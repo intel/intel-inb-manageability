@@ -1,0 +1,241 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Intel Manageability Cloud Configuration JSON Schema",
+    "description": "This is the JSON schema used to validate custom cloud configurations",
+    "type": "object",
+    "required": [
+        "mqtt",
+        "event",
+        "telemetry",
+        "attribute",
+        "method"
+    ],
+    "properties": {
+        "mqtt": {
+            "description": "MQTT connection details",
+            "type": "object",
+            "required": ["username", "hostname", "port"],
+            "properties": {
+                "username": {
+                    "description": "The MQTT username",
+                    "type": "string"
+                },
+                "password": {
+                    "description": "The MQTT password",
+                    "type": "string"
+                },
+                "client_id": {
+                    "description": "The MQTT Client ID to use",
+                    "type": "string"
+                },
+                "hostname": {
+                    "description": "The endpoint of the target MQTT broker",
+                    "type": "string"
+                },
+                "port": {
+                    "description": "The port of the target MQTT broker",
+                    "type": "integer"
+                }
+            }
+        },
+        "proxy": {
+            "description": "Set the HTTP proxy to use",
+            "type": "object",
+            "oneOf": [
+                {
+                    "required": ["auto"],
+                    "properties": {
+                        "auto": {
+                            "description": "Automatically use the system proxy",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                {
+                    "required": ["hostname", "port"],
+                    "properties": {
+                        "hostname": {
+                            "description": "The proxy endpoint without http://",
+                            "type": "string"
+                        },
+                        "port": {
+                            "description": "The proxy port",
+                            "type": "integer"
+                        }
+                    }
+
+                }
+            ]
+        },
+        "tls": {
+            "description": "Set the TLS configuration to use",
+            "type": "object",
+            "required": ["version"],
+            "properties": {
+                "version": {
+                    "description": "TLS version to use",
+                    "type": "string",
+                    "enum": ["TLSv1.2", "TLSv1.3"]
+                },
+                "certificates": {
+                    "description": "Path to the CA certificates file to use",
+                    "type": "string"
+                }
+            }
+        },
+        "x509": {
+            "description": "X509 cert information",
+            "type": "object",
+            "required": ["device_cert"],
+            "properties": {
+                "device_cert": {
+                    "description": "Device/leaf certificate",
+                    "type": "string"
+                },
+                "device_key": {
+                    "description": "Device/leaf private key",
+                    "type": "string"
+                }
+            }
+        },
+        "event": {
+            "type": "object",
+            "required": ["pub", "format"],
+            "properties": {
+                "pub": {
+                    "description": "The topic to publish events to",
+                    "type": "string"
+                },
+                "format": {
+                    "description": "The formatting to publish events in",
+                    "type": "string"
+                }
+            }
+        },
+        "telemetry": {
+            "type": "object",
+            "required": ["pub", "format"],
+            "properties": {
+                "pub": {
+                    "description": "The topic to publish telemetry to",
+                    "type": "string"
+                },
+                "format": {
+                    "description": "The formatting to publish events in",
+                    "type": "string"
+                }
+            }
+        },
+        "attribute": {
+            "type": "object",
+            "required": ["pub", "format"],
+            "properties": {
+                "pub": {
+                    "description": "The topic to publish attributes to",
+                    "type": "string"
+                },
+                "format": {
+                    "description": "The formatting to publish attributes in",
+                    "type": "string"
+                }
+            }
+        },
+        "method": {
+            "type": "object",
+            "required": ["pub", "format", "sub", "parse"],
+            "properties": {
+                "pub": {
+                    "description": "The topic to publish RPC responses to",
+                    "type": "string"
+                },
+                "format": {
+                    "description": "The formatting to publish RPC responses in",
+                    "type": "string"
+                },
+                "sub": {
+                    "description": "The topic to subscribe for RPCs",
+                    "type": "string"
+                },
+                "parse": {
+                    "description": "The information on values to extract from the incoming RPC",
+                    "type": "object",
+                    "definitions": {
+                        "parse_regex": {
+                            "type": "object",
+                            "description": "Parse a value from raw input with regular expressions",
+                            "required": ["regex", "group"],
+                            "properties": {
+                                "regex": {
+                                    "description": "Regular expression",
+                                    "type": "string"
+                                },
+                                "group": {
+                                    "description": "Which regex group to use",
+                                    "type": "integer"
+                                }
+                            }
+                        },
+                        "parse_path": {
+                            "type": "object",
+                            "description": "Parse a value through a path in a parsed data structure",
+                            "required": ["path"],
+                            "properties": {
+                                "path": {
+                                    "description": "Path to the value",
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "parse_info": {
+                            "oneOf": [
+                                { "$ref": "#/properties/method/properties/parse/definitions/parse_regex" },
+                                { "$ref": "#/properties/method/properties/parse/definitions/parse_path" }
+                            ]
+                        }
+                    },
+                    "properties": {
+                        "aggregate": {
+                            "description": "Information to use to parse out an array of single methods",
+                            "$ref": "#/properties/method/properties/parse/definitions/parse_path"
+                        },
+                        "single": {
+                            "type": "object",
+                            "required": ["method", "args"],
+                            "properties": {
+                                "method": {
+                                    "$ref": "#/properties/method/properties/parse/definitions/parse_info"
+                                },
+                                "args": {
+                                    "$ref": "#/properties/method/properties/parse/definitions/parse_path"
+                                }
+                            },
+                            "additionalProperties": {
+                                "$ref": "#/properties/method/properties/parse/definitions/parse_info"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "echoers": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "required": ["sub", "pub", "format"],
+                "properties": {
+                    "sub": {
+                        "description": "The topic to subscribe for messages"
+                    },
+                    "pub": {
+                        "description": "The topic to publish echoes to",
+                        "type": "string"
+                    },
+                    "format": {
+                        "description": "The formatting to publish in",
+                        "type": "string"
+                    }
+                }
+            }
+        }
+    }
+}

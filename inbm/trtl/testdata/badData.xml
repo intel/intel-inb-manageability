@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Test>
+    <Book>
+    <!-- Valid types are Docker only -->
+    <Type>Fiction</Type>
+    <!-- Number of images kept after a successful update -->
+    <NumberOfBooks>10</NumberOfBooks>
+</Test>

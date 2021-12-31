@@ -1,0 +1,190 @@
+"""
+    AOTA Application Command Concrete Classes
+
+    Copyright (C) 2017-2021 Intel Corporation
+    SPDX-License-Identifier: Apache-2.0
+"""
+import logging
+import os
+import shutil
+
+from typing import Optional, Any, Mapping
+
+from inbm_lib.detect_os import is_cent_os_and_inside_container
+from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path
+
+from dispatcher.dispatcher_callbacks import DispatcherCallbacks
+from dispatcher.config_dbs import ConfigDbs
+from dispatcher.packagemanager.local_repo import DirectoryRepo
+from dispatcher.common.result_constants import CODE_OK
+from dispatcher.constants import UMASK_OTA, REPO_CACHE
+from dispatcher.packagemanager.package_manager import get
+
+from .checker import check_application_command_supported, check_url
+from .aota_command import AotaCommand
+from .constants import CHROOT_CMD, CENTOS_DRIVER_PATH, DOCKER, COMPOSE, APPLICATION, SupportedDriver
+from .cleaner import cleanup_repo, remove_directory
+from .aota_error import AotaError
+
+logger = logging.getLogger(__name__)
+
+
+class Application(AotaCommand):
+    """Performs Application updates triggered via AOTA
+
+    @param dispatcher_callbacks callback to the main Dispatcher object
+    @param parsed_manifest: parameters from OTA manifest
+    @param dbs: Config.dbs value
+    """
+
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]],
+                 dbs: ConfigDbs) -> None:
+        # security assumption: parsed_manifest is already validated
+        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+
+    def verify_command(self, cmd: str) -> None:
+        check_application_command_supported(cmd)
+
+    def cleanup(self) -> None:
+        if self.repo_to_clean_up is not None and self.resource is not None:
+            cleanup_repo(self.repo_to_clean_up, self.resource)
+            remove_directory(self.repo_to_clean_up)
+
+    def identify_package(self, package_name: str) -> Optional[str]:
+        """
+        @param package_name: driver package's name
+
+        @return: name of driver to be removed
+        """
+        driver_name = None
+        for driver in SupportedDriver:
+            if driver.value in package_name:
+                driver_name = driver.value
+        return driver_name
+
+    def _download_package(self) -> DirectoryRepo:
+        if self._uri is None:
+            raise AotaError("missing URI.")
+
+        logger.debug("AOTA to download a package")
+        self._dispatcher_callbacks.broker_core.telemetry(
+            f'OTA Trigger Install command invoked for package: {self._uri}')
+        application_repo = AotaCommand.create_repository_cache_repo()
+        get_result = get(url=canonicalize_uri(self._uri),
+                         repo=application_repo,
+                         umask=UMASK_OTA,
+                         username=self._username,
+                         password=self._password)
+        self._dispatcher_callbacks.broker_core.telemetry(
+            f'Package: {self._uri} Fetch Result: {get_result}')
+
+        if get_result.status != CODE_OK:
+            raise AotaError("Unable to download application package.")
+        return application_repo
+
+    def _reboot(self, cmd: str) -> None:
+        if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
+            logger.debug(f" Application {self.resource} installed. Rebooting...")
+            self._dispatcher_callbacks.broker_core.telemetry('Rebooting...')
+            (output, err, code) = PseudoShellRunner.run(cmd)
+            if code != 0:
+                raise AotaError(f'Reboot Failed {err}')
+
+    def update(self) -> None:
+        """Performs Application Update
+        Sets the result variable to failure or success based on the result
+
+        @raise: AotaError when application download or installation fails
+        """
+        check_url(self._uri)
+
+
+class CentOsApplication(Application):
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs) -> None:
+        # security assumption: parsed_manifest is already validated
+        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+
+    def cleanup(self) -> None:
+        """Clean up AOTA temporary file and the driver file after use"""
+        logger.debug("")
+        for dir in os.listdir(get_canonical_representation_of_path(REPO_CACHE)):
+            if dir.startswith("aota") and os.path.isdir(os.path.join(REPO_CACHE, dir)):
+                shutil.rmtree(get_canonical_representation_of_path(os.path.join(REPO_CACHE, dir)))
+        # Clean up driver files
+        for file in os.listdir(CENTOS_DRIVER_PATH):
+            remove_file(get_canonical_representation_of_path(os.path.join(CENTOS_DRIVER_PATH, file)))
+
+    def update(self) -> None:
+        """ Update CentOS driver"""
+        super().update()
+        application_repo = self._download_package()
+
+        # Check if it's CentOS and inside container. In CentOS inb container, chroot is used to switch to CentOS
+        # rootfs and install the driver.
+        driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
+        logger.debug(f"driver path = {driver_path}")
+        try:
+            # Remove all files in inb_driver
+            for file in os.listdir(CENTOS_DRIVER_PATH):
+                remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
+
+            driver_centos_path = os.path.join(CENTOS_DRIVER_PATH, driver_path.split('/')[-1])
+            logger.debug(f"driver_centos_path = {driver_centos_path}")
+            # Move driver to CentOS filesystem
+            shutil.move(driver_path, driver_centos_path)
+
+            # Remove old driver
+            old_driver_name = self.identify_package(driver_path.split('/')[-1])
+            if not old_driver_name:
+                raise AotaError(
+                    f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
+            uninstall_driver_cmd = CHROOT_CMD + f'/usr/bin/rpm -e --nodeps {old_driver_name}'
+            out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
+            logger.debug(out)
+            # If old packages wasn't install on system, it will return error too.
+            if code != 0 and "is not installed" not in str(err):
+                raise AotaError(err)
+
+            chroot_driver_path = driver_centos_path.replace("/host", "")
+            install_driver_cmd = CHROOT_CMD + f'/usr/bin/rpm -ivh {chroot_driver_path}'
+            logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
+            out, err, code = PseudoShellRunner().run(install_driver_cmd)
+            logger.debug(out)
+            if code != 0:
+                raise AotaError(err)
+            self._reboot(CHROOT_CMD + '/usr/sbin/shutdown -r 0')
+
+        except (AotaError, FileNotFoundError, OSError) as error:
+            # Remove temp files if the error happened.
+            self.cleanup()
+            raise AotaError(f'AOTA Command Failed: {error}')
+
+
+class UbuntuApplication(Application):
+    """Performs Application updates triggered via AOTA on Ubuntu
+
+    @param dispatcher_callbacks callback to the main Dispatcher object
+    @param parsed_manifest: parameters from OTA manifest
+    @param dbs: Config.dbs value
+    """
+
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks,
+                 parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs) -> None:
+        # security assumption: parsed_manifest is already validated
+        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+
+    def update(self):
+        super().update()
+        application_repo = self._download_package()
+        install_cmd = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
+        if ' ' in install_cmd or install_cmd.isspace():
+            logger.debug(f"INSTALL : {install_cmd}")
+            raise AotaError(f"File path cannot contain spaces - {install_cmd}")
+        command = f"dpkg -i {install_cmd}"
+        logger.debug(f" Updating Application {self.resource} ...")
+        out, err, code = PseudoShellRunner().run(command)
+        logger.debug(f" Application update logs {out} and error {err}")
+        if code != 0:
+            raise AotaError(err)
+        self._reboot("reboot -f")

@@ -1,0 +1,24 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Telemetry Agent Service
+Requires=network.target mqtt.service
+After=mqtt.service
+PartOf=inbm.service
+After=inbm.service
+
+[Service]
+# ExecStart command is only run when everything else has loaded
+Type=idle
+User=telemetry-agent
+EnvironmentFile=-/etc/intel-manageability/public/mqtt.environment
+Environment='LOGGERCONFIG=/etc/intel-manageability/public/telemetry-agent/logging.ini'
+ExecStart=/usr/bin/inbm-telemetry
+RestartSec=5s
+Restart=on-failure
+Group=telemetry-agent
+SupplementaryGroups=pmsuser
+
+[Install]
+WantedBy=inbm.service

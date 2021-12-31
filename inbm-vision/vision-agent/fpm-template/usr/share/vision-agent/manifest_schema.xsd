@@ -1,0 +1,374 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:simpleType name="Max50Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="50"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PathMax500Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="500"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="SignatureMax1000Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="1000"/>
+         </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="manifest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="type">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="config"/>
+                            <xs:enumeration value="ota"/>
+                            <xs:enumeration value="cmd"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                <xs:element name="cmd" minOccurs="0">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="restart"/>
+                            <xs:enumeration value="query"/>
+                            <xs:enumeration value="provisionNode"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+
+                <xs:element name="config" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="cmd">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="get_element"/>
+                                        <xs:enumeration value="set_element"/>
+                                        <xs:enumeration value="load"/>
+                                        <xs:enumeration value="append"/>
+                                        <xs:enumeration value="remove"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="targetType">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="vision"/>
+                                        <xs:enumeration value="node"/>
+                                        <xs:enumeration value="node_client"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="configtype">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="targets" minOccurs="0" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="target" type="xs:string" minOccurs="0" maxOccurs="50"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:choice>
+                                            <xs:element ref="get"/>
+                                            <xs:element ref="set"/>
+                                            <xs:element ref="load"/>
+                                            <xs:element ref="append"/>
+                                            <xs:element ref="remove"/>
+                                        </xs:choice>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="restart" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="targetType" minOccurs="0" maxOccurs="1">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="node"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="targets" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="target" type="xs:string" minOccurs="1" maxOccurs="50"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="query" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="option">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="all"/>
+                                        <xs:enumeration value="hw"/>
+                                        <xs:enumeration value="fw"/>
+                                        <xs:enumeration value="os"/>
+                                        <xs:enumeration value="status"/>
+                                        <xs:enumeration value="version"/>
+                                        <xs:enumeration value="security"/>
+                                        <xs:enumeration value="guid"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="targetType" minOccurs="0" maxOccurs="1">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="vision"/>
+                                        <xs:enumeration value="node"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="targets" minOccurs="0" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="target" type="xs:string" minOccurs="1" maxOccurs="50"/>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="provisionNode" minOccurs="0">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="blobPath" type="xs:string"/>
+                            <xs:element name="certPath" type="xs:string"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="ota" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="header">
+                                <xs:complexType>
+                                    <xs:all>
+                                        <xs:element name="id" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="name" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="description" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                                        <xs:element name="type">
+                                            <xs:simpleType>
+                                                <xs:restriction base="xs:string">
+                                                    <xs:enumeration value="fota"/>
+                                                    <xs:enumeration value="sota"/>
+                                                    <xs:enumeration value="pota"/>
+                                                </xs:restriction>
+                                            </xs:simpleType>
+                                        </xs:element>
+                                        <xs:element name="repo" type="xs:string"/>
+                                    </xs:all>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="type">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:choice>
+                                            <xs:element ref="fota"/>
+                                            <xs:element ref="sota"/>
+                                            <xs:element ref="pota"/>
+                                        </xs:choice>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="logType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Yes"/>
+            <xs:enumeration value="No"/>
+            <xs:enumeration value="YES"/>
+            <xs:enumeration value="NO"/>
+            <xs:enumeration value="Y"/>
+            <xs:enumeration value="N"/>
+            <xs:enumeration value="n"/>
+            <xs:enumeration value="y"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="sotacmd">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="update"/>
+            <xs:enumeration value="upgrade"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="get">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="path" type="PathMax500Chars"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="set">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="path" type="PathMax500Chars"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="load">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="path" type="PathMax500Chars"/>
+                <xs:element name="signature" type="SignatureMax1000Chars" minOccurs="0" maxOccurs="1"/>
+            </xs:all>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="append">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="path" type="PathMax500Chars"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="remove">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="path" type="PathMax500Chars"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    
+    <xs:element name="fota">
+        <xs:complexType>
+            <xs:all>
+                <xs:element name="targetType" minOccurs="0" maxOccurs="1">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="host"/>
+                            <xs:enumeration value="node"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="targets" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="target" type="xs:string" minOccurs="0" maxOccurs="50"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="signature" type="SignatureMax1000Chars" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="biosversion" type="Max50Chars"/>
+                <xs:element name="vendor" type="Max50Chars"/>
+                <xs:element name="manufacturer" type="Max50Chars"/>
+                <xs:element name="product" type="Max50Chars"/>
+                <xs:element name="releasedate" type="xs:date"/>
+                <xs:element name="tooloptions" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="path" type="PathMax500Chars"/>
+            </xs:all>
+            <xs:attribute name="name" type="xs:string" use="required"/>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="sota">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="cmd">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="sotacmd">
+                                <xs:attribute name="logtofile" type="logType"/>
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="targetType" minOccurs="0" maxOccurs="1">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="host"/>
+                            <xs:enumeration value="node"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="targets" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="target" type="xs:string" minOccurs="0" maxOccurs="50"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="signature" type="SignatureMax1000Chars" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="username" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="password" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="release_date" type="xs:date"/>
+                <xs:element name="path" type="PathMax500Chars"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="pota">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="targetType" minOccurs="0" maxOccurs="1">
+                <xs:simpleType>
+                    <xs:restriction base="xs:string">
+                        <xs:enumeration value="host"/>
+                        <xs:enumeration value="node"/>
+                        <xs:enumeration value="node_client"/>
+                    </xs:restriction>
+                </xs:simpleType>
+                </xs:element>
+                <xs:element name="targets" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="target" type="xs:string" minOccurs="0" maxOccurs="50"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="fota">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="signature" type="SignatureMax1000Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="biosversion" type="Max50Chars"/>
+                            <xs:element name="manufacturer" type="Max50Chars"/>
+                            <xs:element name="product" type="Max50Chars"/>
+                            <xs:element name="vendor" type="Max50Chars"/>
+                            <xs:element name="releasedate" type="xs:date"/>
+                            <xs:element name="path" type="PathMax500Chars"/>
+                        </xs:all>
+                        <xs:attribute name="name" type="Max50Chars" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="sota">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="cmd">
+                                <xs:complexType>
+                                    <xs:simpleContent>
+                                        <xs:extension base="sotacmd">
+                                            <xs:attribute name="logtofile" type="logType"/>
+                                        </xs:extension>
+                                    </xs:simpleContent>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="signature" type="SignatureMax1000Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="release_date" type="xs:date"/>
+                            <xs:element name="path" type="PathMax500Chars"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+</xs:schema>

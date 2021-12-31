@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>ota</type>
+    <!-- Remote Resource Fetch -->
+    <ota>
+        <header>
+            <id>sampleId</id>
+            <name>Sample AOTA</name>
+            <description>Sample AOTA manifest file</description>
+            <!-- Valid types: aota, fota, sota -->
+            <type>aota</type>
+            <repo>remote</repo>
+        </header>
+        <type>
+            <!--Type of update-->
+            <aota name="sample-rpm">
+                <!-- All fields are mandatory -->
+                <!-- Valid types: load, import, snapshot -->
+                <cmd>load</cmd>
+                <!-- Valid types: docker, btrfs -->
+                <app>docker</app>
+                <!-- optional field to set runtime params in containers -->
+                <configParams>{"device":["/dev/sdc1"],"execcmd":"/bin/bash -c ls /dev/sdc1"}</configParams>
+                <fetch>http://sampleurl/sample-rpm.rpm</fetch>
+                <version>1.0</version>
+                <!-- optional field -->
+                <signature>kc8XfFOfMfr4HB</signature>
+                <!-- if resourceType == image, then containerTag must contain version ex. sample-container:3 -->
+                <containerTag>sample-container</containerTag>
+                <!-- optional field set to fetch files from HTTPS server using username and password -->
+                <username>user</username>
+                <password>pswd</password>
+                <!-- optional field set to pull images from docker registry -->
+                <dockerRegistry>hub.docker.com/example:1.2</dockerRegistry>
+                <dockerUsername>user</dockerUsername>
+                <dockerPassword>passwrd</dockerPassword>
+            </aota>
+        </type>
+    </ota>
+    <!-- Local Resource via HDC cloud
+    <ota>
+        <header>
+            <id>sampleId</id>
+            <name>Sample AOTA</name>
+            <description>Sample AOTA manifest file</description>
+            <type>aota</type>
+            <repo>local</repo>
+        </header>
+        <type>
+            <aota name="sample">
+                <cmd>load</cmd>
+                <name>sample-rpm</name>
+                <version>1.0</version>
+                <signature>qwe345try67y</signature>
+                <containerTag>sample-container</containerTag>
+            </resource>
+        </type>
+        <bundle>
+            <name>ota-package.zip</name>
+            <version>1.2</version>
+            <signature>qwe345try67y</signature>
+        </bundle>
+    </ota>
+    -->
+</manifest>
+
+        <!-- FOTA sample manifest
+        <?xml version='1.0'  ?>
+        <manifest>
+            <type>ota</type>
+            <ota>
+                <header>
+                <id></id>
+                <name></name>
+                <description></description>
+                <type>fota</type>
+                <repo>remote</repo>
+                </header>
+                <type>
+                    <fota name='sample'>
+                        <fetch>http://ci_nginx:80/BIOSUPDATE.tar</fetch>
+                        <signature>`python /tmp/create_signature.py /nginx-content/succeed_rpm_key.pem  /nginx-content/${BIOSUPDATE_FILE}  1234`</signature>
+                        <biosversion>A..ZZZZ.B11.1</biosversion>
+                        <vendor>Intel Corp.</vendor>
+                        <manufacturer>testmanufacturer</manufacturer>
+                        <product>testproduct<product/>
+                        <releasedate>2017-06-23</releasedate>
+                        <path>/boot/efi/</path>
+                        <toolOptions>/p /b</toolOptions>
+
+                    </fota>
+                </type>
+            </ota>
+        </manifest>
+        -->
+
+
+        <!-- SOTA sample manifest
+        <?xml version="1.0" encoding="UTF-8"?>
+        <manifest>
+        <type>ota</type>
+            <ota>
+                <header>
+                    <id>sampleId</id>
+                    <name>Sample SOTA</name>
+                    <description>Sample SOTA manifest file</description>
+                    <type>sota</type>
+                    <repo>remote</repo>
+                </header>
+                <type>
+                    <syota>
+                            <cmd logtofile=Y>update</cmd>
+                    </syota>
+                </type>
+            </ota>
+        </manifest>
+        -->
+
+        <!-- Config sample manifest
+
+             <?xml version="1.0" encoding="UTF-8"?>
+             <manifest>
+                 <type>config</type>
+                     <config>
+                        <cmd>get_element</cmd>
+                        <configtype>
+                            <get>
+                               <path>{"diagnostic": [{"minStorageMB": ""}, {"minMemoryMB": ""}], "telemetry": [{"maxCacheSize": ""}]}</path>
+                            </get>
+                        </configtype>
+                     </config>
+             </manifest>
+
+             <?xml version="1.0" encoding="UTF-8"?>
+             <manifest>
+                 <type>config</type>
+                     <config>
+                        <cmd>set_element</cmd>
+                        <configtype>
+                            <set>
+                               <path>{"diagnostic": [{"minStorageMB": "10"}, {"minMemoryMB": "20"}], "telemetry": [{"maxCacheSize": "10"}]}</path>
+                            </set>
+                        </configtype>
+                     </config>
+             </manifest>
+
+             <?xml version="1.0" encoding="UTF-8"?>
+             <manifest>
+                 <type>config</type>
+                     <config>
+                        <cmd>load</cmd>
+                        <configtype>
+                            <load>
+                               <fetch>http://ci_nginx:80/tc.conf<fetch>
+                               <path>/tmp</path>
+                            </load>
+                        </configtype>
+                     </config>
+             </manifest>
+             -->
+
+        <!-- Shutdown/Restart sample manifest
+             <?xml version='1.0'  ?>
+             <manifest>
+                <type>cmd</type>
+                <cmd>restart</cmd> or <cmd>shutdown</cmd>
+             </manifest>
+        -->

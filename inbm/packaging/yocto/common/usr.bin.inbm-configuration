@@ -1,0 +1,50 @@
+# Last Modified: Wed Oct 25 11:19:16 2017
+#include <tunables/global>
+
+/usr/bin/inbm-configuration {
+  #include <abstractions/base>
+  #include <abstractions/bash>
+  #include <abstractions/nameservice>
+  #include <abstractions/python>
+
+  capability dac_override,
+
+  deny /* w,
+
+  /dev/tty wr,
+  /bin/bash.bash rix,
+  /bin/dash rix,
+  /bin/uname rix,
+  /bin/uname.coreutils rix,
+  /etc/tc_config.conf r,
+  /etc/intel_manageability.conf rw,
+  /etc/intel_manageability.conf_bak rw,
+  /proc/*/mounts r,
+  /proc/*/status r,
+  /proc/*/fd/ r,
+  /sbin/ldconfig rix,
+  /sbin/ldconfig.real rix,
+  /tmp/ rw,
+  /tmp/** mrw,
+  /usr/bin/gcc-5 rix,
+  /usr/bin/python2.7 ix,
+  /usr/bin/inbm-configuration rix,
+  /usr/share/configuration-agent/*.xsd r,
+  /usr/share/misc/magic.mgc r,
+  /etc/intel-manageability/public/configuration-agent/configuration-agent.crt r,
+  /etc/intel-manageability/secret/configuration-agent/configuration-agent.key r,
+  /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt r,
+  /etc/ssl/openssl.cnf r,
+  /opt/csl/csl-node/certs/k8s/csl-ca-cert.pem r,
+  /etc/opt/csl/csl-node/csl-manager r,
+  /etc/opt/csl/csl-node/long-lived-token r,
+  /etc/ssl/certs/csl-ca-cert.pem r,
+  /var/tmp/* rw,
+  /var/cache/manageability/** rw,
+  /etc/intel-manageability/public/configuration-agent/logging.ini r,
+  /etc/ssl/openssl.cnf r, 
+  /usr/bin/file rix,
+  /usr/** r,
+  /bin/lsb_release rUx,
+  /bin/busybox.nosuid rUx,
+}

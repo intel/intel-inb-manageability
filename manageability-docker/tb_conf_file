@@ -1,0 +1,5 @@
+TB_IP_ADDR= <thingsboard_host_ip_addr>
+TB_PORT=<thingsboard_port>
+DEVICE_TOKEN=<device_token>
+TLS=<set tls to y/n>
+TLS_PEM_FILE_LOCATION=<if tls is set to 'y', provide the path to the thingsboard mqtt tls cert here>

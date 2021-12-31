@@ -1,0 +1,26 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Diagnostic Agent Service
+Requires=network.target mqtt.service
+After=mqtt.service
+PartOf=inbm.service
+After=inbm.service
+
+
+[Service]
+# ExecStart command is only run when everything else has loaded
+Type=idle
+User=diagnostic-agent
+Group=diagnostic-agent
+SupplementaryGroups=docker
+EnvironmentFile=-/etc/intel-manageability/public/mqtt.environment
+Environment='LOGGERCONFIG=/etc/intel-manageability/public/diagnostic-agent/logging.ini'
+EnvironmentFile=-/etc/environment
+ExecStart=/usr/bin/inbm-diagnostic
+RestartSec=5s
+Restart=on-failure
+
+[Install]
+WantedBy=inbm.service

@@ -1,0 +1,2 @@
+[bandit]
+exclude: /inbm_vision_lib/tests

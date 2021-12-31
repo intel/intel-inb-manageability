@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -euxo pipefail
+
+# Check node in flashless environment
+if ! grep -q root /proc/cmdline ; then
+    echo Flashless system detected.
+    if [ -f /usr/bin/node ] ; then
+        systemctl enable --now inbm-node.service
+    fi
+fi

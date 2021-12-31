@@ -1,0 +1,7 @@
+version: '2'
+
+services:
+  nginx:
+    build: ./nginx
+    ports:
+      - 9876:80

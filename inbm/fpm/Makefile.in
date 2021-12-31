@@ -1,0 +1,45 @@
+include(`Makefile-macros.m4')
+all: build
+
+OUTPUT=output
+
+# ---- Dependencies ----
+
+fpm_package(`yocto-provision',
+        `1.0',
+        `1',
+        `true',
+        `yocto-provision/template',
+        `--provides tc-provisioner')
+
+fpm_package(`sample-application',
+        `1.0',
+        `1',
+        `true',
+        `sample-application/template',
+        `')
+
+fpm_package(`tpm-provision',
+	`1.0',
+	`1',
+	`true',
+	`tpm-provision/template',
+	`--provides tc-provisioner -d tpm2-tools')
+
+
+fpm_package(`mqtt', 
+	include(`../version.txt'), 
+	`1', 
+	`mkdir -p mqtt/files/var/persistent-log/mosquitto && chmod 0700 mqtt/files/usr/bin/tc-get-tpm-passphrase', 
+	`mqtt/template', 
+	`-d cryptsetup -d mosquitto -d tpm2-abrmd')	
+
+# ---- Top level ----
+
+build: rpms debs
+
+debs: ${DEBS}
+rpms: ${RPMS}
+
+clean:
+	rm -r -f -v ${CLEANUP} #&& rm -rf ${OUTPUT} && mkdir -p ${OUTPUT}

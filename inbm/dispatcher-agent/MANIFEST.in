@@ -1,0 +1,6 @@
+include README.md
+include licenses/LICENSE
+include requirements.txt
+include packaging/empty.txt
+include packaging/config/manifest_schema.xsd
+include packaging/config/config_param_schema.json

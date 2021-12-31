@@ -1,0 +1,58 @@
+#!/bin/bash
+set -euxo pipefail
+
+FORMAT="$1"
+PROJECT="$2" # 'EVAL', 'KMB', or 'EHL'
+
+: We expect to see a binary in ./trtl and current working directory be
+: the trtl directory.
+
+[[ -f ./trtl ]]
+
+rm -rf trtl-package/files
+cp -a trtl-package/template trtl-package/files
+
+mkdir -p trtl-package/files/etc/apparmor.d/
+if [ "${PROJECT}" = "EHL" ]; then
+    cp  trtl-package/packaging/yocto/common/usr.bin.trtl trtl-package/files/etc/apparmor.d/usr.bin.trtl
+fi
+if [ "${PROJECT}" = "KMB" ]; then
+    cp  trtl-package/packaging/yocto/common/usr.bin.trtl trtl-package/files/etc/apparmor.d/usr.bin.trtl
+fi
+if [ "${PROJECT}" = "EVAL" ]; then
+    cp  trtl-package/packaging/eval/usr.bin.trtl trtl-package/files/etc/apparmor.d/usr.bin.trtl
+fi
+
+[ -f trtl-package/files/etc/apparmor.d/usr.bin.trtl ]
+
+mkdir -p trtl-package/files/usr/bin/
+cp -v trtl trtl-package/files/usr/bin/trtl
+chmod +x trtl-package/files/usr/bin/trtl
+
+EXTENSION="$FORMAT"
+NAME="trtl"
+VERSION="$(cat ../version.txt)"
+ITERATION="1"
+
+( cd trtl-package
+  fpm -t "$EXTENSION" \
+    --after-install after_install.sh \
+    --before-remove before_remove.sh \
+    --after-remove after_remove.sh \
+    --after-upgrade after_upgrade.sh \
+    --before-upgrade before_upgrade.sh \
+    --before-install before_install.sh \
+    --iteration "$ITERATION" \
+    -s dir \
+    -C files \
+    -p "$NAME-$VERSION-$ITERATION.$PROJECT.$EXTENSION" \
+    -f \
+    -n "$NAME" \
+    -v "$VERSION" \
+    --no-auto-depends \
+    -a all \
+    -m none \
+    . )
+
+mkdir -p ./output/
+mv -v "trtl-package/$NAME-$VERSION-$ITERATION.$PROJECT.$EXTENSION" ./output/

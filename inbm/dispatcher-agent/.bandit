@@ -1,0 +1,3 @@
+[bandit]
+exclude: /tests
+skips: ["-S101", "-S301", "-S320", "-S403", "-S410"]

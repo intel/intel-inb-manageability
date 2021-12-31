@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -eo pipefail
+
+TPM_FLAG_FILE=/etc/intel-manageability/public/tpm_flag
+
+function detect_tpm {
+    if [[ "x$PROVISION_TPM" == "xdisable" ]]; then
+        echo "Disabling TPM (PROVISION_TPM set to x$PROVISION_TPM)."
+        echo "FALSE" >"$TPM_FLAG_FILE"
+        return 0
+    fi
+
+    # for disable, enable, or (unset) we always want to try to detect the TPM
+    TPM_CHECK_TIMEOUT_SEC=90
+    echo "Checking TPM (can take up to $TPM_CHECK_TIMEOUT_SEC seconds)..."
+
+    # on some systems if TPM is broken a timeout is necessary
+    if timeout "$TPM_CHECK_TIMEOUT_SEC" /usr/bin/tc-get-tpm-passphrase >/dev/null 2>/dev/null ; then
+        echo "TPM is good. Enabling TPM for provisioning."
+        echo "TRUE" >"$TPM_FLAG_FILE"
+    else
+        echo "TPM check failed. This may mean there is no TPM, the TPM needs to be cleared, or there is an"
+        echo "error communicating with the TPM."
+
+        if [[ "x$PROVISION_TPM" == "xenable" ]]; then
+            echo "PROVISION_TPM set to x$PROVISION_TPM. Stopping."
+            rm -f "$TPM_FLAG_FILE"
+            exit 1
+        fi
+
+        if [[ "x$PROVISION_TPM" == "xauto" ]]; then
+            echo "No TPM detected and PROVISION_TPM set to x$PROVISION_TPM. Proceeding without TPM."
+            echo "FALSE" >"$TPM_FLAG_FILE"
+            return 0
+        fi
+
+        # Default behavior (unset).  Prompt.
+        echo "OK to proceed without TPM? Secrets are not hardware protected without TPM. "
+        read -p "[Y/N] " -n 1 -r REPLY
+        echo
+        if [[ $REPLY =~ ^[Yy]$ ]]; then
+            echo "FALSE" >"$TPM_FLAG_FILE"
+            return 0
+        else
+            echo "Aborting provisioning."
+            exit 1
+        fi
+    fi 
+}
+
+detect_tpm

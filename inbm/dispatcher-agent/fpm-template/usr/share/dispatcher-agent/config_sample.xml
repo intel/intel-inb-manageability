@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configurations>
+    <telemetry>
+        <collectionIntervalSeconds>60</collectionIntervalSeconds>
+        <publishIntervalSeconds>300</publishIntervalSeconds>
+        <maxCacheSize>100</maxCacheSize>
+        <containerHealthIntervalSeconds>600</containerHealthIntervalSeconds>
+    </telemetry>
+    <diagnostic>
+        <minStorageMB>100</minStorageMB>
+        <minMemoryMB>10</minMemoryMB>
+        <minPowerPercent>20</minPowerPercent>
+        <sotaSW>
+            docker
+            trtl
+            telemetry
+        </sotaSW>
+        <networkCheck>true</networkCheck>
+    </diagnostic>
+    <dispatcher>
+        <trustedRepositories>
+
+        </trustedRepositories>
+        <sota>
+            <updateAptSource>
+                http://linux-ftp.jf.intel.com/pub/mirrors/ubuntu
+            </updateAptSource>
+            <proceedWithoutRollback>false</proceedWithoutRollback>
+        </sota>
+    </dispatcher>
+</configurations>

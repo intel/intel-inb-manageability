@@ -1,0 +1,26 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Intel(R) In-Band Manageability MQTT
+ConditionPathExists=/etc/intel-manageability/public/mqtt-broker/acl.file
+Requires=network.target
+Requires=multi-user.target
+Wants=tpm2-abrmd.service
+After=tpm2-abrmd.service
+
+[Service]
+Type=simple
+User=mqtt-broker
+PermissionsStartOnly=true
+ExecStartPre=/usr/bin/mqtt-provision-start
+ExecStart=/usr/sbin/mosquitto -c /etc/intel-manageability/public/mqtt-broker/mosquitto.conf
+ExecReload=/bin/kill -HUP $MAINPID
+StandardOutput=journal
+StandardError=journal
+Restart=always
+Group=mqtt-broker
+TimeoutSec=120
+
+[Install]
+WantedBy=multi-user.target

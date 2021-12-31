@@ -1,0 +1,82 @@
+#!/bin/bash
+
+set -euo pipefail
+
+STORE_SLOT="0x81001231"
+OLD_SLOT="0x81010001"
+
+# store luks-passphrase.txt into $STORE_SLOT in TPM
+# only call when in secure directory
+store_passphrase() {
+    tpm2_createprimary --quiet --hierarchy=o --key-algorithm=rsa --hash-algorithm=sha256 --key-context=prim.ctx 1>&2
+    tpm2_create --hash-algorithm=sha256 --public=seal.pub --private=seal.priv --parent-context=prim.ctx -L policy.dat -p "$TPM_PASS" -i- 1>&2 <luks-passphrase.txt
+    tpm2_load --parent-context=prim.ctx --public=seal.pub --private=seal.priv --name=seal.name --key-context=seal.ctx 1>&2
+    tpm2_evictcontrol --hierarchy=o --object-context="$STORE_SLOT" 1>&2 || true
+    tpm2_evictcontrol --hierarchy=o --object-context=seal.ctx "$STORE_SLOT" 1>&2
+}
+
+sleep 1
+
+# (in case the TPM is in dictionary lockout mode)
+timeout 5 tpm2_dictionarylockout --clear-lockout || true
+
+timeout 5 tpm2_selftest
+umount /etc/intel-manageability/scratch 1>&2 || true
+
+rm -rf /etc/intel-manageability/scratch 1>&2
+mkdir -p /etc/intel-manageability/scratch 1>&2
+mount -t ramfs -o size=32m ramfs /etc/intel-manageability/scratch 1>&2
+chown root.root /etc/intel-manageability/scratch 1>&2
+chmod og-rwx /etc/intel-manageability/scratch 1>&2
+
+cd /etc/intel-manageability/scratch
+# setup lock pass phrases with a -p password
+tpm2_startauthsession -S session.dat 1>&2
+tpm2_policypassword -S session.dat -L policy.dat 1>&2
+
+# read existing or generate new tpm password.
+TPM_PASS_LOCATION="/etc/intel-manageability/tpm-pass.txt"
+if [ -f $TPM_PASS_LOCATION ]; then
+  TPM_PASS=$(<$TPM_PASS_LOCATION)
+else
+  set +o pipefail
+  cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 32 | head -n 1 >"$TPM_PASS_LOCATION"   # minimum 128 bits randomness. this is ~192
+  set -o pipefail
+  chmod 0400 "$TPM_PASS_LOCATION"
+  TPM_PASS=$(<$TPM_PASS_LOCATION)
+fi
+
+# each branch should have passphrase in luks-passphrase.txt at the end
+# Several scenarios:
+# 1. old slot, no passphrase -- migrate
+if (tpm2_unseal -c "$OLD_SLOT" >luks-passphrase.txt) ; then
+    store_passphrase
+    tpm2_evictcontrol -c "$OLD_SLOT"
+# 2. old slot, fixed passphrase 'manageability' -- migrate
+elif (tpm2_unseal -c "$OLD_SLOT" -p manageability >luks-passphrase.txt) ; then
+    store_passphrase
+    tpm2_evictcontrol -c "$OLD_SLOT"
+# 3. new slot, no passphrase -- migrate
+elif (tpm2_unseal -c "$STORE_SLOT" >luks-passphrase.txt) ; then
+    tpm2_evictcontrol -c "$STORE_SLOT"
+    store_passphrase
+# 4. new slot, fixed passphrase 'manageability' -- migrate
+elif (tpm2_unseal -c "$STORE_SLOT" -p manageability >luks-passphrase.txt) ; then
+    tpm2_evictcontrol -c "$STORE_SLOT"
+    store_passphrase
+# 5. new slot, new passphrase -- just read
+elif (tpm2_unseal -c "$STORE_SLOT" -p "$TPM_PASS" >luks-passphrase.txt) ; then
+    : nothing to do here
+# 6. not stored yet -- generate and store LUKS passphrase
+else
+    dd if=/dev/urandom bs=1 count=32 2>/dev/null >luks-passphrase.txt 
+    store_passphrase
+fi
+
+cat luks-passphrase.txt
+
+cd /
+
+find /etc/intel-manageability/scratch -type f -exec shred --force --remove {} \;
+sync
+umount /etc/intel-manageability/scratch 1>&2

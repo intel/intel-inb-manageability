@@ -1,0 +1,43 @@
+# base-setup.m4: common set of commands for a base utility image, either x86 or arm
+
+SHELL ["/bin/bash", "-c"]
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
+    m4  \
+    gcc \
+    make \
+    curl \
+    ruby-dev \
+    rubygems \
+    python \
+    python-dev \
+    python-pip \
+    python-virtualenv \
+    pkg-config \
+    rpm \
+    wget \
+    unzip \
+    git && \
+    apt-get clean
+RUN gem install --no-ri --no-rdoc fpm -v 1.11.0
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
+    software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get clean
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
+    python3.8 \
+    python3.8-dev \
+    python3-pip \
+    python3.8-venv \
+    python3-setuptools \
+    libxslt1-dev \
+    gcc \
+    libssl-dev \
+    libffi-dev \
+    cpio \
+    rsync \
+    && \
+    apt-get clean
+

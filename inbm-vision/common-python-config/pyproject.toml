@@ -1,0 +1,51 @@
+[tool.flakehell]
+baseline = ".flakehell_baseline"
+format = "grouped"
+show_source = true
+statistics = false
+doctests = false
+enable_extensions = "G"
+
+exclude = ["tests",
+    "vision/tests",
+    "manageability_library/tests",
+    "node/tests",
+    "mqttclient/tests"]
+
+accept_encodings = "utf-8"
+max_line_length = 99
+
+max_jones_score = 12
+max_cognitive_score = 88 # Extremely High (12) <- This should not increase
+max_try_body_length = 33 # Extremely High (1)
+max_arguments = 15 # Very High (5) <- This should not increase
+max_methods = 28 # Extremely High (7)
+max_local_variables = 26 # Extremely High (5)
+max_expressions = 24 # Very High (9)
+max_returns = 8 # High (5) <- This should not increase
+max_function_expressions = 5 # High (4)
+max_line_complexity = 26 # High (14)
+max_module_expressions = 17 # Very High (7)
+max_cognitive_average = 11 # High (8) <- This should not increase
+max_string_usages = 8 # High (5)
+max_imports = 23 # High (12)
+max_attributes = 14 # Very High (6)
+max_module_members = 12 # Extremely High (7)
+max_imported_names = 65 # High (50)
+max_import_from_members = 17 # Very High (8)
+
+max_base_classes = 3
+max_decorators = 5
+max_awaits = 5
+max_asserts = 5
+max_call_level = 3
+max_annotation_complexity = 3
+
+max_tuple_unpack_length = 4
+max_access_level = 4
+
+
+[tool.flakehell.plugins]
+"flake8-annotations" = ["-*", "+ANN001", "+ANN2??", "+ANN301"]
+"flake8-bandit" = ["+*", "-S404", "-S603"]
+"wemake-python-styleguide" = ["-*", "+WPS2??", "-WPS220", "-WPS222", "-WPS223", "-WPS203"]

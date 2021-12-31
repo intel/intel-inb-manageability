@@ -1,0 +1,63 @@
+# Last Modified: Wed Oct 25 11:19:16 2017
+#include <tunables/global>
+
+/usr/bin/inbm-telemetry {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+  #include <abstractions/python>
+
+  capability dac_override,
+  capability net_admin,
+
+  deny /home/** a,
+
+  /dev/tty wr,
+  /bin/lsblk Pix,
+  /bin/uname ix,
+  /usr/bin/uname rix,
+  /dev/mem r,
+  /proc/*/mounts r,
+  /proc/*/status r,
+  /proc/*/fd/ r,
+  /proc/sys/kernel/hostname r,
+  /proc/sys/net/core/somaxconn r,
+  /proc/cpuinfo r,
+  /sbin/ldconfig rix,
+  /sbin/ldconfig.real rix,
+  /sys/block/ r,
+  /sys/class/**  r,
+  /sys/devices/** r,
+  /sys/firmware/dmi/tables/DMI r,
+  /sys/firmware/dmi/tables/smbios_entry_point r,
+  /sys/firmware/efi/systab r,
+  /tmp/ rw,
+  /tmp/** mrw,
+  /usr/lib/ r,
+  /usr/lib/libPmsPython rm,
+  /usr/lib/libPmsClient rm,
+  /var/rm-daemon wr,
+  /var/rm-daemon-notify wr,
+  /usr/bin/gcc-5 rix,
+  /usr/bin/python2.7 ix,
+  /usr/bin/trtl Pix,
+  /usr/bin/lsb_release rUx,
+  /usr/bin/dpkg-query rUx,
+  /usr/bin/inbm-telemetry rix,
+  /etc/intel-manageability/public/telemetry-agent/telemetry-agent.crt r,
+  /etc/intel-manageability/secret/telemetry-agent/telemetry-agent.key r,
+  /etc/magic r,
+  /usr/share/misc/magic.mgc r,
+  /etc/ssl/openssl.cnf r,
+  /usr/sbin/dmidecode Ux,
+  /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt r,
+  /var/tmp/* rw,
+  /run/docker.sock rw,
+  /etc/intel-manageability/public/telemetry-agent/logging.ini r,
+  /bin/systemctl Ux,
+  /etc/mime.types r,
+  /usr/bin/systemctl Ux,
+  /usr/bin/lsblk Pix,
+  /scripts/dmi_id_bios_info/* r,
+  /usr/bin/file rix,
+  /usr/** r,
+}

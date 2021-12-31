@@ -1,0 +1,78 @@
+# Access Control List to client access to Intel(R) In-Band Manageability broker topics
+
+user dispatcher-agent
+topic dispatcher/#
+topic configuration/#
+topic diagnostic/#
+topic telemetry/#
+topic readwrite remediation/+
+topic read manageability/request/+
+topic write ma/request/+
+topic write manageability/event
+topic write manageability/cmd/+
+topic write manageability/response
+topic write ma/configuration/update/+
+topic write dispatcher/query
+
+user cloudadapter-agent
+topic cloudadapter/#
+topic write manageability/request/+
+topic read manageability/response
+topic read manageability/telemetry
+topic read manageability/event
+
+user telemetry-agent
+topic telemetry/#
+topic configuration/#
+topic diagnostic/#
+topic write manageability/telemetry
+topic write manageability/event
+topic read dispatcher/query
+
+user diagnostic-agent
+topic diagnostic/#
+topic configuration/#
+topic write manageability/event
+topic write remediation/+
+
+user configuration-agent
+topic configuration/#
+
+user vision-agent
+topic vision/#
+topic read ma/request/+
+topic read +/state
+topic read ma/configuration/update/+
+topic read ma/configuration/response/#
+topic write manageability/response
+topic write manageability/event
+topic write manageability/telemetry
+topic write vision/state
+topic write ma/configuration/command/+
+topic write ma/xlink/+
+
+user node-agent
+topic node/#
+topic write manageability/request/+
+topic read manageability/telemetry
+topic read manageability/event
+topic read manageability/response
+topic read +/state
+
+user inbc-program
+topic write manageability/request/+
+topic write ma/request/+
+topic write ma/configuration/update/+
+topic read manageability/response
+topic read manageability/event
+topic read ma/xlink/status
+
+user cmd-program
+topic write manageability/event
+topic write manageability/response
+topic write manageability/telemetry
+topic read manageability/cmd/+
+
+# Read from all state/broadcast channels - Anonymous users disabled
+pattern read +/state
+pattern read +/broadcast

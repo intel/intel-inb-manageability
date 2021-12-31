@@ -1,0 +1,12 @@
+[report]
+show_missing = True
+exclude_lines =
+   pragma: no cover
+   logger\.debug
+   telemetry\(
+   logger\.info
+   logger\.error
+
+[run]
+omit = *tests*
+

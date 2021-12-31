@@ -1,0 +1,2 @@
+LOGGERCONFIG=/etc/intel-manageability/public/dispatcher-agent/logging.ini
+GENERIC_LISTEN_PORT=8888

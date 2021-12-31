@@ -1,0 +1,67 @@
+#!/bin/bash
+set -euxo pipefail
+
+DEVICE_MXLK="mxlk"
+DEVICE_XLINK="xlink"
+DEVICE_FLS="flash_logic"
+MXLK="$DEVICE_MXLK.ko"
+XLINK="$DEVICE_XLINK.ko"
+FLS="$DEVICE_FLS.ko"
+
+function check_xlink_installed() {
+  # Check if Xlink Driver is installed or installation problem
+    if lsmod | grep "$DEVICE_MXLK" &> /dev/null ; then
+      echo "$MXLK is loaded!"
+    else
+      echo "$MXLK install FAIL"
+      exit 1
+    fi
+
+    if lsmod | grep "$DEVICE_XLINK" &> /dev/null ; then
+      echo "$XLINK is loaded!"
+    else
+      echo  "$XLINK install FAIL"
+      exit 1
+    fi
+	echo "Done Xlink driver installation and Successful"
+
+	  if lsmod | grep "$DEVICE_FLS" &> /dev/null ; then
+      echo "$FLS is loaded!"
+    else
+      echo  "$FLS install FAIL"
+    fi
+	echo "Done $FLS driver installation."
+}
+
+function load_xlink_driver() {
+	modprobe $DEVICE_MXLK || true
+	modprobe $DEVICE_XLINK || true
+	modprobe $DEVICE_FLS || true
+
+    if lsmod | grep "mxlk" &> /dev/null; then
+      echo "mxlk modprode loaded"
+    else
+      echo "mxlk modprode fail"
+    fi
+
+    if lsmod | grep "xlink" &> /dev/null; then
+      echo "xlink modprode loaded"
+    else
+      echo "xlink modprode fail"
+    fi
+
+    if lsmod | grep "$DEVICE_FLS" &> /dev/null; then
+      echo "$FLS modprode loaded"
+    else
+      echo "$FLS modprode fail"
+    fi
+}
+
+if grep -q "XLINK_SIMULATOR=True" "/lib/systemd/system/inbm-vision.service"; then
+  # Skip driver installation if xlink simulator being used.
+  exit 0
+fi
+
+load_xlink_driver
+check_xlink_installed
+exit 0

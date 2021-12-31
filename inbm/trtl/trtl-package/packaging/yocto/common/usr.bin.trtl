@@ -1,0 +1,23 @@
+# Last Modified: Fri Sep 15 11:02:29 2017
+#include <tunables/global>
+
+/usr/bin/trtl {
+  #include <abstractions/base>
+  #include <abstractions/nameservice>
+
+  /proc/sys/kernel/hostname r,
+  /proc/sys/net/core/somaxconn r,
+  /usr/bin/trtl mr,
+  /usr/bin/snapper rUx,
+  /usr/bin/docker rix,
+  /etc/trtl.conf r,
+  /usr/bin/docker-compose rUx,
+  /usr/local/bin/docker-compose rUx,
+  /usr/bin/pip rUx,
+  /etc/mime.types r,
+  /usr/share/trtl/trtl.xsd r,
+  /sys/kernel/mm/transparent_hugepage/{,**} r,
+  /usr/share/misc/magic.mgc r,
+  /usr/bin/file rix,
+  /usr/** r,
+}

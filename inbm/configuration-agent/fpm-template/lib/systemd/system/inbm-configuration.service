@@ -1,0 +1,24 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Configuration Agent Service
+Requires=network.target mqtt.service
+After=mqtt.service
+PartOf=inbm.service
+After=inbm.service
+
+[Service]
+# ExecStart command is only run when everything else has loaded
+Type=idle
+User=configuration-agent
+Group=configuration-agent
+SupplementaryGroups=mqtt-ca
+EnvironmentFile=-/etc/intel-manageability/public/mqtt.environment
+Environment='LOGGERCONFIG=/etc/intel-manageability/public/configuration-agent/logging.ini'
+ExecStart=/usr/bin/inbm-configuration
+RestartSec=5s
+Restart=on-failure
+
+[Install]
+WantedBy=inbm.service

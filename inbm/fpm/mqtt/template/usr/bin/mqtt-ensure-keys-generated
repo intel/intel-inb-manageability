@@ -1,0 +1,125 @@
+#!/bin/bash
+set -euxo pipefail
+
+TC_PUBLIC="/etc/intel-manageability/public"
+TC_SECRET="/etc/intel-manageability/secret"
+DAYS_EXPIRY="2555"
+
+do_provision() {
+    rm -f "$TC_SECRET"/.provisioned
+    /usr/bin/inb-provision-certs "$TC_PUBLIC" "$TC_SECRET"
+
+    fix_permissions
+
+    touch "$TC_SECRET"/.provisioned
+}
+
+# Function will print an error and exit with code 1 if a user exists
+# and has a password set.
+# If the user exists and has a shell other than {/usr,}/sbin/nologin, set shell to
+# /usr/sbin/nologin
+check_no_insecure_user() {
+  local user_to_check="$1"
+
+  # user exists?
+  if getent passwd "$user_to_check" >&/dev/null ; then
+
+    # password set?
+    case $(passwd --status "$user_to_check" | awk '{print $2}') in
+      NP) true ;; # does not have password set, continue
+      L)  true ;; # user is locked out, continue
+      P)  echo "User $user_to_check already exists and has a password. Exiting." ; exit 1 ;;
+    esac
+
+    # shell other than /sbin/nologin or /usr/sbin/nologin?
+    local user_shell
+    user_shell=$(getent passwd "$user_to_check" | cut -d: -f7)
+    if [[ "$user_shell" == "/sbin/nologin" ]] || [[ "$user_shell" == "/usr/sbin/nologin" ]] ; then
+      true
+    else
+      echo "User $user_to_check already exists and has insecure shell $user_shell. Changing shell to /usr/sbin/nologin."
+      chsh -s /usr/sbin/nologin "$user_to_check"
+    fi
+  fi
+}
+
+fix_permissions() {
+    # Protect directories by group
+    for dir in $(find "$TC_SECRET" -mindepth 1 -maxdepth 1 -type d) ; do
+        GROUP="$(basename $dir)"
+	USER="$GROUP"
+        if ! [ "$GROUP" == "lost+found" ] ; then
+            check_no_insecure_user "$USER"
+            getent group "$GROUP" || groupadd "$GROUP"
+	    if id "$USER" >&/dev/null; then
+                : user already exists
+	    else
+	        useradd -g "$GROUP" -s /usr/sbin/nologin "$USER" # user does not exist
+	    fi
+            chgrp -R "$GROUP" "$dir"
+            # Ensure group does not have write, 'other' does not have read, write, or execute
+            chmod -R g-w,o-rwx "$dir"
+            # Ensure user has read/write and group has read
+            chmod -R u+rw,g+r "$dir"
+        fi
+    done
+    for i in /etc/intel_manageability.conf /etc/intel_manageability.conf_bak; do
+	    touch "$i"
+        chgrp configuration-agent "$i"
+	    chmod g+rw "$i"
+    done
+
+    # Set up temp file permissions
+    chown -R root.mqtt-ca /var/cache/manageability
+    chmod -R o-rwx /var/cache/manageability
+    chmod -R ug+rw /var/cache/manageability
+    find /var/cache/manageability -type d -exec chmod g+s {} \;  # Make sure new files have correct group ownership
+
+    # Make sure 'docker' group exists for diagnostic agent's .service file
+    getent group docker || groupadd docker
+}
+
+# Ensure keys are provisioned
+if ! [ -f "$TC_SECRET"/.provisioned ] ; then
+    echo Provisioning not previously done. Creating certs.
+    do_provision
+else
+    # Fix permissions even if we end up not reprovisioning
+    fix_permissions
+
+    # Check for HDDL mode; always reprovision with HDDL mode due to time sync issue.
+    KMB_PCIE_EP_STATUS="/proc/device-tree/soc/pcie_ep@37000000/status"
+    THB_PCIE_EP_STATUS="/proc/device-tree/soc/pcie_ep@82000000/status"
+
+    if [ -f $KMB_PCIE_EP_STATUS ]; then
+        PCIE_EP_STATUS=$KMB_PCIE_EP_STATUS
+    elif [ -f $THB_PCIE_EP_STATUS ]; then
+        PCIE_EP_STATUS=$THB_PCIE_EP_STATUS
+    else
+         PCIE_EP_STATUS=""
+    fi
+
+    if [ ! $PCIE_EP_STATUS == "" ]; then
+        IS_HDDL=$(cat $PCIE_EP_STATUS | tr -d '\0')
+        echo $IS_HDDL
+        if [ $IS_HDDL == "okay" ]; then
+            echo HDDL mode enabled.
+            # always reprovision certs in HDDL mode
+	    do_provision
+	    exit 0
+	fi
+    fi
+
+    # Otherwise, if not in HDDL mode:
+    echo Provisioning already previously done. Checking mqtt-ca cert expiration.
+    let CertExpireThreshold=60*60*24*7  # one week
+    if openssl x509 -checkend "$CertExpireThreshold" -noout -in "$TC_PUBLIC"/mqtt-ca/mqtt-ca.crt
+    then
+        echo "Cert will not expire for the next week. No need to recreate certs."
+    else
+	echo "Cert will expire within one week. Recreating certs."
+        do_provision
+    fi 
+fi
+
+exit 0

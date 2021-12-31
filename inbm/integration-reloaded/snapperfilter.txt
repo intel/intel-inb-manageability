@@ -1,0 +1,6 @@
+/var/lib/dispatcher/upload/*
+/etc/intel-manageability/public/dispatcher-agent/*
+/etc/intel-manageability/public/cloudadapter-agent/*
+/etc/intel-manageability/public/telemetry-agent/*
+/etc/intel-manageability/public/configuration-agent/*
+/etc/intel-manageability/public/diagnostic-agent/*

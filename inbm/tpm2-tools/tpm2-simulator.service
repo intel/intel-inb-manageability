@@ -1,0 +1,15 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=IBM TPM2 simulator
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/tpm_server
+WorkingDirectory=/var/tpm2-simulator
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

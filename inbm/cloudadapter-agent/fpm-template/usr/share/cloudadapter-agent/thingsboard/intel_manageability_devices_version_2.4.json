@@ -1,0 +1,1143 @@
+{
+  "title": "Intel Manageability Devices",
+  "configuration": {
+    "description": "View Individual Intel Manageability Devices",
+    "widgets": {
+      "6d855ef9-994f-c8ee-d13a-2340e1aa9b3e": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "ota_form",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [
+              {
+                "key": "manifest",
+                "label": "XML Manifest"
+              }
+            ],
+            "otaSelectFields": [],
+            "otaMethod": "triggerota",
+            "otaMethodLabel": "Manifest Update"
+          },
+          "title": "New OTA Form",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ]
+        },
+        "id": "6d855ef9-994f-c8ee-d13a-2340e1aa9b3e"
+      },
+      "4c951f3d-26cc-f23e-c9fb-4b3b13daccd4": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "ota_form",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [
+              {
+                "label": "Container Tag",
+                "key": "containerTag"
+              },
+              {
+                "label": "Device Reboot",
+                "key": "deviceReboot"
+              },
+              {
+                "label": "Fetch",
+                "key": "fetch"
+              },
+              {
+                "label": "Docker Compose file",
+                "key": "file"
+              },
+              {
+                "label": "Version",
+                "key": "version"
+              },
+              {
+                "label": "Server Username",
+                "key": "username"
+              },
+              {
+                "label": "Server Password",
+                "key": "password"
+              },
+              {
+                "label": "Docker Registry",
+                "key": "dockerRegistry"
+              },
+              {
+                "label": "Docker Username",
+                "key": "dockerUsername"
+              },
+              {
+                "label": "Docker Password",
+                "key": "dockerPassword"
+              }
+            ],
+            "otaSelectFields": [
+              {
+                "label": "App",
+                "key": "app",
+                "options": [
+                  {
+                    "label": "docker",
+                    "key": "docker"
+                  },
+                  {
+                    "label": "docker-compose",
+                    "key": "compose"
+                  },
+                  {
+                    "label": "application",
+                    "key": "application"
+                  }
+                ],
+                "data": {
+                  "label": "docker",
+                  "key": "docker"
+                }
+              },
+              {
+                "label": "Command",
+                "key": "cmd",
+                "options": [
+                  {
+                    "label": "down",
+                    "key": "down"
+                  },
+                  {
+                    "label": "update",
+                    "key": "update"
+                  },
+                  {
+                    "label": "up",
+                    "key": "up"
+                  },
+                  {
+                    "label": "import",
+                    "key": "import"
+                  },
+                  {
+                    "label": "load",
+                    "key": "load"
+                  },
+                  {
+                    "label": "pull",
+                    "key": "pull"
+                  },
+                  {
+                    "label": "remove",
+                    "key": "remove"
+                  },
+                  {
+                    "label": "list",
+                    "key": "list"
+                  },
+                  {
+                    "label": "stats",
+                    "key": "stats"
+                  }
+                ],
+                "data": {
+                  "label": "down",
+                  "key": "down"
+                }
+              }
+            ],
+            "otaMethod": "triggeraota",
+            "otaMethodLabel": "Trigger AOTA"
+          },
+          "title": "Trigger AOTA",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ],
+          "showTitleIcon": false,
+          "titleIcon": "more_horiz",
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": ""
+        },
+        "id": "4c951f3d-26cc-f23e-c9fb-4b3b13daccd4"
+      },
+      "f52c1844-2fc6-9cf4-77ef-93b998e68606": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "ota_form",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [
+              {
+                "label": "Fetch",
+                "key": "fetch"
+              },
+              {
+                "label": "Username",
+                "key": "username"
+              },
+              {
+                "label": "Password",
+                "key": "password"
+              },
+              {
+                "key": "release_date",
+                "label": "Release Date"
+              }
+            ],
+            "otaSelectFields": [
+              {
+                "label": "Command",
+                "key": "cmd",
+                "options": [
+                  {
+                    "label": "update",
+                    "key": "update"
+                  }
+                ],
+                "data": {
+                  "label": "update",
+                  "key": "update"
+                }
+              },
+              {
+                "label": "Log to File",
+                "key": "log_to_file",
+                "options": [
+                  {
+                    "label": "yes",
+                    "key": "Y"
+                  },
+                  {
+                    "label": "no",
+                    "key": "N"
+                  }
+                ],
+                "data": {
+                  "label": "yes",
+                  "key": "Y"
+                }
+              }
+            ],
+            "otaMethod": "triggersota",
+            "otaMethodLabel": "Trigger SOTA"
+          },
+          "title": "Trigger SOTA",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ],
+          "showTitleIcon": false,
+          "titleIcon": "more_horiz",
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": ""
+        },
+        "id": "f52c1844-2fc6-9cf4-77ef-93b998e68606"
+      },
+      "e8ae46e1-c375-7107-a548-d1742f7079ef": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "ota_form",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [
+              {
+                "label": "BIOS Version",
+                "key": "biosversion"
+              },
+              {
+                "key": "fetch",
+                "label": "Fetch"
+              },
+              {
+                "label": "Manufacturer",
+                "key": "manufacturer"
+              },
+              {
+                "label": "Path",
+                "key": "path"
+              },
+              {
+                "label": "Product",
+                "key": "product"
+              },
+              {
+                "label": "Release Date",
+                "key": "releasedate"
+              },
+              {
+                "label": "Signature",
+                "key": "signature"
+              },
+              {
+                "label": "Tool Options",
+                "key": "tooloptions"
+              },
+              {
+                "label": "Vendor",
+                "key": "vendor"
+              },
+              {
+                "label": "Server Username",
+                "key": "username"
+              },
+              {
+                "label": "Server Password",
+                "key": "password"
+              }
+            ],
+            "otaSelectFields": [],
+            "otaMethod": "triggerfota",
+            "otaMethodLabel": "Trigger FOTA"
+          },
+          "title": "New OTA Form",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ]
+        },
+        "id": "e8ae46e1-c375-7107-a548-d1742f7079ef"
+      },
+      "e4179256-7b87-d09b-8350-aee7a9b251b4": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "ota_form",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [
+              {
+                "label": "Fetch",
+                "key": "fetch"
+              },
+              {
+                "label": "Path",
+                "key": "path"
+              },
+              {
+                "label": "Signature",
+                "key": "signature"
+              }
+            ],
+            "otaSelectFields": [
+              {
+                "label": "Command",
+                "options": [
+                  {
+                    "label": "get",
+                    "key": "get"
+                  },
+                  {
+                    "label": "set",
+                    "key": "set"
+                  },
+                  {
+                    "label": "load",
+                    "key": "load"
+                  },
+                  {
+                    "label": "append",
+                    "key": "append"
+                  },
+                  {
+                    "label": "remove",
+                    "key": "remove"
+                  }
+                ],
+                "data": {
+                  "label": "get",
+                  "key": "get"
+                },
+                "key": "cmd"
+              }
+            ],
+            "otaMethod": "triggerconfig",
+            "otaMethodLabel": "Trigger Config Update"
+          },
+          "title": "Configuration Update",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ],
+          "showTitleIcon": false,
+          "titleIcon": "more_horiz",
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": ""
+        },
+        "id": "e4179256-7b87-d09b-8350-aee7a9b251b4"
+      },
+      "ff05bc52-72c6-94e6-9aa7-f907272a9275": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "timeseries_table",
+        "type": "timeseries",
+        "title": "New widget",
+        "sizeX": 24,
+        "sizeY": 9,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "event",
+                  "type": "timeseries",
+                  "label": "Message",
+                  "color": "#2196f3",
+                  "settings": {
+                    "useCellStyleFunction": false,
+                    "useCellContentFunction": false
+                  },
+                  "_hash": 0.8332095206647121
+                }
+              ],
+              "entityAliasId": "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "interval": 1000,
+              "timewindowMs": 2592000000
+            },
+            "aggregation": {
+              "type": "NONE",
+              "limit": 200
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "rgb(255, 255, 255)",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "showTimestamp": true,
+            "displayPagination": true,
+            "defaultPageSize": 10
+          },
+          "title": "Event Log",
+          "dropShadow": true,
+          "enableFullscreen": true,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": false,
+          "showLegend": false,
+          "widgetStyle": {},
+          "actions": {},
+          "displayTimewindow": true,
+          "showTitleIcon": false,
+          "titleIcon": "more_horiz",
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": ""
+        },
+        "id": "ff05bc52-72c6-94e6-9aa7-f907272a9275"
+      },
+      "141500b4-83d8-3c29-3566-77539b273adb": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "basic_timeseries",
+        "type": "timeseries",
+        "title": "New widget",
+        "sizeX": 15,
+        "sizeY": 6,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "availableMemory",
+                  "type": "timeseries",
+                  "label": "Available Memory",
+                  "color": "#ffc107",
+                  "settings": {
+                    "showLines": true,
+                    "fillLines": false,
+                    "showPoints": false,
+                    "showSeparateAxis": false,
+                    "axisPosition": "left"
+                  },
+                  "_hash": 0.02216839053112407,
+                  "units": "bytes",
+                  "decimals": 0
+                },
+                {
+                  "name": "coreTempCelsius",
+                  "type": "timeseries",
+                  "label": "Core Temperature",
+                  "color": "#f44336",
+                  "settings": {
+                    "showLines": true,
+                    "fillLines": false,
+                    "showPoints": false,
+                    "showSeparateAxis": false,
+                    "axisPosition": "left"
+                  },
+                  "_hash": 0.42270835146860275,
+                  "units": "°C",
+                  "decimals": 2
+                },
+                {
+                  "name": "percentDiskUsed",
+                  "type": "timeseries",
+                  "label": "Disk Usage",
+                  "color": "#03a9f4",
+                  "settings": {
+                    "showLines": true,
+                    "fillLines": false,
+                    "showPoints": false,
+                    "showSeparateAxis": false,
+                    "axisPosition": "left"
+                  },
+                  "_hash": 0.38408411097984496,
+                  "units": "%",
+                  "decimals": 2
+                },
+                {
+                  "name": "systemCpuPercent",
+                  "type": "timeseries",
+                  "label": "CPU Usage",
+                  "color": "#673ab7",
+                  "settings": {
+                    "showLines": true,
+                    "fillLines": false,
+                    "showPoints": false,
+                    "showSeparateAxis": false,
+                    "axisPosition": "left"
+                  },
+                  "_hash": 0.7765456180468246,
+                  "units": "%",
+                  "decimals": 2
+                }
+              ],
+              "entityAliasId": "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": true,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "8px",
+          "settings": {
+            "shadowSize": 4,
+            "fontColor": "#545454",
+            "fontSize": 10,
+            "xaxis": {
+              "showLabels": true,
+              "color": "#545454"
+            },
+            "yaxis": {
+              "showLabels": true,
+              "color": "#545454"
+            },
+            "grid": {
+              "color": "#545454",
+              "tickColor": "#DDDDDD",
+              "verticalLines": true,
+              "horizontalLines": true,
+              "outlineWidth": 1
+            },
+            "stack": false,
+            "tooltipIndividual": false
+          },
+          "title": "Dynamic Telemetry",
+          "dropShadow": true,
+          "enableFullscreen": true,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "mobileHeight": null,
+          "widgetStyle": {},
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": true,
+          "actions": {}
+        },
+        "id": "141500b4-83d8-3c29-3566-77539b273adb"
+      },
+      "3b048a24-7aec-a3e0-faf8-a8d90fd482bd": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "connectivity_status",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 24,
+        "sizeY": 1,
+        "config": {
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0",
+          "settings": {
+            "pulse": 10
+          },
+          "title": "New Connectivity Status",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "mobileHeight": null,
+          "targetDeviceAliases": [],
+          "widgetStyle": {},
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ]
+        },
+        "id": "3b048a24-7aec-a3e0-faf8-a8d90fd482bd"
+      },
+      "035a26d7-d89c-b9d1-9e4d-34e7fb4f936a": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "device_information",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 9,
+        "sizeY": 6,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "systemProductName",
+                  "type": "attribute",
+                  "label": "Product",
+                  "color": "#2196f3",
+                  "settings": {},
+                  "_hash": 0.4498947802180162
+                },
+                {
+                  "name": "systemManufacturer",
+                  "type": "attribute",
+                  "label": "Manufacturer",
+                  "color": "#4caf50",
+                  "settings": {},
+                  "_hash": 0.8450433946585665
+                },
+                {
+                  "name": "osInformation",
+                  "type": "attribute",
+                  "label": "OS",
+                  "color": "#f44336",
+                  "settings": {},
+                  "_hash": 0.7340735274281496
+                },
+                {
+                  "name": "cpuId",
+                  "type": "attribute",
+                  "label": "CPU",
+                  "color": "#ffc107",
+                  "settings": {},
+                  "_hash": 0.6794097192269515
+                },
+                {
+                  "name": "totalPhysicalMemory",
+                  "type": "attribute",
+                  "label": "RAM",
+                  "color": "#607d8b",
+                  "settings": {},
+                  "_hash": 0.14755632904370186,
+                  "units": "bytes",
+                  "decimals": 0
+                },
+                {
+                  "name": "biosVendor",
+                  "type": "attribute",
+                  "label": "BIOS Vendor",
+                  "color": "#9c27b0",
+                  "settings": {},
+                  "_hash": 0.07523388946953569
+                },
+                {
+                  "name": "biosVersion",
+                  "type": "attribute",
+                  "label": "BIOS Version",
+                  "color": "#8bc34a",
+                  "settings": {},
+                  "_hash": 0.6328772997965417
+                },
+                {
+                  "name": "biosReleaseDate",
+                  "type": "attribute",
+                  "label": "BIOS Release Date",
+                  "color": "#3f51b5",
+                  "settings": {},
+                  "_hash": 0.4776025763763485
+                },
+                {
+                  "name": "diskInformation",
+                  "type": "attribute",
+                  "label": "Disk Information",
+                  "color": "#e91e63",
+                  "settings": {},
+                  "_hash": 0.16634308678669196
+                }
+              ],
+              "entityAliasId": "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0",
+          "settings": {},
+          "title": "New Device Information",
+          "dropShadow": true,
+          "enableFullscreen": true,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "id": "035a26d7-d89c-b9d1-9e4d-34e7fb4f936a"
+      },
+      "781cd051-c660-eb6b-4764-367e47d44455": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "ota_form",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [],
+            "otaSelectFields": [],
+            "otaMethod": "shutdown_device",
+            "otaMethodLabel": "Shutdown Device"
+          },
+          "title": "New OTA Form",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ]
+        },
+        "id": "781cd051-c660-eb6b-4764-367e47d44455"
+      },
+      "68921169-f86c-c12f-7a08-f14db6380129": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "ota_form",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [],
+            "otaSelectFields": [],
+            "otaMethod": "reboot_device",
+            "otaMethodLabel": "Reboot Device"
+          },
+          "title": "New OTA Form",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ]
+        },
+        "id": "68921169-f86c-c12f-7a08-f14db6380129"
+      },
+      "ffcb3126-bcd1-189a-c39e-0f86cc0fbb25": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "docker_stats_widget",
+        "type": "latest",
+        "title": "New widget",
+        "sizeX": 9,
+        "sizeY": 6,
+        "config": {
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "containersCpuPercent",
+                  "type": "timeseries",
+                  "label": "containersCpuPercent",
+                  "color": "#4caf50",
+                  "settings": {},
+                  "_hash": 0.5792660212571261
+                }
+              ],
+              "entityAliasId": "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+            }
+          ],
+          "timewindow": {
+            "realtime": {
+              "timewindowMs": 60000
+            }
+          },
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "refreshTimeout": 8000
+          },
+          "title": "New Docker Stats Widget",
+          "dropShadow": true,
+          "enableFullscreen": true,
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "mobileHeight": null,
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "widgetStyle": {},
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {}
+        },
+        "id": "ffcb3126-bcd1-189a-c39e-0f86cc0fbb25"
+      },
+      "154d2a44-0137-a3eb-c791-cdc2c7d9c90b": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability",
+        "typeAlias": "ota_form",
+        "type": "rpc",
+        "title": "New widget",
+        "sizeX": 5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [],
+            "otaSelectFields": [],
+            "otaMethod": "decommission_device",
+            "otaMethodLabel": "Decommission Device"
+          },
+          "title": "New OTA Form",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "showTitleIcon": false,
+          "titleIcon": null,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "targetDeviceAliasIds": [
+            "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9"
+          ]
+        },
+        "id": "154d2a44-0137-a3eb-c791-cdc2c7d9c90b"
+      }
+    },
+    "states": {
+      "default": {
+        "name": "Intel Manageability",
+        "root": true,
+        "layouts": {
+          "main": {
+            "widgets": {
+              "6d855ef9-994f-c8ee-d13a-2340e1aa9b3e": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 9,
+                "col": 14
+              },
+              "4c951f3d-26cc-f23e-c9fb-4b3b13daccd4": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 9,
+                "col": 9
+              },
+              "f52c1844-2fc6-9cf4-77ef-93b998e68606": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 9,
+                "col": 19
+              },
+              "e8ae46e1-c375-7107-a548-d1742f7079ef": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 11,
+                "col": 9
+              },
+              "e4179256-7b87-d09b-8350-aee7a9b251b4": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 11,
+                "col": 14
+              },
+              "ff05bc52-72c6-94e6-9aa7-f907272a9275": {
+                "sizeX": 24,
+                "sizeY": 9,
+                "row": 13,
+                "col": 0
+              },
+              "141500b4-83d8-3c29-3566-77539b273adb": {
+                "sizeX": 15,
+                "sizeY": 6,
+                "mobileHeight": null,
+                "row": 1,
+                "col": 9
+              },
+              "3b048a24-7aec-a3e0-faf8-a8d90fd482bd": {
+                "sizeX": 24,
+                "sizeY": 1,
+                "mobileHeight": null,
+                "row": 0,
+                "col": 0
+              },
+              "035a26d7-d89c-b9d1-9e4d-34e7fb4f936a": {
+                "sizeX": 9,
+                "sizeY": 6,
+                "row": 1,
+                "col": 0
+              },
+              "781cd051-c660-eb6b-4764-367e47d44455": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 7,
+                "col": 9
+              },
+              "68921169-f86c-c12f-7a08-f14db6380129": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 7,
+                "col": 14
+              },
+              "ffcb3126-bcd1-189a-c39e-0f86cc0fbb25": {
+                "sizeX": 9,
+                "sizeY": 6,
+                "mobileHeight": null,
+                "row": 7,
+                "col": 0
+              },
+              "154d2a44-0137-a3eb-c791-cdc2c7d9c90b": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 7,
+                "col": 19
+              }
+            },
+            "gridSettings": {
+              "backgroundColor": "#eeeeee",
+              "color": "rgba(0,0,0,0.870588)",
+              "columns": 24,
+              "margins": [
+                10,
+                10
+              ],
+              "backgroundSizeMode": "100%"
+            }
+          }
+        }
+      }
+    },
+    "entityAliases": {
+      "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9": {
+        "id": "01357fc2-bc57-3e4c-2a62-fcbb6c9de6d9",
+        "alias": "Intel Manageability",
+        "filter": {
+          "type": "deviceType",
+          "resolveMultiple": false,
+          "deviceType": "Intel Manageability",
+          "deviceNameFilter": ""
+        }
+      }
+    },
+    "timewindow": {
+      "realtime": {
+        "interval": 1800000,
+        "timewindowMs": 86400000
+      },
+      "aggregation": {
+        "type": "AVG",
+        "limit": 25000
+      }
+    },
+    "settings": {
+      "stateControllerId": "entity",
+      "showTitle": false,
+      "showDashboardsSelect": true,
+      "showEntitiesSelect": true,
+      "showDashboardTimewindow": true,
+      "showDashboardExport": true,
+      "toolbarAlwaysOpen": true
+    }
+  },
+  "name": "Intel Manageability Devices"
+}

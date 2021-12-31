@@ -1,0 +1,8 @@
+output
+*.tar
+*.tgz
+*.deb
+*.rpm
+input/
+.idea/
+Makefile

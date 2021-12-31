@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -euxo pipefail
+
+: do not run integration tests in build
+rm -rf realdocker/*test*
+mkdir -p ./output/
+go test -coverprofile ./trtl-coverage.out ./...
+go get golang.org/x/tools/cmd/cover
+cover -func=./trtl-coverage.out >./output/trtl-coverage.txt

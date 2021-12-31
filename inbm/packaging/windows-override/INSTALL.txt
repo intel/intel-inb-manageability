@@ -1,0 +1,8 @@
+TO INSTALL:
+
+* Copy this directory to c:\inb-files
+* Run: c:\inb-files\install.ps1
+
+TO PROVISION:
+
+* Run: c:\inb-files\provision.ps1

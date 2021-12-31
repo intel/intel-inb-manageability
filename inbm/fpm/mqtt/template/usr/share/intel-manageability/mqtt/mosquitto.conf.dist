@@ -1,0 +1,27 @@
+# do not remove the line below
+# COMPATIBLE WITH MOSQUITTO 2.0: TRUE 
+
+listener 8883 127.0.0.1
+tls_version tlsv1.2
+
+ciphers ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA256
+
+persistence true
+persistence_location /var/lib/mosquitto/
+
+require_certificate true
+
+cafile /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt
+certfile /etc/intel-manageability/public/mqtt-broker/mqtt-broker.crt
+keyfile /etc/intel-manageability/secret/mqtt-broker/mqtt-broker.key
+
+allow_anonymous false
+use_identity_as_username true
+acl_file /etc/intel-manageability/public/mqtt-broker/acl.file
+
+log_dest file /var/persistent-log/mosquitto/mosquitto.log
+log_dest stdout
+
+message_size_limit 1000000
+max_inflight_messages 20
+persistent_client_expiration 1d

@@ -1,0 +1,15 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Node Agent Flashless Autoenable
+# Automatically enable and start node agent in flashless device
+
+[Service]
+Type=simple
+ExecStart=node-flashless-autoenable
+# This will be run once, and only once, on boot or runlevel change.
+Restart=no
+
+[Install]
+WantedBy=multi-user.target

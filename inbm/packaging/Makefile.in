@@ -1,0 +1,58 @@
+include(`Makefile-macros.m4')
+all: build
+
+OUTPUT=output
+CLEANUP=tmp-container.txt
+
+# ---- Dependencies ----
+BIOSUPDATE_FILE=BIOSUPDATE.fv
+BIOSUPDATE_TAR=BIOSUPDATE.tar
+AMI_BIOSUPDATE_FILE=U1170000F60X043.bin
+AMI_BIOSUPDATE_TAR=U1170000F60X043.tar
+DUMMY_CERT_FAIL=fail_rpm.cert
+CLEANUP += docker-sample-container/*.rpm
+CLEANUP += docker-sample-container/*.deb
+CLEANUP += docker-sample-container/sample-container.tgz
+CLEANUP += docker-sample-container/docker/*.rpm
+CLEANUP += docker-sample-container/docker/*.deb
+CLEANUP += ${OUTPUT}/*.rpm
+
+docker-sample-container/docker/${HDC_DEB}: ${OUTPUT}/${HDC_DEB}
+	cp ${OUTPUT}/${HDC_DEB} docker-sample-container/docker
+
+# BIOSUPDATE file
+${OUTPUT}/${BIOSUPDATE_FILE}: 
+	rm -f fota/${BIOSUPDATE_FILE}
+	cd fota && touch BIOSUPDATE.fv
+	cd fota && \
+	tar -cvf ${BIOSUPDATE_TAR} ${BIOSUPDATE_FILE}
+	cp fota/${BIOSUPDATE_FILE} ${OUTPUT}
+	cp fota/${BIOSUPDATE_TAR}  ${OUTPUT}
+
+# NO_DOCKER_CONFIG file
+${OUTPUT}/${NO_DOCKER_CONFIG_FILE}:
+	cp no-docker-setup/${NO_DOCKER_CONFIG_FILE}  ${OUTPUT}
+
+# WITH_DOCKER_CONFIG file
+${OUTPUT}/${WITH_DOCKER_CONFIG_FILE}:
+	cp no-docker-setup/${WITH_DOCKER_CONFIG_FILE}  ${OUTPUT}
+
+
+# AMI BIOSUPDATE file
+${OUTPUT}/${AMI_BIOSUPDATE_FILE}:
+	rm -f fota/${AMI_BIOSUPDATE_FILE}
+	cd fota && touch U1170000F60X043.bin
+	cd fota && \
+	tar -cvf ${AMI_BIOSUPDATE_TAR} ${AMI_BIOSUPDATE_FILE}
+	cp fota/${AMI_BIOSUPDATE_TAR} ${OUTPUT}
+	cp fota/${AMI_BIOSUPDATE_FILE} ${OUTPUT}
+
+# ---- Top level ----
+
+build: ${OUTPUT}/${NO_DOCKER_CONFIG_FILE} ${OUTPUT}/${WITH_DOCKER_CONFIG_FILE} ${OUTPUT}/${BIOSUPDATE_FILE} ${OUTPUT}/${AMI_BIOSUPDATE_FILE} rpms debs
+
+debs: ${DEBS}
+rpms: ${RPMS}
+
+clean:
+	rm -r -f -v ${CLEANUP} #&& rm -rf ${OUTPUT} && mkdir -p ${OUTPUT}

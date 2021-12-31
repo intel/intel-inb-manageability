@@ -1,0 +1,14 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Provision mqtt related keys if not already provisioned (deprecated: folded into mqtt.service; will be removed)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/true
+StandardOutput=journal
+ExecStop=/bin/true
+
+[Install]
+WantedBy=multi-user.target

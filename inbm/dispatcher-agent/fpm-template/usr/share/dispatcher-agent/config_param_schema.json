@@ -1,0 +1,27 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "ConfigParams",
+  "description": "Configuration parameters to be passed to Trtl",
+  "type": "object",
+  "properties": {
+    "device": {
+      "description": "device to be mounted",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "port": {
+      "description": "port/s to be exposed",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "execcmd": {
+      "description": "command to be run on startup",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

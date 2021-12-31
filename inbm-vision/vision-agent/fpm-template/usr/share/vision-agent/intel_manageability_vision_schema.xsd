@@ -1,0 +1,29 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="configurations">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="vision">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="heartbeatCheckIntervalSecs" type="xs:integer"/>
+                            <xs:element name="heartbeatTransmissionIntervalSecs" type="xs:integer"/>
+                            <xs:element name="fotaCompletionTimerSecs" type="xs:integer"/>
+                            <xs:element name="sotaCompletionTimerSecs" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="potaCompletionTimerSecs" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="isAliveTimerSecs" type="xs:integer"/>
+                            <xs:element name="heartbeatRetryLimit" type="xs:integer"/>
+                            <xs:element name="flashlessFileLocation" type="xs:string"/>
+                            <xs:element name="XLinkPCIeDevID" type="xs:integer"/>
+                            <xs:element name="xlinkFirstChannel" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="xlinkLastChannel" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="xlinkBootDevice" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="flashlessRollbackWaitTimeSecs" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="bootFlashlessDevice" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

@@ -1,0 +1,44 @@
+{
+  "builders":
+  [
+    {
+      "type": "qemu",
+      "iso_url": "core-image-sato-dev-qemux86-64.iso",
+      "accelerator": "kvm",
+      "iso_checksum": "",
+      "iso_checksum_type": "none",
+      "disk_size": 2000,
+      "disk_image": "false",
+      "format": "qcow2",
+      "headless": "true",
+      "ssh_username": "root",
+      "qemuargs": [
+          [ "-cpu", "Nehalem" ],
+          [ "-m", "2048" ],
+          [ "-vga", "vmware" ]
+      ],
+      "net_device": "virtio-net",
+      "disk_interface": "virtio",
+      "boot_wait": "1s",
+      "boot_command":  ["<down><down><enter><wait10s>vda<enter><wait10s><enter>"]
+    }
+  ],
+  "post-processors": ["vagrant"],
+  "provisioners":
+  [
+    {
+      "type": "file",
+      "source": "redhat-release",
+      "destination": "/etc/redhat-release"
+    },
+    {
+      "type": "shell",
+      "inline": ["systemctl reboot"],
+      "expect_disconnect": "true"
+    },
+    {
+      "type": "shell",
+      "inline": ["cat /etc/redhat-release"]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# Unit test / coverage reports
+.coverage
+.coverage.*
+nosetests.xml
+coverage.xml
+*.cover
+intel_manageability_node_schema.xsd
+intel_manageability_node.conf

@@ -1,0 +1,29 @@
+
+DBS manual testing checks and flow of execution:
+
+
+Whenever a new change has been added for DBS, please make sure none of the following tests break.
+ 
+The following tests need to be done manually in order to make sure DBS works as per design.
+ 
+
+By default DBS is 'ON':
+ 
+- While On, start the agents, check if periodic check works and event_watcher is capturing the events. - Basic functionality
+ 
+
+WHEN SET TO 'OFF':
+ 
+- Now when DBS is set to off via config update, you still see the periodic check and the event watcher running. To check if event_watcher is listening on events, do a docker pull hello-world in a new tab and check if the events are being listened.
+The expectation here is that when the DBS is OFF, the dockerbenchsecurity test should not run. You find a new Timer created for the interval seconds specified in the conf file. However DBS will not run since it is set to OFF.
+ 
+- Now try changing the dbsIntervalSeconds while dbs is still off, new dbs_timer should be created reflecting the new updated value. However, DBS check shouldn't run since DBS is off.
+ 
+- There is a case where event watcher has listened to event and started the dbs check and in the meantime if a dbs off is set then since the dbs check is still in process and hence the new timer is created after the dbs is run irrespective of the dbs config value set to off. Although the new timer is created it won't run the DBS checks as the value is set to OFF.
+ 
+- When by default if the event agents starts by reading the DBS value as OFF from conf file, no event watcher or dbs_timer for periodic checks is initialized.
+ 
+
+WHEN SET TO 'WARN':
+ 
+- WARN should have the dbs checks running but shouldn't take any action of killing the failed images and containers.

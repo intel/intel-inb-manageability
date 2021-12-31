@@ -1,0 +1,16 @@
+hiddenimports = [
+    'UserList',
+    'UserString',
+    'UserDict',
+    'itertools',
+    'collections',
+    'future.backports.misc',
+    'commands',
+    'base64',
+    '__builtin__',
+    'math',
+    'reprlib',
+    'functools',
+    're',
+    'subprocess',
+]

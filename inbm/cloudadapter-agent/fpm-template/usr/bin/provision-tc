@@ -1,0 +1,276 @@
+#!/bin/bash
+
+# Shell script that provisions Intel(R) In-Band Manageability Framework
+# Copyright 2021 Intel Corporation All Rights Reserved.
+# License: Intel, see licenses/LICENSE for more details.
+
+# PROVISION_TPM could be set to auto, disable, or enable, or could be unset
+# auto: use TPM if detected.don't use TPM if not detected. do not prompt.
+# disable: do not use TPM.
+# enable: always use TPM; return error if not detected.
+# (unset): use TPM if present; prompt user if no TPM is present before disabling.
+# PROCEED_WITHOUT_TPM_PROMPT can be set to 'Y' to skip the proceed prompt
+
+# LOCAL_MQTT_PORT can be set to override default 8883 port
+
+set -eo pipefail
+
+### The main provisioning function
+function provision {
+  check_requirements
+  /usr/bin/mqtt-detect-tpm
+  get_proxies
+  if [[ "x$SKIP_DOCKER_CONFIGURATION" == "x" ]]; then
+    configure_docker
+  fi
+  if [[ "x$LOCAL_MQTT_PORT" == "x" ]]; then
+    LOCAL_MQTT_PORT=8883
+  fi
+  re='^[0-9]+$'
+  if ! [[ $LOCAL_MQTT_PORT =~ $re ]] ; then
+    echo "error: Not a number: $LOCAL_MQTT_PORT in setting mqtt port number" >&2; exit 1
+  fi
+  echo "$LOCAL_MQTT_PORT" >/etc/intel-manageability/local-mqtt-port.txt
+  enable_mqtt
+  if [[ "x$NO_CLOUD" == "x" ]]; then
+    configure_cloud
+  fi
+  if [[ "x$NO_OTA_CERT" == "x" ]]; then
+    inb-provision-ota-cert
+  fi
+  enable_agents
+  echo "Intel(R) In-Band Manageability Provisioning Complete"
+  exit 0
+}
+
+function enable_mqtt {
+  echo "Enabling and starting mqtt (this may take some time to generate secrets)..."
+  systemctl disable --now mqtt inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  systemctl enable mqtt
+  systemctl start mqtt
+  sleep 1
+}
+
+function enable_agents {
+  echo "Enabling and starting agents..."
+  systemctl restart apparmor
+  systemctl enable --now inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+}
+
+### Ensure the prerequisites are in place before proceeding
+function check_requirements {
+  # Ensure we're running as root
+  if [ "$EUID" -ne 0 ]; then
+    echo "Please run as root"
+    exit 1
+  fi
+
+  # Check for safe mode
+  if [ -f /etc/intel-manageability/secret/SAFE_MODE ]; then
+    echo "WARNING: Safe mode is on. Provisioned credentials will go away on next boot."
+  fi
+
+  # Ensure we have Docker installed
+  if [ -x "$(command -v docker)" ]; then
+        # Docker is installed
+        echo "Confirmed Docker Engine"
+  else
+        # Docker is not installed
+        echo "No Docker Installation found"
+        SKIP_DOCKER_CONFIGURATION="true"
+  fi
+
+  # Ensure we're running in a supported OS
+  if test -f /usr/share/intel-manageability/system_is_Yocto; then
+    return 0
+  fi
+
+
+  if [ "$(lsb_release -rs)" == "18.04" ]; then
+    echo "Confirmed Supported Platform (Ubuntu 18.04)"
+  elif [ "$(lsb_release -rs)" == "20.04" ]; then
+    echo "Confirmed Supported Platform (Ubuntu 20.04)"
+  elif [ "$(lsb_release -sc)" == "buster" ]; then
+    echo "Confirmed Supported Platform (Debian 10)"
+    return 0
+  else
+    echo "Unsupported Platform. Hint:"
+    echo "http://releases.ubuntu.com/18.04/ or"
+    echo "http://releases.ubuntu.com/20.04/ or"
+    echo "https://www.debian.org/releases/buster/"
+    exit 1
+  fi
+
+  # Check if dispatcher agent is installed
+  echo "Checking if dispatcher agent is installed."
+  if dpkg --list | grep dispatcher >&/dev/null ; then
+    echo "Confirmed, dispatcher agent is installed."
+  else
+    echo "Run install-tc.sh first."
+    exit 1
+  fi
+}
+
+### Read proxy information from the environment
+http_proxy_host=""
+http_proxy_port=""
+function get_proxies {
+  if [[ "x$http_proxy" == "x" ]]; then
+  http_proxy="$HTTP_PROXY"
+  fi
+
+  if [[ "x$https_proxy" == "x" ]]; then
+    https_proxy="$HTTPS_PROXY"
+  fi
+
+  if [[ "x$no_proxy" == "x" ]]; then
+    no_proxy="$NO_PROXY"
+  fi
+
+  if ! [[ "x$http_proxy" == "x" ]]; then
+    [[ "$http_proxy" =~ ^http?://(([^:]{1,128}):([^@]{1,256})@)?([^:/]{1,255})(:([0-9]{1,5}))?/? ]]
+    http_proxy_host="${BASH_REMATCH[4]}"
+    http_proxy_port="${BASH_REMATCH[6]}"
+  fi
+}
+
+### Sets up the Docker proxies and Docker-Bench-Security
+function configure_docker {
+  echo "Setting proxies for Docker..."
+
+  local DOCKER_SERVICE_D="/etc/systemd/system/docker.service.d/"
+  mkdir -p "$DOCKER_SERVICE_D"
+
+  local FILE=""
+  local CONFIG=""
+  if ! [[ "x$http_proxy" == "x" ]]; then
+    FILE="im-http-proxy.conf"
+    CONFIG="[Service]\nEnvironment=\"HTTP_PROXY=$http_proxy\"\n"
+    printf $CONFIG > $DOCKER_SERVICE_D$FILE
+  fi
+  if ! [[ "x$https_proxy" == "x" ]]; then
+    FILE="im-https-proxy.conf"
+    CONFIG="[Service]\nEnvironment=\"HTTPS_PROXY=$https_proxy\"\n"
+    printf $CONFIG > $DOCKER_SERVICE_D$FILE
+  fi
+  if ! [[ "x$no_proxy" == "x" ]]; then
+    FILE="im-no-proxy.conf"
+    CONFIG="[Service]\nEnvironment=\"NO_PROXY=$no_proxy\"\n"
+    printf $CONFIG > $DOCKER_SERVICE_D$FILE
+  fi
+
+  systemctl daemon-reload
+  systemctl enable docker
+  systemctl restart docker
+
+  echo "Docker proxies set. Running self test."
+  if docker pull registry.hub.docker.com/library/hello-world && docker run registry.hub.docker.com/library/hello-world ; then
+    echo "Docker confirmed good."
+  else
+    echo "Problem running docker run registry.hub.docker.com/library/hello-world; exiting."
+    exit 1
+  fi
+
+  echo "Pulling Docker-Bench-Security"
+  if docker pull registry.hub.docker.com/docker/docker-bench-security@sha256:ddbdf4f86af4405da4a8a7b7cc62bb63bfeb75e85bf22d2ece70c204d7cfabb8; then
+       echo "Setting Docker-Bench-Security"
+       docker tag registry.hub.docker.com/docker/docker-bench-security@sha256:ddbdf4f86af4405da4a8a7b7cc62bb63bfeb75e85bf22d2ece70c204d7cfabb8 docker-bench-security
+       if test -f /usr/share/intel-manageability/system_is_Yocto; then
+          sed -i 's/<dbs>\(off\|OFF\)<\/dbs>/<dbs>WARN<\/dbs>/' /etc/intel_manageability.conf
+       fi
+  else
+        echo "Problem pulling Docker-Bench-Security; exiting."
+        exit 1
+  fi
+}
+##################################
+### Configuring cloud services ###
+##################################
+
+CLOUD_DIR="/etc/intel-manageability/secret/cloudadapter-agent/"
+CLOUD_FILE="adapter.cfg" # The main config file
+cloud_config="" # The main config data
+
+### Choose the cloud service to configure
+function configure_cloud {
+  mkdir -p "$CLOUD_DIR"
+  inb-provision-cloud "$CLOUD_DIR" /usr/share/cloudadapter-agent/thingsboard /usr/share/cloudadapter-agent/config_schema.json
+  chgrp -R cloudadapter-agent "$CLOUD_DIR"
+}
+
+########## HELPER FUNCTIONS ##########
+
+### Get a valid text input
+# @param 1: The input request
+# @param 2: The input hint
+INPUT="x"
+INPUT_DEFAULT="x"
+function get_input {
+  INPUT="x"
+  while [[ $INPUT == "x" ]]; do
+    echo
+    echo "$1"
+    read -e INPUT
+    if [[ "x$INPUT" == "x" ]]; then
+      if ! [[ "x$INPUT_DEFAULT" == "x" ]]; then
+        INPUT=$INPUT_DEFAULT
+        INPUT_DEFAULT=""
+        return 0
+      fi
+      echo "Invalid input!"
+      echo "$2"
+      INPUT="x"
+    fi
+  done
+}
+
+### Get a multiline input
+# @param 1: The input request
+function get_multiline_input {
+  INPUT=""
+  local IN="x"
+  echo
+  echo $1
+  while ! [[ "x$IN" == "x" ]]; do
+    read -er IN
+    INPUT=$INPUT$'\n'$IN
+  done
+}
+
+### Get the contents of a "file"
+# @param 1: The input request
+function get_file_input {
+  INPUT=""
+  while [[ $INPUT == "" ]]; do
+    echo
+    echo $1
+    select method in "Absolute file path" "Console input"
+    do
+      case $method in
+        "Absolute file path")
+          # Read data from file
+          get_input "Please enter the file path:"
+          local LOCATION=$INPUT
+          if [[ -f $LOCATION && -r $LOCATION ]]; then
+            INPUT=$(cat $LOCATION)
+          else
+            echo
+            echo "Invalid file!"
+          fi
+          break;;
+        "Console input")
+          # Read directly from the stdin
+          get_multiline_input "Please enter the data, followed by [ENTER] twice: "
+          INPUT=$INPUT
+          break;;
+        *) echo "Invalid option!";;
+      esac
+    done
+    if [[ $INPUT == "" ]]; then
+      echo "No input given!"
+    fi
+  done
+}
+
+provision
+

@@ -1,0 +1,3 @@
+[bandit]
+exclude: /configuration/tests
+skips: ["-S101", "-S320", "-S405", "-S410"]

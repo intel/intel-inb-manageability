@@ -1,0 +1,25 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Dispatcher Agent Service
+Requires=network.target mqtt.service
+After=mqtt.service
+PartOf=inbm.service
+After=inbm.service
+
+[Service]
+# ExecStart command is only run when everything else has loaded
+Type=idle
+User=root
+EnvironmentFile=-/etc/environment
+EnvironmentFile=-/etc/dispatcher.environment
+EnvironmentFile=-/etc/intel-manageability/public/mqtt.environment
+ExecStart=/usr/bin/inbm-dispatcher
+RestartSec=5s
+Restart=on-failure
+WorkingDirectory=/etc/systemd/system/
+Group=dispatcher-agent
+
+[Install]
+WantedBy=inbm.service

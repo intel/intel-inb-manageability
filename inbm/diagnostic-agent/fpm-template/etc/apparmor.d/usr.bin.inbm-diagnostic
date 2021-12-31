@@ -1,0 +1,83 @@
+# Last Modified: Fri Dec 15 11:44:43 2017
+#include <tunables/global>
+
+/usr/bin/inbm-diagnostic {
+  #include <abstractions/base>
+  #include <abstractions/bash>
+  #include <abstractions/dbus-strict>
+  #include <abstractions/nameservice>
+  #include <abstractions/python>
+  dbus send
+      bus=system
+      path=/org/freedesktop/systemd1/unit/docker_2eservice
+      interface=org.freedesktop.DBus.Properties
+      member=Get
+      peer=(name=org.freedesktop.systemd1),
+  dbus send
+      bus=system
+      path=/org/freedesktop/systemd1/unit/inbm_2dtelemetry_2eservice
+      interface=org.freedesktop.DBus.Properties
+      member=Get
+      peer=(name=org.freedesktop.systemd1),
+
+  capability net_admin,
+  capability sys_ptrace,
+  capability sys_resource,
+
+  ptrace trace peer=unconfined,
+
+  /dev/tty wr,
+  /bin/btrfs rix,
+  /bin/dash rix,
+  /bin/lsb_release rUx,
+  /usr/bin/lsb_release rUx,
+  /bin/grep rix,
+  /usr/bin/grep rix,
+  /sbin/ip rix,
+  /bin/ip rix,
+  /bin/systemctl rix,
+  /bin/uname rix,
+  /usr/bin/uname rix,
+  /usr/bin/which rix,
+  /bin/ps rix,
+  /usr/bin/ps rix,
+  / r,
+  /etc/machine-id r,
+  /proc/ r,
+  /proc/** r,
+  /dev/vda* r,
+  /dev/sda* r,
+  /run/log/journal/ r,
+  /run/log/journal/** r,
+  /run/systemd/private rw,
+  /sbin/ldconfig rix,
+  /sbin/ldconfig.real rix,
+  /sys/fs/** r,
+  /sys/class/power_supply/ r,
+  /tmp/ rw,
+  /tmp/** mrw,
+  /usr/bin/awk rix,
+  /usr/bin/basename rix,
+  /usr/bin/curl rix,
+  /usr/bin/gawk rix,
+  /usr/bin/mawk rix,
+  /usr/bin/python2.7 ix,
+  /usr/bin/wc rix,
+  /usr/bin/inbm-diagnostic rix,
+  /usr/sbin/service rix,
+  /etc/intel-manageability/public/diagnostic-agent/diagnostic-agent.crt r,
+  /etc/intel-manageability/secret/diagnostic-agent/diagnostic-agent.key r,
+  /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt r,
+  /etc/magic r,
+  /etc/ssl/openssl.cnf r,
+  /var/tmp/* rw,
+  /etc/intel-manageability/public/diagnostic-agent/logging.ini r,
+  /usr/bin/trtl Pix,
+  /usr/bin/btrfs rix,
+  /usr/bin/systemctl rix,
+  /sys/devices/** r,
+  capability sys_admin, # for btrfs
+  /usr/share/misc/magic.mgc r,
+  /usr/bin/file rix,
+  /usr/** r,
+}

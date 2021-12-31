@@ -1,0 +1,26 @@
+#!/bin/bash
+set -euxo pipefail
+
+TC_PUBLIC="/etc/intel-manageability/public"
+TC_SECRET="/etc/intel-manageability/secret"
+SECRET_FILE="/var/intel-manageability/secret.img"
+
+systemctl stop mqtt # this should also stop all the agents
+
+: Removing keys and certs.
+rm -f "$TC_SECRET/.provisioned"
+rm -f $(find "$TC_SECRET" -name "*.key")
+
+: Unmounting secret directory.
+umount "$TC_SECRET" || true
+
+sync
+sleep 5
+
+: Closing secret crypt device.
+cryptsetup -v close /dev/mapper/intel-manageability-secret || true
+
+: Removing encrypted secret file.
+shred --force --remove "$SECRET_FILE" || true
+sync
+exit 0

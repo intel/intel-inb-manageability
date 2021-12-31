@@ -1,0 +1,16 @@
+**/venv-*
+**/.vscode
+inbm/output
+inbm-vision/output
+**/nginx-data
+**/*.rpm
+**/*.deb
+**/*.zip
+.git
+inbm/scratch-packaging
+inbm-vision/scratch-packaging
+inbm/dockerfiles
+inbm-vision/dockerfiles
+inbm/Dockerfile-*
+inbm-vision/Dockerfile-*
+dist/

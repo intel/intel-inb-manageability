@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:simpleType name="Max50Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="50"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PathMax1500Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="1500"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="URLMax700Chars">
+         <xs:restriction base="xs:anyURI">
+             <xs:maxLength value="700"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="MaxInteger">
+         <xs:restriction base="xs:integer">
+             <xs:maxInclusive value="1000000000000"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:element name="configurations">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="all">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="dbs">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                    <xs:enumeration value="ON"/>
+                                    <xs:enumeration value="OFF"/>
+                                    <xs:enumeration value="WARN"/>
+                                    <xs:enumeration value="on"/>
+                                    <xs:enumeration value="off"/>
+                                    <xs:enumeration value="warn"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="telemetry">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="collectionIntervalSeconds" type="MaxInteger"/>
+                            <xs:element name="publishIntervalSeconds" type="MaxInteger"/>
+                            <xs:element name="maxCacheSize" type="MaxInteger"/>
+                            <xs:element name="containerHealthIntervalSeconds" type="MaxInteger"/>
+                            <xs:element name="enableSwBom" type="xs:boolean" minOccurs="0"/>
+                            <xs:element name="swBomIntervalHours" type="MaxInteger" minOccurs="0"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="diagnostic">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="minStorageMB" type="MaxInteger"/>
+                            <xs:element name="minMemoryMB" type="MaxInteger"/>
+                            <xs:element name="minPowerPercent" type="MaxInteger"/>
+                            <xs:element name="sotaSW">
+                                <xs:simpleType>
+                                    <xs:list itemType="URLMax700Chars"/>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="dockerBenchSecurityIntervalSeconds" type="MaxInteger" minOccurs="0"/>
+                            <xs:element name="networkCheck" type="xs:boolean" minOccurs="0"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="dispatcher">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="dbsRemoveImageOnFailedContainer" type="xs:boolean"/>
+                            <xs:element name="proceedWithoutCslmStatusResponse" type="xs:boolean" minOccurs="0"/>
+                            <xs:element name="trustedRepositories">
+                                <xs:simpleType>
+                                    <xs:list itemType="URLMax700Chars"/>
+                                </xs:simpleType>
+                            </xs:element>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="orchestrator" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="orchestratorResponse" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="ip" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="token" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="certFile" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
+                        </xs:all>
+                        <xs:attribute name="name" type="xs:string" use="required"></xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="sota">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="ubuntuAptSource" minOccurs="0">
+                                <xs:simpleType>
+                                    <xs:list itemType="URLMax700Chars"/>
+                                </xs:simpleType>
+                            </xs:element>
+                            <xs:element name="proceedWithoutRollback" type="xs:boolean"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+

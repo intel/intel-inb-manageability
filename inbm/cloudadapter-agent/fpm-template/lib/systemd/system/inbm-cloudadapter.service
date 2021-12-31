@@ -1,0 +1,26 @@
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
+
+[Unit]
+Description=Cloud Adapter Agent Service
+Requires=network.target mqtt.service
+After=mqtt.service
+PartOf=inbm.service
+After=inbm.service
+
+[Service]
+# ExecStart command is only run when everything else has loaded
+Type=idle
+User=cloudadapter-agent
+Group=cloudadapter-agent
+Environment='LOGGERCONFIG=/etc/intel-manageability/public/cloudadapter-agent/logging.ini'
+EnvironmentFile=-/etc/environment
+EnvironmentFile=-/etc/intel-manageability/public/mqtt.environment
+#ExecStart set to run a python script
+ExecStart=/usr/bin/inbm-cloudadapter
+RestartSec=5s
+Restart=on-failure
+Group=cloudadapter-agent
+
+[Install]
+WantedBy=inbm.service

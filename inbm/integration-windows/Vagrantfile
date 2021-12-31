@@ -1,0 +1,15 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# you're doing.
+Vagrant.configure("2") do |config|
+  config.vm.box = "peru/windows-10-enterprise-x64-eval"
+  config.vm.box_version = "20210222.01"
+  config.vm.provision "shell", path: "inb-files/intel-manageability/install.ps1"
+  config.vm.provision "shell", path: "inb-files/intel-manageability/provision.ps1"
+
+  config.vm.provider "virtualbox" do |v|
+    v.gui = false
+    config.vm.synced_folder "inb-files", "/inb-files"
+  end
+end

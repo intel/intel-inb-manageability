@@ -1,0 +1,5 @@
+#!/bin/bash
+set -e
+
+echo Generating Makefile.
+m4 <Makefile.in >Makefile

@@ -1,0 +1,27 @@
+#!/bin/bash
+set -euxo pipefail
+
+INTEL_MANAGEABILITY_PUBLIC="/etc/intel-manageability/public"
+INTEL_MANAGEABILITY_SECRET="/etc/intel-manageability/secret"
+RANDFILE="/etc/intel-manageability/secret/randfile"
+DAYS_EXPIRY="2555"
+
+/usr/bin/node-non-root-setup
+
+# Check flashless or flashbased system. Skip MQTT key/cert generation in flashless device.
+if grep -q root /proc/cmdline ; then
+  for i in node-agent; do
+    cd "$INTEL_MANAGEABILITY_SECRET"/"$i"
+    openssl genrsa -out "$i".key 3072
+    openssl req -new -key "$i".key -subj "/C=US/ST=Oregon/L=Hillsboro/O=Intel/OU=EVAL/CN=$i" -out "$i".csr
+    openssl x509 -req -days "$DAYS_EXPIRY" -sha384 -extensions v3_req -CA "$INTEL_MANAGEABILITY_SECRET"/mqtt-ca/mqtt-ca.crt -CAkey "$INTEL_MANAGEABILITY_SECRET"/mqtt-ca/mqtt-ca.key -CAcreateserial -in "$i".csr -out "$i".crt
+    chgrp "$i" "$i".key "$i".csr "$i".crt
+    chmod g+rw "$i".key "$i".csr "$i".crt
+    cp "$i".crt "$INTEL_MANAGEABILITY_PUBLIC"/"$i"
+  done
+  echo Cert/key provisioning of node agent finished.
+else
+  echo Skip MQTT key/cert.
+fi
+
+exit 0

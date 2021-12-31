@@ -1,0 +1,2 @@
+config.vm.box = "turtlecreek-packer-ubuntu-18.04-20210323"
+config.vm.box_url = "https://ubit-artifactory-or.intel.com/artifactory/turtle-creek-debian-local/boxes/turtlecreek-packer-ubuntu-18.04-20210323.box"

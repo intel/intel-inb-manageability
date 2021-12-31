@@ -1,0 +1,41 @@
+# Last Modified: Wed Oct 31 12:17:48 2019
+#include <tunables/global>
+
+/usr/bin/inbm-cloudadapter {
+  #include <abstractions/base>
+  #include <abstractions/bash>
+  #include <abstractions/nameservice>
+  #include <abstractions/python>
+
+  deny /* w,
+
+  /dev/tty wr,
+  /bin/dash rix,
+  /bin/uname rix,
+  /usr/bin/uname rix,
+  /etc/tc_config.conf r,
+  /etc/intel_manageability.conf rw,
+  /etc/intel_manageability.conf_bak rw,
+  /proc/*/mounts r,
+  /proc/*/status r,
+  /proc/*/fd/ r,
+  /sbin/ldconfig rix,
+  /sbin/ldconfig.real rix,
+  /tmp/ rw,
+  /tmp/** mrw,
+  /usr/bin/gcc-5 rix,
+  /usr/bin/python2.7 ix,
+  /usr/bin/inbm-cloudadapter rix,
+  /etc/intel-manageability/public/cloudadapter-agent/** r,
+  /etc/intel-manageability/secret/cloudadapter-agent/** r,
+  /usr/share/cloudadapter-agent/config_schema.json r,
+  /etc/intel-manageability/public/cloudadapter-agent/device_id rw,
+  /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt r,
+  /var/tmp/* rw,
+  /etc/intel-manageability/public/cloudadapter-agent/logging.ini r,
+  /etc/magic r,
+  /usr/share/misc/magic.mgc r,
+  /etc/ssl/openssl.cnf r,
+  /usr/bin/file rix,
+  /usr/** r,
+}

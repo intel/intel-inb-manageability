@@ -1,0 +1,121 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  config.ssh.username = 'vagrant'
+  config.ssh.password = 'vagrant'
+  config.ssh.insert_key = 'true'
+  config.ssh.extra_args = ["-o", "ServerAliveInterval=2", "-o", "ServerAliveCountMax=5"]
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://vagrantcloud.com/search.
+  eval File.read("Vagrantfile-vm-box")
+
+  # Disable automatic box update checking. If you disable this, then
+  # boxes will only be checked for updates when the user runs
+  # `vagrant box outdated`. This is not recommended.
+  # config.vm.box_check_update = false
+
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+
+  config.vm.provider :libvirt do |domain|
+      domain.memory = 4196
+      domain.cpus = 4
+  end
+  config.vm.provider :libvirt do |libvirt|
+      libvirt.driver = 'kvm'
+  end
+
+  config.vm.provider "virtualbox" do |vb|
+      vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
+  end
+
+    config.vm.provision "shell", inline: <<-SHELL
+    set -e
+    set -x
+    cat >/etc/apt/apt.conf <<EOF
+Acquire::http::proxy "http://proxy-chain.intel.com:911/";
+Acquire::https::proxy "http://proxy-chain.intel.com:912/";
+EOF
+    export https_proxy=http://proxy-chain.intel.com:912/
+    echo "http_proxy=http://proxy-chain.intel.com:911/" >>/etc/environment
+    echo "HTTP_PROXY=http://proxy-chain.intel.com:911/" >>/etc/environment
+    echo "https_proxy=http://proxy-chain.intel.com:912/" >>/etc/environment
+    echo "HTTPS_proxy=http://proxy-chain.intel.com:912/" >>/etc/environment
+    echo "no_proxy=intel.com,ci_nginx,127.0.0.1,127.0.0.1,localhost" >>/etc/environment
+    echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,localhost" >>/etc/environment
+    ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+    cat /etc/apt/sources.list
+
+    rm -rf /var/lib/apt/lists/*
+
+    mkdir -p /var/log/journal
+    systemd-tmpfiles --create --prefix /var/log/journal
+    time systemctl restart systemd-journald
+    hash -r pip3
+
+    # Upgrade mosquitto to fix acl.file bug
+    sudo add-apt-repository -y ppa:mosquitto-dev/mosquitto-ppa
+    sudo apt-get update
+    sudo apt-get -y install mosquitto
+
+    cd /vagrant/input
+    time pip3 install cryptography==2.7 # For create_signature.py
+
+  SHELL
+
+  config.vagrant.sensitive = [ENV["DOCKER_PASSWORD"]]
+  config.vm.provision "shell", inline: "sudo apt-get update && sudo apt-get -y install gnupg2 pass && echo " +
+    ENV["DOCKER_PASSWORD"] + " | sudo docker login -u " + ENV["DOCKER_USERNAME"] + " --password-stdin"
+
+  config.vm.provision "file", source: "./scripts/dmidecode",
+    destination: "/tmp/dmidecode"
+  config.vm.provision "file", source: "./scripts/turtle_creek_developer.conf",
+    destination: "/tmp/turtle_creek_developer.conf"
+  config.vm.provision "shell", inline: "cp /tmp/dmidecode /usr/sbin"
+  config.vm.provision "file", source: "./scripts/tc-get-secret-passphrase",
+    destination: "/tmp/tc-get-secret-passphrase"
+  config.vm.provision "shell", inline: "cp /tmp/tc-get-secret-passphrase /usr/bin"
+  config.vm.provision "file", source: "./scripts/setup-mqtt.sh",
+    destination: "/tmp/setup-mqtt.sh"
+  config.vm.provision "file", source: "./common/util/test_util.sh",
+    destination: "/test/test_util.sh"
+  config.vm.provision "file", source: "./common/xlink_simulator_library/libXLinkARM.so",
+    destination: "/tmp/libXLinkARM.so"
+  config.vm.provision "shell", inline: "cp /tmp/libXLinkARM.so /usr/lib"
+  config.vm.provision "file", source: "./common/xlink_simulator_library/libXLinkPC.so",
+    destination: "/tmp/libXLinkPC.so"
+  config.vm.provision "shell", inline: "cp /tmp/libXLinkPC.so /usr/lib"
+
+
+  #setting up files for nginx-content
+  config.vm.provision "file", source: "./nginx/nginx.conf", 
+	  destination: "/tmp/nginx.conf"
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo cp /tmp/nginx.conf /etc/nginx/nginx.conf
+    nginx -s reload
+    sed -i "3i 127.0.1.1       ci_nginx" /etc/hosts
+  SHELL
+  
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  config.vm.synced_folder './input', '/vagrant/input', id: 'input', type: 'rsync'
+  config.vm.synced_folder './tests', '/test', id: 'test', type: 'rsync'
+  config.vm.synced_folder './nginx-data', '/vagrant/nginx-data', id: 'nginx-data', type: 'rsync'
+  config.vm.synced_folder './scripts', '/scripts', id: 'scripts', type: 'rsync'
+
+  config.vm.provision "shell", inline: <<-SHELL
+    /test/intel-cert-setup-debian.sh
+  SHELL
+
+end

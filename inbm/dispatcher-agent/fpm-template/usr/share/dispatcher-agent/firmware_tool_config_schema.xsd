@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+     <xs:simpleType name="Max50Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="50"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PathMax1500Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="500"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:element name="firmware_component">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="firmware_product" maxOccurs="50">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="operating_system" type="Max50Chars"/>
+                            <xs:element name="firmware_file_type" type="Max50Chars"/>
+                            <xs:element name="firmware_dest_path" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="firmware_tool" type="Max50Chars"  minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="firmware_tool_args" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="firmware_tool_check_args" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="bios_vendor" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="manufacturer" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                        </xs:all>
+                        <xs:attribute name="name" type="xs:string" use="required"></xs:attribute>
+                        <xs:attribute name="guid" type="xs:boolean" use="optional" default="false"></xs:attribute>
+                        <xs:attribute name="tool_options" type="xs:boolean" use="optional" default="false"></xs:attribute>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>

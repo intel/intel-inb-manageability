@@ -1,0 +1,166 @@
+#!/bin/bash
+set -euxo pipefail
+
+INTEL_MANAGEABILITY_PUBLIC="/etc/intel-manageability/public"
+INTEL_MANAGEABILITY_SECRET="/etc/intel-manageability/secret"
+NODE_PUBLIC_DIR="$INTEL_MANAGEABILITY_PUBLIC"/"node-agent"
+NODE_SECRET_DIR="$INTEL_MANAGEABILITY_SECRET"/"node-agent"
+MANAGEABILITY_CACHE_DIR="/var/cache/manageability"
+MANAGEABILITY_REPOSITORY_TOOL_DIR="/var/cache/manageability/repository-tool"
+NODE_CONF_DIR="/etc/intel-manageability/public/node-agent/intel_manageability_node.conf"
+RTC_DEV_PATH="/dev/rtc0"
+XLINK_DEV_PATH="/dev/xlnk"
+XLINK_SECURE_DEV_PATH="/dev/xlnksecure"
+TEE_DEV_PATH="/dev/tee0"
+
+function create_and_mod_user {
+  # Add node-agent user
+  if [ $(grep -c -i 'node-agent' /etc/passwd) -gt 0 ]; then
+    echo "Found node agent in group"
+  else
+    groupadd -f node-agent
+    useradd -s /usr/sbin/nologin -g node-agent node-agent
+  fi
+
+  # Add node-agent into mqtt-ca group
+  if [ $(grep -c -i 'mqtt-ca' /etc/group) -gt 0 ]; then
+    echo "Add node agent into mqtt-ca group"
+    usermod -a -G mqtt-ca node-agent
+  else
+    echo "Create mqtt-ca group."
+    groupadd -f mqtt-ca
+    echo "Add node agent into mqtt-ca group"
+    usermod -a -G mqtt-ca node-agent
+  fi
+
+  # Add node-agent into mqtt-broker group
+  if [ $(grep -c -i 'mqtt-broker' /etc/group) -gt 0 ]; then
+    echo "Add node agent into mqtt-broker group"
+    usermod -a -G mqtt-broker node-agent
+  else
+    echo "Create mqtt-broker group."
+    groupadd -f mqtt-broker
+    echo "Add node agent into mqtt-broker group"
+    usermod -a -G mqtt-broker node-agent
+  fi
+}
+
+function create_and_mod_file {
+  # Check node-agent public folder is exist
+  if  [ "$(ls -A $NODE_PUBLIC_DIR)" ]; then
+      echo "node-agent public folder exist."
+  else
+      echo "create public folder."
+      mkdir -p $NODE_PUBLIC_DIR
+  fi
+
+  # Check node-agent secret folder is exist
+  if  [ "$(ls -A $NODE_SECRET_DIR)" ]; then
+      echo "node-agent secret folder exist."
+  else
+      echo "create secret folder."
+      mkdir -p $NODE_SECRET_DIR
+  fi
+
+  chgrp node-agent $NODE_PUBLIC_DIR
+  chgrp node-agent $NODE_SECRET_DIR
+  chmod g+rw $NODE_PUBLIC_DIR
+  chmod g+rw $NODE_SECRET_DIR
+
+  # Change and add group write-access to node config file
+  if  [ "$(ls -A $NODE_CONF_DIR)" ]; then
+    chown node-agent $NODE_CONF_DIR
+    chgrp node-agent $NODE_CONF_DIR
+    chmod g+rw $NODE_CONF_DIR
+  else
+    echo $NODE_CONF_DIR not found.
+  fi
+
+  # Temporily solution here. Need TC to add group read write access for files under mqtt-ca folder
+  # Add group write-access to mqtt-ca folder
+  if  [ "$(ls -A "$INTEL_MANAGEABILITY_SECRET"/"mqtt-ca")" ]; then
+    chmod g+rw "$INTEL_MANAGEABILITY_SECRET"/"mqtt-ca"/*
+  else
+    echo "mqtt-ca folder not found. Please setup mqtt."
+  fi
+
+  # Temporily assign to mqtt-ca group. Need a group that both TC and BC can access.
+  # Change manageability cache folder to group mqtt-ca and add group read/write access.
+  if  [ "$(ls -A $MANAGEABILITY_CACHE_DIR)" ]; then
+    chgrp mqtt-ca $MANAGEABILITY_CACHE_DIR
+    chmod g+rw $MANAGEABILITY_CACHE_DIR
+  else
+    echo $MANAGEABILITY_CACHE_DIR not found
+  fi
+
+  # Temporily assign to mqtt-ca group. Need a group that both TC and BC can access.
+  # Change manageability cache folder to group mqtt-ca and add group read/write access.
+  if  [ "$(ls -A $MANAGEABILITY_REPOSITORY_TOOL_DIR)" ]; then
+    chgrp mqtt-ca $MANAGEABILITY_REPOSITORY_TOOL_DIR
+    chmod g+rw $MANAGEABILITY_REPOSITORY_TOOL_DIR
+  else
+    echo $MANAGEABILITY_REPOSITORY_TOOL_DIR not found
+  fi
+}
+
+function mod_dev_access {
+  # Add xlink, rtc and tee group
+  groupadd -f rtc
+  groupadd -f xlink
+  groupadd -f tee
+  echo "Add node agent into rtc group"
+  usermod -a -G rtc node-agent
+  echo "Add node agent into rtc group"
+  usermod -a -G xlink node-agent
+  echo "Add node agent into tee group"
+  usermod -a -G tee node-agent
+  # Modify and add group write-access to rtc device file
+  if  [ "$(ls -A $RTC_DEV_PATH)" ]; then
+    echo $RTC_DEV_PATH found.
+    chgrp rtc $RTC_DEV_PATH
+    chmod g+rw $RTC_DEV_PATH
+  else
+    echo $RTC_DEV_PATH not found.
+  fi
+
+  if  [ "$(ls -A $XLINK_DEV_PATH)" ]; then
+    echo $XLINK_DEV_PATH found.
+    chgrp xlink $XLINK_DEV_PATH
+    chmod g+rw $XLINK_DEV_PATH
+  else
+    echo $XLINK_DEV_PATH not found.
+  fi
+
+  if  [ "$(ls -A $XLINK_SECURE_DEV_PATH)" ]; then
+    echo $XLINK_SECURE_DEV_PATH found.
+    chgrp xlink $XLINK_SECURE_DEV_PATH
+    chmod g+rw $XLINK_SECURE_DEV_PATH
+  else
+    echo $XLINK_SECURE_DEV_PATH not found.
+  fi
+
+  if  [ "$(ls -A $TEE_DEV_PATH)" ]; then
+    echo $TEE_DEV_PATH found.
+    chgrp tee $TEE_DEV_PATH
+    chmod g+rw $TEE_DEV_PATH
+  else
+    echo $TEE_DEV_PATH not found.
+  fi
+}
+
+if ! [ "$(ls -A $INTEL_MANAGEABILITY_SECRET/.provisioned_node)" ]; then
+  echo "Setup node agent to run as non-root"
+  create_and_mod_user
+  create_and_mod_file
+  touch $INTEL_MANAGEABILITY_SECRET/.provisioned_node
+  echo "Setup node agent to run as non-root complete"
+else
+  echo non-root-setup already done.
+fi
+
+mod_dev_access
+
+# Allocate more free vm for SOTA file transferring
+echo 67584 > /proc/sys/vm/min_free_kbytes
+
+exit 0

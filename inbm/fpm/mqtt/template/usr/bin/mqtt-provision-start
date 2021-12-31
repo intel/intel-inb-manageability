@@ -1,0 +1,51 @@
+#!/bin/bash
+set -euxo pipefail
+# Ensure mqtt-broker has required permissions
+getent group pmsuser || groupadd pmsuser
+chgrp mqtt-broker /var/persistent-log/mosquitto
+chmod g+rwx /var/persistent-log/mosquitto
+chmod -R g+rw /var/persistent-log/mosquitto
+
+# Ensure mosquitto.conf is upgraded
+if ! grep "COMPATIBLE WITH MOSQUITTO 2.0: TRUE" /etc/intel-manageability/public/mqtt-broker/mosquitto.conf >&/dev/null ; then
+  echo mosquitto.conf needs to be upgraded, or this is the first mqtt
+  echo startup and mosquitto.conf needs to be copied from /usr/... to /etc/...
+  cp /usr/share/intel-manageability/mqtt/mosquitto.conf.dist /etc/intel-manageability/public/mqtt-broker/mosquitto.conf
+else
+  echo mosquitto.conf is up to date
+fi
+
+if [ -f /etc/intel-manageability/local-mqtt-port.txt ] ; then
+  LOCAL_MQTT_PORT=$(cat /etc/intel-manageability/local-mqtt-port.txt)
+  re='^[0-9]+$'
+  if ! [[ $LOCAL_MQTT_PORT =~ $re ]] ; then
+     echo "error: Not a number: $LOCAL_MQTT_PORT in setting mqtt port number" >&2; exit 1
+  fi
+else
+  echo "Using default MQTT port."
+  LOCAL_MQTT_PORT=8883
+fi
+
+# Set local port in TC service environment file
+TC_ENV_FILE=/etc/intel-manageability/public/mqtt.environment
+echo MQTT_HOST=localhost >"$TC_ENV_FILE"
+echo MQTT_PORT="$LOCAL_MQTT_PORT" >>"$TC_ENV_FILE"
+echo MQTT_CA_CERTS=/etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt >>"$TC_ENV_FILE"
+
+# Set local port in mosquitto.conf
+sed -i -e "s/listener .* 127.0.0.1/listener $LOCAL_MQTT_PORT 127.0.0.1/g" /etc/intel-manageability/public/mqtt-broker/mosquitto.conf
+
+# If dispatcher.environment exists, patch its port
+if [ -f /etc/dispatcher.environment ]; then
+  sed -i -e "s/MQTT_PORT=.*/MQTT_PORT=$LOCAL_MQTT_PORT/g" /etc/dispatcher.environment
+fi
+
+
+
+# Ensure secret directory is mounted
+/usr/bin/mqtt-ensure-secret-mounted
+
+
+# Ensure keys are generated
+/usr/bin/mqtt-ensure-keys-generated
+exit 0

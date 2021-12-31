@@ -1,0 +1,195 @@
+<html>
+<head>
+    <h1>Manifest Creator</h1>
+</head>
+<body>
+Update Type:
+<select id="update_type" onchange="showForm(this.value)">
+    <option value="select" selected="selected">select</option>
+    <option value="aota">AOTA</option>
+    <option value="fota">FOTA</option>
+    <option value="sota">SOTA</option>
+    <option value="config">CONFIG</option>
+</select>
+
+<form id="aota_form" style="visibility: hidden; display: none;">
+    <select id="app">
+        <option value="docker">Docker</option>
+        <option value="docker-compose">Docker Compose</option>
+    </select>
+    <br/>
+    <select id="aota_cmd">
+        <option value="load">Load</option>
+        <option value="import">Import</option>
+        <option value="up">Up</option>
+        <option value="down">Down</option>
+    </select>
+    <br/>
+    Container Tag: <input type="text"> <br/>
+    Fetch: <input type="text"> <br/>
+    Version: <input type="text"> <br/>
+    <input type="button" value="Get XML" onclick="aota_xml()">
+</form>
+
+<form id="fota_form" style="visibility: hidden; display: none;">
+    Bios Version: <input type="text"> <br/>
+    Manufacture: <input type="text"> <br/>
+    Fetch: <input type="text"> <br/>
+    Path: <input type="text"> <br/>
+    Product: <input type="text"> <br/>
+    Release Date: <input type="text"> <br/>
+    Vendor: <input type="text"> <br/>
+    <input type="button" value="Get XML" onclick="fota_xml()">
+</form>
+
+<form id="sota_form" style="visibility: hidden; display: none;">
+    Sota Command:
+    <select id="sota_cmd_type">
+        <option value="update">Update</option>
+        <option value="upgrade">Upgrade</option>
+    </select>
+    <br/>
+    Log to File:
+    <select>
+        <option value="y">Yes</option>
+        <option value="n">No</option>
+    </select> <br/>
+    <input type="button" value="Get XML" onclick="sota_xml()">
+</form>
+
+<form id="config_form" style="visibility: hidden; display: none;">
+    Config command:
+    <select id="cmd_type" onchange="showFetch(this.value)">
+        <option value="get">Get Element</option>
+        <option value="set">Set Element</option>
+        <option value="load">Load config</option>
+    </select>
+    <br/>
+    Path:<input type="text">
+    <div id="config_fetch" style="visibility: hidden; display: none;">
+        Fetch: <input type="text">
+    </div>
+    <br/>
+    <input type="button" value="Get XML" onclick="config_xml()">
+</form>
+<div id="result">
+    Manifest: <textarea id="xml_result" cols=200></textarea> <input type="button" value="Copy To Clipboard"
+                                                                    onclick="copyToClipboard()">
+</div>
+</body>
+<script>
+
+function copyToClipboard() {
+    var copyText = document.getElementById("xml_result");
+    copyText.select();
+    document.execCommand("Copy");
+    alert("Copied the text: " + copyText.value);
+    copyText.value=""
+}
+
+function sota_xml(){
+
+    x = document.forms['sota_form'].elements
+    xml = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type>' +
+                           '<repo>remote</repo></header><type><sota><cmd logtofile="' + x[1].value +
+                           '">' + x[0].value + '</cmd></sota></type></ota></manifest>'
+
+    document.getElementById("xml_result").value = xml
+    console.log(xml)
+}
+
+function config_xml(){
+    x = document.forms['config_form'].elements
+    xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>' + x[0].value + '_element</cmd><configtype>' +
+                               '<' + x[0].value + '><path>' + x[1].value +
+                               '</path></' + x[0].value + '></configtype></config></manifest>'
+
+    document.getElementById("xml_result").value = xml
+    console.log(xml)
+}
+
+function fota_xml(){
+    x = document.forms['fota_form'].elements
+    xml = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type>' +
+                           '<repo>remote</repo></header><type><fota name="sample"><fetch>' + x[2].value +
+                           '</fetch><biosversion>' + x[0].value + '</biosversion><vendor>' +
+                           x[6].value + '</vendor><manufacturer>' + x[1].value +
+                           + '</manufacturer><product>' + x[4].value + '</product><releasedate>' +
+                            x[5].value + '</releasedate><path>' + x[3].value +
+                           '</path></fota></type></ota></manifest>'
+
+    document.getElementById("xml_result").value = xml
+    console.log(xml)
+}
+
+function aota_xml(){
+    x = document.forms['aota_form'].elements
+    xml = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header>' +
+                           '<type>aota</type></header><type><aota name="sample-rpm"><cmd>' + x[1].value +
+                            '</cmd><app>' + x[0].value + '</app><fetch>' + x[3].value +
+                            '</fetch><version>' + x[4].value + '</version><containerTag>' +
+                           x[2].value + '</containerTag></aota></type></ota></manifest>'
+
+    document.getElementById("xml_result").value = xml
+    console.log(xml)
+}
+
+function showForm(val) {
+    if (val == 'config') {
+        document.getElementById("sota_form").style.visibility = "hidden";
+        document.getElementById("config_form").style.visibility = "visible";
+        document.getElementById("fota_form").style.visibility = "hidden";
+        document.getElementById("aota_form").style.visibility = "hidden";
+        document.getElementById("aota_form").style.display = "none";
+        document.getElementById("sota_form").style.display = "none";
+        document.getElementById("fota_form").style.display = "none";
+        document.getElementById("config_form").style.display = "block";
+    }
+
+    if (val == 'sota') {
+        document.getElementById("config_form").style.visibility = "hidden";
+        document.getElementById("sota_form").style.visibility = "visible";
+        document.getElementById("fota_form").style.visibility = "hidden";
+        document.getElementById("aota_form").style.visibility = "hidden";
+        document.getElementById("config_form").style.display = "none";
+        document.getElementById("aota_form").style.display = "none";
+        document.getElementById("fota_form").style.display = "none";
+        document.getElementById("sota_form").style.display = "block";
+    }
+
+    if (val == 'fota') {
+        document.getElementById("config_form").style.visibility = "hidden";
+        document.getElementById("sota_form").style.visibility = "hidden";
+        document.getElementById("fota_form").style.visibility = "visible";
+        document.getElementById("aota_form").style.visibility = "hidden";
+        document.getElementById("config_form").style.display = "none";
+        document.getElementById("sota_form").style.display = "none";
+        document.getElementById("aota_form").style.display = "none";
+        document.getElementById("fota_form").style.display = "block";
+    }
+
+    if (val == 'aota') {
+        document.getElementById("config_form").style.visibility = "hidden";
+        document.getElementById("sota_form").style.visibility = "hidden";
+        document.getElementById("fota_form").style.visibility = "hidden";
+        document.getElementById("aota_form").style.visibility = "visible";
+        document.getElementById("config_form").style.display = "none";
+        document.getElementById("sota_form").style.display = "none";
+        document.getElementById("fota_form").style.display = "none";
+        document.getElementById("aota_form").style.display = "block";
+    }
+}
+
+function showFetch(val) {
+    if (val == 'load') {
+        document.getElementById("config_fetch").style.visibility = "visible";
+        document.getElementById("config_fetch").style.display = "block";
+    }
+    else {
+        document.getElementById("config_fetch").style.visibility = "hidden";
+        document.getElementById("config_fetch").style.display = "none";
+    }
+}
+
+</script>
+</html>

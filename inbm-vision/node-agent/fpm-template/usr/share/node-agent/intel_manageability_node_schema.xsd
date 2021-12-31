@@ -1,0 +1,20 @@
+<?xml version="1.1" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="configurations">
+        <xs:complexType>
+            <xs:sequence>
+		<xs:element name="node">
+                    <xs:complexType>
+                        <xs:all>
+                            <xs:element name="registrationRetryTimerSecs" type="xs:integer"/>
+                            <xs:element name="registrationRetryLimit" type="xs:integer"/>
+                            <xs:element name="XLinkPCIeDevID" type="xs:integer"/>
+                            <xs:element name="heartbeatResponseTimerSecs" type="xs:integer"/>
+                        </xs:all>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
+

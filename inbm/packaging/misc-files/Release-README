@@ -1,0 +1,24 @@
+QUICK README
+=============
+1.  To install both TC and BC run the install-inb.sh script with root privileges. Before running the script update the following fields in azure_conf_file with the necessary information to have device connected to cloud.
+        - SCOPE_ID <refer Azure user guide documentation on how to fetch SCOPE_ID>
+        - DEVICE_ID <a pretag to the device. The device-id will be later generated with an appended uuid later>
+        - PRIMARY_KEY <refer Azure user guide documentation on how to fetch PRIMARY_KEY>
+
+    To install only BC, run the command 'sudo ./install-inb.sh hddl'
+
+2.  When installed TC and BC by running install-inb.sh, the device will be automatically on-boarded to Azure cloud using SAS primary key. The device-id generated will be stored under /usr/share/azure_conf_file. 
+        Use this device-id info to check the device on the Azure cloud (https://intel-inband-manageability.azureiotcentral.com/devices).
+        NOTE: Azure Auto-onboarding is supported only via SAS token.
+
+3.  To uninstall, run 'sudo ./uninstall-inb.sh'                                
+
+
+IMPORTANT NOTE: For more detailed instructions please refer INB collaterals 
+
+626910 - In-Band Manageability Installation Guide Ubuntu
+630706 - In-Band Manageability HDDL User Guide - Azure
+626762 - In-Band Manageability User Guide - Azure
+626763 - In-Band Manageability User Guide - ThingsBoard
+626909 - In-Band Manageability Developer Guide
+632027 - KMB IA Host - In-Band Manageability Software Quick Start Guide

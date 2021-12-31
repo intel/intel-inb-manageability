@@ -1,0 +1,71 @@
+# Last Modified: Thu Aug  2 20:26:36 2018
+#include <tunables/global>
+
+/usr/bin/inbm-diagnostic {
+  #include <abstractions/base>
+  #include <abstractions/bash>
+  #include <abstractions/dbus-strict>
+  #include <abstractions/nameservice>
+  #include <abstractions/python>
+  #include <abstractions/ubuntu-konsole>
+
+  capability net_admin,
+  capability sys_admin, # for btrfs
+  capability sys_ptrace,
+  capability sys_resource,
+
+  ptrace trace peer=unconfined,
+
+  / r,
+  
+  /bin/bash.bash rix,
+  /bin/btrfs rix,
+  /bin/dash rix,
+  /bin/grep rix,
+  /bin/ip rix,
+  /bin/ps rix,
+  /bin/lsb_release rUx,
+  /usr/bin/lsb_release rUx,
+  /bin/systemctl rix,
+  /bin/uname rix,
+  /bin/uname.coreutils rix,
+  /dev/sda* r,
+  /dev/tty rw,
+  /dev/vda* r,
+  /etc/machine-id r,
+  /etc/intel-manageability/public/diagnostic-agent/diagnostic-agent.crt r,
+  /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt r,
+  /etc/intel-manageability/secret/diagnostic-agent/diagnostic-agent.key r,
+  /proc/ r,
+  /proc/** r,
+  /run/log/journal/ r,
+  /run/log/journal/** r,
+  /run/systemd/private rw,
+  /sbin/ip rix,
+  /sbin/ip.iproute2 rix,
+  /sbin/ldconfig rix,
+  /sbin/ldconfig.real rix,
+  /sys/fs/** r,
+  /sys/class/** r,
+  /tmp/ rw,
+  /tmp/** mrw,
+  /usr/bin/awk rix,
+  /usr/bin/basename rix,
+  /usr/bin/curl rix,
+  /usr/bin/gawk rix,
+  /usr/bin/mawk rix,
+  /usr/bin/python2.7 ix,
+  /usr/bin/trtl Pix,
+  /usr/bin/wc rix,
+  /usr/bin/which rix,
+  /usr/bin/inbm-diagnostic rix,
+  /usr/sbin/service rix,
+  /usr/share/misc/magic.mgc r,
+  /etc/intel-manageability/public/diagnostic-agent/logging.ini r,
+  /sys/devices/** r,
+  /var/tmp/* rw,
+  /usr/bin/file rix,
+  /usr/** r,
+  /bin/lsb_release rUx,
+  /bin/busybox.nosuid rUx,
+}

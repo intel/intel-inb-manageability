@@ -1,0 +1,15 @@
+trtl
+trtl.git
+*.out
+sonarqube.sh
+.idea
+.scannerwork
+coverage.xml
+report.xml
+test.xml
+sonar-project.properties
+.idea/*
+vendor/
+debug.test
+.vscode/*
+Gopkg.lock

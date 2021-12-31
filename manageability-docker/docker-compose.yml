@@ -1,0 +1,37 @@
+version: "3.3"
+# Copyright: Copyright (C) 2021 Intel Corporation
+# Author: Wong Yeng Liong
+# Email: yeng.liong.wong@intel.com
+services:
+  inb:
+   cap_add:
+     - SYS_ADMIN
+   container_name: inb
+   image: inb
+   ipc: host
+   network_mode: "host"
+   security_opt:
+     - seccomp:unconfined
+     - apparmor:docker-ble-policy
+   build:
+     context: .
+     dockerfile: ./Dockerfile
+     args:
+       http_proxy: ${http_proxy:-}
+       https_proxy: ${https_proxy:-}
+       HTTP_PROXY: ${HTTP_PROXY:-}
+       HTTPS_PROXY: ${HTTPS_PROXY:-}
+       NO_PROXY: ${NO_PROXY:-}
+       no_proxy: ${no_proxy:-}
+   tmpfs:
+      - /run
+      - /run/lock
+   privileged: true
+   volumes:
+     - /sys/fs/cgroup:/sys/fs/cgroup:ro
+     - /var/run/docker.sock:/var/run/docker.sock:ro
+     - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
+     - /:/host
+     - /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool
+   tty: true
+
