@@ -1,0 +1,26 @@
+# Terminology
+
+| Term   | Description                                                                                                                                                                                                     |
+|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ACL    | Access Control List                                                                                                                                                                                             |
+| AOTA   | Application Over the Air (Docker)                                                                                                                                                                               |
+| BIOS   | Basic Input Output System                                                                                                                                                                                       |
+| BSP    | Board Support Package                                                                                                                                                                                           |
+| Device | A device is any equipment that is installed to be monitored or controlled in a building. Examples of devices include light switches, thermostats, cameras, other mechanical loads, chillers, cooler, and so on. |
+| FOTA   | Firmware Over the Air                                                                                                                                                                                           |
+| FW     | Firmware                                                                                                                                                                                                        |
+| HDDL   | High Density Deep Learning                                                                                                                                                                                      |
+| IA     | Intel Architecture                                                                                                                                                                                              |
+| INBM   | Intel® In-Band Manageability Framework                                                                                                                                                                          |
+| IoT    | Internet of Things                                                                                                                                                                                              |
+| MQTT   | Message Queuing Telemetry Transport                                                                                                                                                                             |
+| OS     | Operating System                                                                                                                                                                                                |
+| OTA    | Over-the-air                                                                                                                                                                                                    |
+| PCIe   | Peripheral Component Interconnect Express                                                                                                                                                                       |
+| PEM    | Privacy Enhanced Mail                                                                                                                                                                                           |
+| POTA   | Platform Over-the-Air (SOTA and FOTA combined)                                                                                                                                                                  |
+| SMBIOS | System Management BIOS                                                                                                                                                                                          |
+| SoC    | System on a Chip                                                                                                                                                                                                |
+| SOTA   | Software Over the Air (OS update)                                                                                                                                                                               |
+| VPU    | Visual Processing Unit                                                                                                                                                                                          |
+| YAML   | Yet Another Markup Language                                                                                                                                                                                     |
