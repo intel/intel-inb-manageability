@@ -52,3 +52,6 @@ FW_DEVICE_TREE_PATH = '/proc/device-tree/firmware/bios/'
 
 # Afulnx tool name
 AFULNX_64 = 'afulnx_64'
+
+# Default signature version
+DEFAULT_SIG_VERSION = 384

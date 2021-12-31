@@ -10,6 +10,7 @@ from typing import List, Tuple
 from tarfile import TarInfo
 
 from inbm_common_lib.utility import get_canonical_representation_of_path, canonicalize_uri, remove_file
+from inbm_common_lib.constants import DEFAULT_SIG_VERSION
 
 from .constants import UMASK_PROVISION_FILE, REPO_CACHE, SCHEMA_LOCATION, TARGET_PROVISION, OTA_PACKAGE_CERT_PATH
 from .dispatcher_callbacks import DispatcherCallbacks
@@ -51,6 +52,13 @@ class ProvisionTarget:
         uri = parsed_head.find_element('provisionNode/fetch')
         signature = parsed_head.find_element('provisionNode/signature')
         sig_version = parsed_head.find_element('provisionNode/signature_version')
+        if signature:
+            try:
+                logger.debug(f"sig_version = {sig_version}")
+                sig_version = int(sig_version) if sig_version else DEFAULT_SIG_VERSION
+            except ValueError:
+                logger.debug("Unable to parse signature version. Use default version.")
+                sig_version = DEFAULT_SIG_VERSION
         canonicalized_url = canonicalize_uri(uri)
         repo = DirectoryRepo(REPO_CACHE)
         download(dispatcher_callbacks=self._dispatcher_callbacks,

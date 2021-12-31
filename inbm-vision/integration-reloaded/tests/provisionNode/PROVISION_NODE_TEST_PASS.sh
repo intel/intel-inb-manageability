@@ -28,17 +28,15 @@ if journalctl -u inbm-dispatcher | grep provisionNode ; then
 else
   journalctl -u inbm-dispatcher
   echo Error in provision-node test.  Showing recent journalctl.
-  # journalctl -a --no-pager -n 50
   exit 1
 fi
 
 echo "Wait 5 seconds for vision-agent to process the manifest..."
 sleep 5
 
-if [ -f "$CERT_FILE_NAME" ]; then
-  echo Found cert file under $PROVISION_FOLDER
+if ! [ -f "$CERT_FILE_NAME" ]; then
+  echo Cert file being deleted due to command failed and not found under $PROVISION_FOLDER.
 else
-  #print_all_error
   echo ProvisionNode command fail. Showing recent journalctl.
   journalctl -a --no-pager -n 50 | egrep "( cat|vision|dispatcher in system mode)"
 
@@ -50,11 +48,10 @@ else
   exit 1
 fi
 
-if [ -f "$BLOB_FILE_NAME" ]; then
-  echo Found blob file under $PROVISION_FOLDER
+if ! [ -f "$BLOB_FILE_NAME" ]; then
+  echo Blob file being deleted due to command failed and not found under $PROVISION_FOLDER.
   echo ProvisionNode test passed.
 else
-  #print_all_error
   echo ProvisionNode command fail. Showing recent journalctl.
   journalctl -a --no-pager -n 50 | egrep "( cat|vision|dispatcher in system mode)"
 

@@ -1,6 +1,6 @@
 #include <tunables/global>
 
-/usr/bin/vision {
+/usr/bin/inbm-vision {
   #include <abstractions/base>
   #include <abstractions/bash>
   #include <abstractions/nameservice>
@@ -36,7 +36,7 @@
   /sbin/ldconfig.real rix,
   /tmp/** mrw,
   /usr/bin/lspci rix,
-  /usr/bin/vision rix,
+  /usr/bin/inbm-vision rix,
   /usr/bin/tee ix,
   /usr/bin/vision-flashless/flashless rix,
   /usr/bin/x86_64-linux-gnu-ld.bfd ix,

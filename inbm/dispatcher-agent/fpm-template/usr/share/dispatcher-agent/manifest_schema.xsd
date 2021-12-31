@@ -116,6 +116,7 @@
                         <xs:sequence>
                             <xs:element name="fetch" type="URLMax700Chars" minOccurs="0" maxOccurs="1"/>
                             <xs:element name="signature" type="SigMax1000Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="signature_version" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                             <xs:element name="username" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                             <xs:element name="password" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                         </xs:sequence>

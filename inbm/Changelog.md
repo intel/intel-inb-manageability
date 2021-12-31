@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## NEXT - ?
+
+### Fixed
+ - 505595, HSD 15010407028 - Fix provisionNode command failed in Signature check
+
 ## 3.0.6 - 2021-12-31
 This is the first open source release.
 
