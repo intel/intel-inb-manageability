@@ -1,9 +1,5 @@
 # base-setup.m4: common set of commands for a base utility image, either x86 or arm
 
-ENV http_proxy http://proxy-dmz.intel.com:911/
-ENV https_proxy http://proxy-dmz.intel.com:912/
-ENV no_proxy intel.com,127.0.0.1,localhost
-
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \

@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## 3.0.7 - 2022-01-04
+
+## Fixed
+ - Build from normal Internet connection fixed.
+
+
 ## 3.0.6 - 2021-12-31
 This is the first open source release.
 
