@@ -22,7 +22,7 @@ from diagnostic.broker import Broker
 from inbm_lib.windows_service import WindowsService
 
 
-class LoggingPath:
+class LoggingPath:  # pragma: no cover
 
     def __init__(self):
         pass
@@ -35,7 +35,7 @@ class LoggingPath:
             return DEFAULT_LOGGING_PATH
 
 
-class Diagnostic(WindowsService):
+class Diagnostic(WindowsService):  # pragma: no cover
     """Listen for commands.
 
     An instance of this class will be created to start the agent and listen for incoming commands

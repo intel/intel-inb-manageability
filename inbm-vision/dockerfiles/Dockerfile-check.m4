@@ -1,10 +1,6 @@
 # base image with all dependencies for running unit tests/lints
 FROM registry.hub.docker.com/library/ubuntu:18.04 as base
 
-ENV http_proxy http://proxy-dmz.intel.com:911/
-ENV https_proxy http://proxy-dmz.intel.com:912/
-ENV no_proxy intel.com,127.0.0.1,localhost
-
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
