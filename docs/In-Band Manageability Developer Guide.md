@@ -784,11 +784,8 @@ The framework code base can be extended when there is a requirement to add a new
 
 The following steps provide a clear overview on how to create a new agent.
 
-1. A new folder with name **\<agent\_name\>-agent** should be created under the *\~/intel-inb-manageability/inbm* directory.
-2. Once the source code is added to the folder, mqtt keys need to be generated for the new agent. To generate mqtt-keys,
-
-> <img src="media/In-Band Manageability Developer Guide/media/image14.png" style="width:6.15139in;height:1.24514in" />
-Go to the```~/inbm/fpm/mqtt/template/usr/bin/mqtt-ensure-keys-generated``` file and add the new agent name in the for-loop(line 50) shown in the below image.
+1. A new folder with name `\<agent\_name\>-agent` should be created under the `inbm` directory.
+2. Once the source code is added to the folder, mqtt keys need to be generated for the new agent at provision time. To update the provisioning utility to do this, edit `inbm/fpm/inb-provision-certs/main.go` to add the new agent name to the for loop in the `main` function of this `main.go` file.
 
 3.  These certificates are stored in
 
@@ -808,16 +805,41 @@ And the respective keys are stored in
 5.  Once the code is ready to be built, a service file created for the
     agent should include the correct group name.
 ```shell
-~ /turtle-creek/<agent_name>-agent/fpm-template/etc/systemd/system/<agent_name>.service
+inbm/<agent_name>-agent/fpm-template/etc/systemd/system/<agent_name>.service
 ```
 An example of the *dispatcher.service* file located at
 ```shell
-~/inbm/dispatcher-agent/fpm-template/lib/systemd/system/inbm-dispatcher.service
+inbm/dispatcher-agent/fpm-template/lib/systemd/system/inbm-dispatcher.service
 ```
-is shown below highlighting its respective group name.
+is shown below.
 
-<img src="media/In-Band Manageability Developer Guide/media/image15.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+```
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
 
+[Unit]
+Description=Dispatcher Agent Service
+Requires=network.target mqtt.service
+After=mqtt.service
+PartOf=inbm.service
+After=inbm.service
+
+[Service]
+# ExecStart command is only run when everything else has loaded
+Type=idle
+User=root
+EnvironmentFile=-/etc/environment
+EnvironmentFile=-/etc/dispatcher.environment
+EnvironmentFile=-/etc/intel-manageability/public/mqtt.environment
+ExecStart=/usr/bin/inbm-dispatcher
+RestartSec=5s
+Restart=on-failure
+WorkingDirectory=/etc/systemd/system/
+Group=dispatcher-agent
+
+[Install]
+WantedBy=inbm.service
+```
 
 ## Issues and Troubleshooting
 
