@@ -784,19 +784,19 @@ The framework code base can be extended when there is a requirement to add a new
 
 The following steps provide a clear overview on how to create a new agent.
 
-1. A new folder with name `\<agent\_name\>-agent` should be created under the `inbm` directory.
+1. A new folder with name `<agent_name>-agent` should be created under the `inbm` directory.
 2. Once the source code is added to the folder, mqtt keys need to be generated for the new agent at provision time. To update the provisioning utility to do this, edit `inbm/fpm/inb-provision-certs/main.go` to add the new agent name to the for loop in the `main` function of this `main.go` file.
 
 3.  These certificates are stored in
 
 ```
-/etc/intel-manageability/secret/\<agent\_name\>-agent/\<agent\_name\>-agent.crt
+/etc/intel-manageability/secret/<agent_name>-agent/<agent_name>-agent.crt
 ```
 
 And the respective keys are stored in
 
 ```
-/etc/intel-manageability/secret/\<agent\_name\>-agent/\<agent\_name\>-agent.key
+/etc/intel-manageability/secret/<agent_name>-agent/<agent_name>-agent.key
 ```
 
 4.  The above-mentioned paths must be used within the agent code to make
@@ -807,7 +807,7 @@ And the respective keys are stored in
 ```shell
 inbm/<agent_name>-agent/fpm-template/etc/systemd/system/<agent_name>.service
 ```
-An example of the *dispatcher.service* file located at
+An example of the `dispatcher.service` file located at
 ```shell
 inbm/dispatcher-agent/fpm-template/lib/systemd/system/inbm-dispatcher.service
 ```
