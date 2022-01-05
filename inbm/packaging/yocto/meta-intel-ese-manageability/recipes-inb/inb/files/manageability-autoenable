@@ -68,7 +68,7 @@ if [ ! $PCIE_EP_STATUS == "" ]; then
 
         # Finally, we start inbm-node.service.
         # TODO: BC needs a provision-bc script. This is temporary:
-        if [ -f /usr/bin/node ] ; then
+        if [ -f /usr/bin/inbm-node ] ; then
             systemctl start inbm-node.service
         fi
     fi
