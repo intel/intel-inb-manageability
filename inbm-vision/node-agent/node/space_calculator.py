@@ -8,7 +8,7 @@
 """
 
 from inbm_vision_lib.shell_runner import PseudoShellRunner
-
+from .constant import VAR_DIR
 import logging
 import re
 
@@ -71,7 +71,7 @@ def _calculate_btrfs_free_space():
 
 
 def _get_non_btrfs_space():
-    return psutil.disk_usage('.').free
+    return psutil.disk_usage(VAR_DIR).free
 
 
 def get_free_memory() -> int:

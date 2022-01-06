@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - 504494, HSD 15010332252 - Fix provision file not removed in /opt/xlink_provision when failed to reset device due to no matching device id
 - 506035, HSD 15010309026 - Update node apparmor policy by adding /sys/kernel/xlink_secure/debug
+- HSD 15010516458 - Fix storage checks failed during mender file transferring in SOTA/POTA
 - 506874 - Fix node config schema error when upgrading from v2.16.0 to v2.17.2
 
 ## 3.0.6 - 2021-12-31
