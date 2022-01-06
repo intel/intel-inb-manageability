@@ -9,7 +9,7 @@
                             <xs:element name="registrationRetryTimerSecs" type="xs:integer"/>
                             <xs:element name="registrationRetryLimit" type="xs:integer"/>
                             <xs:element name="XLinkPCIeDevID" type="xs:integer"/>
-                            <xs:element name="heartbeatResponseTimerSecs" type="xs:integer"/>
+                            <xs:element name="heartbeatResponseTimerSecs" type="xs:integer" minOccurs="0" maxOccurs="1"/>
                         </xs:all>
                     </xs:complexType>
                 </xs:element>
