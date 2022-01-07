@@ -26,4 +26,3 @@ class IPoller(ABC):
 
         """
         pass
-

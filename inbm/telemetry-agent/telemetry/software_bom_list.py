@@ -73,7 +73,7 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
     """Publishes the software BOM details chunks according to the specified byte size.
     The last chunk of data has the keyword 'queryEndResult' stating it the last chunk of result 
     while the other chunks have 'queryResult'
-    
+
     @param client: MQTT
     @param query_request: determines if a query request is made to
         decide on the key of the Dict to be published. The key would be 'queryResult' 

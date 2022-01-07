@@ -3,12 +3,8 @@
 ## Table of Contents
 
 1. [Introduction](#introduction)
-
     1. [Purpose](#purpose)
-
     2. [Audience](#audience)
-
-    3. [Terminology](#terminology)
 
 2. [ThingsBoard&reg; Overview](#thingsboard-overview)
 
@@ -91,22 +87,6 @@ This guide is intended for
 
 - System Integrators administrating devices running In-Band
     Manageability framework.
-
-### Terminology
-
-| Term | Description  |
-| ---- | -----------  |
-| AOTA | Application Over the Air (Docker)|
-| BIOS | Basic Input Output System  |
-| Device | A device is any equipment that is installed to be monitored or controlled in a building. Examples of devices include light switches, thermostats, cameras, other mechanical loads, chillers, cooler, and so on. |
-| FOTA | Firmware Over the Air |
-| FW | Firmware  |
-| INB  | Intel® In-Band Manageability Framework  |
-| IoT  | Internet of Things  |
-| OS | Operating System  |
-| OTA  | Over-the-air  |
-| SMBIOS | System Management BIOS  |
-| SOTA | Software Over the Air (OS update) |
 
 ## ThingsBoard&reg; Overview
 
@@ -922,7 +902,7 @@ You can only use signed packages to update Xlink Driver application
 
 #### AOTA Docker/Docker-Compose Operations via Manifest
 
-[AOTA Manifest Parameters and Examples](Manifest-parameters.md#AOTA)
+[AOTA Manifest Parameters and Examples](Manifest%20Parameters.md#AOTA)
 
 ### FOTA Updates 
 
@@ -971,17 +951,17 @@ FOTA` button as seen below
 
 Parameter Details
 
-|Parameter|Description|
-|--- |--- |
-|BIOSVersion|Verify with BIOS Vendor (IBV)|
-|Fetch|Repository URL<br>NOTE: Follow Creating FOTA Package|
-|Manufacturer|Endpoint Manufacturer Name|
-|Path|FOTA path created in repository|
-|Product|Product name set by Manufacturer|
-|Release Date|Specify the release date of the BIOS file you are applying. Verify with BIOS Vendor (IBV) <br> IMPORTANT NOTE: Date format: yyyy-mm-dd|
-|Signature|Digital signature|
-|ToolOptions|Any Tool options to be given for the Firmware Tool|
-|Server Username/Password|If server where we host the package to download FOTA file needs credentials, we need to specify the username and password|
+| Parameter                | Description                                                                                                                            |
+|--------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| BIOSVersion              | Verify with BIOS Vendor (IBV)                                                                                                          |
+| Fetch                    | Repository URL<br>NOTE: Follow Creating FOTA Package                                                                                   |
+| Manufacturer             | Endpoint Manufacturer Name                                                                                                             |
+| Path                     | FOTA path created in repository                                                                                                        |
+| Product                  | Product name set by Manufacturer                                                                                                       |
+| Release Date             | Specify the release date of the BIOS file you are applying. Verify with BIOS Vendor (IBV) <br> IMPORTANT NOTE: Date format: yyyy-mm-dd |
+| Signature                | Digital signature                                                                                                                      |
+| ToolOptions              | Any Tool options to be given for the Firmware Tool                                                                                     |
+| Server Username/Password | If server where we host the package to download FOTA file needs credentials, we need to specify the username and password              |
 
 Following sections demonstrate what fields to fill for respective FOTA operations with required and optional fields.
 
@@ -996,7 +976,7 @@ Following sections demonstrate what fields to fill for respective FOTA operation
 
 #### FOTA Update via Manifest
 
-[FOTA Manifest Parameters and Examples](Manifest-parameters.md#FOTA)
+[FOTA Manifest Parameters and Examples](Manifest%20Parameters.md#FOTA)
 
 ### SOTA Updates 
 
@@ -1022,9 +1002,9 @@ the cloud. SOTA log files can be located at the endpoint
 
 ##### SOTA Parameters
 
-|Command|Specifies the SOTA `update` command.|
-|--- |--- |
-|Log to File|Specifies if the logs be written to a file or to the cloud. Values `Y` or `N` <br> SOTA log files can be located at the endpoint `/var/cache/manageability/repository-tool/sota/`|
+| Command     | Specifies the SOTA `update` command.                                                                                                                                              |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Log to File | Specifies if the logs be written to a file or to the cloud. Values `Y` or `N` <br> SOTA log files can be located at the endpoint `/var/cache/manageability/repository-tool/sota/` |
 
 **Note:**
 > Following screenshot demonstrates what fields to fill for a
@@ -1053,13 +1033,13 @@ the cloud. SOTA log files can be located at the endpoint
 
 **Parameter Details:**
 
-|Command|Specifies the SOTA `update` command.|
-|--- |--- |
-|Fetch|URL patch to download the Mender artifact from|
-|Log to File|Specifies if the logs be written to a file or to the cloud. Values `Y` or `N` <br> SOTA log files can be located at the endpoint `/var/cache/manageability/repository-tool/sota/`|
-|Username|Mender artifact repository Username|
-|Password|Mender artifact repository Password|
-|Release Date|Release date of the new mender file used in fetch field|
+| Command      | Specifies the SOTA `update` command.                                                                                                                                              |
+|--------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Fetch        | URL patch to download the Mender artifact from                                                                                                                                    |
+| Log to File  | Specifies if the logs be written to a file or to the cloud. Values `Y` or `N` <br> SOTA log files can be located at the endpoint `/var/cache/manageability/repository-tool/sota/` |
+| Username     | Mender artifact repository Username                                                                                                                                               |
+| Password     | Mender artifact repository Password                                                                                                                                               |
+| Release Date | Release date of the new mender file used in fetch field                                                                                                                           |
 
 **Note:**
 > Following screenshot demonstrates what fields to fill for a
@@ -1075,7 +1055,7 @@ Populate the SOTA pop-up window with the required parameters and click
 
 
 #### SOTA Update Via Manifest
-[SOTA Manifest Parameters and Examples](Manifest-parameters.md#SOTA)
+[SOTA Manifest Parameters and Examples](Manifest%20Parameters.md#SOTA)
 
 ### Configuration Update
 
@@ -1089,37 +1069,37 @@ configuration tags, its values and the description.
 
 #### Default Configuration Parameters
 
-| Telemetry                              |                         |                                                                                                                                          |
-|----------------------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Collection Interval Seconds            | 60 seconds              | Time interval after which telemetry is collected from the system.                                                                        |
-| Publish interval seconds               | 300 seconds             | Time interval after which collected telemetry is published to dispatcher and the cloud                                                   |
-| Max Cache Size                         | 100                     | Maximum cache set to store the telemetry data. This is the count of messages that telemetry agent caches before sending out to the cloud |
-| Container Health Interval Seconds      | 600 seconds             | Interval after which container health check is run and results are returned.                                                             |
-| Enable SwBom                           | True                                              |  Specifies if Software BOM needs to be published in the initial telemetry.                                                                 |
-| SwBom Interval Hours                   | 24 Hours                                          | Interval after which swbom details are published.                                                                                        |
-| Diagnostic Values                      |                         |                                                                                                                                          |
-| Min Storage                            | 100 MB                  | Value of minimum storage that the system should have before or after an update                                                           |
-| Min Memory                             | 200 MB                  | Value of minimum memory that the system should have before or after an update                                                            |
-| Min Power Percent                      | 20%                     | Value of minimum battery percent that the system should have before or after an update                                                   |
-| Mandatory SW                           | docker, trtl, telemetry | List of software that should be present and are checked for.                                                                             |
+| Telemetry                                   |                         |                                                                                                                                          |
+|---------------------------------------------|-------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
+| Collection Interval Seconds                 | 60 seconds              | Time interval after which telemetry is collected from the system.                                                                        |
+| Publish interval seconds                    | 300 seconds             | Time interval after which collected telemetry is published to dispatcher and the cloud                                                   |
+| Max Cache Size                              | 100                     | Maximum cache set to store the telemetry data. This is the count of messages that telemetry agent caches before sending out to the cloud |
+| Container Health Interval Seconds           | 600 seconds             | Interval after which container health check is run and results are returned.                                                             |
+| Enable SwBom                                | True                    | Specifies if Software BOM needs to be published in the initial telemetry.                                                                |
+| SwBom Interval Hours                        | 24 Hours                | Interval after which swbom details are published.                                                                                        |
+| Diagnostic Values                           |                         |                                                                                                                                          |
+| Min Storage                                 | 100 MB                  | Value of minimum storage that the system should have before or after an update                                                           |
+| Min Memory                                  | 200 MB                  | Value of minimum memory that the system should have before or after an update                                                            |
+| Min Power Percent                           | 20%                     | Value of minimum battery percent that the system should have before or after an update                                                   |
+| Mandatory SW                                | docker, trtl, telemetry | List of software that should be present and are checked for.                                                                             |
 | Docker&reg; Bench Security Interval Seconds | 900 seconds             | Time interval after which DBS will run and report back to the cloud.                                                                     |
-| Network Check                          | True                    | This configures network check on the platforms based on their Ethernet capability.                                                       |
-| Dispatcher Values                      |                         |                                                                                                                                          |
-| DBS Remove Image on Failed Container   | False                   | Specifies if the image should be removed in the event of a failed container as flagged by DBS.                                           |
-| Trusted Repositories                   |                         | List of repositories that are trusted and packages can be fetched from them                                                              |
-| SOTA Values                            |                         |                                                                                                                                          |
-| Ubuntu Apt Source                      | Repository link         | Location used to update Debian packages                                                                                                  |
-| Proceed Without Rollback               | True                    | Whether SOTA update should go through even when rollback is not supported on the system.                                                 |
+| Network Check                               | True                    | This configures network check on the platforms based on their Ethernet capability.                                                       |
+| Dispatcher Values                           |                         |                                                                                                                                          |
+| DBS Remove Image on Failed Container        | False                   | Specifies if the image should be removed in the event of a failed container as flagged by DBS.                                           |
+| Trusted Repositories                        |                         | List of repositories that are trusted and packages can be fetched from them                                                              |
+| SOTA Values                                 |                         |                                                                                                                                          |
+| Ubuntu Apt Source                           | Repository link         | Location used to update Debian packages                                                                                                  |
+| Proceed Without Rollback                    | True                    | Whether SOTA update should go through even when rollback is not supported on the system.                                                 |
 
 **Below are the configuration update commands and input field
 description**
 
-|Trigger Configs|Description of field|
-|--- |--- |
-|Command|`Set`: Command used to update the configuration value using key:value pair. <br>`Get`: Command used to retrieve a specific configuration value using key:value pair<br>`Load`: Command used to replace an entire configuration file.<br>`Append`: Command used to append values to a configuration parameter.<br>`Remove`: Command used to remove a specific values from the configuration parameter.|
-|Fetch|The URL to fetch config file from in the case of a load|
-|Path|Specifies the path of element to get, set, append or remove in key:value format|
-|Signature|Digital signature|
+| Trigger Configs | Description of field                                                                                                                                                                                                                                                                                                                                                                                  |
+|-----------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Command         | `Set`: Command used to update the configuration value using key:value pair. <br>`Get`: Command used to retrieve a specific configuration value using key:value pair<br>`Load`: Command used to replace an entire configuration file.<br>`Append`: Command used to append values to a configuration parameter.<br>`Remove`: Command used to remove a specific values from the configuration parameter. |
+| Fetch           | The URL to fetch config file from in the case of a load                                                                                                                                                                                                                                                                                                                                               |
+| Path            | Specifies the path of element to get, set, append or remove in key:value format                                                                                                                                                                                                                                                                                                                       |
+| Signature       | Digital signature                                                                                                                                                                                                                                                                                                                                                                                     |
 
 
 **To trigger a configuration update, follow the steps below**:
@@ -1218,7 +1198,7 @@ Events Log in the dashboard below the OTA buttons.
 </p>
 
 ### Configuration Update Via Manifest
-[Configuration Command Manifests and Examples](Manifest-parameters.md)
+[Configuration Command Manifests and Examples](Manifest%20Parameters.md)
 
 ### Power Management
 
@@ -1271,7 +1251,7 @@ The query command capabilities are supported via manifest.
 
 ### Query Commands via Manifest
 
-[Query Manifest and Examples](Manifest-parameters.md#Query)
+[Query Manifest and Examples](Manifest%20Parameters.md#Query)
 
 ## Telemetry Data
 
@@ -1345,19 +1325,7 @@ see the below
 ## Issues and Troubleshooting
 
 ### OTA Error Status
-
-|Error Message|Description|
-|--- |--- |
-|COMMAND_FAILURE|Diagnostic agent checks fail to run properly or if diagnostic agent/ config agent is not up when contacted.<br>{'status': 301, 'message': 'COMMAND FAILURE'}|
-|COMMAND_SUCCESS|Post and pre-install check go through.<br>{'status': 200, 'message': 'COMMAND SUCCESS'}|
-|FILE_NOT_FOUND|File to be fetched is not found. <br>{'status': 404, 'message': 'FILE NOT FOUND'}|
-|IMAGE_IMPORT_FAILURE|Image is already present when Image Import is triggered.<br>{'status': 401, 'message': 'FAILED IMAGE IMPORT, IMAGE ALREADY PRESENT'}|
-|INSTALL_FAILURE|Installation was not successful due to invalid package or one of the source file, signature or version checks failed.<br>{'status': 400, 'message': 'FAILED TO INSTALL'}|
-|OTA_FAILURE|Another OTA is in progress when OTA is triggered.<br>{'status': 302, 'message': 'OTA IN PROGRESS, TRY LATER'}|
-|UNABLE_TO_START_DOCKER_COMPOSE|docker-compose container is not able to be started or spawned etc.<br>{'status': 400, 'message': "Unable to start docker-compose container."}|
-|UNABLE_TO_STOP_DOCKER_COMPOSE|docker-compose down command was not successful.<br>{'status': 400, 'message': "Unable to stop docker-compose container."}|
-|UNABLE_TO_DOWNLOAD_DOCKER_COMPOSE|docker-compose downloaded command failed.<br>{'status': 400, 'message': "Unable to download docker-compose container."}|
-|XML_FAILURE|Result of bad formatting, missing mandatory tag.<br>{'status': 300, 'message': 'FAILED TO PARSE/VALIDATE MANIFEST'}|
+[Error Messages](Error Messages.md)
 
 ### Provisioning Unsuccessful or Device Not Connected to Cloud
 
