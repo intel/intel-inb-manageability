@@ -5,7 +5,6 @@
 1. [Introduction](#introduction)
     1. [Purpose](#purpose)
     2. [Audience](#audience)
-    3. [Terminology](#terminology)
 2. [Installing INBM](#installing-INBM)
     1. [OS Support](#supported-os)
     2. [Setting up checklist](#setting-up-checklist)
@@ -21,7 +20,7 @@ to install INBM for Ubuntu on Edge IOT device:
 
 -   Key checks before initiating installation
 
--   Running install scripts
+-   Run install script
 
 
 ### Audience
@@ -33,24 +32,6 @@ This guide is intended for
 
 -   System Integrators administrating devices running In-Band
     Manageability framework.
-
-### Terminology
-
-|        |                                                                                                                                                                                                                 |
-|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Term   | Definition                                                                                                                                                                                                     |
-| AOTA   | Application Over the Air (Docker)                                                                                                                                                                               |
-| BIOS   | Basic Input Output System                                                                                                                                                                                       |
-| Device | A device is any equipment that is installed to be monitored or controlled in a building. Examples of devices include light switches, thermostats, cameras, other mechanical loads, chillers, cooler, and so on. |
-| FOTA   | Firmware Over the Air                                                                                                                                                                                           |
-| FW     | Firmware                                                                                                                                                                                                        |
-| IoT    | Internet of Things                                                                                                                                                                                              |
-| OS     | Operating System                                                                                                                                                                                                |
-| OTA    | Over-the-air                                                                                                                                                                                                    |
-| SMBIOS | System Management BIOS                                                                                                                                                                                          |
-| SOTA   | Software Over the Air (OS update)                                                                                                                                                                               |
-| POTA   | Platform Over the Air (OS + Firmware update)                                                                                                                                                                               |
-
 
 ## Installing INBM
 
@@ -70,33 +51,33 @@ Intel In-band Manageability framework, a.k.a. INBM, is designed to provide certa
 
 Before starting the installation process the user should ensure that:
 
-1.  The Device time is correctly set: This is to ensure that the
-    creation of certificates during provisioning phase have the correct
+1.  Device time is correctly set: Ensures that the
+    creation of certificates during the provisioning phase have the correct
     time stamps.
 
-2.  Network proxy’s are set accordingly: This is to ensure that all the
-    dependency packages for INBM get downloaded without any
+2.  Network proxies are set accordingly: Ensure that all the
+    dependency packages for INBM are downloaded without any
     glitches, else the installation will get aborted.
 
-### Running Install script
+### Run Install script
 
-A typical installation package will consists of the below shell scripts
-along with a tar.gz file which consists of all the frameworks executable
+A typical installation package will consist of the below shell scripts.  It will also 
+include a tar.gz file which consists of all the frameworks executable
 packages (.deb files in the case of Ubuntu/Debian).
 
 
 **Build Output files**
 
-| Script name                               |    Functionality                                         |
-|-------------------------------------------|----------------------------------------------------------|
-| `inbm/install-inb.sh`                     | Installs both inbm and inbm-vision for Ubuntu or Debian  |
-| `inbm/install-tc.sh`                      | Installs inbm for Ubuntu or Debian                       |
-| `inbm/uninstall-inb.sh`                   | Uninstalls both inbm and inbm-vision for Ubuntu or Debian|
-| `inbm/uninstall-tc.sh`                    | Uninstalls inbm for Ubuntu or Debian                     |
-| `inbm/Intel-Manageability.preview.tar.gz` | Binary files for inbm                                    |
-| `inbm-vision/install-bc.sh`               | Installs vision or node agent from inbm-vision           |
-| `inbm-vision/uninstall-bc.sh`             | Uninstalls vision or node agent from inbm-vision         |
-| `inbm-vision/*.deb`                       | Binary files for inbm-vision                             | 
+| Script name                               | Functionality                                             |
+|-------------------------------------------|-----------------------------------------------------------|
+| `inbm/install-inb.sh`                     | Installs both inbm and inbm-vision for Ubuntu or Debian   |
+| `inbm/install-tc.sh`                      | Installs inbm for Ubuntu or Debian                        |
+| `inbm/uninstall-inb.sh`                   | Uninstalls both inbm and inbm-vision for Ubuntu or Debian |
+| `inbm/uninstall-tc.sh`                    | Uninstalls inbm for Ubuntu or Debian                      |
+| `inbm/Intel-Manageability.preview.tar.gz` | Binary files for inbm                                     |
+| `inbm-vision/install-bc.sh`               | Installs vision or node agent from inbm-vision            |
+| `inbm-vision/uninstall-bc.sh`             | Uninstalls vision or node agent from inbm-vision          |
+| `inbm-vision/*.deb`                       | Binary files for inbm-vision                              | 
 
 Before running any of the above scripts, execute the below command:
 ```shell
@@ -112,9 +93,9 @@ sudo ./install-tc.sh
 
 ```
 
-Note: During Installation you will be prompted whether or not to accept the License. You can accept by typing ‘Y’, this will result in installation of the INBM Framework.
+❗ During Installation you will be prompted to accept the License. You can accept by typing ‘Y’, this will result in installation of the INBM Framework.
 
-Similarly any of the scripts can be run accordingly. Once the framework has been installed users would then need to provision INBM with Device Management Cloud related credentials, a phase referred to as “Provisioning”.
+Any of the scripts can be run accordingly. Once the framework has been installed users would then need to provision INBM with Device Management Cloud related credentials, a phase referred to as “Provisioning”.
 
 Details of provisioning steps are present in the **User Guide**, depending on the choice of cloud provider service; refer to 
 

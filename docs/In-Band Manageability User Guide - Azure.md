@@ -5,7 +5,6 @@
 1. [Contents](#contents)
 2. [Introduction](#introduction)
     1. [Audience](#audience)
-    2. [Terminology](#terminology)
 3. [Azure&reg; Overview](#azure-overview)
     1. [Getting Started with Azure&reg;](#getting-started-with-azure)
         1. [Creating Azure&reg; portal account](#creating-azure-portal-account)
@@ -98,22 +97,6 @@ This guide is intended for
 
 -   System Integrators administrating devices running the Intel® In-Band
     Manageability framework.
-
-### Terminology
-
-| Term | Description  |
-| ---- | -----------  |
-| AOTA | Application Over the Air (Docker)|
-| BIOS | Basic Input Output System  |
-| Device | A device is any equipment that is installed to be monitored or controlled in a building. Examples of devices include light switches, thermostats, cameras, other mechanical loads, chillers, cooler, and so on. |
-| FOTA | Firmware Over the Air |
-| FW | Firmware  |
-| INB  | Intel® In-Band Manageability Framework  |
-| IoT  | Internet of Things  |
-| OS | Operating System  |
-| OTA  | Over-the-air  |
-| SMBIOS | System Management BIOS  |
-| SOTA | Software Over the Air (OS update) |
 
 ## Azure&reg; Overview
 
@@ -292,7 +275,7 @@ identify and authenticate itself to the remote Device Management Portal.
 
 -   Launch the provisioning script using the command.
 
-```
+```shell
 sudo provision-tc
 ```
     
@@ -443,7 +426,7 @@ If the device list is showing an error: Refer to [Error viewing Devices on Azure
 First, view a device using instructions from [Viewing and Managing Devices](#viewing-and-managing-devices).
 
 -   If the device is successfully provisioned, the status of the device
-    will be shown as Provisioned on the top-right corner.
+    will be shown as Provisioned in the top-right corner.
     <img src="media/In-Band Manageability User Guide - Azure/media/image27.png" style="width:5.5in;height:1.23056in" />
 
 -   Upon viewing a device, the **Measurement** tab Ⓐ is displayed, where
@@ -504,15 +487,16 @@ Azure&reg; portal and the status of the device can is visible as
 Users shall be able to perform the updates listed below on the device
 that is provisioned:
 
--   AOTA (Application Over the Air update)
+- AOTA (Application Over the Air update)
 
--   FOTA (Firmware-over-the-Air update)
+- FOTA (Firmware-over-the-Air update)
 
--   SOTA (Software/OS-over-the-Air update)
+- SOTA (Software/OS-over-the-Air update)
+- POTA (Platform-over-the Air update)
 
--   Config Update (configuration parameter update)
+- Config Update (configuration parameter update)
 
--   Power Management (Remote Shutdown and Restart)
+- Power Management (Remote Shutdown and Restart)
 
 ### Trusted Repositories 
 
@@ -593,10 +577,10 @@ format
 #### Creating AOTA Package
 
 
-|AOTA Command|AOTA Package Structure|
-|---|---|
-|AOTA docker-compose package<br>(Same format for up/pull)|Container Tag == Container Image Name<br>Example: The container Image name and the tar file name should be the same<br>*Container Tag =* `CPU`<br>*Tar file =* `CPU.tar.gz`<br>*Note: The tar file should contain a folder with the same name `CPU`. This folder `CPU` needs to have the `docker-compose.yml` file.*<br>Steps:<br>1. Make a folder<br>2. Copy the `docker-compose.yml` file into the folder<br>Tar the folder|
-|AOTA Docker&reg; Load/Import|Package needs to be `tar.gz` format<br>The package needs to have a folder within the same name as the package.|
+| AOTA Command                                             | AOTA Package Structure                                                                                                                                                                                                                                                                                                                                                                                                        |
+|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AOTA docker-compose package<br>(Same format for up/pull) | Container Tag == Container Image Name<br>Example: The container Image name and the tar file name should be the same<br>*Container Tag =* `CPU`<br>*Tar file =* `CPU.tar.gz`<br>*Note: The tar file should contain a folder with the same name `CPU`. This folder `CPU` needs to have the `docker-compose.yml` file.*<br>Steps:<br>1. Make a folder<br>2. Copy the `docker-compose.yml` file into the folder<br>Tar the folder |
+| AOTA Docker&reg; Load/Import                             | Package needs to be `tar.gz` format<br>The package needs to have a folder within the same name as the package.                                                                                                                                                                                                                                                                                                                |
 
 #### Creating Configuration Load Package
 
@@ -643,15 +627,15 @@ To trigger OTA commands on the device provisioned with Azure*, navigate to the �
 
 ### Commands - Definitions and Usage
 
-| Command | Definition  |
-|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| Trigger AOTA  | Remotely launch/update docker containers on the Edge IoT Device |
-| Trigger FOTA  | Update the BIOS firmware on the system  |
-| Trigger SOTA  | User-friendly, parameter driven updates to OS software packages on the system |
-| Trigger Config Update | Update the In-Band Manageability configurations |
-| Reboot  | Remotely reboot the Endpoint  |
-| Shutdown | Remotely shutdown the Endpoint  |
-| Manifest Update | Any OTA update type can be done via the Manifest Update, by entering XML text to update the Endpoint. Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md).|
+| Command               | Definition                                                                                                                                                                            |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Trigger AOTA          | Remotely launch/update docker containers on the Edge IoT Device                                                                                                                       |
+| Trigger FOTA          | Update the BIOS firmware on the system                                                                                                                                                |
+| Trigger SOTA          | User-friendly, parameter driven updates to OS software packages on the system                                                                                                         |
+| Trigger Config Update | Update the In-Band Manageability configurations                                                                                                                                       |
+| Reboot                | Remotely reboot the Endpoint                                                                                                                                                          |
+| Shutdown              | Remotely shutdown the Endpoint                                                                                                                                                        |
+| Manifest Update       | Any OTA update type can be done via the Manifest Update, by entering XML text to update the Endpoint. Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md). |
 
 ### AOTA Updates
 
@@ -954,14 +938,14 @@ Populate the SOTA text fields on screen with the parameters below:
 
 Parameter Details
 
-|Command|Specifies the SOTA ‘update’ command.|
-|--- |--- |
-|Fetch|URL patch to download the Mender artifact from|
-|Log to File|Specifies if the logs be written to a file or to the cloud. Values “Y” or “N”
-||SOTA log files can be located at the endpoint `/var/cache/manageability/repository-tool/sota/`|
-|Username|Mender artifact repository Username|
-|Password|Mender artifact repository Password|
-|Release Date|Release date of the new mender file used in fetch field|
+| Command                                                                                        | Specifies the SOTA ‘update’ command.                                          |
+|:-----------------------------------------------------------------------------------------------|:------------------------------------------------------------------------------|
+| Fetch                                                                                          | URL patch to download the Mender artifact from                                |
+| Log to File                                                                                    | Specifies if the logs be written to a file or to the cloud. Values “Y” or “N” |
+|| SOTA log files can be located at the endpoint `/var/cache/manageability/repository-tool/sota/` |     |
+| Username                                                                                       | Mender artifact repository Username                                           |
+| Password                                                                                       | Mender artifact repository Password                                           |
+| Release Date                                                                                   | Release date of the new mender file used in fetch field                       |
 
  **NOTE:** Following sections demonstrate what fields to fill for respective FOTA operations with required and optional fields.
 
@@ -972,53 +956,31 @@ Parameter Details
 -   Click **Run** to commission SOTA update.
 #### SOTA Update via Manifest
 
-Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md).
+[SOTA Manifest Parameters and Examples](Manifest%20Parameters.md#SOTA)
 
 ### Configuration Update 
 
 
 Configuration update is used to change/retrieve/append/remove
 configuration parameters value from the Configuration file located at
-`/etc/intel_manageability.conf`. Refer to table below to understand
+`/etc/intel_manageability.conf`. Refer to table to understand
 the configuration tags, it’s values and the description.
 
-#### Default Configuration Parameters
+[Configuration Parameters](Configuration%20Parameters.md)
 
-| Telemetry  |  |  |
-|----------------------------------------|----------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|
-| Collection Interval Seconds  | 60 seconds | Time interval after which telemetry is collected from the system.  |
-| Publish interval seconds | 300 seconds  | Time interval after which collected telemetry is published to dispatcher and the cloud |
-| Max Cache Size | 100  | Maximum cache set to store the telemetry data. This is the count of messages that telemetry agent caches before sending out to the cloud |
-| Container Health Interval Seconds  | 600 seconds  | Interval after which container health check is run and results are returned. |
-| Enable SwBom | True  |  Specifies if Software BOM needs to be published in the initial telemetry. |
-| SwBom Interval Hours | 24 Hours  | Interval after which swbom details are published.  |
-| Diagnostic Values  |  |  |
-| Min Storage  | 100 MB | Value of minimum storage that the system should have before or after an update |
-| Min Memory | 200 MB | Value of minimum memory that the system should have before or after an update  |
-| Min Power Percent  | 20%  | Value of minimum battery percent that system should have before or after update  |
-| Mandatory SW | docker, trtl, telemetry  | List of software that should be present and are checked for. |
-| Docker Bench Security Interval Seconds | 900 seconds  | Time interval after which DBS will run and report back to the cloud. |
-| Network Check  | true | This configures network check on the platforms based on their Ethernet capability. |
-| Dispatcher Values  |  |  |
-| DBS Remove Image on Failed Container | False  | Specifies if the image should be removed in the event of a failed container as flagged by DBS. |
-| Trusted Repositories |  | List of repositories that are trusted and packages can be fetched from them  |
-| SOTA Values  |  |  |
-| Ubuntu Apt Source  |  | Location used to update Ubuntu |
-| Proceed Without Rollback | True | Whether SOTA update should go through even when rollback is not supported on the system.    
+**Below are the configuration update commands and input field description**
 
-**Below are the configuration update commands and input field
-description**
-|Trigger Configs|Description of field|
-|--- |--- |
-|Command|Set: Command used to update the configuration value using key:value pair.
-||Get: Command used to retrieve a specific configuration value using key:value pair
-||Load: Command used to replace an entire configuration file.
-||Append: Command used to append values to a configuration parameter.
-||Remove: Command used to remove a specific values from the configuration parameter.|
-|Fetch|The URL to fetch config file from in the case of a load|
-|Path|Specifies the path of element to get, set, append or remove in key:value format|
-|Signature|Digital signature refers to [TBD]|
-  |
+| Trigger Configs | Description of field                                                 |
+|:----------------|:---------------------------------------------------------------------|
+| Set             | Command used to update the configuration value using key:value pair. |
+| Get             | Retrieve a specific configuration value using key:value pair         |
+| Load            | Replace an entire configuration file.                                |
+| Append          | Append values to a configuration parameter.                          |
+| Remove          | Remove a specific values from the configuration parameter.           |
+| Fetch           | URL to fetch config file from in the case of a load                  |
+| Path            | Path of element to get, set, append or remove in key:value format    |
+| Signature       | Digital signature                                                    |
+
 
 In order to trigger Configuration updates:
 
@@ -1162,7 +1124,7 @@ The Intel® In-Band Manageability provides a mechanism to handle the
 decommission request over the air.
 
 **NOTE:** 
-> On receiving a Decommission cmd:
+> Upon receiving a decommission command:
 > -   The Intel® In-Band Manageability credentials (all user/device data which allows the device to identify and connect to cloud) will be deleted from the device.
 > -   The device shutdowns.
 In order to trigger Decommission:
@@ -1182,7 +1144,7 @@ In order to trigger Decommission:
 ### Query Commands
 The query command capabilities are supported via manifest.
 ### Query Commands via Manifest
-Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md).
+Refer to [Query Manifest and Examples](Manifest%20Parameters.md#Query)
 
 ## Telemetry Data
 
@@ -1259,19 +1221,7 @@ there is an error viewing device, do as below:
 
 ### OTA Error Status
 
-|Error Message|Description|
-|--- |--- |
-|COMMAND_FAILURE|Diagnostic agent checks fail to run properly or if diagnostic agent/ config agent is not up when contacted.<br>{'status': 301, 'message': 'COMMAND FAILURE'}|
-|COMMAND_SUCCESS|Post and pre-install check go through.<br>{'status': 200, 'message': 'COMMAND SUCCESS'}|
-|FILE_NOT_FOUND|File to be fetched is not found. <br>{'status': 404, 'message': 'FILE NOT FOUND'}|
-|IMAGE_IMPORT_FAILURE|Image is already present when Image Import is triggered.<br>{'status': 401, 'message': 'FAILED IMAGE IMPORT, IMAGE ALREADY PRESENT'}|
-|INSTALL_FAILURE|Installation was not successful due to invalid package or one of the source file, signature or version checks failed.<br>{'status': 400, 'message': 'FAILED TO INSTALL'}|
-|OTA_FAILURE|Another OTA is in progress when OTA is triggered.<br>{'status': 302, 'message': 'OTA IN PROGRESS, TRY LATER'}|
-|UNABLE_TO_START_DOCKER_COMPOSE|docker-compose container is not able to be started or spawned etc.<br>{'status': 400, 'message': "Unable to start docker-compose container."}|
-|UNABLE_TO_STOP_DOCKER_COMPOSE|docker-compose down command was not successful.<br>{'status': 400, 'message': "Unable to stop docker-compose container."}|
-|UNABLE_TO_DOWNLOAD_DOCKER_COMPOSE|docker-compose downloaded command failed.<br>{'status': 400, 'message': "Unable to download docker-compose container."}|
-|XML_FAILURE|Result of bad formatting, missing mandatory tag.<br>{'status': 300, 'message': 'FAILED TO PARSE/VALIDATE MANIFEST'}|
-
+[Error Messages](Error Messages.md)
 
 ### Provisioning Unsuccessful or Device Not Connected to Cloud
 

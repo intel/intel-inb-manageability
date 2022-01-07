@@ -5,7 +5,6 @@
 1. [Introduction](#introduction)
     1. [Purpose](#purpose)
     2. [Audience](#audience)
-    3. [Terminology](#terminology)
 2. [Source Overview](#source-overview)
    1. [Agents Overview](#agents-overview)
       1. [CloudAdapter Agent](#cloudadapter-agent)
@@ -17,8 +16,9 @@
       7. [Node Agent](#node-agent)
    2. [Run Agents via Source Code](#run-agents-via-source-code)
 3. [Build instructions](#build-instructions)
-4. [Configuring Framework](#configuring-framework)
-5. [Security](#security)
+4. [INBC](#INBC)
+5. [Adding a New Configuration Parameter](#adding-a-new-configuration-parameter)
+6. [Security](#security)
    1. [OS Hardening](#os-hardening)
    2. [INBM Hardening](#inbm-hardening)
       1. [AppArmor Profiles](#apparmor-profiles)
@@ -29,32 +29,31 @@
       6. [Manifest Schema Checks](#manifest-schema-checks)
       7. [Docker Bench Security](#docker-bench-security)
       8. [Platform TPM usage](#platform-tpm-usage)
-6. [Enable Debug Logging](#enable-debug-logging)
-7. [OTA updates via Manifest](#ota-updates-via-manifest)
+7. [Enable Debug Logging](#enable-debug-logging)
+8. [OTA Commands via Manifest](#ota-commands-via-manifest)
    1. [Manifest Rules](#manifest-rules)
    2. [AOTA Updates](#aota-updates)
       1. [AOTA Manifest Parameters](#aota-manifest-parameters)
-      2. [Docker manifest examples](#docker-manifest-examples)
-      3. [Docker-Compose Manifest Examples](#docker-compose-manifest-examples)
    3. [FOTA Updates](#fota-updates)
       1. [FOTA Manifest Parameters](#fota-manifest-parameters)
-      2. [Sample FOTA Manifest](#sample-fota-manifest)
+      2. [FOTA Class Diagram](#fota-class-diagram)
    4. [SOTA Updates](#sota-updates)
       1. [SOTA Manifest Parameters](#sota-manifest-parameters)
-      2. [Sample SOTA Manifest](#sample-sota-manifest)
-   5. [Configuration Operations](#configuration-operations)
+   5. [POTA Updates](#pota-updates)
+      1. [POTA Manifest Parameters](#pota-manifest-parameters)
+   6. [Configuration Operations](#configuration-operations)
       1. [Configuration Manifest](#configuration-manifest)
       2. [Manual Configuration Update](#manual-configuration-update)
-   6. [Power Management](#power-management)
+   7. [Power Management](#power-management)
       1. [Restart via Manifest](#restart-via-manifest)
       2. [Shutdown via Manifest](#shutdown-via-manifest)
-8. [Extending FOTA support](#extending-fota-support)
+9. [Extending FOTA support](#extending-fota-support)
    1. [Understanding FOTA Configuration File](#understanding-fota-configuration-file)
-   2. [Query command Manifest](#query-command-manifest)
-   3. [Configuration Parameter Values](#configuration-parameter-values)
+   2. [Firmware Configuration Parameter Values](#firmware-configuration-parameter-values)
+   3. [Query command Manifest](#query-command-manifest)
    4. [AppArmor Permissions](#apparmor-permissions)
-9. [Creating a New Agent](#creating-a-new-agent)
-10. [Issues and Troubleshooting](#issues-and-troubleshooting)
+10. [Creating a New Agent](#creating-a-new-agent)
+11. [Issues and Troubleshooting](#issues-and-troubleshooting)
     1. [OTA Error Status](#ota-error-status)
     2. [Dispatcher-Agent Not Receiving Messages](#dispatcher-agent-not-receiving-messages)
 
@@ -78,24 +77,7 @@ example:
 This guide is intended for:
 -   Manageability Solution developers to extend/modify the INBM Framework.
 -   System Integrators administrating devices running the INBM Framework.
-
-### Terminology
-
-| Term   | Description                                                                                                                                                                                                     |                                                                                                                                                                                                            
-|:-------|:----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| AOTA   | Application Over-the-Air (Docker)                                                                                                                                                                               | 
-| BIOS   | Basic Input Output System                                                                                                                                                                                       |                                                                                                                                                                        
-| Device | A device is any equipment that is installed to be monitored or controlled in a building. Examples of devices include light switches, thermostats, cameras, other mechanical loads, chillers, cooler, and so on. |
-| FOTA   | Firmware Over-the-Air                                                                                                                                                                                           |          
-| FW     | Firmware                                                                                                                                                                                                        |   
-| INBM   | Intel In-Band Manageability                                                                                                                                                                                     |
-| IoT    | Internet of Things                                                                                                                                                                                              |                                                                                                                                                                              
-| OS     | Operating System                                                                                                                                                                                                |                                                                                                                                                                             
-| OTA    | Over-the-air                                                                                                                                                                                                    |
-| POTA   | Platform Over-the-Air (SOTA and FOTA combined)                                                                                                                                                                  |
-| SMBIOS | System Management BIOS                                                                                                                                                                                          |                                                                                                                                                                                 
-| SOTA   | Software Over the Air (OS update)                                                                                                                                                                               |   
-| YAML   | Yet Another Markup Language                                                                                                                                                                                     |
+                                                                                                                                                                           |
 
 ## Source Overview
 
@@ -118,8 +100,9 @@ communicate with the other agents using MQTT.
 The cloudadapter-agent relays the messages between the cloud and the dispatcher-agent via MQTT.  
 
 #### ⚙️Configuration Agent
-Configuration-agent publishes the config parameter values to all other agents. The parameters are stored at ``/etc/intel_manageability.conf``` file. The descriptions of the parameters are available in the USER guide. To
-configure and use a new parameter, refer [Section 4](#configuring-framework).
+Configuration-agent publishes the config parameter values to all other agents. The parameters are stored in the ``/etc/intel_manageability.conf``` file. 
+The parameters and  their descriptions can be found in the [Configuration Parameters](Configuration%20Parameters.md) reference.
+
 
 The *broker.py* handles all config updates to be performed on the system.  
 The *configuration.py* starts the configuration agent.  
@@ -348,7 +331,7 @@ unauthorized resource via INBM.
 
 These profiles can be found at: 
 ```
-/etc/apparmor.d/usr.bin.\<service\>
+/etc/apparmor.d/usr.bin.<service>
 ```
 
 #### Access Control List
@@ -451,7 +434,7 @@ vi  /etc/intel-manageability/public/\<agent-name\>-agent/logging.ini
 
 3. Restart the agent: 
 ```shell
-systemctl restart <agent-name>
+sudo systemctl restart <agent-name>
 ```
 
 #### Option 2 (multiple agents):
@@ -548,7 +531,7 @@ Fields in the AOTA form:
 | Docker Registry Docker Registry Username/Password | Specify Docker Registry if accessing any registry other than the default <em>index.docker.io.  <p>Optional fields Docker Registry Username/Password can be used to access docker private images in AOTA through docker and docker-compose up, pull commands. |
 
 #### AOTA Manifest Parameters
-[AOTA Manifest Parameters and Examples](Manifest-parameters.md#AOTA)
+[AOTA Manifest Parameters and Examples](Manifest%20Parameters.md#AOTA)
 
 ### FOTA Updates
 
@@ -588,7 +571,7 @@ dmidecode –t bios –t system
 ```
 
 ### FOTA Manifest Parameters
-[FOTA Manifest Parameters and Examples](Manifest-parameters.md#FOTA)
+[FOTA Manifest Parameters and Examples](Manifest%20Parameters.md#FOTA)
 
 ### FOTA Class Diagram
 
@@ -605,71 +588,26 @@ SOTA flow can be broken into two parts:
 1.  Pre-reboot - SOTA update is triggered.
 2.  Post-reboot - Checks the health of critical manageability services and takes corrective action.
 
-### SOTA Manifest Parameters
-[SOTA Manifest Parameters and Examples](Manifest-parameters.md#SOTA)
+#### SOTA Manifest Parameters
+[SOTA Manifest Parameters and Examples](Manifest%20Parameters.md#SOTA)
 
-### POTA Manifest Parameters
+### POTA Updates
 
 A platform update is the equivalent of performing both a SOTA and FOTA with the same command. This is useful when there is a hard dependency between the software and firmware updates. Please review the information above regarding SOTA and FOTA for determining the correct values to supply.
 
-### POTA Manifest Parameters
-[POTA Manifest Parameters and Examples](Manifest-parameters.md#POTA)
+#### POTA Manifest Parameters
+[POTA Manifest Parameters and Examples](Manifest%20Parameters.md#POTA)
 
 ### Configuration Operations 
 
-Configuration update is used to change/retrieve/append/remove configuration parameter values from the Configuration file located at
-*/etc/intel_manageability.conf*. Refer to tables below to understand the configuration key value pairs
+Each of the agents has its own set of configuration key/value pairs which can be dynamically set either via the cloud, INBC, or directly in the file.  Note, that if the changes 
+are made via the cloud or using INBC that the changes will be dynamic.  If they are made to the file directly, then the service will need to be restarted to pick up the changes.
 
-The below tables represent the different sections of the configuration file.
-
-##### All
-| Key | Default Value | Description                                                                                    |
-|:----|:-------------:|:-----------------------------------------------------------------------------------------------|
-| dbs |     WARN      | How the system should be respond if there is a Docker Bench Security alert. [ON, OFF, or WARN] |
-
-##### Telemetry
-| Key                            | Default Value | Description                                                                                                                              |
-|:-------------------------------|:-------------:|:-----------------------------------------------------------------------------------------------------------------------------------------|
-| collectionIntervalSeconds      |  60 seconds   | Time interval after which telemetry is collected from the system.                                                                        |
-| publishIntervalSeconds         |  300 seconds  | Time interval after which collected telemetry is published to dispatcher and the cloud                                                   |
-| maxCacheSize                   |      100      | Maximum cache set to store the telemetry data. This is the count of messages that telemetry agent caches before sending out to the cloud |
-| containerHealthIntervalSeconds |  600 seconds  | Interval after which container health check is run and results are returned.                                                             |
-| enableSwBom                    |     true      | Specifies if Software BOM needs to be published in the initial telemetry.                                                                |
-| swBomIntervalHours             |      24       | Number of hours between swBom publish.                                                                                                   |
-
-##### Diagnostic
-| Key                                |        Default Value         | Description                                                                     |
-|:-----------------------------------|:----------------------------:|:--------------------------------------------------------------------------------|
-| minStorageMB                       |             100              | Minimum storage that the system should have before or after an update           |
-| minMemoryMB                        |              10              | Minimum memory that the system should have before or after an update            |
-| minPowerPercent                    |              20              | Value of minimum battery percent that system should have before or after update |
-| sotaSW                             | docker, trtl, inbm-telemetry | Mandatory software list.                                                        |
-| dockerBenchSecurityIntervalSeconds |             900              | Time interval after which DBS will run and report back to the cloud.            |
-| networkCheck                       |             true             | True if network connection is mandatory; otherwise, False.                      |
-
-##### Dispatcher
-| Key                             | Default Value | Description                                                                        |
-|:--------------------------------|:-------------:|:-----------------------------------------------------------------------------------|
-| dbsRemoveImageOnFailedContainer |     false     | True if image should be removed on BSD flagged failed container; otherwise, False. |
-| trustedRepositories             |               | List of trusted repositories for fetching packages                                 | 
-
-##### Orchestrator
-| Key                  |             Default Value              | Description        |
-|:---------------------|:--------------------------------------:|:-------------------|
-| orchestratorResponse |                  true                  |                    |
-| ip                   |   /etc/opt/csl/csl-node/csl-manager    | path to IP         |
-| token                | /etc/opt/csl/csl-node/long-lived-token | path to token      |
-| certFile             |     /etc/ssl/certs/csl-ca-cert.pem     | path the cert file |
-
-##### SOTA
-| Key                    |     Default Value      | Description                                                                              |
-|:-----------------------|:----------------------:|:-----------------------------------------------------------------------------------------|
-| ubuntuAptSource        | http://yoururl/ubuntu/ | Location used to update Ubuntu                                                           |
-| proceedWithoutRollback |          true          | Whether SOTA update should go through even when rollback is not supported on the system. |
+[Configuration Parameters](Configuration%20Parameters.md)
 
 #### Configuration Manifest
 
-[Configuration Command Manifests and Examples](Manifest-parameters.md)
+[Configuration Command Manifests and Examples](Manifest%20Parameters.md)
 
 To send the whole manifest with edited parameters at once,
 
@@ -697,15 +635,15 @@ values are **trustedRepositories**, **sotaSW** and **ubuntuAptSource**.
 
 -   To remove part of a value, use **Remove Element** manifest
 
-[Configuration GET Manifest and Examples](Manifest-parameters.md#Get)
+[Configuration GET Manifest and Examples](Manifest%20Parameters.md#Get)
 
-[Configuration SET Manifest and Examples](Manifest-parameters.md#Set)
+[Configuration SET Manifest and Examples](Manifest%20Parameters.md#Set)
 
-[Configuration APPEND Manifest and Examples](Manifest-parameters.md#Append)
+[Configuration APPEND Manifest and Examples](Manifest%20Parameters.md#Append)
 
-[Configuration REMOVE Manifest and Examples](Manifest-parameters.md#Remove)
+[Configuration REMOVE Manifest and Examples](Manifest%20Parameters.md#Remove)
 
-[Configuration LOAD Manifest and Examples](Manifest-parameters.md#Load)
+[Configuration LOAD Manifest and Examples](Manifest%20Parameters.md#Load)
 
 ### Manual Configuration Update:
 User can also manually update the parameters of the configuration file
@@ -718,7 +656,7 @@ parameter values. Then restart the configuration agent using the
 following command:
 
 ```shell
-systemctl restart configuration
+sudo systemctl restart configuration
 ```
 
 ### Power Management
@@ -812,7 +750,7 @@ triggering query commands via manifest returns query results through dynamic tel
 | [version]               | Publish INBM version details         |
 
 ### Query Manifest Parameters 
-[Query Manifest and Examples](Manifest-parameters.md#Query)
+[Query Manifest and Examples](Manifest%20Parameters.md#Query)
 
 AppArmor Permissions:
 ---------------------
@@ -836,11 +774,9 @@ Step 2: Add the entry with a comma at the end and save the file.
 /usr/bin/UpdateBIOS.sh rix,
 ```
 
-<img src="media/In-Band Manageability Developer Guide/media/image13.png" alt="P1167L11#yIS1" style="width:2.30208in;height:0.21875in" />
-
 Step 3: After updating the file, restart the AppArmor service:
 ```shell
-systemctl restart apparmor
+sudo systemctl restart apparmor
 ```
 
 ## Creating a New Agent
@@ -848,25 +784,19 @@ The framework code base can be extended when there is a requirement to add a new
 
 The following steps provide a clear overview on how to create a new agent.
 
-1.  A new folder with name **\<agent\_name\>-agent** should be created under the *\~/inbm* directory.
-2.  Once the source code is added to the folder, mqtt keys need to be generated for the new agent. To generate mqtt-keys,
-
-> <img src="media/In-Band Manageability Developer Guide/media/image14.png" style="width:6.15139in;height:1.24514in" />Go
-> to
-> *\~/inbm/fpm/mqtt/template/usr/bin/mqtt-ensure-keys-generated*
-> file, and add the new agent name in the for-loop(line 50) shown in the
-> below image.
+1. A new folder with name `<agent_name>-agent` should be created under the `inbm` directory.
+2. Once the source code is added to the folder, mqtt keys need to be generated for the new agent at provision time. To update the provisioning utility to do this, edit `inbm/fpm/inb-provision-certs/main.go` to add the new agent name to the for loop in the `main` function of this `main.go` file.
 
 3.  These certificates are stored in
 
 ```
-/etc/intel-manageability/secret/\<agent\_name\>-agent/\<agent\_name\>-agent.crt
+/etc/intel-manageability/secret/<agent_name>-agent/<agent_name>-agent.crt
 ```
 
 And the respective keys are stored in
 
 ```
-/etc/intel-manageability/secret/\<agent\_name\>-agent/\<agent\_name\>-agent.key
+/etc/intel-manageability/secret/<agent_name>-agent/<agent_name>-agent.key
 ```
 
 4.  The above-mentioned paths must be used within the agent code to make
@@ -875,31 +805,47 @@ And the respective keys are stored in
 5.  Once the code is ready to be built, a service file created for the
     agent should include the correct group name.
 ```shell
-~ /turtle-creek/<agent_name>-agent/fpm-template/etc/systemd/system/<agent_name>.service
+inbm/<agent_name>-agent/fpm-template/etc/systemd/system/<agent_name>.service
 ```
-An example of the *dispatcher.service* file located at
+An example of the `dispatcher.service` file located at
 ```shell
-~/inbm/dispatcher-agent/fpm-template/lib/systemd/system/inbm-dispatcher.service
+inbm/dispatcher-agent/fpm-template/lib/systemd/system/inbm-dispatcher.service
 ```
-is shown below highlighting its respective group name.
+is shown below.
 
-<img src="media/In-Band Manageability Developer Guide/media/image15.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+```
+ # Copyright 2021 Intel Corporation All Rights Reserved.
+ # SPDX-License-Identifier: Apache-2.0
 
+[Unit]
+Description=Dispatcher Agent Service
+Requires=network.target mqtt.service
+After=mqtt.service
+PartOf=inbm.service
+After=inbm.service
+
+[Service]
+# ExecStart command is only run when everything else has loaded
+Type=idle
+User=root
+EnvironmentFile=-/etc/environment
+EnvironmentFile=-/etc/dispatcher.environment
+EnvironmentFile=-/etc/intel-manageability/public/mqtt.environment
+ExecStart=/usr/bin/inbm-dispatcher
+RestartSec=5s
+Restart=on-failure
+WorkingDirectory=/etc/systemd/system/
+Group=dispatcher-agent
+
+[Install]
+WantedBy=inbm.service
+```
 
 ## Issues and Troubleshooting
 
 ### OTA Error Status
-| Error Message                     | Description                                                                                                           | Result                                                                   |
-|:----------------------------------|:----------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------|
-| COMMAND_FAILURE                   | Diagnostic-agent check fails to run properly or diagnostic agent config agent is not up when contacted.               | {'status': 301, 'message': 'COMMAND FAILURE'}                            |
-| COMMAND_SUCCESS                   | Post and pre-install check go through.                                                                                | {'status': 200, 'message': 'COMMAND SUCCESS'}                            |
-| FILE_NOT_FOUND                    | File to be fetched is not found.                                                                                      | {'status': 404, 'message': 'FILE NOT FOUND'}                             |
-| IMAGE_IMPORT_FAILURE              | Image is already present when Image Import is triggered.                                                              | {'status': 401, 'message': 'FAILED IMAGE IMPORT, IMAGE ALREADY PRESENT'} |
-| INSTALL_FAILURE                   | Installation was not successful due to invalid package or one of the source file, signature or version checks failed. | {'status': 400, 'message': 'FAILED TO INSTALL'}                          |
-| OTA_FAILURE                       | Another OTA is in progress when OTA is triggered.                                                                     | {'status': 302, 'message': 'OTA IN PROGRESS, TRY LATER'}                | 
-| UNABLE_TO_START_DOCKER_COMPOSE    | Docker-compose container is not able to be started or spawned etc.                                                    | {'status': 400, 'message': "Unable to start docker-compose container."}  |
-| UNABLE_TO_STOP_DOCKER_COMPOSE     | Docker-compose down command was not successful.                                                                       | {'status': 400, 'message': "Unable to stop dockercompose container."}    |
-| UNABLE_TO_DOWNLOAD_DOCKER_COMPOSE | Docker-compose download command failed.                                                                               | {'status': 300, 'message': 'FAILED TO PARSE/VALIDATE MANIFEST'}          |
+
+[Error Messages](Error Messages.md)
 
 ### Dispatcher-Agent Not Receiving Messages 
 If the dispatcher-agent does not receive the manifest message from the *cloudadapteragent* after triggering SOTA/FOTA, 
@@ -907,7 +853,7 @@ the current workaround is to remove *mosquitto.db*. This will remove the message
 
 Step 1: 
 ```shell
-systemctl stop mqtt  
+sudo systemctl stop mqtt  
 ```
 
 Step 2:
@@ -917,7 +863,7 @@ rm /var/lib/mosquitto/mosquitto.db
 
 Step 3:
 ```shell
-systemctl start mqtt
+sudo systemctl start mqtt
 ```
 
 ## Appendix
