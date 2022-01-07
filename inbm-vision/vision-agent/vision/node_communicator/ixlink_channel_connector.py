@@ -87,7 +87,7 @@ class IXlinkChannelConnector(ABC):
         @param node_id: ID of the device to reset
         """
         pass
-    
+
     @abstractmethod
     def get_guid(self, sw_device_id: int) -> Tuple[str, str]:
         """Get node's GUID 
@@ -96,7 +96,7 @@ class IXlinkChannelConnector(ABC):
         @return: GUID of node, SVN of node
         """
         pass
-    
+
     @abstractmethod
     def get_all_guid(self) -> List[Dict[str, bool]]:
         """Get node's GUID and svn from secure xlink library
@@ -104,7 +104,7 @@ class IXlinkChannelConnector(ABC):
         @return: nodes' GUID and its provisioned status
         """
         pass
-    
+
     @abstractmethod
     def is_provisioned(self, sw_device_id: int) -> bool:
         """Get node's provisioned status from secure xlink library
@@ -113,7 +113,7 @@ class IXlinkChannelConnector(ABC):
         @return: True if provisioned; otherwise False
         """
         pass
-    
+
     @abstractmethod
     def get_platform_type(self, node_id: Optional[str], sw_device_id: Optional[str] = None) -> Optional[str]:
         """Check the platform type of device
@@ -201,14 +201,14 @@ class XlinkSimulatorConnector(IXlinkChannelConnector):
         @return: GUID of node, SVN of node
         """
         return "0", "0"
-    
+
     def get_all_guid(self) -> List[Dict[str, bool]]:
         """Get node's GUID and svn from secure xlink library
 
         @return: nodes' GUID and its provisioned status
         """
         return []
-    
+
     def is_provisioned(self, sw_device_id: int) -> bool:
         """Get node's provisioned status from secure xlink library
 
@@ -216,7 +216,7 @@ class XlinkSimulatorConnector(IXlinkChannelConnector):
         @return: True if provisioned; otherwise False
         """
         return True
-    
+
     def get_platform_type(self, node_id: Optional[str], sw_device_id: Optional[str] = None) -> Optional[str]:
         """Check the platform type of device
 
