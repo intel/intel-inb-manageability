@@ -100,7 +100,7 @@ class Broker(object):
                          'request is in the correct format. {}'
                          .format(error))
 
-    def push_ota(self, manifest) -> None:
+    def push_ota(self, manifest: str) -> None:
         """push ota manifest to request channel
 
         @param manifest OTA manifest

@@ -14,6 +14,7 @@
 | INBM   | Intel® In-Band Manageability Framework                                                                                                                                                                          |
 | IoT    | Internet of Things                                                                                                                                                                                              |
 | MQTT   | Message Queuing Telemetry Transport                                                                                                                                                                             |
+| MTLS   | Mutual Transport Layer Security                                                                                                                                                                                 |
 | OS     | Operating System                                                                                                                                                                                                |
 | OTA    | Over-the-air                                                                                                                                                                                                    |
 | PCIe   | Peripheral Component Interconnect Express                                                                                                                                                                       |
@@ -22,5 +23,6 @@
 | SMBIOS | System Management BIOS                                                                                                                                                                                          |
 | SoC    | System on a Chip                                                                                                                                                                                                |
 | SOTA   | Software Over the Air (OS update)                                                                                                                                                                               |
+| TPM    | Trusted Platform Module                                                                                                                                                                                         |
 | VPU    | Visual Processing Unit                                                                                                                                                                                          |
 | YAML   | Yet Another Markup Language                                                                                                                                                                                     |

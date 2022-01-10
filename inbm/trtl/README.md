@@ -16,8 +16,8 @@ There are two ways to acquire trtl:
 
 * First method (recommended):
   * Set up ssh access to https://github.com/intel/intel-inb-manageability (see [Connecting to GitHub with SSH](https://docs.github.com/en/authentication/connecting-to-github-with-ssh))
-  * Instruct your git to treat https urls to https://github.com/intel/intel-inb-manageability as ssh urls: 
-	  * run `git config --global url.ssh://git@github.com/intel/intel-inb-manageability insteadOf https://github.com/intel/intel-inb-manageability
+  * Instruct your git to treat https urls to https://github.com/intel/intel-inb-manageability as SSH urls: 
+	  * run `git config --global url.ssh://git@github.com/intel/intel-inb-manageability instead of https://github.com/intel/intel-inb-manageability
   * Acquire trtl: `go get -v intel-inb-manageability/inbm/trtl`
 
 * Second method: Go convention is to clone source into path matching repository.  
@@ -105,7 +105,7 @@ trtl [-type=docker] -cmd=commit -in=IMAGE_NAME -iv=IMAGE_VERSION
 ```
 ### Example
 ```
-Ex. trtl -cmd=commit -in=sample-container -iv=3
+trtl -cmd=commit -in=sample-container -iv=3
 ```
 
 ## ⚙️ ContainerCopy
@@ -199,11 +199,11 @@ trtl [-type=docker] -cmd=containerRemoveById
 
 ### Example
 #### Remove all container images with id=ABCD that are not running
-```
+```shell
 trtl -cmd=containerRemoveById -id=ABCD
 ```
 #### Remove all container images with id=ABCD (running or not)
-```
+```shell
 trtl -cmd=containerRemoveById -id=ABCD -f=true
 ```
 
@@ -212,7 +212,7 @@ trtl -cmd=containerRemoveById -id=ABCD -f=true
 Removes all container images. 
 
 ### Usage
-```
+```shell
 trtl [-type=docker] -cmd=containerRemoveAl} 
    [-f=FORCE (true | false); default=false] 
    [-in=IMAGE_NAME]

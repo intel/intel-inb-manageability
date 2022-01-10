@@ -18,12 +18,11 @@ class IDataHandler(ABC):
 
     @abstractmethod
     def register(self) -> None:
-        """Add register_command to invoker when node being initialize
+        """Add register_command to invoker when node is initialized
 
-        1. Called when Node being initialize  
+        1. Called when Node is initialized
         2. Create the RegisterCommand object
         4. Add the Command to Invoker
-
         """
 
         pass
