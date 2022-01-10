@@ -88,7 +88,7 @@ ADAPTER_CONFIG_PATH = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / \
 
 # Log certain telemetry keys by default
 LOGGED_TELEMETRY = {'containersCpuPercent', 'networkInformation',
-                    'resourceMonitoring', 'resourceAlert', 'softwareBOM', \
+                    'resourceMonitoring', 'resourceAlert', 'softwareBOM',
                     'queryResult', 'queryEndResult'}  # 'disk-information'
 
 

@@ -85,7 +85,8 @@ def _check_type_validate_manifest(xml: str,
                         is_file=False,
                         schema_location=schema_location)
     type_of_manifest = parsed.get_element('type')
-    logger.debug(f"type_of_manifest: {type_of_manifest!r}. parsed: {mask_security_info(str(parsed))!r}.")
+    logger.debug(
+        f"type_of_manifest: {type_of_manifest!r}. parsed: {mask_security_info(str(parsed))!r}.")
     return type_of_manifest, parsed
 
 

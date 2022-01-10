@@ -25,7 +25,7 @@ from .xlink_connector import XlinkConnector
 logger = logging.getLogger(__name__)
 
 
-def _create_channel_connector_factory(data_handler: IDataHandler, channel_list: List[int], 
+def _create_channel_connector_factory(data_handler: IDataHandler, channel_list: List[int],
                                       is_boot_device: bool) -> IXlinkChannelConnector:
     """Factory which creates the correct connector to nodes based on environment
 

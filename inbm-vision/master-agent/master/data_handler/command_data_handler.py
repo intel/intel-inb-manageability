@@ -82,4 +82,5 @@ def _restart_device_after_provision_node_command(file_name: str) -> None:
             logger.error(f"Failed to reset device: {error}")
 
     if not is_device_reset:
-        raise MasterException(f"Failed to reset device due to no matching device id - {file_guid}.")
+        raise MasterException(
+            f"Failed to reset device due to no matching device id - {file_guid}.")

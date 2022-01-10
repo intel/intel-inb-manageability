@@ -86,7 +86,7 @@ class Broker(IBroker):
             """Subscribe to  Telemetry Response to check if update success """
             print('Subscribe to: {0}'.format(RESPONSE_CHANNEL))
             self.mqttc.subscribe(RESPONSE_CHANNEL, self._on_response)
-            
+
             print('Subscribe to: {0}'.format(EVENT_CHANNEL))
             self.mqttc.subscribe(EVENT_CHANNEL, self._on_vision_event)
 
