@@ -238,7 +238,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
                 self._invoker.add(cmd)
                 break
         else:
-            logger.debug("Flashless boot device disabled. Master won't boot the device.")
+            logger.debug("Flashless boot device disabled. Vision Agent won't boot the device.")
 
     def _check_if_request_allowed(self) -> None:
         if self._updater:
