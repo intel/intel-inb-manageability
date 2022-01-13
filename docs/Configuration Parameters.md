@@ -86,9 +86,9 @@ Node Agent configuration file is located at: ````/etc/intel-manageability/public
 
 The best way to update the file is either by using the cloud or INBC.
 
-| Key                        | Default Value | Description                                                                                                           |
-|:---------------------------|:-------------:|:----------------------------------------------------------------------------------------------------------------------|
-| registrationRetryTimerSecs |      20       | Timer interval for the Node agent to send a registration request if a response is not received from the Vision Agent. |
-| registrationRetryLimit     |       8       | Number of attempted retries for the Node Agent to send a registration request.                                        |
-| XLinkPCIeDevID             |       0       | Number used to connect the XLink PCIe devices to the Node Agent                                                       |
-| heartbeatResponseTimerSecs |      300      |                                                                                                                       |
+| Key                        | Default Value | Lower Limit | Upper Limit | Description                                                                                                                                                    |
+|:---------------------------|:-------------:|:------------|:------------|:---------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| registrationRetryTimerSecs |      20       | 1           | 60          | Timer interval for the Node agent to send a registration request if a response is not received from the Vision Agent.                                          |
+| registrationRetryLimit     |       8       | 3           | 15          | Number of attempted retries for the Node Agent to send a registration request.                                                                                 |
+| XLinkPCIeDevID             |       0       | N/A         | N/A         | Number used to connect the XLink PCIe devices to the Node Agent.                                                                                               |
+| heartbeatResponseTimerSecs |      300      | 90          | 1800        | Timer interval to wait for heartbeat response from vision-agent after sending heartbeat message.  If not received node will re-register with the Vision agent. |

@@ -13,6 +13,7 @@ import shutil
 from typing import Optional, Any
 from pathlib import Path
 
+from inbm_common_lib.validater import configuration_bounds_check
 from inbm_vision_lib.invoker import Invoker
 from inbm_vision_lib import checksum_validator
 from inbm_vision_lib.configuration_manager import ConfigurationManager
@@ -27,8 +28,8 @@ from .command.command import Command, NodeCommands, RequestToDownloadCommand, Se
 from .command.configuration_command import ConfigValuesCommand, LoadConfigCommand, SendConfigResponseCommand
 from .constant import INVOKER_QUEUE_SIZE, GET_ELEMENT, SET_ELEMENT, \
     REGISTRATION_RETRY_TIMER_SECS, REGISTRATION_RETRY_LIMIT, LOAD, APPEND, REMOVE, \
-    XLINK_SCHEMA_LOCATION, KEY_DICTIONARY, HEARTBEAT_RESPONSE_TIMER_SECS, CONFIG_HEARTBEAT_RESPONSE_SECS_DEFAULT, \
-    CONFIG_HEARTBEAT_RESPONSE_SECS_LOWER_LIMIT, CONFIG_HEARTBEAT_RESPONSE_SECS_UPPER_LIMIT
+    XLINK_SCHEMA_LOCATION, KEY_DICTIONARY, HEARTBEAT_RESPONSE_TIMER_SECS, CONFIG_REGISTRATION_RETRY_TIMER_SECS, \
+    CONFIG_REGISTRATION_RETRY_LIMIT, CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS
 from .heartbeat_timer import HeartbeatTimer
 from .node_exception import NodeException
 from .xlink_parser import XLinkParser
@@ -53,10 +54,10 @@ class DataHandler(idata_handler.IDataHandler):
         self._heartbeat_interval: Optional[int] = None
         self._nid: Optional[str] = None
         self._timer: Optional[HeartbeatTimer] = None
-        self._retry_limit = 0
+        self._retry_limit: int = 0
         self._retry_interval: int = 0
         self._retry_timer: int = 0
-        self._heartbeat_response: int = CONFIG_HEARTBEAT_RESPONSE_SECS_DEFAULT
+        self._heartbeat_response: int = CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS.default_value
         self._heartbeat_response_timer: Optional[HeartbeatTimer] = None
         self.load_config_file()
         self.file_name = None
@@ -292,7 +293,7 @@ class DataHandler(idata_handler.IDataHandler):
         self.start_heartbeat_response_timer()
 
     def start_heartbeat_response_timer(self) -> None:
-        """Start a timer to wait for heartbeat response. If timer expires, it create a Register Command
+        """Start a timer to wait for heartbeat response. If timer expires, it creates a Register Command
         and start the Register sequence again"""
         if self._heartbeat_response_timer:
             self._heartbeat_response_timer.stop()
@@ -331,18 +332,12 @@ class DataHandler(idata_handler.IDataHandler):
             for child in children:
                 value = children[child]
                 if child == REGISTRATION_RETRY_TIMER_SECS:
-                    self._retry_timer = int(value)
+                    self._retry_timer = configuration_bounds_check(CONFIG_REGISTRATION_RETRY_TIMER_SECS, int(value))
                 if child == REGISTRATION_RETRY_LIMIT:
-                    self._retry_interval = int(value)
+                    self._retry_interval = configuration_bounds_check(CONFIG_REGISTRATION_RETRY_LIMIT, int(value))
                 if child == HEARTBEAT_RESPONSE_TIMER_SECS:
-                    if CONFIG_HEARTBEAT_RESPONSE_SECS_LOWER_LIMIT < int(value) < CONFIG_HEARTBEAT_RESPONSE_SECS_UPPER_LIMIT:
-                        self._heartbeat_response = int(value)
-                    else:
-                        logger.error(f'Heartbeat Response is outside of the allowed limits: '
-                                     f'{CONFIG_HEARTBEAT_RESPONSE_SECS_LOWER_LIMIT}-'
-                                     f'{CONFIG_HEARTBEAT_RESPONSE_SECS_UPPER_LIMIT}.  '
-                                     f'Using the default value: {CONFIG_HEARTBEAT_RESPONSE_SECS_DEFAULT}.')
-                        self._heartbeat_response = CONFIG_HEARTBEAT_RESPONSE_SECS_DEFAULT
+                    self._heartbeat_response = \
+                        configuration_bounds_check(CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS, int(value))
         else:
             logger.error('Children value is empty')
 

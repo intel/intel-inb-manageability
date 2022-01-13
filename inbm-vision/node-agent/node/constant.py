@@ -2,9 +2,11 @@
 """
     Constants and other config variables used throughout the node-agent
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
+
+from inbm_common_lib.validater import ConfigurationItem
 
 AGENT = 'node'
 STATE_CHANNEL = '+/state'
@@ -95,10 +97,10 @@ PROC_VERSION = '/etc/version'
 # Node version file path
 NODE_VERSION_PATH = '/usr/share/node-agent/version.txt'
 
-# Configuration value limits
-CONFIG_HEARTBEAT_RESPONSE_SECS_UPPER_LIMIT = 1800
-CONFIG_HEARTBEAT_RESPONSE_SECS_LOWER_LIMIT = 90
-CONFIG_HEARTBEAT_RESPONSE_SECS_DEFAULT = 300
+# Configuration items (key, lower bound, upper bound, default value)
+CONFIG_REGISTRATION_RETRY_TIMER_SECS = ConfigurationItem('RegistrationRetry Timer Secs', 1, 60, 20)
+CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS = ConfigurationItem('Heartbeat Response Timer Secs', 90, 1800, 300)
+CONFIG_REGISTRATION_RETRY_LIMIT = ConfigurationItem('Registration Retry Limit', 3, 15, 8)
 
 # Var directory
 VAR_DIR = '/var'
