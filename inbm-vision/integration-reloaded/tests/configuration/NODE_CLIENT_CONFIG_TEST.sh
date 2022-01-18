@@ -27,7 +27,7 @@ LOAD_CONFIG_MESSAGE='push_ota message to manageability/request/install, message 
 echo "Checking health of all services"
 check_health_vision_services
 echo "Health check passed"
-echo "Wait 10 seconds for all agent come up..."
+echo "Wait 10 seconds for all agents to come up..."
 sleep 10
 
 cp /etc/intel_manageability.conf "$NGINX_DATA"

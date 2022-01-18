@@ -55,7 +55,7 @@ The below tables represent the different sections of the configuration file.
 | ubuntuAptSource        | http://yoururl/ubuntu/ | Location used to update Ubuntu                                                           |
 | proceedWithoutRollback |          true          | Whether SOTA update should go through even when rollback is not supported on the system. |
 
-## INBC Vision Configuration
+## INBM Vision Configuration
 
 ### Vision Agent
 
@@ -63,22 +63,21 @@ Vision Agent configuration file is located at: ````/etc/intel-manageability/publ
 
 The best way to update the file is either by using the cloud or INBC.
 
-| Key                               | Default Value  | Description                                                                                                                                                                                 |
-|:----------------------------------|:--------------:|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| heartbeatCheckIntervalSecs        |      300       | Time interval for Vision agent to perform periodic heartbeat check.                                                                                                                         |
-| heartbeatTransmissionIntervalSecs |       60       | Time interval for node agent to send heartbeat to the vision-agent.                                                                                                                         |
-| fotaCompletionTimerSecs           |      600       | Expiration time of a FOTA request.  The next OTA can only start once this timer has expired.                                                                                                |
-| sotaCompletionTimerSecs           |      900       | Expiration time of a SOTA request.  The next OTA can only start once this timer has expired.                                                                                                |
-| potaCompletionTimerSecs           |      900       | Expiration time of a POTA request.  The next OTA can only start once this timer has expired.                                                                                                |
-| isAliveTimerSecs                  |      200       | Expiration time of 'isAlive' request.  Vision agent will  delete the node agent from it's in-memory registry if the node agent does not send back a heartbeat before the timer has expired. |
-| heartbeatRetryLimit               |       3        | Number of heartbeat retries allowed before the Vision agent sends an 'isAlive' request.                                                                                                     |
-| flashlessFileLocation             | /lib/firmware/ | Location to store the flash-less firmware image.                                                                                                                                            |
-| XLinkPCIeDevID                    |       0        | Number used to connect the Xlink PCIe devices to the Vision agent.                                                                                                                          | 
-| xlinkFirstChannel                 |      1530      | First channel of xlink channel range.                                                                                                                                                       |
-| xlinkLastChannel                  |      1730      | Last channel of xlink channel range.                                                                                                                                                        |
-| xlinkBootDevice                   |     false      |                                                                                                                                                                                             |
- | flashlessRollbackWaitTimeSecs     |      600       |                                                                                                                                                                                             |
-| bootFlashlessDevice               |     false      |                                                                                                                                                                                             |
+| Key                               | Default Value  | Lower Limit | Upper Limit | Description                                                                                                                                                                                 |
+|:----------------------------------|:--------------:|:------------|:------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| heartbeatCheckIntervalSecs        |      300       | 10          | 300         | Time interval for Vision agent to perform periodic heartbeat check.                                                                                                                         |
+| heartbeatTransmissionIntervalSecs |       60       | 10          | 240         | Time interval for node agent to send heartbeat to the vision-agent.                                                                                                                         |
+| fotaCompletionTimerSecs           |      600       | 120         | 1200        | Expiration time of a FOTA request.  The next OTA can only start once this timer has expired.                                                                                                |
+| sotaCompletionTimerSecs           |      900       | 600         | 1680        | Expiration time of a SOTA request.  The next OTA can only start once this timer has expired.                                                                                                |
+| potaCompletionTimerSecs           |      900       | 600         | 1680        | Expiration time of a POTA request.  The next OTA can only start once this timer has expired.                                                                                                |
+| isAliveTimerSecs                  |      180       | 60          | 600         | Expiration time of 'isAlive' request.  Vision agent will  delete the node agent from it's in-memory registry if the node agent does not send back a heartbeat before the timer has expired. |
+| heartbeatRetryLimit               |       3        | 2           | 15          | Number of heartbeat retries allowed before the Vision agent sends an 'isAlive' request.                                                                                                     |
+| flashlessFileLocation             | /lib/firmware/ | N/A         | N/A         | Location to store the flash-less firmware image.                                                                                                                                            |
+| XLinkPCIeDevID                    |       0        | N/A         | N/A         | Number used to connect the Xlink PCIe devices to the Vision agent.                                                                                                                          | 
+| xlinkFirstChannel                 |      1530      | N/A         | N/A         | First channel of xlink channel range.                                                                                                                                                       |
+| xlinkLastChannel                  |      1730      | N/A         | N/A         | Last channel of xlink channel range.                                                                                                                                                        |
+| flashlessRollbackWaitTimeSecs     |      600       | 120         | 1200        | Time interval to wait for flashless rollback to complete.                                                                                                                                   |
+| bootFlashlessDevice               |     false      | N/A         | N/A         |                                                                                                                                                                                             |
 
 ### Node Agent
 

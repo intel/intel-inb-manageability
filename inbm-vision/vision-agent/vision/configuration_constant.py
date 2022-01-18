@@ -2,9 +2,21 @@
 """
     Stores configuration constants used throughout the vision-agent
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
+
+from inbm_common_lib.validater import ConfigurationItem
+
+# Configuration items (key, lower bound, upper bound, default value)
+CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS = ConfigurationItem('Heartbeat Check Interval Seconds', 10, 1200, 300)
+CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS = ConfigurationItem('Heartbeat Transmission Interval Seconds', 10, 240, 60)
+CONFIG_HEARTBEAT_RETRY_LIMIT = ConfigurationItem('Heartbeat Retry Limit', 2, 15, 3)
+CONFIG_FOTA_COMPLETION_TIMER_SECS = ConfigurationItem('FOTA Completion Timer Seconds', 120, 1200, 600)
+CONFIG_SOTA_COMPLETION_TIMER_SECS = ConfigurationItem('SOTA Completion Timer Seconds', 600, 1680, 900)
+CONFIG_POTA_COMPLETION_TIMER_SECS = ConfigurationItem('POTA Completion Timer Seconds', 600, 1680, 900)
+CONFIG_IS_ALIVE_TIMER_SECS = ConfigurationItem('IsAlive Timer Seconds', 60, 600, 180)
+CONFIG_FLASHLESS_ROLLBACK_WAIT_TIMER_SECS = ConfigurationItem('Flash-less Rollback Wait Time Seconds', 120, 1200, 600)
 
 # Configuration constants
 VISION_HB_CHECK_INTERVAL_SECS = 'heartbeatCheckIntervalSecs'
