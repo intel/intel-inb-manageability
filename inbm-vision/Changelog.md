@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - 506035, HSD 15010309026 - Update node apparmor policy by adding /sys/kernel/xlink_secure/debug
 - HSD 15010516458 - Fix storage checks failed during mender file transferring in SOTA/POTA
 - 506874 - Fix node config schema error when upgrading from v2.16.0 to v2.17.2
+- 507151 - Add lower bound, upper bound, and default values to node-agent configuration values.
 
 ## 3.0.7 - 2022-01-04
 
