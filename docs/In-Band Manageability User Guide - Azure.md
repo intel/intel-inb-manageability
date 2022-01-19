@@ -1,15 +1,15 @@
 # In-Band Manageability Framework User Guide – Azure&reg;
 
-## Contents
+<details>
+<summary>Table of Contents</summary>
 
-1. [Contents](#contents)
-2. [Introduction](#introduction)
+1. [Introduction](#introduction)
     1. [Audience](#audience)
-3. [Azure&reg; Overview](#azure-overview)
-    1. [Getting Started with Azure&reg;](#getting-started-with-azure)
-        1. [Creating Azure&reg; portal account](#creating-azure-portal-account)
-        2. [Setting up an Azure&reg; IoT Central Application ](#setting-up-an-azure-iot-central-application-)
-        3. [Accessing Azure&reg;](#accessing-azure)
+3. [Azure&reg; Overview](#azurereg-overview)
+    1. [Getting Started with Azure&reg;](#getting-started-with-azurereg)
+        1. [Creating Azure&reg; portal account](#creating-azurereg-portal-account)
+        2. [Setting up an Azure&reg; IoT Central Application ](#setting-up-an-azurereg-iot-central-application)
+        3. [Accessing Azure&reg;](#accessing-azurereg)
         4. [Setting up the application for X509 based device enrollment](#setting-up-the-application-for-x509-based-device-enrollment)
     2. [Creating a Device and Obtaining Device Credentials](#creating-a-device-and-obtaining-device-credentials)
         1. [Shared Access Signature (SAS) authentication:](#shared-access-signature-sas-authentication)
@@ -22,7 +22,7 @@
     2. [Navigating the Device Interface](#navigating-the-device-interface)
 6. [Performing batch operations](#performing-batch-operations)
 7. [OTA Updates](#ota-updates)
-    1. [Trusted Repositories ](#trusted-repositories-)
+    1. [Trusted Repositories ](#trusted-repositories)
     2. [Preparing OTA Update Packages](#preparing-ota-update-packages)
         1. [Creating FOTA Package](#creating-fota-package)
         2. [Creating SOTA Package](#creating-sota-package)
@@ -30,7 +30,7 @@
         4. [Creating Configuration Load Package](#creating-configuration-load-package)
     3. [How to Generate Signature](#how-to-generate-signature)
 8. [OTA Commands](#ota-commands)
-    1. [Commands - Definitions and Usage](#commands-definitions-and-usage)
+    1. [Commands - Definitions and Usage](#commands---definitions-and-usage)
     2. [AOTA Updates](#aota-updates)
     3. [AOTA Docker-Compose Operations](#aota-docker-compose-operations)
         1. [Docker Compose Up](#docker-compose-up)
@@ -55,7 +55,6 @@
         2. [SOTA Update Via ‘Trigger SOTA’ Button Click (Mender)](#sota-update-via-trigger-sota-button-click-mender)
         3. [SOTA Update via Manifest](#sota-update-via-manifest)
     9. [Configuration Update ](#configuration-update)
-        1. [Default Configuration Parameters](#default-configuration-parameters)
     10. [Configuration Operation via Button Click](#configuration-operation-via-button-click)
         1. [Configuration Set](#configuration-set)
         2. [Configuration Get:](#configuration-get)
@@ -78,10 +77,12 @@
         1. [Static Telemetry:](#static-telemetry)
         2. [Dynamic Telemetry:](#dynamic-telemetry)
 10. [Issues and Troubleshooting](#issues-and-troubleshooting)
-    1. [Error viewing Devices on Azure&reg; Portal:](#error-viewing-devices-on-azure-portal)
+    1. [Error viewing Devices on Azure&reg; Portal:](#error-viewing-devices-on-azurereg-portal)
     2. [OTA Error Status](#ota-error-status)
     3. [Provisioning Unsuccessful or Device Not Connected to Cloud](#provisioning-unsuccessful-or-device-not-connected-to-cloud)
     4. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
+
+</details>
 
 ## Introduction
 

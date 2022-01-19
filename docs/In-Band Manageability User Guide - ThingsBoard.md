@@ -1,64 +1,40 @@
 # User Guide – ThingsBoard&reg;
 
-## Table of Contents
+<details>
+<summary>Table of Contents</summary>
 
 1. [Introduction](#introduction)
     1. [Purpose](#purpose)
     2. [Audience](#audience)
-
-2. [ThingsBoard&reg; Overview](#thingsboard-overview)
-
-    1. [Getting Started with ThingsBoard&reg;](#getting-started-with-thingsboard)
-
+2. [ThingsBoard&reg; Overview](#thingsboardreg-overview)
+    1. [Getting Started with ThingsBoard&reg;](#getting-started-with-thingsboardreg)
     2. [Adding a Device](#adding-a-device)
-
     3. [Obtaining Device Credentials](#obtaining-device-credentials)
-
     4. [Creating a Device to Use X.509 Auth](#creating-a-device-to-use-x509-auth)
-
     5. [Provisioning a Device](#provisioning-a-device)
-
     6. [Setting up the Dashboards](#setting-up-the-dashboards)
-
-    7. [Getting Familiar with ThingsBoard&reg;](#getting-familiar-with-thingsboard)
-
+    7. [Getting Familiar with ThingsBoard&reg;](#getting-familiar-with-thingsboardreg)
     8. [Interacting with Individual Devices](#interacting-with-individual-devices)
-
     9. [Interacting with Multiple Devices](#interacting-with-multiple-devices)
-
     10. [Modifying and Working with Intel Manageability Widgets](#modifying-and-working-with-intel-manageability-widgets)
-
-3. [OTA commands](#ota-commands)
-
+3. [Commands](#commands)
     1. [Trusted Repositories](#trusted-repositories)
-
     2. [Preparing OTA Update Packages](#preparing-ota-update-packages)
-
     3. [OTA Updates](#ota-updates)
-
     3. [Configuration Update](#configuration-update)
-
     4. [Power Management](#power-management)
-
     5. [Decommission Command](#decommission-command)
-
     6. [Query Commands](#query-commands)
-
 4. [Telemetry Data](#telemetry-data)
-
     1. [Static Telemetry Data](#static-telemetry-data)
-
     2. [Dynamic Telemetry Data](#dynamic-telemetry-data)
-
     3. [Viewing Telemetry Data](#viewing-telemetry-data)
-
 5. [Issues and Troubleshooting](#issues-and-troubleshooting)
-
     1. [OTA Error Status](#ota-error-status)
-
     2. [Provisioning Unsuccessful or Device Not Connected to Cloud](#provisioning-unsuccessful-or-device-not-connected-to-cloud)
-
     3. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
+
+</details>
 
 ## Introduction
 ### Purpose
@@ -579,7 +555,7 @@ limitation:
 - Device List is used to send a list of selected devices to OTA Form
     widgets for batch operations
 
-## OTA Updates
+## Commands
 
 After the In-Band Manageability Framework running on the Edge IoT Device
 is provisioned, it will establish a secure session with the ThingsBoard

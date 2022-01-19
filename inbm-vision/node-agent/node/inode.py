@@ -18,9 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 class INode(ABC):
-    """Acts as the client in Node Pattern. It main function called when start node agent.
-    and initialize the broker, xlink_manager, data_handler and configuration_manager
-    """
+    """Interface for the Node class"""
 
     @abstractmethod
     def start(self) -> None:

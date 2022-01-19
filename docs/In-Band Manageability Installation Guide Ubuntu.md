@@ -6,9 +6,9 @@
     1. [Purpose](#purpose)
     2. [Audience](#audience)
 2. [Installing INBM](#installing-INBM)
-    1. [OS Support](#supported-os)
+    1. [Supported OS](#supported-os)
     2. [Setting up checklist](#setting-up-checklist)
-    3. [Running Install script](#running-install-script)
+    3. [Run Install script](#run-install-script)
 
 ## Introduction
 ### Purpose

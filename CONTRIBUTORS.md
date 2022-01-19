@@ -19,3 +19,15 @@ Special thanks to all who worked on this project prior to the release to open so
  - Tejaswini Sirlapu (Intel)
  - Vinod Kulkarni (Intel)
  - Yeng Liong Wong (Intel)
+
+Validation Team
+ - Ahamedsha, Nur Syazwany Shah (Intel)
+ - Bin Samsudin, Safarin (Intel)
+ - Lim, Christine Xin Yi (Intel)
+ - Loh, Shao Boon (Intel)
+ - Mohd Affandi, Nurain (Intel)
+ - Pang, Jeff Jian Ye (Intel)
+ - Soo, Swee Kiong (Intel)
+ - Tan, Seng Howe (Intel)
+ - Tan, Siew Li (Intel)
+ - Thien, Kian Chung (Intel)

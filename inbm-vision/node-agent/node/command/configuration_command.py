@@ -51,7 +51,7 @@ class SendConfigResponseCommand(Command):
 
 
 class ConfigValuesCommand(Command):
-    """Call broker to publish get_config payload.
+    """Sends configuration result back to host via Xlink
 
        @param nid : id of the node
        @param xlink_manager : Node Xlink Manager
@@ -123,11 +123,11 @@ class ConfigValuesCommand(Command):
 
 
 class LoadConfigCommand(Command):
-    """Call broker to publish get_config payload.
+    """Sends configuration load result back to host via Xlink
 
        @param nid : id of the node
        @param xlink_manager : Node Xlink Manager
-       @param config_mngr : Configuration Manager
+       @param config_mgr : Configuration Manager
        @param path: path to fetch the value from the conf file
     """
 

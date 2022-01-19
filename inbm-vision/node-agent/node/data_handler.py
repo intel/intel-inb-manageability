@@ -71,7 +71,7 @@ class DataHandler(idata_handler.IDataHandler):
         children = self._config.get_children(NODE)
         self.publish_config_value(children)
 
-    def receive_mqtt_message(self, payload) -> None:
+    def receive_mqtt_message(self, payload: str) -> None:
         """Publish message to vision-agent when receive message from EVENT_CHANNEL and TELEMETRY_CHANNEL"""
         command = SendTelemetryEventCommand(self._nid, self.node_callback.get_xlink(), payload)
         self._invoker.add(command)
@@ -309,7 +309,7 @@ class DataHandler(idata_handler.IDataHandler):
         self._heartbeat_interval = None
         self._retry_limit = 0
 
-    def downloaded_file(self, file_name, receive_status):
+    def downloaded_file(self, file_name, receive_status: bool) -> None:
         """Add Send_Download_Status_Name command into invoker if the OTA file exists
         @param file_name: relative filename from CACHE
         @param receive_status : File receive status

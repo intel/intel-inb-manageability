@@ -61,7 +61,8 @@ class Command(ABC):
 
 
 class RequestToDownloadCommand(Command):
-    """check system storage size to get the file download
+    """Check system storage size to determine if there is enough space
+       to download.  Send result back via xlink.
 
        @param nid : Node Device ID
        @param xlink_manager : Node Xlink Manager
@@ -79,7 +80,7 @@ class RequestToDownloadCommand(Command):
         self.xlink_manager.send(self._is_enough_space(self.download_size_kb))
 
     def _is_enough_space(self, download_size_kb) -> str:
-        # if it is flashless system, check free memory instead of storage
+        # if it is flash-less system, check free memory instead of storage
         free = get_free_memory() if is_flashless() else get_free_space()
         free_storage = free / 1024
         if free_storage > int(download_size_kb):
