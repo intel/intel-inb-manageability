@@ -39,7 +39,8 @@ from ..configuration_constant import VISION_HB_CHECK_INTERVAL_SECS, NODE_HEARTBE
     IS_ALIVE_INTERVAL_SECS, VISION_HB_RETRY_LIMIT, VISION_SOTA_TIMER, VISION_POTA_TIMER, FLASHLESS_FILE_PATH, \
     BOOT_FLASHLESS_DEV, CONFIG_HEARTBEAT_RETRY_LIMIT, CONFIG_FOTA_COMPLETION_TIMER_SECS, \
     CONFIG_SOTA_COMPLETION_TIMER_SECS, CONFIG_POTA_COMPLETION_TIMER_SECS, CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS, \
-    CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS, CONFIG_IS_ALIVE_TIMER_SECS
+    CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS, CONFIG_IS_ALIVE_TIMER_SECS, DEFAULT_FLASHLESS_FILE_PATH, KEY_MANIFEST, \
+    INT_CONFIG_VALUES
 from ..parser import XLinkParser
 from ..status_watcher import StatusWatcher
 from ..updater import Updater, ConfigurationLoader, get_updater_factory
@@ -49,10 +50,11 @@ logger = logging.getLogger(__name__)
 
 class DataHandler(vision.data_handler.idata_handler.IDataHandler):
     # docstring inherited
+    flashless_filepath = DEFAULT_FLASHLESS_FILE_PATH
 
     def __init__(self, vision_callback: vision.ivision.IVision,
                  config_callback: inbm_vision_lib.configuration_manager.ConfigurationManager) -> None:
-        """Constructor.
+        """Acts as the Client in the Command Design Pattern
 
         @param vision_callback: Callback to the Node object
         @param config_callback: Callback to Configuration object
@@ -67,6 +69,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         self._max_fota_update_time = CONFIG_FOTA_COMPLETION_TIMER_SECS.default_value
         self._max_sota_update_time = CONFIG_SOTA_COMPLETION_TIMER_SECS.default_value
         self._max_pota_update_time = CONFIG_POTA_COMPLETION_TIMER_SECS.default_value
+        #self._flashless_filepath = DEFAULT_FLASHLESS_FILE_PATH
         self._updater: Optional[Updater] = None
         self._status_watcher: Optional[StatusWatcher] = None
         self._config = config_callback
@@ -324,12 +327,10 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
                     vision.flashless_utility.copy_backup_flashless_files()
                     if parsed_manifest.manifest_type == POTA:
                         inbm_vision_lib.utility.move_flashless_files(parsed_manifest.info['fota_path'],
-                                                                     self._config.get_element([FLASHLESS_FILE_PATH],
-                                                                                              AGENT)[0])
+                                                                     self.flashless_filepath)
                     else:
                         inbm_vision_lib.utility.move_flashless_files(parsed_manifest.info['path'],
-                                                                     self._config.get_element([FLASHLESS_FILE_PATH],
-                                                                                              AGENT)[0])
+                                                                     self.flashless_filepath)
 
                 except (FileNotFoundError, OSError) as error:
                     # If error happened, reset updater.
@@ -457,35 +458,47 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         logger.debug(element_key)
         key_value = element_key.split(":", 1)
         key = key_value[0]
-        if key_value[1].isdigit():
-            value = int(key_value[1])
+
+        if key not in KEY_MANIFEST:
+            raise VisionException("Attempt to update invalid configuration key")
+
+        if key == FLASHLESS_FILE_PATH:
+            self.flashless_filepath = key_value[1]
 
         # Update component based on new value in key_value[1]
-        int_value = int(value)
+        if key in INT_CONFIG_VALUES:
+            if not key_value[1].isdigit():
+                raise VisionException("Attempt to update integer value with a non-integer value")
+            else:
+                value = int(key_value[1])
+                int_value = int(value)
+                self._update_integer_configuration_value(key, int_value)
+
+    def _update_integer_configuration_value(self, key: str, value: int) -> None:
         if key == VISION_HB_CHECK_INTERVAL_SECS:
-            v = configuration_bounds_check(CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS, int_value)
-            self._registry_manager.update_heartbeat_check_interval(v)
-        if key == NODE_HEARTBEAT_INTERVAL_SECS:
-            v = configuration_bounds_check(CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS, int_value)
-            self._update_heartbeat_transmission_interval(v)
-        if key == VISION_FOTA_TIMER:
-            v = configuration_bounds_check(CONFIG_FOTA_COMPLETION_TIMER_SECS, int_value)
-            logger.info('FOTA update timer changed to {0}.'.format(v))
-            self._max_fota_update_time = v
-        if key == VISION_SOTA_TIMER:
-            v = configuration_bounds_check(CONFIG_SOTA_COMPLETION_TIMER_SECS, int_value)
-            logger.info('SOTA update timer changed to {0}.'.format(v))
-            self._max_sota_update_time = v
-        if key == VISION_POTA_TIMER:
-            v = configuration_bounds_check(CONFIG_POTA_COMPLETION_TIMER_SECS, int_value)
-            logger.info('POTA update timer changed to {0}.'.format(v))
-            self._max_pota_update_time = v
-        if key == IS_ALIVE_INTERVAL_SECS:
-            v = configuration_bounds_check(CONFIG_IS_ALIVE_TIMER_SECS, int_value)
-            self._registry_manager.update_is_alive_interval(v)
-        if key == VISION_HB_RETRY_LIMIT:
-            v = configuration_bounds_check(CONFIG_HEARTBEAT_RETRY_LIMIT, int_value)
-            self._registry_manager.update_heartbeat_retry_limit(v)
+            self._registry_manager.update_heartbeat_check_interval(
+                configuration_bounds_check(CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS, value))
+        elif key == NODE_HEARTBEAT_INTERVAL_SECS:
+            self._update_heartbeat_transmission_interval(
+                configuration_bounds_check(CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS, value))
+        elif key == VISION_FOTA_TIMER:
+            fv = configuration_bounds_check(CONFIG_FOTA_COMPLETION_TIMER_SECS, value)
+            logger.info(f'FOTA update timer changed to {fv}.')
+            self._max_fota_update_time = fv
+        elif key == VISION_SOTA_TIMER:
+            sv = configuration_bounds_check(CONFIG_SOTA_COMPLETION_TIMER_SECS, value)
+            logger.info(f'SOTA update timer changed to {sv}.')
+            self._max_sota_update_time = sv
+        elif key == VISION_POTA_TIMER:
+            pv = configuration_bounds_check(CONFIG_POTA_COMPLETION_TIMER_SECS, value)
+            logger.info(f'POTA update timer changed to {pv}.')
+            self._max_pota_update_time = pv
+        elif key == IS_ALIVE_INTERVAL_SECS:
+            self._registry_manager.update_is_alive_interval(
+                configuration_bounds_check(CONFIG_IS_ALIVE_TIMER_SECS, value))
+        elif key == VISION_HB_RETRY_LIMIT:
+            self._registry_manager.update_heartbeat_retry_limit(
+                configuration_bounds_check(CONFIG_HEARTBEAT_RETRY_LIMIT, value))
 
     def _update_request_status(self, node_id: str) -> None:
         logger.debug("")
