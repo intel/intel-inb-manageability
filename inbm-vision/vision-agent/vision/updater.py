@@ -105,7 +105,7 @@ class Updater(ABC):
 
         """
         for fp in self._file_paths:
-            remove_file(get_canonical_representation_of_path(fp))
+            remove_file(fp)
 
         fail_target = []
         logger.info("Number of Target: %i", len(self._targets))
