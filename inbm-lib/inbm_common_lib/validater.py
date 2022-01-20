@@ -47,7 +47,7 @@ class ConfigurationItem:
 
 
 def configuration_bounds_check(item: ConfigurationItem, value: int) -> int:
-    if item.lower_limit < int(value) < item.upper_limit:
+    if item.lower_limit <= int(value) <= item.upper_limit:
         return value
     else:
         logger.error(f'{item.key} is outside of the allowed limits: '

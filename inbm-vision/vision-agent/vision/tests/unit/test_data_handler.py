@@ -411,13 +411,16 @@ class TestDataHandler(TestCase):
         update_method.assert_called_once()
 
     def test_manage_configuration_update_fota_timer(self):
-        self.data_handler.manage_configuration_update(VISION_FOTA_TIMER + ":10")
+        self.data_handler.manage_configuration_update(VISION_FOTA_TIMER + ":121")
+        self.assertEquals(getattr(self.data_handler, 'max_fota_update_wait_time'), 121)
 
     def test_manage_configuration_update_sota_timer(self):
         self.data_handler.manage_configuration_update(VISION_SOTA_TIMER + ":600")
+        self.assertEquals(getattr(self.data_handler, 'max_sota_update_wait_time'), 600)
 
     def test_manage_configuration_update_pota_timer(self):
         self.data_handler.manage_configuration_update(VISION_POTA_TIMER + ":1680")
+        self.assertEquals(getattr(self.data_handler, 'max_pota_update_wait_time'), 1680)
 
     @patch('vision.registry_manager.RegistryManager.update_is_alive_interval')
     def test_manage_configuration_update_is_alive_interval(self, update_method):
@@ -425,11 +428,8 @@ class TestDataHandler(TestCase):
         update_method.assert_called_once()
 
     def test_manage_configuration_update_flashless_file_path(self):
-        try:
-            self.data_handler.manage_configuration_update(FLASHLESS_FILE_PATH + ":/etc")
-            self.assertEquals(getattr(self.data_handler, 'flashless_filepath'), '/etc')
-        except VisionException as e:
-            self.fail(f"unexpected exception raised: {e}")
+        self.data_handler.manage_configuration_update(FLASHLESS_FILE_PATH + ":/etc")
+        self.assertEquals(getattr(self.data_handler, 'flashless_filepath'), '/etc')
 
     @patch('vision.registry_manager.RegistryManager.update_heartbeat_retry_limit')
     def test_manage_configuration_update_retry_limit(self, update_method):
