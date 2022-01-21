@@ -2,7 +2,7 @@
 """
     Constants and other config variables used throughout the vision-agent.
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from inbm_vision_lib.path_prefixes import INBM_VISION_ETC_PATH_PREFIX, INBM_VISION_SHARE_PATH_PREFIX, \
@@ -41,12 +41,8 @@ RESTART_TIMER_SECS = 420  # TODO:  Needs to be in Vision-agent configuration fil
 FLASHLESS_BOOT_TIME_SECS = 240
 
 # Heartbeat constants
-HEARTBEAT_CHECK_INTERVAL = 300  # 5 minutes
-NODE_HEARTBEAT_INTERVAL = 60  # 1 minute
-HEARTBEAT_RETRY_LIMIT = 3
 HEARTBEAT_ACTIVE_STATE = "Active"
 HEARTBEAT_IDLE_STATE = "Idle"
-IS_ALIVE_CHECK_INTERVAL = 180  # 3 minutes
 INTERNAL_CLOCK_INTERVAL = 1
 
 # Update constants
@@ -60,9 +56,6 @@ INVOKER_QUEUE_SIZE = 100
 
 # Maximum OTA and load timer
 MAX_CONFIG_LOAD_TIMER_SECS = 120
-MAX_FOTA_TIMER_SECS = 600
-MAX_SOTA_TIMER_SECS = 900
-MAX_POTA_TIMER_SECS = 900
 
 # Command constants
 UPDATE_NODE_COMMAND_NAME = "Update Node Command"
