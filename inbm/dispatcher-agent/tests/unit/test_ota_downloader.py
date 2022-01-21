@@ -9,7 +9,7 @@ from mock import patch
 
 ota_element = {'fetch': 'https://abc.tar'}
 parsed_manifest = {'uri': 'https://abc.com', 'signature': 'asdf',
-                   'signature_version': '3',
+                   'hash_algorithm': '3',
                    'resource': ota_element,
                    'username': 'uname',
                    'password': 'pwd'}
