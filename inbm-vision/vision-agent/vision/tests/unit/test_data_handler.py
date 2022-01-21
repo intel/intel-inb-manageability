@@ -7,7 +7,8 @@ from vision.manifest_parser import ParsedManifest, TargetParsedManifest
 from vision.constant import HEARTBEAT_ACTIVE_STATE, HEARTBEAT_IDLE_STATE, VisionException
 from vision.constant import AGENT
 from vision.configuration_constant import VISION_HB_CHECK_INTERVAL_SECS, NODE_HEARTBEAT_INTERVAL_SECS, \
-    VISION_FOTA_TIMER, IS_ALIVE_INTERVAL_SECS, VISION_HB_RETRY_LIMIT
+    VISION_FOTA_TIMER, VISION_SOTA_TIMER, VISION_POTA_TIMER, IS_ALIVE_INTERVAL_SECS, VISION_HB_RETRY_LIMIT, \
+    FLASHLESS_FILE_PATH
 from inbm_common_lib.constants import CONFIG_LOAD
 from inbm_vision_lib.constants import CONFIG_GET, CONFIG_SET
 from inbm_vision_lib.configuration_manager import ConfigurationException
@@ -410,17 +411,38 @@ class TestDataHandler(TestCase):
         update_method.assert_called_once()
 
     def test_manage_configuration_update_fota_timer(self):
-        self.data_handler.manage_configuration_update(VISION_FOTA_TIMER + ":10")
+        self.data_handler.manage_configuration_update(VISION_FOTA_TIMER + ":121")
+        self.assertEquals(getattr(self.data_handler, 'max_fota_update_wait_time'), 121)
+
+    def test_manage_configuration_update_sota_timer(self):
+        self.data_handler.manage_configuration_update(VISION_SOTA_TIMER + ":600")
+        self.assertEquals(getattr(self.data_handler, 'max_sota_update_wait_time'), 600)
+
+    def test_manage_configuration_update_pota_timer(self):
+        self.data_handler.manage_configuration_update(VISION_POTA_TIMER + ":1680")
+        self.assertEquals(getattr(self.data_handler, 'max_pota_update_wait_time'), 1680)
 
     @patch('vision.registry_manager.RegistryManager.update_is_alive_interval')
     def test_manage_configuration_update_is_alive_interval(self, update_method):
         self.data_handler.manage_configuration_update(IS_ALIVE_INTERVAL_SECS + ":10")
         update_method.assert_called_once()
 
+    def test_manage_configuration_update_flashless_file_path(self):
+        self.data_handler.manage_configuration_update(FLASHLESS_FILE_PATH + ":/etc")
+        self.assertEquals(getattr(self.data_handler, 'flashless_filepath'), '/etc')
+
     @patch('vision.registry_manager.RegistryManager.update_heartbeat_retry_limit')
     def test_manage_configuration_update_retry_limit(self, update_method):
         self.data_handler.manage_configuration_update(VISION_HB_RETRY_LIMIT + ":10")
         update_method.assert_called_once()
+
+    def test_raise_updating_non_integer_value(self):
+        with self.assertRaises(VisionException):
+            self.data_handler.manage_configuration_update(VISION_HB_RETRY_LIMIT + ":abc")
+
+    def test_raise_update_invalid_key(self):
+        with self.assertRaises(VisionException):
+            self.data_handler.manage_configuration_update("InvalidKey:10")
 
     @patch('vision.data_handler.data_handler.DataHandler.manage_configuration_update')
     def test_load_config_file_startup_success(self, conf_update: Any):

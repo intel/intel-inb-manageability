@@ -4,7 +4,7 @@
     - Create appropriate command and add it to Invoker
     - Trigger an OTA update
 
-    @copyright: Copyright 2021 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2019-2022 Intel Corporation All Rights Reserved.
     @license: Intel, see licenses/LICENSE for more details.
 """
 
@@ -18,6 +18,9 @@ import inbm_vision_lib
 import vision.data_handler
 import vision.manifest_parser
 import vision.validater
+import vision.configuration_constant
+
+from inbm_common_lib.validater import configuration_bounds_check
 from inbm_common_lib.utility import validate_file_type, get_canonical_representation_of_path, remove_file, \
     remove_file_list
 from inbm_common_lib.utility import clean_input
@@ -31,12 +34,9 @@ from .request_data_handler import GeneralDataHandler, get_dh_factory
 from .query import _create_query_response, _create_query_guid_response
 
 from ..command import configuration_command, ota_command, command, broker_command
-from ..constant import NODE_HEARTBEAT_INTERVAL, INVOKER_QUEUE_SIZE, AGENT, CONFIG_LOCATION, \
+from ..constant import INVOKER_QUEUE_SIZE, AGENT, CONFIG_LOCATION, \
     NO_ACTIVE_NODES_FOUND_ERROR, RESTART_TIMER_SECS, VISION_ID, VisionException, SUCCESS, MAX_CONFIG_LOAD_TIMER_SECS, \
-    MAX_FOTA_TIMER_SECS, MAX_SOTA_TIMER_SECS, MAX_POTA_TIMER_SECS, XLINK_PROVISION_PATH
-from ..configuration_constant import VISION_HB_CHECK_INTERVAL_SECS, NODE_HEARTBEAT_INTERVAL_SECS, VISION_FOTA_TIMER, \
-    IS_ALIVE_INTERVAL_SECS, VISION_HB_RETRY_LIMIT, VISION_SOTA_TIMER, VISION_POTA_TIMER, FLASHLESS_FILE_PATH, \
-    BOOT_FLASHLESS_DEV
+    XLINK_PROVISION_PATH
 from ..parser import XLinkParser
 from ..status_watcher import StatusWatcher
 from ..updater import Updater, ConfigurationLoader, get_updater_factory
@@ -46,10 +46,14 @@ logger = logging.getLogger(__name__)
 
 class DataHandler(vision.data_handler.idata_handler.IDataHandler):
     # docstring inherited
+    flashless_filepath = vision.configuration_constant.DEFAULT_FLASHLESS_FILE_PATH
+    max_fota_update_wait_time = vision.configuration_constant.CONFIG_FOTA_COMPLETION_TIMER_SECS.default_value
+    max_sota_update_wait_time = vision.configuration_constant.CONFIG_SOTA_COMPLETION_TIMER_SECS.default_value
+    max_pota_update_wait_time = vision.configuration_constant.CONFIG_POTA_COMPLETION_TIMER_SECS.default_value
 
     def __init__(self, vision_callback: vision.ivision.IVision,
                  config_callback: inbm_vision_lib.configuration_manager.ConfigurationManager) -> None:
-        """Constructor.
+        """Acts as the Client in the Command Design Pattern
 
         @param vision_callback: Callback to the Node object
         @param config_callback: Callback to Configuration object
@@ -60,10 +64,8 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         self._xlink_queue: List[str] = []
         self._registry_manager = vision.registry_manager.RegistryManager(self)
         self._invoker = Invoker(INVOKER_QUEUE_SIZE)
-        self._node_heartbeat_interval_secs = NODE_HEARTBEAT_INTERVAL
-        self._max_fota_update_time = MAX_FOTA_TIMER_SECS
-        self._max_sota_update_time = MAX_SOTA_TIMER_SECS
-        self._max_pota_update_time = MAX_POTA_TIMER_SECS
+        self._node_heartbeat_interval_secs = \
+            vision.configuration_constant.CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS.default_value
         self._updater: Optional[Updater] = None
         self._status_watcher: Optional[StatusWatcher] = None
         self._config = config_callback
@@ -229,7 +231,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
 
         @param sw_device_id: sw device id of targeted node agent
         """
-        if self._config.get_element([BOOT_FLASHLESS_DEV], AGENT)[0] == "true":
+        if self._config.get_element([vision.configuration_constant.BOOT_FLASHLESS_DEV], AGENT)[0] == "true":
             while self._running and self.boot_device_lock.acquire():
                 # The lock will be released once the BootDeviceCommand complete.
                 cmd = command.BootDeviceCommand(
@@ -308,9 +310,9 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
             except TypeError as error:
                 raise VisionException(f"OTA FAILURE due to {error}")
 
-            ota_timer = self._max_fota_update_time if parsed_manifest.manifest_type == FOTA \
-                else self._max_sota_update_time \
-                if parsed_manifest.manifest_type == SOTA else self._max_pota_update_time
+            ota_timer = self.max_fota_update_wait_time if parsed_manifest.manifest_type == FOTA \
+                else self.max_sota_update_wait_time \
+                if parsed_manifest.manifest_type == SOTA else self.max_pota_update_wait_time
             self._updater = get_updater_factory(parsed_manifest.manifest_type, valid_target_ids, self, file_paths,
                                                 parsed_manifest.info, ota_timer)
             cmd = ota_command.UpdateNodeCommand(self._updater)
@@ -321,12 +323,10 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
                     vision.flashless_utility.copy_backup_flashless_files()
                     if parsed_manifest.manifest_type == POTA:
                         inbm_vision_lib.utility.move_flashless_files(parsed_manifest.info['fota_path'],
-                                                                     self._config.get_element([FLASHLESS_FILE_PATH],
-                                                                                              AGENT)[0])
+                                                                     self.flashless_filepath)
                     else:
                         inbm_vision_lib.utility.move_flashless_files(parsed_manifest.info['path'],
-                                                                     self._config.get_element([FLASHLESS_FILE_PATH],
-                                                                                              AGENT)[0])
+                                                                     self.flashless_filepath)
 
                 except (FileNotFoundError, OSError) as error:
                     # If error happened, reset updater.
@@ -454,27 +454,48 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         logger.debug(element_key)
         key_value = element_key.split(":", 1)
         key = key_value[0]
-        if key_value[1].isdigit():
-            value = int(key_value[1])
+
+        if key not in vision.configuration_constant.KEY_MANIFEST:
+            raise VisionException("Attempt to update invalid configuration key")
+
+        if key == vision.configuration_constant.FLASHLESS_FILE_PATH:
+            self.flashless_filepath = key_value[1]
 
         # Update component based on new value in key_value[1]
-        if key == VISION_HB_CHECK_INTERVAL_SECS:
-            self._registry_manager.update_heartbeat_check_interval(value)
-        if key == NODE_HEARTBEAT_INTERVAL_SECS:
-            self._update_heartbeat_transmission_interval(value)
-        if key == VISION_FOTA_TIMER:
-            logger.info('FOTA update timer changed to {0}.'.format(value))
-            self._max_fota_update_time = value
-        if key == VISION_SOTA_TIMER:
-            logger.info('SOTA update timer changed to {0}.'.format(value))
-            self._max_sota_update_time = value
-        if key == VISION_POTA_TIMER:
-            logger.info('POTA update timer changed to {0}.'.format(value))
-            self._max_pota_update_time = value
-        if key == IS_ALIVE_INTERVAL_SECS:
-            self._registry_manager.update_is_alive_interval(value)
-        if key == VISION_HB_RETRY_LIMIT:
-            self._registry_manager.update_heartbeat_retry_limit(value)
+        if key in vision.configuration_constant.INT_CONFIG_VALUES:
+            if not key_value[1].isdigit():
+                raise VisionException("Attempt to update integer value with a non-integer value")
+            else:
+                value = int(key_value[1])
+                int_value = int(value)
+                self._update_integer_configuration_value(key, int_value)
+
+    def _update_integer_configuration_value(self, key: str, value: int) -> None:
+        if key == vision.configuration_constant.VISION_HB_CHECK_INTERVAL_SECS:
+            self._registry_manager.update_heartbeat_check_interval(
+                configuration_bounds_check(vision.configuration_constant.CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS, value))
+        elif key == vision.configuration_constant.NODE_HEARTBEAT_INTERVAL_SECS:
+            self._update_heartbeat_transmission_interval(
+                configuration_bounds_check(
+                    vision.configuration_constant.CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS, value))
+        elif key == vision.configuration_constant.VISION_FOTA_TIMER:
+            fv = configuration_bounds_check(vision.configuration_constant.CONFIG_FOTA_COMPLETION_TIMER_SECS, value)
+            logger.info(f'FOTA update timer changed to {fv}.')
+            self.max_fota_update_wait_time = fv
+        elif key == vision.configuration_constant.VISION_SOTA_TIMER:
+            sv = configuration_bounds_check(vision.configuration_constant.CONFIG_SOTA_COMPLETION_TIMER_SECS, value)
+            logger.info(f'SOTA update timer changed to {sv}.')
+            self.max_sota_update_wait_time = sv
+        elif key == vision.configuration_constant.VISION_POTA_TIMER:
+            pv = configuration_bounds_check(vision.configuration_constant.CONFIG_POTA_COMPLETION_TIMER_SECS, value)
+            logger.info(f'POTA update timer changed to {pv}.')
+            self.max_pota_update_wait_time = pv
+        elif key == vision.configuration_constant.IS_ALIVE_INTERVAL_SECS:
+            self._registry_manager.update_is_alive_interval(
+                configuration_bounds_check(vision.configuration_constant.CONFIG_IS_ALIVE_TIMER_SECS, value))
+        elif key == vision.configuration_constant.VISION_HB_RETRY_LIMIT:
+            self._registry_manager.update_heartbeat_retry_limit(
+                configuration_bounds_check(vision.configuration_constant.CONFIG_HEARTBEAT_RETRY_LIMIT, value))
 
     def _update_request_status(self, node_id: str) -> None:
         logger.debug("")

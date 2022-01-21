@@ -88,26 +88,26 @@ This guide is intended for:
 
 The diagram below depicts the entire Intel Manageability Framework.  There are three projects to the Framework.  They can
 either be used together or separately.  The following are the 3 projects:
-1. INB
+1. INBM
 2. INBM Vision (Only used on Intel Vision based HDDL solutions)
 3. INBC (Optional command-line tool)
 
 <img src="media/In-Band Manageability Developer Guide/media/image1.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
-### INB
-INB can be used in any of the three scenarios.
+### INBM
+INBM can be used in any of the three scenarios.
    1. Edge Device
    2. Host system of a Vision based HDDL solution
    3. SOC of a Flash-based Vision HDDL solution
 
-The diagram below depicts the overall architecture of INB.  INB is one of the two projects within INBM.  
+The diagram below depicts the overall architecture of INBM.  INBM is one of the three projects within the INBM Framework.  
 It's responsibilities include:
   - Communication with the Cloud
   - Perform OTA updates (FOTA, SOTA, POTA, and AOTA)
   - Diagnostic checks
   - Telemetry (Static and Dynamic)
 
-There are 5 Agents and 1 Binary associated with INB which all reside on the same system and communicate with one another via MQTT.
+There are 5 Agents and 1 Binary associated with INBM which all reside on the same system and communicate with one another via MQTT.
 - Cloudadapter-agent (would not be used on SOC of a Vision based HDDL solution)
 - Configuration-agent
 - Diagnostic-agent
@@ -175,7 +175,7 @@ TRTL is a binary executable developed in Golang.  It is a command-line tool whic
 
 ### INBM Vision
 
-The INBM Vision solution is only used in a Vision based HDDL solution.  There are 2 Agents/Services associated with INBM Vision.  Unlike INB these agents reside separately on different systems.
+The INBM Vision solution is only used in a Vision based HDDL solution.  There are 2 Agents/Services associated with INBM Vision.  Unlike INBM these agents reside separately on different systems.
 - Vision-agent (resides on the Host system only)
 - Node-agent (resides on the SOC system only)
 
@@ -850,7 +850,7 @@ inbm/dispatcher-agent/fpm-template/lib/systemd/system/inbm-dispatcher.service
 is shown below.
 
 ```
- # Copyright 2021 Intel Corporation All Rights Reserved.
+ # Copyright 2021-2022 Intel Corporation All Rights Reserved.
  # SPDX-License-Identifier: Apache-2.0
 
 [Unit]
@@ -894,7 +894,7 @@ sudo systemctl stop mqtt
 
 Step 2:
 ```shell
-rm /var/lib/mosquitto/mosquitto.db  
+sudo rm /var/lib/mosquitto/mosquitto.db  
 ```
 
 Step 3:

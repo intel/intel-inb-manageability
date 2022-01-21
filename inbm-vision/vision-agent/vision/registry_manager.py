@@ -12,7 +12,7 @@
     timestamp(which is recorded based on internal clock, not system time.).
     This way removes the dependency on the system time.
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -22,8 +22,9 @@ from typing import Any, Optional, Tuple, List
 from threading import Lock
 from time import sleep
 
-from .constant import HEARTBEAT_CHECK_INTERVAL, HEARTBEAT_RETRY_LIMIT, HEARTBEAT_ACTIVE_STATE, \
-    HEARTBEAT_IDLE_STATE, IS_ALIVE_CHECK_INTERVAL, INTERNAL_CLOCK_INTERVAL
+from .constant import HEARTBEAT_ACTIVE_STATE, HEARTBEAT_IDLE_STATE, INTERNAL_CLOCK_INTERVAL
+from .configuration_constant import CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS, CONFIG_HEARTBEAT_RETRY_LIMIT, \
+    CONFIG_IS_ALIVE_TIMER_SECS
 from .data_handler.idata_handler import IDataHandler
 from inbm_vision_lib.timer import Timer
 from inbm_vision_lib.xlink.ixlink_wrapper import check_platform_type
@@ -139,12 +140,12 @@ class RegistryManager(object):
     @param hb_check_interval: time between checking for node heartbeats
     """
 
-    def __init__(self, data_handler: IDataHandler, hb_check_interval: int = HEARTBEAT_CHECK_INTERVAL) \
-            -> None:
+    def __init__(self, data_handler: IDataHandler,
+                 hb_check_interval: int = CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS.default_value) -> None:
         self._data_handler_callback = data_handler
         self._heartbeat_check_interval: int = hb_check_interval
-        self._heartbeat_retry_limit: int = HEARTBEAT_RETRY_LIMIT
-        self._is_alive_interval: int = IS_ALIVE_CHECK_INTERVAL
+        self._heartbeat_retry_limit: int = CONFIG_HEARTBEAT_RETRY_LIMIT.default_value
+        self._is_alive_interval: int = CONFIG_IS_ALIVE_TIMER_SECS.default_value
         self._registries: List[Registry] = []
         self._internal_clock: datetime = datetime.now()
         self._interval_clock_run = Timer(INTERNAL_CLOCK_INTERVAL, self._start_internal_clock)
@@ -347,7 +348,7 @@ class RegistryManager(object):
         @param heartbeat_timestamp: A datetime object represent the previous heartbeat timestamp.
         @return: returns boolean values
         """
-        logger.debug("Current HEARTBEAT_CHECK_INTERVAL is %i seconds",
+        logger.debug("Current HEARTBEAT CHECK INTERVAL is %i seconds",
                      self._heartbeat_check_interval)
         if (self._heartbeat_check_interval - self._calculate_time_interval(heartbeat_timestamp,
                                                                            self._internal_clock)) > 0.0:
