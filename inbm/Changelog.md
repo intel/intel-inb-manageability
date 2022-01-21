@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
  - 505595, HSD 15010407028 - Fix provisionNode command failed in Signature check
  - HSD 15010510035 - Fix node service fail to autostart after freshly flash
+ - HSD 15010519087, 15010575546, 15010584480 - Fix SSL search path to work on Yocto, using /etc/ssl/ca-certificates.crt on all systems.
 
 ## 3.0.7 - 2022-01-04
 
