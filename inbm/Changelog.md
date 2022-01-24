@@ -10,10 +10,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010510035 - Fix node service fail to autostart after freshly flash
 
 ### Security
- - Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}.
+ - RTC 507867: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}.
    Previous runtime (1.16.2/1.16.3) had a number of CVEs associated with it.
    New runtime version is 1.17.6.
- - Updated trtl dependency to clear a third-party CVE result associated with
+ - RTC 507867: Updated trtl dependency to clear a third-party CVE result associated with
    containerd.
 
 ## 3.0.7 - 2022-01-04
