@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - ?
+## 3.0.8 - 2022-01-24
 
 ### Fixed
 - 504494, HSD 15010332252 - Fix provision file not removed in /opt/xlink_provision when failed to reset device due to no matching device id

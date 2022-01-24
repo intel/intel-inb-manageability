@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - ?
+## 3.0.8 - 2022-01-24
 
 ### Fixed
  - 505595, HSD 15010407028 - Fix provisionNode command failed in Signature check
@@ -11,11 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010519087, 15010575546, 15010584480 - Fix SSL search path to work on Yocto, using /etc/ssl/ca-certificates.crt on all systems.
 
 ### Security
- - RTC 507867: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}.
-   Previous runtime (1.16.2/1.16.3) had a number of CVEs associated with it.
-   New runtime version is 1.17.6.
- - RTC 507867: Updated trtl dependency to clear a third-party CVE result associated with
-   containerd.
+ - RTC 507867: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.16.2/1.16.3) had a number of CVEs associated with it. New runtime version is 1.17.6.
+ - RTC 507867: Updated trtl dependency to clear a third-party CVE result associated with containerd.
 
 ## 3.0.7 - 2022-01-04
 
