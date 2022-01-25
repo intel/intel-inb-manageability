@@ -3,6 +3,7 @@ from datetime import datetime
 from unittest import TestCase
 
 from vision.constant import *
+from vision.configuration_constant import *
 from vision.data_handler.idata_handler import IDataHandler
 from vision.registry_manager import RegistryManager
 from mock import Mock, patch
@@ -188,13 +189,13 @@ class TestRegistryManager(TestCase):
         self.assertEquals(time_interval, 10)
 
     @patch('vision.registry_manager.RegistryManager._calculate_time_interval',
-           return_value=HEARTBEAT_CHECK_INTERVAL - 1)
+           return_value=CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS.default_value - 1)
     def test_is_heartbeat_status_active(self, cal):
         self.assertIsNotNone(self.new_registry_manager)
         self.assertTrue(self.new_registry_manager._is_heartbeat_active(Mock()))
 
     @patch('vision.registry_manager.RegistryManager._calculate_time_interval',
-           return_value=HEARTBEAT_CHECK_INTERVAL + 1)
+           return_value=CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS.default_value + 1)
     def test_is_heartbeat_status_idle(self, cal):
         self.assertIsNotNone(self.new_registry_manager)
         self.assertFalse(self.new_registry_manager._is_heartbeat_active(Mock()))

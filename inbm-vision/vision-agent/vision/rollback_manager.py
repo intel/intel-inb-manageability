@@ -69,7 +69,7 @@ class RollbackManager(object):
             if self._broker:
                 self._broker.publish_telemetry_response(VISION_ID, resp_msg)
         else:
-            logger.debug("Flashless boot device disabled. Master won't boot the device.")
+            logger.debug("Flashless boot device disabled. Vision Agent won't boot the device.")
 
     def _reboot_device(self, nid: str) -> None:
         """Starts the agent and listens for incoming commands on the command channel

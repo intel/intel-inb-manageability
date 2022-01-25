@@ -25,7 +25,7 @@ class IXlinkChannelConnector(ABC):
 
     @param data_handler: DataHandler object
     @param channel_list: List of private xlink channels
-    @params is_boot_device: True if boot device; otherwise, false
+    @param is_boot_device: True if boot device; otherwise, false
     """
 
     def __init__(self, data_handler: IDataHandler, channel_list: List[int], is_boot_device: bool) -> None:
@@ -136,7 +136,7 @@ class XlinkSimulatorConnector(IXlinkChannelConnector):
 
     @param data_handler: DataHandler object
     @param channel_list: List of private xlink channels
-    @params is_boot_device: True if boot device; otherwise, false
+    @param is_boot_device: True if boot device; otherwise, false
     """
 
     def __init__(self, data_handler: IDataHandler, channel_list: List[int], is_boot_device: bool) -> None:

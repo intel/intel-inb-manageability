@@ -8,6 +8,7 @@
 
 
 import logging
+import os
 
 import inbm_vision_lib
 import vision.manifest_parser
@@ -17,6 +18,7 @@ from inbm_vision_lib.ota_parser import ParseException
 from .idata_handler import IDataHandler
 
 from inbm_common_lib.pms.pms_helper import PMSHelper, PmsException
+from inbm_common_lib.utility import remove_file
 from inbm_vision_lib.xlink.xlink_utility import get_all_xlink_pcie_device_ids, filter_first_slice_from_list
 from inbm_vision_lib.path_prefixes import IS_WINDOWS
 from inbm_vision_lib.xlink.xlink_secure_wrapper import XlinkSecureWrapper
@@ -32,10 +34,16 @@ def receive_provision_node_request(manifest: str, data_handler: IDataHandler) ->
     @param manifest: manifest received via MQTT
     @param data_handler: DataHandler object
     """
+    logger.debug("Execute provisionNode command.")
     try:
         parsed_manifest = vision.manifest_parser.ParsedManifest.from_instance(
             vision.manifest_parser.parse_manifest(manifest))
-        logger.debug("Execute provisionNode command.")
+    except (XmlException, ParseException) as error:
+        data_handler.send_telemetry_response(VISION_ID, inbm_vision_lib.constants.create_error_message(
+            f"Command PROVISION_NODE FAILED: {error}"))
+        return
+
+    try:
         for path in parsed_manifest.info:
             inbm_vision_lib.utility.move_file(
                 parsed_manifest.info[path], XLINK_PROVISION_PATH)
@@ -46,7 +54,11 @@ def receive_provision_node_request(manifest: str, data_handler: IDataHandler) ->
         _restart_device_after_provision_node_command(
             parsed_manifest.info["blob_path"].rsplit("/")[-1])
 
-    except (XmlException, OSError, VisionException, ParseException) as error:
+    except (OSError, VisionException) as error:
+        remove_file(parsed_manifest.info["blob_path"])
+        remove_file(parsed_manifest.info["cert_path"])
+        remove_file(os.path.join(XLINK_PROVISION_PATH, parsed_manifest.info["blob_path"].split('/')[-1]))
+        remove_file(os.path.join(XLINK_PROVISION_PATH, parsed_manifest.info["cert_path"].split('/')[-1]))
         data_handler.send_telemetry_response(VISION_ID, inbm_vision_lib.constants.create_error_message(
             f"Command PROVISION_NODE FAILED: {error}"))
 

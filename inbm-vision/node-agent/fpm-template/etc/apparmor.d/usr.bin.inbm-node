@@ -39,6 +39,7 @@
   /sys/firmware/devicetree/base/soc/version-info/sku r,
   /sys/firmware/devicetree/base/soc/version-info/stepping r,
   /sys/firmware/devicetree/base/boot_info/measured_boot r,
+  /sys/kernel/xlink_secure/debug r,
   /tmp/** mrw,
   /usr/bin/inbm-node rix,
   /usr/bin/rpm rix,

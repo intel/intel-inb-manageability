@@ -1,24 +1,31 @@
 # Developer Guide
 
-## Table of Contents
+<details>
+<summary>Table of Contents</summary>
 
 1. [Introduction](#introduction)
     1. [Purpose](#purpose)
     2. [Audience](#audience)
-2. [Source Overview](#source-overview)
-   1. [Agents Overview](#agents-overview)
-      1. [CloudAdapter Agent](#cloudadapter-agent)
-      2. [Configuration Agent](#configuration-agent)
-      3. [Diagnostic Agent](#diagnostic-agent)
-      4. [Dispatcher Agent](#dispatcher-agent)
-      5. [Telemetry Agent](#telemetry-agent)
-      6. [Vision Agent](#vision-agent)
-      7. [Node Agent](#node-agent)
-   2. [Run Agents via Source Code](#run-agents-via-source-code)
-3. [Build instructions](#build-instructions)
-4. [INBC](#INBC)
-5. [Adding a New Configuration Parameter](#adding-a-new-configuration-parameter)
-6. [Security](#security)
+2. [Architecture](#architecture)
+   1. [INB](#inb)
+         1. [CloudAdapter Agent](#cloudadapter-agent)
+         2. [Configuration Agent](#configuration-agent)
+         3. [Diagnostic Agent](#diagnostic-agent)
+         4. [Dispatcher Agent](#dispatcher-agent-dms)
+            1. [OTA Update Class Diagram](#ota-update-class-diagram)
+         5. [Telemetry Agent](#telemetry-agent)
+         6. [TRTL](#trtl)
+   2. [INBM Vision](#inbm-vision)
+         1. [Vision Agent](#vision-agent)
+            1. [Vision Agent Overall Class Diagram](#vision-agent-overall-class-diagram)
+            2. [Vision Agent Registry Class Diagram](#vision-agent-registry-class-diagram)
+            3. [Vision Agent Xlink Connectivity Class Diagram](#vision-agent-xlink-connectivity-class-diagram)
+         2. [Node Agent](#node-agent)
+            1. [Node Agent Class Diagram](#node-agent-class-diagram)
+   3. [INBC](#inbc)
+3. [Run Agents via Source Code](#run-agents-via-source-code)
+6. [Add New Configuration Parameter](#add-new-configuration-parameter)
+7. [Security](#security)
    1. [OS Hardening](#os-hardening)
    2. [INBM Hardening](#inbm-hardening)
       1. [AppArmor Profiles](#apparmor-profiles)
@@ -29,8 +36,8 @@
       6. [Manifest Schema Checks](#manifest-schema-checks)
       7. [Docker Bench Security](#docker-bench-security)
       8. [Platform TPM usage](#platform-tpm-usage)
-7. [Enable Debug Logging](#enable-debug-logging)
-8. [OTA Commands via Manifest](#ota-commands-via-manifest)
+8. [Enable Debug Logging](#enable-debug-logging)
+9. [OTA Commands via Manifest](#ota-commands-via-manifest)
    1. [Manifest Rules](#manifest-rules)
    2. [AOTA Updates](#aota-updates)
       1. [AOTA Manifest Parameters](#aota-manifest-parameters)
@@ -47,30 +54,28 @@
    7. [Power Management](#power-management)
       1. [Restart via Manifest](#restart-via-manifest)
       2. [Shutdown via Manifest](#shutdown-via-manifest)
-9. [Extending FOTA support](#extending-fota-support)
-   1. [Understanding FOTA Configuration File](#understanding-fota-configuration-file)
-   2. [Firmware Configuration Parameter Values](#firmware-configuration-parameter-values)
-   3. [Query command Manifest](#query-command-manifest)
-   4. [AppArmor Permissions](#apparmor-permissions)
-10. [Creating a New Agent](#creating-a-new-agent)
-11. [Issues and Troubleshooting](#issues-and-troubleshooting)
+10. [Extending FOTA support](#extending-fota-support)
+    1. [Understanding FOTA Configuration File](#understanding-fota-configuration-file)
+    2. [Firmware Configuration Parameter Values](#firmware-configuration-parameter-values)
+    3. [Query command Manifest](#query-command-manifest)
+    4. [AppArmor Permissions](#apparmor-permissions)
+11. [Creating a New Agent](#creating-a-new-agent)
+12. [Issues and Troubleshooting](#issues-and-troubleshooting)
     1. [OTA Error Status](#ota-error-status)
     2. [Dispatcher-Agent Not Receiving Messages](#dispatcher-agent-not-receiving-messages)
-
-Appendix
-1. [Vision-agent Xlink Connectivity Class Diagram](#vision-agent-xlink-connectivity-class-diagram)
+</details>
 
 ## Introduction
 ### Purpose
 
-This Developer Guide provides the reader instructions on how to navigate
-and build the INBM source code. It also provides information that Manageability solution developers will find useful, for
+It provides information that Manageability solution developers will find useful, for
 example:
 
--   Configuration file composition
--   How to enable logging
--   Adding new Platform support for FW update capability
--   Adding support to a new Cloud Backend and Communicating with the INBM framework
+- Overall architecture
+- Configuration file composition
+- How to enable logging
+- Adding new Platform support for FW update capability
+- Adding support to a new Cloud Backend and Communicating with the INBM framework
 
 ### Audience
 
@@ -79,81 +84,104 @@ This guide is intended for:
 -   System Integrators administrating devices running the INBM Framework.
                                                                                                                                                                            |
 
-## Source Overview
+## Architecture
 
-INBM has seven different agents each with its own unique responsibility.
+The diagram below depicts the entire Intel Manageability Framework.  There are three projects to the Framework.  They can
+either be used together or separately.  The following are the 3 projects:
+1. INBM
+2. INBM Vision (Only used on Intel Vision based HDDL solutions)
+3. INBC (Optional command-line tool)
 
-- Cloudadapter-agent
+<img src="media/In-Band Manageability Developer Guide/media/image1.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+
+### INBM
+INBM can be used in any of the three scenarios.
+   1. Edge Device
+   2. Host system of a Vision based HDDL solution
+   3. SOC of a Flash-based Vision HDDL solution
+
+The diagram below depicts the overall architecture of INBM.  INBM is one of the three projects within the INBM Framework.  
+It's responsibilities include:
+  - Communication with the Cloud
+  - Perform OTA updates (FOTA, SOTA, POTA, and AOTA)
+  - Diagnostic checks
+  - Telemetry (Static and Dynamic)
+
+There are 5 Agents and 1 Binary associated with INBM which all reside on the same system and communicate with one another via MQTT.
+- Cloudadapter-agent (would not be used on SOC of a Vision based HDDL solution)
 - Configuration-agent
 - Diagnostic-agent
 - Dispatcher-agent
 - Telemetry-agent
-- Vision (used with Intel Vision cards)
-- Node (used with Intel Vision cards)
+- TRTL (Binary Executable)
 
-### Agents Overview
-
-The Vision and Node agents communicate with each other via Xlink.  All other agents
-communicate with the other agents using MQTT.
+<img src="media/In-Band Manageability Developer Guide/media/image3.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
 #### ⚙️CloudAdapter Agent
-The cloudadapter-agent relays the messages between the cloud and the dispatcher-agent via MQTT.  
+Relays MQTT messages between the cloud API and dispatcher-agent.  
 
 #### ⚙️Configuration Agent
-Configuration-agent publishes the config parameter values to all other agents. The parameters are stored in the ``/etc/intel_manageability.conf``` file. 
-The parameters and  their descriptions can be found in the [Configuration Parameters](Configuration%20Parameters.md) reference.
-
-
-The *broker.py* handles all config updates to be performed on the system.  
-The *configuration.py* starts the configuration agent.  
-The *xml_handler.py* contains the necessary functions required to
-modify the XML conf file.  
-The *constants.py* contains all MQTT subscription and publishing
-channels used by configuration-agent.
+Publishes the configuration parameter values to all other agents. The parameters are stored in the ``/etc/intel_manageability.conf``` file. 
+The parameters and their descriptions can be found in the [Configuration Parameters](Configuration%20Parameters.md) reference.
 
 #### ⚙️Diagnostic Agent
-Monitors and reports the state of critical components of the framework. This agent is responsible for performing all 
-diagnostic checks like system health checks. It requires software checks before installation, network checks, docker stats, docker-bench-security checks as such. These checks will be performed at timed intervals. These timed intervals can be altered by changing the interval seconds within the ```/etc/intel_manageability.conf``` file using configuration updates from cloud via button click or manifest update. Once the checks are completed, the result message is published to the cloud as telemetry.
 
-The *command_pattern.py* consists of all the commands/checks that are being handled by the diagnostic agent.  
-The *dispatch_command.py* dispatches correct command/checks based on the request.  
-The *docker_bench_security\_runner.py* runs the DockerBenchSecurity checks on the docker containers and images, while the *event\_watcher.py* watches for events from Docker.  
-The *repeating_timer.py* creates a timer that repeats for a given interval specified by the time-based checks.  
-The file *constants.py* contains all the MQTT subscription and publishing channels used by diagnostic-agent to communicate with other agents.
+The Diagnostic-agent is responsible for the following:
+- Perform diagnostic system health checks prior to an OTA install.
+- Perform diagnostic check at timed intervals which can be altered by changing the interval seconds with the ```/etc/intel_manageability.conf``` file using configuration 
+updates.
+- Publishing diagnostic results as Telemetry.
 
-#### ⚙️Dispatcher Agent
+The following checks may be performed:
+- Network available
+- Docker stats
+- Docker-bench-security for container health
+- Available memory
+- Available storage
+- Battery power (mobile systems)
+- Required software installed
 
-Dispatches and performs the received commands/operations from the cloud on the device.  It is responsible for determining what kind of request is received from the cloud and invokes the respective commands/threads that would perform the desired operation. Once the operation is complete, the status of the operation will be published to the cloud by this agent.
+#### ⚙️Dispatcher Agent (DMS)
+The Dispatcher-agent is the central agent.  It is responsible for the following:
+- Dispatching and executing the received commands/operations from the cloud or INBC. Determines the type of request and invokes the respective commands/threads to perform the operation.
+- Publishes the resulting status of the operation.
 
-##### OTA update Class Diagram
-When there is an OTA update, the Dispatcher class will call into an Abstract Factory pattern to create the correct concrete classes to perform the update.  The update
-can be for either a FOTA, SOTA, AOTA, or POTA.  It will create the classes based on that.  
-
-<img src="media/In-Band Manageability Developer Guide/media/image19.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+    ##### OTA Update Class Diagram
+    When there is an OTA update, the Dispatcher class will call into an [Abstract Factory pattern](https://en.wikipedia.org/wiki/Abstract_factory_pattern) to create the correct concrete classes to perform the update.  The update
+    can be for either a FOTA, SOTA, AOTA, or POTA.  It will create the classes based on that.  
+    
+    <img src="media/In-Band Manageability Developer Guide/media/image19.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
 #### ⚙️Telemetry Agent
-Publishes the system’s static and dynamic telemetry to the cloud.
+The Telemetry-agent is responsible for the following:
+- Collect and publish the system’s static telemetry information.
+- Collect and publish dynamic telemetry information at configured intervals.
 
-The broker.py initializes the agents publish/subscribe channels.
+#### ⚙️TRTL
+TRTL is a binary executable developed in Golang.  It is a command-line tool which is also called internally in INB. It provides a wrapper around the API calls to Docker, Docker-Compose, and Snapper in order to provide the following:
+ - Uniform interface to install/rollback for back ends such as Docker, Docker-Compose, and Snapper.
+ - Ability to open a container to perform Docker-bench-security checks
+   - Container management
+     - Create
+     - Remove
+     - Snapshot
+     - Rollback
+     - List
+ - [List of Commands](https://github.com/intel/intel-inb-manageability/blob/develop/inbm/trtl/README.md)
 
-The *container_usage.py* has code that gets the container stats on a
-device.
+   #### TRTL High Level Class Diagram
+   TRTL parses the incoming command and then creates the concrete class based on the type of command (docker, compose, btrfs).  It will then activate the designated command.  
+   <img src="media/In-Band Manageability Developer Guide/media/image8.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
-The *dynamic_attributes.py* contains functions that retrieve dynamic
-telemetry information such as disk_usage, cpu percentage, network
-telemetry, and available memory,
+### INBM Vision
 
-The *static_attributes.py* have function that gets the device’s static
-telemetry information such as cpu_id, disk information, and total
-physical memory,
+The INBM Vision solution is only used in a Vision based HDDL solution.  There are 2 Agents/Services associated with INBM Vision.  Unlike INBM these agents reside separately on different systems.
+- Vision-agent (resides on the Host system only)
+- Node-agent (resides on the SOC system only)
 
-The *telemetry_handling.py* is responsible for calling the necessary
-telemetry events upon time-intervals and then publishing the information
-on to the cloud and other agents when needed.
+Both agents use the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as their overall design.
 
-The file *constants.py* contains all the MQTT subscription and
-publishing channels used by telemetry-agent to communicate with other
-agents.
+The Vision and Node agents communicate with each other via Xlink.
 
 #### ⚙️Vision Agent
 The Vision-agent resides on the Host side of a system utilizing Intel Vision cards.  It manages all communication with the individual vision cards.  It is responsible for the following:
@@ -161,22 +189,78 @@ The Vision-agent resides on the Host side of a system utilizing Intel Vision car
 - Manage the communication status of each Vision card.  Try and reconnect if communication is lost.
 - Determine what Vision cards should receive the update if no targets are requested in the manifest.
 - Verify that a requested target is eligible for the requested OTA update.
+- Push OTA files to targeted nodes.
+- Push OTA manifest to targeted nodes.
+- Parse Xlink messages from nodes
+- Create Xlink messages for nodes
+- Push configuration values to nodes via xlink
 - Publish Telemetry events and results received from Vision cards
 
-The Xlink code used by the Vision-agent uses several classes and two Abstract Factory design patterns.  The class diagram of how these classes interact
-can be found in the [Appendix](#vision-agent-xlink-connectivity-class-diagram).
+<details>
+<summary>Vision Agent Class Diagrams</summary>
+
+##### Vision Agent Overall Class Diagram
+The Vision Agent uses the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as the overall design with the following Participants: 
+- Command = Command class
+- ConcreteCommand = Everything inheriting from the Command class
+- Client = DataHandler classes
+- Invoker = Invoker class
+- Receiver = NodeConnector, Broker, RegistryManager, Updater
+
+<img src="media/In-Band Manageability Developer Guide/media/image5.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+
+##### Vision-agent Registry Class Diagram 
+The Registry class used by the RegistryManager:
+
+<img src="media/In-Band Manageability Developer Guide/media/image7.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+
+##### Vision-agent Xlink Connectivity Class Diagram
+
+The Vision Agent communicates with the Node Agent over PCIe using Xlink.  The Xlink code uses several classes and two 
+Abstract Factory design patterns.  The class diagram of how these classes interact is below:
+
+<img src="media/In-Band Manageability Developer Guide/media/image16.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+    
+</details>
 
 #### ⚙️Node Agent
 The Node-agent resides on each of the individual Intel Vision cards.  It manages the communication of each vision card via Xlink.  It is responsible for the following:
 - Registering with the Vision-agent on startup with its hardware, firmware, operating system, and security information 
 - Sending a heartbeat to the Vision-agent at the set interval (received as a registration response message from the Vision-agent)
-- Try and reconnect with Vision-agent if communication is lost.
+- Reconnect with Vision-agent if communication is lost.
 - Download OTA update file via Xlink from Vision-agent
 - Download Configuration load file via Xlink from Vision-agent
 - Receive updated manifest from Vision-agent via Xlink and publish it to the Dispatcher-agent via MQTT for OTA updates and configuration requests.
 - Relay Telemetry events and results to the Vision-agent via Xlink 
 
-### Run Agents via Source Code
+The Node Agent communicates with the Vision Agent over PCIe using Xlink.  The Xlink code uses several classes and two Abstract Factory design patterns.  The class diagram of how these classes interact
+can be found in the [Appendix](#vision-agent-xlink-connectivity-class-diagram).
+
+##### Node Agent Class Diagram
+The Vision Agent uses the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as the overall design with the following Participants: 
+- Command = Command class
+- ConcreteCommand = Everything inheriting from the Command class
+- Client = DataHandler classes
+- Invoker = Invoker class
+- Receiver = XLinkManager, Broker 
+
+<img src="media/In-Band Manageability Developer Guide/media/image6.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+
+### INBC
+
+INBC is a command-line based tool that can be used instead of the cloud to perform the following:
+- OTA update
+- View/Change Configuration settings
+- Query system data
+- Restart SOC
+
+INBC uses the Python 'argparse' library to parse the command-line arguments.  Based on those arguments it will use
+the Factory Design Pattern to create the correct concrete 'Command' class.
+
+<img src="media/In-Band Manageability Developer Guide/media/image17.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
+
+
+## Run Agents via Source Code
 
 To run and test the agents after modifying the source code, the developer is required to run the script *dev-mode.sh* located
 under the **applications.manageability.inband-manageability.iotg-manageability/inbm** directory.
@@ -214,57 +298,10 @@ the command
 make logging LEVEL=DEBUG
 ```
 
-or refer to [Section 5](#security) to enable logging prior to running
+or refer to [Security](#security) to enable logging prior to running
 the INBM via source code.
 
-
-## Build instructions 
-
-Developers can build INBM executables if source is provided as
-part of the release package.
-
-To successfully build the INBM source code, the user would need to execute
-the following commands, to make sure the scripts have the executable
-access:
-```shell
-cd applications.manageability.inband-manageability.iotg-manageability/inbm
-
-find . -type f -iname configure -exec chmod +x {} \\;
-
-find . -type f -iname "\*.sh" -exec chmod +x {} \\;
-
-chmod -R 755 trtl/scripts/
-```
-The user should be able to build the source from the directory
-**applications.manageability.inband-manageability.iotg-manageability/inbm** using the command.
-
-Docker needs to be installed on the system to build the code.
-
-```shell
-./build.sh
-```
-
-or the following command can also be used for better build performance:
-
-```shell
-DOCKER_BUILDKIT=1 ./build.sh
-```
-
-When the build is complete, the build output can be found in the
-**turtlecreek/source/output** folder.
-
-## INBC
-
-INBC is a command-line tool that allows the user to perform OTA and configuration commands from the Edge or 
-Host (Intel Vision card solution) system instead of from the cloud.
-
-### INBC Class Diagram
-INBC uses the Python 'argparse' library to parse the command-line arguments.  Based on those arguments it will use
-the Factory Design Pattern to create the correct concrete 'Command' class.
-
-<img src="media/In-Band Manageability Developer Guide/media/image17.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
-
-## Adding a New Configuration Parameter
+## Add New Configuration Parameter
 
 There may be scenarios where new configurations are required to be added
 to extend the functionality of the INBM framework. For example,
@@ -282,8 +319,7 @@ to accommodate this health check tag with a certain value by following these ste
 ~/inbm/configuration-agent/fpm-template/usr/share/configuration-agent/iotg_inb_schema.xsd
 ```
 
-3. (a) Test the changes by creating a new build using the build instructions mentioned in [Section
-    3](#build-instructions). Uninstall and reinstall INBM from the output folder after the build is complete.
+3. (a) Test the changes by creating a new build using the [build instructions](https://github.com/intel/intel-inb-manageability/blob/develop/README.md). Uninstall and reinstall INBM from the output folder after the build is complete.
 
 (Or)
 
@@ -427,7 +463,7 @@ for each agent by changing **ERROR** to **DEBUG** with a text editor.  These *lo
 #### Option 1 (single agent):
 1. Open the logging file: 
 ```shell
-vi  /etc/intel-manageability/public/\<agent-name\>-agent/logging.ini
+sudo vi  /etc/intel-manageability/public/\<agent-name\>-agent/logging.ini
 ```
 
 2. Change the value **ERROR** to **DEBUG**
@@ -814,7 +850,7 @@ inbm/dispatcher-agent/fpm-template/lib/systemd/system/inbm-dispatcher.service
 is shown below.
 
 ```
- # Copyright 2021 Intel Corporation All Rights Reserved.
+ # Copyright 2021-2022 Intel Corporation All Rights Reserved.
  # SPDX-License-Identifier: Apache-2.0
 
 [Unit]
@@ -857,19 +893,11 @@ sudo systemctl stop mqtt
 ```
 
 Step 2:
-```sehell
-rm /var/lib/mosquitto/mosquitto.db  
+```shell
+sudo rm /var/lib/mosquitto/mosquitto.db  
 ```
 
 Step 3:
 ```shell
 sudo systemctl start mqtt
 ```
-
-## Appendix
-
-### Vision-agent Xlink Connectivity Class Diagram
-
-Below is the class diagram showing how the different classes in the Vision-agent work together to send and receive communication with the individual node-agents.  The xlink classes can be found in the source under both the *inbm-vision/vision-agent/vision/node_communicator* and  */inbm-lib/inbm_vision_lib/xlink* directories.  The classes under the inbm-lib are also used by the node-agent for xlink communication.  Those classes are in green in the diagram below.
-
-<img src="media/In-Band Manageability Developer Guide/media/image16.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
