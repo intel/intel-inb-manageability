@@ -28,9 +28,10 @@ class TestXlinkChecker(TestCase):
         xlink_checker.return_error(5)
         assert mock_logger.error.call_count == 4
 
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.xlink_checker.logger')
     @patch('inbm_vision_lib.timer.Timer.start')
-    def test_return_error_dev_busy(self, t_start, mock_logger):
+    def test_return_error_dev_busy(self, t_start, mock_logger, mock_reconnect):
         mock_callback = Mock()
         xlink_checker = XlinkChecker(mock_callback)
         xlink_checker.return_error(2)
