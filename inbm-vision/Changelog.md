@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Fixed
+- HSD 1509485150, 47042 - Fix INBC fail to exit intermittently when using hddl_device_server
+
 ## 3.0.8 - 2022-01-24
 
 ### Fixed
@@ -14,7 +17,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - 506874 - Fix node config schema error when upgrading from v2.16.0 to v2.17.2
 - 507151 - Add lower bound, upper bound, and default values to node-agent configuration values.
 - 507593 - Add lower bound, upper bound, and default values to vision-agent configuration values.
-- HSD 1509485150, 47042 - Fix INBC fail to exit intermittently when using hddl_device_server
 
 ## 3.0.7 - 2022-01-04
 
