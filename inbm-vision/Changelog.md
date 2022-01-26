@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - 506874 - Fix node config schema error when upgrading from v2.16.0 to v2.17.2
 - 507151 - Add lower bound, upper bound, and default values to node-agent configuration values.
 - 507593 - Add lower bound, upper bound, and default values to vision-agent configuration values.
+- 507150 - Rename Signature_version to hash_algorithm in manifest.  Add restricted values to manifest for hash_algorithm.
 
 ## 3.0.7 - 2022-01-04
 

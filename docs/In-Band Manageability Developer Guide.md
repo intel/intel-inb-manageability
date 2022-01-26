@@ -118,13 +118,21 @@ There are 5 Agents and 1 Binary associated with INBM which all reside on the sam
 <img src="media/In-Band Manageability Developer Guide/media/image3.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
 #### ⚙️CloudAdapter Agent
+
+**Service name:** inbm-cloudadapter
+
 Relays MQTT messages between the cloud API and dispatcher-agent.  
 
 #### ⚙️Configuration Agent
-Publishes the configuration parameter values to all other agents. The parameters are stored in the ``/etc/intel_manageability.conf``` file. 
+
+**Service name:** inbm-configuration
+
+Publishes the configuration parameter values to all other agents. The parameters are stored in the ``/etc/intel_manageability.conf`` file. 
 The parameters and their descriptions can be found in the [Configuration Parameters](Configuration%20Parameters.md) reference.
 
 #### ⚙️Diagnostic Agent
+
+**Service name:** inbm-diagnostic
 
 The Diagnostic-agent is responsible for the following:
 - Perform diagnostic system health checks prior to an OTA install.
@@ -142,6 +150,9 @@ The following checks may be performed:
 - Required software installed
 
 #### ⚙️Dispatcher Agent (DMS)
+
+**Service name:** inbm-dispatcher
+
 The Dispatcher-agent is the central agent.  It is responsible for the following:
 - Dispatching and executing the received commands/operations from the cloud or INBC. Determines the type of request and invokes the respective commands/threads to perform the operation.
 - Publishes the resulting status of the operation.
@@ -153,6 +164,9 @@ The Dispatcher-agent is the central agent.  It is responsible for the following:
     <img src="media/In-Band Manageability Developer Guide/media/image19.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
 #### ⚙️Telemetry Agent
+
+**Service name:** inbm-telemetry
+
 The Telemetry-agent is responsible for the following:
 - Collect and publish the system’s static telemetry information.
 - Collect and publish dynamic telemetry information at configured intervals.
@@ -463,20 +477,21 @@ for each agent by changing **ERROR** to **DEBUG** with a text editor.  These *lo
 #### Option 1 (single agent):
 1. Open the logging file: 
 ```shell
-sudo vi  /etc/intel-manageability/public/\<agent-name\>-agent/logging.ini
+sudo vi  /etc/intel-manageability/public/<agent-name>-agent/logging.ini
 ```
 
 2. Change the value **ERROR** to **DEBUG**
 
-3. Restart the agent: 
-```shell
-sudo systemctl restart <agent-name>
-```
 
 #### Option 2 (multiple agents):
  If logging needs to be enabled on all the agents, the following command can be used: 
 ```shell
-sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/\*/logging.ini
+sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/*/logging.ini
+```
+
+### Restart the agents after changing the log level: 
+```shell
+sudo systemctl restart <agent-name>
 ```
 
 ### View Logs

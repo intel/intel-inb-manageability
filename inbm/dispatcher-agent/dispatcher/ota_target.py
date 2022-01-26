@@ -46,7 +46,7 @@ class OtaTarget:
         self._username = parsed_manifest.get('username', None)
         self._password = parsed_manifest.get('password', None)
         self._signature = parsed_manifest.get('signature', None)
-        self._signature_version = parsed_manifest.get('signature_version', None)
+        self._hash_algorithm = parsed_manifest.get('hash_algorithm', None)
         if self._ota_type == OtaType.POTA.name:
             [parsed_manifest.pop('ota_type')]  # type: ignore
         self._parsed_manifest = parsed_manifest
@@ -82,10 +82,10 @@ class OtaTarget:
                 repo = DirectoryRepo(repo) if repo else DirectoryRepo(REPO_CACHE)
                 repo_list.append(repo)
                 signature = ota_resource.get('signature', None)
-                sig_version = ota_resource.get('signature_version', None)
+                hash_algorithm = ota_resource.get('hash_algorithm', None)
                 try:
                     download_info = {'username': username, 'password': password,
-                                     'signature': signature, 'sig_version': sig_version}
+                                     'signature': signature, 'hash_algorithm': hash_algorithm}
                     self._download_and_validate_package(
                         self._dispatcher_callbacks, uri, repo, ota_key.upper(), download_info)
                 except DispatcherException as err:
@@ -98,7 +98,7 @@ class OtaTarget:
             repo_list.append(self._repo)
             try:
                 download_info = {'username': self._username, 'password': self._password,
-                                 'signature': self._signature, 'sig_version': self._signature_version}
+                                 'signature': self._signature, 'hash_algorithm': self._hash_algorithm}
                 self._download_and_validate_package(
                     self._dispatcher_callbacks, self._uri, self._repo, self._ota_type, download_info)
             except DispatcherException as err:
@@ -137,16 +137,17 @@ class OtaTarget:
                  password=download_info.get('password', None))
         if ota_type != OtaType.SOTA.name:
             self._validate_signature(canonicalize_uri(uri), repo, download_info.get(
-                'signature', None), download_info.get('sig_version', None))
+                'signature', None), download_info.get('hash_algorithm', None))
         disp_callbacks.broker_core.telemetry('Proceeding to publish OTA manifest...')
 
-    def _validate_signature(self, uri: CanonicalUri, repo: DirectoryRepo, signature: Optional[str], sig_version: Optional[int]):
+    def _validate_signature(self, uri: CanonicalUri, repo: DirectoryRepo,
+                            signature: Optional[str], hash_algo: Optional[int]):
         logger.debug("")
         file_name = os.path.basename(urlsplit(uri.value).path)
         file_path = os.path.join(repo.get_repo_path(), file_name)
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if signature:
-                verify_signature(signature, file_path, self._dispatcher_callbacks, sig_version)
+                verify_signature(signature, file_path, self._dispatcher_callbacks, hash_algo)
             else:
                 raise DispatcherException(
                     'OTA update aborted. Signature is required to validate the package and proceed with the update.')

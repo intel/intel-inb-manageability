@@ -1,7 +1,7 @@
 """
     FOTA update tool which is called from the dispatcher during installation
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -34,12 +34,12 @@ class Installer(ABC):
         self._parsed_fota_conf = XmlHandler(xml=xml_file, is_file=True, schema_location=xml_schema)
 
     @abstractmethod
-    def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str], signature_version: Optional[int],
-                bios_vendor: str = None, platform_product: str = None) -> None:
+    def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
+                hash_algorithm: Optional[int], bios_vendor: str = None, platform_product: str = None) -> None:
         pass
 
     def get_product_params(self, platform_product: str) -> Dict:
-        """This function returns the key value pairs of all the subelements for a given platform name
+        """This function returns the key value pairs of all the sub-elements for a given platform name
         from the firmware conf file.
 
         @param platform_product: Product platform name
@@ -96,19 +96,19 @@ class Installer(ABC):
     def prepare_for_install(self,
                             pkg_filename: str,
                             checksum: Optional[str],
-                            signature_version: Optional[int]) -> None:
+                            hash_algorithm: Optional[int]) -> None:
         """Method to verify if signature is provided, validate the signature and create a directory
 
         @param pkg_filename: filename of the package
         @param checksum: signed checksum in hex format of the package retrieved from manifest
-        @param signature_version: version of checksum i.e 256 or 384
+        @param hash_algorithm: Crytographic Hash Algorithm i.e 256 or 384 or 512
         """
         logger.debug("")
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
-            if checksum and signature_version:
+            if checksum and hash_algorithm:
                 file_path = str(Path(str(self._repo.get_repo_path())) / pkg_filename)
                 verify_signature(checksum, file_path,
-                                 self._dispatcher_callbacks, signature_version)
+                                 self._dispatcher_callbacks, hash_algorithm)
                 self._dispatcher_callbacks.broker_core.telemetry('Attempting Firmware Update')
             else:
                 logger.error("Signature required to proceed with OTA update.")
@@ -132,15 +132,15 @@ class LinuxInstaller(Installer):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, xml_file: str, xml_schema: str) -> None:
         super().__init__(dispatcher_callbacks, repo, xml_file, xml_schema)
 
-    def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str], signature_version: Optional[int],
-                bios_vendor: str = None, platform_product: str = None) -> None:
+    def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
+                hash_algorithm: Optional[int], bios_vendor: str = None, platform_product: str = None) -> None:
         """Performs a Linux FOTA install
 
         @param guid: system firmware type
         @param tool_options: tool options for firmware update
         @param pkg_filename: file name of OTA
         @param signature: signed checksum in hex format of the package retrieved from manifest
-        @param signature_version: version of checksum i.e 256 or 384
+        @param hash_algorithm: hash algorithm of checksum i.e 256 or 384 or 512
         @param bios_vendor: bios vendor on the platform
         @param platform_product: platform product name
         @raises: FotaError
@@ -149,7 +149,7 @@ class LinuxInstaller(Installer):
 
         super().prepare_for_install(pkg_filename=pkg_filename,
                                     checksum=signature,
-                                    signature_version=signature_version)
+                                    hash_algorithm=hash_algorithm)
 
         if platform_product is None:
             raise FotaError("Platform product unspecified.")
@@ -182,11 +182,11 @@ class WindowsInstaller(Installer):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, xml_file: str, xml_schema: str) -> None:
         super().__init__(dispatcher_callbacks, repo, xml_file, xml_schema)
 
-    def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str], signature_version: Optional[int],
-                bios_vendor: str = None, platform_product: str = None) -> None:
+    def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
+                hash_algorithm: Optional[int], bios_vendor: str = None, platform_product: str = None) -> None:
         super().prepare_for_install(pkg_filename=pkg_filename,
                                     checksum=signature,
-                                    signature_version=signature_version)
+                                    hash_algorithm=hash_algorithm)
         if platform_product is None:
             raise FotaError("Platform product unspecified.")
         params = super().get_product_params(platform_product)

@@ -1,7 +1,7 @@
 """
     Gets package from remote repo, verifies, and rebuilds manifest to publish to vision-agent.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -10,7 +10,7 @@ from typing import List, Tuple
 from tarfile import TarInfo
 
 from inbm_common_lib.utility import get_canonical_representation_of_path, canonicalize_uri, remove_file
-from inbm_common_lib.constants import DEFAULT_SIG_VERSION
+from inbm_common_lib.constants import DEFAULT_HASH_ALGORITHM
 
 from .constants import UMASK_PROVISION_FILE, REPO_CACHE, SCHEMA_LOCATION, TARGET_PROVISION, OTA_PACKAGE_CERT_PATH
 from .dispatcher_callbacks import DispatcherCallbacks
@@ -43,7 +43,7 @@ class ProvisionTarget:
         self._schema_location = schema_location
 
     def install(self, parsed_head: XmlHandler) -> None:
-        """Manages the install sequence to support the Accelerator Manageability Framework
+        """Manages the installation sequence to support the Accelerator Manageability Framework
 
         @param parsed_head: Parsed XML file
         @raises DispatcherException: package doesn't contain enough files to proceed
@@ -51,14 +51,14 @@ class ProvisionTarget:
         logger.debug("")
         uri = parsed_head.find_element('provisionNode/fetch')
         signature = parsed_head.find_element('provisionNode/signature')
-        sig_version = parsed_head.find_element('provisionNode/signature_version')
+        hash_algo = parsed_head.find_element('provisionNode/hash_algorithm')
         if signature:
             try:
-                logger.debug(f"sig_version = {sig_version}")
-                sig_version = int(sig_version) if sig_version else DEFAULT_SIG_VERSION
+                logger.debug(f"hash algorithm = {hash_algo}")
+                hash_algo = int(hash_algo) if hash_algo else DEFAULT_HASH_ALGORITHM
             except ValueError:
                 logger.debug("Unable to parse signature version. Use default version.")
-                sig_version = DEFAULT_SIG_VERSION
+                hash_algo = DEFAULT_HASH_ALGORITHM
         canonicalized_url = canonicalize_uri(uri)
         repo = DirectoryRepo(REPO_CACHE)
         download(dispatcher_callbacks=self._dispatcher_callbacks,
@@ -71,7 +71,7 @@ class ProvisionTarget:
         tar_file_path = os.path.join(REPO_CACHE, tar_file_name)
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if signature:
-                verify_signature(signature, tar_file_path, self._dispatcher_callbacks, sig_version)
+                verify_signature(signature, tar_file_path, self._dispatcher_callbacks, hash_algo)
             else:
                 raise DispatcherException(
                     'Provision Target install aborted. Signature is required to validate the package and proceed with the update.')
