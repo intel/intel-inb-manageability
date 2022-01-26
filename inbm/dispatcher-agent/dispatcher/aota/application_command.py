@@ -113,8 +113,7 @@ class CentOsApplication(Application):
                 shutil.rmtree(get_canonical_representation_of_path(os.path.join(REPO_CACHE, dir)))
         # Clean up driver files
         for file in os.listdir(CENTOS_DRIVER_PATH):
-            remove_file(get_canonical_representation_of_path(
-                os.path.join(CENTOS_DRIVER_PATH, file)))
+            remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
     def update(self) -> None:
         """ Update CentOS driver"""
