@@ -52,12 +52,13 @@ def remove_file(path: Union[str, Path]) -> None:
 
     @param path: location of file to be removed
     """
-    if not os.path.exists(path):
+    canonical_path = get_canonical_representation_of_path(str(path))
+    if not os.path.exists(canonical_path):
         return
 
-    if os.path.isfile(path):
-        logger.debug(f"Removing file at {path}.")
-        os.remove(path)
+    if os.path.isfile(canonical_path):
+        logger.debug(f"Removing file at {canonical_path}.")
+        os.remove(canonical_path)
     else:
         logger.warn("Failed to remove file. Path is a directory.")
 

@@ -237,6 +237,7 @@ class ConfigurationManager:
         try:
             shutil.copy(self._xml, backup_file)
             shutil.copyfile(path, self._xml)  # type: ignore
+
             remove_file(path)
         except (OSError, shutil.SameFileError, IsADirectoryError, PermissionError) as error:
             self._clean_up(path)
