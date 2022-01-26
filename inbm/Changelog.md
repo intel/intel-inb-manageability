@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## Fixed
+ - Fixed that x86_64 Yocto output files were missing inbm- prefix
+
 ## 3.0.8 - 2022-01-24
 
 ### Fixed
