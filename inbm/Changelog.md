@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Fixed
  - Fixed that x86_64 Yocto output files were missing inbm- prefix
 
+### Added
+ - (507873) Added support for Ubuntu 21.10
+
 ## 3.0.8 - 2022-01-24
 
 ### Fixed
