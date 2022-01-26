@@ -27,10 +27,10 @@ RUN cd /build/EHL && \
         rm -fv "$TAR" ; \
       done
 COPY inbm/version.txt /build
-RUN cd /build/EHL && \
+RUN set -e && cd /build/EHL && \
     perl -pi -e 'chomp if eof' /build/version.txt && \
     VERSION=$(cat /build/version.txt) && \
-    for i in cloudadapter-agent dispatcher-agent diagnostic-agent telemetry-agent configuration-agent inbc-program trtl; do \
-        mv -v "$i"-"$VERSION"*.tar.gz "$i"-"$VERSION"-1.tar.gz ; \
+    for i in inbm-cloudadapter-agent inbm-dispatcher-agent inbm-diagnostic-agent inbm-telemetry-agent inbm-configuration-agent inbc-program trtl; do \
+        mv -v "$i"-"$VERSION"*.tar.gz "$i"-"$VERSION"-1.tar.gz || /bin/false ; \
     done
 RUN mkdir -p /output && cp -r /build/EHL /output/EHL
