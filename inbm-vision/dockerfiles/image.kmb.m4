@@ -9,7 +9,7 @@ RUN python3.8 -m venv /venv-py3 && \
 RUN . /venv-py3/bin/activate && \
     pip3.8 install -e /src/inbm-lib-editable
 
-FROM registry.hub.docker.com/library/ubuntu:16.04 as base-x86_64
+FROM registry.hub.docker.com/library/ubuntu:18.04 as base-x86_64
 include(`commands.base-setup.m4')
 
 # ------Build Agents for arm64------
