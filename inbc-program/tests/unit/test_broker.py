@@ -3,6 +3,7 @@ from mock import patch, Mock
 from inbc.broker import Broker
 from inbc.parser import ArgsParser
 from inbm_common_lib.request_message_constants import *
+from inbc.inbc_exception import InbcException
 
 
 class TestINBC(TestCase):
@@ -19,6 +20,8 @@ class TestINBC(TestCase):
             ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '--target', '123ABC', '456DEF'])
         self._get_args = self.arg_parser.parse_args(
             ['get', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '--targettype', 'vision'])
+        self._inbm_get_args = self.arg_parser.parse_args(
+            ['get', '--nohddl', '-p', 'maxCacheSize'])
         self._set_args = self.arg_parser.parse_args(
             ['set', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-tt', 'node-client'])
         self._load_args = self.arg_parser.parse_args(
@@ -133,6 +136,17 @@ class TestINBC(TestCase):
         b._on_response('manageability/response', 'Configuration command: FAILED', 1)
         mock_terminate.assert_called_once()
 
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
+    @patch('inbc.command.command.Command.terminate_operation')
+    @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
+    def test_on_message_response_inbm_get_success(self, mock_agent, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
+        b = Broker('get', self._inbm_get_args, Mock(), False)
+        b._on_response('manageability/response', 'Configuration command: SUCCESSFUL', 1)
+        mock_terminate.assert_called_once()
+
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -224,3 +238,26 @@ class TestINBC(TestCase):
         payload = '{"status": "200", "message": "OTA_TARGETS:two"}'
         b._on_response('manageability/response', payload, 1)
         self.assertEquals(b._command._num_vision_targets, 1)
+
+    @patch('inbc.command.command.Command.search_response')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
+    def test_on_message_response(self, mock_agent, mock_trigger, mock_sub, mock_pub, mock_con, mock_search):
+        b = Broker('fota', self._fota_args, Mock(), False)
+        b._on_response('manageability/response', 'check', 1)
+        mock_search.assert_called_once()
+
+    @patch('inbc.utility.search_keyword', return_value= True)
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
+    def test_on_status(self, mock_agent, mock_trigger, mock_sub, mock_pub, mock_con, mock_search):
+        b = Broker('fota', self._fota_args, Mock(), False)
+        b._on_status('manageability/response', 'check', 1)
+
+   

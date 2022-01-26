@@ -47,3 +47,6 @@ HDDL = "hddl"
 
 # Target type
 NODE = "node"
+
+# INBM Publish channel
+INBM_CONFIG_CHANNEL = 'manageability/request/install'

@@ -184,7 +184,7 @@ class ArgsParser(object):
         parser_get.add_argument('--target', '-t', nargs='*',
                                 default=None, required=False,
                                 help=TARGETS_NODE_AND_CLIENT_ONLY_HELP)
-        parser_get.add_argument('--targettype', '-tt', default='node', required=False,
+        parser_get.add_argument('--targettype', '-tt', default=None, required=False,
                                 help='Type of target [vision | node | node-client]')
         parser_get.set_defaults(func=get)
 
@@ -199,7 +199,7 @@ class ArgsParser(object):
         parser_set.add_argument('--target', '-t', nargs='*',
                                 default=None, required=False,
                                 help=TARGETS_NODE_AND_CLIENT_ONLY_HELP)
-        parser_set.add_argument('--targettype', '-tt', default='node', required=False,
+        parser_set.add_argument('--targettype', '-tt', default=None, required=False,
                                 help='Type of target [vision | node | node-client]')
         parser_set.set_defaults(func=set)
 
@@ -233,7 +233,7 @@ def _create_source(args) -> Tuple[str, str, str]:
     repo = LOCAL_SOURCE if not args.nohddl else REMOTE_SOURCE
     if repo == LOCAL_SOURCE and args.path is None:
         raise InbcException('local path (-p) is required with HDDL command.')
-    if repo == REMOTE_SOURCE and args.uri is None:
+    if repo == REMOTE_SOURCE and not args.uri:
         raise InbcException('URI (-u) is required with non-HDDL command')
 
     source_tag = PATH_STRING if repo == LOCAL_SOURCE else 'fetch'
@@ -508,9 +508,6 @@ def get(args) -> str:
     @return: Generated xml manifest string
     """
 
-    if args.nohddl:
-        raise InbcException('Get command is only supported for HDDL.')
-
     arguments = {
         'target': args.target,
         'targetType': args.targettype,
@@ -546,9 +543,6 @@ def set(args) -> str:
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
     """
-
-    if args.nohddl:
-        raise InbcException('Set command is only supported for HDDL.')
 
     arguments = {
         'target': args.target,

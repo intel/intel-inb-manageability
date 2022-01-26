@@ -601,11 +601,14 @@ class TestINBC(TestCase):
                    '</get></configtype></config></manifest>'
         self.assertEqual(g.func(g), expected)
 
-    def test_raise_not_supported_no_hddl_get_manifest(self):
+    def test_supported_no_hddl_get_manifest(self):
         get = self.arg_parser.parse_args(
-            ['get', '--nohddl', '-p', '/var/cache/manageability/repository-tool/BIOS.img'])
-        with self.assertRaisesRegex(InbcException, 'Get command is only supported for HDDL.'):
-            get.func(get)
+            ['get', '--nohddl', '-p', 'maxCacheSize'])
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>config</type><config><cmd>' \
+                   'get_element</cmd><configtype>' \
+                   '<get><path>maxCacheSize</path>' \
+                   '</get></configtype></config></manifest>'
+        self.assertEqual(get.func(get), expected)
 
     @patch('inbc.command.command.Command.terminate_operation')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
@@ -619,11 +622,14 @@ class TestINBC(TestCase):
                    '</set></configtype></config></manifest>'
         self.assertEqual(s.func(s), expected)
 
-    def test_raise_not_supported_no_hddl_set_manifest(self):
+    def test_no_hddl_set_manifest(self):
         s = self.arg_parser.parse_args(
-            ['set', '--nohddl', '-p', '/var/cache/manageability/repository-tool/BIOS.img'])
-        with self.assertRaisesRegex(InbcException, 'Set command is only supported for HDDL.'):
-            s.func(s)
+            ['set', '--nohddl', '-p', 'maxCacheSize:120'])
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>config</type><config><cmd>' \
+                   'set_element</cmd><configtype>' \
+                   '<set><path>maxCacheSize:120</path>' \
+                   '</set></configtype></config></manifest>'
+        self.assertEqual(s.func(s), expected)
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.command.command.Command.terminate_operation')
@@ -685,3 +691,9 @@ class TestINBC(TestCase):
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         t_stop.assert_called_once()
+
+    #@patch('sys.stderr', new_callable=StringIO)
+    #def test_raise_no_uri(self, mock_stderr):
+    #    cs = self.arg_parser._create_source(['sota', '--nohddl'])
+    #    with self.assertRaisesRegex(InbcException, 'URI (-u) is required with non-HDDL command'):
+    #        cs.func(cs)
