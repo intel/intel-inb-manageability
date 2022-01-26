@@ -33,7 +33,7 @@ class OtaParser(metaclass=abc.ABCMeta):
         self._username = None
         self._password = None
         self._signature = None
-        self._signature_version: Optional[int] = None
+        self._hash_algorithm: Optional[int] = None
         self._ota_resource_list: Optional[Dict] = None
         self._ota_type = None
 
@@ -57,7 +57,7 @@ class OtaParser(metaclass=abc.ABCMeta):
         self._password = resource.get('password', None)
         self._signature = resource.get('signature', None)
         if self._signature:
-            self._signature_version = int(resource.get('sigversion', 384))
+            self._hash_algorithm = int(resource.get('sigversion', 384))
 
         return {}
 
@@ -84,7 +84,7 @@ class FotaParser(OtaParser):
         super().parse(resource, kwargs, parsed)
 
         resource_dict = {'uri': self._uri, 'signature': self._signature,
-                         'signature_version': self._signature_version,
+                         'hash_algorithm': self._hash_algorithm,
                          'resource': resource,
                          'username': self._username,
                          'password': self._password}
@@ -129,7 +129,7 @@ class SotaParser(OtaParser):
             log_to_file = 'N'
 
         resource_dict = {'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri, 'signature': self._signature,
-                         'signature_version': self._signature_version, 'resource': resource, 'username': self._username,
+                         'hash_algorithm': self._hash_algorithm, 'resource': resource, 'username': self._username,
                          'password': self._password, 'release_date': release_date}
 
         if self._ota_type == OtaType.POTA.name.lower():
@@ -178,7 +178,7 @@ class AotaParser(OtaParser):
                         " in manifest, rejected update")
             raise XmlException
         kwargs.update({'signature': self._signature, 'config_params': config_params,
-                       'signature_version': self._signature_version,
+                       'hash_algorithm': self._hash_algorithm,
                        'app_type': app,
                        'cmd': cmd,
                        'container_tag': container_tag,

@@ -1,6 +1,6 @@
 # Manifest Overview
 
-The following outlines the manifest parameters used to perform the supported OTA updates, configuration commands and query.
+The following outlines the manifest parameters used to perform the supported OTA updates, configuration commands, query, and provision node.
 
 ## Table of Contents
 1. [FOTA](#FOTA)
@@ -11,6 +11,7 @@ The following outlines the manifest parameters used to perform the supported OTA
 6. [Configuration SET](#Set)
 7. [Configuration GET](#Get)
 8. [Configuration LOAD](#Load)
+9. [Provision Node](#Provision-Node)
 
 ## FOTA
 
@@ -1278,5 +1279,40 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
             </remove>
         </configtype>
     </config>
+</manifest>
+```
+
+## Provision Node
+
+Provision Node is only used by the INBM Vision solution to provision a flashless device.
+
+#### Configuration Provision Node Manifest Parameters
+| Tag                                      | Example                                             | Required/Optional | Notes                                                                               |
+|:-----------------------------------------|:----------------------------------------------------|:-----------------:|:------------------------------------------------------------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`            |         R         |                                                                                     |
+| `<manifest>`                             | `<manifest>`                                        |         R         |                                                                                     |
+| `<type></type>`                          | `<type>cmd</type>`                                  |         R         | Always 'cmd'                                                                        |
+| `<cmd></cmd>`'`                          | `<cmd>provisionNode</cmd>`                          |         R         | Always 'provisionNode'                                                              |
+| `<provisionNode>`                        | `<provisionNode>`                                   |         R         |                                                                                     |
+| `<fetch></fetch>`                        | `<fetch>https://www.repo.com/provision.tar</fetch>` |         R         |                                                                                     |
+| `<signature></signature`>                | `<signature>96e92d</signature>`                     |         O         | Signature of package–signed checksum of package.  Recommended for security purposes |
+| `<hash_algorithm></hash_algorithm`       | `<hash_algorithm>384</hash_algorithm`               |         O         | 256 or 384 or 512                                                                   |
+| `<username></username>`                  | `<username>user</username>`                         |         O         | Username used during fetch from remote repository                                   |
+| `<password><password>`                   | `<password>pwd</password>`                          |         O         | Password used during fetch from remote repository                                   |
+| `</provisionNode>`                       | `</provisionNode>`                                  |         R         |                                                                                     |
+| `</manifest>`                            | `</manifest>`                                       |         R         |                                                                                     |
+
+#### Provision Node Example
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+	<type>cmd</type>
+	<cmd>provisionNode</cmd>
+	<provisionNode>
+		<fetch>https://www.repo.com/provision.tar</fetch>
+		<signature>signature</signature>
+		<hash_algorithm>384</hash_algorithm>
+	</provisionNode>
 </manifest>
 ```

@@ -95,7 +95,7 @@ class ConfigurationHelper:
             header = parsed.get_children('config/configtype/load')
             signature = header.get('signature')
             logger.debug(f"SIGN : {signature}")
-            signature_version = 384 if signature else None
+            hash_algorithm = 384 if signature else None
         except (XmlException, UrlSecurityException) as err:
             raise DispatcherException(
                 f"Configuration File Load Error: Manifest Data in Invalid format {err}")
@@ -126,7 +126,7 @@ class ConfigurationHelper:
                 if signature:
                     try:
                         verify_signature(signature, tar_file_path,
-                                         self._dispatcher_callbacks, signature_version)
+                                         self._dispatcher_callbacks, hash_algorithm)
                     except DispatcherException as err:
                         self._repo.delete(tar_file_name)
                         raise DispatcherException(f'Configuration Load Aborted. {str(err)}')

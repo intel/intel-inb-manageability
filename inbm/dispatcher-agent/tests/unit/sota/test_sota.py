@@ -35,7 +35,7 @@ class TestSota(testtools.TestCase):
         parsed = XmlHandler(fake_sota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         cls.resource = parsed.get_children('ota/type/sota')
         parsed_manifest = {'resource': cls.resource,
-                           'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'signature_version': None,
+                           'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': TestSota._build_mock_repo(0), 'username': username,
                            'password': password}
         cls.sota_instance = SOTA(parsed_manifest, 'remote',
@@ -104,7 +104,7 @@ class TestSota(testtools.TestCase):
         mock_detect_os.return_value = 'Ubuntu'
         parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
                            'sota_repos': None,
-                           'uri': 'https://www.example.com/', 'signature': None, 'signature_version': None,
+                           'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
