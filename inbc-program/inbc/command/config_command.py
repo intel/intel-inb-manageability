@@ -1,7 +1,7 @@
 """
     Config Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2021 Intel Corporation
+    # Copyright (C) 2020-2022 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 """
 
@@ -9,7 +9,7 @@ from typing import Any
 from pathlib import Path
 from .command import Command
 from ..utility import copy_file_to_target_location, search_keyword
-from ..constants import COMMAND_SUCCESS, COMMAND_FAIL, MAX_TIME_LIMIT
+from ..constants import COMMAND_SUCCESS, COMMAND_FAIL, MAX_TIME_LIMIT, INBM_INSTALL_CHANNEL
 from ..inbc_exception import InbcCode
 from ..ibroker import IBroker
 
@@ -67,13 +67,14 @@ class GetConfigCommand(ConfigCommand):
        """
         super().__init__(broker, 'get')
 
-    def trigger_manifest(self, args: Any, topic: str = CONFIG_CHANNEL + CONFIG_GET):
+    def trigger_manifest(self, args: Any, topic: str) -> None:
         """Trigger the command-line utility tool to invoke command.
 
         @param args: arguments from user
         @param topic: MQTT topic
         """
-        super().trigger_manifest(args, CONFIG_CHANNEL + CONFIG_GET)
+        channel = INBM_INSTALL_CHANNEL if args.nohddl else CONFIG_CHANNEL + CONFIG_GET
+        super().trigger_manifest(args, channel)
 
     def search_response(self, payload: str) -> None:
         """Search for keywords in response message
@@ -99,13 +100,14 @@ class SetConfigCommand(ConfigCommand):
        """
         super().__init__(broker, 'set')
 
-    def trigger_manifest(self, args: Any, topic: str = CONFIG_CHANNEL + CONFIG_SET):
+    def trigger_manifest(self, args: Any, topic: str) -> None:
         """Trigger the command-line utility tool to invoke command.
 
         @param args: arguments from user
         @param topic: MQTT topic
         """
-        super().trigger_manifest(args, CONFIG_CHANNEL + CONFIG_SET)
+        channel = INBM_INSTALL_CHANNEL if args.nohddl else CONFIG_CHANNEL + CONFIG_SET
+        super().trigger_manifest(args, channel)
 
     def search_response(self, payload: str) -> None:
         """Search for keywords in response message
