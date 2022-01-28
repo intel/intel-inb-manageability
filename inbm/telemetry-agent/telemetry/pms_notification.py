@@ -32,8 +32,7 @@ class PMSNotification():
         self.running = True
 
     def import_pms_library(self) -> None:
-        """Check if PMS Python library can be imported from /usr/lib
-        """
+        """Check if PMS Python library can be imported from /usr/lib"""
         sys.path.insert(0, PMS_LIB_PATH)
         try:
             import libPmsPython  # type: ignore

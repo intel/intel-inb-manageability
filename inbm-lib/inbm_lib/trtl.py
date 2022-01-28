@@ -67,7 +67,7 @@ class Trtl:
             if "ContainerStats=" in line:
                 logger.debug(line)
                 return line.split('=')[1]
-        return None
+        return err
 
     def image_import(self, url: str, image_name: str) -> Tuple[str, Optional[str], int]:
         """Do import
@@ -131,7 +131,6 @@ class Trtl:
 
         @param image: Image whose snapshot is to be taken
         @param version: Container tag version
-        @param command: Command to run inside container
         @param opt: flag which specifies if config params need to be passed or not
         @return: Result, error message, error code
         """
@@ -158,10 +157,13 @@ class Trtl:
                          "]; return code: " + str(code))
         return out, err, code
 
-    def image_pull_public(self, image: str, reference: Optional[str], fileName: str = None) -> Tuple[str, Optional[str], int]:
+    def image_pull_public(self, image: str, reference: Optional[str], file_name: str = None) \
+            -> Tuple[str, Optional[str], int]:
         """Do image pull to public registry
 
+        @param image: image name
         @param reference: remote registry from which to pull image
+        @param file_name: file name
         @return: code, err and version number of image pulled
         """
 
@@ -174,9 +176,9 @@ class Trtl:
             reference = image
             logger.debug("Trtl.pull(" + str(reference) + ")")
 
-            if fileName:
+            if file_name:
                 out, err, code = self.runner.run(
-                    self._boilerplate("pull") + " -cf=" + fileName + " -ref=" + reference)
+                    self._boilerplate("pull") + " -cf=" + file_name + " -ref=" + reference)
             else:
                 out, err, code = self.runner.run(
                     self._boilerplate("pull") + " -ref=" + reference)
@@ -278,6 +280,7 @@ class Trtl:
         """Do TRTL down (docker-compose)
 
         @param image: Image to be stopped
+        @param file_name: File name
         @return: Result, error message, error code
         """
         logger.debug("Trtl.down(" + image + ")")
@@ -385,7 +388,7 @@ class Trtl:
     def stop_all(self, image: str) -> Tuple[str, Optional[str], int]:
         """
         Do TRTL stopAll
-        @param container: Container image to be stopped
+        @param image: Container image to be stopped
         @return: Result, error message, error code
         """
         logger.debug("Trtl.StopAll(" + image + ")")

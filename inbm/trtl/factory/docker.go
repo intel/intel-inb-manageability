@@ -25,6 +25,7 @@ var login = realdocker.Login
 var removeImage = realdocker.RemoveImage
 var removeAllImages = realdocker.RemoveAllImages
 var removeLatestContainerFromImage = realdocker.RemoveLatestContainerFromImage
+var stats = realdocker.Stats
 var stop = realdocker.Stop
 var stopAll = realdocker.StopAll
 var getImageByContainerId = realdocker.GetImageByContainerId
@@ -316,14 +317,11 @@ func (docker *DockerInfo) Logs(options string, imageName string, target string) 
 	}
 }
 
-// Stats fetches container usage statistics.  If all is true, then all container usage statistics
-// are obtained.  Otherwise, the specified container is fetched only.
-func (docker *DockerInfo) Stats(instanceName string, instanceVersion int, all bool) {
-	i := realdocker.NewInstance(instanceVersion, instanceName, nil)
-	f := realdocker.DockerFinder{}
+// Stats fetches container usage statistics of all running containers.
+func (docker *DockerInfo) Stats() {
 	dw := realdocker.DockerWrap{}
-	if err := i.Stats(f, dw, all); err != nil {
-		fmt.Fprintf(os.Stderr, "Error fetching container stats usage: %s", err)
+	if err := stats(dw); err != nil {
+	    fmt.Fprintf(os.Stderr, "Error fetching container stats: %s", err)
 		osExit(1)
 	}
 }

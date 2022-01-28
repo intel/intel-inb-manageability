@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2021 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2022 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package main
@@ -99,7 +99,6 @@ func main() {
 	}
 
 	typePtr := flag.String("type", "docker", "Box application type")
-	allPtr := flag.Bool("all", true, "Include all containers or images")
 	autoModePtr := flag.Bool("am", true, "Automatically uses the last version.")
 	commandTypePtr := flag.String("cmd", "", "Container command to execute")
 	configNamePtr := flag.String("config", "rootConfig", "Configuration file used by Snapper")
@@ -296,7 +295,7 @@ func main() {
 		}
 	case parser.Stats:
 		{
-			stats(box.(factory.Container), *instanceNamePtr, *instanceVersionPtr, *allPtr)
+			box.(factory.Container).Stats()
 		}
 	case parser.Stop:
 		{
@@ -383,14 +382,6 @@ func snapshot(container factory.Container, instanceName string, instanceVersion 
 		validateIntFlag("InstanceVersion", instanceVersion)
 	}
 	container.Snapshot(instanceName, instanceVersion, autoMode)
-}
-
-func stats(container factory.Container, instanceName string, instanceVersion int, all bool) {
-	if !all {
-		validateStringFlag("InstanceName", instanceName)
-		validateIntFlag("InstanceVersion", instanceVersion)
-	}
-	container.Stats(instanceName, instanceVersion, all)
 }
 
 func imageDeleteOld(container factory.Container, instanceName string) {

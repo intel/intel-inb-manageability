@@ -1,10 +1,8 @@
 from unittest import TestCase
 import logging
-from mock import patch, Mock, MagicMock
-from inbm_lib.detect_os import detect_os
+from mock import patch, Mock
 from telemetry.software_bom_list import *
-from telemetry.software_bom_list import get_sw_bom_list, read_mender_file
-from telemetry.telemetry_exception import TelemetryException
+from telemetry.software_bom_list import get_sw_bom_list, read_mender_file, publish_software_bom
 from telemetry.constants import UNKNOWN
 from inbm_lib.constants import SYSTEM_IS_YOCTO_PATH, MENDER_FILE_PATH
 
@@ -100,3 +98,9 @@ class TestSoftwareBomList(TestCase):
         mock_uname.return_value = ('Linux', 'abc', '#1 SMP PREEMPT Wed Mar 7 16:03:28 UTC 2021',
                                    '4.14.22-yocto', 'aarch64')
         self.assertEquals(get_sw_bom_list(), [' mender version: Unknown'])
+
+    @patch('telemetry.telemetry_handling.publish_dynamic_telemetry')
+    @patch('telemetry.software_bom_list.get_sw_bom_list', return_value=[])
+    def test_publish_sw_bom_list_empty(self, mock_sw_bom, mock_publish):
+        publish_software_bom(Mock(), False)
+        assert mock_publish.call_count == 1

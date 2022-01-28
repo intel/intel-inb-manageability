@@ -12,7 +12,6 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional, Mapping
 
 from inbm_common_lib.utility import canonicalize_uri
-from inbm_lib.detect_os import detect_os
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.trtl import Trtl
 
@@ -28,8 +27,7 @@ from .aota_error import AotaError
 from .checker import check_url, check_docker_parameters, check_no_username_password_on_http, \
     check_compose_command_supported, check_docker_command_supported, check_resource
 from .cleaner import cleanup_repo, remove_directory, remove_old_images, cleanup_docker_compose_instance
-from .constants import DOCKER_COMPOSE_CACHE, REPOSITORY_TOOL_CACHE, DOCKER, \
-    TELEMETRY_DOCKER_STATS
+from .constants import DOCKER_COMPOSE_CACHE, REPOSITORY_TOOL_CACHE, DOCKER, DOCKER_STATS
 from ..common import uri_utilities
 
 logger = logging.getLogger(__name__)
@@ -200,12 +198,11 @@ class Docker(AotaCommand):
         @raise: AotaError on failure
         """
         logger.debug("Docker Stats command")
-        stats = self._trtl.stats()
-        if stats == "" or stats is None:
-            raise AotaError(stats)
+        running_container_stats = self._trtl.stats()
+        logger.debug(f'docker stats: {running_container_stats}')
 
-        self._dispatcher_callbacks.broker_core.mqtt_publish(
-            TELEMETRY_UPDATE_CHANNEL, TELEMETRY_DOCKER_STATS)  # pragma: no cover
+        container_cpu_stats = DOCKER_STATS + ":" + str(running_container_stats)
+        self._dispatcher_callbacks.broker_core.telemetry(container_cpu_stats)
 
     def remove(self) -> None:
         super().remove()
