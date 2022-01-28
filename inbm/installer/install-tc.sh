@@ -50,6 +50,9 @@ if [ "$(lsb_release -rs)" == "18.04" ]; then
 elif [ "$(lsb_release -rs)" == "20.04" ]; then
   OS_TYPE="Ubuntu-20.04"
 	echo "Confirmed Supported Platform (Ubuntu 20.04)"
+elif [ "$(lsb_release -rs)" == "21.10" ]; then
+  OS_TYPE="Ubuntu-21.10"
+	echo "Confirmed Supported Platform (Ubuntu 21.10)"
 elif [ "$(lsb_release -sc)" == "buster" ]; then
   OS_TYPE="Debian"
   echo "Confirmed Supported Platform (Debian 10)"
@@ -57,6 +60,7 @@ else
   echo "Unsupported Platform. Hint:"
   echo "http://releases.ubuntu.com/18.04/ or"
   echo "http://releases.ubuntu.com/20.04/ or"
+  echo "http://releases.ubuntu.com/21.10/ or"
   echo "https://www.debian.org/releases/buster/"
   exit 1
 fi
@@ -215,12 +219,13 @@ pushd "$INST_DIR" > /dev/null
 
 # install tpm tools
 if [ "$(lsb_release -rs)" == "20.04" ]; then
-  # install tpm tools
   apt-get install -y tpm2-tools tpm2-abrmd libtss2-tcti-tabrmd0
   systemctl enable --now tpm2-abrmd
   ln -sf libtss2-tcti-tabrmd.so.0 /lib/x86_64-linux-gnu/libtss2-tcti-default.so
+elif [ "$(lsb_release -rs)" == "21.10" ]; then
+  apt-get install -y tpm2-tools tpm2-abrmd
+  systemctl enable --now tpm2-abrmd
 else
-  # install tpm tools
   dpkg -i tpm2-tss*.deb tpm2-abrmd*.deb tpm2-tools*.deb
   ln -sf libtss2-tcti-tabrmd.so /usr/lib/libtss2-tcti-default.so
 fi

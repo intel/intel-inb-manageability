@@ -14,11 +14,11 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Ensure we're running Ubuntu 18 or 20
-if [ "$(lsb_release -rs)" == "18.04" ] || [ "$(lsb_release -rs)" == "20.04" ]; then
+# Ensure we're running Ubuntu 18 or 20 or 21.10
+if [ "$(lsb_release -rs)" == "18.04" ] || [ "$(lsb_release -rs)" == "20.04" ] || [ "$(lsb_release -rs)" == "21.10" ]; then
   echo "Confirmed Supported Platform"
 else
-  echo "Unsupported Platform. Hint: http://releases.ubuntu.com/18.04/ (or 20.04)"
+  echo "Unsupported Platform. Hint: http://releases.ubuntu.com/18.04/ (or 20.04/21.10)"
   exit 1
 fi
 
