@@ -12,7 +12,7 @@ SRC_URI = "file://${INB_TGZ_PATH}/mqtt-${PV}-1.tar.gz;subdir=${BP} \
         file://${INB_TGZ_PATH}/inbm-telemetry-agent-${PV}-1.tar.gz;subdir=${BP} \
         file://${INB_TGZ_PATH}/inbc-program-${PV}-1.tar.gz;subdir=${BP} \
         file://${INB_TGZ_PATH}/trtl-${PV}-1.tar.gz;subdir=${BP} \
-        file://${INB_TGZ_PATH}/yocto-provision-1.0-1.tar.gz;subdir=${BP}"
+        file://${INB_TGZ_PATH}/yocto-provision-${PV}-1.tar.gz;subdir=${BP}"
 
 SRC_URI_append = " file://manageability-autoenable.service "
 FILES_${PN} += " ${systemd_system_unitdir}/manageability-autoenable.service "

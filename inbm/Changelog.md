@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## NEXT - ?
+
+## Fixed
+ - Fixed that x86_64 Yocto output files were missing inbm- prefix
+
+### Added
+ - (507873) Added support for Ubuntu 21.10
+ - (507914) Add script to deploy .debs to a PPA hosted on Artifactory
+
 ## 3.0.8 - 2022-01-24
 
 ### Fixed
