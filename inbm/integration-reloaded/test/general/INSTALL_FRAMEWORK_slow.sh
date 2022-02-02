@@ -24,29 +24,32 @@ if [ "$(lsb_release -rs)" == "20.04" ]; then
   dpkg -i ../tpm2-simulator20.04-0.1332-1.deb
   sed -i -e 's#ConditionPathExistsGlob=/dev/tpm.##g' /lib/systemd/system/tpm2-abrmd.service
   sed -i -e 's#ExecStart=/usr/sbin/tpm2-abrmd#ExecStart=/usr/sbin/tpm2-abrmd --tcti=libtss2-tcti-mssim.so.0#g' /lib/systemd/system/tpm2-abrmd.service
+  TPM_SIMULATOR=true
 elif [ "$(lsb_release -rs)" == "21.10" ]; then
-  dpkg -i ../tpm2-simulator20.04-0.1332-1.deb # yes, still 20.04 package
-  sed -i -e 's#ConditionPathExistsGlob=/dev/tpm.##g' /lib/systemd/system/tpm2-abrmd.service
-  sed -i -e 's#ExecStart=/usr/sbin/tpm2-abrmd#ExecStart=/usr/sbin/tpm2-abrmd --tcti=libtss2-tcti-mssim.so.0#g' /lib/systemd/system/tpm2-abrmd.service
+  # TPM simulator is broken on 21.10; needs more research, or maybe qemu vtpm?
+  TPM_SIMULATOR=false
 elif [ "$(lsb_release -rs)" == "18.04" ]; then
   dpkg -i ../tpm2-simulator18.04-0.1332-1.deb
   sed -i -e 's#ExecStart=/usr/sbin/tpm2-abrmd#ExecStart=/usr/sbin/tpm2-abrmd --tcti=libtss2-tcti-mssim.so#g' /lib/systemd/system/tpm2-abrmd.service
+  TPM_SIMULATOR=true
 fi
 
-sed -i -e 's#After=dev-tpm0.device##g' /lib/systemd/system/tpm2-abrmd.service || true
-sed -i -e 's#Requires=dev-tpm0.device##g' /lib/systemd/system/tpm2-abrmd.service || true
+if [ "$TPM_SIMULATOR" == "true" ]; then
+  sed -i -e 's#After=dev-tpm0.device##g' /lib/systemd/system/tpm2-abrmd.service || true
+  sed -i -e 's#Requires=dev-tpm0.device##g' /lib/systemd/system/tpm2-abrmd.service || true
 
-# Reload / Restart Services
-systemctl daemon-reload
-systemctl enable --now tpm2-simulator
-systemctl restart tpm2-simulator
-systemctl restart tpm2-abrmd
+  # Reload / Restart Services
+  systemctl daemon-reload
+  systemctl enable --now tpm2-simulator
+  systemctl restart tpm2-simulator
+  systemctl restart tpm2-abrmd
 
-echo "Checking TPM simulator..."
-sleep 1
-tpm2_startup -c
-tpm2_clear
-/usr/bin/tc-get-tpm-passphrase >/dev/null
+  echo "Checking TPM simulator..."
+  sleep 1
+  tpm2_startup -c
+  tpm2_clear
+  /usr/bin/tc-get-tpm-passphrase >/dev/null
+fi
 
 date
 
@@ -59,7 +62,11 @@ cp /scripts/iotg_inb_developer.conf /etc/intel_manageability.conf
 cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 touch /etc/intel-manageability/public/cloudadapter-agent/iot-dispatcher.cfg
 # don't connect to Telit in Integration Reloaded
-sudo -H NO_CLOUD=x PROVISION_TPM=enable NO_OTA_CERT=1 LOCAL_MQTT_PORT=9999 bash -x /usr/bin/provision-tc
+if [ "$TPM_SIMULATOR" == "true" ]; then
+  sudo -H NO_CLOUD=x PROVISION_TPM=enable NO_OTA_CERT=1 LOCAL_MQTT_PORT=9999 bash -x /usr/bin/provision-tc
+else
+  sudo -H NO_CLOUD=x PROVISION_TPM=disable NO_OTA_CERT=1 LOCAL_MQTT_PORT=9999 bash -x /usr/bin/provision-tc
+fi
 
 cp /scripts/iotg_inb_developer.conf /etc/intel_manageability.conf
 cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
