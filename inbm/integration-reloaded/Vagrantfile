@@ -10,8 +10,6 @@ Vagrant.configure("2") do |config|
   # For a complete reference, please see the online documentation at
   # https://docs.vagrantup.com.
 
-  config.ssh.username = 'vagrant'
-  config.ssh.password = 'vagrant'
   config.ssh.insert_key = 'true'
   config.ssh.extra_args = ["-o", "ServerAliveInterval=2", "-o", "ServerAliveCountMax=5"]
 
