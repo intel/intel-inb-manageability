@@ -69,7 +69,7 @@ EOF
     sudo add-apt-repository -y ppa:mosquitto-dev/mosquitto-ppa
     sudo apt-get update
     sudo apt-mark unhold mosquitto
-    sudo apt-get -y install mosquitto
+    sudo apt-get -y install mosquitto python3-pip
     time sudo python3 -m pip install cryptography==3.2 # For create_signature.py
     time sudo python3 -m pip install requests[security]
     # disable slow time sync
