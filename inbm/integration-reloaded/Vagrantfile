@@ -55,7 +55,7 @@ EOF
     echo "no_proxy=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
     echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
     echo 'Dpkg::options { "--force-confdef"; "--force-confold"; }' >>/etc/apt/apt.conf.d/local # FIXME: WORKAROUND FOR SOTA BUG
-    ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+    if grep security.ubuntu.com /etc/apt/sources.list; then ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list ; fi
     cat /etc/apt/sources.list
 
     rm -rf /var/lib/apt/lists/*
