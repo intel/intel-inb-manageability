@@ -12,6 +12,8 @@ if [ "x$1" == "x18.04" ] ; then
   "$DIR"/scripts/select-ubuntu-18.04.sh
 elif [ "x$1" == "x20.04" ] ; then
   "$DIR"/scripts/select-ubuntu-20.04.sh
+elif [ "x$1" == "x21.10" ] ; then
+  "$DIR"/scripts/select-ubuntu-21.10.sh
 else # default
   "$DIR"/scripts/select-ubuntu-20.04.sh
 fi
