@@ -479,15 +479,18 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
                 configuration_bounds_check(
                     vision.configuration_constant.CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS, value))
         elif key == vision.configuration_constant.VISION_FOTA_TIMER:
-            fv = configuration_bounds_check(vision.configuration_constant.CONFIG_FOTA_COMPLETION_TIMER_SECS, value)
+            fv = configuration_bounds_check(
+                vision.configuration_constant.CONFIG_FOTA_COMPLETION_TIMER_SECS, value)
             logger.info(f'FOTA update timer changed to {fv}.')
             self.max_fota_update_wait_time = fv
         elif key == vision.configuration_constant.VISION_SOTA_TIMER:
-            sv = configuration_bounds_check(vision.configuration_constant.CONFIG_SOTA_COMPLETION_TIMER_SECS, value)
+            sv = configuration_bounds_check(
+                vision.configuration_constant.CONFIG_SOTA_COMPLETION_TIMER_SECS, value)
             logger.info(f'SOTA update timer changed to {sv}.')
             self.max_sota_update_wait_time = sv
         elif key == vision.configuration_constant.VISION_POTA_TIMER:
-            pv = configuration_bounds_check(vision.configuration_constant.CONFIG_POTA_COMPLETION_TIMER_SECS, value)
+            pv = configuration_bounds_check(
+                vision.configuration_constant.CONFIG_POTA_COMPLETION_TIMER_SECS, value)
             logger.info(f'POTA update timer changed to {pv}.')
             self.max_pota_update_wait_time = pv
         elif key == vision.configuration_constant.IS_ALIVE_INTERVAL_SECS:
