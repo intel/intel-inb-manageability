@@ -119,5 +119,7 @@ systemctl start mqtt inbm
 systemctl disable inbm-cloudadapter
 systemctl stop inbm-cloudadapter
 
-# Disable TPM lockout for integration testing.
-tpm2_dictionarylockout --setup-parameters --max-tries=4294967295 --clear-lockout
+if [ "$TPM_SIMULATOR" == "true" ]; then
+  # Disable TPM lockout for integration testing.
+  tpm2_dictionarylockout --setup-parameters --max-tries=4294967295 --clear-lockout
+fi
