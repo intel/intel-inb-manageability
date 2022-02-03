@@ -559,8 +559,7 @@
             "otaTextFields": [
               {
                 "label": "Container Tag",
-                "key": "containerTag",
-                "data": "mysql"
+                "key": "containerTag"
               },
               {
                 "label": "Fetch",

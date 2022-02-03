@@ -561,24 +561,18 @@ trtl -cmd=start -in=sample-container -iv=2 -opt="[{\"Device\": [\"/dev/sdb1\"],
 
 ## ⚙️ Stats
 ### Description
-Gets the stats of container(s).
+Gets the Stats for all running containers.
+Returns the image name, containerID, and CPU % Usage, Memory Used, Memory Total, Memory % used
 
 ### Usage
 ```
 trtl [-type=docker] -cmd=stats 
-   [-all=(true | false); default=true] 
-   [-in=IMAGE_NAME] 
-   [-iv=IMAGE_VERSION]
 ```
 
 ### Example
-#### Stats for all containers
+#### Stats 
 ```
 trtl -cmd=stats
-```
-#### Stats for a specific container only
-```
-trtl -cmd=stats -all=false -in=sample-container -iv=3 (will grab stats for only one container.  -all=false MUST BE SET)
 ```
 
 ## ⚙️ Stop

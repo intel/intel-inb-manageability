@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 */
 
@@ -61,7 +61,7 @@ type Container interface {
 	Logs(instanceName string, options string, target string)
 	Rollback(instanceName string, instanceVersion int, snapshotName string, snapshotVersion int)
 	Start(instanceName string, instanceVersion int, options string, securityOptions []string)
-	Stats(instanceName string, instanceVersion int, all bool)
+	Stats()
 	Stop(instanceName string, instanceVersion int)
 	StopAll(instanceName string)
 	Commit(instanceName string, instanceVersion int)

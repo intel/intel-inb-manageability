@@ -46,6 +46,31 @@ func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Con
 	return containers, nil
 }
 
+// ContainerUsage is a structure to hold container usage.
+type ContainerInfo struct {
+  ImageName string `json:"imageName"`
+	ID string `json:"id"`
+}
+
+// GetAllContainers retrieves a list of all containers on the system in the running state.
+// It returns the list of all running container IDs and any error encountered.
+func GetAllRunningContainers(dw DockerWrapper) ([]ContainerInfo, error) {
+	containers, err := dw.ContainerList(types.ContainerListOptions{All: true})
+	if err != nil {
+		return nil, err
+	}
+
+	var runningContainers []ContainerInfo
+	for _, container := range containers {
+        if container.State == "running" {
+            runningContainers = append(runningContainers,
+							ContainerInfo{ImageName: container.Image, ID: container.ID[:12]})
+        }
+    }
+	return runningContainers, nil
+}
+
+
 // ListContainers list all containers for all images that are either 'latest' or have a tag number.
 // It will list the container ID, state, and image name.  It will provide 'NONE' for the container ID
 // and state if the image does not have an active container.

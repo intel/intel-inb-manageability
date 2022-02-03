@@ -12,12 +12,12 @@ TEST_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
            '</provisionNode></manifest>'
 
 TEST_XML_VALID_HASH_ALGO = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
-                              '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
-                              '<hash_algorithm>384</hash_algorithm></provisionNode></manifest>'
+    '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
+    '<hash_algorithm>384</hash_algorithm></provisionNode></manifest>'
 
 TEST_XML_INVALID_HASH_ALGO = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
-                              '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
-                              '<hash_algorithm>384abc</hash_algorithm></provisionNode></manifest>'
+    '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
+    '<hash_algorithm>384abc</hash_algorithm></provisionNode></manifest>'
 
 BAD_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
     '<path>https://www.repo.com/provision.tar</path><signature>signature</signature>' \
@@ -79,7 +79,8 @@ class TestProvisionTarget(TestCase):
     @patch('dispatcher.provision_target.extract_files_from_tar', return_value=([blob_files, cert_files], test_tar))
     @patch('dispatcher.provision_target.download')
     def test_raise_on_install_with_invalid_hash_algorithm(self, mock_download, mock_extract):
-        p = ProvisionTarget(TEST_XML_INVALID_HASH_ALGO, self.mocked_dispatcher, TEST_SCHEMA_LOCATION)
+        p = ProvisionTarget(TEST_XML_INVALID_HASH_ALGO,
+                            self.mocked_dispatcher, TEST_SCHEMA_LOCATION)
         with self.assertRaises(DispatcherException):
             p.install(self.parsed_hash_algo)
 
