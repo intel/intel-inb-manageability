@@ -1,6 +1,6 @@
 """Parser class to parse the system argument
 
-   Copyright (C) 2020-2021 Intel Corporation
+   Copyright (C) 2020-2022 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -508,12 +508,9 @@ def get(args) -> str:
     @return: Generated xml manifest string
     """
 
-    if args.nohddl:
-        raise InbcException('Get command is only supported for HDDL.')
-
     arguments = {
         'target': args.target,
-        'targetType': args.targettype,
+        'targetType': None if args.nohddl else args.targettype,
         'path': args.path,
         'nohddl': args.nohddl
     }
@@ -547,12 +544,9 @@ def set(args) -> str:
     @return: Generated xml manifest string
     """
 
-    if args.nohddl:
-        raise InbcException('Set command is only supported for HDDL.')
-
     arguments = {
         'target': args.target,
-        'targetType': args.targettype,
+        'targetType': None if args.nohddl else args.targettype,
         'path': args.path,
         'nohddl': args.nohddl
     }

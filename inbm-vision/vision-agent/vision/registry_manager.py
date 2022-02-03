@@ -202,7 +202,7 @@ class RegistryManager(object):
         self._registries.append(registry)
         self._data_handler_callback.send_node_register_response(registry.device_id)
         self._data_handler_callback.create_telemetry_event(registry.device_id, f'One node-agent added with information: '
-                                                                               + node_readable_info)
+                                                           + node_readable_info)
 
         self._register_lock.release()
 

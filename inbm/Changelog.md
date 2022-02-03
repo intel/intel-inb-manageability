@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
  - (507873) Added support for Ubuntu 21.10
  - (507914) Add script to deploy .debs to a PPA hosted on Artifactory
+ - (508492, 508493) [INBM] Support INBC Config commands(Get,Set)
 
 ## 3.0.8 - 2022-01-24
 
@@ -59,3 +60,4 @@ These are the open source release candidates.
 ### Security
  - (505490) Upgraded trtl dependencies to address CVE-2021-41190 in specs-go 1.0.1
  - (RTC 503878) Ensure dispatcher agent always blanks username and password in logs
+
