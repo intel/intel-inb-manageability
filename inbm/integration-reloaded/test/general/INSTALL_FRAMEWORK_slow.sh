@@ -75,6 +75,9 @@ cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 touch /etc/intel-manageability/public/cloudadapter-agent/iot-dispatcher.cfg
 /usr/bin/tc-get-secret-passphrase 2>/dev/null | md5sum
 
+# Give agents time to come up
+sleep 10
+
 # we don't connect to Telit in Integration Reloaded so we don't expect
 # cloudadapter-agent to function (it primarily connects to Telit)
 ps -G dispatcher-agent | grep dispatcher
