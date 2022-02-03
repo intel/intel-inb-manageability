@@ -28,7 +28,10 @@ GOOD_XML='<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>r
 
 test_echo RUNNING REBOOT CSLM TEST FAIL
 trigger_ota "${GOOD_XML}"
-listen_ota | grep 400
+sleep 1
+if ! listen_ota | tee /tmp/ota.txt | grep 400 ; then
+  echo "listen_ota output did not contain 400: " $(cat /tmp/ota.txt)
+fi
 systemctl stop csl-agent
 systemctl disable csl-agent
 rm -rf /etc/opt/csl/csl-node/*
