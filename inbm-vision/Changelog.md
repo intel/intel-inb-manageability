@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
-### Added
+### Fixed
+- HSD 1509485150, 47042 - Fix INBC fail to exit intermittently when using hddl_device_server
 - (507873) Added support for Ubuntu 21.10
 
 ## 3.0.8 - 2022-01-24
