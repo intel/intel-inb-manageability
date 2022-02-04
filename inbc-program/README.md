@@ -9,7 +9,7 @@ Intel® In-Band Manageability needs to be installed and running.
 
 
 ## 📝 Note
-1. INBC supports FOTA, SOTA and POTA on an Edge device. Use the **'--nohddl'** flag to target an Edge device.  This requires downloading from a remote source.
+1. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. Use the **'--nohddl'** flag to target an Edge device.  This requires downloading from a remote source.
 2. If targets=NONE for HDDL; the vision-agent determines the eligible targets based on their attributes.
 3. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
 
@@ -208,11 +208,20 @@ Get key/value pairs from configuration file
 ❗ This command is currently only supported on HDDL Plug-in cards
 ### Usage
 ```
-inbc get {--path, -p KEY_PATH;...} 
+inbc get [--nohddl]
+   {--path, -p KEY_PATH;...} 
    [--targettype, -tt NODE | VISION | NODE_CLIENT; default="node"]
    [--target, -t TARGETS...; default=None]
 ```   
 ### Examples
+#### Edge Device on Yocto OS
+```
+inbc get --nohddl --path  publishIntervalSeconds
+```
+#### Edge Device on Ubuntu
+```
+inbc get --nohddl --path  publishIntervalSeconds
+```
 #### HDDL Plug-in cards - get values from vision-agent
 ```
 inbc get -p isAliveTimerSecs;heartbeatRetryLimit -tt vision
@@ -247,11 +256,20 @@ Set key/value pairs in configuration file
 ❗ This command is currently only supported on HDDL Plug-in cards
 ### Usage
 ```
-inbc set {--path, -p KEY_PATH;...} 
+inbc set [--nohddl]
+   {--path, -p KEY_PATH;...} 
    [--targettype, -tt NODE | VISION | NODE_CLIENT; default="node"] 
    [--target, -t TARGETS...; default=None]
 ```
 ### Examples
+#### Edge Device on Yocto OS
+```
+inbc set --nohddl --path  maxCacheSize:100
+```
+#### Edge Device on Ubuntu
+```
+inbc set --nohddl --path  maxCacheSize:100
+```
 #### HDDL Plug-in cards - set values on vision-agent
 ```
 inbc set -p isAliveTimerSecs:50;heartbeatRetryLimit:2 -tt vision

@@ -39,6 +39,8 @@ This guide is intended for
 
 Intel In-band Manageability framework, a.k.a. INBM, is designed to provide certain level of OS abstraction to the administrator managing the IOT Device. The framework supported and validated on the below OS flavors:
 
+-   Ubuntu 21.10 (Desktop and Server)
+
 -   Ubuntu 20.04 (Desktop and Server)
 
 -   Ubuntu 18.04 (Desktop and Server)

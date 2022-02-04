@@ -1,6 +1,6 @@
 """ Constants and other config variables used throughout the inbc module.
 
-    Copyright (C) 2020-2021 Intel Corporation
+    Copyright (C) 2020-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -30,7 +30,7 @@ COMMAND_SUCCESS = "SUCCESS"
 COMMAND_FAIL = "FAIL"
 
 # MQTT topic
-TC_INSTALL_CHANNEL = 'manageability/request/install'
+INBM_INSTALL_CHANNEL = 'manageability/request/install'
 
 # Signature Tag Name
 FOTA_SIGNATURE = "fota_signature"

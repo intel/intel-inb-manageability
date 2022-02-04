@@ -22,11 +22,11 @@ class TestAotaCommand(TestCase):
                                app_type=None, need_repo=True, file=None,
                                username=None, password=None, docker_registry=None, docker_username=None,
                                docker_password=None):
-        signature_version = None
+        hash_algorithm = None
 
         if need_repo:
             parsed_manifest = {'signature': signature, 'config_params': None, 'version': None,
-                               'signature_version': signature_version,
+                               'hash_algorithm': hash_algorithm,
                                'container_tag': container_tag, 'uri': uri,
                                'file': file,
                                'cmd': cmd, 'repo': TestAotaCommand._build_mock_repo(num_files),
@@ -38,7 +38,7 @@ class TestAotaCommand(TestCase):
                                'device_reboot': None}
         else:
             parsed_manifest = {'signature': signature, 'config_params': None, 'version': None,
-                               'signature_version': signature_version,
+                               'hash_algorithm': hash_algorithm,
                                'container_tag': container_tag, 'uri': uri,
                                'file': file,
                                'cmd': cmd, 'app_type': app_type, 'username': username,

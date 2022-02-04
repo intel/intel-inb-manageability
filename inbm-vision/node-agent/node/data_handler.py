@@ -332,12 +332,15 @@ class DataHandler(idata_handler.IDataHandler):
             for child in children:
                 value = children[child]
                 if child == REGISTRATION_RETRY_TIMER_SECS:
-                    self._retry_timer = configuration_bounds_check(CONFIG_REGISTRATION_RETRY_TIMER_SECS, int(value))
+                    self._retry_timer = configuration_bounds_check(
+                        CONFIG_REGISTRATION_RETRY_TIMER_SECS, int(value))
                 if child == REGISTRATION_RETRY_LIMIT:
-                    self._retry_interval = configuration_bounds_check(CONFIG_REGISTRATION_RETRY_LIMIT, int(value))
+                    self._retry_interval = configuration_bounds_check(
+                        CONFIG_REGISTRATION_RETRY_LIMIT, int(value))
                 if child == HEARTBEAT_RESPONSE_TIMER_SECS:
                     self._heartbeat_response = \
-                        configuration_bounds_check(CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS, int(value))
+                        configuration_bounds_check(
+                            CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS, int(value))
         else:
             logger.error('Children value is empty')
 

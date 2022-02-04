@@ -67,8 +67,7 @@
             "otaTextFields": [
               {
                 "label": "XML Manifest",
-                "key": "manifest",
-                "data": "<?xml version=\"1.0\" encoding=\"utf-8\"?><manifest><type>ota</type><ota><header><type>aota</type><repo>remote</repo></header><type><aota name=\"sample-rpm\"><cmd>pull</cmd><app>docker</app><containerTag>mysql</containerTag></aota></type></ota></manifest>"
+                "key": "manifest"
               }
             ],
             "otaSelectFields": [],
@@ -837,8 +836,7 @@
             "otaTextFields": [
               {
                 "label": "Container Tag",
-                "key": "containerTag",
-                "data": "mysql"
+                "key": "containerTag"
               },
               {
                 "label": "Fetch",

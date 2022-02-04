@@ -46,12 +46,12 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     'manifest_schema.xsd')
 ota_element = {'fetch': 'https://abc.tar'}
 parsed_manifest = {'uri': 'https://abc.com', 'signature': 'asdf',
-                   'signature_version': '3',
+                   'hash_algorithm': '3',
                    'resource': ota_element,
                    'username': 'uname',
                    'password': 'pwd'}
-pota_parsed_manifest = {'ota_type': 'pota', 'fota': {'uri': 'http://nat-ubuntu.jf.intel.com:8000/A1170000F60XE01.rar', 'signature': 'signature', 'signature_version': 384, 'resource': {'fetch': 'http://nat-ubuntu.jf.intel.com:8000/A1170000F60XE01.rar', 'biosversion': '5.12', 'sigversion': '384', 'signature': 'signature', 'manufacturer': 'Default string', 'product': 'Default string', 'productversion': '1', 'vendor': 'American Megatrends Inc.', 'releasedate': '2018-02-08', 'boot': 'boot', 'guid': 'guid', 'size': 'size', 'tooloptions': '/p /b', 'username': 'user1',
-                                                                                                                                                                                        'password': 'pwd', 'targetType': 'node', 'targets': '                '}, 'username': 'user1', 'password': 'pwd'}, 'sota': {'sota_cmd': 'update', 'log_to_file': 'y', 'uri': 'http://nat-ubuntu.jf.intel.com:8000/file.mender', 'signature': 'signature', 'signature_version': 384, 'resource': {'cmd': 'update', 'fetch': 'http://nat-ubuntu.jf.intel.com:8000/file.mender', 'signature': 'signature', 'username': 'user', 'password': 'pwd', 'release_date': '2020-10-10', 'targetType': 'node', 'targets': '                '}, 'username': 'user', 'password': 'pwd', 'release_date': '2020-10-10'}}
+pota_parsed_manifest = {'ota_type': 'pota', 'fota': {'uri': 'http://nat-ubuntu.jf.intel.com:8000/A1170000F60XE01.rar', 'signature': 'signature', 'hash_algorithm': 384, 'resource': {'fetch': 'http://nat-ubuntu.jf.intel.com:8000/A1170000F60XE01.rar', 'biosversion': '5.12', 'sigversion': '384', 'signature': 'signature', 'manufacturer': 'Default string', 'product': 'Default string', 'productversion': '1', 'vendor': 'American Megatrends Inc.', 'releasedate': '2018-02-08', 'boot': 'boot', 'guid': 'guid', 'size': 'size', 'tooloptions': '/p /b', 'username': 'user1',
+                                                                                                                                                                                     'password': 'pwd', 'targetType': 'node', 'targets': '                '}, 'username': 'user1', 'password': 'pwd'}, 'sota': {'sota_cmd': 'update', 'log_to_file': 'y', 'uri': 'http://nat-ubuntu.jf.intel.com:8000/file.mender', 'signature': 'signature', 'hash_algorithm': 384, 'resource': {'cmd': 'update', 'fetch': 'http://nat-ubuntu.jf.intel.com:8000/file.mender', 'signature': 'signature', 'username': 'user', 'password': 'pwd', 'release_date': '2020-10-10', 'targetType': 'node', 'targets': '                '}, 'username': 'user', 'password': 'pwd', 'release_date': '2020-10-10'}}
 
 
 class TestPublishTargetOta(TestCase):

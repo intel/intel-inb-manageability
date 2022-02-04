@@ -31,7 +31,7 @@ class TestOtaParser(TestCase):
     def test_parse_sota_a(self):
         result = SotaParser('remote', self.mock_disp_obj).parse(
             {'cmd': '', 'signature': '', 'release_date': '', 'fetch': 'https://www.google.com/'}, {}, self.parsed)
-        self.assertTrue('signature_version' in result)
+        self.assertTrue('hash_algorithm' in result)
 
     def test_parse_pota_a(self):
         p = PotaParser('remote', self.mock_disp_obj)

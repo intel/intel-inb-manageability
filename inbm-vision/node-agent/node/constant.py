@@ -99,7 +99,8 @@ NODE_VERSION_PATH = '/usr/share/node-agent/version.txt'
 
 # Configuration items (key, lower bound, upper bound, default value)
 CONFIG_REGISTRATION_RETRY_TIMER_SECS = ConfigurationItem('RegistrationRetry Timer Secs', 1, 60, 20)
-CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS = ConfigurationItem('Heartbeat Response Timer Secs', 90, 1800, 300)
+CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS = ConfigurationItem(
+    'Heartbeat Response Timer Secs', 90, 1800, 300)
 CONFIG_REGISTRATION_RETRY_LIMIT = ConfigurationItem('Registration Retry Limit', 3, 15, 8)
 
 # Var directory

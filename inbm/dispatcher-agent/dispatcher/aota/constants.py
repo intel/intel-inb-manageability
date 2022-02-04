@@ -19,7 +19,7 @@ COMPOSE = 'compose'
 APPLICATION = 'application'
 
 # Docker stats telemetry key
-TELEMETRY_DOCKER_STATS = 'containersCpuPercent'
+DOCKER_STATS = 'containerStats'
 
 DockerCommands = Enum('DockerCommands', 'import load pull remove stats')
 ComposeCommands = Enum('ComposeCommands', 'up pull down list remove')

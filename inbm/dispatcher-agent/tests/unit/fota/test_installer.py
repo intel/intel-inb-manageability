@@ -29,7 +29,7 @@ class TestInstaller(TestCase):
                                                                                                                                      tool_options=None,
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
-                                                                                                                                     signature_version=1,
+                                                                                                                                     hash_algorithm=1,
                                                                                                                                      bios_vendor="CRB",
                                                                                                                                      platform_product="Broxton P")
         except FotaError:
@@ -44,7 +44,7 @@ class TestInstaller(TestCase):
                                                                                                                                      tool_options='/b /p',
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
-                                                                                                                                     signature_version=1,
+                                                                                                                                     hash_algorithm=1,
                                                                                                                                      bios_vendor="American Megatrends Inc.",
                                                                                                                                      platform_product="Default string")
         except FotaError as e:
@@ -59,7 +59,7 @@ class TestInstaller(TestCase):
                                                                                                                                      tool_options=None,
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
-                                                                                                                                     signature_version=1,
+                                                                                                                                     hash_algorithm=1,
                                                                                                                                      bios_vendor="Intel Corp.",
                                                                                                                                      platform_product="Elkhart Lake Embedded Platform")
         except FotaError as e:
@@ -74,7 +74,7 @@ class TestInstaller(TestCase):
                                                                                                                                      tool_options='123',
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
-                                                                                                                                     signature_version=1,
+                                                                                                                                     hash_algorithm=1,
                                                                                                                                      bios_vendor="Intel Corp.",
                                                                                                                                      platform_product="Elkhart Lake Embedded Platform")
         except FotaError as e:
@@ -91,7 +91,7 @@ class TestInstaller(TestCase):
                                                                                                                                      tool_options='1234',
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
-                                                                                                                                     signature_version=1,
+                                                                                                                                     hash_algorithm=1,
                                                                                                                                      bios_vendor="Intel Corp.",
                                                                                                                                      platform_product="Dummy Platform")
         except FotaError as e:
@@ -118,7 +118,7 @@ class TestInstaller(TestCase):
                                                                                                                                      tool_options=None,
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
-                                                                                                                                     signature_version=1,
+                                                                                                                                     hash_algorithm=1,
                                                                                                                                      bios_vendor="American Megatrends Inc.",
                                                                                                                                      platform_product="Default string")
         except FotaError as e:

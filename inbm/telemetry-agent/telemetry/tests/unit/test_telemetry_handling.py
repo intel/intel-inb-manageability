@@ -1,8 +1,8 @@
 from telemetry.telemetry_handling import (
-    _set_timestamp, TelemetryTimer, send_initial_telemetry, publish_telemetry_update, get_query_related_info)
+    _set_timestamp, TelemetryTimer, send_initial_telemetry, publish_telemetry_update, get_query_related_info,
+    get_docker_stats)
 from mock import patch, Mock
 from unittest import TestCase
-import unittest
 import time
 from future import standard_library
 standard_library.install_aliases()
@@ -129,6 +129,9 @@ class TestTelemetryHandling(TestCase):
         result = get_query_related_info("all", info)
         self.assertEqual(info, result)
 
+    @patch('os.path.exists', return_value=False)
+    def test_docker_stats_return_no_trtl_message(self, mock_exists):
+        self.assertEqual(get_docker_stats(True), "TRTL is not installed")
 
-if __name__ == '__main__':
-    unittest.main()
+    def test_docker_stats_return_no_docker_message(self):
+        self.assertEqual(get_docker_stats(False), "Docker is not installed")
