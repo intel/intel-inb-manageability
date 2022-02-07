@@ -30,7 +30,7 @@ class TestClient(unittest.TestCase):
         self.client.start()
 
         self.MockBroker.assert_called_once_with()
-        assert self.MockBroker.return_value.bind_callback.call_count > 0
+        assert self.MockBroker.return_value.ota_formback.call_count > 0
         self.MockBroker.return_value.start.assert_called_once_with()
 
     def test_start_adapter_succeed(self):

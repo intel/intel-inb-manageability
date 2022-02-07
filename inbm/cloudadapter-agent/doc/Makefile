@@ -3,6 +3,5 @@ doc-init:
 
 html:
 	epydoc --html ../cloudadapter -o html
-
 clean:
 	rm -rf html

@@ -1,19 +1,46 @@
-# diagnostic-agent
+# Diagnostic Agent
 
-IoT Diagnostic Agent
+<details>
+<summary>Table of Contents</summary>
 
-Agent which monitors and reports the state of critical components of the  manageability framework
+- [Overview](#overview)
+- [Agent Communication](#agent-communication)
+    - [Publish Channels](#publish-channels)
+    - [Subscribe Channels](#subscribe-channels)
+  - [Request - Response communication](#request---response-communication)
+  - [Commands supported](#commands-supported)
+- [Install from Source](#install-from-source)
+  - [Usage](#usage)
+    - [Changing the logging level](#changing-the-logging-level)
+    - [Running the agent](#running-the-agent)
+    - [Testing the agent](#testing-the-agent)
+</details>
+    
+## Overview
+
+The Intel Manageability agent which monitors and reports the state of critical components of the  manageability framework.
 
 ## Agent Communication 
 
-- Uses MQTT for communication with other tools/agents
-- Currently, once Diagnostic agent is up and running, subscribes to the following topics:
- - `diagnostic/command/#` channel for any incoming commands 
- - `+/state` channel for knowing states of other agents (e.g. `running`, `dead` etc.)
- - `+/broadcast` channel for general message exchange with everyone who is subscribed to this channel
-- Publishes state to `diagnostic/state` when running/dead
+Uses MQTT for communication with other tools/agents
+
+### Publish Channels
+The agent publishes to the following topics:
+  - Command response: `diagnostic/response/{id}`
+  - Container Remediation: `remediation/container`
+  - Image Remediation: `remediation/image`
+  - Event channel: `manageability/event`
+  - diagnostic-agent state: diagnostic/state` when dead/running
+
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+  - [Diagnostic commands](#commands-supported): `diagnostic/command/+`
+  - [Diagnostic Configuration Settings](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Configuration%20Parameters.md#diagnostic): `configuration/update/diagnostic/+`
+  - [All Configuration Settings](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Configuration%20Parameters.md#all): `configuration/update/all/+`
+  - Agent states: `+/state`
  
-P.S: `+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
+❗`+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
 
 ## Request - Response communication
 
@@ -34,7 +61,7 @@ P.S: `+` is a wild-card indicating single level thus matching `diagnostic/state`
 - `check_memory` - If min memory of 200MB present on gateway
 - `check_storage` - If min storage of 100MB present on gateway
 - `check_network` - If active network interface is up and connected to internet
-- `install_check` - Executes all of the above commands and returns result
+- `install_check` - Executes all the above commands and returns result
 
 Ex: 
 - Dispatcher can publish on `diagnostic/command/install_check` with payload `{'cmd': 'install_check', 'id': 12345}`
@@ -61,29 +88,10 @@ Changing the logging level:
   - ERROR
   - INFO
 
-Runnning the agent:
+Run the agent:
 
 - Run: `make run`
 
 Testing the agent:
 
 - Run: `make tests`
-
-## Install via DEB
-
-- Download RPM from Artifacts directory in diagnostic-agent/ repo build in TeamCity
-- For Ubuntu: `dpkg -i dist/diagnostic-agent-<latest>.deb`
-- Check diagnostic agent is running correctly: `journalctl -fu diagnostic`
-
-## Remove `diagnostic-agent` (via DEB)
-
-- For Ubuntu: `dpkg --purge diagnostic-agent`
-
-## Generate PyDoc for diagnostic agent
-NOTE: TeamCity will generate API documentation for each commit
-
-- To generate API documentation locally for Diagnostic agent:
-  1. Run `cd doc`
-  2. Run `make doc-init`
-  3. Run `make html`
-  4. Open `html/toc.html` in browser of choice
