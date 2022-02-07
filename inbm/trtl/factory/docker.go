@@ -87,7 +87,7 @@ func (docker *DockerInfo) GetImageByContainerId(containerID string) {
 // and state if the image does not have an active container.
 func (docker *DockerInfo) List(instanceName string) {
 	dw := realdocker.DockerWrap{}
-	if err := listContainers(dw); err != nil {
+	if err := listContainers(dw, instanceName); err != nil {
 		fmt.Fprintf(os.Stderr, "Error listing image/container information: %s", err)
 		osExit(1)
 	}

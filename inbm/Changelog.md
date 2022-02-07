@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Fixed
  - Fixed that x86_64 Yocto output files were missing inbm- prefix
  - RTC 508366 - Fix Issues affecting Docker Stats command for AOTA and Dynamic Telemetry
+ - RTC 508708 - Improve usability of AOTA Docker List command
 
 ### Added
  - (507873) Added support for Ubuntu 21.10
