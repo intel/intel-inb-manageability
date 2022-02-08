@@ -184,7 +184,11 @@ class XlinkWrapper(IXlinkWrapper):
                         self._xlink_release_data()
                         if self._receive_callback is not None:
                             logger.info('Receive callback method exist. Call the method.')
-                            self._receive_callback(message_combined)
+                            # Use threading to speed up message handling so that it can speed up xlink_read_data
+                            # process.
+                            handle_thread = threading.Thread(target=self._receive_callback, args=(message_combined,))
+                            handle_thread.daemon = True
+                            handle_thread.start()
 
     def receive_file(self, file_save_path: str) -> str:
         """Receive update file and save it to the local repository.
