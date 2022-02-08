@@ -467,12 +467,9 @@ def load(args) -> str:
     @return: Generated xml manifest string
     """
 
-    if args.nohddl:
-        raise InbcException('Load command is only supported for HDDL.')
-
     arguments = {
         'target': args.target,
-        'targetType': args.targettype,
+        'targetType': None if args.nohddl else args.targettype,
         'path': args.path,
         'nohddl': args.nohddl,
         'username': args.username,

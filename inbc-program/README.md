@@ -169,11 +169,22 @@ Load a new configuration file.   This will replace the existing configuration fi
 ❗ This command is currently only supported on HDDL Plug-in cards
 ### Usage
 ```
-inbc load {--path, -p FILE_PATH} 
+inbc load [--nohddl] 
+   {--path, -p FILE_PATH}
+   {--fetch, -f URI}
    [--targettype, -tt NODE | VISION | NODE_CLIENT; default="node"] 
    [--target, -t TARGETS...; default=None]
 ```
 ### Examples
+
+#### Edge Device on Yocto OS
+```
+inbc load --nohddl --fetch  <URI to config file>/config.file
+```
+#### Edge Device on Ubuntu
+```
+inbc load --nohddl --fetch  <URI to config file>/config.file
+```
 #### HDDL Plug-in cards - load new configuration on vision-agent
 ```
 inbc load --path /var/cache/manageability/intel_manageabilty_vision.conf -tt vision
