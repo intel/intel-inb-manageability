@@ -1,6 +1,6 @@
 #include <tunables/global>
 
-profile docker-ble-policy flags=(attach_disconnected,mediate_deleted) {
+profile docker-manageability-policy flags=(attach_disconnected,mediate_deleted) {
 
   #include <abstractions/base>
   #include <abstractions/dbus-strict>
@@ -17,7 +17,7 @@ profile docker-ble-policy flags=(attach_disconnected,mediate_deleted) {
   umount,
   mount,
 
-  signal (send,receive) peer=docker-ble-policy,
+  signal (send,receive) peer=docker-manageability-policy,
 
   deny @{PROC}/* w,   # deny write for all files directly in /proc (not in a subdir)
   # deny write to files not in /proc/<number>/** or /proc/sys/**
@@ -34,11 +34,12 @@ profile docker-ble-policy flags=(attach_disconnected,mediate_deleted) {
   /sys/firmware/** rwkix,
   /var/cache/apt/archives/* rw,
   /usr/** rwix,
+  /usr/bin/docker rUx,
   /boot/efi/** rwix,
   deny /sys/kernel/security/** rwklx,
 
 
   # suppress ptrace denials when using 'docker ps' or using 'ps' inside a container
-  ptrace (trace,read,tracedby,readby) peer=docker-ble-policy,
+  ptrace (trace,read,tracedby,readby) peer=docker-manageability-policy,
 
 }

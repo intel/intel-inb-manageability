@@ -11,6 +11,9 @@ DOCKER = 'docker'
 # Docker stats telemetry key
 DOCKER_STATS = 'containerStats'
 
+# Command prefix to run a command 'as the host' using docker, chroot, and namespace control
+DOCKER_CHROOT_PREFIX = "/usr/bin/docker run -it --privileged --rm --net=host --pid=host -v /:/host ubuntu:20.04 /usr/sbin/chroot /host "
+
 # XML parse time limit
 PARSE_TIME_SECS = 5
 

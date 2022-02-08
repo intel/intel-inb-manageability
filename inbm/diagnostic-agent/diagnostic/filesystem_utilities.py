@@ -8,8 +8,10 @@ import logging
 import platform
 import re
 import psutil
+import os
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_common_lib.constants import CHROOT_PREFIX
 
 logger = logging.getLogger(__name__)
 
@@ -42,27 +44,30 @@ def _calculate_btrfs_free_space(path: str) -> int:
     to retrieve, returns default ps_utils value
     """
 
-    # FIXME (tech debt) -- in moving the btrfs code below I notice a few things in the btrfs specific
-    # calls that are probably broken: e.g. using a pipe below, and not properly escaping the \d as \\d in
-    # the regex.
-    # Also, we need a way to figure out a mount point corresponding to the path.
-    (out, err, code) = PseudoShellRunner.run('btrfs filesystem usage -b / | grep "Free (estimated)"')
-
+    # FIXME: we need a way to figure out a mount point corresponding to the path.
+    
     try:
+        is_docker_app = os.environ.get("container", False)
+        cmd = 'btrfs filesystem usage -b /'
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            (out, err, code) = PseudoShellRunner.run(CHROOT_PREFIX + cmd)
+        else:
+            (out, err, code) = PseudoShellRunner.run(cmd)
         if code == 0:
             logger.debug('The output of BTRFS filesystem usage command: {}'.format(str(out)))
-            fsregex = re.search(r"min: \d+", out)
+            fsregex = re.search(r"min: (\d+)", out, re.MULTILINE)
             if not fsregex:
                 logger.debug(
                     'Failed to determine free space for BTRFS..falling back to default implementation')
                 return _get_non_btrfs_space(path)
-            free_space = fsregex.group(0)
-            return int(free_space.split()[1])
+            free_space = fsregex.group(1)
+            return int(free_space)
         else:
             logger.debug(
                 'Failed to determine free space for BTRFS..falling back to default implementation')
             return _get_non_btrfs_space(path)
-    except (re.error, KeyError):
+    except (re.error, KeyError, IOError):
         logger.debug(
             'Failed to determine free space for BTRFS..falling back to default implementation')
     return _get_non_btrfs_space(path)

@@ -12,7 +12,7 @@ services:
    network_mode: "host"
    security_opt:
      - seccomp:unconfined
-     - apparmor:docker-ble-policy
+     - apparmor:docker-manageability-policy
    build:
      context: .
      dockerfile: ./Dockerfile

@@ -25,8 +25,6 @@ ApplicationCommands = Enum('ApplicationCommands', 'update')
 # CentOS driver path in docker
 CENTOS_DRIVER_PATH = "/host/inb_driver/"
 
-CHROOT_CMD = "/usr/sbin/chroot /host "
-
 # Supported driver upgrade
 
 
