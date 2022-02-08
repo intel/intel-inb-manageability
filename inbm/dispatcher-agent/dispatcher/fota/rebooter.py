@@ -6,9 +6,10 @@
 """
 import logging
 import time
+import os
 from abc import ABC, abstractmethod
 
-from ..device_manager.constants import WIN_POWER, WIN_RESTART
+from ..device_manager.constants import WIN_POWER, WIN_RESTART, LINUX_POWER, LINUX_RESTART
 from ..dispatcher_callbacks import DispatcherCallbacks
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
@@ -42,7 +43,13 @@ class LinuxRebooter(Rebooter):
         logger.debug("")
         self._dispatcher_callbacks.broker_core.telemetry('Rebooting platform in 2 seconds......')
         time.sleep(2)
-        (output, err, code) = PseudoShellRunner.run("reboot -f")
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            (output, err, code) = PseudoShellRunner.run("/host"+LINUX_POWER + LINUX_RESTART)
+        else:
+            (output, err, code) = PseudoShellRunner.run(LINUX_POWER + LINUX_RESTART)
+
 
         if code != 0:
             self._dispatcher_callbacks.broker_core.telemetry(

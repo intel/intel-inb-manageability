@@ -32,7 +32,7 @@ fpm_package(`mqtt',
 	`1', 
 	`mkdir -p mqtt/files/var/persistent-log/mosquitto && chmod 0700 mqtt/files/usr/bin/tc-get-tpm-passphrase', 
 	`mqtt/template', 
-	`-d cryptsetup -d mosquitto -d tpm2-abrmd')	
+	`-d cryptsetup -d mosquitto')	
 
 # ---- Top level ----
 

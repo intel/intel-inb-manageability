@@ -84,7 +84,14 @@ class DebianBasedUpdater(OsUpdater):
         """
         logger.debug("")
         os.environ["DEBIAN_FRONTEND"] = "noninteractive"
-        cmds = ["apt-get update", "dpkg-query -f '${binary:Package}\\n' -W", "apt-get -yq upgrade"]
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            cmds = ["/usr/sbin/chroot /host /bin/bash -c 'apt-get update'",
+                    "/usr/sbin/chroot /host /bin/bash -c 'dpkg-query -f '${binary:Package}\\n' -W'", "/usr/sbin/chroot /host /bin/bash -c 'apt-get -yq upgrade'"]
+        else:
+            cmds = ["apt-get update",
+                    "dpkg-query -f '${binary:Package}\\n' -W", "apt-get -yq upgrade"]
         return CommandList(cmds).cmd_list
 
     def update_local_source(self, file_path: str) -> List[str]:
@@ -103,7 +110,14 @@ class DebianBasedUpdater(OsUpdater):
         @return: Returns 0 if size is freed. Returns in bytes of size consumed
         """
         logger.debug("")
-        (upgrade, _, _) = PseudoShellRunner.run("/usr/bin/apt-get -u upgrade --assume-no")
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            cmd = "apt-get -u upgrade --assume-no"
+            (upgrade, _, _) = PseudoShellRunner.run("/usr/sbin/chroot /host /bin/bash -c '" +
+                                                    cmd + "'")
+        else:
+            (upgrade, _, _) = PseudoShellRunner.run("/usr/bin/apt-get -u upgrade --assume-no")
         return DebianBasedUpdater._get_estimated_size_from_apt_get_upgrade(upgrade)
 
     @staticmethod

@@ -241,7 +241,12 @@ class LinuxToolFirmware(BiosFactory):
         if self._fw_tool == AFULNX_64:
             self._dispatcher_callbacks.broker_core.telemetry(
                 "Device will be rebooting upon successful firmware install.")
-        (out, err, code) = runner.run(cmd)
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            (out, err, code) = runner.run("/usr/sbin/chroot /host /bin/bash -c '" + cmd + "'")
+        else:
+            (out, err, code) = runner.run(cmd)
         if code == 0:
             self._dispatcher_callbacks.broker_core.telemetry("Apply firmware command successful.")
         else:
