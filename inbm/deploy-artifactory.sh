@@ -17,7 +17,8 @@ DISTRIBUTION=impish
 COMPONENT=universe
 ARCHITECTURE=amd64
 
-# Deploy all .debs in working directory
+# Deploy all .debs in working directory with some exceptions
+rm tpm*.deb
 for i in *.deb ; do
   deploy_package "$i" 
 done
