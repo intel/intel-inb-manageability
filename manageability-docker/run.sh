@@ -83,7 +83,7 @@ function docker_start {
       -f Dockerfile \
       .
 
-sudo docker run -d -it --name inb  --restart always --privileged=true --cap-add SYS_ADMIN --network=host --security-opt seccomp=unconfined --security-opt apparmor=docker-ble-policy --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /var/run/docker.sock:/var/run/docker.sock:ro --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket -v /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool -v /home/harsha/certs:/var/certs -v /:/host inb
+sudo docker run -d -it --name inb  --restart always --privileged=true --cap-add SYS_ADMIN --network=host --security-opt seccomp=unconfined --security-opt apparmor=docker-ble-policy  --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /var/run/docker.sock:/var/run/docker.sock -v /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool -v /home/harsha/certs:/var/certs -v /:/host inb
 
 #sudo docker run -d -it --name inb  --restart always --privileged=true --cap-add SYS_ADMIN --network=host --security-opt seccomp=unconfined --security-opt apparmor=docker-ble-policy --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /var/run/docker.sock:/var/run/docker.sock:ro --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket -v /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool -v /:/host inb
 
