@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - Fixed that x86_64 Yocto output files were missing inbm- prefix
  - RTC 508366 - Fix Issues affecting Docker Stats command for AOTA and Dynamic Telemetry
  - RTC 508698 - [BUG] Diagnostic returns inbm-telemetry not running and fails OTA checks blocking the OTA
+ - RTC 508367 - Fix Thingsboard 3.3 files to support Batch updates
 
 ### Added
  - (507873) Added support for Ubuntu 21.10
