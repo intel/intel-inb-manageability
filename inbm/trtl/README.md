@@ -156,16 +156,22 @@ trtl -cmd=exec -in=rpm-hdclite -iv=3
 
 ## ⚙️ List
 ### Description
-Lists all containers for all images that are either 'latest' or have a tag number.  It will list the container ID, state, and image name.  It will provide 'NONE' for the container ID and state if the image does not have an active container.
-
+Lists all containers for all images that are either 'latest' or have a tag number.  Exited containers will not be listed.  It will list the container ID, state, and image name.  It will provide 'NONE' for the container ID and state if the image does not have an active container.
+Optionally an image name may be provided.  In that case, only containers for that image will be listed.
 ### Usage
 ```
-trtl [-type=docker] -cmd=list -in=IMAGE_NAME
+trtl [-type=docker] -cmd=list [-in=IMAGE_NAME]
 ```
 
-### Example
-```
+### Example 
+#### List all non-exited containers
+```shell
 trtl -cmd=list
+```
+
+#### List containers for image 'redis'
+```shell
+trtl -cmd=list -in=redis
 ```
 
 ## ⚙️ ContainerRemove

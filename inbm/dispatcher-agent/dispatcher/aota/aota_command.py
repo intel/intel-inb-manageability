@@ -187,11 +187,21 @@ class Docker(AotaCommand):
         check_docker_command_supported(cmd)
 
     def cleanup(self) -> None:
-        if self.repo_to_clean_up is not None and self.resource is not None:
-            cleanup_repo(self.repo_to_clean_up, self.resource)
-            remove_directory(self.repo_to_clean_up)
-        if self._container_tag is not None and self._cmd != 'pull':
-            remove_old_images(self._trtl, self._container_tag)
+        if self._cmd != 'list':
+            if self.repo_to_clean_up is not None and self.resource is not None:
+                cleanup_repo(self.repo_to_clean_up, self.resource)
+                remove_directory(self.repo_to_clean_up)
+            if self._container_tag is not None and self._cmd != 'pull':
+                remove_old_images(self._trtl, self._container_tag)
+
+    def list(self) -> None:
+        """List all non-exited containers for all images stored on the system."""
+        logger.debug(f"Docker List command: container_tag->{self._container_tag}")
+        err, output = self._trtl.list(self._container_tag)
+        if err is None:
+            self._dispatcher_callbacks.broker_core.telemetry(str(output))
+        else:
+            raise AotaError(f'Docker List Failed {err}')
 
     def stats(self) -> None:
         """Displays info of running containers

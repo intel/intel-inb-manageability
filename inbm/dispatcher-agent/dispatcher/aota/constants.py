@@ -1,7 +1,7 @@
 """
     Constants and other config variables used throughout the AOTA module
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -21,7 +21,7 @@ APPLICATION = 'application'
 # Docker stats telemetry key
 DOCKER_STATS = 'containerStats'
 
-DockerCommands = Enum('DockerCommands', 'import load pull remove stats')
+DockerCommands = Enum('DockerCommands', 'import load pull remove stats list')
 ComposeCommands = Enum('ComposeCommands', 'up pull down list remove')
 ApplicationCommands = Enum('ApplicationCommands', 'update')
 

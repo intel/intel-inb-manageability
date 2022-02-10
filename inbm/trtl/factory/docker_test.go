@@ -23,7 +23,7 @@ func TestErrorWhenGetLatestTagContainsAsterisk(t *testing.T) {
 	assert.Equal(t, 1, got)
 }
 
-func fakeListContainer(realdocker.DockerWrapper) error {
+func fakeListContainer(realdocker.DockerWrapper, string) error {
 	return errors.New("error")
 }
 
