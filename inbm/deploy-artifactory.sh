@@ -18,7 +18,8 @@ COMPONENT=universe
 ARCHITECTURE=amd64
 
 # Deploy all .debs in working directory with some exceptions
-rm tpm*.deb
+rm tpm2-abrmd*.deb tpm2-tools*.deb tpm2-tss*.deb
+ls -l *.deb
 for i in *.deb ; do
   deploy_package "$i" 
 done
