@@ -1207,9 +1207,9 @@
               "filterId": null,
               "dataKeys": [
                 {
-                  "name": "containersCpuPercent",
+                  "name": "containerStats",
                   "type": "timeseries",
-                  "label": "containersCpuPercent",
+                  "label": "containerStats",
                   "color": "#4acf50",
                   "settings": {},
                   "_hash": 0.9236149981998252,

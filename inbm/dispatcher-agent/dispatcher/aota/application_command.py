@@ -1,7 +1,7 @@
 """
     AOTA Application Command Concrete Classes
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -23,7 +23,7 @@ from dispatcher.packagemanager.package_manager import get
 
 from .checker import check_application_command_supported, check_url
 from .aota_command import AotaCommand
-from .constants import CHROOT_CMD, CENTOS_DRIVER_PATH, DOCKER, COMPOSE, APPLICATION, SupportedDriver
+from .constants import CHROOT_CMD, CENTOS_DRIVER_PATH, SupportedDriver
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 

@@ -914,9 +914,9 @@
               "type": "entity",
               "dataKeys": [
                 {
-                  "name": "containersCpuPercent",
+                  "name": "containerStats",
                   "type": "timeseries",
-                  "label": "containersCpuPercent",
+                  "label": "containerStats",
                   "color": "#4caf50",
                   "settings": {},
                   "_hash": 0.5792660212571261

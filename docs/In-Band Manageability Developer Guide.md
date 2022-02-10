@@ -544,23 +544,24 @@ Supported AOTA commands and their functionality:
 
 Supported ***docker*** commands:
 
-| *docker* Command                | Definition                                                              |
-|:--------------------------------|:------------------------------------------------------------------------|
-| [Import](#_Example_of_docker)   | Importing an image to the device and starting a container               |
-| [Load](#_Example_of_docker_1)   | Loading an image from the device and starting a container               |
-| [Pull](#_Example_of_docker_2)   | Pulls an image or a repository from a registry and starting a container |
-| [Remove](#_Example_of_docker_3) | Removes docker images from the system                                   |
-| [Stats](#_Example_of_docker_4)  | Returns a live data stream for all the running containers               |
+| *docker* Command | Definition                                                                                                                                                                                                                                       |
+|:-----------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Import           | Importing an image to the device and starting a container                                                                                                                                                                                        |
+| List             | Lists all containers for all images that are either 'latest' or have a tag number.  It will list the container ID, state, and image name.  It will provide 'NONE' for the container ID and state if the image does not have an active container. | 
+| Load             | Loading an image from the device and starting a container                                                                                                                                                                                        |
+| Pull             | Pulls an image or a repository from a registry and starting a container                                                                                                                                                                          |
+| Remove           | Removes docker images from the system                                                                                                                                                                                                            |
+| Stats            | Returns a live data stream for all the running containers                                                                                                                                                                                        |
 
 Supported ***docker-compose*** commands:
 
-| *docker-compose* Command          | Definition                                                                    |
-|:----------------------------------|:------------------------------------------------------------------------------|
-| [Up](#_Example_of_docker-compose) | Deploying a service stack on the device                                       |
-| [Down](#_Example_of_docker_5)     | Stopping a service stack on the device                                        |
-| [Pull](#_Example_of_docker_6)     | Pulls an image or a repository from a registry and starting the service stack |
-| [List](#_Example_of_docker_7)     | Lists containers                                                              |
-| [Remove](#_Example_of_docker_8)   | Removes docker images from the system                                         |
+| *docker-compose* Command | Definition                                                                    |
+|:-------------------------|:------------------------------------------------------------------------------|
+| Up                       | Deploying a service stack on the device                                       |
+| Down                     | Stopping a service stack on the device                                        |
+| Pull                     | Pulls an image or a repository from a registry and starting the service stack |
+| List                     | Lists containers                                                              |
+| Remove                   | Removes docker images from the system                                         |
 
 Supported **‘Application’** commands:
 
