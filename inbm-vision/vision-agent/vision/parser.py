@@ -167,7 +167,12 @@ class XLinkParser(object):
                     if info == "bootFwDate":
                         try:
                             fw_date = XLinkParser.create_date_time_from_string(
+                                register_items[info], "%m-%d-%Y-%H-%M-%S")
+                        except ValueError:
+                            # In older version of node, it doesn't send hour, minute and seconds
+                            fw_date = XLinkParser.create_date_time_from_string(
                                 register_items[info], "%m-%d-%Y")
+                        try:
                             if not fw_date:
                                 raise XmlException("bootFwDate date is empty.")
                             node_info[info] = fw_date
