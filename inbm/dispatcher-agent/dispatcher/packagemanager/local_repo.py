@@ -132,9 +132,11 @@ class DirectoryRepo(IRepo):  # pragma: no cover
         repo_path = self.get_repo_path()
         logger.debug("Erasing files directly underneath " + repo_path)
         if not os.path.exists(repo_path):
-            raise DispatcherException(f"cannot delete files from {repo_path}: does not exist")
+            logger.debug(f"cannot delete files from {repo_path}: does not exist")
+            raise DispatcherException(f"cannot delete files from repo path: does not exist")
         if not os.path.isdir(repo_path):
-            raise DispatcherException(f"cannot delete files from {repo_path}: is not a directory")
+            logger.debug(f"cannot delete files from {repo_path}: is not a directory")
+            raise DispatcherException(f"cannot delete files from repo path: is not a directory")
         try:
             for the_file in os.listdir(repo_path):
                 file_path = os.path.join(self.get_repo_path(), the_file)
