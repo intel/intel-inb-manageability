@@ -169,10 +169,12 @@ class SOTA:
             try:
                 os.mkdir(SOTA_CACHE)
             except OSError as e:
-                raise SotaError(f"SOTA cache directory {SOTA_CACHE} cannot be created: {e}") from e
+                logger.debug(f"SOTA cache directory {SOTA_CACHE} cannot be created: {e}")
+                raise SotaError("SOTA cache directory cannot be created") from e
         elif not os.path.isdir(SOTA_CACHE):
+            logger.debug(f"SOTA cache directory {SOTA_CACHE} already exists and is not a directory")
             raise SotaError(
-                f"SOTA cache directory {SOTA_CACHE} already exists and is not a directory")
+                "SOTA cache directory already exists and is not a directory")
         sota_cache_repo = DirectoryRepo(SOTA_CACHE)
 
         is_rollback_available = not self.proceed_without_rollback
