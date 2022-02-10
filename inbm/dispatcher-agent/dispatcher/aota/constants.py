@@ -18,9 +18,6 @@ DOCKER = 'docker'
 COMPOSE = 'compose'
 APPLICATION = 'application'
 
-# Docker stats telemetry key
-DOCKER_STATS = 'containerStats'
-
 DockerCommands = Enum('DockerCommands', 'import load pull remove stats list')
 ComposeCommands = Enum('ComposeCommands', 'up pull down list remove')
 ApplicationCommands = Enum('ApplicationCommands', 'update')

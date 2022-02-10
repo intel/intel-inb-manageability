@@ -15,7 +15,7 @@ from typing import Union, Dict, Optional, Any
 
 from inbm_lib import wmi
 from inbm_lib.count_down_latch import CountDownLatch
-from inbm_lib.constants import TRTL_PATH
+from inbm_lib.constants import TRTL_PATH, DOCKER_STATS
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.trtl import Trtl
 from inbm_lib.wmi_exception import WmiException
@@ -212,7 +212,7 @@ def get_dynamic_telemetry(is_docker_installed: bool, rm_active: bool = False) ->
     # several types possible in dictionary
     dynamic_telemetry: Dict[str, Optional[Any]] \
         = {'systemCpuPercent': get_cpu_percent(),
-           'containersCpuPercent': get_docker_stats(is_docker_installed),
+            DOCKER_STATS: get_docker_stats(is_docker_installed),
            'availableMemory': get_available_memory(),
            'percentDiskUsed': get_percent_disk_used(),
            'coreTempCelsius': get_core_temp_celsius(),

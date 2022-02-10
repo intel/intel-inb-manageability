@@ -18,6 +18,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (507914) Add script to deploy .debs to a PPA hosted on Artifactory
  - (508492, 508493) [INBM] Support INBC Config commands(Get,Set)
 
+### Changed
+ - (508706) - Change dynamic telemetry tag from ContainersCpuPercentage to ContainerStats
+
 ## 3.0.8 - 2022-01-24
 
 ### Fixed

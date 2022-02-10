@@ -8,6 +8,9 @@ from inbm_common_lib.utility import get_canonical_representation_of_path
 COMPOSE = 'compose'
 DOCKER = 'docker'
 
+# Docker stats telemetry key
+DOCKER_STATS = 'containerStats'
+
 # XML parse time limit
 PARSE_TIME_SECS = 5
 
