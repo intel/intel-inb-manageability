@@ -115,7 +115,7 @@ class TestSota(testtools.TestCase):
                 mock_rollback_and_delete_snap.assert_called_once()
             mock_reboot.assert_called_once()
         except SotaError as e:
-            self.assertEquals(str(e), 'Final result in SOTA execution: SOTA fail')
+            self.assertEquals(str(e), "SOTA cache directory cannot be created")
 
     @patch("dispatcher.sota.downloader.Downloader.is_valid_release_date")
     @patch("dispatcher.sota.snapshot.YoctoSnapshot.recover")

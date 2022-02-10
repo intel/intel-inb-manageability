@@ -147,7 +147,7 @@ class SOTA:
                      dispatcher_callbacks=self._dispatcher_callbacks)
         return cmd_list
 
-    def execute(self, proceed_without_rollback: bool, skip_sleeps: bool = False) -> None:
+    def execute(self, proceed_without_rollback: bool, skip_sleeps: bool = False) -> None:  # pragma: no cover
         """Entry point into the SOTA Module. Prints summary at the end before rebooting
 
         If everything was fine after reboot by SOTA, 'diagnostic_system_healthy' is set which means
