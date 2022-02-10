@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Fixed
+- 509266 Vision agent post-install script fails
 - HSD 1509485150, 47042 - Fix INBC fail to exit intermittently when using hddl_device_server
 - (507873) Added support for Ubuntu 21.10
 - HSD 15010686097, 509209 - Fix INBC query not printing correct time of fw-release-date
