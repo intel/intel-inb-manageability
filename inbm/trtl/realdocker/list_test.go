@@ -15,7 +15,7 @@ func TestListContainersSuccessfully(t *testing.T) {
 		},
 	}
 
-	err := ListContainers(d)
+	err := ListContainers(d, "redis")
 	assert.NoError(t, err)
 }
 func TestListContainersNoneImageSuccessfully(t *testing.T) {
@@ -26,6 +26,6 @@ func TestListContainersNoneImageSuccessfully(t *testing.T) {
 		},
 	}
 
-	err := ListContainers(d)
+	err := ListContainers(d, "redis")
 	assert.NoError(t, err)
 }

@@ -458,12 +458,9 @@ class Trtl:
         if container_id is None:
             container_id = ''
 
-        logger.debug("Trtl.list")
-        try:
-            (out, err, code) = self.runner.run(
-                self._boilerplate("list") + " -in=" + container_id)
-        except OSError as e:
-            return 'OSError running trtl', ''
+        logger.debug(f"Trtl.list: container_id->{container_id}")
+        out, err, code = self.runner.run(
+            self._boilerplate("list") + " -in=" + container_id)
         logging.debug(
             "Trtl.list results: output={}, err={}, exitcode={}".format(
                 out, err, code))
