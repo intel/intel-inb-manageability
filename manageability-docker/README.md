@@ -14,7 +14,7 @@ This folder contains the build instructions for creating mangeability docker con
 
 * Unzip the package(inb_azure_container.zip/inb_tb_container.zip).
 * If planning to use the sample_customer_mqtt_client provided, open the cloud_source file and uncomment the lines specified in the file.
-* If using Thingsboard, edit the tb_conf_file and fill in the respective Thingsboard server details and device tokens along with tls certificate of thingsboard server if TLS is enabled on the Thingsboard server. If using TLS for Thingsboard uncomment the line 'cp /src/thingsboard.pub.pem /etc/intel-manageability/secret/cloudadapter-agent/thingsboard.pub.pem' in the cloud_source file.
+* If using Thingsboard, edit the tb_conf_file and fill in the respective Thingsboard server details and device tokens along with tls certificate of thingsboard server if TLS is enabled on the Thingsboard server. If not using TLS for Thingsboard, remove the line 'RUN cp ./thingsboard.pub.pem /src/thingsboard.pub.pem' in the Dockerfile
 * If using Azure, edit the azure_conf_file and fill in the Primary SAS Key, device name, scope id.
 * Now run ./run.sh which builds the docker image and starts the container.
 
