@@ -382,7 +382,6 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `<fetch></fetch>`                        | `<fetch>http://server name/AOTA/container.tar.gz<fetch>` |         R         | Trusted repo + name of package                                                      |
 | `<file></file>`                          | `<file>custom.yml</file>`                                |         O         | Name of custom YAML file to use with docker-compose                                 |
 | `<version></version>`                    | `<version>0.7.6</version>`                               |         O         | Update Package version.                                                             |
-| `<signature></signature`>                | `<signature>96e92d</signature>`                          |         O         | Signature of package–signed checksum of package.  Recommended for security purposes |
 | `<containerTag></containerTag>`          | `<containerTag>Modbusservice</containerTag>`             |         R         | Name of container image                                                             |
 | `<deviceReboot></deviceReboot>`          | `<deviceReboot>yes</deviceReboot>`                       |         O         | [yes or no] Used by application update.  If yes, reboot system after update.        |
 | `<username></username>`                  | `<username>user</username>`                              |         O         | Username credentials of the server where the package is hosted for downloads        |
