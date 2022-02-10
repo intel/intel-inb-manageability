@@ -6,6 +6,7 @@
 """
 
 import logging
+import os
 import time
 from typing import Any, List, Optional, Union, Mapping
 
@@ -146,7 +147,7 @@ class SOTA:
                      dispatcher_callbacks=self._dispatcher_callbacks)
         return cmd_list
 
-    def execute(self, proceed_without_rollback: bool, skip_sleeps: bool = False) -> None:
+    def execute(self, proceed_without_rollback: bool, skip_sleeps: bool = False) -> None:  # pragma: no cover
         """Entry point into the SOTA Module. Prints summary at the end before rebooting
 
         If everything was fine after reboot by SOTA, 'diagnostic_system_healthy' is set which means
@@ -162,9 +163,20 @@ class SOTA:
         self.log_to_file = self._parsed_manifest['log_to_file']
         self.sota_cmd = self._parsed_manifest['sota_cmd']
         if self.sota_cmd is None:
-            raise DispatcherException('sota_cmd is None')
+            raise SotaError('sota_cmd is None')
         release_date = self._parsed_manifest['release_date']
+        if not os.path.exists(SOTA_CACHE):
+            try:
+                os.mkdir(SOTA_CACHE)
+            except OSError as e:
+                logger.debug(f"SOTA cache directory {SOTA_CACHE} cannot be created: {e}")
+                raise SotaError("SOTA cache directory cannot be created") from e
+        elif not os.path.isdir(SOTA_CACHE):
+            logger.debug(f"SOTA cache directory {SOTA_CACHE} already exists and is not a directory")
+            raise SotaError(
+                "SOTA cache directory already exists and is not a directory")
         sota_cache_repo = DirectoryRepo(SOTA_CACHE)
+
         is_rollback_available = not self.proceed_without_rollback
         time_to_wait_before_reboot = 2 if not skip_sleeps else 0
 
