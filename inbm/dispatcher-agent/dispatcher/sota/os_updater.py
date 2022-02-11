@@ -15,7 +15,7 @@ from abc import ABC, abstractmethod
 
 from inbm_common_lib.utility import CanonicalUri
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
 
 from .command_list import CommandList
 from .constants import MENDER_ARTIFACT_INSTALL_COMMAND

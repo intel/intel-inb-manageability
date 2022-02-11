@@ -10,7 +10,7 @@ import os
 
 from ..dispatcher_callbacks import DispatcherCallbacks
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.constants import DOCKER_CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 logger = logging.getLogger(__name__)
 

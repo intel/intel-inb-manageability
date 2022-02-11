@@ -18,7 +18,7 @@ fi
 
 NAME=bit-creek
 
-perl -pi -e 'chomp if eof' version.txt
+perl -pi -e 'chomp if eof' "$DIR"/version.txt
 
 rm -rf "$DIR"/output
 

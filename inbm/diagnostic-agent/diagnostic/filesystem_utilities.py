@@ -11,7 +11,7 @@ import psutil
 import os
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.constants import CHROOT_PREFIX
+from inbm_lib.constants import CHROOT_PREFIX
 
 logger = logging.getLogger(__name__)
 

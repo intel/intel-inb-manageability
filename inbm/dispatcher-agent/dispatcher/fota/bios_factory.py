@@ -16,7 +16,7 @@ from inbm_common_lib.constants import AFULNX_64
 
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.constants import DOCKER_CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 from . import constants
 from typing import Tuple, Optional, Dict

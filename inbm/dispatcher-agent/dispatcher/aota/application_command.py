@@ -13,7 +13,7 @@ from typing import Optional, Any, Mapping
 from inbm_lib.detect_os import is_cent_os_and_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path
-from inbm_common_lib.constants import DOCKER_CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs

@@ -15,15 +15,6 @@ VALID_MAGIC_FILE_TYPE = ['data', 'POSIX tar archive', 'gzip compressed data', 'e
 TEMP_EXT_FOLDER = "/var/cache/manageability/repository-tool/temp_ext"
 URL_NULL_CHAR = '%00'
 
-# Command prefix to run a command 'as the host' using docker, chroot, and namespace control
-# note this will not propagate proxy environment variables
-# change above comment if -e entries are added for proxies
-DOCKER_CHROOT_PREFIX = "/usr/bin/docker run -e DEBIAN_FRONTEND=noninteractive --privileged --rm --net=host --pid=host -v /:/host ubuntu:20.04 /usr/sbin/chroot /host "
-
-# Command prefix to run a command simply in a chroot in the container without docker
-# this will propagate all environment variables
-CHROOT_PREFIX = "/usr/sbin/chroot /host "
-
 # MQTT Channels
 RESPONSE_CHANNEL = 'manageability/response'
 EVENT_CHANNEL = 'manageability/event'

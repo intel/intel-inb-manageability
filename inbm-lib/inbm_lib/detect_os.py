@@ -15,7 +15,7 @@ from .constants import MENDER_FILE_PATH, SYSTEM_IS_YOCTO_PATH, FORCE_YOCTO_PATH,
 import logging
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.constants import DOCKER_CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 logger = logging.getLogger(__name__)
 
