@@ -547,7 +547,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
                     is_provisioned = node_connector.is_provisioned(node_id)
                 dictionary.update({"guid": guid})
                 dictionary.update({"is_provisioned": is_provisioned})
-                c = command.RegisterNodeCommand(node_id, self._registry_manager, dictionary)
+                c = command.RegisterNodeCommand(node_id, self._registry_manager, dictionary.copy())
             elif cmd is command.VisionCommands.HEARTBEAT.value:
                 c = command.UpdateNodeHeartbeatCommand(node_id, self._registry_manager)
             elif cmd is command.VisionCommands.DOWNLOAD_STATUS.value:
