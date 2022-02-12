@@ -12,8 +12,8 @@
 - [Install from Source](#install-from-source)
 - [Usage](#usage)
   - [Changing the logging level](#changing-the-logging-level)
-  - [Running the agent](#running-the-agent)
-  - [Testing the agent](#testing-the-agent)
+  - [Run the agent](#run-the-agent)
+  - [Test the agent](#test-the-agent)
 - [Debian package (DEB)](#debian-package-deb)
 </details>
   
@@ -94,7 +94,7 @@ NOTE: Ensure any Python version greater than 3.8 is installed
 ❗Some commands will require root privileges (sudo)  
 ❗Run commands in the `inbm/configuration-agent` directory
 
-### Changing the logging level:
+### Changing the logging level
 
 - Run: `make logging LEVEL=DEBUG`
 - Valid values for `LEVEL`:
@@ -102,10 +102,10 @@ NOTE: Ensure any Python version greater than 3.8 is installed
   - `ERROR`
   - `INFO`
 
-### Running the agent:
+### Run the agent:
 - Run: `make run`
 
-### Testing the agent:
+### Test the agent:
 - Run: `make tests`
 
 ## Debian package (DEB)

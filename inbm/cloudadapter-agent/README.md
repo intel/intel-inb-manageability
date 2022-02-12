@@ -13,8 +13,8 @@
 - [Usage](#usage)
   - [Setup](#setup)
   - [Changing the logging level](#changing-the-logging-level)
-  - [Running the agent](#running-the-agent)
-  - [Testing the agent](#testing-the-agent)
+  - [Run the agent](#run-the-agent)
+  - [Test the agent](#test-the-agent)
 - [Debian package (DEB)](#debian-package-deb)
 </details>
 
@@ -95,12 +95,11 @@ For example:
 - [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
 - [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
-
 ## Usage
-
 ❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
 ❗Some commands will require root privileges (sudo)  
 ❗Run commands in the `inbm/cloudadapter-agent` directory
+
 
 ### Setup:
 - Run: `make config`
@@ -116,11 +115,11 @@ For example:
   - `ERROR`
   - `INFO`
 
-### Running the agent:
+### Run the agent:
 
 - Run: `make run`
 
-### Testing the agent:
+### Test the agent:
 
 - Run: `make tests`
 

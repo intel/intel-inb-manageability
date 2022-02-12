@@ -12,8 +12,8 @@
 - [Install from Source](#install-from-source)
 - [Usage](#usage)
   - [Changing the logging level](#changing-the-logging-level)
-  - [Running the agent](#running-the-agent)
-  - [Testing the agent](#testing-the-agent)
+  - [Run the agent](#run-the-agent)
+  - [Test the agent](#test-the-agent)
 - [Debian package (DEB)](#debian-package-deb)
 </details>
     
@@ -47,18 +47,18 @@ The agent subscribes to the following topics:
 - Agent incorporates req-resp style communication layer on top of MQTT
 - Agents/Tools can send commands to Diagnostic via `diagnostic/command/<command-name>` with payload:
 ```json
-{
+  {
     "cmd": "<command name>",
     "id": "<any ID>"
-}
+  }
 ```
 - Diagnostic sends JSON responses on `diagnostic/response/<ID>`
 - Responses are of format: 
 ```json
-{
+  {
     "rc": "0 | 1", 
     "message": "<user friendly message>"
-}
+  }
 ```
 
 ## Commands supported
@@ -72,8 +72,20 @@ The agent subscribes to the following topics:
 - `install_check` - Executes all the above commands and returns result
 
 Ex: 
-- Dispatcher can publish on `diagnostic/command/install_check` with payload `{'cmd': 'install_check', 'id': 12345}`
-- Diagnostic receives it, processes and sends result as `{'rc':0, 'message': 'Install check passed'}` on `diagnostic/response/12345`
+- Dispatcher can publish on `diagnostic/command/install_check` with payload:
+```json
+  {
+    "cmd": "install_check", 
+    "id": "12345"
+  }
+```
+- Diagnostic receives the following response on `diagnostic/response/12345`:
+```json
+  {
+    "rc":0, 
+    "message": "Install check passed"
+  }
+```
 
 ## Install from Source
 ❗ Use a Python version greater than 3.8 is installed
@@ -88,18 +100,17 @@ Ex:
 ❗Run commands in the `inbm/diagnostic-agent` directory
 
 ### Changing the logging level:
-
 - Run: `make logging LEVEL=DEBUG`
 - Valid values for `LEVEL`:
   - `DEBUG`
   - `ERROR`
   - `INFO`
 
-### Running the agent:
+### Run the agent:
 
 - Run: `make run`
 
-### Testing the agent:
+### Test the agent:
 
 - Run: `make tests`
 
