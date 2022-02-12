@@ -839,7 +839,7 @@ WantedBy=inbm.service
 
 ### OTA Error Status
 
-[Error Messages](Error Messages.md)
+[Error Messages](Error%20Messages.md)
 
 ### Dispatcher-Agent Not Receiving Messages 
 If the dispatcher-agent does not receive the manifest message from the *cloudadapteragent* after triggering SOTA/FOTA, 
