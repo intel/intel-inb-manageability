@@ -1159,6 +1159,9 @@ the device item.
 <img src="media/In-Band Manageability User Guide - Azure/media/image67.png" style="width:6in;height:5.69444in" />
 
 ## Issues and Troubleshooting
+
+[General Troubleshooting](Issues%20and%20Troubleshooting.md)
+
 ### Error viewing Devices on Azure&reg; Portal:
 
 While following the steps in [Section 2.5.1](#_2.5.1_Viewing_and), if
@@ -1187,35 +1190,7 @@ there is an error viewing device, do as below:
 
 ### OTA Error Status
 
-[Error Messages](Error Messages.md)
-
-### Provisioning Unsuccessful or Device Not Connected to Cloud
-
-If the provisioning script is struck while creating *symlinks* at the
-end of provisioning or Device is not connected to the cloud, there is a
-chance that other system services that are waiting might possibly
-blocked the INB services from starting. In order to fix this issue,
-follow the steps:
-
-Check if bootup is complete or not using the command:
-
-```shell
-sudo systemd-analyze critical-chain
-```
-
-If the boot-up isn’t complete, list all the jobs:
-
-```shell
-sudo systemctl list-jobs
-```
-
-Stop all the jobs that are under ‘waiting’ state:
-
-```shell
-sudo systemctl stop [job_unit_name]
-```
-
-And try provisioning the device again following the steps in [Provisioning a Device](#provisioning-a-device).
+[Error Messages](Error%20Messages.md)
 
 ### Acquiring Debug Messages from Agents
 
