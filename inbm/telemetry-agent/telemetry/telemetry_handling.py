@@ -23,14 +23,13 @@ from inbm_lib.wmi_exception import WmiException
 from inbm_common_lib.device_tree import is_device_tree_exists, get_device_tree_system_info, get_device_tree_cpu_id
 from inbm_common_lib.dmi import get_dmi_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_common_lib.constants import UNKNOWN
+from inbm_common_lib.constants import UNKNOWN, TELEMETRY_CHANNEL
 from inbm_common_lib.pms.pms_helper import PMSHelper, PmsException
 
 from .static_attributes import get_total_physical_memory, get_cpu_id, get_os_information, \
     get_disk_information
 from .dynamic_attributes import get_cpu_percent, get_available_memory, get_percent_disk_used, \
     get_core_temp_celsius, get_network_telemetry, get_battery_status
-from .constants import SYSTEM_TELEMETRY_CHANNEL
 from .command import Command
 from .telemetry_exception import TelemetryException
 from inbm_lib.version import get_friendly_inbm_version_commit, get_friendly_inbm_vision_version_commit
@@ -383,14 +382,14 @@ def send_initial_telemetry(client, with_docker) -> None:
     while not static_succeeded and current_retry_count < max_retry_count:
         try:
             current_retry_count += 1
-            publish_static_telemetry(client, SYSTEM_TELEMETRY_CHANNEL)
+            publish_static_telemetry(client, TELEMETRY_CHANNEL)
             static_succeeded = True
         except TelemetryException as e:
             logger.error(
                 "Unable to publish static telemetry: {}.  Retrying.".format(str(e)))
             time.sleep(5)
 
-    publish_dynamic_telemetry(client, SYSTEM_TELEMETRY_CHANNEL,
+    publish_dynamic_telemetry(client, TELEMETRY_CHANNEL,
                               get_dynamic_telemetry(with_docker))
 
     # SWBOM

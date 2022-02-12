@@ -720,36 +720,8 @@ buttons\[3\]** as seen below
 | Manifest Update             | Any OTA update type can be done via the Manifest Update, by entering XML text to update the Endpoint. Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md).
  
 
-### AOTA Updates
-
-Supported AOTA commands and their functionality:
-
-`docker-compose` commands currently supported:
-
-| `docker-compose` Command | Definition  |
-|--------------------------|-------------------------------------------------------------------------------|
-| `up` | Deploying a service stack on the device |
-| `down` | Stopping a service stack on the device  |
-| `pull` | Pulls an image or a repository from a registry and starting the service stack |
-| `list` | Lists containers  |
-| `remove` | Removes docker images from the system |
-
-`docker` commands currently supported:
-
-| `docker` Command | Definition  |
-|------------------|-------------------------------------------------------------------------|
-| `import` | Importing an image to the device and starting a container |
-| `load` | Loading an image from the device and starting a container |
-| `pull` | Pulls an image or a repository from a registry and starting a container |
-| `remove` | Removes docker images from the system |
-| `stats`  | Returns a live data stream for all the running containers |
-
-
-**`Application`** command currently supported:
-
-| `application` Command | Definition  |
-|---------------------------------------|---------------------------------|
-| Update | Updating an application package |
+#### Supported AOTA commands and AOTA form descriptions
+[AOTA Updates](AOTA.md)
 
 
 To trigger Application-over the Air updates click the `Trigger AOTA`
@@ -1300,33 +1272,10 @@ see the below
 
 ## Issues and Troubleshooting
 
+[General Troubleshooting](Issues%20and%20Troubleshooting.md)
+
 ### OTA Error Status
-[Error Messages](Error Messages.md)
-
-### Provisioning Unsuccessful or Device Not Connected to Cloud
-
-If the provisioning script is struck while creating *symlinks* at the
-end of provisioning or Device is not connected to the cloud, there is a
-chance that other system services that are waiting might possibly
-blocked the INB services from starting. In order to fix this issue,
-follow the steps:
-
-Check if bootup is complete or not using the command:
-```shell
-sudo system-analyze critical-chain
-```
-
-If the boot-up isn`t complete, list all the jobs:
-```shell
-sudo systemctl list-jobs
-```
-
-Stop all the jobs that are under `waiting` state:
-```shell
-sudo systemctl stop <job_unit_name>
-```
-
-And try provisioning the device again following the steps in [Provisioning a Device](#provisioning-a-device).
+[Error Messages](Error%20Messages.md)
 
 ### Acquiring Debug Messages from Agents
 

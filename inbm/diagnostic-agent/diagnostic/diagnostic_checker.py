@@ -34,10 +34,7 @@ logger = logging.getLogger(__name__)
 
 class DiagnosticChecker:
     """Acts as the client in the Command Pattern.  It decides which receiver objects it assigns
-    to the command objects and which commands it assigns to the invoker.
-
-    @param node_callback: Callback to the Node object
-    """
+    to the command objects and which commands it assigns to the invoker."""
 
     def __init__(self, broker: IBroker) -> None:
         """Acts as the client in the Command Pattern.  It decides which receiver objects it assigns

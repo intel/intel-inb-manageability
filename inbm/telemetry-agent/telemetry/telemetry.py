@@ -11,7 +11,7 @@ import platform
 from typing import Optional, List, Union
 
 from inbm_lib.windows_service import WindowsService
-from telemetry.constants import DEFAULT_LOGGING_PATH, SCHEMA_LOCATION, SYSTEM_TELEMETRY_CHANNEL, EVENTS_CHANNEL
+from telemetry.constants import DEFAULT_LOGGING_PATH, SCHEMA_LOCATION, EVENTS_CHANNEL
 from inbm_lib.constants import QUERY_CMD_CHANNEL
 from inbm_lib.xmlhandler import XmlHandler
 from telemetry import software_bom_list
@@ -26,7 +26,6 @@ from pathlib import Path
 import time
 import sys
 import signal
-import json
 import os
 import logging
 

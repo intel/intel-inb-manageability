@@ -3,15 +3,36 @@
 The following outlines the manifest parameters used to perform the supported OTA updates, configuration commands, query, and provision node.
 
 ## Table of Contents
-1. [FOTA](#FOTA)
-2. [SOTA](#SOTA)
-3. [POTA](#POTA)
-4. [AOTA](#AOTA)
-5. [Query](#Query)
-6. [Configuration SET](#Set)
-7. [Configuration GET](#Get)
-8. [Configuration LOAD](#Load)
-9. [Provision Node](#Provision-Node)
+1. [Manifest Rules](#manifest-rules)
+3. [FOTA](#FOTA)
+4. [SOTA](#SOTA)
+5. [POTA](#POTA)
+6. [AOTA](#AOTA)
+7. [Query](#Query)
+8. [Configuration SET](#Set)
+9. [Configuration GET](#Get)
+10. [Configuration LOAD](#Load)
+11. [Provision Node](#Provision-Node)
+
+## Manifest Rules 
+
+- All tags marked as **required (R)** in the manifest examples below
+    must be in the manifest. Any tags marked as **optional (O)** can be
+    omitted.
+
+- The start of a section is indicated as follows **\<manifest\>**.
+
+- The end of a section is indicated by **\</manifest\>**. All sections
+    must have the start and the matching end tag.
+
+- Remove spaces, tabs, comments and so on. Make it a single continuous
+    long string.  
+    Example: **\<xml
+    ...\>\<manifest\>\<ota\>\<header\>...\</ota\>\<manifest\>**
+
+- Parameter within a tag cannot be empty.  
+    Example: **\<description\>\</description\>** is not allowed.
+
 
 ## FOTA
 
@@ -178,7 +199,7 @@ description will trigger a FOTA update via Manifest.
 </manifest>
 ```
 
-#### Sample SOTA Manifest - Target specific Intel Vision cards: 
+### Sample SOTA Manifest - Target specific Intel Vision cards: 
 
 - Specific targets identified in <targets></targets> section.
 
@@ -211,7 +232,7 @@ description will trigger a FOTA update via Manifest.
 </manifest>
 ```
 
-#### Sample SOTA Manifest - Target all eligible Intel Vision cards: 
+### Sample SOTA Manifest - Target all eligible Intel Vision cards: 
 
 - No <targets></targets> section included.
 - The Vision-agent will determine which Vision cards are eligible for the upgrade based on its internal registry.  It will compare the release-date in this manifest with the release date of each vision card in its registry.
@@ -291,7 +312,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `</ota>`                                 | `</ota>`                                                        |         R         |                                                                                                 |
 | `</manifest>`                            | `</manifest>`                                                   |         R         |                                                                                                 |
 
-#### POTA Example Manifest - Targets not specified
+### POTA Example Manifest - Targets not specified
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -323,7 +344,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 </manifest>
 ```
 
-#### POTA Example Manifest - Targets specified
+### POTA Example Manifest - Targets specified
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
