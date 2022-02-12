@@ -48,17 +48,17 @@ client.stop()
 
 ## Custom Actions/Commands registered with cloud Adapter HDC
 
-`HDC Adapter` can register commands with the HDC cloud. Currently registered commands:
+`HDC Adapter` can register commands with the HDC cloud. Current registered commands:
 
 1. `Trigger OTA`
  - Parameter Name: `Manifest`
  - Parameter Value: Contents of `packaging/config/ota_manifest_sample.xml`
  - Please change the values of the file as per the deployment need
 
-P.S: Remove the spaces, indent, comments etc. while pasting into `Manifest` paramter. It should be a continuous string
+P.S: Remove the spaces, indent, comments etc. while pasting into `Manifest` parameter. It should be a continuous string
 
 It is possible to trigger to two types of OTA's so far through this trigger or to trigger an update/fetch to config agent
-1. AOTA - Applicaiton Over the Air
+1. AOTA - Application Over the Air
 2. FOTA - Firmware Over the Air
 3. CONFIG FETCH/UPDATE
 
@@ -89,7 +89,7 @@ agents about changes
 The shutdown or restart command can also be sent down using the manifest to trigger a system shutdown or reboot.
 
 
-If the anything goes wrong, the file is not downloaded from the repository. Currently the code only works for Apollo Lake capable CRB.
+If the anything goes wrong, the file is not downloaded from the repository. The code only works for Apollo Lake capable CRB.
 
 ## Install
 NOTE: Ensure any Python version greater than 3.8 is installed
@@ -113,12 +113,12 @@ Changing the logging level:
   - ERROR
   - INFO
 
-Runnning the agent:
+Run the agent:
 
 - For production, run: `make run`
 - For non-production, set GENERIC_LISTEN_PORT, e.g: `GENERIC_LISTEN_PORT=8888 make run`
 
-Testing the agent:
+Test the agent:
 
 - Run: `make tests`
 

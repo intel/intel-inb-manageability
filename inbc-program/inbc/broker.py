@@ -83,7 +83,7 @@ class Broker(IBroker):
         try:
             logger.debug('Setting up broker.')
 
-            """Subscribe to  Telemetry Response to check if update success """
+            """Subscribe to  Telemetry Response to check if update successful """
             print('Subscribe to: {0}'.format(RESPONSE_CHANNEL))
             self.mqttc.subscribe(RESPONSE_CHANNEL, self._on_response)
 

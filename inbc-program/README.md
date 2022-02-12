@@ -7,11 +7,27 @@ Intel® In-Band Manageability command-line utility, INBC, is a software utility 
 ## Prerequisites
 Intel® In-Band Manageability needs to be installed and running.
 
-
 ## 📝 Note
 1. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. Use the **'--nohddl'** flag to target an Edge device.  This requires downloading from a remote source.
 2. If targets=NONE for HDDL; the vision-agent determines the eligible targets based on their attributes.
 3. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
+
+# MQTT Communication 
+
+Uses MQTT for communication with INBM agents
+
+### Publish Channels
+The agent publishes to the following topics:
+- INBM command request: `manageability/request/install`
+- Vision-agent command requests: `ma/request/{command}`  command=status, restart, query
+- Vision-agent configuration requests: `ma/configuration/update/{command}`  command=get_element, set-element, load
+
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+- Telemetry Response to check if update successful: `manageability/response`
+- Searches for keywords in the telemetry events.  Keywords are dependent on command: `manageabilty/event`
+- Determines if Vision-agent is present by looking for xlink driver message: `ma/xlink/status`
 
 # Commands
 

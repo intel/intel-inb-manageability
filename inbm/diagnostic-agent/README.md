@@ -10,10 +10,11 @@
   - [Request - Response communication](#request---response-communication)
   - [Commands supported](#commands-supported)
 - [Install from Source](#install-from-source)
-  - [Usage](#usage)
-    - [Changing the logging level](#changing-the-logging-level)
-    - [Running the agent](#running-the-agent)
-    - [Testing the agent](#testing-the-agent)
+- [Usage](#usage)
+  - [Changing the logging level](#changing-the-logging-level)
+  - [Running the agent](#running-the-agent)
+  - [Testing the agent](#testing-the-agent)
+- [Debian package (DEB)](#debian-package-deb)
 </details>
     
 ## Overview
@@ -43,55 +44,72 @@ The agent subscribes to the following topics:
 ❗`+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
 
 ## Request - Response communication
-
 - Agent incorporates req-resp style communication layer on top of MQTT
 - Agents/Tools can send commands to Diagnostic via `diagnostic/command/<command-name>` with payload:
-```
+```json
 {
-	'cmd': <command name>,
-	'id': <any ID>
+    "cmd": "<command name>",
+    "id": "<any ID>"
 }
 ```
 - Diagnostic sends JSON responses on `diagnostic/response/<ID>`
-- Responses are of format: `{'rc': 0/1, 'message': <user friendly message>}`
+- Responses are of format: 
+```json
+{
+    "rc": "0 | 1", 
+    "message": "<user friendly message>"
+}
+```
 
 ## Commands supported
 
-- `health_device_battery` - If gateway battery powered, expects min of 20% battery charge
-- `check_memory` - If min memory of 200MB present on gateway
-- `check_storage` - If min storage of 100MB present on gateway
-- `check_network` - If active network interface is up and connected to internet
+- `health_device_battery` - If system is battery powered, checks that battery charge is above expected minimum. (configurable)
+- `check_memory` - Checks that memory is above expected minimum. (configurable)
+- `check_storage` - Checks that available storage is above expected minimum. (configurable)
+- `check_network` - Checks that an active network interface is up and connected to internet. This check can be turned off for systems without an internet connection.
+- `container_health_check` - Lists out images on the system and 
+- `swCheck` - Checks that listed software is installed on the system.  Ex. Docker, TRTL (configurable)
 - `install_check` - Executes all the above commands and returns result
 
 Ex: 
 - Dispatcher can publish on `diagnostic/command/install_check` with payload `{'cmd': 'install_check', 'id': 12345}`
 - Diagnostic receives it, processes and sends result as `{'rc':0, 'message': 'Install check passed'}` on `diagnostic/response/12345`
 
-## Install 
-NOTE: Ensure any Python version greater than 3.8 is installed
+## Install from Source
+❗ Use a Python version greater than 3.8 is installed
 
-- Run `git clone https://gitlab.devtools.intel.com/OWR/IoTG/SMIE/Manageability/iotg-inb.git` into local directory
-- Run `cd iotg-inb/diagnostic-agent`
-- Run `make init` to install necessary Python packages
+1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
+2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
-## Usage (via Source)
-NOTE:  
-Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
-Some commands will require root privileges (sudo).  
-Be sure to run the commands in the `diagnostic-agent` directory
+## Usage
 
-Changing the logging level:
+❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
+❗Some commands will require root privileges (sudo)  
+❗Run commands in the `inbm/diagnostic-agent` directory
+
+### Changing the logging level:
 
 - Run: `make logging LEVEL=DEBUG`
-- Valid values for LEVEL:
-  - DEBUG
-  - ERROR
-  - INFO
+- Valid values for `LEVEL`:
+  - `DEBUG`
+  - `ERROR`
+  - `INFO`
 
-Run the agent:
+### Running the agent:
 
 - Run: `make run`
 
-Testing the agent:
+### Testing the agent:
 
 - Run: `make tests`
+
+## Debian package (DEB)
+
+### Install (For Ubuntu)
+After building the above package, if you only want to install the diagnostic-agent, you can do so by following these steps:
+- `cd dist/inbm`
+- Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
+- Install package: `dpkg -i diagnostic-agent<latest>.deb`
+
+### Uninstall (For Ubuntu)
+- `dpkg --purge diagnostic-agent`

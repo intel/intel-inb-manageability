@@ -10,11 +10,12 @@
     - [Publish channels](#publish-channels)
     - [Subscribe channels](#subscribe-channels)
 - [Install from Source](#install-from-source)
-  - [Usage](#usage)
-    - [Setup](#setup)
-    - [Changing the logging level](#changing-the-logging-level)
-    - [Running the agent](#running-the-agent)
-    - [Testing the agent](#testing-the-agent)
+- [Usage](#usage)
+  - [Setup](#setup)
+  - [Changing the logging level](#changing-the-logging-level)
+  - [Running the agent](#running-the-agent)
+  - [Testing the agent](#testing-the-agent)
+- [Debian package (DEB)](#debian-package-deb)
 </details>
 
 ## Overview
@@ -89,24 +90,25 @@ For example:
 ```
 
 ## Install from Source
-NOTE: Ensure any Python version greater than 3.8 is installed
+❗ Use a Python version greater than 3.8 is installed
 
-1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
-2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
+- [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
+- [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
-### Usage
+
+## Usage
 
 ❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
 ❗Some commands will require root privileges (sudo)  
 ❗Run commands in the `inbm/cloudadapter-agent` directory
 
-#### Setup:
+### Setup:
 - Run: `make config`
 - Refer to the following documents for cloud setup:
   - [Azure](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
   - [Thingsboard](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
 
-#### Changing the logging level:
+### Changing the logging level:
 
 - Run: `make logging LEVEL=DEBUG`
 - Valid values for `LEVEL`:
@@ -114,10 +116,21 @@ NOTE: Ensure any Python version greater than 3.8 is installed
   - `ERROR`
   - `INFO`
 
-#### Running the agent:
+### Running the agent:
 
 - Run: `make run`
 
-#### Testing the agent:
+### Testing the agent:
 
 - Run: `make tests`
+
+## Debian package (DEB)
+
+### Install (For Ubuntu)
+After building the above package, if you only want to install the cloudadpater-agent, you can do so by following these steps:
+- `cd dist/inbm`
+- Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
+- Install package: `dpkg -i cloudadapter-agent<latest>.deb`
+
+### Uninstall (For Ubuntu)
+- `dpkg --purge cloudadapter-agent`

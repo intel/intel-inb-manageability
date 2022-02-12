@@ -10,10 +10,11 @@
   - [Request - Response communication](#request---response-communication)
   - [Commands supported](#commands-supported)
 - [Install from Source](#install-from-source)
-  - [Usage](#usage)
-    - [Changing the logging level](#changing-the-logging-level)
-    - [Running the agent](#running-the-agent)
-    - [Testing the agent](#testing-the-agent)
+- [Usage](#usage)
+  - [Changing the logging level](#changing-the-logging-level)
+  - [Running the agent](#running-the-agent)
+  - [Testing the agent](#testing-the-agent)
+- [Debian package (DEB)](#debian-package-deb)
 </details>
   
 
@@ -42,15 +43,19 @@ The agent subscribes to the following topics:
 
 - Agent incorporates req-resp style communication layer on top of MQTT
 - Agents/Tools can send commands to Configuration via `configuration/command/<command-name>` with payload:
-```
+```json
 {
-	'cmd': <command name>,
-	'id': <any ID>,
-	'path': <any path>
+    "cmd": "<command name>",
+    "id": "<any ID>",
+    "path": "<any path>"
 }
 ```
-- Configuration sends JSON responses on `configuration/response/<ID>`
-- Responses are of format: `{'message': <result of the request>}`
+- Configuration sends JSON responses on `configuration/response/<ID>`:
+```json
+{
+    "message": "<result of the request>"
+}
+```
 
 ## Commands Supported
 
@@ -61,8 +66,21 @@ The agent subscribes to the following topics:
 - `load` - loads a new configuration file.
 
 Ex:
-- Another agent (ex. Diagnostic) can publish on `configuration/command/get-element` with payload `{'cmd': 'get-element', 'id': 12345, 'path': 'diagnostic/level'}`
-- Configuration receives it, processes and sends result as `{'rc':0, 'message': '1'}` on `configuration/response/12345`
+- Another agent (ex. Diagnostic) can publish on `configuration/command/get-element` with payload:
+```json
+{
+  "cmd": "get-element",
+  "id": "12345",
+  "path": "diagnostic/level"
+}
+```
+- Configuration receives it, processes and sends on `configuration/response/12345`:
+```json
+{
+  "rc": 0,
+  "message": "1"
+}
+```
 
 ## Install from Source
 NOTE: Ensure any Python version greater than 3.8 is installed
@@ -70,13 +88,13 @@ NOTE: Ensure any Python version greater than 3.8 is installed
 1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
 2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
-### Usage
+## Usage
 
 ❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
 ❗Some commands will require root privileges (sudo)  
 ❗Run commands in the `inbm/configuration-agent` directory
 
-#### Changing the logging level:
+### Changing the logging level:
 
 - Run: `make logging LEVEL=DEBUG`
 - Valid values for `LEVEL`:
@@ -84,10 +102,19 @@ NOTE: Ensure any Python version greater than 3.8 is installed
   - `ERROR`
   - `INFO`
 
-#### Running the agent:
-
+### Running the agent:
 - Run: `make run`
 
-#### Testing the agent:
-
+### Testing the agent:
 - Run: `make tests`
+
+## Debian package (DEB)
+
+### Install (For Ubuntu)
+After building the above package, if you only want to install the configuration-agent, you can do so by following these steps:
+- `cd dist/inbm`
+- Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
+- Install package: `dpkg -i configuration-agent<latest>.deb`
+
+### Uninstall (For Ubuntu)
+- `dpkg --purge configuration-agent`
