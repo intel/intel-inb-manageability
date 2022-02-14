@@ -47,10 +47,10 @@ class LinuxRebooter(Rebooter):
         is_docker_app = os.environ.get("container", False)
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
-            (output, err, code) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + LINUX_POWER + LINUX_RESTART)
+            (output, err, code) = PseudoShellRunner.run(
+                DOCKER_CHROOT_PREFIX + LINUX_POWER + LINUX_RESTART)
         else:
             (output, err, code) = PseudoShellRunner.run(LINUX_POWER + LINUX_RESTART)
-
 
         if code != 0:
             self._dispatcher_callbacks.broker_core.telemetry(

@@ -89,7 +89,7 @@ class DebianBasedUpdater(OsUpdater):
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
             # get all packages ready for install (requires network and does
-            # not require host PID/DOCKER_CHROOT_PREFIX), then run the install locally            
+            # not require host PID/DOCKER_CHROOT_PREFIX), then run the install locally
             # (does not require network but does require host PID/DOCKER_CHROOT_PREFIX)
             cmds = [CHROOT_PREFIX + "/usr/bin/apt-get update",  # needs network
                     CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",
@@ -120,7 +120,7 @@ class DebianBasedUpdater(OsUpdater):
         cmd = "/usr/bin/apt-get -u upgrade --assume-no"
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
-            
+
             (upgrade, _, _) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)
         else:
             (upgrade, _, _) = PseudoShellRunner.run(cmd)

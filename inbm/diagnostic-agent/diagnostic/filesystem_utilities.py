@@ -45,7 +45,7 @@ def _calculate_btrfs_free_space(path: str) -> int:
     """
 
     # FIXME: we need a way to figure out a mount point corresponding to the path.
-    
+
     try:
         is_docker_app = os.environ.get("container", False)
         cmd = 'btrfs filesystem usage -b /'

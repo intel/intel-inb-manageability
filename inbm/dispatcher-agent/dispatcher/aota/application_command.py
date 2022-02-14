@@ -140,7 +140,8 @@ class CentOsApplication(Application):
             if not old_driver_name:
                 raise AotaError(
                     f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
-            uninstall_driver_cmd = DOCKER_CHROOT_PREFIX + f'/usr/bin/rpm -e --nodeps {old_driver_name}'
+            uninstall_driver_cmd = DOCKER_CHROOT_PREFIX + \
+                f'/usr/bin/rpm -e --nodeps {old_driver_name}'
             out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
             logger.debug(out)
             # If old packages wasn't install on system, it will return error too.
@@ -154,7 +155,7 @@ class CentOsApplication(Application):
             logger.debug(out)
             if code != 0:
                 raise AotaError(err)
-            self._reboot(DOCKER_CHROOT_PREFIX  + '/usr/sbin/shutdown -r 0')
+            self._reboot(DOCKER_CHROOT_PREFIX + '/usr/sbin/shutdown -r 0')
 
         except (AotaError, FileNotFoundError, OSError) as error:
             # Remove temp files if the error happened.
