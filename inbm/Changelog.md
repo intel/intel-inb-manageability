@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 508698 - [BUG] Diagnostic returns inbm-telemetry not running and fails OTA checks blocking the OTA
  - RTC 508367 - Fix Thingsboard 3.3 files to support Batch updates
  - RTC 508935 - [BUG] Dispatcher can't handle missing sota cache directory
+ - RTC 508936 - Upgrading networkmanager fails during SOTA in container
 
 ### Added
  - (507873) Added support for Ubuntu 21.10
