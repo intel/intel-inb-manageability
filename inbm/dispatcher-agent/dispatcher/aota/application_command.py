@@ -13,6 +13,7 @@ from typing import Optional, Any, Mapping
 from inbm_lib.detect_os import is_cent_os_and_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
@@ -23,7 +24,7 @@ from dispatcher.packagemanager.package_manager import get
 
 from .checker import check_application_command_supported, check_url
 from .aota_command import AotaCommand
-from .constants import CHROOT_CMD, CENTOS_DRIVER_PATH, SupportedDriver
+from .constants import CENTOS_DRIVER_PATH, DOCKER, COMPOSE, APPLICATION, SupportedDriver
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 
@@ -139,7 +140,8 @@ class CentOsApplication(Application):
             if not old_driver_name:
                 raise AotaError(
                     f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
-            uninstall_driver_cmd = CHROOT_CMD + f'/usr/bin/rpm -e --nodeps {old_driver_name}'
+            uninstall_driver_cmd = DOCKER_CHROOT_PREFIX + \
+                f'/usr/bin/rpm -e --nodeps {old_driver_name}'
             out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
             logger.debug(out)
             # If old packages wasn't install on system, it will return error too.
@@ -147,13 +149,13 @@ class CentOsApplication(Application):
                 raise AotaError(err)
 
             chroot_driver_path = driver_centos_path.replace("/host", "")
-            install_driver_cmd = CHROOT_CMD + f'/usr/bin/rpm -ivh {chroot_driver_path}'
+            install_driver_cmd = DOCKER_CHROOT_PREFIX + f'/usr/bin/rpm -ivh {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
             out, err, code = PseudoShellRunner().run(install_driver_cmd)
             logger.debug(out)
             if code != 0:
                 raise AotaError(err)
-            self._reboot(CHROOT_CMD + '/usr/sbin/shutdown -r 0')
+            self._reboot(DOCKER_CHROOT_PREFIX + '/usr/sbin/shutdown -r 0')
 
         except (AotaError, FileNotFoundError, OSError) as error:
             # Remove temp files if the error happened.

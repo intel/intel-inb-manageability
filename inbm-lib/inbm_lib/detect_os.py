@@ -15,6 +15,7 @@ from .constants import MENDER_FILE_PATH, SYSTEM_IS_YOCTO_PATH, FORCE_YOCTO_PATH,
 import logging
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 logger = logging.getLogger(__name__)
 
@@ -50,11 +51,18 @@ def get_lsb_release_name() -> Optional[str]:
     """
 
     try:
-        (result, error, exit_code) = PseudoShellRunner.run("lsb_release -i -s")
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            (result, error, exit_code) = PseudoShellRunner.run(
+                DOCKER_CHROOT_PREFIX + "/usr/bin/lsb_release -i -s")
+        else:
+            (result, error, exit_code) = PseudoShellRunner.run("lsb_release -i -s")
         if exit_code == 0:
             logger.debug("Found lsb_release -i: " + result)
             return result.replace('\n', '')
         else:
+            logger.debug(
+                f"(result, error, exit_code) for lsb_release command = ({result}, {error}, {exit_code})")
             logger.debug("lsb_release command failed")
             return None
     except (ValueError, OSError, SubprocessError) as e:

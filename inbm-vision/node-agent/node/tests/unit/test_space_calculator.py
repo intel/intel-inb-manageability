@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 class TestSpaceCalculator(TestCase):
 
-    @patch("inbm_vision_lib.shell_runner.PseudoShellRunner.run", return_value=('Free ('
+    @patch("inbm_vision_lib.shell_runner.PseudoShellRunner.run", return_value=('line\nFree ('
                                                                                'estimated): '
                                                                                '2716983296	('
                                                                                'min: '
