@@ -734,14 +734,14 @@ then click `Send` to trigger the AOTA update.
 
 AOTA Field Details
 
-|Field|Input description|
-|---|---|
-|App and its command|`docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `load`, `import`, `pull`, `remove` and `stats`<br>Application: update|
-|Container Tag|Name tag for image/container.<br>Note: Conatiner Tag can have both the Name and Version in this format Image:Version|
-|Docker&reg; Compose File|Field to specify the name of custom yaml file for docker-compose command. Example: `custom.yml`|
-|Fetch|Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)|
-|Server Username/<br>Server Password|If server where we host the package to download AOTA file needs credentials, we need to specify the username and password|
-|Docker&reg; Registry<br>Docker&reg; Registry Username/Password|Specify Docker&reg; Registry if accessing any registry other than the default `index.docker.io`.<br>Example for docker Registry: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands.|
+| Field                                                          | Input description                                                                                                                                                                                                                                                                                   |
+|----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Application and supported command                              | `docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `list`, `load`, `import`, `pull`, `remove` and `stats`<br>Application: update                                                                                                                           |
+| Container Tag                                                  | Name tag for image/container.<br>Note: Container Tag can have both the Name and Version in this format Image:Version                                                                                                                                                                                |
+| Docker&reg; Compose File                                       | Name of custom YAML file for docker-compose command. Example: `custom.yml`                                                                                                                                                                                                                          |
+| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)                                                    |
+| Server Username/<br>Server Password                            | Credentials to download remote package when required.                                                                                                                                                                                                                                               |
+| Docker&reg; Registry<br>Docker&reg; Registry Username/Password | Docker&reg; Registry if accessing any registry other than the default `index.docker.io`.<br>Example: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands. |
 
 **Note:** 
 > Following sections demonstrate what fields to fill for respective AOTA operations with required and optional fields.
@@ -805,6 +805,9 @@ Package.
 Example: Container Tag: CPU, Downloaded fetch file: CPU.targ.gz
 
 Follow [**Creating AOTA Package**](#creating-aota-package)
+
+### Docker LIST
+
 
 #### Docker LOAD
 
@@ -1157,13 +1160,13 @@ below.
 
 Click the `Reboot Button` as seen below in the dashboard to trigger a
 Device Reboot
-<p align="center">
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image48.png" style="width:5.475in;height:3.21667in" />
 </p>
 
 Now on the pop-up window shows up, click the `Send` button on the box
 titled **`Reboot Device`.**
-<p align="center">
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image49.PNG" alt="P1014#yIS2" style="width:3.33333in;height:1.18687in" />
 </p>
 
@@ -1171,7 +1174,7 @@ titled **`Reboot Device`.**
 
 Click the `Shutdown Button` as seen below in the dashboard to trigger a
 Device Reboot.
-<p align="center">
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image50.png" style="width:5.63542in;height:3.24167in" />
 </p>
 
@@ -1186,7 +1189,7 @@ credentials and then result in a device shutdown.
 
 To trigger Decommission, click the `Reboot Button` as seen below in the
 dashboard to trigger a Device Reboot.
-<p align="center">
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image52.png" style="width:5.70833in;height:2.83333in" />
 </p>
 
@@ -1203,13 +1206,12 @@ The query command capabilities are supported via manifest.
 
 ## Telemetry Data
 
-In-Band Manageability provides two types of telemetry data, static
-telemetry and dynamic telemetry. The telemetry data will indicate the
-health of each endpoint.
+In-Band Manageability provides two types of telemetry data.  Telemetry can be viewed under Dashboard as displayed below:
+- 1 - Static Telemetry
+- 2 - Dynamic Telemetry.  The telemetry data will indicate the health of each endpoint.
 
-Telemetry can be viewed under DashBoard, 1 for Static Telemetry 2 for
-Dynamic Telemetry.
-<p align="center">
+
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image54.png" style="width:5.70833in;height:3.74167in" />
 </p>
 
@@ -1218,39 +1220,30 @@ Dynamic Telemetry.
 This contains the following information
 
 - BIOS-release-date
-
 - BIOS-vendor
-
 - BIOS-version
-
 - CPU-ID
-
+- Disk Information
 - OS-information
-
 - System-Manufacturer
-
 - System-Product-Name
-
 - Total-physical-memory
 
-> Static Telemetry can be viewed in the DashBoard when you maximize the
-> Static Telemetry window.
+ Static Telemetry can be viewed in the DashBoard when you maximize the Static Telemetry window.
 
 ### Dynamic Telemetry Data
 
-Each endpoint publishes the following Dynamic Telemetry Data in 5-minute
-intervals.
+Each endpoint publishes the following Dynamic Telemetry Data in 5-minute intervals.
 
+The following are displayed in the data chart and also appear in the New Event Log:
 - Available-memory
-
 - Core-temp-Celsius
-
 - Percent-disk-used
-
 - System-cpu-percent
+- Battery Status (if battery powered)
 
-- Container-stats(cpu-usage)
-
+The following will only appear in the New Event Log:
+- Container-stats (cpu usage and memory information for all running containers)
 - Network Information
 
 ### Viewing Telemetry Data
