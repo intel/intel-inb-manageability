@@ -229,5 +229,6 @@
   /usr/share/misc/magic.mgc r,
   /usr/bin/file rix,
   /usr/bin/file.file rix,
+  /usr/sbin/chroot rUx,
   /usr/** r,
 }

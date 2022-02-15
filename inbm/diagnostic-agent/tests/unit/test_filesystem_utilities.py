@@ -6,7 +6,7 @@ from diagnostic.filesystem_utilities import get_free_space
 
 class TestFilesystemUtilities(TestCase):
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('Free ('
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('line\nFree ('
                                                                                'estimated): '
                                                                                '2716983296	('
                                                                                'min: '
