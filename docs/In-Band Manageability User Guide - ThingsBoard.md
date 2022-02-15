@@ -806,8 +806,10 @@ Example: Container Tag: CPU, Downloaded fetch file: CPU.targ.gz
 
 Follow [**Creating AOTA Package**](#creating-aota-package)
 
-### Docker LIST
-
+#### Docker LIST
+<p align="center">
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image57.png" alt="P654#yIS2" style="width:3.99201in;height:6.18387in" />
+</p>
 
 #### Docker LOAD
 
