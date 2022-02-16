@@ -172,7 +172,8 @@ class SOTA:
                 logger.debug(f"SOTA cache directory {SOTA_CACHE} cannot be created: {e}")
                 raise SotaError("SOTA cache directory cannot be created") from e
         elif not os.path.isdir(SOTA_CACHE):
-            logger.debug(f"SOTA cache directory {SOTA_CACHE} already exists and is not a directory")
+            logger.debug(
+                f"SOTA cache directory {SOTA_CACHE} already exists and is not a directory")
             raise SotaError(
                 "SOTA cache directory already exists and is not a directory")
         sota_cache_repo = DirectoryRepo(SOTA_CACHE)

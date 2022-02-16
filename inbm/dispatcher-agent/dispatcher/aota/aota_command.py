@@ -14,6 +14,7 @@ from typing import Any, Optional, Mapping
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.trtl import Trtl
+from inbm_lib.constants import DOCKER_STATS
 
 from dispatcher.common.result_constants import INSTALL_FAILURE, CODE_OK
 from dispatcher.config_dbs import ConfigDbs
@@ -27,7 +28,7 @@ from .aota_error import AotaError
 from .checker import check_url, check_docker_parameters, check_no_username_password_on_http, \
     check_compose_command_supported, check_docker_command_supported, check_resource
 from .cleaner import cleanup_repo, remove_directory, remove_old_images, cleanup_docker_compose_instance
-from .constants import DOCKER_COMPOSE_CACHE, REPOSITORY_TOOL_CACHE, DOCKER, DOCKER_STATS
+from .constants import DOCKER_COMPOSE_CACHE, REPOSITORY_TOOL_CACHE, DOCKER
 from ..common import uri_utilities
 
 logger = logging.getLogger(__name__)

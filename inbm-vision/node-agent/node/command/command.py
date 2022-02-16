@@ -129,9 +129,13 @@ class RegisterCommand(Command):
         measured_boot_enabled = self._get_measured_boot_status()
         logger.info("DM_VERITY : {}".format(dm_verity_enabled))
         logger.info("MEASURED_BOOT : {}".format(measured_boot_enabled))
-        text_boot_fw_date = str(platform_info.bios_release_date.month) + "-" + \
-            str(platform_info.bios_release_date.day) + "-" + \
-            str(platform_info.bios_release_date.year) \
+        text_boot_fw_date = "{0}-{1}-{2}-{3}-{4}-{5}".format(
+            str(platform_info.bios_release_date.month),
+            str(platform_info.bios_release_date.day),
+            str(platform_info.bios_release_date.year),
+            str(platform_info.bios_release_date.hour),
+            str(platform_info.bios_release_date.minute),
+            str(platform_info.bios_release_date.second)) \
             if isinstance(platform_info.bios_release_date, date) else "UNKNOWN"
 
         stepping, sku, model, serial_num = self._get_board_info()

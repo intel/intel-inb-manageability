@@ -16,6 +16,8 @@ from inbm_common_lib.constants import AFULNX_64
 
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
+
 from . import constants
 from typing import Tuple, Optional, Dict
 
@@ -241,7 +243,12 @@ class LinuxToolFirmware(BiosFactory):
         if self._fw_tool == AFULNX_64:
             self._dispatcher_callbacks.broker_core.telemetry(
                 "Device will be rebooting upon successful firmware install.")
-        (out, err, code) = runner.run(cmd)
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            (out, err, code) = runner.run(DOCKER_CHROOT_PREFIX + cmd)
+        else:
+            (out, err, code) = runner.run(cmd)
         if code == 0:
             self._dispatcher_callbacks.broker_core.telemetry("Apply firmware command successful.")
         else:

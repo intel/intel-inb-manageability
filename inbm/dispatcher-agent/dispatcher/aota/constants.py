@@ -18,17 +18,12 @@ DOCKER = 'docker'
 COMPOSE = 'compose'
 APPLICATION = 'application'
 
-# Docker stats telemetry key
-DOCKER_STATS = 'containerStats'
-
 DockerCommands = Enum('DockerCommands', 'import load pull remove stats list')
 ComposeCommands = Enum('ComposeCommands', 'up pull down list remove')
 ApplicationCommands = Enum('ApplicationCommands', 'update')
 
 # CentOS driver path in docker
 CENTOS_DRIVER_PATH = "/host/inb_driver/"
-
-CHROOT_CMD = "/usr/sbin/chroot /host "
 
 # Supported driver upgrade
 

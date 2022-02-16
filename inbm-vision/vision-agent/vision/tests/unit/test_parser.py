@@ -36,7 +36,7 @@ NODE_REGISTRATION_XML = '<?xml version="1.0" encoding="utf-8"?>' \
                         '<message>' \
                         '    <register id="123ABC">' \
                         '        <items>' \
-                        '           <bootFwDate>10-9-2018</bootFwDate>' \
+                        '           <bootFwDate>10-9-2018-10-10-10</bootFwDate>' \
                         '           <bootFwVendor>Dell Inc.</bootFwVendor>' \
                         '           <bootFwVersion>1.5.9</bootFwVersion>' \
                         '           <osType>Linux</osType>' \
@@ -105,7 +105,7 @@ NO_NID_XML = '<?xml version="1.0" encoding="utf-8"?><message>    <sendFileRespon
 
 
 NODE_REGISTRATION_INFORMATION = {
-    'bootFwDate': datetime.datetime(2018, 10, 9, 0, 0), 'bootFwVersion': '1.5.9',
+    'bootFwDate': datetime.datetime(2018, 10, 9, 10, 10, 10), 'bootFwVersion': '1.5.9',
     'bootFwVendor': 'Dell Inc.', 'osType': 'Linux', 'osVersion': 'Ubuntu 16.04.6 LTS',
     'osReleaseDate': datetime.datetime(2020, 10, 9, 0, 0),
     'manufacturer': 'Dell Inc.',
