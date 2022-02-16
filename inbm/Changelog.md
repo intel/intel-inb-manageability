@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 508935 - [BUG] Dispatcher can't handle missing sota cache directory
  - RTC 508936 - Upgrading networkmanager fails during SOTA in container
  - HSD 15010715189 - Telemetry service failed to start when unable to find mender file
+ - RTC 509436 - [BUG] SOTA in docker container cannot take snapshot in btrfs
 
 ### Added
  - (507873) Added support for Ubuntu 21.10

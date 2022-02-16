@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2021 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2022 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 package util
 
@@ -14,7 +14,7 @@ import (
 func UnTar(cw ExecCommandWrapper, filename string, dir string) error {
 	zipFile := filename + ".tar.gz"
 	args := []string{"zxvf", zipFile}
-	err := cw.Run("tar", dir, args)
+	err := cw.Run("tar", dir, args, false)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to untar file '%s':%s", zipFile, err)
 	}

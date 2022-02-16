@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2021 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2022 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 package btrfs
 
@@ -11,7 +11,7 @@ import (
 // isSnapperOnSystem checks to see if snapper is on the system.
 // Returns true if snapper exists; otherwise, false.
 func isSnapperOnSystem(cw util.ExecCommandWrapper) bool {
-	if err := cw.Run(snapper, "", []string{"--help"}); err != nil {
+	if err := cw.Run(snapper, "", []string{"--help"}, isDockerApp()); err != nil {
 		return false
 	}
 
