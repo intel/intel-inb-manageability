@@ -1296,7 +1296,7 @@ Provision Node is only used by the INBM Vision solution to provision a flashless
 | `<provisionNode>`                        | `<provisionNode>`                                   |         R         |                                                                                     |
 | `<fetch></fetch>`                        | `<fetch>https://www.repo.com/provision.tar</fetch>` |         R         |                                                                                     |
 | `<signature></signature`>                | `<signature>96e92d</signature>`                     |         O         | Signature of package–signed checksum of package.  Recommended for security purposes |
-| `<hash_algorithm></hash_algorithm`       | `<hash_algorithm>384</hash_algorithm`               |         O         | 256 or 384 or 512                                                                   |
+| `<hash_algorithm></hash_algorithm`       | `<hash_algorithm>384</hash_algorithm`               |         O         | 384 or 512                                                                          |
 | `<username></username>`                  | `<username>user</username>`                         |         O         | Username used during fetch from remote repository                                   |
 | `<password><password>`                   | `<password>pwd</password>`                          |         O         | Password used during fetch from remote repository                                   |
 | `</provisionNode>`                       | `</provisionNode>`                                  |         R         |                                                                                     |
