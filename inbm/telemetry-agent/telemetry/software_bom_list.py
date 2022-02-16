@@ -1,7 +1,7 @@
 """
     Retrieves Software BOM information.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -45,7 +45,7 @@ def get_sw_bom_list() -> List[Any]:
             if swbom is not None:
                 output = output + swbom
         return output.splitlines()
-    except (OSError, FileNotFoundError) as e:
+    except (ValueError, OSError, FileNotFoundError) as e:
         raise SoftwareBomError(str(e))
 
 
