@@ -148,9 +148,7 @@ class DebianBasedSnapshot(Snapshot):
         a.) After reboot by SOTA, and diagnostic reports bad report for system health
         """
         logger.debug("")
-        self._dispatcher_callbacks.broker_core.telemetry("rollback and delete snap")
         if self.snap_num:
-            self._dispatcher_callbacks.broker_core.telemetry("snap_num available")
             self._dispatcher_callbacks.broker_core.telemetry("SOTA attempting rollback")
             rc, err = self.trtl.sota_rollback(self.snap_num)
         else:
@@ -218,8 +216,6 @@ class DebianBasedSnapshot(Snapshot):
         dispatcher_state.clear_dispatcher_state()
         if self.snap_num:
             self._rollback_and_delete_snap()
-        else:
-            self._dispatcher_callbacks.broker_core.telemetry("no, rollback not available")
         time.sleep(time_to_wait_before_reboot)
         rebooter.reboot()
 
