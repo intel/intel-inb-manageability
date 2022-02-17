@@ -9,7 +9,8 @@ from dispatcher.dispatcher_exception import DispatcherException
 
 TEST_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
            '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
-           '</provisionNode></manifest>'
+           '<hash_algorithm>384</hash_algorithm><username>user</username>' \
+           '<password>pass123</password></provisionNode></manifest>'
 
 TEST_XML_VALID_HASH_ALGO = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
     '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
@@ -21,7 +22,7 @@ TEST_XML_INVALID_HASH_ALGO = '<manifest><type>cmd</type><cmd>provisionNode</cmd>
 
 BAD_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
     '<path>https://www.repo.com/provision.tar</path><signature>signature</signature>' \
-    '</provisionNode></manifest>'
+          '<hash_algorithm>384</hash_algorithm></provisionNode></manifest>'
 
 MODIFIED_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
                '<blobPath>/var/cache/manageability/repository-tool/blob.bin</blobPath>' \
