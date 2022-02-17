@@ -815,9 +815,6 @@ class Dispatcher(WindowsService):
             logger.debug('Subscribing to: %s', STATE_CHANNEL)
             self._broker.mqtt_subscribe(STATE_CHANNEL, self._on_message)
 
-            logger.debug('Subscribing to: %s', CMD_CHANNEL)
-            self._broker.mqtt_subscribe(CMD_CHANNEL, self._on_message)
-
             logger.debug('Subscribing to: %s', CONFIGURATION_DISPATCHER_UPDATE_CHANNEL)
             self._broker.mqtt_subscribe(
                 CONFIGURATION_DISPATCHER_UPDATE_CHANNEL, override_defaults)

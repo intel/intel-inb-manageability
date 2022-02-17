@@ -67,19 +67,21 @@ A typical installation package will consist of the below shell scripts.  It will
 include a tar.gz file which consists of all the frameworks executable
 packages (.deb files in the case of Ubuntu/Debian).
 
+#### Build Output
 
-**Build Output files**
+The location of the installation scripts will be different depending on whether the source is being used from the GitHub location or if a build package is used from distribution.
 
-| Script name                               | Functionality                                             |
-|-------------------------------------------|-----------------------------------------------------------|
-| `inbm/install-inb.sh`                     | Installs both inbm and inbm-vision for Ubuntu or Debian   |
-| `inbm/install-tc.sh`                      | Installs inbm for Ubuntu or Debian                        |
-| `inbm/uninstall-inb.sh`                   | Uninstalls both inbm and inbm-vision for Ubuntu or Debian |
-| `inbm/uninstall-tc.sh`                    | Uninstalls inbm for Ubuntu or Debian                      |
-| `inbm/Intel-Manageability.preview.tar.gz` | Binary files for inbm                                     |
-| `inbm-vision/install-bc.sh`               | Installs vision or node agent from inbm-vision            |
-| `inbm-vision/uninstall-bc.sh`             | Uninstalls vision or node agent from inbm-vision          |
-| `inbm-vision/*.deb`                       | Binary files for inbm-vision                              | 
+| Description                                               | From GitHub Clone File Location                  | From Distribution File Location           |
+|:----------------------------------------------------------|:-------------------------------------------------|:------------------------------------------|
+| Installs both inbm and inbm-vision for Ubuntu or Debian   | `inbm/output/install-inb.sh`                     | `inbm/install-inb.sh`                     |
+| Installs inbm for Ubuntu or Debian                        | `inbm/output/install-tc.sh`                      | `inbm/install-tc.sh`                      |
+| Uninstalls both inbm and inbm-vision for Ubuntu or Debian | `inbm/output/uninstall-inb.sh`                   | `inbm/uninstall-inb.sh`                   |
+| Uninstalls inbm for Ubuntu or Debian                      | `inbm/output/uninstall-tc.sh`                    | `inbm/uninstall-tc.sh`                    |
+| Binary files for inbm                                     | `inbm/output/Intel-Manageability.preview.tar.gz` | `inbm/Intel-Manageability.preview.tar.gz` |
+| Installs vision or node agent from inbm-vision            | `inbm-vision/output/install-bc.sh`               | `inbm-vision/installer/install-bc.sh`     |
+| Uninstalls vision or node agent from inbm-vision          | `inbm-vision/output/uninstall-bc.sh`             | `inbm-vision/installer/uninstall-bc.sh`   |
+| Binary files for inbm-vision                              | `inbm-vision/outp/*.deb`                         | `inbm-vision/*.deb`                       | 
+
 
 Before running any of the above scripts, execute the below command:
 ```shell
@@ -90,9 +92,13 @@ chmod a+x *.sh
 
 To install INBM:
 ```shell
-
 sudo ./install-tc.sh
 
+```
+
+To install INBM-VISION:
+```shell
+sudo ./install-bc.sh
 ```
 
 ❗ During Installation you will be prompted to accept the License. You can accept by typing ‘Y’, this will result in installation of the INBM Framework.

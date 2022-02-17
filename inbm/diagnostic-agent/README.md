@@ -1,89 +1,126 @@
-# diagnostic-agent
+# Diagnostic Agent
 
-IoT Diagnostic Agent
+<details>
+<summary>Table of Contents</summary>
 
-Agent which monitors and reports the state of critical components of the  manageability framework
+- [Overview](#overview)
+- [Agent Communication](#agent-communication)
+    - [Publish Channels](#publish-channels)
+    - [Subscribe Channels](#subscribe-channels)
+  - [Request - Response communication](#request---response-communication)
+  - [Commands supported](#commands-supported)
+- [Install from Source](#install-from-source)
+- [Usage](#usage)
+  - [Changing the logging level](#changing-the-logging-level)
+  - [Run the agent](#run-the-agent)
+  - [Test the agent](#test-the-agent)
+- [Debian package (DEB)](#debian-package-deb)
+</details>
+    
+## Overview
+
+The Intel Manageability agent which monitors and reports the state of critical components of the  manageability framework.
 
 ## Agent Communication 
 
-- Uses MQTT for communication with other tools/agents
-- Currently, once Diagnostic agent is up and running, subscribes to the following topics:
- - `diagnostic/command/#` channel for any incoming commands 
- - `+/state` channel for knowing states of other agents (e.g. `running`, `dead` etc.)
- - `+/broadcast` channel for general message exchange with everyone who is subscribed to this channel
-- Publishes state to `diagnostic/state` when running/dead
+Uses MQTT for communication with other tools/agents
+
+### Publish Channels
+The agent publishes to the following topics:
+  - Command response: `diagnostic/response/{id}`
+  - Informs RemediationManager to remove a specific container: `remediation/container`
+  - Informs RemediationManager to remove a specific image: `remediation/image`
+  - Event channel: `manageability/event`
+  - diagnostic-agent state: diagnostic/state` when dead/running
+
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+  - [Diagnostic commands](#commands-supported): `diagnostic/command/+`
+  - [Diagnostic Configuration Settings](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Configuration%20Parameters.md#diagnostic): `configuration/update/diagnostic/+`
+  - [All Configuration Settings](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Configuration%20Parameters.md#all): `configuration/update/all/+`
+  - Agent states: `+/state`
  
-P.S: `+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
+❗`+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
 
 ## Request - Response communication
-
 - Agent incorporates req-resp style communication layer on top of MQTT
 - Agents/Tools can send commands to Diagnostic via `diagnostic/command/<command-name>` with payload:
-```
-{
-	'cmd': <command name>,
-	'id': <any ID>
-}
+```json
+  {
+    "cmd": "<command name>",
+    "id": "<any ID>"
+  }
 ```
 - Diagnostic sends JSON responses on `diagnostic/response/<ID>`
-- Responses are of format: `{'rc': 0/1, 'message': <user friendly message>}`
+- Responses are of format: 
+```json
+  {
+    "rc": "0 | 1", 
+    "message": "<user friendly message>"
+  }
+```
 
 ## Commands supported
 
-- `health_device_battery` - If gateway battery powered, expects min of 20% battery charge
-- `check_memory` - If min memory of 200MB present on gateway
-- `check_storage` - If min storage of 100MB present on gateway
-- `check_network` - If active network interface is up and connected to internet
-- `install_check` - Executes all of the above commands and returns result
+- `health_device_battery` - If system is battery powered, checks that battery charge is above expected minimum. (configurable)
+- `check_memory` - Checks that memory is above expected minimum. (configurable)
+- `check_storage` - Checks that available storage is above expected minimum. (configurable)
+- `check_network` - Checks that an active network interface is up and connected to internet. This check can be turned off for systems without an internet connection.
+- `container_health_check` - Lists out images on the system and 
+- `swCheck` - Checks that listed software is installed on the system.  Ex. Docker, TRTL (configurable)
+- `install_check` - Executes all the above commands and returns result
 
 Ex: 
-- Dispatcher can publish on `diagnostic/command/install_check` with payload `{'cmd': 'install_check', 'id': 12345}`
-- Diagnostic receives it, processes and sends result as `{'rc':0, 'message': 'Install check passed'}` on `diagnostic/response/12345`
+- Dispatcher can publish on `diagnostic/command/install_check` with payload:
+```json
+  {
+    "cmd": "install_check", 
+    "id": "12345"
+  }
+```
+- Diagnostic receives the following response on `diagnostic/response/12345`:
+```json
+  {
+    "rc":0, 
+    "message": "Install check passed"
+  }
+```
 
-## Install 
-NOTE: Ensure any Python version greater than 3.8 is installed
+## Install from Source
+❗ Use a Python version greater than 3.8 is installed
 
-- Run `git clone https://gitlab.devtools.intel.com/OWR/IoTG/SMIE/Manageability/iotg-inb.git` into local directory
-- Run `cd iotg-inb/diagnostic-agent`
-- Run `make init` to install necessary Python packages
+1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
+2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
-## Usage (via Source)
-NOTE:  
-Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
-Some commands will require root privileges (sudo).  
-Be sure to run the commands in the `diagnostic-agent` directory
+## Usage
 
-Changing the logging level:
+❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
+❗Some commands will require root privileges (sudo)  
+❗Run commands in the `inbm/diagnostic-agent` directory
 
+### Changing the logging level:
 - Run: `make logging LEVEL=DEBUG`
-- Valid values for LEVEL:
-  - DEBUG
-  - ERROR
-  - INFO
+- Valid values for `LEVEL`:
+  - `DEBUG`
+  - `ERROR`
+  - `INFO`
 
-Runnning the agent:
+### Run the agent:
 
 - Run: `make run`
 
-Testing the agent:
+### Test the agent:
 
 - Run: `make tests`
 
-## Install via DEB
+## Debian package (DEB)
 
-- Download RPM from Artifacts directory in diagnostic-agent/ repo build in TeamCity
-- For Ubuntu: `dpkg -i dist/diagnostic-agent-<latest>.deb`
-- Check diagnostic agent is running correctly: `journalctl -fu diagnostic`
+### Install (For Ubuntu)
+After building the above package, if you only want to install the diagnostic-agent, you can do so by following these steps:
+- `cd dist/inbm`
+- Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
+- Install package: `dpkg -i diagnostic-agent<latest>.deb`
 
-## Remove `diagnostic-agent` (via DEB)
-
-- For Ubuntu: `dpkg --purge diagnostic-agent`
-
-## Generate PyDoc for diagnostic agent
-NOTE: TeamCity will generate API documentation for each commit
-
-- To generate API documentation locally for Diagnostic agent:
-  1. Run `cd doc`
-  2. Run `make doc-init`
-  3. Run `make html`
-  4. Open `html/toc.html` in browser of choice
+### Uninstall (For Ubuntu)
+- `dpkg --purge diagnostic-agent`

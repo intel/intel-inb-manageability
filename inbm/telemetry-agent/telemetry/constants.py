@@ -39,7 +39,6 @@ CLOUDADAPTER_STATE_CHANNEL = 'cloudadapter/state'
 
 # Publish channels
 DIAGNOSTIC_CMD_CHANNEL = 'diagnostic/command/'
-SYSTEM_TELEMETRY_CHANNEL = 'manageability/telemetry'
 EVENTS_CHANNEL = 'manageability/event'
 
 # TEST URL

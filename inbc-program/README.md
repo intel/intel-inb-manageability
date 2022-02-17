@@ -7,11 +7,27 @@ Intel® In-Band Manageability command-line utility, INBC, is a software utility 
 ## Prerequisites
 Intel® In-Band Manageability needs to be installed and running.
 
-
 ## 📝 Note
 1. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. Use the **'--nohddl'** flag to target an Edge device.  This requires downloading from a remote source.
 2. If targets=NONE for HDDL; the vision-agent determines the eligible targets based on their attributes.
 3. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
+
+# MQTT Communication 
+
+Uses MQTT for communication with INBM agents
+
+### Publish Channels
+The agent publishes to the following topics:
+- INBM command request: `manageability/request/install`
+- Vision-agent command requests: `ma/request/{command}`  command=status, restart, query
+- Vision-agent configuration requests: `ma/configuration/update/{command}`  command=get_element, set-element, load
+
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+- Telemetry Response to check if update successful: `manageability/response`
+- Searches for keywords in the telemetry events.  Keywords are dependent on command: `manageabilty/event`
+- Determines if Vision-agent is present by looking for xlink driver message: `ma/xlink/status`
 
 # Commands
 
@@ -307,7 +323,7 @@ Restart nodes
 inbc restart [--target, -t TARGETS...; default=None]
 ```
 ### Examples
-#### HDDL Plug-in cards - set values on all node-clients
+#### HDDL Plug-in cards - restart all nodes
 ```
 inbc restart
 ```
@@ -333,56 +349,56 @@ inbc query
 
 #### 'hw' - Hardware
 
-| Attribute | Description | 
-|:---|:---|
-|is_flashless    | True if plug-in card is flashless; otherwise, False |
-|manufacturer | Hardware manufacturer |
-|platform_type | Type of plug-in card.  TBH or KMB |
-|product | Product type |
-|stepping | Stepping |
-|sku | SKU |
-|model | Model number |
-|serial_sum | Serial number |
+| Attribute     | Description                                         | 
+|:--------------|:----------------------------------------------------|
+| is_flashless  | True if plug-in card is flashless; otherwise, False |
+| manufacturer  | Hardware manufacturer                               |
+| platform_type | Type of plug-in card.  TBH or KMB                   |
+| product       | Product type                                        |
+| stepping      | Stepping                                            |
+| sku           | SKU                                                 |
+| model         | Model number                                        |
+| serial_sum    | Serial number                                       |
 
 #### 'fw' - Firmware
 
-| Attribute | Description | 
-|:---|:---|
-|boot_fw_date    | Firmware date |
-|boot_fw_vendor | Firmware vendor |
-|boot_fw_version | Firmware version |
+| Attribute       | Description      | 
+|:----------------|:-----------------|
+| boot_fw_date    | Firmware date    |
+| boot_fw_vendor  | Firmware vendor  |
+| boot_fw_version | Firmware version |
 
 #### 'guid' - GUID
 
-| Attribute | Description | 
-|:---|:---|
-|guid    | GUID of HDDL plug-in card|
-|is_provisioned | True if HDDL plug-in card is provisioned; otherwise, False |
+| Attribute      | Description                                                | 
+|:---------------|:-----------------------------------------------------------|
+| guid           | GUID of HDDL plug-in card                                  |
+| is_provisioned | True if HDDL plug-in card is provisioned; otherwise, False |
 
 #### 'os' - Operating System
 
-| Attribute | Description | 
-|:---|:---|
-|os_type    | Operating System type|
-|os_version | Operating System version |
-|os_release_date | Operating System release date |
+| Attribute       | Description                   | 
+|:----------------|:------------------------------|
+| os_type         | Operating System type         |
+| os_version      | Operating System version      |
+| os_release_date | Operating System release date |
 
 #### 'security' - Security
 
-| Attribute | Description | 
-|:---|:---|
-|dm_verity_enabled    | True if DM verity is enabled; otherwise, False|
-|measured_boot_enabled | True if Measured Boot is enabled; otherwise, False |
-|is_provisioned | True if HDDL plug-in card is provisioned; otherwise, False |
-|is_xlink_secured | True if using Secured Xlink; otherwise, False |
-|guid    | GUID of HDDL plug-in card|
+| Attribute             | Description                                                | 
+|:----------------------|:-----------------------------------------------------------|
+| dm_verity_enabled     | True if DM verity is enabled; otherwise, False             |
+| measured_boot_enabled | True if Measured Boot is enabled; otherwise, False         |
+| is_provisioned        | True if HDDL plug-in card is provisioned; otherwise, False |
+| is_xlink_secured      | True if using Secured Xlink; otherwise, False              |
+| guid                  | GUID of HDDL plug-in card                                  |
 
 #### 'status' - Status
 
-| Attribute | Description | 
-|:---|:---|
-|heartbeat_status    | Heartbeat status of HDDL plug-in card (Active, Idle)|
-|heartbeat_retries | Number of heartbeat retries attempted for the HDDL plug-in card |
+| Attribute         | Description                                                     | 
+|:------------------|:----------------------------------------------------------------|
+| heartbeat_status  | Heartbeat status of HDDL plug-in card (Active, Idle)            |
+| heartbeat_retries | Number of heartbeat retries attempted for the HDDL plug-in card |
 
  #### 'swbom' - Software BOM
 
@@ -390,9 +406,9 @@ SWBOM dynamic telemetry data
  
 #### 'version' - Version
 
-| Attribute | Description | 
-|:---|:---|
-|version    | Version of the vision-agent service|
+| Attribute | Description                         | 
+|:----------|:------------------------------------|
+| version   | Version of the vision-agent service |
    
 </details>
 
