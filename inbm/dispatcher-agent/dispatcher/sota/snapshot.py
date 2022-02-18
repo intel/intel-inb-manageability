@@ -59,28 +59,24 @@ class Snapshot(ABC):  # pragma: no cover
         pass
 
     @abstractmethod
-    def recover(
-        self, rebooter: Rebooter, time_to_wait_before_reboot: int, is_rollback_available: bool
-    ) -> None:
+    def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA.
 
         Abstract function. Implementations may reboot.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
-        @param is_rollback_available: If False, do not attempt a rollback.
         """
         logger.debug("")
         pass
 
     @abstractmethod
-    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int, is_rollback_available: bool) -> None:
+    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
 
         Implementations may reboot.
 
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
-        @param is_rollback_available: If False, do not attempt a rollback.
         """
         pass
 
@@ -193,34 +189,32 @@ class DebianBasedSnapshot(Snapshot):
             return rc
 
     def recover(
-        self, rebooter: Rebooter, time_to_wait_before_reboot: int, is_rollback_available: bool
-    ) -> None:
+            self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA.
 
         On Debian-based OSes, we need to rollback and delete the snapshot, and reboot.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
-        @param is_rollback_available: If False, do not attempt a rollback.
         """
         logger.debug("time_to_wait_before_reboot = " + str(time_to_wait_before_reboot))
         dispatcher_state.clear_dispatcher_state()
-        if is_rollback_available:
+        if self.snap_num:
             self._rollback_and_delete_snap()
-        time.sleep(time_to_wait_before_reboot)
+        else:
+            time.sleep(time_to_wait_before_reboot)
         logger.debug("Rebooting to recover from failed SOTA...")
         rebooter.reboot()
 
-    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int, is_rollback_available: bool) -> None:
+    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
 
         On Debian-based OSes, we need to rollback, delete snapshot, and reboot.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
-        @param is_rollback_available: If False, do not attempt a rollback.
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
-        if is_rollback_available:
+        if self.snap_num:
             self._rollback_and_delete_snap()
         time.sleep(time_to_wait_before_reboot)
         rebooter.reboot()
@@ -266,27 +260,23 @@ class WindowsSnapshot(Snapshot):  # pragma: no cover
         """
         dispatcher_state.clear_dispatcher_state()
 
-    def recover(
-        self, rebooter: Rebooter, time_to_wait_before_reboot: int, is_rollback_available: bool
-    ) -> None:
+    def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA. Stub. Not implemented for Windows.
 
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
-        @param is_rollback_available: If False, do not attempt a rollback.
         @return: nothing
         """
         logger.debug("")
         pass
 
-    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int, is_rollback_available: bool) -> None:
+    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
 
         Stub for Windows.
 
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
-        @param is_rollback_available: If False, do not attempt a rollback.
         """
         pass
 
@@ -353,29 +343,25 @@ class YoctoSnapshot(Snapshot):
         logger.debug("Running Mender commit: " + str(cmd))
         PseudoShellRunner.run(cmd)
 
-    def recover(
-        self, rebooter: Rebooter, time_to_wait_before_reboot: int, is_rollback_available: bool
-    ) -> None:
+    def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA.
 
         On Yocto with Mender, no action is required other than deleting the
         state file and rebooting.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
-        @param is_rollback_available: If False, do not attempt a rollback.
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
         time.sleep(time_to_wait_before_reboot)
         rebooter.reboot()
 
-    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int, is_rollback_available: bool) -> None:
+    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
 
         On Ubuntu, we need to rollback, delete snapshot, and reboot.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
-        @param is_rollback_available: If False, do not attempt a rollback.
         """
         logger.debug("time_to_wait_before_reboot = " + str(time_to_wait_before_reboot))
         dispatcher_state.clear_dispatcher_state()

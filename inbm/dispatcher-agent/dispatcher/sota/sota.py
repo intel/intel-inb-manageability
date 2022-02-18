@@ -178,7 +178,6 @@ class SOTA:
                 "SOTA cache directory already exists and is not a directory")
         sota_cache_repo = DirectoryRepo(SOTA_CACHE)
 
-        is_rollback_available = not self.proceed_without_rollback
         time_to_wait_before_reboot = 2 if not skip_sleeps else 0
 
         os_factory = SotaOsFactory(self._dispatcher_callbacks)
@@ -197,7 +196,7 @@ class SOTA:
             self.sota_cmd, self.snap_num, self.proceed_without_rollback)
         rebooter = self.factory.create_rebooter()
         if self.sota_state == 'diagnostic_system_unhealthy':
-            snapshot.revert(rebooter, time_to_wait_before_reboot, is_rollback_available)
+            snapshot.revert(rebooter, time_to_wait_before_reboot)
         elif self.sota_state == 'diagnostic_system_healthy':
             try:
                 snapshot.update_system()
@@ -209,7 +208,7 @@ class SOTA:
                 msg = "FAILED INSTALL: System has not been properly updated; reverting."
                 logger.debug(str(e))
                 self._dispatcher_callbacks.broker_core.send_result(msg)
-                snapshot.revert(rebooter, time_to_wait_before_reboot, is_rollback_available)
+                snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:
             self.execute_from_manifest(setup_helper=setup_helper,
                                        sota_cache_repo=sota_cache_repo,
@@ -240,7 +239,6 @@ class SOTA:
         cmd_list: List = []
         success = False
         download_success = False
-        is_rollback_available = not self.proceed_without_rollback
 
         try:
             if setup_helper.pre_processing():
@@ -270,8 +268,7 @@ class SOTA:
                 else:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         '{"status": 400, "message": "SOTA command status: FAILURE"}')
-                    snapshotter.recover(rebooter, time_to_wait_before_reboot,
-                                        is_rollback_available)
+                    snapshotter.recover(rebooter, time_to_wait_before_reboot)
         except (DispatcherException, SotaError, UrlSecurityException) as e:
             msg = "Caught exception during SOTA: " + str(e)
             logger.debug(msg)
@@ -279,8 +276,7 @@ class SOTA:
             self._dispatcher_callbacks.broker_core.send_result(
                 '{"status": 400, "message": "SOTA command status: FAILURE"}')
             if download_success:
-                snapshotter.recover(rebooter, time_to_wait_before_reboot,
-                                    is_rollback_available)
+                snapshotter.recover(rebooter, time_to_wait_before_reboot)
             raise SotaError(str(msg))
         finally:
             if self._repo_type == LOCAL_SOURCE:

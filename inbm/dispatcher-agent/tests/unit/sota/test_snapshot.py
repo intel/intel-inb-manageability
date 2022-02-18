@@ -126,9 +126,10 @@ class TestUbuntuSnapshot(unittest.TestCase):
         rebooter = Mock()
         ubuntu_snapshot = DebianBasedSnapshot(Mock(), "command", Mock(), "", True)
         ubuntu_snapshot._rollback_and_delete_snap = Mock()  # type: ignore
-        ubuntu_snapshot.revert(rebooter, 0, True)  # type: ignore
+        ubuntu_snapshot.snap_num = "1"
+        ubuntu_snapshot.revert(rebooter, 0)  # type: ignore
         assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
-        assert ubuntu_snapshot._rollback_and_delete_snap.call_count == 1  # type: ignore
+        self.assertEqual(ubuntu_snapshot._rollback_and_delete_snap.call_count, 1)  # type: ignore
         assert rebooter.reboot.call_count == 1
 
 
