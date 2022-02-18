@@ -22,6 +22,9 @@ const host = "/host"
 
 // Run makes actual call to exec.Command to run the command.
 // if chrootHost is true, run command in a chroot on /host
+// Running in a chroot on /host is used when running trtl in
+// a container but needing to run a command in the host filesystem
+// namespace rather than the container.
 func (ec ExecCommandWrap) Run(command string, directory string, args []string, chrootHost bool) error {
 	if chrootHost {
 		cmd := exec.Command(chroot, append([]string{host, command}, args...)...)
@@ -36,6 +39,9 @@ func (ec ExecCommandWrap) Run(command string, directory string, args []string, c
 
 // CombinedOutput makes an actual call to exec.Command to run the command and get the output.
 // if chrootHost is true, run command in a chroot on /host
+// Running in a chroot on /host is used when running trtl in
+// a container but needing to run a command in the host filesystem
+// namespace rather than the container.
 func (ec ExecCommandWrap) CombinedOutput(command string, directory string, args []string, chrootHost bool) ([]byte, error) {
 	if chrootHost {
 		cmd := exec.Command(chroot, append([]string{host, command}, args...)...)
