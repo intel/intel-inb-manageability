@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - (507873) Added support for Ubuntu 21.10
 - HSD 15010686097, 509209 - Fix INBC query not printing correct time of fw-release-date
 - HSD 15010749354 - Use XML schema to check for boundary conditions on integers in configuration files.  Validate set operations against schema.
+- HSD 15010640268 - Send only the SWID to Secure XLink API to avoid receiving the same GUID for each TBH.
 
 ## 3.0.8 - 2022-01-24
 

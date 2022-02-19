@@ -356,6 +356,7 @@ class XlinkSecureWrapper(IXlinkWrapper):
         @param sw_device_id: sw_device_id to be checked
         @return: GUID of node, SVN of node
         """
+        logger.debug(f"get_guid: sw_device_id: {sw_device_id}")
         try:
             guid = create_string_buffer(MAXIMUM_GUID_BUFFER)
             guid_len = c_uint32(MINIMUM_GUID_LENGTH)
