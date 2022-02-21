@@ -25,6 +25,9 @@ ApplicationCommands = Enum('ApplicationCommands', 'update')
 # CentOS driver path in docker
 CENTOS_DRIVER_PATH = "/host/inb_driver/"
 
+# RPM file type
+RPM_TYPE = "RPM"
+
 # Supported driver upgrade
 
 

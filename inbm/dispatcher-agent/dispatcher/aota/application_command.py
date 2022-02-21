@@ -12,7 +12,7 @@ from typing import Optional, Any, Mapping
 
 from inbm_lib.detect_os import is_cent_os_and_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path
+from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, get_file_type
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
@@ -24,7 +24,7 @@ from dispatcher.packagemanager.package_manager import get
 
 from .checker import check_application_command_supported, check_url
 from .aota_command import AotaCommand
-from .constants import CENTOS_DRIVER_PATH, DOCKER, COMPOSE, APPLICATION, SupportedDriver
+from .constants import CENTOS_DRIVER_PATH, DOCKER, COMPOSE, APPLICATION, SupportedDriver, RPM_TYPE
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 
@@ -116,6 +116,19 @@ class CentOsApplication(Application):
         for file in os.listdir(CENTOS_DRIVER_PATH):
             remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
+    def validate_package_type(self, path: str):
+        """Check if the package type is rpm. Otherwise it rejects the AOTA request.
+
+        @param path: Path to driver package
+        """
+        package_type = get_file_type(path)
+        logger.debug(f"package_type = {package_type}")
+        if RPM_TYPE in package_type:
+            pass
+        else:
+            raise AotaError(
+                f'AOTA Command Failed: Unsupported driver format {package_type}')
+
     def update(self) -> None:
         """ Update CentOS driver"""
         super().update()
@@ -126,12 +139,14 @@ class CentOsApplication(Application):
         driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
         logger.debug(f"driver path = {driver_path}")
         try:
+            # Validate driver package in RPM format
+            self.validate_package_type(driver_path)
+
             # Remove all files in inb_driver
             for file in os.listdir(CENTOS_DRIVER_PATH):
                 remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
             driver_centos_path = os.path.join(CENTOS_DRIVER_PATH, driver_path.split('/')[-1])
-            logger.debug(f"driver_centos_path = {driver_centos_path}")
             # Move driver to CentOS filesystem
             shutil.move(driver_path, driver_centos_path)
 
