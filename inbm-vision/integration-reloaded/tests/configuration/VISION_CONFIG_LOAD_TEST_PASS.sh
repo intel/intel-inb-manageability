@@ -24,7 +24,7 @@ GET_CONFIG_ELEMENTS=(
 CHECK_GET_MESSAGE=(
   "vision/heartbeatCheckIntervalSecs:15"
   "vision/heartbeatTransmissionIntervalSecs:65"
-  "vision/fotaCompletionTimerSecs:125"
+  "vision/fotaCompletionTimerSecs:602"
   "vision/isAliveTimerSecs:205"
   "vision/heartbeatRetryLimit:3"
 )
@@ -38,7 +38,7 @@ sleep 10
 cp /etc/intel-manageability/public/vision-agent/intel_manageability_vision.conf "$NGINX_DATA"
 sed -i "s|<heartbeatCheckIntervalSecs>11</heartbeatCheckIntervalSecs>|<heartbeatCheckIntervalSecs>15</heartbeatCheckIntervalSecs>|g" "$NGINX_DATA"/intel_manageability_vision.conf
 sed -i "s|<heartbeatTransmissionIntervalSecs>60</heartbeatTransmissionIntervalSecs>|<heartbeatTransmissionIntervalSecs>65</heartbeatTransmissionIntervalSecs>|g" "$NGINX_DATA"/intel_manageability_vision.conf
-sed -i "s|<fotaCompletionTimerSecs>120</fotaCompletionTimerSecs>|<fotaCompletionTimerSecs>125</fotaCompletionTimerSecs>|g" "$NGINX_DATA"/intel_manageability_vision.conf
+sed -i "s|<fotaCompletionTimerSecs>600</fotaCompletionTimerSecs>|<fotaCompletionTimerSecs>602</fotaCompletionTimerSecs>|g" "$NGINX_DATA"/intel_manageability_vision.conf
 sed -i "s|<isAliveTimerSecs>200</isAliveTimerSecs>|<isAliveTimerSecs>205</isAliveTimerSecs>|g" "$NGINX_DATA"/intel_manageability_vision.conf
 sed -i "s|<heartbeatRetryLimit>4</heartbeatRetryLimit>|<heartbeatRetryLimit>3</heartbeatRetryLimit>|g" "$NGINX_DATA"/intel_manageability_vision.conf
 

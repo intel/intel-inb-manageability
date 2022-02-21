@@ -81,8 +81,7 @@ class SetVisionConfigValuesCommand(Command):
         self.target_type = target_type
 
     def execute(self) -> None:
-        """Execute set config and publish the result to telemetry Event
-        """
+        """Execute set config and publish the result to telemetry Event"""
         logger.debug('Execute SetVisionConfigValuesCommand.')
         try:
             result = self.config_mgr.set_element(self.key, self.target_type)
