@@ -1,13 +1,13 @@
 /*
-    Copyright (C) 2017-2021 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2022 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 package btrfs
 
 import (
 	"fmt"
-	"os"
 	"iotg-inb/trtl/util"
+	"os"
 )
 
 const unknownConfig = "Unknown config.\n"
@@ -16,6 +16,15 @@ const snapper = "snapper"
 var cConfig = createConfig
 var pConfig = prepareConfig
 var dList = setDefaultHelper
+
+// isDockerApp checks if trtl is running in a container
+// Returns true if trtl is running in a container
+func isDockerApp() bool {
+	if os.Getenv("container") == "" {
+		return false
+	}
+	return true
+}
 
 // prepareConfig checks to see if a configuration file already exists for Snapper.  If it does not, it will create it.
 // Returns an error if it is unable to find or create the configuration file.
@@ -38,7 +47,7 @@ func prepareConfig(cw util.ExecCommandWrapper, configName string) error {
 func isConfigExist(cw util.ExecCommandWrapper, configName string) (bool, error) {
 	args := []string{"-c", configName, "get-config"}
 
-	if cmdOut, err := cw.CombinedOutput(snapper, "", args); err != nil {
+	if cmdOut, err := cw.CombinedOutput(snapper, "", args, isDockerApp()); err != nil {
 		if string(cmdOut) == unknownConfig {
 			return false, nil
 		}
@@ -63,7 +72,7 @@ func setDefaultHelper(cw util.ExecCommandWrapper, configName string) error {
 func setDefaultConfig(cw util.ExecCommandWrapper, configName string, configItem string) error {
 	args := []string{"-c", configName, "set-config", configItem}
 
-	if cmdOut, err := cw.CombinedOutput(snapper, "", args); err != nil {
+	if cmdOut, err := cw.CombinedOutput(snapper, "", args, isDockerApp()); err != nil {
 		if len(string(cmdOut)) > 0 {
 			return err
 		}
@@ -76,7 +85,7 @@ func setDefaultConfig(cw util.ExecCommandWrapper, configName string, configItem 
 func createConfig(cw util.ExecCommandWrapper, configName string) error {
 	args := []string{"-c", configName, "create-config", "/"}
 
-	if cmdOut, err := cw.CombinedOutput(snapper, "", args); err != nil {
+	if cmdOut, err := cw.CombinedOutput(snapper, "", args, isDockerApp()); err != nil {
 		fmt.Fprintf(os.Stderr, "%s", cmdOut)
 		fmt.Fprintf(os.Stderr, "Error creating snapper configuration file: %s", err)
 		return err

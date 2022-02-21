@@ -2,7 +2,7 @@
     Config Command classes to represent command entered by user.
 
     # Copyright (C) 2020-2022 Intel Corporation
-# SPDX-License-Identifier: Apache-2.0
+    # SPDX-License-Identifier: Apache-2.0
 """
 
 from typing import Any

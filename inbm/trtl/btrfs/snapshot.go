@@ -1,16 +1,16 @@
 /*
-    Copyright (C) 2017-2021 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2022 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 package btrfs
 
 import (
 	"errors"
 	"fmt"
+	"iotg-inb/trtl/util"
 	"os"
 	"os/exec"
 	"strings"
-	"iotg-inb/trtl/util"
 )
 
 var execCommand = exec.Command
@@ -34,7 +34,7 @@ func SingleSnapshot(cw util.ExecCommandWrapper, configName string, desc string) 
 
 	args := []string{"-c", configName, "create", "-p", "--description", desc}
 
-	if cmdOut, err = cw.CombinedOutput(snapper, "", args); err != nil {
+	if cmdOut, err = cw.CombinedOutput(snapper, "", args, isDockerApp()); err != nil {
 		fmt.Fprintf(os.Stderr, "%s", cmdOut)
 		fmt.Fprintf(os.Stderr, "Error creating single snapshot using snapper: %s", err)
 		return err

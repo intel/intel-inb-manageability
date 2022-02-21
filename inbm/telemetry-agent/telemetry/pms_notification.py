@@ -7,12 +7,11 @@
 import sys
 import time
 import json
-import platform
-import threading
 import logging
 from typing import Union
 from .constants import *
 from . import telemetry_handling
+from inbm_common_lib.constants import TELEMETRY_CHANNEL
 from inbm_lib.mqttclient.mqtt import MQTT
 from telemetry.ipoller import IPoller
 
@@ -44,7 +43,7 @@ class PMSNotification():
         """Notification Callback function to publish message when an error occurs
         """
         alert = {'values': {'resourceAlert': json.loads(info)}, 'type': "dynamic_telemetry"}
-        telemetry_handling.publish_dynamic_telemetry(PMSNotification.client, SYSTEM_TELEMETRY_CHANNEL,
+        telemetry_handling.publish_dynamic_telemetry(PMSNotification.client, TELEMETRY_CHANNEL,
                                                      alert)
 
     def register_pms_notification(self, poller: IPoller) -> None:
@@ -73,7 +72,7 @@ class PMSNotification():
         except PmsException as err:
             logger.error(f'{str(err)}. Re-trying PMS RAS registration...')
             err_msg = {'values': {'resourceAlert': str(err)}, 'type': "dynamic_telemetry"}
-            telemetry_handling.publish_dynamic_telemetry(PMSNotification.client, SYSTEM_TELEMETRY_CHANNEL,
+            telemetry_handling.publish_dynamic_telemetry(PMSNotification.client, TELEMETRY_CHANNEL,
                                                          err_msg)
             poller.pms_notification_registered = False
 

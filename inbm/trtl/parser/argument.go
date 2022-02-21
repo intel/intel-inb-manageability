@@ -110,7 +110,7 @@ const (
 	// UndoChange is a string declaration for UndoChange command.
 	UndoChange = "undochange"
 
-	// UP is a string declearation for Up command.
+	// UP is a string declaration for Up command.
 	Up = "up"
 
 	noCommand = "none"
