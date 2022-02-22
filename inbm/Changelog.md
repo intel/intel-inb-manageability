@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010715189 - Telemetry service failed to start when unable to find mender file
  - RTC 509436 - [BUG] SOTA in docker container cannot take snapshot in btrfs
  - HSD 15010407028 - Remove <hash_algorithm> tag before sending provisionNode manifest to vision-agent
+ - RTC 509442 - [BUG] docker-compose fails in container due to docker-compose not being installed in container
+ - RTC 509493 - [BUG] docker service is running unnecessarily in container, in container mod
 
 ### Added
  - (507873) Added support for Ubuntu 21.10
