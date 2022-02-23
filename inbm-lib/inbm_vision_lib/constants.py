@@ -143,7 +143,6 @@ TARGET_TYPE = "targetType"
 # Flashless constant
 # The name of fip and os image may be different in other platform.
 FLASHLESS_FILE_PATH = 'flashlessFileLocation'
-BOOT_FLASHLESS_DEV = "bootFlashlessDevice"
 FIP_FILE = 'thb_fip.bin'
 OS_IMAGE = 'thb_os.bin'
 ROOTFS = 'thb_rootfs.bin'
