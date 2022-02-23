@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010407028 - Remove <hash_algorithm> tag before sending provisionNode manifest to vision-agent
  - RTC 509442 - [BUG] docker-compose fails in container due to docker-compose not being installed in container
  - RTC 509493 - [BUG] docker service is running unnecessarily in container, in container mod
+ - RTC 509440 - Remove testing entries from intel_manageability.conf in release builds
 
 ### Added
  - (507873) Added support for Ubuntu 21.10
