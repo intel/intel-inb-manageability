@@ -77,11 +77,6 @@ EOF
 
 sed -i "s|XLINK_SIMULATOR=False|XLINK_SIMULATOR=True|g" /lib/systemd/system/inbm-vision.service
 sed -i "s|XLINK_SIMULATOR=False|XLINK_SIMULATOR=True|g" /lib/systemd/system/inbm-node.service
-# Set OTA time in vision-agent conf file to 120s to speed up the integration test
-sed -i "s|600|120|g" /etc/intel-manageability/public/vision-agent/intel_manageability_vision.conf
-# for sota and pota timer
-sed -i "s|900|120|g" /etc/intel-manageability/public/vision-agent/intel_manageability_vision.conf
-sed -i "s|900|120|g" /etc/intel-manageability/public/vision-agent/intel_manageability_vision.conf
 
 # Temporarily disable vision-agent write access to event,telemetry and response channel
 sed -i -z "s|topic write manageability/event|#topic write manageability/event|4" /etc/intel-manageability/public/mqtt-broker/acl.file

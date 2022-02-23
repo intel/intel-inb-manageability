@@ -393,7 +393,7 @@ class RegistryManager(object):
             logger.info("No device exist. Skip check heartbeat.")
 
     def _handle_inactive_heartbeat(self, node_device) -> None:
-        """Method to handle unresponsive node agent. It has following functions:
+        """Method to handle unresponsive node agent:
         - Update the heartbeat to Idle state
         - Increase the heartbeat retries
         - Send the IsAlive request to node agent if it reaches heartbeat retries limit
