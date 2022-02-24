@@ -46,8 +46,9 @@ def verify_os_supported() -> str:
         raise ValueError('Unsupported OS type.')
 
 
-def get_lsb_release_name() -> Optional[str]:
+def get_lsb_release_name_host() -> Optional[str]:
     """Get OS name from lsb_release command. Return None on any error.
+    NOTE: will look at host rather than container, if in container
     """
 
     try:
@@ -72,6 +73,9 @@ def get_lsb_release_name() -> Optional[str]:
 
 def detect_os() -> str:
     """Detects the operating system type running on the current system
+    Will detect host OS if in container only for Linux distributions that have
+    lsb_release working; otherwise falls back to method that cannot see outside
+    the container.
     @return: OS type
     """
 
@@ -91,7 +95,7 @@ def detect_os() -> str:
         os_name: Optional[str] = None
 
         # Try getting name from lsb_release (should only work on Linux)
-        lsb_release_name = get_lsb_release_name()
+        lsb_release_name = get_lsb_release_name_host()
 
         if lsb_release_name is not None and lsb_release_name in LinuxDistType.__members__:
             logger.debug("Detected OS with lsb_release: " + lsb_release_name)

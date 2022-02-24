@@ -164,7 +164,9 @@ class CentOsApplication(Application):
 
 
 class UbuntuApplication(Application):
-    """Performs Application updates triggered via AOTA on Ubuntu
+    """Performs Application updates triggered via AOTA on Ubuntu.
+    Capable of detecting whether running in container (update Ubuntu host)
+    and escaping container if needed.
 
     @param dispatcher_callbacks callback to the main Dispatcher object
     @param parsed_manifest: parameters from OTA manifest
@@ -176,17 +178,30 @@ class UbuntuApplication(Application):
         # security assumption: parsed_manifest is already validated
         super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
 
-    def update(self):
+    def update(self):  # pragma: no cover
         super().update()
         application_repo = self._download_package()
         install_cmd = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
         if ' ' in install_cmd or install_cmd.isspace():
             logger.debug(f"INSTALL : {install_cmd}")
             raise AotaError(f"File path cannot contain spaces - {install_cmd}")
-        command = f"dpkg -i {install_cmd}"
+        base_command = f"/usr/bin/dpkg -i {install_cmd}"
+
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            command = DOCKER_CHROOT_PREFIX + base_command
+        else:
+            command = base_command
         logger.debug(f" Updating Application {self.resource} ...")
         out, err, code = PseudoShellRunner().run(command)
         logger.debug(f" Application update logs {out} and error {err}")
         if code != 0:
             raise AotaError(err)
-        self._reboot("reboot -f")
+
+        reboot_base_command = "/usr/sbin/reboot -f"
+        if is_docker_app:
+            reboot_command = DOCKER_CHROOT_PREFIX + reboot_base_command
+        else:
+            reboot_command = reboot_base_command
+
+        self._reboot(reboot_command)
