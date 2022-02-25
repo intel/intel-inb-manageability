@@ -31,7 +31,6 @@
     3. [Viewing Telemetry Data](#viewing-telemetry-data)
 5. [Issues and Troubleshooting](#issues-and-troubleshooting)
     1. [OTA Error Status](#ota-error-status)
-    2. [Provisioning Unsuccessful or Device Not Connected to Cloud](#provisioning-unsuccessful-or-device-not-connected-to-cloud)
     3. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
 
 </details>
@@ -42,10 +41,7 @@
 This User Guide serves to provide the reader an overview on how to:
 
 - Login and setup ThingsBoard&reg; Cloud Service
-
-- Provision the Edge IoT device running In-Band Manageability
-    Framework
-
+- Provision the Edge IoT device running In-Band Manageability Framework
 - Perform OTA updates through ThingsBoard.
 
 It also provides examples of the Web-UI configuration, reported
@@ -78,11 +74,8 @@ perform OTA commands.
 This section will walk through the setup steps:
 
 - Accessing ThingsBoard&reg;
-
 - Setting up ThingsBoard&reg; TLS
-
 - Changing ThingsBoard&reg; Server Port
-
 - Creating ThingsBoard&reg; Account
 
 #### Accessing ThingsBoard&reg;
@@ -93,13 +86,12 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
     following link:  
     [**https://thingsboard.io/docs/installation/**](https://thingsboard.io/docs/installation/)
 
-    **Note:** 
-    > For a sandbox environment, choose the `Community` edition
+    ❗ In a sandbox environment, choose the `Community` edition
 
 - In order to run a ThingsBoard&reg; server instance on the same device as
     Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboard-server-port)
 
-#### Setting up ThingsBoard&reg; TLS
+#### Setting up ThingsBoard TLS
 
 To allow for a secure TLS connection to be established between a device
 with Intel Manageability and a self-hosted ThingsBoard&reg; server, some
@@ -107,11 +99,9 @@ configuration must be done to the server. Information on that process
 can be found below, or at:
 [**https://thingsboard.io/docs/user-guide/mqtt-over-ssl/**](https://thingsboard.io/docs/user-guide/mqtt-over-ssl/)
 
-1. Download the *server.keygen.sh* and *keygen.properties* files from
-    the link above
+1. Download the *server.keygen.sh* and *keygen.properties* files from the link above
 
-2. Fill out the *keygen.properties* accordingly
-
+2. Fill out the *keygen.properties* accordingly:
     1. Change is the **DOMAIN\_SUFFIX** field, which should match the
         hostname of the ThingsBoard&reg; server
 
@@ -126,10 +116,7 @@ can be found below, or at:
 4. Copy the resulting *\*.jks* file to the ThingsBoard&reg; configuration
     directory
 
-    1. This may be under: 
-    ```
-    /etc/thingsboard/conf/
-    ```
+    - This may be under: ```/etc/thingsboard/conf/```
 
 5. The *\*.pub.pem* file will be needed later to provision Intel
     Manageability devices
@@ -143,17 +130,12 @@ a different number for both to coexist on the same device.
 To do this:
 
 1. Locate and open the *thingsboard.yml* file
-
-    1. On Yocto, this file is located in 
-    ```
-    /etc/thingsboard/conf/
-    ```
+    - On Yocto, this file is located in ```/etc/thingsboard/conf/```
 
 2. Change the property **transport \> mqtt \> bind\_port** to any other
     number (e.g. 2883)
 
-    1. This property should be under a section labeled: `Local MQTT
-        transport parameters`
+    1. This property should be under a section labeled: `Local MQTT transport parameters`
 
     2. Be sure to note the new port number, and enter it accordingly in
         the provisioning step
@@ -325,7 +307,7 @@ Input path to Device certificate file (*nopass.pem):
 
 8. If user selects Token based authentication in step 6, an option for
     TLS will appear; press **Y** if the server was configured in
-    [**Setting up ThingsBoard&reg; TLS**](#setting-up-thingsboardreg-tls). Otherwise, press **N** and
+    [**Setting up ThingsBoard&reg; TLS**](#setting-up-thingsboard-tls). Otherwise, press **N** and
     skip to step 11.
 > If the user selects X509 authentication, it is mandatory to have TLS configured. By default, the application proceeds with the TLS configuration.
 
