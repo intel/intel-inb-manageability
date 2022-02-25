@@ -17,6 +17,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 509436 - [BUG] SOTA in docker container cannot take snapshot in btrfs
  - HSD 15010407028 - Remove <hash_algorithm> tag before sending provisionNode manifest to vision-agent
  - No longer upload custom tpm2 debs with 21.10 PPA deploy script
+ - RTC 509442 - [BUG] docker-compose fails in container due to docker-compose not being installed in container
+ - RTC 509493 - [BUG] docker service is running unnecessarily in container, in container mod
+ - RTC 509438 - [BUG] When installing .deb file (driver update) in container, .deb should be installed in host
 
 ### Added
  - (507873) Added support for Ubuntu 21.10

@@ -17,9 +17,9 @@ CONFIG_HEARTBEAT_RETRY_LIMIT = ConfigurationItem('Heartbeat Retry Limit', 2, 15,
 CONFIG_FOTA_COMPLETION_TIMER_SECS = ConfigurationItem(
     'FOTA Completion Timer Seconds', 120, 1200, 600)
 CONFIG_SOTA_COMPLETION_TIMER_SECS = ConfigurationItem(
-    'SOTA Completion Timer Seconds', 600, 1680, 900)
+    'SOTA Completion Timer Seconds', 300, 1680, 900)
 CONFIG_POTA_COMPLETION_TIMER_SECS = ConfigurationItem(
-    'POTA Completion Timer Seconds', 600, 1680, 900)
+    'POTA Completion Timer Seconds', 300, 1680, 900)
 CONFIG_IS_ALIVE_TIMER_SECS = ConfigurationItem('IsAlive Timer Seconds', 60, 600, 180)
 CONFIG_FLASHLESS_ROLLBACK_WAIT_TIMER_SECS = ConfigurationItem(
     'Flash-less Rollback Wait Time Seconds', 120, 1200, 600)
