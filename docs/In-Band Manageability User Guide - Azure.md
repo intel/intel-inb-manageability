@@ -78,10 +78,9 @@
         1. [Static Telemetry:](#static-telemetry)
         2. [Dynamic Telemetry:](#dynamic-telemetry)
 10. [Issues and Troubleshooting](#issues-and-troubleshooting)
-    1. [Error viewing Devices on Azure&reg; Portal:](#error-viewing-devices-on-azurereg-portal)
+    1. [Error viewing Devices on Azure Portal](#error-viewing-devices-on-azure-portal)
     2. [OTA Error Status](#ota-error-status)
-    3. [Provisioning Unsuccessful or Device Not Connected to Cloud](#provisioning-unsuccessful-or-device-not-connected-to-cloud)
-    4. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
+    3. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
 
 </details>
 
@@ -236,7 +235,7 @@ the device to Azure&reg; cloud.
 
     <img src="media/In-Band Manageability User Guide - Azure/media/image12.png" style="width:5.99167in;height:0.68819in" />
 
--   As INB supports both SAS and X509 authentication types, the user must choose one of the Authentication types supported. If the user intends to select SAS based authentication, refer to [Shared Access Signature (SAS) authentication](#shared_access_signaturesas_authentication). Else, if the user wants X509 based Authentication, refer to [X509 Authentication](#x509_authentication).<span id="_2.3.1_Shared_Access" class="anchor"></span>
+-   As INBM supports both SAS and X509 authentication types, the user must choose one of the Authentication types supported. If the user intends to select SAS based authentication, refer to [Shared Access Signature (SAS) authentication](#shared-access-signature-sas-authentication). Else, if the user wants X509 based Authentication, refer to [X509 Authentication](#x509_authentication).<span id="_2.3.1_Shared_Access" class="anchor"></span>
 
 #### Shared Access Signature (SAS) authentication:
 
@@ -414,14 +413,13 @@ sudo PROVISION_TPM=disable provision-tc
 
 ## Using the IoT Central Application
 
-
 ### Viewing and Managing Devices
 
 -   To view and manage devices, go to the **Devices** tab on the side panel Ⓐ
     <img src="media/In-Band Manageability User Guide - Azure/media/image26.png" style="width:4.8375in;height:2.39375in" />
 -   Alternatively, to quickly view a device, use the **Devices** panel Ⓑ
 
-If the device list is showing an error: Refer to [Error viewing Devices on Azure&reg; Portal](#error-viewing-devices-on-azurereg-portal).
+If the device list is showing an error: Refer to [Error viewing Devices on Azure Portal](#error-viewing-devices-on-azure-portal).
 
 ### Navigating the Device Interface
 
@@ -1162,10 +1160,9 @@ the device item.
 
 [General Troubleshooting](Issues%20and%20Troubleshooting.md)
 
-### Error viewing Devices on Azure&reg; Portal:
+### Error viewing Devices on Azure Portal:
 
-While following the steps in [Section 2.5.1](#_2.5.1_Viewing_and), if
-there is an error viewing device, do as below:
+While following the steps in [Viewing and Managing Devices](#viewing-and-managing-devices), if there is an error viewing device, do the following:
 
 -   Click **Edit** in the upper right-hand corner:
 

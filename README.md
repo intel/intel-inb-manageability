@@ -65,3 +65,6 @@ If you see something like 'unable to resolve' or a DNS error or 'unable to look 
 ### Build output
 * When build is complete, build output will be in the `dist` folder. 
 * See `dist/README.txt` for a description of the build output.
+
+### Next Steps
+Please see the [Ubuntu Installation Guide](https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
