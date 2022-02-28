@@ -718,16 +718,16 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 The query command can be used to gather information about the system and the Vision cards.
 
-| XML Tags                                 | Definition             | Required/Optional | Notes                  |
-|:-----------------------------------------|:-----------------------|:-----------------:|:-----------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` |                        |         R         |                        |
+| XML Tags                                 | Definition             | Required/Optional | Notes                         |
+|:-----------------------------------------|:-----------------------|:-----------------:|:------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` |                        |         R         |                               |
 | `<manifest>`                             | `<manifest>`           |         R         ||
-| `<type><type>`                           | `<type>cmd</type>`     |         R         | will always be 'cmd'   |
-| `<cmd></cmd>`                            | `<cmd>query</cmd>`     |         R         | will always be 'query' |
-| `<query>`                                | `<query>`              |         R         |                        |
-| `<option></option>`                      | `<option>all</option>` |         R         | [optional type]()      |
-| `</query>`                               | `</query>`             |         R         |                        |
-| `</manifest>`                            | `</manifest>`          |         R         |                        |
+| `<type><type>`                           | `<type>cmd</type>`     |         R         | will always be 'cmd'          |
+| `<cmd></cmd>`                            | `<cmd>query</cmd>`     |         R         | will always be 'query'        |
+| `<query>`                                | `<query>`              |         R         |                               |
+| `<option></option>`                      | `<option>all</option>` |         R         | [Available Options](Query.md) |
+| `</query>`                               | `</query>`             |         R         |                               |
+| `</manifest>`                            | `</manifest>`          |         R         |                               |
 
 
 #### Example of swbom query manifest examples
