@@ -1,7 +1,7 @@
 """
     Constants used by the common manageability library
-    @copyright: Copyright 2021 Intel Corporation All Rights Reserved.
-    @license: Intel, see licenses/LICENSE for more details.
+    @copyright: Copyright 2017-2022 Intel Corporation All Rights Reserved.
+    @license: SPDX-License-Identifier: Apache-2.0
 """
 from inbm_common_lib.utility import get_canonical_representation_of_path
 

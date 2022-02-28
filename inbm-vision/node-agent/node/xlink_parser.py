@@ -2,7 +2,7 @@
     XLinkParser processes the messages received from Xlink and stores them as a list of
     directories.
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 

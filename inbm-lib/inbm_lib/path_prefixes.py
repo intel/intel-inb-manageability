@@ -1,8 +1,8 @@
 """
     Intel Manageability path prefixes
 
-    @copyright: Copyright 2021 Intel Corporation All Rights Reserved.
-    @license: Intel, see licenses/LICENSE for more details.
+    @copyright: Copyright 2017-2022 Intel Corporation All Rights Reserved.
+    @license: SPDX-License-Identifier: Apache-2.0
 """
 
 import platform

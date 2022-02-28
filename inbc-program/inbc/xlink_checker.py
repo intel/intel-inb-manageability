@@ -1,6 +1,6 @@
 """ Checks xlink device status and reports back if an error occurred.
 
-    Copyright (C) 2020-2021 Intel Corporation
+    Copyright (C) 2020-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging

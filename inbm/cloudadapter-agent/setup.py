@@ -1,3 +1,6 @@
+# Copyright (C) 2017-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 from setuptools import setup, find_packages
 
 with open('README.md') as f:

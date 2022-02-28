@@ -1,8 +1,8 @@
 """
     Module that handles parsing of XML files
 
-    @copyright: Copyright 2021 Intel Corporation All Rights Reserved.
-    @license: Intel, see licenses/LICENSE for more details.
+    Copyright (C) 2017-2022 Intel Corporation
+    SPDX-License-Identifier: Apache-2.0
 """
 import io
 import os.path
