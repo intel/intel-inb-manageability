@@ -155,7 +155,7 @@ class CentOsApplication(Application):
             logger.debug(out)
             if code != 0:
                 raise AotaError(err)
-            self._reboot(DOCKER_CHROOT_PREFIX + '/usr/sbin/shutdown -r 0')
+            self._reboot(DOCKER_CHROOT_PREFIX + '/sbin/shutdown -r 0')
 
         except (AotaError, FileNotFoundError, OSError) as error:
             # Remove temp files if the error happened.
@@ -198,7 +198,7 @@ class UbuntuApplication(Application):
         if code != 0:
             raise AotaError(err)
 
-        reboot_base_command = "/usr/sbin/reboot -f"
+        reboot_base_command = "/sbin/reboot -f"
         if is_docker_app:
             reboot_command = DOCKER_CHROOT_PREFIX + reboot_base_command
         else:
