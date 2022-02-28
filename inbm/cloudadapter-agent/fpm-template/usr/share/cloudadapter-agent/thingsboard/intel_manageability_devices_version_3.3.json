@@ -1164,7 +1164,7 @@
         "col": 0,
         "id": "21555927-43b5-f9d6-0174-bcd15bd1d96a"
       },
-      "9f6336cd-e4ae-236d-d24e-af089a86a683": {
+      "f7fe7f25-63c8-3a31-6c36-8ea4ca19b21f": {
         "isSystemType": false,
         "bundleAlias": "intel_manageability4",
         "typeAlias": "docker_stats_widget_copy",
@@ -1182,7 +1182,7 @@
           "settings": {
             "refreshTimeout": 8000
           },
-          "title": "New Docker-stats widget",
+          "title": "New Docker-stats widgets",
           "dropShadow": true,
           "enableFullscreen": true,
           "titleStyle": {
@@ -1210,14 +1210,9 @@
                   "name": "containerStats",
                   "type": "timeseries",
                   "label": "containerStats",
-                  "color": "#4acf50",
+                  "color": "#2196f3",
                   "settings": {},
-                  "_hash": 0.9236149981998252,
-                  "units": null,
-                  "decimals": null,
-                  "funcBody": null,
-                  "usePostProcessing": null,
-                  "postFuncBody": null
+                  "_hash": 0.6818823993487904
                 }
               ]
             }
@@ -1230,7 +1225,7 @@
         },
         "row": 0,
         "col": 0,
-        "id": "9f6336cd-e4ae-236d-d24e-af089a86a683"
+        "id": "f7fe7f25-63c8-3a31-6c36-8ea4ca19b21f"
       }
     },
     "states": {
@@ -1247,15 +1242,15 @@
                 "col": 0
               },
               "fe43a8ea-dcf5-214e-c39f-282688e872cd": {
-                "sizeX": 4,
+                "sizeX": 3,
                 "sizeY": 2,
-                "row": 9,
-                "col": 13
+                "row": 10,
+                "col": 16
               },
               "1947f161-1d7a-3001-b276-d69e1119949f": {
                 "sizeX": 25,
-                "sizeY": 6,
-                "row": 11,
+                "sizeY": 5,
+                "row": 12,
                 "col": 0
               },
               "1f5e9a7b-52df-8a2b-83cb-19d0a5f44fcf": {
@@ -1265,10 +1260,10 @@
                 "col": 8
               },
               "2ab4204c-fa2d-80be-f436-162754ca228d": {
-                "sizeX": 4,
+                "sizeX": 3,
                 "sizeY": 2,
-                "row": 9,
-                "col": 17
+                "row": 10,
+                "col": 19
               },
               "72db3084-83f9-e7b3-58ed-9ea5c42ed7f7": {
                 "sizeX": 8,
@@ -1277,44 +1272,44 @@
                 "col": 0
               },
               "064e4cf7-cee6-401a-2c72-2f6a35d9ecaa": {
-                "sizeX": 5,
-                "sizeY": 2,
-                "row": 7,
-                "col": 8
-              },
-              "31e095ca-9a4f-9761-cc06-34fa67ae7f72": {
-                "sizeX": 4,
+                "sizeX": 3,
                 "sizeY": 2,
                 "row": 7,
                 "col": 13
               },
-              "a7be9b5b-e9ed-e141-6826-2ebc641cb784": {
-                "sizeX": 4,
+              "31e095ca-9a4f-9761-cc06-34fa67ae7f72": {
+                "sizeX": 3,
                 "sizeY": 2,
                 "row": 7,
-                "col": 17
+                "col": 16
+              },
+              "a7be9b5b-e9ed-e141-6826-2ebc641cb784": {
+                "sizeX": 3,
+                "sizeY": 2,
+                "row": 7,
+                "col": 19
               },
               "90162b56-9527-2ec8-0efc-7a2c38b3565f": {
-                "sizeX": 5,
+                "sizeX": 3,
                 "sizeY": 2,
-                "row": 9,
-                "col": 8
+                "row": 10,
+                "col": 13
               },
               "c93ea1e1-8bc2-9e40-fc59-d43beb94fd99": {
-                "sizeX": 4,
+                "sizeX": 3,
                 "sizeY": 2,
                 "row": 7,
-                "col": 21
+                "col": 22
               },
               "21555927-43b5-f9d6-0174-bcd15bd1d96a": {
-                "sizeX": 4,
+                "sizeX": 3,
                 "sizeY": 2,
-                "row": 9,
-                "col": 21
+                "row": 10,
+                "col": 22
               },
-              "9f6336cd-e4ae-236d-d24e-af089a86a683": {
-                "sizeX": 8,
-                "sizeY": 4,
+              "f7fe7f25-63c8-3a31-6c36-8ea4ca19b21f": {
+                "sizeX": 13,
+                "sizeY": 5,
                 "row": 7,
                 "col": 0
               }
