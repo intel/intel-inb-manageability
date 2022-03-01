@@ -1,7 +1,7 @@
 """
     AOTA Application Factory
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 

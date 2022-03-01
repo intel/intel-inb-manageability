@@ -6,8 +6,8 @@
 # The purpose of this script is to allow quick cloud configuration
 # without having to run the actual provision installer script
 
-# Copyright 2021 Intel Corporation All Rights Reserved.
-# License: Intel, see licenses/LICENSE for more details.
+# Copyright (C) 2017-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
 
 # Usage:
 # sudo ./config.sh

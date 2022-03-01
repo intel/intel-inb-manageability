@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# Copyright (C) 2021-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 # -*- coding: utf-8 -*-
 
 import os
@@ -21,6 +24,7 @@ DEFAULT_MQTT_PORT = 8883
 DEFAULT_MQTT_CERTS = "/home/harsha/certs/mqtt-ca.crt"
 CLIENT_CERTS = "/home/harsha/certs/cmd-program.crt"
 CLIENT_KEYS = "/home/harsha/certs/cmd-program.key"
+
 
 class MQTT:
     """MQTT client providing easy-to-use APIs for client connections

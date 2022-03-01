@@ -1,7 +1,7 @@
 """
     Broker service for INBC tool
 
-    Copyright (C) 2020-2021 Intel Corporation
+    Copyright (C) 2020-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
