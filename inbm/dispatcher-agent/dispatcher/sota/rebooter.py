@@ -45,7 +45,7 @@ class LinuxRebooter(Rebooter):
         super().reboot()
         is_docker_app = os.environ.get("container", False)
 
-        cmd = "/usr/sbin/reboot -f"
+        cmd = "/sbin/reboot -f"
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
             (output, err, code) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)
