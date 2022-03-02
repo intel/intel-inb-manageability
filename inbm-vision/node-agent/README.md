@@ -1,60 +1,62 @@
-# node-agent
-IoT Node Agent on SOC
+# Node agent
 
-Agent which registers with Node Agent and facilitates update on the SOC
+<details>
+<summary>Table of Contents</summary>
 
-## Agent Communication
-- Uses MQTT for communication with OTA client (i.e. INB)
-- Subscribes to events on `manageability/event`
-- Subscribes to telemetry on `manageability/telemetry`
-- Subscribes to response on `manageability/response`
-- Publishes install request on `manageability/request/install`
-- Publishes state to `node/state` when running/dead
+- [Overview](#overview)
+- [Agent Communication](#agent-communication)
+    - [Publish Channels](#publish-channels)
+    - [Subscribe Channels](#subscribe-channels)
+- [Install from Source](#install-from-source)
+- [Usage](#usage)
+  - [Changing the logging level](#changing-the-logging-level)
+  - [Run the agent](#run-the-agent)
+  - [Test the agent](#test-the-agent)
+</details>
+
+## Overview
+
+The Intel Manageability agent which registers with the Vision Agent and facilitates updates on the SOC.
+
+## Agent Communication 
+
+Uses MQTT for communication with the Dispatcher-agent residing on the SOC.
+
+### Publish Channels
+The agent publishes to the following topics:
+  - Request from cloud or INBC for the node: `manageability/request/install`
+  - node-agent state: node/state` when dead/running
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+ - Events to be sent back to the user: `manageability/event` 
+ - Telemetry data: `manageability/telemetry`
+ - Update response: `manageability/response`
+ - Configuration response: `configuration/response`
+ - Agent states: `+/state`
 
  P.S: `+` is a wild-card indicating single level thus matching `node/state` or `<another-agent>/state`
 
-## Install
-NOTE: Ensure any Python version greater than 3.8 is installed
+## Install from Source
+The node-agent is installed on a Yocto image, which requires flashing a Mender image that contains the Node-agent.
 
-- Clone repository into local directory
-- Run `cd node-agent`
-- Run `make init` to install necessary Python packages
+## Usage
 
-## Usage (via Source)
-NOTE:
-Ensure Mosquitto broker is installed and configured for INB.
-Some commands will require root privileges (sudo).
-Be sure to run the commands in the `node-agent` directory
+❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
+❗Some commands will require root privileges (sudo)  
+❗Run commands in the `inbm/node-agent` directory
 
-Changing the logging level:
-
+### Changing the logging level:
 - Run: `make logging LEVEL=DEBUG`
-- Valid values for LEVEL:
-  - DEBUG
-  - ERROR
-  - INFO
+- Valid values for `LEVEL`:
+  - `DEBUG`
+  - `ERROR`
+  - `INFO`
 
-Running the agent:
+### Run the agent:
+
 - Run: `make run`
 
-Testing the agent:
+### Test the agent:
+
 - Run: `make tests`
-
-## Install (via DEB)
-- Download the DEB file from the artifacts tab of a successful TeamCity build
-- For Ubuntu: `dpkg -i dist/node-agent-<latest>.deb`
-- Check node agent is running correctly: `journalctl -fu inbm-node`
-
-
-## Uninstall (via DEB)
-- For Ubuntu: `dpkg --purge inbm-node-agent`
-
-
-## Generate PyDoc for configuration agent
-NOTE: TeamCity will generate API documentation for each commit
-
-- To generate API documentation locally for Node Agent:
-  1. Run `cd doc`
-  2. Run `make doc-init`
-  3. Run `make html`
-  4. Open `html/toc.html` in browser of choice

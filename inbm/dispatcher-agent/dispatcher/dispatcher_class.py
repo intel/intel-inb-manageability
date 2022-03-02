@@ -2,7 +2,7 @@
     Central communication agent in the manageability framework responsible
     for issuing commands and signals to other tools/agents
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -814,9 +814,6 @@ class Dispatcher(WindowsService):
         try:
             logger.debug('Subscribing to: %s', STATE_CHANNEL)
             self._broker.mqtt_subscribe(STATE_CHANNEL, self._on_message)
-
-            logger.debug('Subscribing to: %s', CMD_CHANNEL)
-            self._broker.mqtt_subscribe(CMD_CHANNEL, self._on_message)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_DISPATCHER_UPDATE_CHANNEL)
             self._broker.mqtt_subscribe(

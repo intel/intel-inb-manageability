@@ -1,3 +1,6 @@
+# Copyright (C) 2017-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 .PHONY: tests # `make tests` doesn't run because of the tests directory
 AGENT=dispatcher
 LOGGING_INI=/etc/intel-manageability/public/$(AGENT)-agent/logging.ini

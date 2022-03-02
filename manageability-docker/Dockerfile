@@ -1,3 +1,6 @@
+# Copyright (C) 2021-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 FROM jrei/systemd-ubuntu:20.04
 WORKDIR /src/
 
@@ -13,17 +16,17 @@ RUN if [ ! -z "$NO_PROXY" ]; then echo "NO_PROXY=$NO_PROXY" >> /etc/environment;
 RUN if [ ! -z "$no_proxy" ]; then echo "no_proxy=$no_proxy" >> /etc/environment; fi
 
 # Install required packages
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto cryptsetup openssl dmidecode dbus vim net-tools rsyslog libffi-dev pciutils lxc-common dkms libglib2.0 libssl1.0 udev docker.io && \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto cryptsetup openssl dmidecode dbus vim net-tools rsyslog libffi-dev pciutils lxc-common dkms libglib2.0 libssl1.0 udev docker.io docker-compose && \
     apt-get clean && \ 
     rm -rf /var/lib/apt/lists/*
 
 # Install TC artifacts within the container
 COPY ./Intel-Manageability.preview.tar.gz /src/Intel-Manageability.preview.tar.gz
-
-RUN mkdir -p /etc/intel-manageability/public/
-RUN mkdir -p /etc/intel-manageability/secret/
 COPY ./adapter.cfg /src/adapter.cfg
-RUN touch /etc/intel-manageability/public/tpm_flag \
+
+RUN mkdir -p /etc/intel-manageability/public/ \
+&& mkdir -p /etc/intel-manageability/secret/ \
+&& touch /etc/intel-manageability/public/tpm_flag \
 && echo FALSE >> /etc/intel-manageability/public/tpm_flag \
 && tar -zxvf *.preview.tar.gz \
 && dpkg --force-all -i ./mqtt*.deb \
@@ -32,8 +35,8 @@ RUN touch /etc/intel-manageability/public/tpm_flag \
 && dpkg -i ./inbm-configuration*.deb \
 && dpkg -i ./inbm-cloudadapter*.deb \
 && dpkg -i ./inbm-telemetry*.deb \
-&& dpkg -i ./trtl*.deb
-RUN groupadd -f mqtt-broker \
+&& dpkg -i ./trtl*.deb \
+&& groupadd -f mqtt-broker \
 && groupadd -f dispatcher-agent \
 && groupadd -f telemetry-agent \
 && groupadd -f configuration-agent \
@@ -44,7 +47,8 @@ RUN groupadd -f mqtt-broker \
 && chmod g+rwx /var/persistent-log/mosquitto \
 && chmod -R g+rw /var/persistent-log/mosquitto  \
 && mkdir -p /var/cache/manageability/repository-tool/sota
-RUN systemctl enable mqtt inbm inbm-dispatcher inbm-diagnostic inbm-cloudadapter inbm-configuration inbm-telemetry
+RUN systemctl enable mqtt inbm inbm-dispatcher inbm-diagnostic inbm-cloudadapter inbm-configuration inbm-telemetry && \
+systemctl disable docker
 COPY ./cloud_source /src/cloud_source
 RUN sed -i '/^ExecStart=.*/a ExecStartPost=/src/cloud_source' /lib/systemd/system/mqtt.service
 RUN sed -i 's/^[ \t]*docker[ \t]*$//g' /etc/intel_manageability.conf

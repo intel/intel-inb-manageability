@@ -1,30 +1,71 @@
-# dispatcher-agent
+# Dispatcher Agent
 
+<details>
+<summary>Table of Contents</summary>
+
+- [Overview](#overview)
+- [Agent Communication](#agent-communication)
+    - [Publish Channels](#publish-channels)
+    - [Subscribe Channels](#subscribe-channels)
+- [MQTT Client Module](#mqtt-client-module)
+- [OTA/Config Manifest](#otaconfig-manifest)
+  - [AOTA](#aota)
+  - [SOTA](#sota)
+  - [FOTA](#fota)
+  - [POTA](#pota)
+  - [Configuration](#configuration)
+  - [Shutdown/Restart](#shutdownrestart)
+  - [Query](#query)
+- [Install from Source](#install-from-source)
+- [Usage](#usage)
+  - [Changing the logging level](#changing-the-logging-level)
+  - [Run the agent](#run-the-agent)
+  - [Test the agent](#test-the-agent)
+- [Debian package (DEB)](#debian-package-deb)
+</details>
+    
 ## Overview
 
-- IoT Manageability agent/Dispatcher which dispatches signals/commands to other tools/agents for performing OTA (over-the-air) updates
-- Talks to `diagnostic-agent` for pre/post install checks to confirm gateway/device health before performing OTA
+- The Intel Manageability agent which dispatches signals/commands to other tools/agents for performing OTA (over-the-air) and updates and configuration requests.
+- Talks to the `diagnostic-agent` for pre/post install checks to confirm gateway/device health before performing OTA.  
+  - Before install OTA check is done for all scenarios.  
+  - After install OTA check is done only for successful installations.
+- Relay requests to the `vision-agent` for HDDL related OTA, restart, and configuration requests.
 
 ## Agent Communication 
 
-- Uses MQTT for communication with other tools/agents
-- Currently, once Dispatcher is up and running, subscribes to the following topics:
- - `dispatcher/command` channel for any incoming commands (commands that Dispatcher supports is TBD)
- - `+/state` channel for knowing states of other agents (e.g. `running`, `dead` etc.)
- - `+/broadcast` channel for general message exchange with everyone who is subscribed to this channel
-- Publishes state to `dispatcher/state` when running/dead
+Uses MQTT for communication with other tools/agents
 
-- Talks to `diagnostic-agent` to confirm device health before and after OTA install
-- After install OTA check is done only for successful installations
-- Before install OTA check is done for all scenarios
+### Publish Channels
+The agent publishes to the following topics:
+  - Agent events: `manageability/event`
+  - Request response: `manageability/response`
+  - Perform pre and post diagnostic checks: `diagnostic/command/{command}`
+  - Dynamic telemetry updates: `telemetry/update`
+  - Pass on HDDL OTA requests to vision-agent: `ma/request/{command}`
+  - Pass on HDDL configuration requests to vision-agent: `ma/configuration/update/{command}`
+  - Informs diagnostic-agent remediation manager to remove a specific container: `remediation/container`
+  - Informs diagnostic-agent remediation manager to remove a specific image:`remediation/image`
+  - dispatcher-agent state: dispatcher/state` when dead/running
+
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+  - OTA requests from cloud or INBC: `manageability/request/+`
+  - Response from diagnostic check request: `diagnostic/response/{id}`
+  - Receive configuration changes: `configuration/update/dispatcher/+`
+  - Receive DBS configuration setting changes: `configuration/update/all/+`
+  - Receive SOTA configuration changes: `configuration/update/sota/+`
+  - HDDL requests from cloud: `ma/request/{command}`  command=install, provision, restart, query
+  - Agent states: `+/state`
  
-P.S: `+` is a wild-card indicating single level thus matching `dispatcher/state` or `<another-agent>/state`
+❗`+` is a wild-card indicating single level thus matching `dispatcher/state` or `<another-agent>/state`
+
 
 ## MQTT Client Module
 
 - Provides an abstraction to the Paho MQTT Client APIs
 - Any other microservice/agent can setup async broker communication through these. For example:
-- Refer PyDocs for more API details
 ```
 import mqttclient
 
@@ -40,117 +81,76 @@ client.publish('/topic', 'test')
 # Close connection
 client.stop()
 ```
-## OTA/CONFIG Manifest
+## OTA/Config Manifest
 
-- Dispatcher expects a `Manifest` which is XML containing metadata for the OTA install
-- The currently supported format is located at `packaging/config/ota_manifest_sample.xml`
+- Dispatcher expects a `Manifest`.  [Manifest parameters and examples](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Manifest%20Parameters.md)
+- The manifest schema with the current format: `inbm/dispatcher-agent/fpm-template/usr/share/manifest_schema.xsd`
 - The contents of this file (without the spaces, indent etc.) is sent through the `Trigger OTA` custom action
+- If a file needs to be pulled from a remote repository it checks whether the repository is a secured/trusted.  The secured repositories list is stored in the config file in configuration manager.  If the remote repository is not in the trusted list, the request will be rejected. 
 
-## Custom Actions/Commands registered with cloud Adapter HDC
+### AOTA
+- Performs and Application over the Air request using either Docker or Docker-Compose.   
 
-`HDC Adapter` can register commands with the HDC cloud. Currently registered commands:
-
-1. `Trigger OTA`
- - Parameter Name: `Manifest`
- - Parameter Value: Contents of `packaging/config/ota_manifest_sample.xml`
- - Please change the values of the file as per the deployment need
-
-P.S: Remove the spaces, indent, comments etc. while pasting into `Manifest` paramter. It should be a continuous string
-
-It is possible to trigger to two types of OTA's so far through this trigger or to trigger an update/fetch to config agent
-1. AOTA - Applicaiton Over the Air
-2. FOTA - Firmware Over the Air
-3. CONFIG FETCH/UPDATE
-
-###AOTA
-Is responsible for installing the update requested by sending the manifest down.
-- It does a source check. If we need to pull a file from a repository it checks whether the repository is a secured/trusted one or not.
-The secured repositories list is stored in the config file in configuration manager. The list is extracted from there when an update comes
-and the source is checked against that list. If it is present the update is triggered otherwise it is rejected.
-
-
+### SOTA
+- Performs System Over the Air Updates using Ubuntu Apt-get Update or Mender (Yocto systems)
 
 ### FOTA
-The Firmware update tool currently does the below:
- - Use DMI path to gather current firmware info on the gateway
- - Compares it to the firmware info pointed to the manifest file
- - Then if there is a good match, it downloads the file and places it in location pointed by <path> in manifest file
- - It reboots the gateway allowing the driver to kick in during boot for firmware installation
+Performs a Firmware update:
+ - Uses DMI path to gather current firmware info on the Edge device.
+ - Compares gather data with information provided in the manifest file.
+ - If the information matches, the update file will be downloaded from the remote repository pointed to in the <fetch> tag of the manifest.
+ - Following the update the device will reboot.
 
-### CONFIG FETCH/UPDATE
+### POTA
+Performs both a SOTA and FOTA update at the same time.
+
+### Configuration
 The configuration agent is responsible for changes to the configuration files and to inform other
 agents about changes
- - Dispatcher parses the manifest and calls set_element or get_element in configuration agent
+ - Dispatcher parses the manifest and calls set_element, get_element, append, or remove in configuration agent
  - Configuration agent sets or gets the value based on the functionality called
- - The returned value is displayed on HDC and dispatcher logs
+ - The returned value is displayed back to the cloud and dispatcher logs
 
+### Shutdown/Restart
+The shutdown or restart command can be sent using the manifest to trigger a system shutdown or reboot.
 
-### SHUTDOWN/RESTART COMMAND TRIGGER
-The shutdown or restart command can also be sent down using the manifest to trigger a system shutdown or reboot.
+### Query
+Query system information.
 
+## Install from Source
+❗ Use a Python version greater than 3.8 is installed
 
-If the anything goes wrong, the file is not downloaded from the repository. Currently the code only works for Apollo Lake capable CRB.
+1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
+2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
-## Install
-NOTE: Ensure any Python version greater than 3.8 is installed
+## Usage
 
-- Run `git clone https://gitlab.devtools.intel.com/OWR/IoTG/SMIE/Manageability/iotg-inb.git` into local directory
-- Run `cd dispatcher-agent`
-- Run `make init` to install necessary Python packages
+❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
+❗Some commands will require root privileges (sudo)  
+❗Run commands in the `inbm/dispatcher-agent` directory
 
-## Usage (via Source)
-
-NOTE:  
-Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
-Some commands will require root privileges (sudo).  
-Be sure to run the commands in the `dispatcher-agent` directory
-
-Changing the logging level:
-
+### Changing the logging level:
 - Run: `make logging LEVEL=DEBUG`
-- Valid values for LEVEL:
-  - DEBUG
-  - ERROR
-  - INFO
+- Valid values for `LEVEL`:
+  - `DEBUG`
+  - `ERROR`
+  - `INFO`
 
-Runnning the agent:
+### Run the agent:
 
-- For production, run: `make run`
-- For non-production, set GENERIC_LISTEN_PORT, e.g: `GENERIC_LISTEN_PORT=8888 make run`
+- Run: `make run`
 
-Testing the agent:
+### Test the agent:
 
 - Run: `make tests`
 
-## Install via DEB
+## Debian package (DEB)
 
-P.S: The below step assumes you already have `trtl` binary installed.
+### Install (For Ubuntu)
+After building the above package, if you only want to install the diagnostic-agent, you can do so by following these steps:
+- `cd dist/inbm`
+- Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
+- Install package: `dpkg -i disatpcher-agent<latest>.deb`
 
-- For Ubuntu, Debian, or Deby: `dpkg -i dist/inbm-dispatcher-agent-<latest>.deb`
-- Check Dispatcher is running correctly: `journalctl -fu dispatcher`
-- This starts Dispatcher by using the default HDC adapter
-
-## Remove `dispatcher-agent` (via DEB)
-- For Ubuntu, Debian, or Deby: `dpkg --purge inbm-dispatcher-agent`
-
-P.S: If user wants to run the Dispatcher service via Test Adapter:
- 1. Open `/lib/systemd/system/inbm-dispatcher.service`
- 2. Edit `ExecStart` to use `--adapter=test`
- 3. Add a new environment variable `Environment='GENERIC_LISTEN_PORT=8888` before `ExecStart`
- 4. Save and close
- 5. `systemctl daemon-reload`
- 6. `systemctl start inbm-dispatcher`
-
-## How to enable Runtime Configs for Containers
-1. Attach USB stick to gateway for testing purposes (can be any device)
-2. Change manifest - sample XML
-3. Pass the string and trigger update. Once it is successful you should be able to see the contents of usb listed in dispatcher logs.
-
-## Generate PyDoc API documentation for Dispatcher locally (for dev/testing puposes)
-NOTE: TeamCity will generate API documentation for each commit
-
-- To generate API documentation locally for Dispatcher Agent:
-  1. Run `cd doc`
-  2. Run `make doc-init`
-  3. Run `make html`
-  4. Open `html/toc.html` in browser of choice
+### Uninstall (For Ubuntu)
+- `dpkg --purge dispatcher-agent`

@@ -94,6 +94,7 @@ class ProvisionTarget:
             parsed = XmlHandler(xml=self._xml, is_file=False,
                                 schema_location=get_canonical_representation_of_path(self._schema_location))
             new_xml = parsed.remove_attribute("provisionNode/fetch")
+            new_xml = parsed.remove_attribute("provisionNode/hash_algorithm")
             new_xml = parsed.remove_attribute("provisionNode/signature")
             new_xml = parsed.remove_attribute("provisionNode/username")
             new_xml = parsed.remove_attribute("provisionNode/password")

@@ -1,90 +1,120 @@
-# configuration-agent
+# Configuration Agent
 
-IoT Configuration Agent
+<details>
+<summary>Table of Contents</summary>
 
-Agent which monitors and responds to key/value pair requests.
+- [Overview](#overview)
+- [Agent Communication](#agent-communication)
+    - [Publish Channels](#publish-channels)
+    - [Subscribe Channels](#subscribe-channels)
+  - [Request - Response communication](#request---response-communication)
+  - [Commands supported](#commands-supported)
+- [Install from Source](#install-from-source)
+- [Usage](#usage)
+  - [Changing the logging level](#changing-the-logging-level)
+  - [Run the agent](#run-the-agent)
+  - [Test the agent](#test-the-agent)
+- [Debian package (DEB)](#debian-package-deb)
+</details>
+  
+
+## Overview
+
+The Intel Manageability agent which monitors and responds to key/value pair requests.
 
 ## Agent Communication
 
 - Uses MQTT for communication with other tools/agents
-- Currently, once Configuration agent is up and running, subscribes to the following topics:
- - `configuration/command/#` channel for any incoming commands
- - `+/state` channel for knowing states of other agents (e.g. `running`, `dead` etc.)
- - `+/broadcast` channel for general message exchange with everyone who is subscribed to this channel
- - `configuration/update/*` channel for any updates made to values in the intel_manageability.conf file.
-    the * is replaced by the path of the value updated e.g. updated value = maxCacheSize in telemetry
-    on configuration/update/telemetry/maxCacheSize the updated value is published'
-- Publishes state to `configuration/state` when running/dead
 
-P.S: `+` is a wild-card indicating single level thus matching `configuration/state` or `<another-agent>/state`
+### Publish Channels
+The agent publishes to the following topics:
+  - configuration-agent state: `configuration/state` when dead/running
+  - updates made to configuration values in intel_manageability.conf file: `configuration/update/*`.  The * is replaced by the path of the value updated. e.g. updated value = maxCacheSize in telemetry on configuration/update/telemetry/mazCacheSize is published.
+  - JSON formatted response to configuration requests: `configuration/response`
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+  - Agent states: `+/state`
+  - Incoming commands: `configuration/command/+`
+
+❗`+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
 
 ## Request - Response communication
 
 - Agent incorporates req-resp style communication layer on top of MQTT
 - Agents/Tools can send commands to Configuration via `configuration/command/<command-name>` with payload:
-```
+```json
 {
-	'cmd': <command name>,
-	'id': <any ID>,
-	'path': <any path>
+    "cmd": "<command name>",
+    "id": "<any ID>",
+    "path": "<any path>"
 }
 ```
-- Configuration sends JSON responses on `configuration/response/<ID>`
-- Responses are of format: `{'message': <result of the request>}`
+- Configuration sends JSON responses on `configuration/response/<ID>`:
+```json
+{
+    "message": "<result of the request>"
+}
+```
 
-## Commands supported
+## Commands Supported
 
 - `get-element` - gets element from the given path.
 - `set-element` - sets element at the given path with the given value.
+- `append` - appends a new item to a list.  ex. TrustedRepository list
+- `remove` - removes an item from a list.
+- `load` - loads a new configuration file.
 
 Ex:
-- Another agent (ex. Diagnostic) can publish on `configuration/command/get-element` with payload `{'cmd': 'get-element', 'id': 12345, 'path': 'diagnostic/level'}`
-- Configuration receives it, processes and sends result as `{'rc':0, 'message': '1'}` on `configuration/response/12345`
+- Another agent (ex. Diagnostic) can publish on `configuration/command/get-element` with payload:
+```json
+{
+  "cmd": "get-element",
+  "id": "12345",
+  "path": "diagnostic/level"
+}
+```
+- Configuration receives it, processes and sends on `configuration/response/12345`:
+```json
+{
+  "rc": 0,
+  "message": "1"
+}
+```
 
-## Install
+## Install from Source
 NOTE: Ensure any Python version greater than 3.8 is installed
 
-- Run `git clone https://gitlab.devtools.intel.com/OWR/IoTG/SMIE/Manageability/iotg-inb.git` into local directory
-- Run `cd iotg-inb/configuration-agent`
-- Run `make init` to install necessary Python packages
+1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
+2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
-## Usage (via Source)
-NOTE:  
-Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
-Some commands will require root privileges (sudo).  
-Be sure to run the commands in the `configuration-agent` directory
+## Usage
 
-Changing the logging level:
+❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
+❗Some commands will require root privileges (sudo)  
+❗Run commands in the `inbm/configuration-agent` directory
+
+### Changing the logging level
 
 - Run: `make logging LEVEL=DEBUG`
-- Valid values for LEVEL:
-  - DEBUG
-  - ERROR
-  - INFO
+- Valid values for `LEVEL`:
+  - `DEBUG`
+  - `ERROR`
+  - `INFO`
 
-Runnning the agent:
-
+### Run the agent:
 - Run: `make run`
 
-Testing the agent:
-
+### Test the agent:
 - Run: `make tests`
 
-## Install (via DEB)
+## Debian package (DEB)
 
-- Download the DEB file from the artifacts tab of a successful TeamCity build
-- For Ubuntu: `dpkg -i dist/configuration-agent-<latest>.deb`
-- Check configuration agent is running correctly: `journalctl -fu configuration`
+### Install (For Ubuntu)
+After building the above package, if you only want to install the configuration-agent, you can do so by following these steps:
+- `cd dist/inbm`
+- Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
+- Install package: `dpkg -i configuration-agent<latest>.deb`
 
-## Uninstall (via DEB)
-
-- For Ubuntu: `dpkg --purge configuration-agent`
-
-## Generate PyDoc for configuration agent
-NOTE: TeamCity will generate API documentation for each commit
-
-- To generate API documentation locally for Configuration Agent:
-  1. Run `cd doc`
-  2. Run `make doc-init`
-  3. Run `make html`
-  4. Open `html/toc.html` in browser of choice
+### Uninstall (For Ubuntu)
+- `dpkg --purge configuration-agent`

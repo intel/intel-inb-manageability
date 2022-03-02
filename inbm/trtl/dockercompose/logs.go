@@ -1,14 +1,14 @@
 /*
-    Copyright (C) 2017-2021 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2022 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package dockercompose
 
 import (
 	"fmt"
-	"os"
 	"iotg-inb/trtl/util"
+	"os"
 )
 
 // Logs retrieves the log output from docker-compose
@@ -25,7 +25,7 @@ func Logs(cw util.ExecCommandWrapper, options string, instanceName string, targe
 	}
 
 	dir := dockerComposeDir + "/" + instanceName
-	cmdOut, err := cw.CombinedOutput(dockerComposeCmd, dir, args)
+	cmdOut, err := cw.CombinedOutput(dockerComposeCmd, dir, args, false)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%s", cmdOut)
 		fmt.Fprintf(os.Stderr, "Error logging container using docker-compose: %s", err)
