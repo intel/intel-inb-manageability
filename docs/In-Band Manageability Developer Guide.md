@@ -209,9 +209,6 @@ The Vision-agent resides on the Host side of a system utilizing Intel Vision car
 - Push configuration values to nodes via xlink
 - Publish Telemetry events and results received from Vision cards
 
-<details>
-<summary>Vision Agent Class Diagrams</summary>
-
 ##### Vision Agent Overall Class Diagram
 The Vision Agent uses the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as the overall design with the following Participants: 
 - Command = Command class
@@ -234,8 +231,6 @@ Abstract Factory design patterns.  The class diagram of how these classes intera
 
 <img src="media/In-Band Manageability Developer Guide/media/image16.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
     
-</details>
-
 #### ⚙️Node Agent
 The Node-agent resides on each of the individual Intel Vision cards.  It manages the communication of each vision card via Xlink.  It is responsible for the following:
 - Registering with the Vision-agent on startup with its hardware, firmware, operating system, and security information 
@@ -247,7 +242,7 @@ The Node-agent resides on each of the individual Intel Vision cards.  It manages
 - Relay Telemetry events and results to the Vision-agent via Xlink 
 
 The Node Agent communicates with the Vision Agent over PCIe using Xlink.  The Xlink code uses several classes and two Abstract Factory design patterns.  The class diagram of how these classes interact
-can be found in the [Appendix](#vision-agent-xlink-connectivity-class-diagram).
+can be found in the [Vision-agent Xlink Connectivity Class Diagram](#vision-agent-xlink-connectivity-class-diagram).
 
 ##### Node Agent Class Diagram
 The Vision Agent uses the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as the overall design with the following Participants: 
@@ -338,7 +333,7 @@ to accommodate this health check tag with a certain value by following these ste
 
 3. (b) Copy the conf file in step 1 to ```/etc/intel_manageability.conf``` and the
 *xsd_schema* file in step 2 to ```/usr/share/configuration-agent/iotg_inb_schema.xsd```.  Then run the agents via 
-source code using the steps in [Section 2.2](#run-agents-via-source-code).
+source code using these [steps](#run-agents-via-source-code).
 
 ## Security 
 Security is a key aspect for any software solution to consider,
@@ -536,9 +531,7 @@ endpoint as shown below.
 
 Prior to sending the manifest the user needs to make sure that the
 platform information is present within the
-```/etc/firmwarm_tool_info.conf``` file. Refer to [Section
-7](#ota-updates-via-manifest) on how to modify the file and extend the
-FOTA support to a new platform.
+```/etc/firmwarm_tool_info.conf``` file. Refer to [Extending FOTA Support](#extending-fota-support) on how to modify the file and extend FOTA support to a new platform.
 
 1.  The following information must match the data sent in the FOTA
     update command for In-Band Manageability Framework to initiate a
@@ -749,7 +742,7 @@ triggering query commands via manifest returns query results through dynamic tel
 AppArmor Permissions:
 ---------------------
 
-Make sure the tool or script path used in [Section 7.2](#aota-updates) has AppArmor permissions granted to execute 
+Make sure the tool or script path used in [FOTA Manifest Parameter Values](Manifest%20Parameters.md#FOTA) has AppArmor permissions granted to execute 
 the firmware update.  
 
 For example, the tool or script used to update an Intel NUC  is located at */usr/bin/UpdateBIOS.sh*. 

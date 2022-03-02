@@ -403,7 +403,6 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `<fetch></fetch>`                        | `<fetch>http://server name/AOTA/container.tar.gz<fetch>` |         R         | Trusted repo + name of package                                                      |
 | `<file></file>`                          | `<file>custom.yml</file>`                                |         O         | Name of custom YAML file to use with docker-compose                                 |
 | `<version></version>`                    | `<version>0.7.6</version>`                               |         O         | Update Package version.                                                             |
-| `<signature></signature`>                | `<signature>96e92d</signature>`                          |         O         | Signature of package–signed checksum of package.  Recommended for security purposes |
 | `<containerTag></containerTag>`          | `<containerTag>Modbusservice</containerTag>`             |         R         | Name of container image                                                             |
 | `<deviceReboot></deviceReboot>`          | `<deviceReboot>yes</deviceReboot>`                       |         O         | [yes or no] Used by application update.  If yes, reboot system after update.        |
 | `<username></username>`                  | `<username>user</username>`                              |         O         | Username credentials of the server where the package is hosted for downloads        |
@@ -718,16 +717,16 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 The query command can be used to gather information about the system and the Vision cards.
 
-| XML Tags                                 | Definition             | Required/Optional | Notes                  |
-|:-----------------------------------------|:-----------------------|:-----------------:|:-----------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` |                        |         R         |                        |
+| XML Tags                                 | Definition             | Required/Optional | Notes                         |
+|:-----------------------------------------|:-----------------------|:-----------------:|:------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` |                        |         R         |                               |
 | `<manifest>`                             | `<manifest>`           |         R         ||
-| `<type><type>`                           | `<type>cmd</type>`     |         R         | will always be 'cmd'   |
-| `<cmd></cmd>`                            | `<cmd>query</cmd>`     |         R         | will always be 'query' |
-| `<query>`                                | `<query>`              |         R         |                        |
-| `<option></option>`                      | `<option>all</option>` |         R         | [optional type]()      |
-| `</query>`                               | `</query>`             |         R         |                        |
-| `</manifest>`                            | `</manifest>`          |         R         |                        |
+| `<type><type>`                           | `<type>cmd</type>`     |         R         | will always be 'cmd'          |
+| `<cmd></cmd>`                            | `<cmd>query</cmd>`     |         R         | will always be 'query'        |
+| `<query>`                                | `<query>`              |         R         |                               |
+| `<option></option>`                      | `<option>all</option>` |         R         | [Available Options](Query.md) |
+| `</query>`                               | `</query>`             |         R         |                               |
+| `</manifest>`                            | `</manifest>`          |         R         |                               |
 
 
 #### Example of swbom query manifest examples

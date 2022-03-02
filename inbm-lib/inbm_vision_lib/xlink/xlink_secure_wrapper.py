@@ -1,7 +1,7 @@
 """
     Allows API of xlink driver C library to be called in Python.
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -356,6 +356,7 @@ class XlinkSecureWrapper(IXlinkWrapper):
         @param sw_device_id: sw_device_id to be checked
         @return: GUID of node, SVN of node
         """
+        logger.debug(f"get_guid: sw_device_id: {sw_device_id}")
         try:
             guid = create_string_buffer(MAXIMUM_GUID_BUFFER)
             guid_len = c_uint32(MINIMUM_GUID_LENGTH)
