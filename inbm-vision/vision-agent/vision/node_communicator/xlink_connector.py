@@ -401,7 +401,8 @@ class XlinkConnector(IXlinkChannelConnector):
         svn = "0"
         for xlink in self._xlink_list:
             if xlink.node_id == str(sw_device_id):
-                guid, svn = XlinkSecureWrapper.get_guid(sw_device_id)  # type: ignore
+                only_sw_id = str(sw_device_id).split("-")[1]
+                guid, svn = XlinkSecureWrapper.get_guid(int(only_sw_id))  # type: ignore
         return guid, svn
 
     def get_all_guid(self) -> List[Dict[str, bool]]:

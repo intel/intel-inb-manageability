@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Shell script that provisions Intel(R) In-Band Manageability Framework
-# Copyright 2021 Intel Corporation All Rights Reserved.
-# License: Intel, see licenses/LICENSE for more details.
+# Copyright (C) 2017-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
 
 # PROVISION_TPM could be set to auto, disable, or enable, or could be unset
 # auto: use TPM if detected.don't use TPM if not detected. do not prompt.
