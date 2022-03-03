@@ -33,6 +33,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
  - (508706) - Change dynamic telemetry tag from ContainersCpuPercentage to ContainerStats
 
+### Security
+- RTC 510268: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.6/1.17.6) had a number of CVEs associated with it. New runtime version is 1.17.7.
+
 ## 3.0.8 - 2022-01-24
 
 ### Fixed
