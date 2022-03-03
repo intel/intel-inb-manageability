@@ -1,0 +1,47 @@
+#include <tunables/global>
+
+profile docker-manageability-policy flags=(attach_disconnected,mediate_deleted) {
+
+  #include <abstractions/base>
+  #include <abstractions/dbus-strict>
+
+  #dbus (send) bus=system peer=(name=org.bluez, label=unconfined),
+  #dbus (send, receive) bus=system interface=org.freedesktop.login1.Manager peer=(label=unconfined),
+  #dbus (send, receive) bus=system peer=(name=org.freedesktop, label=unconfined),
+  dbus (send, receive, bind),
+
+
+  network,
+  capability,
+  file,
+  mount,
+  umount,
+
+  signal (send,receive) peer=docker-manageability-policy,
+
+  deny @{PROC}/* w,   # deny write for all files directly in /proc (not in a subdir)
+  # deny write to files not in /proc/<number>/** or /proc/sys/**
+  deny @{PROC}/{[^1-9],[^1-9][^0-9],[^1-9s][^0-9y][^0-9s],[^1-9][^0-9][^0-9][^0-9]*}/** w,
+  deny @{PROC}/sys/[^k]** w,  # deny /proc/sys except /proc/sys/k* (effectively /proc/sys/kernel)
+  deny @{PROC}/sys/kernel/{?,??,[^s][^h][^m]**} w,  # deny everything except shm* in /proc/sys/kernel/
+  deny @{PROC}/sysrq-trigger rwklx,
+  deny @{PROC}/kcore rwklx,
+  #deny /sys/[^f]*/** wklx,
+  deny /sys/f[^s]*/** wklx,
+  deny /sys/fs/[^c]*/** wklx,
+  deny /sys/fs/c[^g]*/** wklx,
+  deny /sys/fs/cg[^r]*/** wklx,
+  /sys/firmware/** rwkix,
+  /var/cache/apt/archives/* rw,
+  /usr/** rwix,
+  /boot/efi/** rwix,
+  /dev/** rwix,
+  /var/lib/docker/overlay2/** r,
+  deny /sys/kernel/security/** rwklx,
+  /sys/devices/** rwkix,
+
+
+  # suppress ptrace denials when using 'docker ps' or using 'ps' inside a container
+  ptrace (trace,read,tracedby,readby) peer=docker-manageability-policy,
+
+}

@@ -1,0 +1,46 @@
+version: "3.8"
+services:
+  inb:
+   container_name: inb
+   image: inb:TBH_MR2_RC01
+   ipc: host
+   network_mode: "host"
+   security_opt:
+     - seccomp:unconfined
+   build:
+     context: .
+     dockerfile: ./Dockerfile
+     args:
+       http_proxy: ${http_proxy:-}
+       https_proxy: ${https_proxy:-}
+       HTTP_PROXY: ${HTTP_PROXY:-}
+       HTTPS_PROXY: ${HTTPS_PROXY:-}
+       NO_PROXY: ${NO_PROXY:-}
+       no_proxy: ${no_proxy:-}
+   tmpfs:
+      - /run
+      - /run/lock
+   privileged: true
+   volumes:
+     - /sys/fs/cgroup:/sys/fs/cgroup:ro
+     - /var/run/docker.sock:/var/run/docker.sock:ro
+     - /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
+     - /lib/modules/`uname -r`:/lib/modules/`uname -r`
+     - /dev:/dev
+     - /var/tmp:/var/tmp
+     - /var/persistent-log/mosquitto
+     - /lib/firmware:/lib/firmware
+     - /lib/firmware/flashless_backup
+     - /usr/lib/libXLink.so:/usr/lib/libXLink.so
+     - /usr/lib/libSecureXLink.so:/usr/lib/libSecureXLink.so
+     - /usr/lib64/libgcrypt.so.11:/usr/lib/libgcrypt.so.11
+     - /usr/lib64/libSecureXLink_provision.so:/usr/lib64/libSecureXLink_provision.so
+     - /:/host
+     - /host/sys/fs/selinux
+     - /host/inb_driver
+     - /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool
+     - /opt/xlink_provision:/opt/xlink_provision
+     - /tmp:/tmp
+   devices:
+     - "/dev/xlnk:/dev/xlnk"
+   tty: true
