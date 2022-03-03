@@ -467,12 +467,10 @@ def load(args) -> str:
     @return: Generated xml manifest string
     """
 
-    if args.nohddl:
-        raise InbcException('Load command is only supported for HDDL.')
-
     arguments = {
         'target': args.target,
-        'targetType': args.targettype,
+        'targetType': None if args.nohddl else args.targettype,
+        'fetch': args.uri,
         'path': args.path,
         'nohddl': args.nohddl,
         'username': args.username,
@@ -489,13 +487,15 @@ def load(args) -> str:
                 '{1}' +
                 '<load>' +
                 '{2}' +
+                '{3}' +
                 '</load>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
         create_xml_tag(arguments, "targetType"),
         create_xml_tag(arguments, "target"),
-        create_xml_tag(arguments, "path")
+        create_xml_tag(arguments, "path"),
+        create_xml_tag(arguments, "fetch")
     )
     print("manifest {0}".format(manifest))
     return manifest
