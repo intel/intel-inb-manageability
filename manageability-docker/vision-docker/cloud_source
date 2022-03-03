@@ -1,0 +1,6 @@
+#!/bin/bash
+set -eo pipefail
+
+cp /src/adapter.cfg /etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg 
+
+
