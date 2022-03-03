@@ -242,34 +242,6 @@ class TestDataHandler(TestCase):
         self.assertEqual(hb_stop.call_count, 2)
         invoker_stop.assert_called_once()
 
-    @patch('shutil.move')
-    @patch('os.path.exists', return_value=True)
-    def test_move_file_success(self, os_path, move_file):
-        file_name = "mock_name"
-        file_path = "mock_path"
-        destination = "mock_location"
-        DataHandler.move_file(file_name, file_path, destination)
-        os_path.assert_called_once()
-        move_file.assert_called()
-
-    @patch('shutil.move')
-    @patch('os.path.exists', return_value=False)
-    def test_move_file_fail(self, os_path, move_file):
-        file_name = "mock_name"
-        file_path = "mock_path"
-        destination = "mock_location"
-        DataHandler.move_file(file_name, file_path, destination)
-        os_path.assert_called_once()
-        move_file.assert_not_called()
-
-    @patch('os.path.exists', return_value=True)
-    def test_move_file_throw_exception(self, os_path):
-        file_name = "mock_name"
-        file_path = "mock_path"
-        destination = "mock_location"
-        self.assertRaises(NodeException, DataHandler.move_file, file_name, file_path, destination)
-        os_path.assert_called_once()
-
     def test_validate_xlink_message_fail(self):
         self.assertRaises(NodeException,
                           self.data_handler._validate_xlink_message, "invalid manifest")

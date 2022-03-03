@@ -12,7 +12,7 @@ from typing import Optional, Any, Mapping
 
 from inbm_lib.detect_os import is_cent_os_and_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path
+from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
@@ -24,7 +24,7 @@ from dispatcher.packagemanager.package_manager import get
 
 from .checker import check_application_command_supported, check_url
 from .aota_command import AotaCommand
-from .constants import CENTOS_DRIVER_PATH, DOCKER, COMPOSE, APPLICATION, SupportedDriver
+from .constants import CENTOS_DRIVER_PATH, SupportedDriver
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 
@@ -133,7 +133,7 @@ class CentOsApplication(Application):
             driver_centos_path = os.path.join(CENTOS_DRIVER_PATH, driver_path.split('/')[-1])
             logger.debug(f"driver_centos_path = {driver_centos_path}")
             # Move driver to CentOS filesystem
-            shutil.move(driver_path, driver_centos_path)
+            move_file(driver_path, driver_centos_path)
 
             # Remove old driver
             old_driver_name = self.identify_package(driver_path.split('/')[-1])
@@ -157,7 +157,7 @@ class CentOsApplication(Application):
                 raise AotaError(err)
             self._reboot(DOCKER_CHROOT_PREFIX + '/sbin/shutdown -r 0')
 
-        except (AotaError, FileNotFoundError, OSError) as error:
+        except (AotaError, FileNotFoundError, OSError, IOError) as error:
             # Remove temp files if the error happened.
             self.cleanup()
             raise AotaError(f'AOTA Command Failed: {error}')

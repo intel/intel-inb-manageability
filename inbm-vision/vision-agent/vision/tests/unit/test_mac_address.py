@@ -1,7 +1,7 @@
 from unittest import TestCase
 from vision.mac_address import get_mac_address, _choose_best_mac_address
 from mock import patch
-import psutil
+
 from psutil._common import snicaddr
 from socket import AddressFamily
 

@@ -9,10 +9,9 @@ import os
 import logging
 import tarfile
 import glob
-import shutil
 
 from datetime import datetime
-from typing import Dict, List, Optional
+from typing import Dict, List
 from pathlib import Path
 from .constants import FIP_FILE, OS_IMAGE, ROOTFS
 
@@ -104,17 +103,3 @@ def create_date(date_info: datetime) -> str:
     @return: Custom date format
     """
     return date_info.strftime("%m-%d-%Y %H:%M:%S") if date_info else "No date provided"
-
-
-def move_file(source_file_path: str, destination_path: str) -> None:
-    """ Move a file from one location to another.
-
-    @param source_file_path: path of source file
-    @param destination_path: path to destination location
-    """
-    source_path = get_canonical_representation_of_path(source_file_path)
-    if not os.path.isfile(source_path):
-        logger.debug(f"Unable to move file {source_file_path} to {destination_path}")
-        raise FileNotFoundError("Unable to move file, file path is not to a file.")
-    file_name = source_path.split('/')[-1]
-    shutil.move(source_path, os.path.join(destination_path, file_name))

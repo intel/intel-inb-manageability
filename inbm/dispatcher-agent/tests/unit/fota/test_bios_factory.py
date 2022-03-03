@@ -102,7 +102,7 @@ class TestBiosFactory(TestCase):
         mock_delete_pkg.assert_has_calls([mock.call(self._uri)])
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    @patch('shutil.move', return_value=True)
+    @patch('dispatcher.fota.bios_factory.move_file')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack', return_value=("fw_file", "cert_file"))
     def test_linux_bios_apollo_lake_install_success(self, mock_unpack, mock_delete_pkg, mock_shutil, mock_runner):

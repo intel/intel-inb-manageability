@@ -31,9 +31,9 @@ class CannotFindFileTypeException(Exception):
 def get_file_type(path: str) -> str:
     """Get string corresponding to file type
 
-    @param path: string representing the location of the file
-    @return file type as a string (as the 'file' utility might return)"""
-
+    @param path: location of the file
+    @return file type (as the 'file' utility might return)
+    """
     try:
         canonical_path = get_canonical_representation_of_path(path)
         (out, err, code) = PseudoShellRunner.run("file -b " + canonical_path)
@@ -45,6 +45,67 @@ def get_file_type(path: str) -> str:
         else:
             raise CannotFindFileTypeException(err)
     return out
+
+
+def move_file(source_file_path: str, destination_path: str) -> None:
+    """ Move a file from one location to another using the same name.  This does not allow symlinks for
+    either src or destination for security reasons.
+
+    @param source_file_path: path of source file
+    @param destination_path: path to destination location
+    @raises: Symlink for src or destination.  Any errors during move.
+    """
+    canonical_src_path = get_canonical_representation_of_path(source_file_path)
+    canonical_target_path = get_canonical_representation_of_path(destination_path)
+
+    try:
+        _check_paths(canonical_src_path, canonical_target_path)
+    except IOError as e:
+        raise IOError(f"Error while moving file: {str(e)}")
+
+    if not os.path.isfile(canonical_target_path):
+        file_name = canonical_src_path.split('/')[-1]
+        destination_file_path = os.path.join(canonical_target_path, file_name)
+    else:
+        destination_file_path = canonical_target_path
+
+    try:
+        shutil.move(canonical_src_path, destination_file_path)
+    except (shutil.SameFileError, PermissionError, IsADirectoryError, FileNotFoundError, OSError) as e:
+        raise IOError(f"Error while moving file: {str(e)}")
+
+
+def copy_file(src: str, destination: str) -> None:
+    """Copies file from source to destination.  This does not allow symlinks for
+    either src or destination for security reasons.
+
+    @param src: path to source file
+    @param destination: path to destination
+    @raises: Symlink for src or destination.  Any errors during copyfile.
+    """
+    canonical_src_path = get_canonical_representation_of_path(str(src))
+    canonical_target_path = get_canonical_representation_of_path(str(destination))
+    try:
+        _check_paths(canonical_src_path, canonical_target_path)
+    except IOError as e:
+        raise IOError(f"Error while copying file: {str(e)}")
+
+    try:
+        logger.debug(f"copyfile: src={canonical_src_path}, destination={canonical_target_path}")
+        shutil.copyfile(canonical_src_path, canonical_target_path)
+    except (shutil.SameFileError, PermissionError, IsADirectoryError, FileNotFoundError, OSError) as e:
+        raise IOError(f"Error while copying file: {str(e)}")
+
+
+def _check_paths(src: str, destination: str) -> None:
+    if not os.path.isfile(src):
+        raise IOError("File does not exist or file path is not to a file.")
+
+    if os.path.islink(src):
+        raise IOError("Security error: Source file is a symlink.")
+
+    if os.path.islink(destination):
+        raise IOError("Security error: Destination  is a symlink")
 
 
 def remove_file(path: Union[str, Path]) -> None:
@@ -60,7 +121,7 @@ def remove_file(path: Union[str, Path]) -> None:
         logger.debug(f"Removing file at {canonical_path}.")
         os.remove(canonical_path)
     else:
-        logger.warn("Failed to remove file. Path is a directory.")
+        logger.warning("Failed to remove file. Path is a directory.")
 
 
 def remove_file_list(path: List[str]) -> None:

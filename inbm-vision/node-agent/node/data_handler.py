@@ -9,11 +9,11 @@
 
 import logging
 import os.path
-import shutil
 from typing import Optional, Any
 from pathlib import Path
 
 from inbm_common_lib.validater import configuration_bounds_check
+from inbm_common_lib.utility import move_file
 from inbm_vision_lib.invoker import Invoker
 from inbm_vision_lib import checksum_validator
 from inbm_vision_lib.configuration_manager import ConfigurationManager
@@ -158,7 +158,10 @@ class DataHandler(idata_handler.IDataHandler):
                     self._nid, self.node_callback.get_xlink(), self._config, dictionary, target_type)
             elif target_type == NODE_CLIENT:
                 if self.file_name:
-                    DataHandler.move_file(node_conf_path.name, CACHE, CACHE_MANAGEABILITY)
+                    src_file_path = os.path.join(CACHE, node_conf_path.name)
+                    new_dir = os.path.join(CACHE_MANAGEABILITY, node_conf_path.name)
+
+                    move_file(src_file_path, new_dir)
                     return SendOtaClientConfigurationCommand(
                         self.node_callback.get_broker(), os.path.join(CACHE_MANAGEABILITY,
                                                                       node_conf_path.name), LOAD)
@@ -230,24 +233,6 @@ class DataHandler(idata_handler.IDataHandler):
         # NODE_CLIENT
         return SendOtaClientConfigurationCommand(
             self.node_callback.get_broker(), dictionary, cmd_type)
-
-    @staticmethod
-    def move_file(file_name: str, file_path: str, destination: str) -> None:
-        """Move the file to new location.
-
-           @param file_name : name of file
-           @param file_path : original file location
-           @param destination : the new location
-        """
-        old_dir = os.path.join(file_path, file_name)
-        new_dir = os.path.join(destination, file_name)
-        try:
-            if os.path.exists(old_dir):
-                shutil.move(old_dir, new_dir)
-            else:
-                logger.error("Directory '{0}' does not exist.".format(old_dir))
-        except OSError as err:
-            raise NodeException("Unable to load new configuration file: {}".format(err))
 
     def register(self) -> None:
         """Add Register_command to invoker when node is being initialized.  In the event that a response is not received
