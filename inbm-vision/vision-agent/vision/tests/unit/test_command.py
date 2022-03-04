@@ -18,26 +18,6 @@ class TestSendXlinkMessageCommand(TestCase):
         self.mock_node_connector.send.assert_called_once()
 
 
-class TestBootDeviceCommand(TestCase):
-    def setUp(self):
-        self.mock_node_connector = Mock()
-        self.mock_node_connector.send
-        self.mock_node_connector.check_platform_type.return_value = TBH
-        self.command = BootDeviceCommand('123ABC', self.mock_node_connector, Mock(), Mock())
-
-    @patch('vision.command.command.create_success_message')
-    @patch("inbm_vision_lib.shell_runner.PseudoShellRunner.run", return_value=('', '', 0))
-    def test_execute_success(self, mock_run, mock_success):
-        self.command.execute()
-        mock_success.assert_called_once()
-
-    @patch('vision.command.command.create_error_message')
-    @patch("inbm_vision_lib.shell_runner.PseudoShellRunner.run", return_value=('reboot failed', '', 1))
-    def test_raise_failed_run(self, mock_run, mock_error):
-        self.command.execute()
-        mock_error.assert_called_once()
-
-
 class TestUpdateNodeHeartbeatCommand(TestCase):
 
     def setUp(self):

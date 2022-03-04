@@ -21,16 +21,22 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 509493 - [BUG] docker service is running unnecessarily in container, in container mod
  - RTC 509440 - Remove testing entries from intel_manageability.conf in release builds
  - RTC 509438 - [BUG] When installing .deb file (driver update) in container, .deb should be installed in host
+ - RTC 495463 - Fix existing driver get uninstalled if AOTA update failed using .deb file package
  - RTC 509509 - Fixes a bug on develop branch that prevents reboot.
  - RTC 508711 - [BUG] Fix Thingsboard Docker Stats widget to display data
+ - RTC 509640 - [BUG] INBC Query(swbom) to exit successfully 
 
 ### Added
  - (507873) Added support for Ubuntu 21.10
  - (507914) Add script to deploy .debs to a PPA hosted on Artifactory
  - (508492, 508493) [INBM] Support INBC Config commands(Get,Set)
-
+ - (508494) [INBM] Support INBC Config Load command
+ 
 ### Changed
  - (508706) - Change dynamic telemetry tag from ContainersCpuPercentage to ContainerStats
+
+### Security
+- RTC 510268: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.6/1.17.6) had a number of CVEs associated with it. New runtime version is 1.17.7.
 
 ## 3.0.8 - 2022-01-24
 

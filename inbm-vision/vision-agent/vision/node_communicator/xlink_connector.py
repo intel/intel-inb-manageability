@@ -386,9 +386,6 @@ class XlinkConnector(IXlinkChannelConnector):
         """
         logger.debug('SW Device ID = {0}, type={1}'.format(sw_device_id, type(sw_device_id)))
         logger.debug('Event type = {0}, type={1}'.format(event_type, type(event_type)))
-        # Currently we just reconnect xlink device when the event happened.
-        if str(event_type) == DEVICE_DOWN:
-            self._data_handler.boot_device(str(sw_device_id))
 
         self._reconnect_public(None, str(sw_device_id))
         return X_LINK_SUCCESS

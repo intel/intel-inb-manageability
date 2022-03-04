@@ -72,7 +72,6 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         self._flashless_rollback: Optional[RollbackManager] = None
         self.load_config_file(True)
         self._running = True
-        self.boot_device_lock = Lock()
 
     def load_config_file(self, is_startup: bool = False) -> None:
         """Load the config value from config file.
@@ -225,22 +224,6 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         cmd = command.SendXlinkMessageCommand(
             node_id, self._vision_callback.get_node_connector(), message)
         self._invoker.add(cmd)
-
-    def boot_device(self, sw_device_id: str) -> None:
-        """Create send download request command with file size to be sent to node
-
-        @param sw_device_id: sw device id of targeted node agent
-        """
-        if self._config.get_element([vision.configuration_constant.BOOT_FLASHLESS_DEV], AGENT)[0] == "true":
-            while self._running and self.boot_device_lock.acquire():
-                # The lock will be released once the BootDeviceCommand complete.
-                cmd = command.BootDeviceCommand(
-                    sw_device_id, self._vision_callback.get_node_connector(), self._vision_callback.get_broker(),
-                    self.boot_device_lock)
-                self._invoker.add(cmd)
-                break
-        else:
-            logger.debug("Flashless boot device disabled. Vision Agent won't boot the device.")
 
     def _check_if_request_allowed(self) -> None:
         if self._updater:

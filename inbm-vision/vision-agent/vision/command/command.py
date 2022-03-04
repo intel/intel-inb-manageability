@@ -253,38 +253,3 @@ class ResetDeviceCommand(Command):
                 else:
                     logger.debug("Unbind ep failed.")
             self.node_connector.reset_device(self._nid)
-
-
-class BootDeviceCommand(Command):
-    """BootDeviceCommand Concrete class
-
-    @param sw_device_id: software device id of the node
-    @param node_connector: instance of NodeConnector
-    @param broker: instance of Broker
-    @param boot_device_lock: mutex lock to prevent race condition in bind and unbind command
-    """
-
-    def __init__(self, sw_device_id: str, node_connector: Optional[NodeConnector], broker: Optional[Broker],
-                 boot_device_lock: Lock) -> None:
-        super().__init__(sw_device_id)
-        self.node_connector = node_connector
-        self.broker = broker
-        self.boot_device_lock = boot_device_lock
-
-    def execute(self) -> None:
-        """Call node connector API to reboot the device"""
-        logger.debug(f'Execute BootDeviceCommand on {self._nid}')
-        try:
-            if self.node_connector:
-                if self.node_connector.check_platform_type(node_id=None, sw_device_id=self._nid) == TBH:
-                    # For hard reset, some delays are required for gpio bringing back TBH
-                    # wait 20 seconds before proceeding to next boot device.
-                    sleep(20)
-                    (output, err, code) = PseudoShellRunner.run(FLASHLESS_TOOL_PATH)
-                    logger.debug(f'code={code}')
-                    resp_msg = create_success_message("Reboot flashless device complete.") \
-                        if code == 0 else create_error_message(f"Reboot flashless device failed with error {output}")
-                    if self.broker:
-                        self.broker.publish_telemetry_response(self._nid, resp_msg)
-        finally:
-            self.boot_device_lock.release()

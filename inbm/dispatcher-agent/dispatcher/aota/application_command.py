@@ -13,7 +13,7 @@ from typing import Optional, Any, Mapping
 from inbm_lib.detect_os import is_cent_os_and_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
-from inbm_lib.constants import DOCKER_CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
@@ -135,27 +135,15 @@ class CentOsApplication(Application):
             # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
 
-            # Remove old driver
-            old_driver_name = self.identify_package(driver_path.split('/')[-1])
-            if not old_driver_name:
-                raise AotaError(
-                    f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
-            uninstall_driver_cmd = DOCKER_CHROOT_PREFIX + \
-                f'/usr/bin/rpm -e --nodeps {old_driver_name}'
-            out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
-            logger.debug(out)
-            # If old packages wasn't install on system, it will return error too.
-            if code != 0 and "is not installed" not in str(err):
-                raise AotaError(err)
-
             chroot_driver_path = driver_centos_path.replace("/host", "")
-            install_driver_cmd = DOCKER_CHROOT_PREFIX + f'/usr/bin/rpm -ivh {chroot_driver_path}'
+            install_driver_cmd = CHROOT_PREFIX + \
+                f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
             out, err, code = PseudoShellRunner().run(install_driver_cmd)
             logger.debug(out)
             if code != 0:
                 raise AotaError(err)
-            self._reboot(DOCKER_CHROOT_PREFIX + '/sbin/shutdown -r 0')
+            self._reboot(CHROOT_PREFIX + '/usr/sbin/shutdown -r 0')
 
         except (AotaError, FileNotFoundError, OSError, IOError) as error:
             # Remove temp files if the error happened.

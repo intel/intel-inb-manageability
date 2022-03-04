@@ -16,7 +16,7 @@ from pathlib import Path
 
 from defusedxml import DefusedXmlException, DTDForbidden, EntitiesForbidden, ExternalReferenceForbidden, \
     NotSupportedError
-from inbm_vision_lib.constants import FLASHLESS_FILE_PATH, BOOT_FLASHLESS_DEV
+from inbm_vision_lib.constants import FLASHLESS_FILE_PATH
 from threading import Lock
 from inbm_common_lib.utility import remove_file, copy_file
 import defusedxml.ElementTree as element_tree
@@ -167,7 +167,7 @@ class ConfigurationManager:
         @return result : status SUCCESS or FAILED
         """
         def _check_value(e: str, v: str) -> Tuple[bool, str]:
-            if e == FLASHLESS_FILE_PATH or e == BOOT_FLASHLESS_DEV:
+            if e == FLASHLESS_FILE_PATH:
                 return True, v
             elif v.isdigit():
                 return True, v
