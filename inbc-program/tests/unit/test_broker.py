@@ -301,6 +301,17 @@ class TestINBC(TestCase):
     def test_on_status(self, mock_agent, mock_trigger, mock_sub, mock_pub, mock_con, mock_search):
         b = Broker('fota', self._fota_args, Mock(), False)
         b._on_status('manageability/response', 'check', 1)
-                
-                
-                
+
+    @patch('inbc.command.command.Command.stop_timer')
+    @patch('inbc.xlink_checker.XlinkChecker')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
+    def test_on_stop_broker(self, mock_agent, mock_trigger, mock_sub, mock_pub, mock_con, mock_mqtt, mock_xlink, mock_timer):
+        b = Broker('fota', self._fota_args, Mock(), False)
+        b.stop_broker()
+        mock_timer.assert_called_once()
+

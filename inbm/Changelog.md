@@ -28,9 +28,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (507873) Added support for Ubuntu 21.10
  - (507914) Add script to deploy .debs to a PPA hosted on Artifactory
  - (508492, 508493) [INBM] Support INBC Config commands(Get,Set)
-
+ - (508494) [INBM] Support INBC Config Load command
+ 
 ### Changed
  - (508706) - Change dynamic telemetry tag from ContainersCpuPercentage to ContainerStats
+
+### Security
+- RTC 510268: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.6/1.17.6) had a number of CVEs associated with it. New runtime version is 1.17.7.
 
 ## 3.0.8 - 2022-01-24
 

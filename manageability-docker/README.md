@@ -14,11 +14,31 @@ PLEASE NOTE: You must have 'btrfs-progs' and 'snapper' installed on the host mac
 ## HOW TO BUILD INB IMAGE AND START THE CONTAINER
 
 * Unzip the package(inb_azure_container.zip/inb_tb_container.zip).
-* If planning to use the sample_customer_mqtt_client provided, open the cloud_source file and uncomment the lines specified in the file.
-* If using Thingsboard, edit the tb_conf_file and fill in the respective Thingsboard server details and device tokens along with tls certificate of thingsboard server if TLS is enabled on the Thingsboard server. If not using TLS for Thingsboard, remove the line 'RUN cp ./thingsboard.pub.pem /src/thingsboard.pub.pem' in the Dockerfile
+* If using the provided `sample_customer_mqtt_client` please refer [HOW TO USE THE SAMPLE CUSTOMER MQTT CLIENT](#how-to-use-the-sample-customer-mqtt-client). 
+* If using Thingsboard, edit the tb_conf_file and fill in the respective Thingsboard server details and device tokens along with tls certificate of thingsboard server if TLS is enabled on the Thingsboard server. If using TLS for Thingsboard uncomment the line 'cp /src/thingsboard.pub.pem /etc/intel-manageability/secret/cloudadapter-agent/thingsboard.pub.pem' in the cloud_source file.
 * If using Azure, edit the azure_conf_file and fill in the Primary SAS Key, device name, scope id.
 * Now run ./run.sh which builds the docker image and starts the container.
 
 
 If an error such as 'unable to resolve' or a DNS error or 'unable to look up' is seen near the start of the build, follow the instructions under https://docs.docker.com/install/linux/linux-postinstall/ --> "DISABLE DNSMASQ".  This can occur in some Linux distributions that put 127.0.0.1 in /etc/resolv.conf.
 
+
+## HOW TO USE THE SAMPLE CUSTOMER MQTT CLIENT
+* Unzip the package built (inb_azure_container.zip/inb_tb_container.zip)
+* Open the cloud_source file and uncomment the lines specified in the file. 
+* Create a directory for storing certs on host device and edit the mqtt_client.py file variables DEFAULT_MQTT_CERTS, CLIENT_CERTS, CLIENT_KEYS to point to your local directory with the same cert,key names as seen in the file Ex: /home/harsha/certs/cmd-program.crt to be modified to <your_directory>/cmd-program.crt.
+* Edit the run.sh file’s docker run command by adding the additional mount point
+```
+-v <your_directory>:/var/certs
+```
+* Edit the tb_conf_file file with your configuration
+* Run the following command
+```shell
+ sudo ./run.sh
+```
+* Wait until all the services are up and running on the INBM container.
+* Run the mqtt_client.py 
+```shell
+sudo python3 mqtt_client.py
+```
+* Trigger the manifest(refer email below) from the TB server and you should be able to see the move command received on the console that is running the mqtt_client.py.

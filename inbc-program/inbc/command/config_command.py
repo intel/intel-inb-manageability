@@ -146,9 +146,14 @@ class LoadConfigCommand(ConfigCommand):
         @param args: arguments from user
         @param topic: MQTT topic
         """
-        canonical_path = get_canonical_representation_of_path(args.path)
-        args.path = copy_file_to_target_location(Path(canonical_path), CACHE_MANAGEABILITY)
-        super().trigger_manifest(args, CONFIG_CHANNEL + CONFIG_LOAD)
+        if args.nohddl:
+            channel = INBM_INSTALL_CHANNEL
+        else:
+            channel = CONFIG_CHANNEL + CONFIG_LOAD
+            canonical_path = get_canonical_representation_of_path(args.path)
+            args.path = copy_file_to_target_location(Path(canonical_path), CACHE_MANAGEABILITY)
+
+        super().trigger_manifest(args, channel)
 
     def search_response(self, payload: str) -> None:
         """Search for keywords in response message
