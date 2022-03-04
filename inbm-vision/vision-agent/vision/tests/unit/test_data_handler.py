@@ -594,11 +594,3 @@ class TestDataHandler(TestCase):
         self.data_handler._config = mock_config_mgr
         self.data_handler.reset_device("123ABC")
         assert add_cmd.call_count == 2
-
-    @patch('inbm_vision_lib.invoker.Invoker.add')
-    def test_boot_device(self, add_cmd):
-        mock_config_mgr = Mock()
-        mock_config_mgr.get_element = MagicMock(return_value=["true"])
-        self.data_handler._config = mock_config_mgr
-        self.data_handler.boot_device("123ABC")
-        add_cmd.assert_called_once()

@@ -203,11 +203,3 @@ class IDataHandler(ABC):
         @param node_id: node to be reset
         """
         pass
-
-    @abstractmethod
-    def boot_device(self, sw_deivce_id: str) -> None:
-        """Create send download request command with file size to be sent to node
-
-        @param sw_deivce_id: a string contains sw device id of targeted node agent
-        """
-        pass
