@@ -11,12 +11,11 @@ from typing import List, Optional
 import vision.flashless_utility
 from inbm_vision_lib.configuration_manager import ConfigurationManager, ConfigurationException
 from inbm_vision_lib.constants import create_error_message, create_success_message
-from .configuration_constant import ROLLBACK_WAIT_TIME, DEFAULT_ROLLBACK_WAIT_TIME, BOOT_FLASHLESS_DEV
+from .configuration_constant import ROLLBACK_WAIT_TIME, DEFAULT_ROLLBACK_WAIT_TIME
 from .node_communicator.node_connector import NodeConnector
 from .broker import Broker
-from .constant import AGENT, FLASHLESS_TOOL_PATH, FLASHLESS_BOOT_TIME_SECS, VISION_ID
+from .constant import AGENT, VISION_ID
 from inbm_vision_lib.timer import Timer
-from inbm_vision_lib.shell_runner import PseudoShellRunner
 
 logger = logging.getLogger(__name__)
 
@@ -60,16 +59,6 @@ class RollbackManager(object):
             reset_thread = threading.Thread(target=self._reboot_device, args=(node,))
             reset_thread.daemon = True
             reset_thread.start()
-
-        if self._config.get_element([BOOT_FLASHLESS_DEV], AGENT)[0] == "true":
-            sleep(FLASHLESS_BOOT_TIME_SECS)
-            (output, err, code) = PseudoShellRunner.run(FLASHLESS_TOOL_PATH)
-            resp_msg = create_success_message("Flashless rollback command complete") \
-                if code == 0 else create_error_message("Flashless rollback command failed: {0}".format(err))
-            if self._broker:
-                self._broker.publish_telemetry_response(VISION_ID, resp_msg)
-        else:
-            logger.debug("Flashless boot device disabled. Vision Agent won't boot the device.")
 
     def _reboot_device(self, nid: str) -> None:
         """Starts the agent and listens for incoming commands on the command channel

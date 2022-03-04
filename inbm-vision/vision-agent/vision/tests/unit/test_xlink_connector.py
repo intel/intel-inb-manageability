@@ -131,31 +131,6 @@ class TestXlinkConnector(TestCase):
         get_status.assert_called_once()
         t_start.assert_called_once()
 
-    def test_boot_device_pass(self):
-        mock_xlink_wrapper = Mock()
-        mock_xlink_wrapper.boot_device
-        mock_xlink = Xlink(mock_xlink_wrapper, 0x501, "123ABC")
-        self.xlink_connector._xlink_list.append(mock_xlink)
-        self.xlink_connector.boot_device("123ABC")
-        mock_xlink_wrapper.boot_device.assert_called_once()
-
-    @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.boot_device')
-    def test_boot_device_fail(self, boot_device):
-        mock_xlink = Xlink(Mock(), 0x501, "123ABC")
-        self.xlink_connector._xlink_list.append(mock_xlink)
-        self.xlink_connector.boot_device("456DEF")
-        boot_device.assert_not_called()
-
-    def test_raise_exception_when_boot_device_fails(self):
-        mock_xlink_wrapper = Mock()
-        mock_xlink_wrapper.boot_device = MagicMock(
-            side_effect=XlinkWrapperException("Failed to boot device"))
-        mock_xlink = Xlink(mock_xlink_wrapper, 0x501, "456DEF")
-        self.xlink_connector._xlink_list.append(mock_xlink)
-        with self.assertRaises(XlinkWrapperException):
-            self.xlink_connector.boot_device("456DEF")
-        mock_xlink_wrapper.boot_device.assert_called_once()
-
     def test_reset_device_pass(self):
         mock_xlink_wrapper_pub = Mock()
         mock_xlink_wrapper_pub.get_platform_type = MagicMock(return_value=KMB)
@@ -287,15 +262,13 @@ class TestXlinkConnector(TestCase):
         self.xlink_connector._xlink_list.append(mock_xlink)
         self.assertEqual(self.xlink_connector.get_platform_type("456DEF"), None)
 
-    @patch('vision.data_handler.data_handler.DataHandler.boot_device')
     @patch('vision.node_communicator.xlink_connector.XlinkConnector._reconnect_public')
-    def test_xlink_async_callback(self, reconnect_pub, boot_dev):
+    def test_xlink_async_callback(self, reconnect_pub):
         sw_dev_id = 17036856
         event_id = 0
         self.assertEqual(self.xlink_connector._xlink_async_callback(
             sw_dev_id, event_id), X_LINK_SUCCESS)
         reconnect_pub.assert_called_once()
-        boot_dev.assert_called_once()
 
     def test_get_guid_when_no_node(self):
         self.assertEqual(self.xlink_connector.get_guid(17036856), ("0", "0"))

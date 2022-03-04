@@ -41,7 +41,6 @@ XLINK_LAST_CHANNEL_ID = 'xlinkLastChannel'
 XLINK_BOOT_DEV = 'xlinkBootDevice'
 FLASHLESS_OTA_BOOT_TIME = 'flashlessOTABootTimeSecs'
 ROLLBACK_WAIT_TIME = 'flashlessRollbackWaitTimeSecs'
-BOOT_FLASHLESS_DEV = 'bootFlashlessDevice'
 
 # Vision-agent Key constants
 KEY_MANIFEST = [FLASHLESS_FILE_PATH,
@@ -49,7 +48,6 @@ KEY_MANIFEST = [FLASHLESS_FILE_PATH,
                 XLINK_FIRST_CHANNEL_ID,
                 XLINK_LAST_CHANNEL_ID,
                 XLINK_BOOT_DEV,
-                BOOT_FLASHLESS_DEV,
                 ]
 # Included separately to ensure values are integers.
 INT_CONFIG_VALUES = [VISION_HB_CHECK_INTERVAL_SECS,
