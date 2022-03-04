@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 509493 - [BUG] docker service is running unnecessarily in container, in container mod
  - RTC 509440 - Remove testing entries from intel_manageability.conf in release builds
  - RTC 509438 - [BUG] When installing .deb file (driver update) in container, .deb should be installed in host
+ - RTC 495463 - Fix existing driver get uninstalled if AOTA update failed using .deb file package
  - RTC 509509 - Fixes a bug on develop branch that prevents reboot.
  - RTC 508711 - [BUG] Fix Thingsboard Docker Stats widget to display data
 
