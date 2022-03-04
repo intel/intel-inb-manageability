@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 509438 - [BUG] When installing .deb file (driver update) in container, .deb should be installed in host
  - RTC 509509 - Fixes a bug on develop branch that prevents reboot.
  - RTC 508711 - [BUG] Fix Thingsboard Docker Stats widget to display data
+ - RTC 509640 - [BUG] INBC Query(swbom) to exit successfully 
 
 ### Added
  - (507873) Added support for Ubuntu 21.10
