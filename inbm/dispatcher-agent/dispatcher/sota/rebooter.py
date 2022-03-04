@@ -1,7 +1,7 @@
 """
     SOTA reboot classes.  Abstract class and concrete classes.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -45,7 +45,7 @@ class LinuxRebooter(Rebooter):
         super().reboot()
         is_docker_app = os.environ.get("container", False)
 
-        cmd = "/usr/sbin/reboot -f"
+        cmd = "/sbin/reboot -f"
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
             (output, err, code) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)

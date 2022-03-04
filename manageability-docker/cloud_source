@@ -4,7 +4,7 @@ set -eo pipefail
 
 cp /src/adapter.cfg /etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg 
 
-# Uncomment the following lines when planning to use the sample mqtt client file provided
+# Uncomment the following lines when using the sample mqtt client file provided
 # mkdir -p /var/certs
 # cp /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt /etc/intel-manageability/public/cmd-program/cmd-program.crt /etc/intel-manageability/secret/cmd-program/cmd-program.key /var/certs
 

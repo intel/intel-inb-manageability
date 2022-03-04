@@ -574,12 +574,15 @@ class TestINBC(TestCase):
                    '</configtype></config></manifest>'
         self.assertEqual(load.func(load), expected)
 
-    def test_raise_not_supported_no_hddl_load_manifest(self):
+    def test_load_manifest2(self):
         load = self.arg_parser.parse_args(
-            ['load', '--nohddl', '-p', '/var/cache/manageability/intel_manageability_node.conf',
-             '--target', '123ABC', '456DEF'])
-        with self.assertRaisesRegex(InbcException, 'Load command is only supported for HDDL.'):
-            load.func(load)
+            ['load', '--nohddl', '-u', 'https://abc.com/intel_manageability.conf'])
+
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>config</type><config><cmd>load' \
+                   '</cmd><configtype><load>' \
+                   '<fetch>https://abc.com/intel_manageability.conf</fetch></load>' \
+                   '</configtype></config></manifest>'
+        self.assertEqual(load.func(load), expected)
 
     def test_load_manifest_clean_inputs(self):
         load = self.arg_parser.parse_args(
@@ -673,3 +676,4 @@ class TestINBC(TestCase):
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         t_stop.assert_called_once()
+        

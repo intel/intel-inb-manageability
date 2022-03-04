@@ -1,5 +1,8 @@
 #!/usr/bin/python
 
+# Copyright (C) 2021-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 # -*- coding: utf-8 -*-
 
 import os
@@ -18,9 +21,13 @@ standard_library.install_aliases()
 CUSTOM_CMD_CHANNEL = "manageability/cmd/custom"
 DEFAULT_MQTT_HOST = 'localhost'
 DEFAULT_MQTT_PORT = 8883
-DEFAULT_MQTT_CERTS = "/home/harsha/certs/mqtt-ca.crt"
-CLIENT_CERTS = "/home/harsha/certs/cmd-program.crt"
-CLIENT_KEYS = "/home/harsha/certs/cmd-program.key"
+
+# Edit the DEFAULT_MQTT_CERTS, CLIENT_CERTS, CLIENT_KEYS to point to the user created directory
+# Also modify docker run command in run.sh script by adding ‘-v <your_directory>:/var/certs’. For ex: '-v ~/certs:/var/certs
+DEFAULT_MQTT_CERTS = "~/certs/mqtt-ca.crt"
+CLIENT_CERTS = "~/certs/cmd-program.crt"
+CLIENT_KEYS = "~/certs/cmd-program.key"
+
 
 class MQTT:
     """MQTT client providing easy-to-use APIs for client connections

@@ -186,7 +186,7 @@ class UbuntuApplication(Application):
         if code != 0:
             raise AotaError(err)
 
-        reboot_base_command = "/usr/sbin/reboot -f"
+        reboot_base_command = "/sbin/reboot -f"
         if is_docker_app:
             reboot_command = DOCKER_CHROOT_PREFIX + reboot_base_command
         else:

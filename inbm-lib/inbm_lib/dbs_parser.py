@@ -1,7 +1,7 @@
 """
     Module which runs the Docker Bench Security check on docker images and containers.
     
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging

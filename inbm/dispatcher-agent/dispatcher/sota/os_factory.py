@@ -2,7 +2,7 @@
     SOTA updates factory class. Used to trigger
     package installation, updates, security updates etc
     
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import platform
