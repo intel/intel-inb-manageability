@@ -18,7 +18,7 @@ from inbm_vision_lib.ota_parser import ParseException
 from .idata_handler import IDataHandler
 
 from inbm_common_lib.pms.pms_helper import PMSHelper, PmsException
-from inbm_common_lib.utility import remove_file
+from inbm_common_lib.utility import remove_file, move_file
 from inbm_vision_lib.xlink.xlink_utility import get_all_xlink_pcie_device_ids, filter_first_slice_from_list
 from inbm_vision_lib.path_prefixes import IS_WINDOWS
 from inbm_vision_lib.xlink.xlink_secure_wrapper import XlinkSecureWrapper
@@ -45,8 +45,7 @@ def receive_provision_node_request(manifest: str, data_handler: IDataHandler) ->
 
     try:
         for path in parsed_manifest.info:
-            inbm_vision_lib.utility.move_file(
-                parsed_manifest.info[path], XLINK_PROVISION_PATH)
+            move_file(parsed_manifest.info[path], XLINK_PROVISION_PATH)
         data_handler.send_telemetry_response(
             VISION_ID, inbm_vision_lib.constants.create_success_message("Provision command: COMPLETE"))
 

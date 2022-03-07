@@ -43,6 +43,7 @@ TARGETS_NODE_ONLY_HELP = 'List of targets to restart if target type is [node].  
                          'on specific targets and not all nodes.'
 PATH_STRING = "Path"
 VISION_SERVICE_PATH = "/lib/systemd/system/inbm-vision.service"
+VISION_BINARY_PATH = "/usr/bin/vision"
 HDDL = "hddl"
 
 # Target type

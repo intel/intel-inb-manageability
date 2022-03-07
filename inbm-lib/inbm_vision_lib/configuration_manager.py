@@ -11,12 +11,14 @@ import pathlib
 import shutil
 import xmlschema
 from typing import Any, Optional, List, Union, Tuple, Dict
+from pathlib import Path
+
 
 from defusedxml import DefusedXmlException, DTDForbidden, EntitiesForbidden, ExternalReferenceForbidden, \
     NotSupportedError
 from inbm_vision_lib.constants import FLASHLESS_FILE_PATH
 from threading import Lock
-from inbm_common_lib.utility import remove_file
+from inbm_common_lib.utility import remove_file, copy_file
 import defusedxml.ElementTree as element_tree
 from defusedxml.ElementTree import parse, XMLParser, ParseError
 
@@ -77,6 +79,7 @@ class ConfigurationManager:
             parser = XMLParser(forbid_dtd=True)
 
             if self._is_file:
+                logger.debug(f"XML path: {self._xml}")
                 if not os.path.exists(self._xml):
                     raise ConfigurationException("XML file not found")
                 root = parse(self._xml, parser)
@@ -172,7 +175,12 @@ class ConfigurationManager:
 
         self._acquire_lock()
         result = []
-        backup_file = self._create_backup_file()
+
+        try:
+            backup_file = self._create_backup_file()
+        except IOError:
+            raise ConfigurationException("Unable to create backup for SET command.  SET aborted.")
+
         try:
             for i in range(len(key_value_pairs)):
                 ele = key_value_pairs[i].strip(',').split(':', 1)[0]
@@ -188,11 +196,17 @@ class ConfigurationManager:
             self._validate_schema(self._xml)
             return result
         except ConfigurationException:
-            shutil.copyfile(backup_file, str(self._xml))
+            try:
+                logger.debug("Reverting configuration file changes.")
+                copy_file(backup_file, str(self._xml))
+            except IOError:
+                raise ConfigurationException("Unable to revert to backup configuration file after SET command.")
+            self.reload_xml()
             raise
         except IndexError as err:
             raise ConfigurationException(f'Cannot find the input value: {err}')
         finally:
+            remove_file(backup_file)
             self._lock.release()
 
     def _set_value(self, path: str, value: Any) -> str:
@@ -223,9 +237,9 @@ class ConfigurationManager:
         backup_file = "{}{}".format(self._xml, '_bak')
         logger.debug(f"Create backup file of: {self._xml}")
         try:
-            shutil.copy(self._xml, backup_file)
+            copy_file(str(self._xml), backup_file)
             return backup_file
-        except (OSError, shutil.SameFileError, IsADirectoryError, PermissionError) as error:
+        except IOError as error:
             raise ConfigurationException(
                 f'Unable to create backup configuration file: {error}')
 
@@ -254,9 +268,9 @@ class ConfigurationManager:
         self._create_backup_file()
 
         try:
-            shutil.copyfile(path, self._xml)  # type: ignore
+            copy_file(str(path), str(self._xml))
             remove_file(path)
-        except (OSError, shutil.SameFileError, IsADirectoryError, PermissionError) as error:
+        except (OSError, IOError, IsADirectoryError, PermissionError) as error:
             self._clean_up(path)
             raise ConfigurationException(
                 f'Unable to create/replace existing configuration file: {error}')

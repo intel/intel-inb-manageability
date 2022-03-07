@@ -86,18 +86,16 @@ class TestConfigurationManager(TestCase):
             self.good.get_children('nodes')
 
     @patch('os.remove')
-    @patch('shutil.copyfile')
-    @patch('shutil.copy')
-    def test_set_valid_values(self, mock_copy, mock_copyfile, mock_remove):
+    @patch('shutil.copy2')
+    def test_set_valid_values(self, mock_copy, mock_remove):
         xml = ConfigurationManager(NODE_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         self.assertEquals(['SUCCESS', 'SUCCESS', 'SUCCESS'],
                           xml.set_element(['registrationRetryLimit:5', 'registrationRetryTimerSecs:11',
                                            'XLinkPCIeDevID:1'], 'node'))
 
     @patch('os.remove')
-    @patch('shutil.copyfile')
-    @patch('shutil.copy')
-    def test_fail_on_bad_set_element(self, mock_copy, mock_copyfile, mock_remove):
+    @patch('shutil.copy2')
+    def test_fail_on_bad_set_element(self, mock_copy, mock_remove):
         xml = ConfigurationManager(NODE_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         self.assertEquals(['Failed', 'Failed', 'Failed'],
                           xml.set_element(['registrationRetryLimit:test', 'registrationRetryTimerSecs:test',
@@ -105,8 +103,7 @@ class TestConfigurationManager(TestCase):
 
     @patch('os.remove')
     @patch('shutil.copyfile')
-    @patch('shutil.copy')
-    def test_load_successful(self, mock_copy, mock_copyfile, mock_remove):
+    def test_load_successful(self, mock_copy, mock_remove):
         try:
             xml = ConfigurationManager(NODE_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
             xml.load(NODE_CONF)
@@ -114,9 +111,8 @@ class TestConfigurationManager(TestCase):
             self.fail("Raised exception when not expected.")
 
     @patch('os.remove')
-    @patch('shutil.copyfile', side_effect=OSError)
-    @patch('shutil.copy')
-    def test_load_raises(self, mock_copy, mock_move, mock_remove):
+    @patch('shutil.copy2', side_effect=OSError)
+    def test_load_raises(self, mock_copy2, mock_remove):
         with self.assertRaises(ConfigurationException):
             xml = ConfigurationManager(NODE_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
             xml.load(NODE_CONF)

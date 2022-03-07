@@ -311,7 +311,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
                         inbm_vision_lib.utility.move_flashless_files(parsed_manifest.info['path'],
                                                                      self.flashless_filepath)
 
-                except (FileNotFoundError, OSError) as error:
+                except (FileNotFoundError, OSError, VisionException) as error:
                     # If error happened, reset updater.
                     self._updater.updater_timer.stop()
                     self._updater = None
@@ -647,7 +647,8 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
                         resp = _create_query_response(parsed_manifest.info['option'], target)
                         self.create_telemetry_event(target.device_id, str(resp))
                 else:
-                    self.create_telemetry_event(VISION_ID, "No node registered with vision.")
+                    self.create_telemetry_event(
+                        VISION_ID, "No nodes registered with the vision agent.")
 
                 self.send_telemetry_response(
                     VISION_ID, inbm_vision_lib.constants.create_success_message("Registry query: SUCCESSFUL"))
