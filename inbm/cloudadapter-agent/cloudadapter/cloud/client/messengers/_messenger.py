@@ -3,7 +3,8 @@ Abstract base class used by all high level messaging objects.
 Messengers are responsible for creating a properly formatted payload,
 then ensuring their successful publish to the cloud.
 
-
+Copyright (C) 2017-2022 Intel Corporation
+SPDX-License-Identifier: Apache-2.0
 """
 
 

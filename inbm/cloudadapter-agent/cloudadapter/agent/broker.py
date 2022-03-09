@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 class Broker:
     """Connects to the MQTT Broker and subscribes to channels
 
-    @param tls: (bool, optional) Whether or not to use TLS
+    @param tls: (bool, optional) Whether to use TLS
     """
 
     def __init__(self, tls: bool = True) -> None:

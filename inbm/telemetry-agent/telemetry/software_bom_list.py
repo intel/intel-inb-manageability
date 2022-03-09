@@ -98,7 +98,7 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
             # Calculate the final chunk of swbom, to incluce have the keyword "QueryEndResult".
             if (i == 0 and len(sw_bom_list) == number_of_swbom_lists) or \
                     i == math.floor(len(sw_bom_list)/number_of_swbom_lists) * number_of_swbom_lists:
-                #Inbc query to exit successfully when it has the keyword "QueryEndResult".
+                # Inbc query to exit successfully when it has the keyword "QueryEndResult".
                 key = 'queryEndResult'
             swbom = {'values': {key: sw_dict}, 'type': "dynamic_telemetry"}
             telemetry_handling.publish_dynamic_telemetry(client, EVENTS_CHANNEL, swbom)
