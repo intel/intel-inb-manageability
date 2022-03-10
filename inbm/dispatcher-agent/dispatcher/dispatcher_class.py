@@ -490,7 +490,8 @@ class Dispatcher(WindowsService):
             return result.status
 
     def _create_ota_resource_list(self, parsed_head: XmlHandler, resource: Dict) -> Dict[str, Any]:
-        """Creates a list of OTA commands requested under POTA along with the resources and arguments associated with each ota
+        """Creates a list of OTA commands requested under POTA along with the resources and arguments
+        associated with each OTA
 
         @param parsed_head: Parsed head of the manifest xml
         @param resource: resource to parse
@@ -511,7 +512,7 @@ class Dispatcher(WindowsService):
         """Performs OTA updates by creating a thread based on OTA factory detected from the manifest
 
         @param xml: manifest in XML format
-        @param ota_type: Type of OTA requested (AOTA/FOTA/SOTA/POTA)
+        @param ota_type: Type of OTA requested (AOTA/FOTA/SOTA)
         @param repo_type: Type of repo to fetch files (local/remote)
         @param target_type: Target on which the config operation needs to be performed
         @param resource: resource to parse
@@ -543,10 +544,8 @@ class Dispatcher(WindowsService):
                                 kwargs: Dict, parsed_head: XmlHandler, ota_list: Dict) -> None:
         """Validate POTA manifest by checking FOTA and SOTA information before starting OTA.
 
-        @param ota_type: Type of OTA requested
         @param repo_type: Type of repo to fetch files (local/remote)
         @param target_type: Target on which the config operation needs to be performed
-        @param resource: resource to parse
         @param kwargs: arguments dictionary to be updated after parsing resources
         @param parsed_head: Parsed head of the manifest xml
         """
@@ -569,8 +568,7 @@ class Dispatcher(WindowsService):
             logger.debug(f'{ota} checks complete.')
 
     def check_username_password(self, parsed_manifest: Mapping[str, Optional[Any]]) -> None:
-        """Check if the manifest miss username or password
-        """
+        """Check if the manifest miss username or password"""
         if parsed_manifest['ota_type'] == OtaType.POTA.name.lower():
             for ota_key in parsed_manifest.keys():
                 if ota_key == OtaType.FOTA.name.lower() or ota_key == OtaType.SOTA.name.lower():

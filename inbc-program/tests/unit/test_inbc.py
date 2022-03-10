@@ -281,6 +281,44 @@ class TestINBC(TestCase):
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
+    def test_create_pota_manifest_with_different_release_dates(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
+                                               mock_connect, mock_reconnect):
+        p = self.arg_parser.parse_args(
+            ['pota',
+             '--fotapath', './fip.bin',
+             '--manufacturer', 'Intel Corporation',
+             '--vendor', 'Intel Corporation',
+             '--product', 'Raptor Lake Client Platform',
+             '--biosversion', 'RPLISFI1.R00.2457.A04.2201130156',
+             '--releasedate', '2022-01-13',
+             '--sotapath', './temp/test.mender',
+             '--release_date', '2030-01-01', '--target', '123ABC', '456DEF'])
+        Inbc(p, 'pota', False)
+
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>pota</type>' \
+                   '<repo>local</repo></header><type><pota><targetType>node</targetType><targets>' \
+                   '<target>123ABC</target><target>456DEF</target></targets><fota name="sample">' \
+                   '<biosversion>RPLISFI1.R00.2457.A04.2201130156</biosversion><manufacturer>Intel Corporation</manufacturer>' \
+                   '<product>Raptor Lake Client Platform</product>' \
+                   '<vendor>Intel Corporation</vendor><releasedate>2022-01-13</releasedate>' \
+                   '<path>/var/cache/manageability/repository-tool/fip.bin</path></fota><sota>' \
+                   '<cmd logtofile="y">update</cmd><release_date>2030-01-01</release_date>' \
+                   '<path>/var/cache/manageability/repository-tool/test.mender</path></sota></pota>' \
+                   '</type></ota></manifest>'
+
+        self.assertEqual(p.func(p), expected)
+        self.assertEqual(copy_file.call_count, 2)
+        assert t_start.call_count == 3
+
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
+    @patch('inbc.command.ota_command.copy_file_to_target_location',
+           side_effect=['/var/cache/manageability/repository-tool/fip.bin',
+                        '/var/cache/manageability/repository-tool/test.mender'])
     def test_create_pota_manifest_with_targets(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
                                                mock_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
@@ -666,7 +704,7 @@ class TestINBC(TestCase):
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         print(t_stop.call_count)
-        assert t_stop.call_count == 2
+        assert t_stop.call_count == 1
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
@@ -676,4 +714,3 @@ class TestINBC(TestCase):
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         t_stop.assert_called_once()
-        

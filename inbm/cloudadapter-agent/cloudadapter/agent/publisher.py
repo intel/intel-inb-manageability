@@ -10,7 +10,7 @@ SPDX-License-Identifier: Apache-2.0
 from ..constants import MESSAGE
 from .broker import Broker
 from inbm_lib.create_xml_tags import create_xml_tags
-from typing import Dict, List, Any
+from typing import Dict, List
 import logging
 logger = logging.getLogger(__name__)
 
@@ -272,11 +272,11 @@ class Publisher:
             # Following line will only execute in testing
             assert command  # noqa: S101
             if command == "append" or command == "remove":
-                addTag = ""
+                add_tag = ""
             else:
-                addTag = "_element"
+                add_tag = "_element"
             manifest = manifest.format(
-                command + addTag,
+                command + add_tag,
                 command,
                 create_xml_tags(arguments, "path")
             )
