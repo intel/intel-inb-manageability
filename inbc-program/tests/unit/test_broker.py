@@ -185,7 +185,6 @@ class TestINBC(TestCase):
         b._on_response('manageability/response', 'Configuration command: FAILED', 1)
         mock_terminate.assert_called_once()
 
-
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -199,7 +198,6 @@ class TestINBC(TestCase):
         b._on_response('manageability/response', 'Configuration command: SUCCESSFUL', 1)
         mock_terminate.assert_called_once()
 
-
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -212,7 +210,6 @@ class TestINBC(TestCase):
         b = Broker('set', self._set_inbm_args, Mock(), False)
         b._on_response('manageability/response', 'Configuration command: FAILED', 1)
         mock_terminate.assert_called_once()
-
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')

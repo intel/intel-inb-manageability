@@ -124,7 +124,7 @@ class AzureAdapter(Adapter):
 
         @param scope_id:  The device's Scope ID
         @param device_id: The device's ID
-        @param device_key:The device's Shared Access Key
+        @param device_auth_set:The device's Shared Access Key
         @param template_urn:The Template URN to be associated to device
         @return:          The IoT Central hostname
         """

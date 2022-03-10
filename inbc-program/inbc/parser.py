@@ -414,7 +414,7 @@ def pota(args) -> str:
         'biosversion': args.biosversion,
         'manufacturer': args.manufacturer,
         'product': args.product,
-        'release_date': args.releasedate,
+        'release_date': args.release_date,
         'Target': args.target,
         FOTA_SIGNATURE: args.fotasignature,
         'nohddl': args.nohddl

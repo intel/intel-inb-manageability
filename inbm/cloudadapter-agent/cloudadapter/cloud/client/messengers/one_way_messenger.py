@@ -2,7 +2,8 @@
 Messenger responsible for publishing events.
 Publishes are one way, purely based on the MQTT protocol.
 
-
+Copyright (C) 2017-2022 Intel Corporation
+SPDX-License-Identifier: Apache-2.0
 """
 
 
