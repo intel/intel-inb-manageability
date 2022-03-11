@@ -46,7 +46,10 @@ class ConfigCommand(Command):
         if search_keyword(payload, CONFIGURATION_SUCCESSFUL_MESSAGE_LIST):
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, CONFIGURATION_FAILURE_MESSAGE_LIST):
-            self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
+            if search_keyword(payload, ["ERROR! No eligible nodes found"]):
+                self.terminate_operation(COMMAND_FAIL, InbcCode.XLINK_DEVICE_NOT_FOUND_OFF.value)    
+            else:
+              self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         else:
             super().search_response(payload)
 

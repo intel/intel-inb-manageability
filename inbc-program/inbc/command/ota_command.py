@@ -149,8 +149,13 @@ class FotaCommand(Command):
             if self.count >= self._num_vision_targets:
                 self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, FOTA_SOTA_FAILURE_MESSAGE_LIST):
-            print("\n FOTA Command Execution FAILED")
-            self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
+             print("\n FOTA Command Execution FAILED")
+             if search_keyword(payload,["ERROR! No eligible nodes found"]):
+                self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_NODE_NOT_FOUND.value)
+             elif search_keyword(payload,["An update is currently in progress"]):
+                self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_HOST_BUSY.value) 
+             else:   
+                self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         else:
             super().search_response(payload)
 
