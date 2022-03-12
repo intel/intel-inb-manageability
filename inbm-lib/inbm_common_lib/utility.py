@@ -98,13 +98,17 @@ def copy_file(src: str, destination: str) -> None:
 
 
 def _check_paths(src: str, destination: str) -> None:
+    logger.debug(f"check paths: src:{src}, destination:{destination}")
     if not os.path.isfile(src):
+        logger.debug(f"File does not exist or file path is not to a file: {src}")
         raise IOError("File does not exist or file path is not to a file.")
 
     if os.path.islink(src):
+        logger.debug(f"Security error: Source file is a symlink: {src}")
         raise IOError("Security error: Source file is a symlink.")
 
     if os.path.islink(destination):
+        logger.debug(f"Security error: Destination is a symlink: {src}")
         raise IOError("Security error: Destination  is a symlink")
 
 
