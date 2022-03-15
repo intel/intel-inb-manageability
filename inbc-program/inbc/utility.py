@@ -5,10 +5,11 @@
     SPDX-License-Identifier: Apache-2.0
 """
 import os
+import psutil
 from typing import List
 from pathlib import Path
 
-from .constants import VISION_SERVICE_PATH, VISION_BINARY_PATH
+from .constants import VISION_SERVICE_PATH, VISION_BINARY_PATH, VISION
 from .inbc_exception import InbcException
 
 from inbm_common_lib.utility import copy_file
@@ -57,3 +58,17 @@ def is_vision_agent_installed() -> bool:
     """
 
     return True if os.path.exists(VISION_BINARY_PATH) else False
+
+
+def is_vision_agent_active() -> bool:
+    """Checks to see if the Vision process is running
+
+    @return: True is vision is running on system; otherwise, False.
+    """
+    for p in psutil.process_iter(['name']):
+        try:
+            if VISION in p.name().lower():
+                return True
+        except (psutil.NoSuchProcess, psutil.ZombieProcess, psutil.AccessDenied):
+            pass
+    return False

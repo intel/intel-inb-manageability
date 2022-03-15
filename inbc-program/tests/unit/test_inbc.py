@@ -186,15 +186,16 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbm_vision_lib.timer.Timer.start')
-    def test_create_query_manifest(self, t_start, mock_agent, m_sub, m_pub, m_connect, mock_reconnect):
+    def test_create_query_manifest(self, t_start, mock_installed, mock_active, m_sub, m_pub, m_connect, mock_reconnect):
         p = self.arg_parser.parse_args(['query', '-o', 'all', '-tt', 'node'])
         Inbc(p, 'query', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>cmd</type><cmd>query</cmd><query>' \
                    '<option>all</option><targetType>node</targetType></query></manifest>'
         self.assertEqual(p.func(p), expected)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
@@ -205,9 +206,10 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_create_non_hddl_fota_manifest_with_targets(self, mock_agent, mock_start, m_sub, m_pub, m_connect,
-                                                        m_pass, m_dmi, mock_reconnect, mock_thread):
+    def test_create_non_hddl_fota_manifest_with_targets(self, mock_installed, mock_active, mock_start, m_sub, m_pub,
+                                                        m_connect, m_pass, m_dmi, mock_reconnect, mock_thread):
         p = self.arg_parser.parse_args(
             ['fota', '--nohddl', '-u', 'https://abc.com/package.bin', '-un', 'frank', '-to', '/b /p'])
         Inbc(p, 'fota', False)
@@ -218,7 +220,7 @@ class TestINBC(TestCase):
                    '<username>frank</username><password>123abc</password>' \
                    '<fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
-        assert mock_start.call_count == 3
+        assert mock_start.call_count == 2
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -227,8 +229,9 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            return_value='/var/cache/manageability/repository-tool/BIOS.img')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_create_hddl_fota_manifest_with_targets(self, mock_agent, mock_copy, mock_start, m_sub, m_pub,
+    def test_create_hddl_fota_manifest_with_targets(self, mock_agent, mock_active, mock_copy, mock_start, m_sub, m_pub,
                                                     m_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
             ['fota', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-r', '2024-12-31', '--target',
@@ -242,7 +245,7 @@ class TestINBC(TestCase):
                    '/repository-tool/BIOS.img</path></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         mock_copy.assert_called_once()
-        assert mock_start.call_count == 3
+        assert mock_start.call_count == 2
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
@@ -277,12 +280,14 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
-    def test_create_pota_manifest_with_different_release_dates(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
-                                               mock_connect, mock_reconnect):
+    def test_create_pota_manifest_with_different_release_dates(self, copy_file, mock_installed, mock_active, t_start,
+                                                               mock_subscribe, mock_publish, mock_connect,
+                                                               mock_reconnect):
         p = self.arg_parser.parse_args(
             ['pota',
              '--fotapath', './fip.bin',
@@ -308,19 +313,20 @@ class TestINBC(TestCase):
 
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
-    def test_create_pota_manifest_with_targets(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
-                                               mock_connect, mock_reconnect):
+    def test_create_pota_manifest_with_targets(self, copy_file, mock_installed, mock_active, t_start, mock_subscribe,
+                                               mock_publish, mock_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
             ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '--target', '123ABC', '456DEF'])
         Inbc(p, 'pota', False)
@@ -337,19 +343,20 @@ class TestINBC(TestCase):
 
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
-    def test_create_pota_manifest_clean_input(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
-                                              mock_connect, mock_reconnect):
+    def test_create_pota_manifest_clean_input(self, copy_file, mock_installed, mock_active, t_start, mock_subscribe,
+                                              mock_publish, mock_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
             ['pota', '-fp', './fip\x00.bin', '-sp', './\'temp/\x00test.mender', '--target', '\x00123ABC', '&456DEF\x00',
              '-v', 'ven\x00dor\'', '-m', 'Int\x00el', '-b', '5.\x0014'])
@@ -367,7 +374,7 @@ class TestINBC(TestCase):
 
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
     @patch('inbc.command.command.Command.terminate_operation')
     @patch('sys.stderr', new_callable=StringIO)
@@ -406,12 +413,13 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
-    def test_create_pota_manifest_without_targets(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
-                                                  mock_connect, mock_reconnect):
+    def test_create_pota_manifest_without_targets(self, copy_file, mock_installed, mock_active, t_start,
+                                                  mock_subscribe, mock_publish, mock_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
             ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender'])
         Inbc(p, 'pota', False)
@@ -428,7 +436,7 @@ class TestINBC(TestCase):
 
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.parser.detect_os', return_value='ABC')
@@ -698,8 +706,9 @@ class TestINBC(TestCase):
     @patch('threading.Thread._bootstrap_inner')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.timer.Timer.stop')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_terminate_operation_success(self, mock_agent, t_stop, mock_reconnect, mock_thread):
+    def test_terminate_operation_success(self, mock_installed, mock_active, t_stop, mock_reconnect, mock_thread):
         with patch("builtins.open", mock_open(read_data="XLINK_SIMULATOR=False")) as mock_file:
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
@@ -707,9 +716,10 @@ class TestINBC(TestCase):
         assert t_stop.call_count == 1
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbm_vision_lib.timer.Timer.stop')
-    def test_terminate_operation_failed(self, t_stop, mock_agent, mock_reconnect):
+    def test_terminate_operation_failed(self, t_stop, mock_installed, mock_active, mock_reconnect):
         with patch("builtins.open", mock_open(read_data="XLINK_SIMULATOR=False")) as mock_file:
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
