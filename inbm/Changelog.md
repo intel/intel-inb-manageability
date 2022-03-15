@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
 ## Fixed
+ - RTC 509991 Updated docker stats dashboard to display units for readability.
+
+## Fixed
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect
 
 ## NEXT - 3.0.9 - 2022-03-08
