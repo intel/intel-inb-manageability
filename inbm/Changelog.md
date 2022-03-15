@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Fixed
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
+ - HSD 15010868044 - Remove checking for isfile on destination before moving file
 
 ## NEXT - 3.0.9 - 2022-03-08
 

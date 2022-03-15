@@ -109,9 +109,9 @@ class CentOsApplication(Application):
     def cleanup(self) -> None:
         """Clean up AOTA temporary file and the driver file after use"""
         logger.debug("")
-        for dir in os.listdir(get_canonical_representation_of_path(REPO_CACHE)):
-            if dir.startswith("aota") and os.path.isdir(os.path.join(REPO_CACHE, dir)):
-                shutil.rmtree(get_canonical_representation_of_path(os.path.join(REPO_CACHE, dir)))
+        for d in os.listdir(get_canonical_representation_of_path(REPO_CACHE)):
+            if d.startswith("aota") and os.path.isdir(os.path.join(REPO_CACHE, d)):
+                shutil.rmtree(get_canonical_representation_of_path(os.path.join(REPO_CACHE, d)))
         # Clean up driver files
         for file in os.listdir(CENTOS_DRIVER_PATH):
             remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
