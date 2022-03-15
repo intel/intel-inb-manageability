@@ -52,7 +52,7 @@ def move_file(source_file_path: str, destination_path: str) -> None:
     either src or destination for security reasons.
 
     @param source_file_path: path of source file
-    @param destination_path: path to destination location
+    @param destination_path: path to destination file
     @raises: Symlink for src or destination.  Any errors during move.
     """
     canonical_src_path = get_canonical_representation_of_path(source_file_path)
@@ -63,14 +63,8 @@ def move_file(source_file_path: str, destination_path: str) -> None:
     except IOError as e:
         raise IOError(f"Error while moving file: {str(e)}")
 
-    if not os.path.isfile(canonical_target_path):
-        file_name = canonical_src_path.split('/')[-1]
-        destination_file_path = os.path.join(canonical_target_path, file_name)
-    else:
-        destination_file_path = canonical_target_path
-
     try:
-        shutil.move(canonical_src_path, destination_file_path)
+        shutil.move(canonical_src_path, canonical_target_path)
     except (shutil.SameFileError, PermissionError, IsADirectoryError, FileNotFoundError, OSError) as e:
         raise IOError(f"Error while moving file: {str(e)}")
 
@@ -98,13 +92,17 @@ def copy_file(src: str, destination: str) -> None:
 
 
 def _check_paths(src: str, destination: str) -> None:
+    logger.debug(f"check paths: src:{src}, destination:{destination}")
     if not os.path.isfile(src):
+        logger.debug(f"File does not exist or file path is not to a file: {src}")
         raise IOError("File does not exist or file path is not to a file.")
 
     if os.path.islink(src):
+        logger.debug(f"Security error: Source file is a symlink: {src}")
         raise IOError("Security error: Source file is a symlink.")
 
     if os.path.islink(destination):
+        logger.debug(f"Security error: Destination is a symlink: {src}")
         raise IOError("Security error: Destination  is a symlink")
 
 
