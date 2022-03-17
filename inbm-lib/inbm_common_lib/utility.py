@@ -86,7 +86,7 @@ def copy_file(src: str, destination: str) -> None:
 
     try:
         logger.debug(f"copyfile: src={canonical_src_path}, destination={canonical_target_path}")
-        shutil.copyfile(canonical_src_path, canonical_target_path)
+        shutil.copy(canonical_src_path, canonical_target_path)
     except (shutil.SameFileError, PermissionError, IsADirectoryError, FileNotFoundError, OSError) as e:
         raise IOError(f"Error while copying file: {str(e)}")
 
