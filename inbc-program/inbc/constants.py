@@ -48,3 +48,5 @@ HDDL = "hddl"
 
 # Target type
 NODE = "node"
+
+VISION = "vision"

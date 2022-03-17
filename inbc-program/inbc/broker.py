@@ -127,8 +127,6 @@ class Broker(IBroker):
         @param payload: message payload
         @param qos: quality of service level
         """
-        if search_keyword(payload, ["Vision agent is running"]):
-            self._command.set_is_vision_agent_running(True)
         self._command.search_event(payload, topic)
 
     def _on_status(self, topic: str, payload: str, qos: int) -> None:

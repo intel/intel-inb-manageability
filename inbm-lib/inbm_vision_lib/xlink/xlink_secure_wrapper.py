@@ -301,11 +301,10 @@ class XlinkSecureWrapper(IXlinkWrapper):
                                                                     message.encode(
                                                                         'utf8'),
                                                                     len(message.encode('utf8')))
+                super()._check_status(status, 'XLinkSecureWriteData failed.')
             finally:
                 self._write_data_lock.release()
                 break
-
-        super()._check_status(status, 'XLinkWriteData data failed.')
 
     def send_file(self, file_path: str) -> None:
         # inherit docstring from superclass
