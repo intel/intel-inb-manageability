@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
 ## Fixed
+ - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
+
+## Fixed
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect
 
 ## NEXT - 3.0.9 - 2022-03-08

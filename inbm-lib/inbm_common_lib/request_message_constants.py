@@ -25,6 +25,8 @@ OTA_FAILURE = "OTA FAILURE"
 INSTALL_CHECK_FAILURE = "Install check failed"
 ERROR_DURING_INSTALL = "Error during install"
 SOTA_OVERALL_FAILURE = "Overall SOTA status: Failure"
+FOTA_NO_NODES_FAILURE = "ERROR! No eligible nodes found"
+FOTA_INPROGRESS_FAILURE = "An update is currently in progress"
 FOTA_SOTA_FAILURE_MESSAGE_LIST = [FAILED_TO_INSTALL, OTA_FAILURE, INSTALL_CHECK_FAILURE,
                                   ERROR_DURING_INSTALL, SOTA_COMMAND_FAILURE, SOTA_OVERALL_FAILURE,
                                   SOTA_FAILURE]

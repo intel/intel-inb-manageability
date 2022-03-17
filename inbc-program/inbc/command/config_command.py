@@ -17,7 +17,7 @@ from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_vision_lib.constants import CACHE_MANAGEABILITY, CONFIG_GET, CONFIG_SET
 from inbm_vision_lib.request_message_constants import CONFIGURATION_SUCCESSFUL_MESSAGE_LIST, \
-    CONFIGURATION_FAILURE_MESSAGE_LIST
+    CONFIGURATION_FAILURE_MESSAGE_LIST, CONFIGURATION_NO_NODES_FAILURE
 
 
 class ConfigCommand(Command):
@@ -46,7 +46,7 @@ class ConfigCommand(Command):
         if search_keyword(payload, CONFIGURATION_SUCCESSFUL_MESSAGE_LIST):
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, CONFIGURATION_FAILURE_MESSAGE_LIST):
-            if search_keyword(payload, ["ERROR! No eligible nodes found"]):
+            if search_keyword(payload, [CONFIGURATION_NO_NODES_FAILURE]):
                 self.terminate_operation(COMMAND_FAIL, InbcCode.XLINK_DEVICE_NOT_FOUND_OFF.value)    
             else:
               self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)

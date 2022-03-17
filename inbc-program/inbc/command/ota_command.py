@@ -18,7 +18,7 @@ from inbm_vision_lib.constants import CACHE, INSTALL_CHANNEL, FOTA, SOTA, POTA
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_common_lib.request_message_constants import FOTA_SOTA_SUCCESS_MESSAGE_LIST, SOTA_FAILURE, \
     FOTA_SOTA_FAILURE_MESSAGE_LIST, COMMAND_SUCCESSFUL, SOTA_COMMAND_STATUS_SUCCESSFUL, SOTA_COMMAND_FAILURE, \
-    SOTA_OVERALL_FAILURE, FLASHLESS_OTA_SUCCESS_MSG
+    SOTA_OVERALL_FAILURE, FLASHLESS_OTA_SUCCESS_MSG, FOTA_NO_NODES_FAILURE, FOTA_INPROGRESS_FAILURE
 
 
 class PotaCommand(Command):
@@ -150,9 +150,9 @@ class FotaCommand(Command):
                 self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, FOTA_SOTA_FAILURE_MESSAGE_LIST):
              print("\n FOTA Command Execution FAILED")
-             if search_keyword(payload,["ERROR! No eligible nodes found"]):
+             if search_keyword(payload,[FOTA_NO_NODES_FAILURE]):
                 self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_NODE_NOT_FOUND.value)
-             elif search_keyword(payload,["An update is currently in progress"]):
+             elif search_keyword(payload,[FOTA_INPROGRESS_FAILURE]):
                 self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_HOST_BUSY.value) 
              else:   
                 self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
