@@ -10,7 +10,7 @@ import shutil
 
 from typing import Optional, Any, Mapping
 
-from inbm_lib.detect_os import is_cent_os_and_inside_container
+from inbm_lib.detect_os import is_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
@@ -147,8 +147,12 @@ class CentOsApplication(Application):
 
         except (AotaError, FileNotFoundError, OSError, IOError) as error:
             # Remove temp files if the error happened.
-            self.cleanup()
-            raise AotaError(f'AOTA Command Failed: {error}')
+            msg = str(error)
+            try:
+                self.cleanup()
+            except FileNotFoundError as e:
+                msg = f'{msg} and during cleanup: {e}'
+            raise AotaError(f'AOTA Command Failed: {msg}')
 
 
 class UbuntuApplication(Application):

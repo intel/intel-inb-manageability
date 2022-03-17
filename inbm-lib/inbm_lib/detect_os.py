@@ -33,6 +33,7 @@ class LinuxDistType(Enum):
     YoctoARM = 2
     Deby = 3
     Debian = 4
+    CentOS = 5
 
 
 def verify_os_supported() -> str:
@@ -126,12 +127,3 @@ def is_inside_container() -> bool:
         logger.debug("Running inside container.")
         return True
     return False
-
-
-def is_cent_os_and_inside_container() -> bool:
-    """Detects the operating system type running on the current system
-    @return: True if CentOS exist and the environment is container; False if CentOS is not exist.
-    """
-    # Currently only support driver update in inb container in CentOS
-
-    return True if is_inside_container() and os.path.exists("/host" + CENTOS_VERSION_PATH) else False
