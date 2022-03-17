@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - HSD 15010749354 - Use XML schema to check for boundary conditions on integers in configuration files.  Validate set operations against schema.
 - 505505 - Remove bootFlashlessDevice from vision configuration file
 - HSD 15010640268 - Send only the SWID to Secure XLink API to avoid receiving the same GUID for each TBH.
+- HSD 15010868050 - Fix manifest triggered POTA failed due to error "File does not exist or file path is not to a file"
 
 ## 3.0.8 - 2022-01-24
 
