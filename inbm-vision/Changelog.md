@@ -3,8 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## 3.0.9 - 2022-03-08
-NOTE: This release has not yet been security tested.
+## NEXT - ?
 
 ## Fixed
  - RTC 509991 Updated docker stats dashboard to display units for readability.
@@ -13,6 +12,7 @@ NOTE: This release has not yet been security tested.
  - HSD 16016084283 - Change INBC to check for vision-agent process instead of waiting for MQTT message to determine the vision-agent service is running
 
 ## 3.0.9 - 2022-03-08
+NOTE: This release has not yet been security tested.
 
 ### Fixed
 - 509266 Vision agent post-install script fails
