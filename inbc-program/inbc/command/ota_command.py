@@ -151,9 +151,9 @@ class FotaCommand(Command):
         elif search_keyword(payload, FOTA_SOTA_FAILURE_MESSAGE_LIST):
              print("\n FOTA Command Execution FAILED")
              if search_keyword(payload,[FOTA_NO_NODES_FAILURE]):
-                self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_NODE_NOT_FOUND.value)
+                self.terminate_operation(COMMAND_FAIL, InbcCode.NODE_NOT_FOUND.value)
              elif search_keyword(payload,[FOTA_INPROGRESS_FAILURE]):
-                self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_HOST_BUSY.value) 
+                self.terminate_operation(COMMAND_FAIL, InbcCode.HOST_BUSY.value)
              else:   
                 self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         else:

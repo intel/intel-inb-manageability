@@ -127,11 +127,11 @@ class Command(ABC):
 
     def _search_for_busy(self, payload: str) -> None:
         if search_keyword(payload, [OTA_IN_PROGRESS]):
-            self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_HOST_BUSY.value)
+            self.terminate_operation(COMMAND_FAIL, InbcCode.HOST_BUSY.value)
 
     def _search_for_error(self, payload: str) -> None:
         if search_keyword(payload, [ACTIVE_NODE_NOT_FOUND, ELIGIBLE_NODE_NOT_FOUND]):
-            self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_NODE_NOT_FOUND.value)
+            self.terminate_operation(COMMAND_FAIL, InbcCode.NODE_NOT_FOUND.value)
 
     def _timer_expired(self) -> None:
         """Callback method when timer has expired"""
@@ -143,7 +143,7 @@ class Command(ABC):
         if not self._is_vision_agent_running:
             logger.error("vision-agent is not running. Please start vision-agent service.")
             self.terminate_operation(
-                COMMAND_FAIL, InbcCode.BITCREEK_VISION_AGENT_UNAVABILABLE.value)
+                COMMAND_FAIL, InbcCode.VISION_AGENT_UNAVABILABLE.value)
 
     def terminate_operation(self, status: str, return_code: int) -> None:
         """Stop INBC after getting expected response from vision-agent
