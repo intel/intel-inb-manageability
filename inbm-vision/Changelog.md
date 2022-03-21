@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010872669 - Add missing heartbeatResponseTimerSecs to the list of configuration keys to fix Get/Set of this configuration key/value pair
 
 ## 3.0.9 - 2022-03-08
+NOTE: This release has not yet been security tested.
 
 ### Fixed
 - 509266 Vision agent post-install script fails

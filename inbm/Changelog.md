@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
 
 ## 3.0.9 - 2022-03-08
+NOTE: This release has not yet been security tested.
 
 ## Fixed
  - Fixed that x86_64 Yocto output files were missing inbm- prefix
