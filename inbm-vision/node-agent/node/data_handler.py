@@ -54,8 +54,8 @@ class DataHandler(idata_handler.IDataHandler):
         self._heartbeat_interval: Optional[int] = None
         self._nid: Optional[str] = None
         self._timer: Optional[HeartbeatTimer] = None
-        self._retry_limit: int = 0
-        self._retry_interval: int = 0
+        self._retry_count: int = 0
+        self._retry_limit: int = CONFIG_REGISTRATION_RETRY_LIMIT.default_value
         self._retry_timer: int = 0
         self._heartbeat_response: int = CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS.default_value
         self._heartbeat_response_timer: Optional[HeartbeatTimer] = None
@@ -242,10 +242,10 @@ class DataHandler(idata_handler.IDataHandler):
             self._timer = None
         self._timer = HeartbeatTimer(self._retry_timer, self.register)
         if self._heartbeat_interval is None:
-            if self._retry_limit < self._retry_interval:
+            if self._retry_count < self._retry_limit:
                 command = RegisterCommand(self.node_callback.get_xlink())
                 self._invoker.add(command)
-                self._retry_limit += 1
+                self._retry_count += 1
             else:
                 self._timer.stop()
                 logger.error(
@@ -292,7 +292,7 @@ class DataHandler(idata_handler.IDataHandler):
         if self._timer is not None:
             self._timer.stop()
         self._heartbeat_interval = None
-        self._retry_limit = 0
+        self._retry_count = 0
 
     def downloaded_file(self, file_name, receive_status: bool) -> None:
         """Add Send_Download_Status_Name command into invoker if the OTA file exists
@@ -320,7 +320,7 @@ class DataHandler(idata_handler.IDataHandler):
                     self._retry_timer = configuration_bounds_check(
                         CONFIG_REGISTRATION_RETRY_TIMER_SECS, int(value))
                 if child == REGISTRATION_RETRY_LIMIT:
-                    self._retry_interval = configuration_bounds_check(
+                    self._retry_limit = configuration_bounds_check(
                         CONFIG_REGISTRATION_RETRY_LIMIT, int(value))
                 if child == HEARTBEAT_RESPONSE_TIMER_SECS:
                     self._heartbeat_response = \

@@ -252,7 +252,7 @@ class TestDataHandler(TestCase):
             pass
 
         self.data_handler._heartbeat_interval = 100
-        self.data_handler._retry_limit = 100
+        self.data_handler._retry_count = 100
         self.data_handler._heartbeat = HeartbeatTimer(
             self.data_handler._heartbeat_interval, mock_callback)
         self.data_handler._timer = HeartbeatTimer(
@@ -260,7 +260,7 @@ class TestDataHandler(TestCase):
         self.data_handler.reset_heartbeat()
         self.assertIsNone(self.data_handler._heartbeat_interval)
         assert hb_stop.call_count == 2
-        self.assertEqual(self.data_handler._retry_limit, 0)
+        self.assertEqual(self.data_handler._retry_count, 0)
 
     def test_successfully_process_get_config_node_command(self):
         cmd = self.data_handler._process_configuration_command(
@@ -321,3 +321,23 @@ class TestDataHandler(TestCase):
         children: Dict[str, Any] = {"heartbeatResponseTimerSecs": '30'}
         self.data_handler.publish_config_value(children)
         self.assertEqual(300, self.data_handler._heartbeat_response)
+
+    def test_successfully_set_registration_retry_timer_secs(self):
+        children: Dict[str, Any] = {"registrationRetryTimerSecs": '30'}
+        self.data_handler.publish_config_value(children)
+        self.assertEqual(30, self.data_handler._retry_timer)
+
+    def test_set_default_value_when_registration_retry_timer_out_of_bounds(self):
+        children: Dict[str, Any] = {"registrationRetryTimerSecs": '61'}
+        self.data_handler.publish_config_value(children)
+        self.assertEqual(20, self.data_handler._retry_timer)
+
+    def test_successfully_set_registration_retry_limit(self):
+        children: Dict[str, Any] = {"registrationRetryLimit": '6'}
+        self.data_handler.publish_config_value(children)
+        self.assertEqual(6, self.data_handler._retry_limit)
+
+    def test_set_default_value_when_registration_retry_limit_out_of_bounds(self):
+        children: Dict[str, Any] = {"registrationRetryLimit": '16'}
+        self.data_handler.publish_config_value(children)
+        self.assertEqual(8, self.data_handler._retry_limit)
