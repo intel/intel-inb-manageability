@@ -127,7 +127,8 @@ class XlinkManager(object):
                 self._start_public_thread()
             else:
                 self.node_data_handler.receive_xlink_message(message)
-        except (OSError, XlinkWrapperException):
+        except (OSError, XlinkWrapperException) as error:
+            logger.debug(f"[Debug] Error happened: {error}")
             self.node_data_handler.downloaded_file(file_name, False)
 
     def send(self, message):
