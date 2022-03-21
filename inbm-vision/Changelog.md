@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 16016084283 - Change INBC to check for vision-agent process instead of waiting for MQTT message to determine the vision-agent service is running
  - HSD 15010872669 - Add missing heartbeatResponseTimerSecs to the list of configuration keys to fix Get/Set of this configuration key/value pair
  - HSD 15010865663 - Revert change of PR #22 as it caused xlink communication issues
+ - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
 
 ## 3.0.9 - 2022-03-08
 NOTE: This release has not yet been security tested.
