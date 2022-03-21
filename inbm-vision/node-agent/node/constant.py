@@ -79,6 +79,7 @@ XLINK_PCIE_DEV_ID = 'XLinkPCIeDevID'
 # Node Key constants
 KEY_DICTIONARY = ['registrationRetryTimerSecs',
                   'registrationRetryLimit',
+                  'heartbeatResponseTimerSecs',
                   'XLinkPCIeDevID']
 
 # Mender commands/arguments
@@ -98,10 +99,10 @@ PROC_VERSION = '/etc/version'
 NODE_VERSION_PATH = '/usr/share/node-agent/version.txt'
 
 # Configuration items (key, lower bound, upper bound, default value)
-CONFIG_REGISTRATION_RETRY_TIMER_SECS = ConfigurationItem('RegistrationRetry Timer Secs', 1, 60, 20)
+CONFIG_REGISTRATION_RETRY_TIMER_SECS = ConfigurationItem(REGISTRATION_RETRY_TIMER_SECS, 1, 60, 20)
 CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS = ConfigurationItem(
-    'Heartbeat Response Timer Secs', 90, 1800, 300)
-CONFIG_REGISTRATION_RETRY_LIMIT = ConfigurationItem('Registration Retry Limit', 3, 15, 8)
+    HEARTBEAT_RESPONSE_TIMER_SECS, 90, 1800, 300)
+CONFIG_REGISTRATION_RETRY_LIMIT = ConfigurationItem(REGISTRATION_RETRY_LIMIT, 3, 15, 8)
 
 # Var directory
 VAR_DIR = '/var'
