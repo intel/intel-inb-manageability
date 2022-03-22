@@ -9,8 +9,9 @@ from datetime import datetime
 UNKNOWN = 'Unknown'
 UNKNOWN_DATETIME = datetime.strptime("9999-01-01", "%Y-%m-%d")
 
-VALID_MAGIC_FILE_TYPE = ['data', 'POSIX tar archive', 'gzip compressed data', 'exported SGML document', 'ASCII text',
-                         'PEM certificate', 'empty', 'u-boot legacy uImage', 'Intel serial flash for PCH ROM']
+VALID_MAGIC_FILE_TYPE_PREFIXES = ['data', 'POSIX tar archive', 'gzip compressed data', 'exported SGML document', 'ASCII text',
+                         'PEM certificate', 'empty', 'u-boot legacy uImage', 'Intel serial flash for PCH ROM',
+                         'XML 1.0 document']
 
 TEMP_EXT_FOLDER = "/var/cache/manageability/repository-tool/temp_ext"
 URL_NULL_CHAR = '%00'
