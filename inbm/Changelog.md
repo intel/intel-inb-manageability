@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 509991 Updated docker stats dashboard to display units for readability.
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
+ - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+
+## Security
+ - RTC 510928 - Upgrade 3rd party deps to address CVE-2022-24921, CVE-2022-23648.
 
 ## 3.0.9 - 2022-03-08
 NOTE: This release has not yet been security tested.
@@ -44,7 +48,7 @@ NOTE: This release has not yet been security tested.
  - (508706) - Change dynamic telemetry tag from ContainersCpuPercentage to ContainerStats
 
 ### Security
-- RTC 510268: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.6/1.17.6) had a number of CVEs associated with it. New runtime version is 1.17.7.
+- RTC 510268: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.6/1.17.6) had a number of CVEs associated with it. New runtime version is 1.17.8.
 
 ## 3.0.8 - 2022-01-24
 

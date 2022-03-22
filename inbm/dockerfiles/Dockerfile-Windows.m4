@@ -79,17 +79,17 @@ RUN mkdir -p /output && \
     ../packaging/run-pyinstaller-py3.sh diagnostic-agent diagnostic && \
     cp -r ../diagnostic-agent/dist/"diagnostic.exe" /output
 
-FROM registry.hub.docker.com/library/golang:1.17.7-buster as inb-provision-certs-windows
+FROM registry.hub.docker.com/library/golang:1.17.8-buster as inb-provision-certs-windows
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && GOOS=windows GOARCH=amd64 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs.exe /output/inb-provision-certs.exe
 
-FROM registry.hub.docker.com/library/golang:1.17.7-buster as inb-provision-cloud-windows
+FROM registry.hub.docker.com/library/golang:1.17.8-buster as inb-provision-cloud-windows
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && GOOS=windows GOARCH=amd64 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud.exe /output/inb-provision-cloud.exe
 
-FROM registry.hub.docker.com/library/golang:1.17.7-buster as inb-provision-ota-cert
+FROM registry.hub.docker.com/library/golang:1.17.8-buster as inb-provision-ota-cert
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && GOOS=windows GOARCH=amd64 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert.exe /output/inb-provision-ota-cert.exe
