@@ -62,13 +62,14 @@ class TestFactory(TestCase):
             get_app_instance("unknown", self.mock_disp_obj, DOCKER_COMPOSE_PARSED_MANIFEST,
                              dbs=ConfigDbs.ON)
 
-    @patch('dispatcher.aota.factory.is_cent_os_and_inside_container', return_value=True)
-    def test_succesfully_get_factory_cent_os(self, is_cent_os_and_inside_container):
+    @patch('dispatcher.aota.factory.is_inside_container', return_value=True)
+    @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
+    def test_successfully_get_factory_cent_os(self, detect_os, is_inside_container):
         assert type(get_app_os(self.mock_disp_obj, DRIVER_PARSED_MANIFEST,
                                dbs=ConfigDbs.ON)) is CentOsApplication
 
     @patch('dispatcher.aota.factory.detect_os', return_value='Ubuntu')
-    def test_succesfully_get_factory_ubuntu(self, detect_os):
+    def test_successfully_get_factory_ubuntu(self, detect_os):
         assert type(get_app_os(self.mock_disp_obj, DOCKER_COMPOSE_PARSED_MANIFEST,
                                dbs=ConfigDbs.ON)) is UbuntuApplication
 
