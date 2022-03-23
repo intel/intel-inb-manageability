@@ -437,11 +437,11 @@ class TestDataHandler(TestCase):
         update_method.assert_called_once()
 
     def test_raise_updating_non_integer_value(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(VisionException):
             self.data_handler.manage_configuration_update(VISION_HB_RETRY_LIMIT + ":abc")
 
     def test_raise_update_invalid_key(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(VisionException):
             self.data_handler.manage_configuration_update("InvalidKey:10")
 
     @patch('vision.data_handler.data_handler.DataHandler.manage_configuration_update')
