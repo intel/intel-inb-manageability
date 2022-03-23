@@ -439,7 +439,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         key = key_value[0]
 
         if key not in vision.configuration_constant.KEY_MANIFEST:
-            raise VisionException("Attempt to update invalid configuration key")
+            raise ValueError("Attempt to update invalid configuration key")
 
         if key == vision.configuration_constant.FLASHLESS_FILE_PATH:
             self.flashless_filepath = key_value[1]
@@ -447,7 +447,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         # Update component based on new value in key_value[1]
         if key in vision.configuration_constant.INT_CONFIG_VALUES:
             if not key_value[1].isdigit():
-                raise VisionException("Attempt to update integer value with a non-integer value")
+                raise ValueError("Attempt to update integer value with a non-integer value")
             else:
                 value = int(key_value[1])
                 int_value = int(value)
