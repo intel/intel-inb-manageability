@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Union
 
-from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE, TEMP_EXT_FOLDER
+from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 from .constants import URL_NULL_CHAR
@@ -182,7 +182,7 @@ def validate_file_type(path: List[str]) -> None:
 
     @param path: string representing the location of target file
     """
-    logger.debug("Supported: {0}".format(VALID_MAGIC_FILE_TYPE))
+    logger.debug("Supported file type prefixes: {0}".format(VALID_MAGIC_FILE_TYPE_PREFIXES))
 
     tarball_list: List[str] = [x for x in path if (not str(x).endswith('.mender') and tarfile.is_tarfile(x))]
     extracted_file_list: List[str] = []
@@ -206,9 +206,11 @@ def validate_file_type(path: List[str]) -> None:
             if os.path.exists(TEMP_EXT_FOLDER):
                 shutil.rmtree(TEMP_EXT_FOLDER, ignore_errors=True)
             raise TypeError(f"Cannot find file type of file {file_path}") from e
-        logger.debug("{0}".format(file_type))
-        if any(x in file_type for x in VALID_MAGIC_FILE_TYPE):
-            pass
+        logger.debug(f"checking validity of file type: {file_type}")
+
+        # TODO: use regular expressions instead of fixed strings for VALID_MAGIC_FILE_TYPE_PREFIXES
+        if any(file_type.startswith(valid_type_prefix) for valid_type_prefix in VALID_MAGIC_FILE_TYPE_PREFIXES):
+            logger.debug("file type matches at least one valid prefix")
         else:
             # Remove all files on failure
             remove_file_list(path + extracted_file_list)

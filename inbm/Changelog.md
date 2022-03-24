@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
  - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+ - HSD 15010918893 INBM does not reject unsupported file type
  - Fixed new build error discovered by clearing docker cache and rebuilding
 
 ## Security
