@@ -143,7 +143,7 @@ class Command(ABC):
         if not self._is_vision_agent_running:
             logger.error("vision-agent is not running. Please start vision-agent service.")
             self.terminate_operation(
-                COMMAND_FAIL, InbcCode.VISION_AGENT_UNAVABILABLE.value)
+                COMMAND_FAIL, InbcCode.VISION_AGENT_UNAVAILABLE.value)
 
     def terminate_operation(self, status: str, return_code: int) -> None:
         """Stop INBC after getting expected response from vision-agent
