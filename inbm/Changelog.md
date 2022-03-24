@@ -11,6 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
  - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
  - RTC 511101 - Handle the null char in a URI
+ - HSD 15010918893 INBM does not reject unsupported file type
+ - Fixed new build error discovered by clearing docker cache and rebuilding
 
 ## Security
  - RTC 510928 - Upgrade 3rd party deps to address CVE-2022-24921, CVE-2022-23648.

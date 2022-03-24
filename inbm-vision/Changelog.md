@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 511044 - Throw ValueError instead of VisionException when configuration set fails.
  - HSD 15010865663 - Revert change of PR #22 as it caused xlink communication issues
  - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+ - HSD 15010918893 - INBM does not reject unsupported file type
 
 ## 3.0.9 - 2022-03-08
 NOTE: This release has not yet been security tested.
