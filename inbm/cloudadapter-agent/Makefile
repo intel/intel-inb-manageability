@@ -3,7 +3,7 @@
 
 .PHONY: tests # `make tests` doesn't run because of the tests directory
 
-.PHONY: documentation # prevent against calling docs folder in higher level dir
+.PHONY: documentation # prevent dup issues from calling documentation folder in higher level dir 
 
 documentation:
 	mkdir -p documentation
