@@ -123,6 +123,12 @@ For example:
 
 - Run: `make tests`
 
+### Generate pydocs locally for cloudadapter agent:
+- 1. Ensure that current working directory is cloudadapter-agent
+- 2. Run: `make documentation`
+- 3. Open any file from `cloudadapter-agent/documentation/` in browser of choice
+
+
 ## Debian package (DEB)
 
 ### Install (For Ubuntu)
