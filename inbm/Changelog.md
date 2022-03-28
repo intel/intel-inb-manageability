@@ -19,6 +19,7 @@ NOTE: This release has not yet been security tested.
 ## Security
  - RTC 510928 - Upgrade 3rd party deps to address CVE-2022-24921, CVE-2022-23648.
  - Update docker/distribution dependency for trtl to address GitHub security warning
+ - Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.8) had a number of CVEs associated with it. New runtime version is 1.18.0.
 
 ## 3.0.9 - 2022-03-08
 NOTE: This release has not yet been security tested.
