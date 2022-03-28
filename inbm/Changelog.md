@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 511101 - Handle the null char in a URI
  - HSD 15010918893 INBM does not reject unsupported file type
  - Fixed new build error discovered by clearing docker cache and rebuilding
+ - HSD 15010766920 - Apparmor issue querying swbom information
 
 ## Security
  - RTC 510928 - Upgrade 3rd party deps to address CVE-2022-24921, CVE-2022-23648.
