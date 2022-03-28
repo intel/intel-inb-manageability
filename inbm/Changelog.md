@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Security
  - RTC 510928 - Upgrade 3rd party deps to address CVE-2022-24921, CVE-2022-23648.
+ - Update docker/distribution dependency for trtl to address GitHub security warning
 
 ## 3.0.9 - 2022-03-08
 NOTE: This release has not yet been security tested.
