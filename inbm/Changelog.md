@@ -9,9 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 509991 Updated docker stats dashboard to display units for readability.
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
- - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+ - HSD 15010868047 - "Unsupported OS" when running POTA via INBC in CentOS container
  - HSD 15010918893 INBM does not reject unsupported file type
  - Fixed new build error discovered by clearing docker cache and rebuilding
+ - HSD 15010766920 - Apparmor issue querying swbom information
 
 ## Security
  - RTC 510928 - Upgrade 3rd party deps to address CVE-2022-24921, CVE-2022-23648.

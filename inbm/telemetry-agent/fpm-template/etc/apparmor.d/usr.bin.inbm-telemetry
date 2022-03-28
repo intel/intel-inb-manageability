@@ -43,6 +43,7 @@
   /usr/bin/lsb_release rUx,
   /usr/bin/dpkg-query rUx,
   /usr/bin/inbm-telemetry rix,
+  /usr/bin/rpm Ux,
   /etc/intel-manageability/public/telemetry-agent/telemetry-agent.crt r,
   /etc/intel-manageability/secret/telemetry-agent/telemetry-agent.key r,
   /etc/magic r,
