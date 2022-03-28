@@ -11,6 +11,7 @@ from threading import Lock
 from typing import Optional, Any, Mapping
 
 from inbm_lib.constants import TRTL_PATH
+from inbm_common_lib.exceptions import UrlSecurityException
 
 from .aota import aota
 from .aota.aota_error import AotaError
@@ -220,7 +221,7 @@ class AotaThread(OtaThread):
                           parsed_manifest=self._parsed_manifest,
                           dbs=self._dbs).run()
                 return COMMAND_SUCCESS
-            except AotaError as e:
+            except (AotaError, UrlSecurityException) as e:
                 self._dispatcher_callbacks.broker_core.telemetry(str(e))
                 logger.error('Error during install: %s', str(e))
                 raise AotaError(str(e))
