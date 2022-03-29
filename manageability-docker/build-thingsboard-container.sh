@@ -20,10 +20,11 @@ cp cloudadapter-agent/fpm-template/usr/share/cloudadapter-agent/thingsboard/conf
 
 cd "$DIR"
 mv output tmp-output
-cp cloud_source docker-manageability-policy Dockerfile docker-compose.yml sample_customer_mqtt_client.py run.sh tb_conf_file "$DIR"/tmp-output
+cp cloud_source docker-manageability-policy Dockerfile docker-compose.yml sample_customer_mqtt_client.py run_thingsboard.sh thingsboard_conf_file "$DIR"/tmp-output
 
 cd tmp-output
+mv run_thingsboard.sh run.sh
 mkdir -p ../output
-zip -r ../output/inb_tb_container.zip *
+zip -r ../output/inb_thingsboard_container.zip *
 cd ..
 rm -rf tmp-output
