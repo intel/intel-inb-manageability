@@ -3,12 +3,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## NEXT - ?
 
 ## Fixed
  - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
- - HSD 15010649794 - INBC POTA/SOTA release date incorrect
 
 ## NEXT - 3.0.9 - 2022-03-08
+ - RTC 509991 Updated docker stats dashboard to display units for readability.
+ - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
+ - HSD 15010868044 - Remove checking for isfile on destination before moving file
+ - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+ - RTC 511101 - Handle the null char in a URI
+ - HSD 15010918893 INBM does not reject unsupported file type
+ - Fixed new build error discovered by clearing docker cache and rebuilding
+ - HSD 15010766920 - Apparmor issue querying swbom information
+
+## Security
+ - RTC 510928 - Upgrade 3rd party deps to address CVE-2022-24921, CVE-2022-23648.
+ - Update docker/distribution dependency for trtl to address GitHub security warning
+
+## 3.0.9 - 2022-03-08
+NOTE: This release has not yet been security tested.
 
 ## Fixed
  - Fixed that x86_64 Yocto output files were missing inbm- prefix
@@ -41,7 +56,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (508706) - Change dynamic telemetry tag from ContainersCpuPercentage to ContainerStats
 
 ### Security
-- RTC 510268: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.6/1.17.6) had a number of CVEs associated with it. New runtime version is 1.17.7.
+- RTC 510268: Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.6/1.17.6) had a number of CVEs associated with it. New runtime version is 1.17.8.
 
 ## 3.0.8 - 2022-01-24
 

@@ -11,6 +11,7 @@ from urllib.parse import urlsplit
 
 from inbm_common_lib.utility import get_canonical_representation_of_path, canonicalize_uri, CanonicalUri
 from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD
+from inbm_common_lib.exceptions import UrlSecurityException
 from .common.result_constants import PUBLISH_SUCCESS, Result, OTA_FAILURE
 from .constants import TARGET_OTA_CMD_CHANNEL, SCHEMA_LOCATION, UMASK_OTA, OTA_PACKAGE_CERT_PATH, REPO_CACHE
 from .dispatcher_broker import DispatcherBroker
@@ -88,7 +89,7 @@ class OtaTarget:
                                      'signature': signature, 'hash_algorithm': hash_algorithm}
                     self._download_and_validate_package(
                         self._dispatcher_callbacks, uri, repo, ota_key.upper(), download_info)
-                except DispatcherException as err:
+                except (DispatcherException, UrlSecurityException) as err:
                     valid_check = False
                     ota_error = str(err)
                     self._dispatcher_callbacks.broker_core.telemetry(ota_error)
@@ -101,7 +102,7 @@ class OtaTarget:
                                  'signature': self._signature, 'hash_algorithm': self._hash_algorithm}
                 self._download_and_validate_package(
                     self._dispatcher_callbacks, self._uri, self._repo, self._ota_type, download_info)
-            except DispatcherException as err:
+            except (DispatcherException, UrlSecurityException) as err:
                 valid_check = False
                 ota_error = str(err)
                 self._dispatcher_callbacks.broker_core.telemetry(ota_error)

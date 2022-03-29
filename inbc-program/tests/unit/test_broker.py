@@ -165,8 +165,9 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_on_message_response_set_success(self, mock_agent, mock_terminate, mock_trigger, mock_sub, mock_pub,
+    def test_on_message_response_set_success(self, mock_installed, mock_active, mock_terminate, mock_trigger, mock_sub, mock_pub,
                                              mock_con, mock_thread):
         b = Broker('set', self._set_vision_args, Mock(), False)
         b._on_response('manageability/response', 'Configuration command: SUCCESSFUL', 1)
@@ -178,8 +179,9 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_on_message_response_set_failed(self, mock_agent, mock_terminate, mock_trigger, mock_sub, mock_pub,
+    def test_on_message_response_set_failed(self, mock_installed, mock_active, mock_terminate, mock_trigger, mock_sub, mock_pub,
                                             mock_con, mock_reconnect):
         b = Broker('set', self._set_vision_args, Mock(), False)
         b._on_response('manageability/response', 'Configuration command: FAILED', 1)
@@ -191,9 +193,10 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=False)
-    def test_on_message_response_set_inbm_success(self, mock_agent, mock_terminate, mock_trigger, mock_sub, mock_pub,
-                                            mock_con, mock_reconnect):
+    def test_on_message_response_set_inbm_success(self, mock_installed, mock_active, mock_terminate, mock_trigger,
+                                                  mock_sub, mock_pub, mock_con, mock_reconnect):
         b = Broker('set', self._set_inbm_args, Mock(), False)
         b._on_response('manageability/response', 'Configuration command: SUCCESSFUL', 1)
         mock_terminate.assert_called_once()
@@ -205,7 +208,7 @@ class TestINBC(TestCase):
     @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
     @patch('inbc.command.command.is_vision_agent_installed', return_value=False)
-    def test_on_message_response_seti_inbm_failed(self, mock_agent, mock_terminate, mock_trigger, mock_sub, mock_pub,
+    def test_on_message_response_set_inbm_failed(self, mock_agent, mock_terminate, mock_trigger, mock_sub, mock_pub,
                                             mock_con, mock_reconnect):
         b = Broker('set', self._set_inbm_args, Mock(), False)
         b._on_response('manageability/response', 'Configuration command: FAILED', 1)

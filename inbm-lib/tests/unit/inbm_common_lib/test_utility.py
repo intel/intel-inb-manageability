@@ -47,7 +47,7 @@ class TestUtility(TestCase):
             canonicalize_uri('https://www.example.com/a/c%00.tar')
 
     @patch('os.path.isfile', return_value=True)
-    @patch('shutil.copyfile')
+    @patch('shutil.copy')
     def test_copies_file(self, mock_copy, mock_is_file):
         try:
             copy_file('/home/usr', '/etc')

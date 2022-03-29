@@ -42,6 +42,7 @@ RUN source /venv-py3/bin/activate && \
 FROM venv-py3 as mypy-inbm-lib
 RUN source /venv-py3/bin/activate && \
     cd /src/inbm-lib && \
+    rm -rf build && \
     ./mypy-py3.sh . && \
     touch /passed.txt
 

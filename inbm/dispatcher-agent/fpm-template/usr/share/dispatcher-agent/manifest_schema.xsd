@@ -397,7 +397,7 @@
 
     <xs:element name="sota">
         <xs:complexType>
-            <xs:sequence>
+            <xs:all>
                 <xs:element name="cmd">
                     <xs:complexType>
                         <xs:simpleContent>
@@ -428,7 +428,7 @@
                 <xs:element name="password" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name ="release_date" type ="xs:date" minOccurs="0" maxOccurs="1"/>
                 <xs:element name ="path" type ="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
-            </xs:sequence>
+            </xs:all>
         </xs:complexType>
     </xs:element>
 
