@@ -149,12 +149,12 @@ class FotaCommand(Command):
             if self.count >= self._num_vision_targets:
                 self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, FOTA_SOTA_FAILURE_MESSAGE_LIST):
-             print("\n FOTA Command Execution FAILED")
-             if search_keyword(payload,[NO_NODES_FAILURE]):
+            print("\n FOTA Command Execution FAILED")
+            if search_keyword(payload, [NO_NODES_FAILURE]):
                 self.terminate_operation(COMMAND_FAIL, InbcCode.NODE_NOT_FOUND.value)
-             elif search_keyword(payload,[FOTA_INPROGRESS_FAILURE]):
+            elif search_keyword(payload, [FOTA_INPROGRESS_FAILURE]):
                 self.terminate_operation(COMMAND_FAIL, InbcCode.HOST_BUSY.value)
-             else:   
+            else:
                 self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         else:
             super().search_response(payload)
