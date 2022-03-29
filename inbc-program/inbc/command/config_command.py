@@ -16,8 +16,9 @@ from ..ibroker import IBroker
 from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_vision_lib.constants import CACHE_MANAGEABILITY, CONFIG_GET, CONFIG_SET
+from inbm_common_lib.request_message_constants import  NO_NODES_FAILURE
 from inbm_vision_lib.request_message_constants import CONFIGURATION_SUCCESSFUL_MESSAGE_LIST, \
-    CONFIGURATION_FAILURE_MESSAGE_LIST, FOTA_NO_NODES_FAILURE
+    CONFIGURATION_FAILURE_MESSAGE_LIST
 
 
 class ConfigCommand(Command):
@@ -46,7 +47,7 @@ class ConfigCommand(Command):
         if search_keyword(payload, CONFIGURATION_SUCCESSFUL_MESSAGE_LIST):
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, CONFIGURATION_FAILURE_MESSAGE_LIST):
-            if search_keyword(payload, [FOTA_NO_NODES_FAILURE]):
+            if search_keyword(payload, [NO_NODES_FAILURE]):
                 self.terminate_operation(COMMAND_FAIL, InbcCode.XLINK_DEVICE_NOT_FOUND_OFF.value)    
             else:
               self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
