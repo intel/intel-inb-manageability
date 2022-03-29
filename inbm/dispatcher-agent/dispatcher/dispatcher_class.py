@@ -475,7 +475,7 @@ class Dispatcher(WindowsService):
                     logger.debug(f"cmd_type : {config_cmd_type}")
                     result = self._do_config_operation_on_target(
                         config_cmd_type, parsed_head, xml, target_type, self._broker)
-        except DispatcherException as error:
+        except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
         except XmlException as error:
