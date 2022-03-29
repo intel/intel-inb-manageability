@@ -3,11 +3,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## 3.0.10 - 2022-03-28
-NOTE: This release has not yet been security tested.
+## NEXT - ?
 
 ## Fixed
  - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
+
+## 3.0.10 - 2022-03-28
+NOTE: This release has not yet been security tested.
 
 ## NEXT - 3.0.9 - 2022-03-08
  - RTC 509991 Updated docker stats dashboard to display units for readability.
