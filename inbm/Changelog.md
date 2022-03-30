@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Fixed
  - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
 
+## 3.0.10 - 2022-03-28
+NOTE: This release has not yet been security tested.
+
 ## NEXT - 3.0.9 - 2022-03-08
  - RTC 509991 Updated docker stats dashboard to display units for readability.
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
@@ -21,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Security
  - RTC 510928 - Upgrade 3rd party deps to address CVE-2022-24921, CVE-2022-23648.
  - Update docker/distribution dependency for trtl to address GitHub security warning
+ - Updated golang runtime for trtl and inb-provision-{certs, cloud, ota-cert}. Previous runtime (1.17.8) had a number of CVEs associated with it. New runtime version is 1.18.0.
 
 ## 3.0.9 - 2022-03-08
 NOTE: This release has not yet been security tested.
