@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## Added
+ - RTC 509279 Added ability to generate pydocs for cloudadapter-agent from Makefile.
 
 ## Fixed
  - RTC 509991 Updated docker stats dashboard to display units for readability.
