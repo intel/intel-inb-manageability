@@ -437,7 +437,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         logger.debug(element_key)
         key_value = element_key.split(":", 1)
         key = key_value[0]
-
+        logger.info('test')
         if key not in vision.configuration_constant.KEY_MANIFEST:
             raise VisionException("Attempt to update invalid configuration key")
 
