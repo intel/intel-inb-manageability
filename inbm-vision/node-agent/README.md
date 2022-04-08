@@ -60,3 +60,7 @@ The node-agent is installed on a Yocto image, which requires flashing a Mender i
 ### Test the agent:
 
 - Run: `make tests`
+
+### Generate Pydoc Documentation:
+
+- Run: `make documentation`
