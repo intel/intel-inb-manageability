@@ -11,7 +11,8 @@ from typing import List
 from ctypes import *
 
 from ..constants import XLINK_LIB_PATH, SW_DEVICE_ID_PCIE_INTERFACE, SW_DEVICE_ID_INTERFACE_SHIFT, \
-    SW_DEVICE_ID_INTERFACE_MASK, MAXIMUM_DEVICE_NAME_SIZE
+    SW_DEVICE_ID_INTERFACE_MASK, MAXIMUM_DEVICE_NAME_SIZE, SW_DEVICE_ID_MEDIA_FUNCTION, \
+    XLINK_SW_DEV_ID_PCIE_FUNCTION_MASK
 
 from .ixlink_wrapper import X_LINK_SUCCESS, xlink_handle, HOST_DEVICE
 
@@ -37,19 +38,31 @@ def get_all_xlink_pcie_device_ids(num_devices: int) -> List[int]:
     logger.debug(f"number of dev = {num_dev.value}, device list: ")
     for num in range(len(dev_id_list)):
         logger.debug("dev_id_list[{}]: {}".format(num, dev_id_list[num]))
-        if _get_interface_from_sw_device_id(dev_id_list[num]) == SW_DEVICE_ID_PCIE_INTERFACE:
+        interface = _get_interface_from_sw_device_id(dev_id_list[num])
+        if interface == SW_DEVICE_ID_PCIE_INTERFACE and SW_DEVICE_ID_MEDIA_FUNCTION:
+
+        if interface == SW_DEVICE_ID_PCIE_INTERFACE:
             xlink_pcie_dev_ids.append(dev_id_list[num])
             logger.debug("dev {} with dev id {} is added".format(num, dev_id_list[num]))
     return xlink_pcie_dev_ids
 
 
 def _get_interface_from_sw_device_id(sw_device_id: int) -> int:
-    """ Call xlink API to get all xlink PCIe device.
+    """ Gets the Xlink interface type
 
         @param sw_device_id: xlink sw device id to be checked
-        @return: number representing xlink device type
+        @return: number representing xlink interface type
     """
     return (sw_device_id >> SW_DEVICE_ID_INTERFACE_SHIFT) & SW_DEVICE_ID_INTERFACE_MASK
+
+def _get_pcie_function(sw_device_id: int) -> int:
+    """Get the Xlink PCIe Function for TBH.
+    Services such as manageability should use the media function.  0x1 or 0x3
+
+    @param sw_device_id: xlink sw device id to be checked
+    @return: number representing xlink PCIe function type
+    """
+    return sw_device_id & XLINK_SW_DEV_ID_PCIE_FUNCTION_MASK
 
 
 def filter_first_slice_from_list(xlink_pcie_dev_list: List[int]) -> List[int]:

@@ -5,7 +5,8 @@
     SPDX-License-Identifier: Apache-2.0
 """
 from typing import Dict
-from inbm_vision_lib.path_prefixes import INBM_VISION_CACHE_PATH_PREFIX, INBM_VISION_XLINK_PATH_PREFIX, INBM_VISION_XLINK_LIB_PATH, BROKER_ETC_PATH, INBM_VISION_XLINK_PROVISION_PATH_PREFIX
+from inbm_vision_lib.path_prefixes import INBM_VISION_CACHE_PATH_PREFIX, INBM_VISION_XLINK_PATH_PREFIX, \
+    INBM_VISION_XLINK_LIB_PATH, BROKER_ETC_PATH, INBM_VISION_XLINK_PROVISION_PATH_PREFIX
 
 
 def create_error_message(error: str) -> Dict[str, str]:
@@ -32,7 +33,6 @@ class SecurityException(Exception):
 
 
 class XmlException(Exception):
-
     """Class exception Module"""
     pass
 
@@ -79,6 +79,8 @@ SW_DEVICE_ID_MTL = 0x4
 SW_DEVICE_ID_STF = 0x5
 SW_DEVICE_ID_PLATFORM_MASK = 0xF
 SW_DEVICE_ID_PLATFORM_SHIFT = 4
+SW_DEVICE_ID_MEDIA_FUNCTION = 0x1  # TBH Media Function
+XLINK_SW_DEV_ID_PCIE_FUNCTION_MASK = 0x1
 
 # Xlink boot device default value
 XLINK_BOOT_DEV_DEFAULT = False
@@ -93,7 +95,7 @@ MINIMUM_GUID_LENGTH = 16
 MAXIMUM_GUID_BUFFER = 250
 
 # MQTT ca path
-MQTT_CA_CERTS = str(BROKER_ETC_PATH/'public'/'mqtt-ca'/'mqtt-ca.crt')
+MQTT_CA_CERTS = str(BROKER_ETC_PATH / 'public' / 'mqtt-ca' / 'mqtt-ca.crt')
 
 # Device local cache
 CACHE = str(INBM_VISION_CACHE_PATH_PREFIX / 'repository-tool/')
