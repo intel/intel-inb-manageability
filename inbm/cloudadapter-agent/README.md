@@ -124,6 +124,7 @@ For example:
 - Run: `make tests`
 
 ### Generate Pydoc Documentation:
+
 - Run: `make documentation`
 
 ## Debian package (DEB)
