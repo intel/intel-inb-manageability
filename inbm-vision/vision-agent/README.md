@@ -79,6 +79,10 @@ The agent subscribes to the following topics:
 
 - Run: `make tests`
 
+### Generate Pydoc Documentation:
+
+- Run: `make documentation`
+
 ## Debian package (DEB)
 
 ### Install (For Ubuntu)

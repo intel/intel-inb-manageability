@@ -1,4 +1,12 @@
 .PHONY: tests # `make tests` doesn't run because of the tests directory
+
+.PHONY: documentation # prevent dup issues from calling documentation folder in higher level dir 
+
+documentation:
+	mkdir -p documentation
+	python -m pydoc -w `find . -iname '*.py'`
+	mv *.html documentation
+
 AGENT=vision
 
 LOCAL_PIP_PATH=$(shell python3 -m site --user-site)

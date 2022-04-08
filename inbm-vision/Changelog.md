@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## Added
+ - RTC 509279 Added ability to generate pydocs for all agents from Makefile.
+
 ### Fixed
 - 509266 Vision agent post-install script fails
 - HSD 1509485150, 47042 - Fix INBC fail to exit intermittently when using hddl_device_server
