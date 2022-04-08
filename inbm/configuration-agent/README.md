@@ -108,6 +108,9 @@ NOTE: Ensure any Python version greater than 3.8 is installed
 ### Test the agent:
 - Run: `make tests`
 
+### Generate Pydoc Documentation:
+- Run: `make documentation`
+
 ## Debian package (DEB)
 
 ### Install (For Ubuntu)
