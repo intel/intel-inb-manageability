@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 
+## Added
+ - RTC 509279 Added ability to generate pydocs for all agents from Makefile.
+
 ## Fixed
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect
 
