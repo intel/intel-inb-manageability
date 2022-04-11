@@ -11,7 +11,6 @@
 import logging
 import os
 from typing import List, Optional, Any, Dict
-from threading import Lock
 
 import vision
 import inbm_vision_lib
@@ -22,13 +21,17 @@ import vision.configuration_constant
 
 from inbm_common_lib.validater import configuration_bounds_check
 from inbm_common_lib.utility import validate_file_type, get_canonical_representation_of_path, remove_file, \
-    remove_file_list
-from inbm_common_lib.utility import clean_input
+    remove_file_list, clean_input, move_file
 from inbm_common_lib.constants import CONFIG_LOAD
+from inbm_common_lib.pms.pms_helper import PMSHelper, PmsException
 from inbm_vision_lib.constants import NODE, NODE_CLIENT, CONFIG_GET, CONFIG_SET, TBH, \
     FOTA, SOTA, POTA, VISION, SecurityException, XmlException, create_success_message, LIB_FIRMWARE_PATH
 from inbm_vision_lib.invoker import Invoker
-from ..rollback_manager import RollbackManager
+from inbm_vision_lib.ota_parser import ParseException
+
+from inbm_vision_lib.xlink.xlink_library import XLinkLibrary
+
+
 
 from .request_data_handler import GeneralDataHandler, get_dh_factory
 from .query import _create_query_response, _create_query_guid_response
@@ -38,6 +41,7 @@ from ..constant import INVOKER_QUEUE_SIZE, AGENT, CONFIG_LOCATION, \
     NO_ACTIVE_NODES_FOUND_ERROR, RESTART_TIMER_SECS, VISION_ID, VisionException, SUCCESS, MAX_CONFIG_LOAD_TIMER_SECS, \
     XLINK_PROVISION_PATH
 from ..parser import XLinkParser
+from ..rollback_manager import RollbackManager
 from ..status_watcher import StatusWatcher
 from ..updater import Updater, ConfigurationLoader, get_updater_factory
 
@@ -62,6 +66,7 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         self._vision_callback = vision_callback
         self._mqtt_queue: List[str] = []
         self._xlink_queue: List[str] = []
+        self._xlink_library = XLinkLibrary()
         self._registry_manager = vision.registry_manager.RegistryManager(self)
         self._invoker = Invoker(INVOKER_QUEUE_SIZE)
         self._node_heartbeat_interval_secs = \
@@ -72,6 +77,78 @@ class DataHandler(vision.data_handler.idata_handler.IDataHandler):
         self._flashless_rollback: Optional[RollbackManager] = None
         self.load_config_file(True)
         self._running = True
+
+    def get_xlink_library(self) -> XLinkLibrary:
+        """Get instance of XLinklibrary class.  We only want it to initialize once when the vision-agent starts.
+
+        @return: instance of XLinkLibrary
+        """
+        return self._xlink_library
+
+    def receive_provision_node_request(self, manifest: str) -> None:
+        """Handles a provision node request received via MQTT.
+
+        @param manifest: manifest received via MQTT
+        """
+        logger.debug("Execute provisionNode command.")
+        try:
+            parsed_manifest = vision.manifest_parser.ParsedManifest.from_instance(
+                vision.manifest_parser.parse_manifest(manifest))
+        except (XmlException, ParseException) as error:
+            self.send_telemetry_response(VISION_ID, inbm_vision_lib.constants.create_error_message(
+                f"Command PROVISION_NODE FAILED: {error}"))
+            return
+
+        try:
+            for path in parsed_manifest.info:
+                move_file(parsed_manifest.info[path], XLINK_PROVISION_PATH)
+            self.send_telemetry_response(
+                VISION_ID, inbm_vision_lib.constants.create_success_message("Provision command: COMPLETE"))
+
+            # Restart device after storing blob and cert file.
+            self._restart_device_after_provision_node_command(
+                parsed_manifest.info["blob_path"].rsplit("/")[-1])
+        except (OSError, VisionException) as error:
+            remove_file(parsed_manifest.info["blob_path"])
+            remove_file(parsed_manifest.info["cert_path"])
+            remove_file(os.path.join(XLINK_PROVISION_PATH,
+                        parsed_manifest.info["blob_path"].split('/')[-1]))
+            remove_file(os.path.join(XLINK_PROVISION_PATH,
+                        parsed_manifest.info["cert_path"].split('/')[-1]))
+            self.send_telemetry_response(VISION_ID, inbm_vision_lib.constants.create_error_message(
+                f"Command PROVISION_NODE FAILED: {error}"))
+
+    def _restart_device_after_provision_node_command(self, file_name: str) -> None:
+        """ After downloading Blob & Cert and storing it at /opt/xlink_provision, reset the device to the driver.
+        Before secure xlink provisioning, nodes will not be able to connect with the vision-agent.
+        The restart command will not work.  To reset device, we need sw_device_id. The only way to identify
+        sw_device_id in current scenario is by getting the sw_device_id from blob/cert name.
+        1. Get the GUID from read_guid API in secure xlink library.
+        2. Compare the GUID with the GUID in blob file's name.
+        3. If both GUIDs match, get the matching sw device id.
+        4. Pass the sw device id to PMS reset API to reset device.
+
+        @param file_name: file name of the blob file
+        """
+        is_device_reset = False
+        file_guid = file_name.rsplit("_")[0]
+        all_xlink_dev_list = self._xlink_library.get_all_xlink_pcie_device_ids()
+        xlink_first_slice_list = self._xlink_library.filter_first_slice_from_list(all_xlink_dev_list)
+
+        logger.debug(f"SW ID to be checked = {xlink_first_slice_list}")
+        for xlink in xlink_first_slice_list:
+            try:
+                guid, svn = XlinkSecureWrapper.get_guid(xlink)  # type: ignore
+                if guid == file_guid:
+                    PMSHelper().reset_device(str(xlink))
+                    is_device_reset = True
+                    break
+            except (AttributeError, PmsException) as error:
+                logger.error(f"Failed to reset device: {error}")
+
+        if not is_device_reset:
+            raise VisionException(
+                f"Failed to reset device due to no matching device id - {file_guid}.")
 
     def load_config_file(self, is_startup: bool = False) -> None:
         """Load the config value from config file.

@@ -32,9 +32,10 @@ class TestBitCreekNode(TestCase):
         self.assertEquals(self.node.get_xlink(), mock_xlink)
         self.assertEquals(self.node.get_data_handler(), mock_data_handler)
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('node.xlink_manager.XlinkManager._query_channel')
     @patch('node.xlink_manager.XlinkManager.start')
-    def test_start_xlink_channel_pass(self, listen_channel, query_channel):
+    def test_start_xlink_channel_pass(self, listen_channel, query_channel, mock_xlink_lib):
         new_config_mgr = Mock()
         new_config_mgr.get_element = MagicMock(return_value=[1, "SUCCESS"])
         self.node.initialize(None, XlinkManager(None, new_config_mgr), None)  # type: ignore

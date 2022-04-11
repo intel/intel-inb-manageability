@@ -11,7 +11,6 @@ import logging
 from typing import Dict, Any
 
 from .data_handler.idata_handler import IDataHandler
-from .data_handler.command_data_handler import receive_provision_node_request
 from . import ibroker
 
 from .constant import AGENT, CLIENT_CERTS, CLIENT_KEYS, STATE_CHANNEL, \
@@ -162,7 +161,7 @@ class Broker(ibroker.IBroker):
         logger.debug('Received provision request: %s on topic: %s', payload, topic)
         try:
             if payload is not None:
-                receive_provision_node_request(payload, self.data_handler)
+                self.data_handler.receive_provision_node_request(payload)
         except ValueError as error:
             logger.error('Unable to parse command/id. Verify '
                          'request is in the correct format. {}'

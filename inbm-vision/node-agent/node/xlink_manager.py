@@ -15,7 +15,7 @@ from inbm_vision_lib.xlink.xlink_wrapper import XlinkWrapper
 from inbm_vision_lib.xlink.xlink_simulator_wrapper import XlinkSimulatorWrapper
 from inbm_vision_lib.xlink.ixlink_wrapper import IXlinkWrapper, XlinkWrapperException, _is_xlink_secure_exist
 from inbm_vision_lib.xlink.xlink_factory import xlink_wrapper_factory
-from inbm_vision_lib.xlink.xlink_utility import get_all_xlink_pcie_device_ids
+from inbm_vision_lib.xlink.xlink_library import XLinkLibrary
 from inbm_vision_lib.constants import CACHE, UNSECURED_XLINK_CHANNEL, SECURED_XLINK_CHANNEL, \
     SECURE_XLINK_LIB_PATH, NODE
 from .constant import REGISTRATION_RETRY_TIMER_SECS
@@ -38,6 +38,7 @@ class XlinkManager(object):
         self._is_boot_device = False
         self._is_xlink_connected = False
         self.running = True
+        self._xlink_library = XLinkLibrary()
         self._is_secure_xlink = _is_xlink_secure_exist()
         self.xlink_wrapper: Optional[IXlinkWrapper] = None
         self.xlink_public_channel: Optional[IXlinkWrapper] = None
@@ -56,7 +57,7 @@ class XlinkManager(object):
         public_channel_thread.start()
 
     def _query_channel(self) -> None:
-        xlink_pcie_dev_list = get_all_xlink_pcie_device_ids(0)
+        xlink_pcie_dev_list = self._xlink_library.get_all_xlink_pcie_device_ids()
         self.xlink_pcie_num = xlink_pcie_dev_list[0]
 
         self.xlink_public_channel = XlinkWrapper(

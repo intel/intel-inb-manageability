@@ -50,13 +50,14 @@ config_file_name = "/var/cache/manageability/node.conf"
 
 
 class TestUpdater(TestCase):  # type: ignore
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('vision.data_handler.data_handler.DataHandler.load_config_file')
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('inbm_vision_lib.invoker.Invoker.__init__', return_value=None)
     @patch('vision.registry_manager.RegistryManager.__init__', return_value=None)
     @patch('os.path.getsize', return_value=16000)
     @patch('os.path.exists', return_value=True)
-    def setUp(self, os_path_exist, os_get_size, mgr_init, invoker_init, mock_timer, load_file):
+    def setUp(self, os_path_exist, os_get_size, mgr_init, invoker_init, mock_timer, load_file, mock_xlink_lib):
         self.maxDiff = None
         self.mock_data_handler = DataHandler(Mock(), Mock())
         self.fota_updater = FotaUpdater(

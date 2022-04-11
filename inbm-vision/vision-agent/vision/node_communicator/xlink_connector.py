@@ -1,7 +1,7 @@
 """
     Concrete class for Xlink Communication
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -12,15 +12,13 @@ from time import sleep
 from ctypes import *
 
 from inbm_vision_lib.constants import UNSECURED_XLINK_CHANNEL, XLINK_DEV_READY, XLINK_UNAVAILABLE, KMB
-from inbm_vision_lib.xlink.xlink_utility import get_all_xlink_pcie_device_ids, filter_first_slice_from_list
 from inbm_vision_lib.xlink.ixlink_wrapper import XlinkWrapperException, _is_xlink_secure_exist, X_LINK_SUCCESS
 from inbm_vision_lib.xlink.xlink_factory import xlink_wrapper_factory
 from inbm_vision_lib.xlink.xlink_secure_wrapper import XlinkSecureWrapper
 from inbm_vision_lib.request_message_constants import NO_DEVICE_FOUND
-from inbm_vision_lib.path_prefixes import IS_WINDOWS
 
 from ..data_handler.idata_handler import IDataHandler
-from ..constant import XLINK_STATUS_CHECKING_INTERVAL, VISION_ID, DEVICE_DOWN
+from ..constant import XLINK_STATUS_CHECKING_INTERVAL, VISION_ID
 from ..mac_address import get_mac_address
 
 from .xlink import XlinkPublic, _xlink_factory
@@ -44,6 +42,7 @@ class XlinkConnector(IXlinkChannelConnector):
         self._running = True
         self.async_callback = self._create_async_callback_cfunction()
         self._query_channel_lock = Lock()
+        self._xlink_library = data_handler.get_xlink_library()
 
     def initialize(self) -> None:
         """Initializes Xlink communication"""
@@ -218,9 +217,8 @@ class XlinkConnector(IXlinkChannelConnector):
     def _start_public_channel(self) -> None:
         """Start the public channel"""
         while self._running:
-            self.xlink_pcie_dev_list = get_all_xlink_pcie_device_ids(0) \
-                if not IS_WINDOWS else get_all_xlink_pcie_device_ids(64)
-            self.xlink_pcie_dev_list = filter_first_slice_from_list(self.xlink_pcie_dev_list)
+            self.xlink_pcie_dev_list = self._xlink_library.get_all_xlink_pcie_device_ids()
+            self.xlink_pcie_dev_list = self._xlink_library.filter_first_slice_from_list(self.xlink_pcie_dev_list)
             logger.debug(f"xlink dev to be connected = {self.xlink_pcie_dev_list}")
             if len(self.xlink_pcie_dev_list) > 0:
                 break
@@ -411,9 +409,8 @@ class XlinkConnector(IXlinkChannelConnector):
         @return: nodes' GUID and its provisioned status
         """
         guid_svn = []
-        all_xlink_dev_list = get_all_xlink_pcie_device_ids(0) \
-            if not IS_WINDOWS else get_all_xlink_pcie_device_ids(64)
-        xlink_first_slice_list = filter_first_slice_from_list(all_xlink_dev_list)
+        all_xlink_dev_list = self._xlink_library.get_all_xlink_pcie_device_ids()
+        xlink_first_slice_list = self._xlink_library.filter_first_slice_from_list(all_xlink_dev_list)
         for xlink in xlink_first_slice_list:
             try:
                 guid, svn = XlinkSecureWrapper.get_guid(xlink)  # type: ignore

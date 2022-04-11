@@ -25,8 +25,8 @@ class TestVision(TestCase):
         self.assertEquals(self._vision._node_connector, mock_node_connector)
         self.assertEquals(self._vision._data_handler, mock_data_handler)
 
-    @patch('vision.node_communicator.xlink_connector.filter_first_slice_from_list', return_value=[1702351])
-    @patch('vision.node_communicator.xlink_connector.get_all_xlink_pcie_device_ids', return_value=[1702351])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.filter_first_slice_from_list', return_value=[1702351])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.get_all_xlink_pcie_device_ids', return_value=[1702351])
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.__init__', return_value=None)
     def test_start_xlink_channel(self, init_wrapper, get_id, filter):
         new_config_mgr = Mock()

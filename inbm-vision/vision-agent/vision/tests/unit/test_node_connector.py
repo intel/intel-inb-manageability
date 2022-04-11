@@ -10,11 +10,12 @@ from vision.node_communicator.node_connector import NodeConnector
 
 class TestNodeConnector(TestCase):
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('vision.data_handler.data_handler.DataHandler.load_config_file')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.invoker.Invoker.__init__', return_value=None)
     @patch('vision.registry_manager.RegistryManager.__init__', return_value=None)
-    def setUp(self, mock_reg, mock_invoker, mock_start_thread, mock_load_file):
+    def setUp(self, mock_reg, mock_invoker, mock_start_thread, mock_load_file, mock_xlink_lib):
         new_data_handler = DataHandler(Mock(), Mock())
         new_config_mgr = Mock()
         new_config_mgr.get_element = MagicMock(return_value=[1, "SUCCESS"])

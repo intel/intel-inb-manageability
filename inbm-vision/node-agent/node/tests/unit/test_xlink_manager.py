@@ -10,9 +10,10 @@ from node.xlink_manager import XlinkManager
 
 class TestXlinkManager(TestCase):
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('threading.Thread.start')
     @patch('node.data_handler.DataHandler.load_config_file')
-    def setUp(self, load_config, t_start):
+    def setUp(self, load_config, t_start, mock_xlink_lib):
         new_data_handler = DataHandler(Mock(), Mock())
         new_config_mgr = Mock()
         new_config_mgr.get_element = MagicMock(return_value=[20, "SUCCESS"])
@@ -63,7 +64,7 @@ class TestXlinkManager(TestCase):
 
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.send')
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.start')
-    @patch('node.xlink_manager.get_all_xlink_pcie_device_ids', return_value=[1702351])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.get_all_xlink_pcie_device_ids', return_value=[1702351])
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.get_init_status', return_value=True)
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.__init__', return_value=None)
     def test_query_channel(self, init, get_status, get_id, start, send):
@@ -120,7 +121,7 @@ class TestXlinkManager(TestCase):
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.stop')
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.send')
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.start')
-    @patch('node.xlink_manager.get_all_xlink_pcie_device_ids', return_value=[1702351])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.get_all_xlink_pcie_device_ids', return_value=[1702351])
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.get_init_status', return_value=True)
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.__init__', return_value=None)
     def test_node_not_send_query_message_after_receive_message_from_vision_agent_pass(self, init, get_status, get_id,
@@ -154,7 +155,7 @@ class TestXlinkManager(TestCase):
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.stop', side_effect=Exception)
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.send', side_effect=[True, AttributeError])
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.start')
-    @patch('node.xlink_manager.get_all_xlink_pcie_device_ids', return_value=[1702351])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.get_all_xlink_pcie_device_ids', return_value=[1702351])
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.get_init_status', return_value=True)
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.__init__', return_value=None)
     def test_node_not_send_query_message_after_receive_message_from_vision_agent_fail(self, init, get_status, get_id,

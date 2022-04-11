@@ -11,11 +11,12 @@ from vision.node_communicator.xlink import Xlink, XlinkPublic
 
 class TestXlinkConnector(TestCase):
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('vision.data_handler.data_handler.DataHandler.load_config_file')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.invoker.Invoker.__init__', return_value=None)
     @patch('vision.registry_manager.RegistryManager.__init__', return_value=None)
-    def setUp(self, mock_reg, mock_invoker, mock_start_thread, mock_load_file):
+    def setUp(self, mock_reg, mock_invoker, mock_start_thread, mock_load_file, mock_xlink_lib):
         new_data_handler = DataHandler(Mock(), Mock())
 
         channel_list = list(range(1530, 1730))
@@ -273,8 +274,8 @@ class TestXlinkConnector(TestCase):
     def test_get_guid_when_no_node(self):
         self.assertEqual(self.xlink_connector.get_guid(17036856), ("0", "0"))
 
-    @patch('vision.node_communicator.xlink_connector.filter_first_slice_from_list', return_value=[])
-    @patch('vision.node_communicator.xlink_connector.get_all_xlink_pcie_device_ids', return_value=[])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.filter_first_slice_from_list', return_value=[])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.get_all_xlink_pcie_device_ids', return_value=[])
     def test_get_all_guid_when_no_node(self, get_all, filter_first):
         self.assertEqual(self.xlink_connector.get_all_guid(), [])
 
@@ -282,7 +283,7 @@ class TestXlinkConnector(TestCase):
         self.assertEqual(self.xlink_connector.is_provisioned(17036856), False)
 
     @patch('inbm_vision_lib.xlink.xlink_secure_wrapper.XlinkSecureWrapper.get_guid', side_effect=AttributeError("Error"))
-    @patch('vision.node_communicator.xlink_connector.filter_first_slice_from_list', return_value=[12345])
-    @patch('vision.node_communicator.xlink_connector.get_all_xlink_pcie_device_ids', return_value=[12345])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.filter_first_slice_from_list', return_value=[12345])
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.get_all_xlink_pcie_device_ids', return_value=[12345])
     def test_get_all_guid_raise_exception(self, get_all, filter_first, get_guid):
         self.assertEqual(self.xlink_connector.get_all_guid(), [])

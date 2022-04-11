@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import patch, Mock, MagicMock
+from mock import patch, Mock
 
 from vision.node_communicator.ixlink_channel_connector import XlinkSimulatorConnector
 from vision.data_handler.data_handler import DataHandler
@@ -7,11 +7,12 @@ from vision.data_handler.data_handler import DataHandler
 
 class TestXlinkSimulatorConnector(TestCase):
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.xlink.xlink_simulator_wrapper.XlinkSimulatorWrapper.__init__', return_value=None)
     @patch('vision.data_handler.data_handler.DataHandler.load_config_file')
     @patch('inbm_vision_lib.invoker.Invoker.__init__', return_value=None)
     @patch('vision.registry_manager.RegistryManager.__init__', return_value=None)
-    def setUp(self, mock_reg, mock_invoker, mock_load_file, mock_sim_wrapper):
+    def setUp(self, mock_reg, mock_invoker, mock_load_file, mock_sim_wrapper, mock_xlink_lib):
         new_data_handler = DataHandler(Mock(), Mock())
 
         channel_list = list(range(1530, 1730))

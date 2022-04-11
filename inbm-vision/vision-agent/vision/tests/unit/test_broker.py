@@ -10,6 +10,10 @@ from mock import patch, Mock
 
 class TestBroker(TestCase):
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
+    def setUp(self, mock_xlink_lib):
+        None
+
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -22,20 +26,22 @@ class TestBroker(TestCase):
         self.assertTrue(INSTALL_CHANNEL in d.mqttc.topics)
         self.assertTrue(RESTART_CHANNEL in d.mqttc.topics)
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
-    def test_on_message(self, m_pub, m_connect, t_start, timer_start):
+    def test_on_message(self, m_pub, m_connect, t_start, timer_start, mock_xlink_init):
         d = TestBroker._build_broker()
         d._on_message('topic', 'payload', 1)
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('vision.data_handler.data_handler.DataHandler.receive_restart_request')
-    def test_on_restart(self, mock_restart_request, m_pub, m_connect, t_start, timer_start):
+    def test_on_restart(self, mock_restart_request, m_pub, m_connect, t_start, timer_start, mock_xlink_init):
         restart_request = '<?xml version="1.0" ' \
             'encoding="utf-8"?><manifest><type>cmd</type><cmd>restart</cmd><restart>' \
             '<targetType>node</targetType><targets><target>node-id1</target><target>node-id2</target><' \
@@ -44,13 +50,14 @@ class TestBroker(TestCase):
         d._on_restart('ma/request/restart', restart_request, 1)
         mock_restart_request.assert_called_once()
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('vision.data_handler.data_handler.DataHandler.receive_mqtt_message')
     def test_on_update_success(self, mock_receive_mqtt_message, m_pub, m_connect, t_start,
-                               timer_start):
+                               timer_start, mock_xlink_lib):
         update_request = '<?xml version="1.0" ' \
                          'encoding="utf-8"?><manifest><type>ota</type><ota><header><id>sampleId' \
                          '</id><name>Sample FOTA</name><description>Sample FOTA manifest ' \
@@ -72,13 +79,14 @@ class TestBroker(TestCase):
         d._on_ota_update('ma/request/install', update_request, 1)
         mock_receive_mqtt_message.assert_called_once()
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('vision.data_handler.data_handler.DataHandler.receive_mqtt_message')
     def test_on_update_fail_on_topic(self, mock_receive_mqtt_message, m_pub, m_connect, t_start,
-                                     timer_start):
+                                     timer_start, mock_xlink_lib):
         update_request = '<?xml version="1.0" ' \
                          'encoding="utf-8"?><manifest><type>ota</type><ota><header><id>sampleId' \
                          '</id><name>Sample FOTA</name><description>Sample FOTA manifest ' \
@@ -105,24 +113,27 @@ class TestBroker(TestCase):
                 str(e), "Unsupported command received: push")
         mock_receive_mqtt_message.assert_not_called()
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('vision.data_handler.data_handler.DataHandler.receive_mqtt_message')
     def test_on_update_fail_on_payload(self, mock_receive_mqtt_message, m_pub, m_connect, t_start,
-                                       timer_start):
+                                       timer_start, mock_xlink_library):
+        update_request = None
         update_request = None
         d = TestBroker._build_broker()
         d._on_ota_update('ma/request/install', update_request, 1)
         mock_receive_mqtt_message.assert_not_called()
         self.assertRaises(ValueError)
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
-    def test_initialize_broker_fail(self, m_pub, m_connect, t_start, timer_start):
+    def test_initialize_broker_fail(self, m_pub, m_connect, t_start, timer_start, mock_xlink_lib):
         m_pub.side_effect = Exception('abc')
         d = TestBroker._build_broker()
         self.assertRaises(Exception)
@@ -143,6 +154,7 @@ class TestBroker(TestCase):
         d._on_config_update('ma/configuration/update/get_element', get_request, 1)
         mock_manage_req.assert_called_once()
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('vision.broker.logger')
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
@@ -150,7 +162,7 @@ class TestBroker(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('vision.data_handler.data_handler.DataHandler.manage_configuration_request', side_effect=ValueError)
     def test_on_config_update_value_error(self, mock_manage_req, m_pub, m_connect, t_start,
-                                          timer_start, mock_logger):
+                                          timer_start, mock_logger, mock_xlink_lib):
         get_request = '<?xml version="1.0" ' \
                       'encoding="utf-8"?><manifest><type>config</type><config><cmd>get_element</cmd> ' \
                       '<agent>vision</agent>' \

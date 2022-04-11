@@ -18,10 +18,11 @@ from vision.ota_target import OtaTarget
 
 class TestDataHandler(TestCase):
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('vision.data_handler.data_handler.DataHandler.load_config_file')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.timer.Timer.start')
-    def setUp(self, timer_start, thread_start, load_file):
+    def setUp(self, timer_start, thread_start, load_file, mock_xlink_lib):
         mock_config_mgr = Mock()
         mock_config_mgr.get_children = MagicMock(return_value={'mock_key1': 10})
         mock_config_mgr.get_element = MagicMock(return_value=['Mock'])
