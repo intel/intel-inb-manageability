@@ -87,8 +87,12 @@ class XmlHandler:
                 schema.validate(xml)
 
             return parsed_doc
-        except (xmlschema.XMLSchemaValidationError, ParseError, DefusedXmlException, DTDForbidden,
-                EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, xmlschema.XMLSchemaParseError) as error:
+        except (xmlschema.XMLSchemaValidationError, DTDForbidden, DefusedXmlException, EntitiesForbidden, ExternalReferenceForbidden, xmlschema.XMLSchemaParseError) as error:
+            logger.debug("**************************************************************************")    
+            raise XmlException(f'XML validation error: {error}')
+                
+        except (ParseError, NotSupportedError) as error:
+            logger.debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
             raise XmlException(f'XML validation error: {error}')
 
     def __repr__(self) -> str:
@@ -116,20 +120,26 @@ class XmlHandler:
         @return: Values of the matched elements as a List
         @raises XmlException
         """
+        #print("............................................>get_children")
         children = {}
         elements = self._root.find(xpath)
 
         if elements is None:
+            logger.debug("........................................>Cannot find children at specified path")
             raise XmlException(f'Cannot find children at specified path: {xpath}')
         for each in elements:
             if each.text:
+                logger.debug(".............................................>each.text")
                 children[each.tag] = each.text
             elif len(each):
                 children[each.tag] = str(each.tag)
+                logger.debug("..............................................>line132")
                 logger.debug(f'The element {each.tag} has {len(each)} children.')
             else:
+                logger.debug("............................................>Empty tag encountered.")
                 raise XmlException('Empty tag encountered. XML rejected')
 
+        print(children)
         return children
 
     def find_element(self, xpath: str) -> Any:
