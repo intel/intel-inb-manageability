@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 from inbc.inbc import Inbc
-from inbc.parser import ArgsParser, fota, sota, load, get, set
+from inbc.parser import ArgsParser, fota, sota, load, get, set, append
 from inbc.constants import COMMAND_FAIL, COMMAND_SUCCESS
 from inbc.inbc_exception import InbcCode, InbcException
 from inbc.command.ota_command import FotaCommand
@@ -724,3 +724,12 @@ class TestINBC(TestCase):
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         t_stop.assert_called_once()
+
+    def test_append_manifest2(self):
+        append = self.arg_parser.parse_args(['append', '--nohddl', '--path', 'trustedRepositories:https://abc.com'])
+
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>config</type><config><cmd>append' \
+                   '</cmd><configtype><append>' \
+                   '<path>trustedRepositories:https://abc.com</path></append>' \
+                   '</configtype></config></manifest>'
+        self.assertEqual(append.func(append), expected)

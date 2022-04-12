@@ -348,6 +348,28 @@ inbc set -p maxCacheSize:120;publishIntervalSeconds:310
    --target 000732767ffb-16781312 000732767ffb-16780544
 ```
 
+## Append
+### Description
+Append is only applicable to three config tags trustedRepositories, sotaSW and ubuntuAptSource in configuration file
+
+❗  This command is only supported on non-HDDL Plug-in cards 
+### Usage
+```
+inbc append [--nohddl]
+   {--path, -p KEY_PATH;...} 
+   [--targettype, -tt NODE | VISION | NODE_CLIENT; default="node"] 
+   [--target, -t TARGETS...; default=None]
+```
+### Examples
+#### Edge Device on Yocto OS
+```
+inbc append --nohddl --path  trustedRepositories:https://abc.com/
+```
+#### Edge Device on Ubuntu
+```
+inbc append --nohddl --path  trustedRepositories:https://abc.com/
+```
+
 
 ## RESTART
 ### Description
