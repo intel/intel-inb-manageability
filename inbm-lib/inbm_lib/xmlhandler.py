@@ -89,10 +89,10 @@ class XmlHandler:
 
             return parsed_doc
         except (xmlschema.XMLSchemaValidationError, ParseError, DTDForbidden,
-                EntitiesForbidden, ExternalReferenceForbidden, xmlschema.XMLSchemaParseError, NotSupportedError) as error:
+                EntitiesForbidden, ExternalReferenceForbidden, xmlschema.XMLSchemaParseError, DefusedXmlException) as error:
             logger.debug(f'**************************&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
             raise XmlException(f'XML validation error: {error}')
-        except (DefusedXmlException) as error:
+        except (NotSupportedError) as error:
             logger.debug(f';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;')
             raise XmlException(f'XML validation error: {error}')    
     
