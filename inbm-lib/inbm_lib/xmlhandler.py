@@ -88,10 +88,10 @@ class XmlHandler:
                 schema.validate(xml)
 
             return parsed_doc
-        except (DefusedXmlException) as error:
+        except (DefusedXmlException, EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, ParseError) as error:
             logger.debug(f'sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss')
             raise XmlException(f'XML validation error: {error}')
-        except (EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, ParseError, xmlschema.XMLSchemaValidationError, DTDForbidden, xmlschema.XMLSchemaParseError) as error:
+        except (xmlschema.XMLSchemaValidationError, DTDForbidden, xmlschema.XMLSchemaParseError) as error:
             logger.debug(f'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy')
             raise XmlException(f'XML validation error: {error}')    
     
