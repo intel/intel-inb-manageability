@@ -93,7 +93,8 @@ class XmlHandler:
             raise XmlException(f'XML validation error: {error}')
         except (xmlschema.XMLSchemaValidationError) as error:
             logger.debug(f'OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
-            raise XmlException(f'XML validation error: {error}')    
+            #raise XmlException(f'XML validation error: {error}')
+            raise XmlException(f'Not Supported')
     
     def __repr__(self) -> str:
         return "<XmlHandler xml=" + self._xml.__repr__() +\
