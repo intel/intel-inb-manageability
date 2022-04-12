@@ -88,9 +88,9 @@ class XmlHandler:
                 schema.validate(xml)
 
             return parsed_doc
-        except (xmlschema.XMLSchemaValidationError) as error:
-            logger.debug('66666666666666666>  NotSupportedError')
-            raise XmlException(f'XML validation error: {error}')
+       # except (xmlschema.XMLSchemaValidationError) as error:
+        #    logger.debug('66666666666666666>  NotSupportedError')
+         #   raise XmlException(f'XML validation error: {error}')
         except (DefusedXmlException) as error:
             logger.debug('77777777777777777777777>  NotSupportedError')
             raise XmlException(f'XML validation error: {error}')
