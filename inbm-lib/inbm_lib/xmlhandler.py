@@ -88,7 +88,7 @@ class XmlHandler:
                 schema.validate(xml)
 
             return parsed_doc
-        except (DefusedXmlException) as error:
+        except (xmlschema.XMLSchemaValidationError) as error:
             raise XmlException(f'XML validation error: {error}')
     
     def __repr__(self) -> str:
