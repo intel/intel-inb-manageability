@@ -91,7 +91,7 @@ class XmlHandler:
         except (DefusedXmlException) as error:
             logger.debug(f'sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss')
             raise XmlException(f'XML validation error: {error}')
-        except (EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, ParseErrorxmlschema.XMLSchemaValidationError, DTDForbidden, xmlschema.XMLSchemaParseError) as error:
+        except (EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, ParseError, xmlschema.XMLSchemaValidationError, DTDForbidden, xmlschema.XMLSchemaParseError) as error:
             logger.debug(f'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy')
             raise XmlException(f'XML validation error: {error}')    
     
