@@ -88,13 +88,10 @@ class XmlHandler:
                 schema.validate(xml)
 
             return parsed_doc
-       # except (xmlschema.XMLSchemaValidationError) as error:
-        #    logger.debug('66666666666666666>  NotSupportedError')
-         #   raise XmlException(f'XML validation error: {error}')
-        except (DefusedXmlException) as error:
-            logger.debug('77777777777777777777777>  NotSupportedError')
+        except (xmlschema.XMLSchemaValidationError) as error:
+            logger.debug('66666666666666666>  NotSupportedError')
             raise XmlException(f'XML validation error: {error}')
-
+    
     def __repr__(self) -> str:
         return "<XmlHandler xml=" + self._xml.__repr__() +\
                ", is_file=" + self._is_file.__repr__() +\
