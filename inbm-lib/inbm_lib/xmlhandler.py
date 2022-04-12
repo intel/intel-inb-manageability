@@ -92,7 +92,7 @@ class XmlHandler:
                 EntitiesForbidden, ExternalReferenceForbidden, xmlschema.XMLSchemaParseError) as error:
             logger.debug(f'&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&')
             raise XmlException(f'XML validation error: {error}')
-        except (NotSupportedError, DefusedXmlException) as error:
+        except (DefusedXmlException, NotSupportedError) as error:
             logger.debug(f'@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
             raise XmlException(f'XML validation error: {error}')    
     
