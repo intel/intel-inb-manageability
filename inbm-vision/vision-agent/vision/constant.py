@@ -7,12 +7,16 @@
 """
 from inbm_vision_lib.path_prefixes import INBM_VISION_ETC_PATH_PREFIX, INBM_VISION_SHARE_PATH_PREFIX, \
     INBM_VISION_USR_BIN_PREFIX, BROKER_ETC_PATH
+from inbm_vision_lib.constants import XLINK_LIB_PATH
+from ctypes import *
 
 
 class VisionException(Exception):
     """Vision exception module"""
     pass
 
+
+XLINK_LIBRARY = CDLL(XLINK_LIB_PATH)
 
 AGENT = 'vision'
 STATE_CHANNEL = '+/state'

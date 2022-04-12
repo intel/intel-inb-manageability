@@ -14,6 +14,11 @@ from inbm_vision_lib.constants import CONFIG_GET, CONFIG_SET
 from inbm_vision_lib.configuration_manager import ConfigurationException
 from mock import Mock, patch, MagicMock
 from vision.ota_target import OtaTarget
+from inbm_vision_lib.ota_parser import ParseException
+
+RECEIVED_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
+    '<blobPath>/var/cache/manageability/repository-tool/test.bin</blobPath>' \
+               '<certPath>/var/cache/manageability/repository-tool/test.crt</certPath></provisionNode></manifest>'
 
 
 class TestDataHandler(TestCase):
@@ -30,6 +35,19 @@ class TestDataHandler(TestCase):
         self.assertEqual(timer_start.call_count, 2)
         thread_start.assert_called_once()
         load_file.assert_called_once()
+
+    @patch('vision.manifest_parser.parse_manifest',
+           return_value=ParsedManifest('provisionNode', {'blob_path': 'blob.bin', 'cert_path': 'path.crt'}, []))
+    @patch('vision.data_handler.data_handler.move_file')
+    def test_move_files_successfully(self, mock_move, mock_parse):
+        self.data_handler.receive_provision_node_request(RECEIVED_XML)
+        self.assertEqual(mock_move.call_count, 2)
+
+    @patch('vision.manifest_parser.parse_manifest', side_effect=ParseException)
+    @patch('inbm_common_lib.utility.move_file')
+    def test_no_move_files_on_failure(self, mock_move, mock_parse):
+        self.data_handler.receive_provision_node_request(RECEIVED_XML)
+        self.assertEqual(mock_move.call_count, 0)
 
     @patch('inbm_vision_lib.invoker.Invoker.add')
     def test_send_node_register_response(self, add_cmd):

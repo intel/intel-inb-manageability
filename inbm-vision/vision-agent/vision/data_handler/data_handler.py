@@ -28,10 +28,7 @@ from inbm_vision_lib.constants import NODE, NODE_CLIENT, CONFIG_GET, CONFIG_SET,
     FOTA, SOTA, POTA, VISION, SecurityException, XmlException, create_success_message, LIB_FIRMWARE_PATH
 from inbm_vision_lib.invoker import Invoker
 from inbm_vision_lib.ota_parser import ParseException
-
 from inbm_vision_lib.xlink.xlink_library import XLinkLibrary
-
-
 
 from .request_data_handler import GeneralDataHandler, get_dh_factory
 from .query import _create_query_response, _create_query_guid_response

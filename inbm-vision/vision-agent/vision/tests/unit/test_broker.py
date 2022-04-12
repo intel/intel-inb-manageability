@@ -10,15 +10,16 @@ from mock import patch, Mock
 
 class TestBroker(TestCase):
 
-    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
-    def setUp(self, mock_xlink_lib):
-        None
+    # @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
+    # def setUp(self, mock_xlink_lib):
+    #     None
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    def test_broker_subscribe_topics(self, m_sub, m_connect, t_start, timer_start):
+    def test_broker_subscribe_topics(self, m_sub, m_connect, t_start, timer_start, mock_xlink_lib):
         d = TestBroker._build_broker()
         self.assertTrue(m_sub.called)
         self.assertEquals(len(d.mqttc.topics), 6)
@@ -138,13 +139,14 @@ class TestBroker(TestCase):
         d = TestBroker._build_broker()
         self.assertRaises(Exception)
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('vision.data_handler.data_handler.DataHandler.manage_configuration_request')
     def test_on_config_update_success(self, mock_manage_req, m_pub, m_connect, t_start,
-                                      timer_start):
+                                      timer_start, mock_xlink_lib):
         get_request = '<?xml version="1.0" ' \
                       'encoding="utf-8"?><manifest><type>config</type><config><cmd>get_element</cmd> ' \
                       '<agent>vision</agent>' \
@@ -172,6 +174,7 @@ class TestBroker(TestCase):
         d._on_config_update('ma/configuration/update/get_element', get_request, 1)
         assert mock_logger.error.call_count == 1
 
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
     @patch('vision.broker.logger')
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('threading.Thread.start')
@@ -179,7 +182,7 @@ class TestBroker(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('vision.data_handler.data_handler.DataHandler.receive_mqtt_message', side_effect=ValueError)
     def test_on_ota_update_value_error(self, receive_msg, m_pub, m_connect, t_start,
-                                       timer_start,  mock_logger):
+                                       timer_start,  mock_logger, mock_xlink_lib):
         update_request = '<?xml version="1.0" ' \
                          'encoding="utf-8"?><manifest><type>ota</type><ota><header><id>sampleId' \
                          '</id><name>Sample FOTA</name><description>Sample FOTA manifest ' \

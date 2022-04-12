@@ -6,35 +6,38 @@
 """
 
 import logging
-
+from ctypes import *
 from typing import List
+
+from inbm_vision_lib.path_prefixes import IS_WINDOWS
+
 from .ixlink_wrapper import X_LINK_SUCCESS, xlink_handle, HOST_DEVICE
 from ..constants import XLINK_LIB_PATH, SW_DEVICE_ID_PCIE_INTERFACE, SW_DEVICE_ID_MEDIA_FUNCTION, \
     SW_DEVICE_ID_INTERFACE_SHIFT, SW_DEVICE_ID_INTERFACE_MASK, XLINK_SW_DEV_ID_PCIE_FUNCTION_MASK, \
     MAXIMUM_DEVICE_NAME_SIZE
-from inbm_vision_lib.path_prefixes import IS_WINDOWS
-
-from ctypes import *
 
 logger = logging.getLogger(__name__)
 
 
 class XLinkLibrary(object):
+
     def __init__(self) -> None:
-        self._xlink_library = CDLL(XLINK_LIB_PATH)
-        self._xlink_library.xlink_initialize()
+        """Initializes the Xlink library and calls xlink library APIs"""
+        self._library = CDLL(XLINK_LIB_PATH)
+        XLINK_LIBRARY.xlink_initialize()
 
     def get_all_xlink_pcie_device_ids(self) -> List[int]:
         """ Call xlink API to get all xlink PCIe device.
 
-            @return: list that contains xlink PCIe device id
+            @return: list of xlink PCIe device id
         """
         dev_id_list = (c_int * 64)()
         xlink_pcie_dev_ids = []
         num_devices = 0 if not IS_WINDOWS else 64
         num_dev = c_int(num_devices)
         logger.debug('Call xlink get device list...')
-        status = self._xlink_library.xlink_get_device_list(
+        lib = self._library    # CDLL
+        status = lib.xlink_get_device_list(
             byref(dev_id_list), byref(num_dev))
         if status is not X_LINK_SUCCESS:
             logger.error('xlink_get_device_list failed - %s', str(status))

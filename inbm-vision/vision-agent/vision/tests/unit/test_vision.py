@@ -13,7 +13,8 @@ from mock import patch, Mock, MagicMock
 
 class TestVision(TestCase):
 
-    def setUp(self):
+    @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.__init__', return_value=None)
+    def setUp(self, mock_xlink_lib):
         self._vision = Vision()
 
     def test_init(self):
@@ -25,10 +26,12 @@ class TestVision(TestCase):
         self.assertEquals(self._vision._node_connector, mock_node_connector)
         self.assertEquals(self._vision._data_handler, mock_data_handler)
 
+    @patch('vision.node_communicator.xlink_connector.XlinkConnector.__init__', return_value=None)
+    #@patch('vision.data_handler.data_handler.DataHandler.get_xlink_library')
     @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.filter_first_slice_from_list', return_value=[1702351])
     @patch('inbm_vision_lib.xlink.xlink_library.XLinkLibrary.get_all_xlink_pcie_device_ids', return_value=[1702351])
     @patch('inbm_vision_lib.xlink.xlink_wrapper.XlinkWrapper.__init__', return_value=None)
-    def test_start_xlink_channel(self, init_wrapper, get_id, filter):
+    def test_start_xlink_channel(self, init_wrapper, get_id, filter, mock_connector):
         new_config_mgr = Mock()
         new_config_mgr.get_element = MagicMock(return_value=[1, "SUCCESS"])
         self._vision.initialize(None, NodeConnector(None, new_config_mgr), None)  # type: ignore
