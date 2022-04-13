@@ -4,15 +4,17 @@ The following outlines the manifest parameters used to perform the supported OTA
 
 ## Table of Contents
 1. [Manifest Rules](#manifest-rules)
-3. [FOTA](#FOTA)
-4. [SOTA](#SOTA)
-5. [POTA](#POTA)
-6. [AOTA](#AOTA)
-7. [Query](#Query)
-8. [Configuration SET](#Set)
-9. [Configuration GET](#Get)
-10. [Configuration LOAD](#Load)
-11. [Provision Node](#Provision-Node)
+2. [FOTA](#FOTA)
+3. [SOTA](#SOTA)
+4. [POTA](#POTA)
+5. [AOTA](#AOTA)
+6. [Query](#Query)
+7. [Configuration SET](#Set)
+8. [Configuration GET](#Get)
+9. [Configuration LOAD](#Load)
+10. [Configuration Append](#Append)
+11. [Configuration Remove](#Remove)
+12. [Provision Node](#Provision-Node)
 
 ## Manifest Rules 
 
@@ -1226,24 +1228,25 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 ## Append
 
 #### Configuration Append Manifest Parameters
-| Tag                                      | Example                                         | Required/Optional | Notes           |
-|:-----------------------------------------|:------------------------------------------------|:-----------------:|:----------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`        |         R         |                 |
-| `<manifest>`                             | `<manifest>`                                    |         R         |                 |
-| `<type></type>`                          | `<type>config</type>`                           |         R         | Always 'config' |
-| `<config>`                               | `<config>`                                      |         R         |                 |
-| `<cmd></cmd>`                            | `<cmd>append</cmd>`                             |         R         |                 |
-| `<configtype>`                           | `<configtype>`                                  |         R         |                 |
-| `<append>`                               | `<append>`                                      |         R         |                 |
-| `<path></path>`                          | `<path>minStorageMB:100;minMemoryMB:200</path>` |         R         |                 |
-| `</append>`                              | `</append>`                                     |         R         |                 |
-| `</configtype>`                          | `</configtype>`                                 |         R         |                 |
-| `</config>`                              | `</config`                                      |         R         |                 |
-| `</manifest>`                            | `</manifest>`                                   |         R         |                 |
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>config</type>`                    |         R         | Always 'config' |
+| `<config>`                               | `<config>`                               |         R         |                 |
+| `<cmd></cmd>`                            | `<cmd>append</cmd>`                      |         R         |                 |
+| `<configtype>`                           | `<configtype>`                           |         R         |                 |
+| `<append>`                               | `<append>`                               |         R         |                 |
+| `<path></path>`                          | `<path>sotaSW:trtl</path>`               |         R         |                 |
+| `</append>`                              | `</append>`                              |         R         |                 |
+| `</configtype>`                          | `</configtype>`                          |         R         |                 |
+| `</config>`                              | `</config`                               |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
 
 #### Append Example
 
 * Append can currently only be used on INB agents in either the Edge or Vision card solution.
+* Append would not be used on the vision or node agents
 * Append is only applicable to three configuration tags, for example,
     **trustedRepositories**, **sotaSW** and **ubuntuAptSource**
 * Path takes in key value pair format, example: trustedRepositories:  https://dummyURL.com
@@ -1262,26 +1265,48 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 </manifest>
 ```
 
+#### Append Example on **SPECIFIC** INB Nodes
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>config</type>
+    <config>
+        <cmd>append</cmd>
+        <targetType>node_client</targetType>
+        <configtype>
+            <targets>
+                <target>000732767ffb-16781312</target>
+                <target>000732767ffb-16780544</target>
+            </targets>
+            <append>
+                <path>sotaSW:trtl</path>
+            </append>
+        </configtype>
+    </config>
+</manifest>
+```
+
 ## Remove
 
 #### Configuration Remove Manifest Parameters
-| Tag                                      | Example                                         | Required/Optional | Notes           |
-|:-----------------------------------------|:------------------------------------------------|:-----------------:|:----------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`        |         R         |                 |
-| `<manifest>`                             | `<manifest>`                                    |         R         |                 |
-| `<type></type>`                          | `<type>config</type>`                           |         R         | Always 'config' |
-| `<config>`                               | `<config>`                                      |         R         |                 |
-| `<cmd></cmd>`                            | `<cmd>remove</cmd>`                             |         R         |                 |
-| `<configtype>`                           | `<configtype>`                                  |         R         |                 |
-| `<remove>`                               | `<remove>`                                      |         R         |                 |
-| `<path></path>`                          | `<path>minStorageMB:100;minMemoryMB:200</path>` |         R         |                 |
-| `</remove>`                              | `</remove>`                                     |         R         |                 |
-| `</configtype>`                          | `</configtype>`                                 |         R         |                 |
-| `</config>`                              | `</config>`                                     |         R         |                 |
-| `</manifest>`                            | `</manifest>`                                   |         R         |                 |
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>config</type>`                    |         R         | Always 'config' |
+| `<config>`                               | `<config>`                               |         R         |                 |
+| `<cmd></cmd>`                            | `<cmd>remove</cmd>`                      |         R         |                 |
+| `<configtype>`                           | `<configtype>`                           |         R         |                 |
+| `<remove>`                               | `<remove>`                               |         R         |                 |
+| `<path></path>`                          | `<path>sotaSW:trtl</path>`               |         R         |                 |
+| `</remove>`                              | `</remove>`                              |         R         |                 |
+| `</configtype>`                          | `</configtype>`                          |         R         |                 |
+| `</config>`                              | `</config>`                              |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
 
 #### Remove Example
-* Append can currently only be used on INB agents in either the Edge or Vision card solution.
+* Remove can currently only be used on INB agents in either the Edge or Vision card solution.
+* Remove would not be used on the vision or node agents
 * *Remove* is only applicable to three configuration tags, for
     example, **trustedRepositories**, **sotaSW** and
     **ubuntuAptSource**.
@@ -1296,6 +1321,27 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
         <configtype>
             <remove>
                 <path>trustedRepositories:https://dummyURL.com</path>
+            </remove>
+        </configtype>
+    </config>
+</manifest>
+```
+
+#### Remove Example on **SPECIFIC** INB Nodes
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>config</type>
+    <config>
+        <cmd>remove</cmd>
+        <targetType>node_client</targetType>
+        <configtype>
+            <targets>
+                <target>000732767ffb-16781312</target>
+                <target>000732767ffb-16780544</target>
+            </targets>
+            <remove>
+                <path>sotaSW:trtl</path>
             </remove>
         </configtype>
     </config>
