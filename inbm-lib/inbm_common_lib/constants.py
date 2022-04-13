@@ -24,6 +24,7 @@ CONFIG_CHANNEL = 'ma/configuration/update/'
 
 # Request constants
 CONFIG_LOAD = "load"
+CONFIG_APPEND = "append"
 
 # Source
 LOCAL_SOURCE = 'local'

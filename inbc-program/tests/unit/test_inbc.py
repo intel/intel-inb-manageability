@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 from inbc.inbc import Inbc
-from inbc.parser import ArgsParser, fota, sota, load, get, set
+from inbc.parser import ArgsParser, fota, sota, load, get, set, append
 from inbc.constants import COMMAND_FAIL, COMMAND_SUCCESS
 from inbc.inbc_exception import InbcCode, InbcException
 from inbc.command.ota_command import FotaCommand
@@ -661,6 +661,29 @@ class TestINBC(TestCase):
                    '<set><path>/var/cache/manageability/repository-tool/BIOS.img</path>' \
                    '</set></configtype></config></manifest>'
         self.assertEqual(s.func(s), expected)
+
+    def test_append_manifest(self):
+        append = self.arg_parser.parse_args(['append', '--nohddl', '--path', 'trustedRepositories:https://abc.com'])
+
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>config</type><config><cmd>append' \
+                   '</cmd><configtype><append>' \
+                   '<path>trustedRepositories:https://abc.com</path></append>' \
+                   '</configtype></config></manifest>'
+        self.assertEqual(append.func(append), expected)
+
+
+    @patch('sys.stderr', new_callable=StringIO)
+    def test_raise_append_non_hddl(self, mock_stderr):
+        s = self.arg_parser.parse_args(['append', '--path', 'trustedRepositories:https://abc.com'])
+        with self.assertRaisesRegex(InbcException, 'Config Append is not supported on HDDL Platforms.'):
+            s.func(s)
+
+    #@patch('sys.stderr', new_callable=StringIO)
+    #def test_raise_append_non_hddl_no_path(self, mock_stderr):
+    #    append = self.arg_parser.parse_args(
+    #            ['append', '--nohddl', 'trustedRepositories:https://abc.com'])
+    #    with self.assertRaisesRegex(InbcException,'argument --path/-p: required with Non-HDDL command.'):
+    #        append.func(append)
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.command.command.Command.terminate_operation')
