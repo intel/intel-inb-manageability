@@ -12,8 +12,8 @@ The following outlines the manifest parameters used to perform the supported OTA
 7. [Configuration SET](#Set)
 8. [Configuration GET](#Get)
 9. [Configuration LOAD](#Load)
-10. [Configuration Append](#Append)
-11. [Configuration Remove](#Remove)
+10. [Configuration APPEND](#Append)
+11. [Configuration REMOVE](#Remove)
 12. [Provision Node](#Provision-Node)
 
 ## Manifest Rules 
