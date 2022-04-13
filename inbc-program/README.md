@@ -37,6 +37,8 @@ Intel® In-Band Manageability needs to be installed and running.
 1. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. Use the **'--nohddl'** flag to target an Edge device.  This requires downloading from a remote source.
 2. If targets=NONE for HDDL; the vision-agent determines the eligible targets based on their attributes.
 3. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
+4. If placing files local on the system for update, they need to be placed in a folder with read/write access in the apparmor profile.  The recommended path would be ```/var/cache/manageability```.  If another directory is used, the apparmor profile would need to
+be modified to allow read/write access to that directory.
 
 # MQTT Communication 
 
@@ -60,6 +62,9 @@ The agent subscribes to the following topics:
 ## FOTA
 ### Description
 Performs a Firmware Over The Air (FOTA) update on either an Edge Device or HDDL Plug-in Card.
+
+❗ See [Note #4](#-notes) if placing files local on the system.
+
 ### Usage
 ```
 inbc fota [--nohddl] {--path,  -p=PATH | --uri, -u=URI}  
@@ -104,6 +109,8 @@ inbc fota -p <local path to FIP>/fip-hddl2.bin
 ## SOTA
 ### Description
 Performs a Software Over The Air (SOTA) update on either an Edge Device or HDDL Plug-in Card.
+
+❗ See [Note #4](#-notes) if placing files local on the system.
 
 #### Edge Device
 There are two possible software updates on an edge device depending on the Operating System on the device. If the OS is Yocto, then a Mender file will be required. If the OS is Ubuntu, then the update will be performed using the Ubuntu update mechanism.
@@ -155,6 +162,8 @@ inbc sota
 Performs a Platform Over The Air update (POTA)
 
 A platform update is the equivalent of performing both a SOTA and FOTA with the same command. This is useful when there is a hard dependency between the software and firmware updates. Please review the information above regarding SOTA and FOTA for determining the correct values to supply.
+
+❗ See [Note #4](#-notes) if placing files local on the system.
 ### Usage
 ```
 inbc pota [--nohddl] 
@@ -208,7 +217,7 @@ inbc pota
 ### Description
 Load a new configuration file.   This will replace the existing configuration file with the new file.
 
-❗ This command is currently only supported on HDDL Plug-in cards
+❗ See [Note #4](#-notes) if placing files local on the system.
 ### Usage
 ``` 
 inbc load [--nohddl] 
@@ -257,7 +266,6 @@ inbc load --path /var/cache/manageability/intel_manageabilty.conf
 ### Description
 Get key/value pairs from configuration file
 
-❗ This command is currently only supported on HDDL Plug-in cards
 ### Usage
 ```
 inbc get [--nohddl]
@@ -305,7 +313,6 @@ inbc get -p maxCacheSize;trustedRepositories
 ### Description
 Set key/value pairs in configuration file
 
-❗ This command is currently only supported on HDDL Plug-in cards
 ### Usage
 ```
 inbc set [--nohddl]
