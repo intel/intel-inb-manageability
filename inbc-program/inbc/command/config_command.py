@@ -12,8 +12,7 @@ from ..utility import copy_file_to_target_location, search_keyword
 from ..constants import COMMAND_SUCCESS, COMMAND_FAIL, MAX_TIME_LIMIT, INBM_INSTALL_CHANNEL
 from ..inbc_exception import InbcCode
 from ..ibroker import IBroker
-
-from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD, CONFIG_APPEND
+from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD, CONFIG_REMOVE
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_vision_lib.constants import CACHE_MANAGEABILITY, CONFIG_GET, CONFIG_SET
 from inbm_common_lib.request_message_constants import NO_NODES_FAILURE
@@ -175,15 +174,15 @@ class LoadConfigCommand(ConfigCommand):
         super().search_event(payload, topic)
 
 
-class AppendConfigCommand(ConfigCommand):
+class RemoveConfigCommand(ConfigCommand):
     def __init__(self, broker: IBroker) -> None:
-        """Configuration Append command.
+        """Configuration Remove command.
         @param broker: Broker object
         """
-        super().__init__(broker, CONFIG_APPEND)
+        super().__init__(broker, CONFIG_REMOVE)
 
     def trigger_manifest(self, args: Any, topic: str):
-        """Trigger the command-line utility tool to invoke config Append.
+        """Trigger the command-line utility tool to invoke update.
         @param args: arguments from user
         @param topic: MQTT topic
         """

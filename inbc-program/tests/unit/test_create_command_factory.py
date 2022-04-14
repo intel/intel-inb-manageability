@@ -4,7 +4,7 @@ from inbc.inbc_exception import InbcException
 from inbc.command.command_factory import create_command_factory
 from inbc.command.command import RestartCommand, QueryCommand
 from inbc.command.ota_command import FotaCommand, SotaCommand, PotaCommand
-from inbc.command.config_command import LoadConfigCommand, SetConfigCommand, GetConfigCommand, AppendConfigCommand
+from inbc.command.config_command import LoadConfigCommand, SetConfigCommand, GetConfigCommand, RemoveConfigCommand
 
 
 class TestOsFactory(TestCase):
@@ -41,8 +41,8 @@ class TestOsFactory(TestCase):
         assert type(create_command_factory("set", Mock())) is SetConfigCommand
 
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_create_append_command(self, mock_agent):
-        assert type(create_command_factory("append", Mock())) is AppendConfigCommand
+    def test_create_remove_command(self, mock_agent):
+        assert type(create_command_factory("remove", Mock())) is RemoveConfigCommand
 
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     def test_raise_on_invalid_command(self, mock_agent):

@@ -40,7 +40,7 @@ class ArgsParser(object):
         self.parse_load_args()
         self.parse_get_args()
         self.parse_set_args()
-        self.parse_append_args()
+        self.parse_remove_args()
         self.parse_restart_args()
         self.parse_query_args()
 
@@ -204,15 +204,17 @@ class ArgsParser(object):
                                 help='Type of target [vision | node | node-client]')
         parser_set.set_defaults(func=set)
 
-    def parse_append_args(self) -> None:
-        """Parse append arguments"""
-        parser_append = self._create_subparser('append')
 
-        parser_append.add_argument('--path', '-p', required=True,
+    def parse_remove_args(self) -> None:
+        """Parse remove arguments"""
+        parser_remove = self._create_subparser('remove')
+
+        parser_remove.add_argument('--path', '-p', required=True,
                                    type=lambda x: validate_string_less_than_n_characters(
                                        x, 'Path', 500),
                                    help='Full path to key(s)')
-        parser_append.set_defaults(func=append)
+        parser_remove.set_defaults(func=remove)
+
 
     def parse_restart_args(self) -> None:
         """Parse restart arguments"""
@@ -584,14 +586,14 @@ def set(args) -> str:
     return manifest
 
 
-def append(args) -> str:
+def remove(args) -> str:
     """Creates manifest in XML format.
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
     """
     if not args.nohddl:
         raise InbcException(
-                "Config Append is not supported on HDDL Platforms.")
+                "Config Remove is not supported on HDDL Platforms.")
 
     if args.nohddl and not args.path:
             raise InbcException('argument --path/-p: required with Non-HDDL command.')
@@ -605,13 +607,13 @@ def append(args) -> str:
                 '<manifest>' +
                 '<type>config</type>' +
                 '<config>' +
-                '<cmd>append</cmd>' +
+                '<cmd>remove</cmd>' +
                 '{0}' +
                 '<configtype>' +
                 '{1}' +
-                '<append>' +
+                '<remove>' +
                 '{2}'
-                '</append>' +
+                '</remove>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
