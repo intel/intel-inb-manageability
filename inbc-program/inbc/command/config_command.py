@@ -13,7 +13,7 @@ from ..constants import COMMAND_SUCCESS, COMMAND_FAIL, MAX_TIME_LIMIT, INBM_INST
 from ..inbc_exception import InbcCode
 from ..ibroker import IBroker
 
-from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD
+from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD, CONFIG_APPEND
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_vision_lib.constants import CACHE_MANAGEABILITY, CONFIG_GET, CONFIG_SET
 from inbm_common_lib.request_message_constants import NO_NODES_FAILURE
@@ -169,6 +169,35 @@ class LoadConfigCommand(ConfigCommand):
     def search_event(self, payload: str, topic: str) -> None:
         """Search for keywords in event message
 
+        @param payload: payload received in which to search
+        @param topic: topic from which message was received
+        """
+        super().search_event(payload, topic)
+
+
+class AppendConfigCommand(ConfigCommand):
+    def __init__(self, broker: IBroker) -> None:
+        """Configuration Append command.
+        @param broker: Broker object
+        """
+        super().__init__(broker, CONFIG_APPEND)
+
+    def trigger_manifest(self, args: Any, topic: str):
+        """Trigger the command-line utility tool to invoke config Append.
+        @param args: arguments from user
+        @param topic: MQTT topic
+        """
+        channel = INBM_INSTALL_CHANNEL
+        super().trigger_manifest(args, channel)
+
+    def search_response(self, payload: str) -> None:
+        """Search for keywords in response message
+        @param payload: payload received in which to search
+        """
+        super().search_response(payload)
+
+    def search_event(self, payload: str, topic: str) -> None:
+        """Search for keywords in event message
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """

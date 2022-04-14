@@ -356,6 +356,23 @@ inbc set -p maxCacheSize:120;publishIntervalSeconds:310
 ```
 
 
+## Append
+### Description
+Append is only applicable to three config tags, which are trustedRepositories, sotaSW and ubuntuAptSource
+
+❗  This command is only supported on non-HDDL Platforms 
+### Usage
+```
+inbc append [--nohddl]
+   {--path, -p KEY_PATH;...} 
+```
+### Examples
+#### Edge Device
+```
+inbc append --nohddl --path  trustedRepositories:https://abc.com/
+```
+
+
 ## RESTART
 ### Description
 Restart nodes
