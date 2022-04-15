@@ -94,8 +94,7 @@ description will trigger a FOTA update via Manifest.
                 <vendor>American Megatrends Inc.</vendor>
                 <manufacturer>Default string</manufacturer>
                 <product>Default string</product>
-                <releasedate>2017-1120</releasedate>
-                <path>/var/cache/repositorytool</path>
+                <releasedate>2017-11-20</releasedate>
             </fota>
         </type>
     </ota>
@@ -114,13 +113,17 @@ description will trigger a FOTA update via Manifest.
         </header>
         <type>
             <fota name='sample'>
-                <fetch>http://yoururl/Afulnx+X041_BIOS.tar</fetch>
-                <biosversion>5.12</biosversion>
-                <vendor>American Megatrends Inc.</vendor>
-                <manufacturer>Default string</manufacturer>
-                <product>Default string</product>
-                <releasedate>2017-1120</releasedate>
-                <path>/var/cache/repositorytool</path>
+                <fetch>http://yoururl/package.tar</fetch>
+                <targetType>node</targetType>
+                <targets>
+                    <target>000732767ffb-16781312</target>
+                    <target>000732767ffb-16780544</target>
+                </targets>
+                <biosversion>U-boot 2021.01</biosversion>
+                <vendor>Intel</vendor>
+                <manufacturer>intel</manufacturer>
+                <product>kmb-m2</product>
+                <releasedate>2022-04-15</releasedate>
             </fota>
         </type>
     </ota>

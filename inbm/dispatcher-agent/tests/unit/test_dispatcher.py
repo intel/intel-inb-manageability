@@ -513,8 +513,7 @@ class TestDispatcher(TestCase):
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_reboot_cmd(self, mock_perform_cmd_type_operation: Any, mock_workload_orchestration: Any,
-                        mock_logging: Any) -> None:
+    def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>restart</cmd></manifest>'
         d = TestDispatcher._build_dispatcher()
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
@@ -523,13 +522,18 @@ class TestDispatcher(TestCase):
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_query_cmd(self, mock_perform_cmd_type_operation: Any, mock_workload_orchestration: Any,
-                       mock_logging: Any) -> None:
+    def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>query</cmd><query><option>status</option><targetType>node</targetType></query></manifest>'
         d = TestDispatcher._build_dispatcher()
-        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
         mock_workload_orchestration.assert_called()
         mock_perform_cmd_type_operation.assert_called_once()
+
+    def test_parse_error_invalid_command(self, mock_logging):
+        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange><targetType>node</targetType></orange></manifest>'
+        d = TestDispatcher._build_dispatcher()
+        status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        self.assertEquals(300, status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -585,7 +589,3 @@ class TestDispatcher(TestCase):
     @staticmethod
     def _build_dispatcher() -> Dispatcher:
         return Dispatcher(None, MockDispatcherBroker.build_mock_dispatcher_broker())
-
-
-if __name__ == '__main__':
-    unittest.main()
