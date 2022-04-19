@@ -144,5 +144,5 @@ class DirectoryRepo(IRepo):  # pragma: no cover
                     logger.debug("... unlinking: " + file_path)
                     os.unlink(file_path)
         except OSError as e:
-            logger.debug(f"got OSError while deleting all in {repo_path}: {e}")
-            raise DispatcherException("got OSError while deleting all in repo path") from e
+            logger.debug(f"OSError while deleting all in {repo_path}: {e}")
+            raise DispatcherException("OSError while deleting all in repo path") from e

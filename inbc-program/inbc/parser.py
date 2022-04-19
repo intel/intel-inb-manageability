@@ -591,10 +591,10 @@ def append(args) -> str:
     """
     if not args.nohddl:
         raise InbcException(
-                "Config Append is not supported on HDDL Platforms.")
+            "Config Append is not supported on HDDL Platforms.")
 
     if args.nohddl and not args.path:
-            raise InbcException('argument --path/-p: required with Non-HDDL command.')
+        raise InbcException('argument --path/-p: required with Non-HDDL command.')
 
     arguments = {
         'path': args.path,
@@ -621,7 +621,6 @@ def append(args) -> str:
     )
     print("manifest {0}".format(manifest))
     return manifest
-
 
 
 def restart(args) -> str:
