@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - RTC 508495 Support INBC Config Append command
+- RTC 508497 Support INBC Config Remove command
 
 ## 3.0.10 - 2022-03-28
 NOTE: This release has not yet been security tested.
