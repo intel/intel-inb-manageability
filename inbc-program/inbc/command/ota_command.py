@@ -133,6 +133,8 @@ class FotaCommand(Command):
         @param args: arguments passed to command-line tool.
         @param topic: MQTT topic
         """
+        if args.nohddl:
+            print("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG")
         if args.path:
             canonical_path = get_canonical_representation_of_path(args.path)
             args.path = copy_file_to_target_location(Path(canonical_path), CACHE)

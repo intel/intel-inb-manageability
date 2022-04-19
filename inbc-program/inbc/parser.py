@@ -337,6 +337,7 @@ def fota(args) -> str:
     repo, source_tag, source_location = _create_source(args)
 
     if args.nohddl:
+        print("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJj")
         p = _gather_system_details()
 
     arguments = {

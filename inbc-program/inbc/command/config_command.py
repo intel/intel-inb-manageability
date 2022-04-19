@@ -151,6 +151,7 @@ class LoadConfigCommand(ConfigCommand):
         @param topic: MQTT topic
         """
         if args.nohddl:
+            print("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
             channel = INBM_INSTALL_CHANNEL
         else:
             channel = CONFIG_CHANNEL + CONFIG_LOAD
