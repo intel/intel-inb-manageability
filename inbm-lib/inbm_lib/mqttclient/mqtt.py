@@ -131,6 +131,7 @@ class MQTT:
         @param retain: Message retention policy, False by default
         """
         assert isinstance(payload, str)
+        logger.debug("================================>>>>>>>>>")
         logger.debug('Publishing message: %s on topic: %s with retain: %s',
                     mask_security_info(payload), topic, retain)
         #logger.info('Publishing message: %s on topic: %s with retain: %s',

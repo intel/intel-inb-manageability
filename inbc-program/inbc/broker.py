@@ -106,7 +106,7 @@ class Broker(IBroker):
         @param payload: message payload
         @param qos: quality of service level
         """
-        logger.info('Message received: %s on topic: %s', payload, topic)
+        logger.info(' 3 ...Message received: %s on topic: %s', payload, topic)
         if search_keyword(payload, [NUM_TARGET]):
             # Vision-agent will send the number of target to be updated.
             try:
@@ -137,7 +137,7 @@ class Broker(IBroker):
         @param qos: quality of service level
         """
         if search_keyword(payload, [NO_DEVICE_FOUND]):
-            logger.info('Message received: %s on topic: %s', payload, topic)
+            logger.info('4 ....Message received: %s on topic: %s', payload, topic)
             self._xlink_checker.return_error(DRIVER_NOT_FOUND)
             self.stop_broker()
         else:
