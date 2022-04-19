@@ -1,7 +1,7 @@
 """
     Utilities
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import html
@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Union
 
-from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE, TEMP_EXT_FOLDER
+from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 from .constants import URL_NULL_CHAR
@@ -31,9 +31,9 @@ class CannotFindFileTypeException(Exception):
 def get_file_type(path: str) -> str:
     """Get string corresponding to file type
 
-    @param path: string representing the location of the file
-    @return file type as a string (as the 'file' utility might return)"""
-
+    @param path: location of the file
+    @return file type (as the 'file' utility might return)
+    """
     try:
         canonical_path = get_canonical_representation_of_path(path)
         (out, err, code) = PseudoShellRunner.run("file -b " + canonical_path)
@@ -47,19 +47,79 @@ def get_file_type(path: str) -> str:
     return out
 
 
+def move_file(source_file_path: str, destination_path: str) -> None:
+    """ Move a file from one location to another using the same name.  This does not allow symlinks for
+    either src or destination for security reasons.
+
+    @param source_file_path: path of source file
+    @param destination_path: path to destination file
+    @raises: Symlink for src or destination.  Any errors during move.
+    """
+    canonical_src_path = get_canonical_representation_of_path(source_file_path)
+    canonical_target_path = get_canonical_representation_of_path(destination_path)
+
+    try:
+        _check_paths(canonical_src_path, canonical_target_path)
+    except IOError as e:
+        raise IOError(f"Error while moving file: {str(e)}")
+
+    try:
+        shutil.move(canonical_src_path, canonical_target_path)
+    except (shutil.SameFileError, PermissionError, IsADirectoryError, FileNotFoundError, OSError) as e:
+        raise IOError(f"Error while moving file: {str(e)}")
+
+
+def copy_file(src: str, destination: str) -> None:
+    """Copies file from source to destination.  This does not allow symlinks for
+    either src or destination for security reasons.
+
+    @param src: path to source file
+    @param destination: path to destination
+    @raises: Symlink for src or destination.  Any errors during copyfile.
+    """
+    canonical_src_path = get_canonical_representation_of_path(str(src))
+    canonical_target_path = get_canonical_representation_of_path(str(destination))
+    try:
+        _check_paths(canonical_src_path, canonical_target_path)
+    except IOError as e:
+        raise IOError(f"Error while copying file: {str(e)}")
+
+    try:
+        logger.debug(f"copyfile: src={canonical_src_path}, destination={canonical_target_path}")
+        shutil.copy(canonical_src_path, canonical_target_path)
+    except (shutil.SameFileError, PermissionError, IsADirectoryError, FileNotFoundError, OSError) as e:
+        raise IOError(f"Error while copying file: {str(e)}")
+
+
+def _check_paths(src: str, destination: str) -> None:
+    logger.debug(f"check paths: src:{src}, destination:{destination}")
+    if not os.path.isfile(src):
+        logger.debug(f"File does not exist or file path is not to a file: {src}")
+        raise IOError("File does not exist or file path is not to a file.")
+
+    if os.path.islink(src):
+        logger.debug(f"Security error: Source file is a symlink: {src}")
+        raise IOError("Security error: Source file is a symlink.")
+
+    if os.path.islink(destination):
+        logger.debug(f"Security error: Destination is a symlink: {src}")
+        raise IOError("Security error: Destination  is a symlink")
+
+
 def remove_file(path: Union[str, Path]) -> None:
     """ Remove file from the given path
 
     @param path: location of file to be removed
     """
-    if not os.path.exists(path):
+    canonical_path = get_canonical_representation_of_path(str(path))
+    if not os.path.exists(canonical_path):
         return
 
-    if os.path.isfile(path):
-        logger.debug(f"Removing file at {path}.")
-        os.remove(path)
+    if os.path.isfile(canonical_path):
+        logger.debug(f"Removing file at {canonical_path}.")
+        os.remove(canonical_path)
     else:
-        logger.warn("Failed to remove file. Path is a directory.")
+        logger.warning("Failed to remove file. Path is a directory.")
 
 
 def remove_file_list(path: List[str]) -> None:
@@ -122,7 +182,7 @@ def validate_file_type(path: List[str]) -> None:
 
     @param path: string representing the location of target file
     """
-    logger.debug("Supported: {0}".format(VALID_MAGIC_FILE_TYPE))
+    logger.debug("Supported file type prefixes: {0}".format(VALID_MAGIC_FILE_TYPE_PREFIXES))
 
     tarball_list: List[str] = [x for x in path if (not str(x).endswith('.mender') and tarfile.is_tarfile(x))]
     extracted_file_list: List[str] = []
@@ -146,9 +206,11 @@ def validate_file_type(path: List[str]) -> None:
             if os.path.exists(TEMP_EXT_FOLDER):
                 shutil.rmtree(TEMP_EXT_FOLDER, ignore_errors=True)
             raise TypeError(f"Cannot find file type of file {file_path}") from e
-        logger.debug("{0}".format(file_type))
-        if any(x in file_type for x in VALID_MAGIC_FILE_TYPE):
-            pass
+        logger.debug(f"checking validity of file type: {file_type}")
+
+        # TODO: use regular expressions instead of fixed strings for VALID_MAGIC_FILE_TYPE_PREFIXES
+        if any(file_type.startswith(valid_type_prefix) for valid_type_prefix in VALID_MAGIC_FILE_TYPE_PREFIXES):
+            logger.debug("file type matches at least one valid prefix")
         else:
             # Remove all files on failure
             remove_file_list(path + extracted_file_list)

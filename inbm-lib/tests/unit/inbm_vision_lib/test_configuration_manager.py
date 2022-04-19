@@ -6,25 +6,21 @@ from mock import patch
 
 from inbm_vision_lib.configuration_manager import ConfigurationManager, ConfigurationException
 
-
 GOOD_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
            '<configurations><node><registrationRetryTimerSecs>45</registrationRetryTimerSecs>' \
-           '<registrationRetryLimit>60</registrationRetryLimit>' \
+           '<registrationRetryLimit>10</registrationRetryLimit>' \
            '<XLinkPCIeDevID>1</XLinkPCIeDevID>' \
            '<heartbeatResponseTimerSecs>300</heartbeatResponseTimerSecs>' \
            '</node></configurations>'
 
 BAD_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
-    '<configurations><node><registrationRetryTimerSecs>45</registrationRetryTimerSecs>' \
-    '<registrationRetryLimit>time</registrationRetryLimit>' \
-    '</node></configurations>'
-
-# Use to test on local system.  Create directory structure and copy contents into files.
-# SCHEMA_LOCATION = './fpm-template/usr/share/node-agent/intel_manageability_node_schema.xsd'
-# NODE_CONF = './fpm-template/etc/intel-manageability/public/node-agent/intel_manageability_node.conf'
+          '<configurations><node><registrationRetryTimerSecs>45</registrationRetryTimerSecs>' \
+          '<registrationRetryLimit>time</registrationRetryLimit>' \
+          '</node></configurations>'
 
 SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'inbm-vision',
-                               'node-agent', 'fpm-template', 'usr', 'share', 'node-agent', 'intel_manageability_node_schema.xsd')
+                               'node-agent', 'fpm-template', 'usr', 'share', 'node-agent',
+                               'intel_manageability_node_schema.xsd')
 NODE_CONF = os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'inbm-vision',
                          'node-agent', 'fpm-template', 'etc', 'intel-manageability',
                          'public', 'node-agent', 'intel_manageability_node.conf')
@@ -71,14 +67,14 @@ class TestConfigurationManager(TestCase):
         ConfigurationManager(NODE_CONF, schema_location=SCHEMA_LOCATION)
 
     def test_return_correct_values(self):
-        self.assertEquals(['60', '45'],
+        self.assertEquals(['10', '45'],
                           self.good.get_element(['registrationRetryLimit', 'registrationRetryTimerSecs'], 'node'))
 
     def test_get_children_successfully(self):
         expected_children: Dict[str, Any] = {"registrationRetryTimerSecs": '45',
-                                             "registrationRetryLimit": '60',
+                                             "registrationRetryLimit": '10',
                                              "heartbeatResponseTimerSecs": '300',
-                                             "XLinkPCIeDevID":  '1'}
+                                             "XLinkPCIeDevID": '1'}
 
         children = self.good.get_children('node')
         assert children is not None
@@ -89,20 +85,25 @@ class TestConfigurationManager(TestCase):
         with self.assertRaises(ConfigurationException):
             self.good.get_children('nodes')
 
-    def test_set_valid_values(self):
+    @patch('os.remove')
+    @patch('shutil.copy2')
+    def test_set_valid_values(self, mock_copy, mock_remove):
+        xml = ConfigurationManager(NODE_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         self.assertEquals(['SUCCESS', 'SUCCESS', 'SUCCESS'],
-                          self.good.set_element(['registrationRetryLimit:5', 'registrationRetryTimerSecs:11',
-                                                 'XLinkPCIeDevID:1'], 'node'))
+                          xml.set_element(['registrationRetryLimit:5', 'registrationRetryTimerSecs:11',
+                                           'XLinkPCIeDevID:1'], 'node'))
 
-    def test_fail_on_bad_set_element(self):
+    @patch('os.remove')
+    @patch('shutil.copy2')
+    def test_fail_on_bad_set_element(self, mock_copy, mock_remove):
+        xml = ConfigurationManager(NODE_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         self.assertEquals(['Failed', 'Failed', 'Failed'],
-                          self.good.set_element(['registrationRetryLimit:test', 'registrationRetryTimerSecs:test',
-                                                 'XLinkPCIeDevID:test'], 'node'))
+                          xml.set_element(['registrationRetryLimit:test', 'registrationRetryTimerSecs:test',
+                                           'XLinkPCIeDevID:test'], 'node'))
 
     @patch('os.remove')
     @patch('shutil.copyfile')
-    @patch('shutil.copy')
-    def test_load_successful(self, mock_copy, mock_copyfile, mock_remove):
+    def test_load_successful(self, mock_copy, mock_remove):
         try:
             xml = ConfigurationManager(NODE_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
             xml.load(NODE_CONF)
@@ -110,9 +111,8 @@ class TestConfigurationManager(TestCase):
             self.fail("Raised exception when not expected.")
 
     @patch('os.remove')
-    @patch('shutil.copyfile', side_effect=OSError)
-    @patch('shutil.copy')
-    def test_load_raises(self, mock_copy, mock_move, mock_remove):
+    @patch('shutil.copy2', side_effect=OSError)
+    def test_load_raises(self, mock_copy2, mock_remove):
         with self.assertRaises(ConfigurationException):
             xml = ConfigurationManager(NODE_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
             xml.load(NODE_CONF)

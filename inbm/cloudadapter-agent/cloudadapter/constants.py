@@ -1,11 +1,12 @@
 """
 Constants and other config variables used throughout the cloudadapter module
 
-Copyright (C) 2017-2021 Intel Corporation
+Copyright (C) 2017-2022 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
 from inbm_common_lib.constants import TELEMETRY_CHANNEL, RESPONSE_CHANNEL, EVENT_CHANNEL
+from inbm_lib.constants import DOCKER_STATS
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_ETC_PATH_PREFIX
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_SHARE_PATH_PREFIX, BROKER_ETC_PATH
 
@@ -87,7 +88,7 @@ ADAPTER_CONFIG_PATH = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / \
     'secret' / 'cloudadapter-agent' / 'adapter.cfg'
 
 # Log certain telemetry keys by default
-LOGGED_TELEMETRY = {'containersCpuPercent', 'networkInformation',
+LOGGED_TELEMETRY = {DOCKER_STATS, 'networkInformation',
                     'resourceMonitoring', 'resourceAlert', 'softwareBOM',
                     'queryResult', 'queryEndResult'}  # 'disk-information'
 

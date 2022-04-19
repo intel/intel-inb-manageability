@@ -1,7 +1,7 @@
 """
     Central telemetry/logging service for the manageability framework
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import platform
@@ -15,7 +15,7 @@ from typing import Union, Dict, Optional, Any
 
 from inbm_lib import wmi
 from inbm_lib.count_down_latch import CountDownLatch
-from inbm_lib.constants import TRTL_PATH
+from inbm_lib.constants import TRTL_PATH, DOCKER_STATS
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.trtl import Trtl
 from inbm_lib.wmi_exception import WmiException
@@ -23,16 +23,13 @@ from inbm_lib.wmi_exception import WmiException
 from inbm_common_lib.device_tree import is_device_tree_exists, get_device_tree_system_info, get_device_tree_cpu_id
 from inbm_common_lib.dmi import get_dmi_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_common_lib.constants import UNKNOWN
+from inbm_common_lib.constants import UNKNOWN, TELEMETRY_CHANNEL
 from inbm_common_lib.pms.pms_helper import PMSHelper, PmsException
-from inbm_lib.detect_os import detect_os, LinuxDistType
 
 from .static_attributes import get_total_physical_memory, get_cpu_id, get_os_information, \
     get_disk_information
 from .dynamic_attributes import get_cpu_percent, get_available_memory, get_percent_disk_used, \
     get_core_temp_celsius, get_network_telemetry, get_battery_status
-from .container_usage import ContainerUsage
-from .constants import SYSTEM_TELEMETRY_CHANNEL, DEVICE_TREE_PATH
 from .command import Command
 from .telemetry_exception import TelemetryException
 from inbm_lib.version import get_friendly_inbm_version_commit, get_friendly_inbm_vision_version_commit
@@ -202,23 +199,25 @@ def get_container_health(client, send_topic) -> None:  # pragma: no cover
         cmd_lock.release()
 
 
-def get_dynamic_telemetry(with_docker: bool, rm_active: bool = False) -> Dict:
+def get_dynamic_telemetry(is_docker_installed: bool, rm_active: bool = False) -> Dict:
     """Collect dynamic telemetry in a dictionary.
 
-    @param with_docker: true if docker is on the system; else false.
+    @param is_docker_installed: true if docker is on the system; else false.
+    @param rm_active: true if resource manager is active; otherwise, false.
     @return: dynamic telemetry data
     """
     logger.debug("Collecting dynamic telemetry.")
 
-    # several different types possible in dictionary
-    dynamic_telemetry: Dict[str, Optional[Any]] = {'systemCpuPercent': get_cpu_percent(),
-                                                   'containersCpuPercent': get_docker_stats(with_docker),
-                                                   'availableMemory': get_available_memory(),
-                                                   'percentDiskUsed': get_percent_disk_used(),
-                                                   'coreTempCelsius': get_core_temp_celsius(),
-                                                   'networkInformation': get_network_telemetry(),
-                                                   'friendlyINBMVersionCommit': get_friendly_inbm_version_commit(),
-                                                   'friendlyINBMVisionVersionCommit': get_friendly_inbm_vision_version_commit()}
+    # several types possible in dictionary
+    dynamic_telemetry: Dict[str, Optional[Any]] \
+        = {'systemCpuPercent': get_cpu_percent(),
+            DOCKER_STATS: get_docker_stats(is_docker_installed),
+           'availableMemory': get_available_memory(),
+           'percentDiskUsed': get_percent_disk_used(),
+           'coreTempCelsius': get_core_temp_celsius(),
+           'networkInformation': get_network_telemetry(),
+           'friendlyINBMVersionCommit': get_friendly_inbm_version_commit(),
+           'friendlyINBMVisionVersionCommit': get_friendly_inbm_vision_version_commit()}
 
     if rm_active:
         dynamic_telemetry['resourceMonitoring'] = get_pms_rm_telemetry()
@@ -230,17 +229,19 @@ def get_dynamic_telemetry(with_docker: bool, rm_active: bool = False) -> Dict:
     return _set_timestamp(dynamic_telemetry, telemetry_type="dynamic_telemetry")
 
 
-def get_docker_stats(with_docker) -> Optional[str]:
+def get_docker_stats(is_docker_installed) -> Optional[str]:
     """Get the Docker stats if possible
 
-    @param with_docker: true if docker is on the system; else false
-    @return: (str) The container usage information; if unavailiable, UNKNOWN
+    @param is_docker_installed: true if docker is on the system; else false
+    @return: (str) The container usage information.
     """
-    trtl_exist = os.path.exists(TRTL_PATH)
-    if trtl_exist and with_docker:
-        return ContainerUsage(Trtl(PseudoShellRunner())).get_container_usage()
-    else:
-        return UNKNOWN
+
+    if not is_docker_installed:
+        return "Docker is not installed"
+    if not os.path.exists(TRTL_PATH):
+        return "TRTL is not installed"
+
+    return Trtl(PseudoShellRunner()).stats()
 
 
 def publish_telemetry_update(client, topic, with_docker, to_update) -> None:
@@ -292,11 +293,13 @@ def get_query_related_info(option: str, info: Dict) -> Dict:
                 del info['values'][elem]
     elif option == "fw":
         for elem in list(info['values'].keys()):
-            if elem in ['diskInformation', 'totalPhysicalMemory', 'cpuId', 'osInformation', 'systemManufacturer', 'systemProductName']:
+            if elem in ['diskInformation', 'totalPhysicalMemory', 'cpuId', 'osInformation', 'systemManufacturer',
+                        'systemProductName']:
                 del info['values'][elem]
     elif option == "os":
         for elem in list(info['values'].keys()):
-            if elem in ['totalPhysicalMemory', 'cpuId', 'biosVendor', 'biosVersion', 'biosReleaseDate', 'systemManufacturer', 'systemProductName', 'diskInformation']:
+            if elem in ['totalPhysicalMemory', 'cpuId', 'biosVendor', 'biosVersion', 'biosReleaseDate',
+                        'systemManufacturer', 'systemProductName', 'diskInformation']:
                 del info['values'][elem]
     elif option == "version":
         info = {}
@@ -310,9 +313,7 @@ def get_query_related_info(option: str, info: Dict) -> Dict:
 
 def get_static_telemetry_info() -> Dict:
     """Publish static (one time) telemetry.
-
-    @param client: MQTT client exposing a publish method
-    @param topic: topic on which to publish system telemetry
+    @return dictionary of static telemetry data
     """
     logger.debug("Publishing static telemetry.")
     platform_info = PlatformInformation()
@@ -381,14 +382,14 @@ def send_initial_telemetry(client, with_docker) -> None:
     while not static_succeeded and current_retry_count < max_retry_count:
         try:
             current_retry_count += 1
-            publish_static_telemetry(client, SYSTEM_TELEMETRY_CHANNEL)
+            publish_static_telemetry(client, TELEMETRY_CHANNEL)
             static_succeeded = True
         except TelemetryException as e:
             logger.error(
                 "Unable to publish static telemetry: {}.  Retrying.".format(str(e)))
             time.sleep(5)
 
-    publish_dynamic_telemetry(client, SYSTEM_TELEMETRY_CHANNEL,
+    publish_dynamic_telemetry(client, TELEMETRY_CHANNEL,
                               get_dynamic_telemetry(with_docker))
 
     # SWBOM

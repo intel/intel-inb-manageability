@@ -1,5 +1,5 @@
 /*
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 */
 
@@ -110,7 +110,7 @@ const (
 	// UndoChange is a string declaration for UndoChange command.
 	UndoChange = "undochange"
 
-	// UP is a string declearation for Up command.
+	// UP is a string declaration for Up command.
 	Up = "up"
 
 	noCommand = "none"

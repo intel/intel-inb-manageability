@@ -1,7 +1,7 @@
 """
     OTA Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2021 Intel Corporation
+    # Copyright (C) 2020-2022 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 """
 from typing import Any
@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .command import Command
 from ..constants import COMMAND_SUCCESS, COMMAND_FAIL, FOTA_TIME_LIMIT, SOTA_TIME_LIMIT, POTA_TIME_LIMIT, \
-    TC_INSTALL_CHANNEL
+    INBM_INSTALL_CHANNEL
 from ..inbc_exception import InbcCode
 from ..utility import copy_file_to_target_location, search_keyword
 from ..ibroker import IBroker
@@ -41,7 +41,7 @@ class PotaCommand(Command):
             canonical_sota_path = get_canonical_representation_of_path(args.sotapath)
             args.fotapath = copy_file_to_target_location(Path(canonical_fota_path), CACHE)
             args.sotapath = copy_file_to_target_location(Path(canonical_sota_path), CACHE)
-        channel = TC_INSTALL_CHANNEL if args.nohddl else INSTALL_CHANNEL
+        channel = INBM_INSTALL_CHANNEL if args.nohddl else INSTALL_CHANNEL
         super().trigger_manifest(args, channel)
 
     def search_response(self, payload: str) -> None:
@@ -88,7 +88,7 @@ class SotaCommand(Command):
             # This is only used for HDDL.
             canonical_path = get_canonical_representation_of_path(args.path)
             args.path = copy_file_to_target_location(Path(canonical_path), CACHE)
-        channel = TC_INSTALL_CHANNEL if args.nohddl else INSTALL_CHANNEL
+        channel = INBM_INSTALL_CHANNEL if args.nohddl else INSTALL_CHANNEL
         super().trigger_manifest(args, channel)
 
     def search_response(self, payload: str) -> None:
@@ -136,7 +136,7 @@ class FotaCommand(Command):
         if args.path:
             canonical_path = get_canonical_representation_of_path(args.path)
             args.path = copy_file_to_target_location(Path(canonical_path), CACHE)
-        channel = TC_INSTALL_CHANNEL if args.nohddl else INSTALL_CHANNEL
+        channel = INBM_INSTALL_CHANNEL if args.nohddl else INSTALL_CHANNEL
         super().trigger_manifest(args, channel)
 
     def search_response(self, payload: str) -> None:

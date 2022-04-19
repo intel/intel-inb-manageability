@@ -3,7 +3,7 @@
     package from the specified URL and stores into a configured local cache
     on the device
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -134,7 +134,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
 def verify_signature(signature: str,
                      path_to_file: str,
                      dispatcher_callbacks: DispatcherCallbacks,
-                     sig_version: Optional[int]) -> None:
+                     hash_algorithm: Optional[int]) -> None:
     """Verifies that the signed checksum of the package matches the package received by fetching the
     package and cert from tar ball and fetching the public key from the cert which is used in
     verifying the signature.
@@ -142,7 +142,7 @@ def verify_signature(signature: str,
     @param signature: Signed checksum of the package retrieved from manifest
     @param path_to_file: Path to the package to be installed
     @param dispatcher_callbacks: DispatcherCallbacks instance
-    @param sig_version: version of checksum i.e. 256 or 384
+    @param hash_algorithm: version of checksum i.e. 256 or 384 or 512
     """
     logger.debug(f"tar_file_path: {path_to_file}")
     extension = path_to_file.rsplit('.', 1)[-1]
@@ -167,7 +167,7 @@ def verify_signature(signature: str,
     try:
         with open(path_to_file, 'rb') as file_content:
             package_content = file_content
-            checksum_str = _get_checksum(package_content.read(), sig_version)
+            checksum_str = _get_checksum(package_content.read(), hash_algorithm)
     except (OSError, ValueError) as e:
         raise DispatcherException(
             f"Signature check failed. Could not load package content to create checksum: {e}")
@@ -203,17 +203,19 @@ def extract_files_from_tar(path_to_file: str) -> Tuple[Optional[List], Optional[
 
 
 def _get_checksum(content: Union[bytes, bytearray, memoryview],
-                  sig_version: Optional[int]) -> str:
+                  hash_algorithm: Optional[int]) -> str:
     """Calculates checksum of package received
 
     @param content: content of the package received
-    @param sig_version: version of the checksum i.e. 256 or 384
+    @param hash_algorithm: hash algorithm of the checksum i.e. 256 or 384 or 512
     @return: checksum of the package
     """
-    if sig_version == 384:
+    if hash_algorithm == 384:
         return hashlib.sha384(content).hexdigest()
-    elif sig_version == 256:
+    elif hash_algorithm == 256:
         return hashlib.sha256(content).hexdigest()
+    elif hash_algorithm == 512:
+        return hashlib.sha512(content).hexdigest()
     raise DispatcherException('Signature check failed. Unable to get checksum for package.')
 
 

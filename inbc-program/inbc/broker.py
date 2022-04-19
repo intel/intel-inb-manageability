@@ -1,7 +1,7 @@
 """
     Broker service for INBC tool
 
-    Copyright (C) 2020-2021 Intel Corporation
+    Copyright (C) 2020-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -83,7 +83,7 @@ class Broker(IBroker):
         try:
             logger.debug('Setting up broker.')
 
-            """Subscribe to  Telemetry Response to check if update success """
+            """Subscribe to  Telemetry Response to check if update successful """
             print('Subscribe to: {0}'.format(RESPONSE_CHANNEL))
             self.mqttc.subscribe(RESPONSE_CHANNEL, self._on_response)
 
@@ -127,8 +127,6 @@ class Broker(IBroker):
         @param payload: message payload
         @param qos: quality of service level
         """
-        if search_keyword(payload, ["Vision agent is running"]):
-            self._command.set_is_vision_agent_running(True)
         self._command.search_event(payload, topic)
 
     def _on_status(self, topic: str, payload: str, qos: int) -> None:

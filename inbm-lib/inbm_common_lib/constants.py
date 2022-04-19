@@ -1,7 +1,7 @@
 """
     Constants used by both inbm-vision and inbm.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
  """
 from datetime import datetime
@@ -9,8 +9,9 @@ from datetime import datetime
 UNKNOWN = 'Unknown'
 UNKNOWN_DATETIME = datetime.strptime("9999-01-01", "%Y-%m-%d")
 
-VALID_MAGIC_FILE_TYPE = ['data', 'POSIX tar archive', 'gzip compressed data', 'exported SGML document', 'ASCII text',
-                         'PEM certificate', 'empty', 'u-boot legacy uImage', 'Intel serial flash for PCH ROM']
+VALID_MAGIC_FILE_TYPE_PREFIXES = ['data', 'POSIX tar archive', 'gzip compressed data', 'exported SGML document', 'ASCII text',
+                         'PEM certificate', 'empty', 'u-boot legacy uImage', 'Intel serial flash for PCH ROM',
+                         'XML 1.0 document', 'Debian binary', 'RPM ']
 
 TEMP_EXT_FOLDER = "/var/cache/manageability/repository-tool/temp_ext"
 URL_NULL_CHAR = '%00'
@@ -54,4 +55,4 @@ FW_DEVICE_TREE_PATH = '/proc/device-tree/firmware/bios/'
 AFULNX_64 = 'afulnx_64'
 
 # Default signature version
-DEFAULT_SIG_VERSION = 384
+DEFAULT_HASH_ALGORITHM= 384

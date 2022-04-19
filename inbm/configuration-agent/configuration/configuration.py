@@ -2,7 +2,7 @@
 """
     Central configuration-agent/configuration service for the manageability framework 
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 

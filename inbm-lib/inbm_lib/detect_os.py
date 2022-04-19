@@ -1,7 +1,7 @@
 """
     Used to detect the platform Operating system to trigger updates.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from enum import Enum
@@ -15,6 +15,7 @@ from .constants import MENDER_FILE_PATH, SYSTEM_IS_YOCTO_PATH, FORCE_YOCTO_PATH,
 import logging
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ class LinuxDistType(Enum):
     YoctoARM = 2
     Deby = 3
     Debian = 4
+    CentOS = 5
 
 
 def verify_os_supported() -> str:
@@ -45,16 +47,24 @@ def verify_os_supported() -> str:
         raise ValueError('Unsupported OS type.')
 
 
-def get_lsb_release_name() -> Optional[str]:
+def get_lsb_release_name_host() -> Optional[str]:
     """Get OS name from lsb_release command. Return None on any error.
+    NOTE: will look at host rather than container, if in container
     """
 
     try:
-        (result, error, exit_code) = PseudoShellRunner.run("lsb_release -i -s")
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            (result, error, exit_code) = PseudoShellRunner.run(
+                DOCKER_CHROOT_PREFIX + "/usr/bin/lsb_release -i -s")
+        else:
+            (result, error, exit_code) = PseudoShellRunner.run("lsb_release -i -s")
         if exit_code == 0:
             logger.debug("Found lsb_release -i: " + result)
             return result.replace('\n', '')
         else:
+            logger.debug(
+                f"(result, error, exit_code) for lsb_release command = ({result}, {error}, {exit_code})")
             logger.debug("lsb_release command failed")
             return None
     except (ValueError, OSError, SubprocessError) as e:
@@ -64,6 +74,9 @@ def get_lsb_release_name() -> Optional[str]:
 
 def detect_os() -> str:
     """Detects the operating system type running on the current system
+    Will detect host OS if in container only for Linux distributions that have
+    lsb_release working; otherwise falls back to method that cannot see outside
+    the container.
     @return: OS type
     """
 
@@ -83,7 +96,7 @@ def detect_os() -> str:
         os_name: Optional[str] = None
 
         # Try getting name from lsb_release (should only work on Linux)
-        lsb_release_name = get_lsb_release_name()
+        lsb_release_name = get_lsb_release_name_host()
 
         if lsb_release_name is not None and lsb_release_name in LinuxDistType.__members__:
             logger.debug("Detected OS with lsb_release: " + lsb_release_name)
@@ -114,12 +127,3 @@ def is_inside_container() -> bool:
         logger.debug("Running inside container.")
         return True
     return False
-
-
-def is_cent_os_and_inside_container() -> bool:
-    """Detects the operating system type running on the current system
-    @return: True if CentOS exist and the environment is container; False if CentOS is not exist.
-    """
-    # Currently only support driver update in inb container in CentOS
-
-    return True if is_inside_container() and os.path.exists("/host" + CENTOS_VERSION_PATH) else False

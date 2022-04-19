@@ -2,7 +2,7 @@
 """
     Acts as the client in the command pattern for the diagnostic-agent
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -34,10 +34,7 @@ logger = logging.getLogger(__name__)
 
 class DiagnosticChecker:
     """Acts as the client in the Command Pattern.  It decides which receiver objects it assigns
-    to the command objects and which commands it assigns to the invoker.
-
-    @param node_callback: Callback to the Node object
-    """
+    to the command objects and which commands it assigns to the invoker."""
 
     def __init__(self, broker: IBroker) -> None:
         """Acts as the client in the Command Pattern.  It decides which receiver objects it assigns

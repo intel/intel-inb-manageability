@@ -1,7 +1,7 @@
 """
     AOTA Application Command Concrete Classes
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -10,9 +10,10 @@ import shutil
 
 from typing import Optional, Any, Mapping
 
-from inbm_lib.detect_os import is_cent_os_and_inside_container
+from inbm_lib.detect_os import is_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path
+from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
@@ -23,7 +24,7 @@ from dispatcher.packagemanager.package_manager import get
 
 from .checker import check_application_command_supported, check_url
 from .aota_command import AotaCommand
-from .constants import CHROOT_CMD, CENTOS_DRIVER_PATH, DOCKER, COMPOSE, APPLICATION, SupportedDriver
+from .constants import CENTOS_DRIVER_PATH, SupportedDriver
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 
@@ -108,13 +109,12 @@ class CentOsApplication(Application):
     def cleanup(self) -> None:
         """Clean up AOTA temporary file and the driver file after use"""
         logger.debug("")
-        for dir in os.listdir(get_canonical_representation_of_path(REPO_CACHE)):
-            if dir.startswith("aota") and os.path.isdir(os.path.join(REPO_CACHE, dir)):
-                shutil.rmtree(get_canonical_representation_of_path(os.path.join(REPO_CACHE, dir)))
+        for d in os.listdir(get_canonical_representation_of_path(REPO_CACHE)):
+            if d.startswith("aota") and os.path.isdir(os.path.join(REPO_CACHE, d)):
+                shutil.rmtree(get_canonical_representation_of_path(os.path.join(REPO_CACHE, d)))
         # Clean up driver files
         for file in os.listdir(CENTOS_DRIVER_PATH):
-            remove_file(get_canonical_representation_of_path(
-                os.path.join(CENTOS_DRIVER_PATH, file)))
+            remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
     def update(self) -> None:
         """ Update CentOS driver"""
@@ -133,37 +133,32 @@ class CentOsApplication(Application):
             driver_centos_path = os.path.join(CENTOS_DRIVER_PATH, driver_path.split('/')[-1])
             logger.debug(f"driver_centos_path = {driver_centos_path}")
             # Move driver to CentOS filesystem
-            shutil.move(driver_path, driver_centos_path)
-
-            # Remove old driver
-            old_driver_name = self.identify_package(driver_path.split('/')[-1])
-            if not old_driver_name:
-                raise AotaError(
-                    f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
-            uninstall_driver_cmd = CHROOT_CMD + f'/usr/bin/rpm -e --nodeps {old_driver_name}'
-            out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
-            logger.debug(out)
-            # If old packages wasn't install on system, it will return error too.
-            if code != 0 and "is not installed" not in str(err):
-                raise AotaError(err)
+            move_file(driver_path, driver_centos_path)
 
             chroot_driver_path = driver_centos_path.replace("/host", "")
-            install_driver_cmd = CHROOT_CMD + f'/usr/bin/rpm -ivh {chroot_driver_path}'
+            install_driver_cmd = CHROOT_PREFIX + \
+                f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
             out, err, code = PseudoShellRunner().run(install_driver_cmd)
             logger.debug(out)
             if code != 0:
                 raise AotaError(err)
-            self._reboot(CHROOT_CMD + '/usr/sbin/shutdown -r 0')
+            self._reboot(CHROOT_PREFIX + '/usr/sbin/shutdown -r 0')
 
-        except (AotaError, FileNotFoundError, OSError) as error:
+        except (AotaError, FileNotFoundError, OSError, IOError) as error:
             # Remove temp files if the error happened.
-            self.cleanup()
-            raise AotaError(f'AOTA Command Failed: {error}')
+            msg = str(error)
+            try:
+                self.cleanup()
+            except FileNotFoundError as e:
+                msg = f'{msg} and during cleanup: {e}'
+            raise AotaError(f'AOTA Command Failed: {msg}')
 
 
 class UbuntuApplication(Application):
-    """Performs Application updates triggered via AOTA on Ubuntu
+    """Performs Application updates triggered via AOTA on Ubuntu.
+    Capable of detecting whether running in container (update Ubuntu host)
+    and escaping container if needed.
 
     @param dispatcher_callbacks callback to the main Dispatcher object
     @param parsed_manifest: parameters from OTA manifest
@@ -175,17 +170,30 @@ class UbuntuApplication(Application):
         # security assumption: parsed_manifest is already validated
         super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
 
-    def update(self):
+    def update(self):  # pragma: no cover
         super().update()
         application_repo = self._download_package()
         install_cmd = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
         if ' ' in install_cmd or install_cmd.isspace():
             logger.debug(f"INSTALL : {install_cmd}")
             raise AotaError(f"File path cannot contain spaces - {install_cmd}")
-        command = f"dpkg -i {install_cmd}"
+        base_command = f"/usr/bin/dpkg -i {install_cmd}"
+
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            command = DOCKER_CHROOT_PREFIX + base_command
+        else:
+            command = base_command
         logger.debug(f" Updating Application {self.resource} ...")
         out, err, code = PseudoShellRunner().run(command)
         logger.debug(f" Application update logs {out} and error {err}")
         if code != 0:
             raise AotaError(err)
-        self._reboot("reboot -f")
+
+        reboot_base_command = "/sbin/reboot -f"
+        if is_docker_app:
+            reboot_command = DOCKER_CHROOT_PREFIX + reboot_base_command
+        else:
+            reboot_command = reboot_base_command
+
+        self._reboot(reboot_command)

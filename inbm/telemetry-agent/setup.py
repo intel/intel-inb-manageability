@@ -9,7 +9,7 @@ setup(
     name='telemetry-agent',
     description='IoT telemetry agent',
     long_description=readme,
-    license='Intel Proprietary (see \'licenses\' directory)',
+    license='Apache 2.0',
     packages=find_packages(exclude=('tests', 'doc')),
     include_package_data=True,
     install_requires=['nose', 'packaging', 'future', 'paho-mqtt', 'psutil'],

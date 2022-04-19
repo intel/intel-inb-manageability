@@ -2,7 +2,7 @@
     Agent responsible for application over the air installs
     and packages.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -37,7 +37,7 @@ class AOTA:
         self._app_type = parsed_manifest['app_type']
 
         if self._app_type is None:
-            raise AotaError("missing app_type for AOTA")
+            raise AotaError("missing application type for AOTA")
         self._app_instance = get_app_instance(
             app_type=self._app_type,
             dispatcher_callbacks=self._dispatcher_callbacks,

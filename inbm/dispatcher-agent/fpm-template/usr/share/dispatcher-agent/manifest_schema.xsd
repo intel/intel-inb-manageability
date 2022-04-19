@@ -114,9 +114,16 @@
                 <xs:element name="provisionNode" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="fetch" type="URLMax700Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="fetch" type="URLMax700Chars"/>
                             <xs:element name="signature" type="SigMax1000Chars" minOccurs="0" maxOccurs="1"/>
-                            <xs:element name="signature_version" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="hash_algorithm" minOccurs="0" maxOccurs="1">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="384"/>
+                                        <xs:enumeration value="512"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
                             <xs:element name="username" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                             <xs:element name="password" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                         </xs:sequence>
@@ -390,7 +397,7 @@
 
     <xs:element name="sota">
         <xs:complexType>
-            <xs:sequence>
+            <xs:all>
                 <xs:element name="cmd">
                     <xs:complexType>
                         <xs:simpleContent>
@@ -421,7 +428,7 @@
                 <xs:element name="password" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name ="release_date" type ="xs:date" minOccurs="0" maxOccurs="1"/>
                 <xs:element name ="path" type ="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
-            </xs:sequence>
+            </xs:all>
         </xs:complexType>
     </xs:element>
 

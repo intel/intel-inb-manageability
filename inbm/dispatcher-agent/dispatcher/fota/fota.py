@@ -1,7 +1,7 @@
 """
     FOTA update tool which is called from the dispatcher during installation
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -76,7 +76,7 @@ class FOTA:
             logger.debug(f"repo_path: {repo_path}")
 
         self.__signature = parsed_manifest['signature']
-        self._sig_version = parsed_manifest['signature_version']
+        self._hash_algorithm = parsed_manifest['hash_algorithm']
 
         self._username = parsed_manifest['username']
         self._password = parsed_manifest['password']
@@ -134,7 +134,7 @@ class FOTA:
                         tool_options=tool_options,
                         pkg_filename=self._pkg_filename,
                         signature=self.__signature,
-                        signature_version=self._sig_version,
+                        hash_algorithm=self._hash_algorithm,
                         bios_vendor=bios_vendor,
                         platform_product=platform_product)
 
@@ -177,9 +177,9 @@ class FOTA:
 
     @staticmethod
     def _verify_os_supported():
-        """checks if the current OS is supported by TC or not.
+        """checks if the current OS is supported.
 
-        @return operating system type if os supported otherwise raise an error
+        @return True if OS is supported; otherwise, false.
         @raise ValueError Unsupported OS
         """
         logger.debug("")

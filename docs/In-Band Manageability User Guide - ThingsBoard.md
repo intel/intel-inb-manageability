@@ -31,7 +31,6 @@
     3. [Viewing Telemetry Data](#viewing-telemetry-data)
 5. [Issues and Troubleshooting](#issues-and-troubleshooting)
     1. [OTA Error Status](#ota-error-status)
-    2. [Provisioning Unsuccessful or Device Not Connected to Cloud](#provisioning-unsuccessful-or-device-not-connected-to-cloud)
     3. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
 
 </details>
@@ -42,10 +41,7 @@
 This User Guide serves to provide the reader an overview on how to:
 
 - Login and setup ThingsBoard&reg; Cloud Service
-
-- Provision the Edge IoT device running In-Band Manageability
-    Framework
-
+- Provision the Edge IoT device running In-Band Manageability Framework
 - Perform OTA updates through ThingsBoard.
 
 It also provides examples of the Web-UI configuration, reported
@@ -78,11 +74,8 @@ perform OTA commands.
 This section will walk through the setup steps:
 
 - Accessing ThingsBoard&reg;
-
 - Setting up ThingsBoard&reg; TLS
-
 - Changing ThingsBoard&reg; Server Port
-
 - Creating ThingsBoard&reg; Account
 
 #### Accessing ThingsBoard&reg;
@@ -93,13 +86,12 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
     following link:  
     [**https://thingsboard.io/docs/installation/**](https://thingsboard.io/docs/installation/)
 
-    **Note:** 
-    > For a sandbox environment, choose the `Community` edition
+    ❗ In a sandbox environment, choose the `Community` edition
 
 - In order to run a ThingsBoard&reg; server instance on the same device as
     Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboard-server-port)
 
-#### Setting up ThingsBoard&reg; TLS
+#### Setting up ThingsBoard TLS
 
 To allow for a secure TLS connection to be established between a device
 with Intel Manageability and a self-hosted ThingsBoard&reg; server, some
@@ -107,11 +99,9 @@ configuration must be done to the server. Information on that process
 can be found below, or at:
 [**https://thingsboard.io/docs/user-guide/mqtt-over-ssl/**](https://thingsboard.io/docs/user-guide/mqtt-over-ssl/)
 
-1. Download the *server.keygen.sh* and *keygen.properties* files from
-    the link above
+1. Download the *server.keygen.sh* and *keygen.properties* files from the link above
 
-2. Fill out the *keygen.properties* accordingly
-
+2. Fill out the *keygen.properties* accordingly:
     1. Change is the **DOMAIN\_SUFFIX** field, which should match the
         hostname of the ThingsBoard&reg; server
 
@@ -126,10 +116,7 @@ can be found below, or at:
 4. Copy the resulting *\*.jks* file to the ThingsBoard&reg; configuration
     directory
 
-    1. This may be under: 
-    ```
-    /etc/thingsboard/conf/
-    ```
+    - This may be under: ```/etc/thingsboard/conf/```
 
 5. The *\*.pub.pem* file will be needed later to provision Intel
     Manageability devices
@@ -143,17 +130,12 @@ a different number for both to coexist on the same device.
 To do this:
 
 1. Locate and open the *thingsboard.yml* file
-
-    1. On Yocto, this file is located in 
-    ```
-    /etc/thingsboard/conf/
-    ```
+    - On Yocto, this file is located in ```/etc/thingsboard/conf/```
 
 2. Change the property **transport \> mqtt \> bind\_port** to any other
     number (e.g. 2883)
 
-    1. This property should be under a section labeled: `Local MQTT
-        transport parameters`
+    1. This property should be under a section labeled: `Local MQTT transport parameters`
 
     2. Be sure to note the new port number, and enter it accordingly in
         the provisioning step
@@ -325,7 +307,7 @@ Input path to Device certificate file (*nopass.pem):
 
 8. If user selects Token based authentication in step 6, an option for
     TLS will appear; press **Y** if the server was configured in
-    [**Setting up ThingsBoard&reg; TLS**](#setting-up-thingsboardreg-tls). Otherwise, press **N** and
+    [**Setting up ThingsBoard&reg; TLS**](#setting-up-thingsboard-tls). Otherwise, press **N** and
     skip to step 11.
 > If the user selects X509 authentication, it is mandatory to have TLS configured. By default, the application proceeds with the TLS configuration.
 
@@ -720,36 +702,8 @@ buttons\[3\]** as seen below
 | Manifest Update             | Any OTA update type can be done via the Manifest Update, by entering XML text to update the Endpoint. Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md).
  
 
-### AOTA Updates
-
-Supported AOTA commands and their functionality:
-
-`docker-compose` commands currently supported:
-
-| `docker-compose` Command | Definition  |
-|--------------------------|-------------------------------------------------------------------------------|
-| `up` | Deploying a service stack on the device |
-| `down` | Stopping a service stack on the device  |
-| `pull` | Pulls an image or a repository from a registry and starting the service stack |
-| `list` | Lists containers  |
-| `remove` | Removes docker images from the system |
-
-`docker` commands currently supported:
-
-| `docker` Command | Definition  |
-|------------------|-------------------------------------------------------------------------|
-| `import` | Importing an image to the device and starting a container |
-| `load` | Loading an image from the device and starting a container |
-| `pull` | Pulls an image or a repository from a registry and starting a container |
-| `remove` | Removes docker images from the system |
-| `stats`  | Returns a live data stream for all the running containers |
-
-
-**`Application`** command currently supported:
-
-| `application` Command | Definition  |
-|---------------------------------------|---------------------------------|
-| Update | Updating an application package |
+#### Supported AOTA commands and AOTA form descriptions
+[AOTA Updates](AOTA.md)
 
 
 To trigger Application-over the Air updates click the `Trigger AOTA`
@@ -762,14 +716,14 @@ then click `Send` to trigger the AOTA update.
 
 AOTA Field Details
 
-|Field|Input description|
-|---|---|
-|App and its command|`docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `load`, `import`, `pull`, `remove` and `stats`<br>Application: update|
-|Container Tag|Name tag for image/container.<br>Note: Conatiner Tag can have both the Name and Version in this format Image:Version|
-|Docker&reg; Compose File|Field to specify the name of custom yaml file for docker-compose command. Example: `custom.yml`|
-|Fetch|Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)|
-|Server Username/<br>Server Password|If server where we host the package to download AOTA file needs credentials, we need to specify the username and password|
-|Docker&reg; Registry<br>Docker&reg; Registry Username/Password|Specify Docker&reg; Registry if accessing any registry other than the default `index.docker.io`.<br>Example for docker Registry: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands.|
+| Field                                                          | Input description                                                                                                                                                                                                                                                                                   |
+|----------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Application and supported command                              | `docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `list`, `load`, `import`, `pull`, `remove` and `stats`<br>Application: update                                                                                                                           |
+| Container Tag                                                  | Name tag for image/container.<br>Note: Container Tag can have both the Name and Version in this format Image:Version                                                                                                                                                                                |
+| Docker&reg; Compose File                                       | Name of custom YAML file for docker-compose command. Example: `custom.yml`                                                                                                                                                                                                                          |
+| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)                                                    |
+| Server Username/<br>Server Password                            | Credentials to download remote package when required.                                                                                                                                                                                                                                               |
+| Docker&reg; Registry<br>Docker&reg; Registry Username/Password | Docker&reg; Registry if accessing any registry other than the default `index.docker.io`.<br>Example: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands. |
 
 **Note:** 
 > Following sections demonstrate what fields to fill for respective AOTA operations with required and optional fields.
@@ -833,6 +787,11 @@ Package.
 Example: Container Tag: CPU, Downloaded fetch file: CPU.targ.gz
 
 Follow [**Creating AOTA Package**](#creating-aota-package)
+
+#### Docker LIST
+<p align="center">
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image57.png" alt="P654#yIS2" style="width:3.99201in;height:6.18387in" />
+</p>
 
 #### Docker LOAD
 
@@ -1185,13 +1144,13 @@ below.
 
 Click the `Reboot Button` as seen below in the dashboard to trigger a
 Device Reboot
-<p align="center">
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image48.png" style="width:5.475in;height:3.21667in" />
 </p>
 
 Now on the pop-up window shows up, click the `Send` button on the box
 titled **`Reboot Device`.**
-<p align="center">
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image49.PNG" alt="P1014#yIS2" style="width:3.33333in;height:1.18687in" />
 </p>
 
@@ -1199,7 +1158,7 @@ titled **`Reboot Device`.**
 
 Click the `Shutdown Button` as seen below in the dashboard to trigger a
 Device Reboot.
-<p align="center">
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image50.png" style="width:5.63542in;height:3.24167in" />
 </p>
 
@@ -1214,7 +1173,7 @@ credentials and then result in a device shutdown.
 
 To trigger Decommission, click the `Reboot Button` as seen below in the
 dashboard to trigger a Device Reboot.
-<p align="center">
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image52.png" style="width:5.70833in;height:2.83333in" />
 </p>
 
@@ -1231,13 +1190,12 @@ The query command capabilities are supported via manifest.
 
 ## Telemetry Data
 
-In-Band Manageability provides two types of telemetry data, static
-telemetry and dynamic telemetry. The telemetry data will indicate the
-health of each endpoint.
+In-Band Manageability provides two types of telemetry data.  Telemetry can be viewed under Dashboard as displayed below:
+- 1 - Static Telemetry
+- 2 - Dynamic Telemetry.  The telemetry data will indicate the health of each endpoint.
 
-Telemetry can be viewed under DashBoard, 1 for Static Telemetry 2 for
-Dynamic Telemetry.
-<p align="center">
+
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image54.png" style="width:5.70833in;height:3.74167in" />
 </p>
 
@@ -1246,39 +1204,30 @@ Dynamic Telemetry.
 This contains the following information
 
 - BIOS-release-date
-
 - BIOS-vendor
-
 - BIOS-version
-
 - CPU-ID
-
+- Disk Information
 - OS-information
-
 - System-Manufacturer
-
 - System-Product-Name
-
 - Total-physical-memory
 
-> Static Telemetry can be viewed in the DashBoard when you maximize the
-> Static Telemetry window.
+ Static Telemetry can be viewed in the DashBoard when you maximize the Static Telemetry window.
 
 ### Dynamic Telemetry Data
 
-Each endpoint publishes the following Dynamic Telemetry Data in 5-minute
-intervals.
+Each endpoint publishes the following Dynamic Telemetry Data in 5-minute intervals.
 
+The following are displayed in the data chart and also appear in the New Event Log:
 - Available-memory
-
 - Core-temp-Celsius
-
 - Percent-disk-used
-
 - System-cpu-percent
+- Battery Status (if battery powered)
 
-- Container-stats(cpu-usage)
-
+The following will only appear in the New Event Log:
+- Container-stats (cpu usage and memory information for all running containers)
 - Network Information
 
 ### Viewing Telemetry Data
@@ -1300,33 +1249,10 @@ see the below
 
 ## Issues and Troubleshooting
 
+[General Troubleshooting](Issues%20and%20Troubleshooting.md)
+
 ### OTA Error Status
-[Error Messages](Error Messages.md)
-
-### Provisioning Unsuccessful or Device Not Connected to Cloud
-
-If the provisioning script is struck while creating *symlinks* at the
-end of provisioning or Device is not connected to the cloud, there is a
-chance that other system services that are waiting might possibly
-blocked the INB services from starting. In order to fix this issue,
-follow the steps:
-
-Check if bootup is complete or not using the command:
-```shell
-sudo system-analyze critical-chain
-```
-
-If the boot-up isn`t complete, list all the jobs:
-```shell
-sudo systemctl list-jobs
-```
-
-Stop all the jobs that are under `waiting` state:
-```shell
-sudo systemctl stop <job_unit_name>
-```
-
-And try provisioning the device again following the steps in [Provisioning a Device](#provisioning-a-device).
+[Error Messages](Error%20Messages.md)
 
 ### Acquiring Debug Messages from Agents
 

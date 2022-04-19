@@ -1,12 +1,14 @@
 """
     Handles polling and publishing telemetry data.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from .constants import *
 from .cache_policy import trim_cache
-from . import telemetry_handling
+
+from inbm_common_lib.constants import TELEMETRY_CHANNEL
+
 from . import iahost
 from . import software_checker
 from . import shared
@@ -138,7 +140,7 @@ class Poller(IPoller):
                 logger.debug('Publishing ' + str(len(telemetry_bundles)) +
                              ' saved telemetry bundles.')
                 for bundle in telemetry_bundles:
-                    telemetry_handling.publish_dynamic_telemetry(client, SYSTEM_TELEMETRY_CHANNEL,
+                    telemetry_handling.publish_dynamic_telemetry(client, TELEMETRY_CHANNEL,
                                                                  bundle)
                 telemetry_bundles = []
 

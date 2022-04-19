@@ -42,7 +42,8 @@ class TestINBC(TestCase):
         self.arg_parser = ArgsParser()
         self.maxDiff = None
 
-    def test_hddl_fota_manifest_pass(self):
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    def test_hddl_fota_manifest_pass(self, mock_reconnect):
         f = self.arg_parser.parse_args(
             ['fota', '-p', '/var/cache/manageability/repository-tool/BIOS.img',
              '--target', '123ABC', '456DEF'])
@@ -68,14 +69,16 @@ class TestINBC(TestCase):
         self.assertEqual(f.vendor, 'Intel')
         self.assertEqual(f.username, 'username')
 
-    def test_non_hddl_sota_manifest_pass(self):
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    def test_non_hddl_sota_manifest_pass(self, mock_reconnect):
         f = self.arg_parser.parse_args(
             ['sota', '--nohddl', '-un', 'username', '-u', 'https://abc.com/test.tar'])
         self.assertTrue(f.nohddl)
         self.assertEqual(f.uri, 'https://abc.com/test.tar')
         self.assertEqual(f.username, 'username')
 
-    def test_hddl_sota_manifest_pass(self):
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    def test_hddl_sota_manifest_pass(self, mock_reconnect):
         f = self.arg_parser.parse_args(
             ['sota', '-p', '/var/cache/manageability/repository-tool/sota.mender',
              '--target', '123ABC', '456DEF'])
@@ -100,7 +103,7 @@ class TestINBC(TestCase):
     @patch('sys.stderr', new_callable=StringIO)
     def test_load_raises_both_path_and_uri(self, mock_stderr):
         with self.assertRaises(SystemExit):
-             self.arg_parser.parse_args(
+            self.arg_parser.parse_args(
                 ['load', '--nohddl', '-p', '/var/cache/manageability/intel_manageability_node.conf',
                  '--uri', 'https://abc.com/intel_manageability.conf'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"argument --uri/-u: not allowed with argument --path/-p")
@@ -121,8 +124,9 @@ class TestINBC(TestCase):
                  '-m', 'Intel', '--target', '123ABC', '456DEF'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
 
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('sys.stderr', new_callable=StringIO)
-    def test_raise_too_long_fota_signature(self, mock_stderr):
+    def test_raise_too_long_fota_signature(self, mock_stderr, mock_reconnect):
         with self.assertRaises(SystemExit):
             self.arg_parser.parse_args(['fota', '-p', '/var/cache/manageability/repository-tool/BIOS.img',
                                         '-r', '2024-12-31',
@@ -152,8 +156,9 @@ class TestINBC(TestCase):
         self.assertRegexpMatches(mock_stderr.getvalue(
         ), r"Manufacturer is greater than allowed string size")
 
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('sys.stderr', new_callable=StringIO)
-    def test_raise_too_long_fota_vendor(self, mock_stderr):
+    def test_raise_too_long_fota_vendor(self, mock_stderr, mock_reconnect):
         with self.assertRaises(SystemExit):
             self.arg_parser.parse_args(
                 ['fota', '-p', '/var/cache/manageability/repository-tool/BIOS.img',
@@ -181,15 +186,16 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbm_vision_lib.timer.Timer.start')
-    def test_create_query_manifest(self, t_start, mock_agent, m_sub, m_pub, m_connect, mock_reconnect):
+    def test_create_query_manifest(self, t_start, mock_installed, mock_active, m_sub, m_pub, m_connect, mock_reconnect):
         p = self.arg_parser.parse_args(['query', '-o', 'all', '-tt', 'node'])
         Inbc(p, 'query', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>cmd</type><cmd>query</cmd><query>' \
                    '<option>all</option><targetType>node</targetType></query></manifest>'
         self.assertEqual(p.func(p), expected)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
@@ -200,9 +206,10 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_create_non_hddl_fota_manifest_with_targets(self, mock_agent, mock_start, m_sub, m_pub, m_connect,
-                                                        m_pass, m_dmi, mock_reconnect, mock_thread):
+    def test_create_non_hddl_fota_manifest_with_targets(self, mock_installed, mock_active, mock_start, m_sub, m_pub,
+                                                        m_connect, m_pass, m_dmi, mock_reconnect, mock_thread):
         p = self.arg_parser.parse_args(
             ['fota', '--nohddl', '-u', 'https://abc.com/package.bin', '-un', 'frank', '-to', '/b /p'])
         Inbc(p, 'fota', False)
@@ -213,7 +220,7 @@ class TestINBC(TestCase):
                    '<username>frank</username><password>123abc</password>' \
                    '<fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
-        assert mock_start.call_count == 3
+        assert mock_start.call_count == 2
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -222,8 +229,9 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.timer.Timer.start')
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            return_value='/var/cache/manageability/repository-tool/BIOS.img')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_create_hddl_fota_manifest_with_targets(self, mock_agent, mock_copy, mock_start, m_sub, m_pub,
+    def test_create_hddl_fota_manifest_with_targets(self, mock_agent, mock_active, mock_copy, mock_start, m_sub, m_pub,
                                                     m_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
             ['fota', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-r', '2024-12-31', '--target',
@@ -237,10 +245,11 @@ class TestINBC(TestCase):
                    '/repository-tool/BIOS.img</path></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         mock_copy.assert_called_once()
-        assert mock_start.call_count == 3
+        assert mock_start.call_count == 2
 
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_create_hddl_fota_manifest_without_targets(self, mock_agent):
+    def test_create_hddl_fota_manifest_without_targets(self, mock_agent, mock_reconnect):
         f = self.arg_parser.parse_args(
             ['fota', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-r', '2024-12-31'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type' \
@@ -271,12 +280,53 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
-    def test_create_pota_manifest_with_targets(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
-                                               mock_connect, mock_reconnect):
+    def test_create_pota_manifest_with_different_release_dates(self, copy_file, mock_installed, mock_active, t_start,
+                                                               mock_subscribe, mock_publish, mock_connect,
+                                                               mock_reconnect):
+        p = self.arg_parser.parse_args(
+            ['pota',
+             '--fotapath', './fip.bin',
+             '--manufacturer', 'Intel Corporation',
+             '--vendor', 'Intel Corporation',
+             '--product', 'Raptor Lake Client Platform',
+             '--biosversion', 'RPLISFI1.R00.2457.A04.2201130156',
+             '--releasedate', '2022-01-13',
+             '--sotapath', './temp/test.mender',
+             '--release_date', '2030-01-01', '--target', '123ABC', '456DEF'])
+        Inbc(p, 'pota', False)
+
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>pota</type>' \
+                   '<repo>local</repo></header><type><pota><targetType>node</targetType><targets>' \
+                   '<target>123ABC</target><target>456DEF</target></targets><fota name="sample">' \
+                   '<biosversion>RPLISFI1.R00.2457.A04.2201130156</biosversion><manufacturer>Intel Corporation</manufacturer>' \
+                   '<product>Raptor Lake Client Platform</product>' \
+                   '<vendor>Intel Corporation</vendor><releasedate>2022-01-13</releasedate>' \
+                   '<path>/var/cache/manageability/repository-tool/fip.bin</path></fota><sota>' \
+                   '<cmd logtofile="y">update</cmd><release_date>2030-01-01</release_date>' \
+                   '<path>/var/cache/manageability/repository-tool/test.mender</path></sota></pota>' \
+                   '</type></ota></manifest>'
+
+        self.assertEqual(p.func(p), expected)
+        self.assertEqual(copy_file.call_count, 2)
+        assert t_start.call_count == 2
+
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
+    @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
+    @patch('inbc.command.ota_command.copy_file_to_target_location',
+           side_effect=['/var/cache/manageability/repository-tool/fip.bin',
+                        '/var/cache/manageability/repository-tool/test.mender'])
+    def test_create_pota_manifest_with_targets(self, copy_file, mock_installed, mock_active, t_start, mock_subscribe,
+                                               mock_publish, mock_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
             ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '--target', '123ABC', '456DEF'])
         Inbc(p, 'pota', False)
@@ -293,19 +343,20 @@ class TestINBC(TestCase):
 
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
-    def test_create_pota_manifest_clean_input(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
-                                              mock_connect, mock_reconnect):
+    def test_create_pota_manifest_clean_input(self, copy_file, mock_installed, mock_active, t_start, mock_subscribe,
+                                              mock_publish, mock_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
             ['pota', '-fp', './fip\x00.bin', '-sp', './\'temp/\x00test.mender', '--target', '\x00123ABC', '&456DEF\x00',
              '-v', 'ven\x00dor\'', '-m', 'Int\x00el', '-b', '5.\x0014'])
@@ -323,10 +374,11 @@ class TestINBC(TestCase):
 
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
+    @patch('inbc.command.command.Command.terminate_operation')
     @patch('sys.stderr', new_callable=StringIO)
-    def test_raise_too_long_pota_sota_path(self, mock_stderr):
+    def test_raise_too_long_pota_sota_path(self, mock_stderr, mock_terminate):
         with self.assertRaises(SystemExit):
             self.arg_parser.parse_args(['pota', '-fp', './fip.bin', '-sp', OVER_FIVE_HUNDRED_CHARACTER_STRING,
                                         '-r', '2024-12-31', '-sr', '2024-12-31'])
@@ -348,8 +400,9 @@ class TestINBC(TestCase):
                 ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '-r', '2024-12-31', '-sr', '12-31-2024'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
 
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('sys.stderr', new_callable=StringIO)
-    def test_raise_invalid_pota_fota_release_date_format(self, mock_stderr):
+    def test_raise_invalid_pota_fota_release_date_format(self, mock_stderr, mock_reconnect):
         with self.assertRaises(SystemExit):
             self.arg_parser.parse_args(
                 ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '-r', '12-25-2021'])
@@ -360,12 +413,13 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
-    def test_create_pota_manifest_without_targets(self, copy_file, mock_agent, t_start, mock_subscribe, mock_publish,
-                                                  mock_connect, mock_reconnect):
+    def test_create_pota_manifest_without_targets(self, copy_file, mock_installed, mock_active, t_start,
+                                                  mock_subscribe, mock_publish, mock_connect, mock_reconnect):
         p = self.arg_parser.parse_args(
             ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender'])
         Inbc(p, 'pota', False)
@@ -382,20 +436,27 @@ class TestINBC(TestCase):
 
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
-        assert t_start.call_count == 3
+        assert t_start.call_count == 2
 
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.parser.detect_os', return_value='ABC')
-    def test_non_ubuntu_supported_no_hddl_pota_manifest(self, mock_os):
+    def test_non_ubuntu_supported_no_hddl_pota_manifest(self, mock_os, mock_reconnect):
         pota = self.arg_parser.parse_args(
             ['pota', '--nohddl', '-fp', '/var/cache/fip.bin', '-sp', '/var/cache/temp/test.mender'])
-        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>pota</type><repo>local</repo></header><type><pota><fota name="sample"><biosversion>5.12</biosversion><manufacturer>intel</manufacturer><product>kmb-hddl2</product><vendor>Intel</vendor><releasedate>2024-12-31</releasedate><path>/var/cache/fip.bin</path></fota><sota><cmd logtofile="y">update</cmd><release_date>2024-12-31</release_date><path>/var/cache/temp/test.mender</path></sota></pota></type></ota></manifest>'
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>pota</type>' \
+                   '<repo>local</repo></header><type><pota><fota name="sample"><biosversion>5.12</biosversion>' \
+                   '<manufacturer>intel</manufacturer><product>kmb-hddl2</product><vendor>Intel</vendor>' \
+                   '<releasedate>2024-12-31</releasedate><path>/var/cache/fip.bin</path></fota><sota>' \
+                   '<cmd logtofile="y">update</cmd><release_date>2024-12-31</release_date>' \
+                   '<path>/var/cache/temp/test.mender</path></sota></pota></type></ota></manifest>'
         self.assertEqual(pota.func(pota), expected)
-    
+
     @patch('inbc.parser.detect_os', return_value='Ubuntu')
     def test_ubuntu_supported_no_hddl_pota_manifest(self, mock_os):
         pota = self.arg_parser.parse_args(
             ['pota', '--nohddl', '-fp', '/var/cache/fip.bin', '-sp', '/var/cache/file.mender'])
-        with self.assertRaisesRegex(InbcException, "POTA is not supported with local 'path' tags on non HDDL Ubuntu device."):
+        with self.assertRaisesRegex(InbcException,
+                                    "POTA is not supported with local 'path' tags on non HDDL Ubuntu device."):
             pota.func(pota)
 
     @patch('sys.stderr', new_callable=StringIO)
@@ -467,7 +528,8 @@ class TestINBC(TestCase):
     def test_create_nohddl_fota_manifest_check_only_one_either_uri_or_fetch_tag(self, mock_sys_err):
         with self.assertRaises(SystemExit):
             self.arg_parser.parse_args(
-                ['fota', '--nohddl', '-u', 'https://abc.com/BIOS.img', '-p', '/var/cache/manageability/reposi&tory-tool/BIOS.img', '-r', '2024-12-31'])
+                ['fota', '--nohddl', '-u', 'https://abc.com/BIOS.img', '-p',
+                 '/var/cache/manageability/reposi&tory-tool/BIOS.img', '-r', '2024-12-31'])
         self.assertRegexpMatches(mock_sys_err.getvalue(
         ), r"argument --path/-p: not allowed with argument --uri/-u")
 
@@ -498,7 +560,7 @@ class TestINBC(TestCase):
                    '<path>/var/cache/manageability/repository-tool/BIOS.img' \
                    '</path></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
-    
+
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     def test_create_hddl_pota_uri_manifest_nohddl_ubuntu(self, mock_agent):
         s = self.arg_parser.parse_args(
@@ -518,7 +580,8 @@ class TestINBC(TestCase):
     @patch('inbc.parser.detect_os', return_value='NonUbuntu')
     def test_create_hddl_pota_uri_manifest_nohddl_non_ubuntu(self, mock_os, mock_agent):
         s = self.arg_parser.parse_args(
-            ['pota', '--nohddl', '-fu', '/var/cache/manageability/repository-tool/fip.bin', '-su', '/var/cache/manageability/repository-tool/file.mender'])
+            ['pota', '--nohddl', '-fu', '/var/cache/manageability/repository-tool/fip.bin', '-su',
+             '/var/cache/manageability/repository-tool/file.mender'])
 
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>pota</type' \
                    '><repo>remote</repo></header><type><pota><fota name="sample">' \
@@ -535,14 +598,16 @@ class TestINBC(TestCase):
         pota = self.arg_parser.parse_args(
             ['pota', '-fp', '/var/cache/manageability/intel_manageability_node.conf',
              '-su', '/var/cache/manageability/repository-tool/file.mender'])
-        with self.assertRaisesRegex(InbcException, "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags."):
+        with self.assertRaisesRegex(InbcException,
+                                    "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags."):
             pota.func(pota)
-    
+
     def test_raise_invalid_pota_uri_manifest(self):
         pota = self.arg_parser.parse_args(
             ['pota', '-fp', '/var/cache/manageability/intel_manageability_node.conf',
              '-su', '/var/cache/manageability/repository-tool/file.mender'])
-        with self.assertRaisesRegex(InbcException, "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags."):
+        with self.assertRaisesRegex(InbcException,
+                                    "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags."):
             pota.func(pota)
 
     def test_load_manifest(self):
@@ -555,12 +620,15 @@ class TestINBC(TestCase):
                    '</configtype></config></manifest>'
         self.assertEqual(load.func(load), expected)
 
-    def test_raise_not_supported_no_hddl_load_manifest(self):
+    def test_load_manifest2(self):
         load = self.arg_parser.parse_args(
-            ['load', '--nohddl', '-p', '/var/cache/manageability/intel_manageability_node.conf',
-             '--target', '123ABC', '456DEF'])
-        with self.assertRaisesRegex(InbcException, 'Load command is only supported for HDDL.'):
-            load.func(load)
+            ['load', '--nohddl', '-u', 'https://abc.com/intel_manageability.conf'])
+
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>config</type><config><cmd>load' \
+                   '</cmd><configtype><load>' \
+                   '<fetch>https://abc.com/intel_manageability.conf</fetch></load>' \
+                   '</configtype></config></manifest>'
+        self.assertEqual(load.func(load), expected)
 
     def test_load_manifest_clean_inputs(self):
         load = self.arg_parser.parse_args(
@@ -582,13 +650,9 @@ class TestINBC(TestCase):
                    '</get></configtype></config></manifest>'
         self.assertEqual(g.func(g), expected)
 
-    def test_raise_not_supported_no_hddl_get_manifest(self):
-        get = self.arg_parser.parse_args(
-            ['get', '--nohddl', '-p', '/var/cache/manageability/repository-tool/BIOS.img'])
-        with self.assertRaisesRegex(InbcException, 'Get command is only supported for HDDL.'):
-            get.func(get)
-
-    def test_set_manifest(self):
+    @patch('inbc.command.command.Command.terminate_operation')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    def test_set_manifest(self, mock_reconnect, mock_terminate):
         s = self.arg_parser.parse_args(
             ['set', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-tt', 'node-client'])
 
@@ -598,13 +662,9 @@ class TestINBC(TestCase):
                    '</set></configtype></config></manifest>'
         self.assertEqual(s.func(s), expected)
 
-    def test_raise_not_supported_no_hddl_set_manifest(self):
-        s = self.arg_parser.parse_args(
-            ['set', '--nohddl', '-p', '/var/cache/manageability/repository-tool/BIOS.img'])
-        with self.assertRaisesRegex(InbcException, 'Set command is only supported for HDDL.'):
-            s.func(s)
-
-    def test_restart_manifest(self):
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbc.command.command.Command.terminate_operation')
+    def test_restart_manifest(self, mock_terminate, mock_reconnect):
         s = self.arg_parser.parse_args(
             ['restart'])
 
@@ -618,7 +678,8 @@ class TestINBC(TestCase):
         with self.assertRaisesRegex(InbcException, 'Restart command is only supported for HDDL.'):
             restart.func(restart)
 
-    def test_restart_with_targets_manifest(self):
+    @patch('inbc.command.command.Command.terminate_operation')
+    def test_restart_with_targets_manifest(self, mock_terminate):
         s = self.arg_parser.parse_args(
             ['restart', '-t', '123ABC', '456DEF'])
 
@@ -642,20 +703,23 @@ class TestINBC(TestCase):
                 ['query', '-o', 'everything'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"invalid choice: 'everything'")
 
+    @patch('threading.Thread._bootstrap_inner')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.timer.Timer.stop')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
-    def test_terminate_operation_success(self, mock_agent, t_stop, mock_reconnect):
+    def test_terminate_operation_success(self, mock_installed, mock_active, t_stop, mock_reconnect, mock_thread):
         with patch("builtins.open", mock_open(read_data="XLINK_SIMULATOR=False")) as mock_file:
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         print(t_stop.call_count)
-        assert t_stop.call_count == 2
+        assert t_stop.call_count == 1
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbc.command.command.is_vision_agent_active', return_value=True)
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     @patch('inbm_vision_lib.timer.Timer.stop')
-    def test_terminate_operation_failed(self, t_stop, mock_agent,mock_reconnect):
+    def test_terminate_operation_failed(self, t_stop, mock_installed, mock_active, mock_reconnect):
         with patch("builtins.open", mock_open(read_data="XLINK_SIMULATOR=False")) as mock_file:
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)

@@ -6,7 +6,7 @@ OUTPUT=output
 # ---- Dependencies ----
 
 fpm_package(`yocto-provision',
-        `1.0',
+	include(`../version.txt'), 
         `1',
         `true',
         `yocto-provision/template',
@@ -20,7 +20,7 @@ fpm_package(`sample-application',
         `')
 
 fpm_package(`tpm-provision',
-	`1.0',
+	include(`../version.txt'), 
 	`1',
 	`true',
 	`tpm-provision/template',

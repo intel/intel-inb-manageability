@@ -1,5 +1,3 @@
-from future import standard_library
-
 import random
 import unittest
 from unittest import TestCase

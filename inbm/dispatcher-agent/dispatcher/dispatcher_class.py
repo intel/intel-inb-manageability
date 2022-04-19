@@ -2,7 +2,7 @@
     Central communication agent in the manageability framework responsible
     for issuing commands and signals to other tools/agents
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -475,7 +475,7 @@ class Dispatcher(WindowsService):
                     logger.debug(f"cmd_type : {config_cmd_type}")
                     result = self._do_config_operation_on_target(
                         config_cmd_type, parsed_head, xml, target_type, self._broker)
-        except DispatcherException as error:
+        except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
         except XmlException as error:
@@ -490,7 +490,8 @@ class Dispatcher(WindowsService):
             return result.status
 
     def _create_ota_resource_list(self, parsed_head: XmlHandler, resource: Dict) -> Dict[str, Any]:
-        """Creates a list of OTA commands requested under POTA along with the resources and arguments associated with each ota
+        """Creates a list of OTA commands requested under POTA along with the resources and arguments
+        associated with each OTA
 
         @param parsed_head: Parsed head of the manifest xml
         @param resource: resource to parse
@@ -511,7 +512,7 @@ class Dispatcher(WindowsService):
         """Performs OTA updates by creating a thread based on OTA factory detected from the manifest
 
         @param xml: manifest in XML format
-        @param ota_type: Type of OTA requested (AOTA/FOTA/SOTA/POTA)
+        @param ota_type: Type of OTA requested (AOTA/FOTA/SOTA)
         @param repo_type: Type of repo to fetch files (local/remote)
         @param target_type: Target on which the config operation needs to be performed
         @param resource: resource to parse
@@ -543,10 +544,8 @@ class Dispatcher(WindowsService):
                                 kwargs: Dict, parsed_head: XmlHandler, ota_list: Dict) -> None:
         """Validate POTA manifest by checking FOTA and SOTA information before starting OTA.
 
-        @param ota_type: Type of OTA requested
         @param repo_type: Type of repo to fetch files (local/remote)
         @param target_type: Target on which the config operation needs to be performed
-        @param resource: resource to parse
         @param kwargs: arguments dictionary to be updated after parsing resources
         @param parsed_head: Parsed head of the manifest xml
         """
@@ -569,8 +568,7 @@ class Dispatcher(WindowsService):
             logger.debug(f'{ota} checks complete.')
 
     def check_username_password(self, parsed_manifest: Mapping[str, Optional[Any]]) -> None:
-        """Check if the manifest miss username or password
-        """
+        """Check if the manifest miss username or password"""
         if parsed_manifest['ota_type'] == OtaType.POTA.name.lower():
             for ota_key in parsed_manifest.keys():
                 if ota_key == OtaType.FOTA.name.lower() or ota_key == OtaType.SOTA.name.lower():
@@ -815,9 +813,6 @@ class Dispatcher(WindowsService):
             logger.debug('Subscribing to: %s', STATE_CHANNEL)
             self._broker.mqtt_subscribe(STATE_CHANNEL, self._on_message)
 
-            logger.debug('Subscribing to: %s', CMD_CHANNEL)
-            self._broker.mqtt_subscribe(CMD_CHANNEL, self._on_message)
-
             logger.debug('Subscribing to: %s', CONFIGURATION_DISPATCHER_UPDATE_CHANNEL)
             self._broker.mqtt_subscribe(
                 CONFIGURATION_DISPATCHER_UPDATE_CHANNEL, override_defaults)
@@ -845,7 +840,7 @@ class Dispatcher(WindowsService):
 
         parsed_manifest = {'sota_cmd': 'rollback', 'log_to_file': None,
                            'sota_repos': self.sota_repos,
-                           'uri': None, 'signature': None, 'signature_version': None,
+                           'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None}
         sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(),
                              **kwargs)

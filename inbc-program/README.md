@@ -1,21 +1,63 @@
 # Intel® In-band Manageability Command-line Utility (INBC) 
 
-## Description
+<details>
+<summary>Table of Contents</summary>
+
+1. [Introduction](#introduction)
+2. [Prerequisites](#prerequisites)
+3. [Notes](#-notes)
+4. [MQTT Communication](#mqtt-communication)
+   1. [Publish Channels](#publish-channels)
+   2. [Subscribe Channels](#subscribe-channels)
+5. [Commands](#commands)
+   1. [FOTA](#fota)
+   2. [SOTA](#sota)
+   3. [POTA](#pota)
+   4. [Configuration Load](#load)
+   5. [Configuration Get](#get)
+   6. [Configuration Set](#set)
+   7. [Restart](#restart)
+   8. [Query](#query)
+6. [Status Codes](#status-codes)
+7. [Return and Exit Codes](#return-and-exit-codes)
+8. [FAQ](#-faq)
+   1. [How do I find what values to use for a specific HDDL plug-in card FOTA update?](#-how-do-i-find-what-values-to-use-for-a-specific-hddl-plug-in-card-fota-update)
+      
+
+</details>
+
+# Introduction
 
 Intel® In-Band Manageability command-line utility, INBC, is a software utility running either on a host managing HDDL plugin cards via PCIe or an Edge IoT Device.  It allows the user to perform Device Management operations like firmware update or system update from the command-line. This may be used in lieu of using the cloud update mechanism.
 
-## Prerequisites
+# Prerequisites
 Intel® In-Band Manageability needs to be installed and running.
 
-
-## 📝 Note
-1. INBC supports FOTA, SOTA and POTA on an Edge device. Use the **'--nohddl'** flag to target an Edge device.  This requires downloading from a remote source.
+# 📝 Notes
+1. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. Use the **'--nohddl'** flag to target an Edge device.  This requires downloading from a remote source.
 2. If targets=NONE for HDDL; the vision-agent determines the eligible targets based on their attributes.
 3. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
 
+# MQTT Communication 
+
+Uses MQTT for communication with INBM agents
+
+### Publish Channels
+The agent publishes to the following topics:
+- INBM command request: `manageability/request/install`
+- Vision-agent command requests: `ma/request/{command}`  command=status, restart, query
+- Vision-agent configuration requests: `ma/configuration/update/{command}`  command=get_element, set-element, load
+
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+- Telemetry Response to check if update successful: `manageability/response`
+- Searches for keywords in the telemetry events.  Keywords are dependent on command: `manageabilty/event`
+- Determines if Vision-agent is present by looking for xlink driver message: `ma/xlink/status`
+
 # Commands
 
-## ⚙️FOTA
+## FOTA
 ### Description
 Performs a Firmware Over The Air (FOTA) update on either an Edge Device or HDDL Plug-in Card.
 ### Usage
@@ -59,7 +101,7 @@ inbc fota -p <local path to FIP>/fip-hddl2.bin
    --target 123ABC 345DEF
  ```
 
-## ⚙️SOTA
+## SOTA
 ### Description
 Performs a Software Over The Air (SOTA) update on either an Edge Device or HDDL Plug-in Card.
 
@@ -108,7 +150,7 @@ inbc sota
      --target 000732767ffb-16781312 000732767ffb-16780544
 ```
 
-## ⚙️POTA
+## POTA
 ### Description
 Performs a Platform Over The Air update (POTA)
 
@@ -162,18 +204,28 @@ inbc pota
 ```
 
 
-## ⚙️LOAD
+## LOAD
 ### Description
 Load a new configuration file.   This will replace the existing configuration file with the new file.
 
 ❗ This command is currently only supported on HDDL Plug-in cards
 ### Usage
-```
-inbc load {--path, -p FILE_PATH} 
+``` 
+inbc load [--nohddl] 
+   {--path, -p FILE_PATH}
+   [--uri, -u URI]
    [--targettype, -tt NODE | VISION | NODE_CLIENT; default="node"] 
    [--target, -t TARGETS...; default=None]
 ```
 ### Examples
+#### Edge Device on Yocto OS
+```
+inbc load --nohddl --uri  <URI to config file>/config.file
+```
+#### Edge Device on Ubuntu
+```
+inbc load --nohddl --uri  <URI to config file>/config.file
+```
 #### HDDL Plug-in cards - load new configuration on vision-agent
 ```
 inbc load --path /var/cache/manageability/intel_manageabilty_vision.conf -tt vision
@@ -201,18 +253,27 @@ inbc load --path /var/cache/manageability/intel_manageabilty.conf
 ```
 
 
-## ⚙️GET
+## GET
 ### Description
 Get key/value pairs from configuration file
 
 ❗ This command is currently only supported on HDDL Plug-in cards
 ### Usage
 ```
-inbc get {--path, -p KEY_PATH;...} 
+inbc get [--nohddl]
+   {--path, -p KEY_PATH;...} 
    [--targettype, -tt NODE | VISION | NODE_CLIENT; default="node"]
    [--target, -t TARGETS...; default=None]
 ```   
 ### Examples
+#### Edge Device on Yocto OS
+```
+inbc get --nohddl --path  publishIntervalSeconds
+```
+#### Edge Device on Ubuntu
+```
+inbc get --nohddl --path  publishIntervalSeconds
+```
 #### HDDL Plug-in cards - get values from vision-agent
 ```
 inbc get -p isAliveTimerSecs;heartbeatRetryLimit -tt vision
@@ -240,18 +301,27 @@ inbc get -p maxCacheSize;trustedRepositories
 ```
 
 
-## ⚙️SET
+## SET
 ### Description
 Set key/value pairs in configuration file
 
 ❗ This command is currently only supported on HDDL Plug-in cards
 ### Usage
 ```
-inbc set {--path, -p KEY_PATH;...} 
+inbc set [--nohddl]
+   {--path, -p KEY_PATH;...} 
    [--targettype, -tt NODE | VISION | NODE_CLIENT; default="node"] 
    [--target, -t TARGETS...; default=None]
 ```
 ### Examples
+#### Edge Device on Yocto OS
+```
+inbc set --nohddl --path  maxCacheSize:100
+```
+#### Edge Device on Ubuntu
+```
+inbc set --nohddl --path  maxCacheSize:100
+```
 #### HDDL Plug-in cards - set values on vision-agent
 ```
 inbc set -p isAliveTimerSecs:50;heartbeatRetryLimit:2 -tt vision
@@ -279,7 +349,7 @@ inbc set -p maxCacheSize:120;publishIntervalSeconds:310
 ```
 
 
-## ⚙️RESTART
+## RESTART
 ### Description
 Restart nodes
 
@@ -289,7 +359,7 @@ Restart nodes
 inbc restart [--target, -t TARGETS...; default=None]
 ```
 ### Examples
-#### HDDL Plug-in cards - set values on all node-clients
+#### HDDL Plug-in cards - restart all nodes
 ```
 inbc restart
 ```
@@ -298,7 +368,7 @@ inbc restart
 inbc restart --target 000732767ffb-16781312 000732767ffb-16780544
 ```
 
-## ⚙️QUERY
+## QUERY
 ### Description
 Query device(s) for attributes
 
@@ -311,72 +381,7 @@ inbc query
 ```
 
 ### Option Results
-<details><summary>[See results for query options]</summary>
-
-#### 'hw' - Hardware
-
-| Attribute | Description | 
-|:---|:---|
-|is_flashless    | True if plug-in card is flashless; otherwise, False |
-|manufacturer | Hardware manufacturer |
-|platform_type | Type of plug-in card.  TBH or KMB |
-|product | Product type |
-|stepping | Stepping |
-|sku | SKU |
-|model | Model number |
-|serial_sum | Serial number |
-
-#### 'fw' - Firmware
-
-| Attribute | Description | 
-|:---|:---|
-|boot_fw_date    | Firmware date |
-|boot_fw_vendor | Firmware vendor |
-|boot_fw_version | Firmware version |
-
-#### 'guid' - GUID
-
-| Attribute | Description | 
-|:---|:---|
-|guid    | GUID of HDDL plug-in card|
-|is_provisioned | True if HDDL plug-in card is provisioned; otherwise, False |
-
-#### 'os' - Operating System
-
-| Attribute | Description | 
-|:---|:---|
-|os_type    | Operating System type|
-|os_version | Operating System version |
-|os_release_date | Operating System release date |
-
-#### 'security' - Security
-
-| Attribute | Description | 
-|:---|:---|
-|dm_verity_enabled    | True if DM verity is enabled; otherwise, False|
-|measured_boot_enabled | True if Measured Boot is enabled; otherwise, False |
-|is_provisioned | True if HDDL plug-in card is provisioned; otherwise, False |
-|is_xlink_secured | True if using Secured Xlink; otherwise, False |
-|guid    | GUID of HDDL plug-in card|
-
-#### 'status' - Status
-
-| Attribute | Description | 
-|:---|:---|
-|heartbeat_status    | Heartbeat status of HDDL plug-in card (Active, Idle)|
-|heartbeat_retries | Number of heartbeat retries attempted for the HDDL plug-in card |
-
- #### 'swbom' - Software BOM
-
-SWBOM dynamic telemetry data
- 
-#### 'version' - Version
-
-| Attribute | Description | 
-|:---|:---|
-|version    | Version of the vision-agent service|
-   
-</details>
+[Allowed Options and Results](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)
 
 ### Examples
 #### HDDL Plug-in cards - return all attributes
@@ -392,31 +397,31 @@ inbc query --option hw
 inbc query --option sw --target 000732767ffb-16781312 000732767ffb-16780544
 ```
 
-# Status Code
+# Status Codes
 
- | Message | Description | Result |
-|:---|:---|:---|
-|COMMAND_SUCCESS    |Post and pre-install check go through   |{'status': 200, 'message': 'COMMAND SUCCESS'} |
-|FILE_NOT_FOUND | File to be fetched is not found | {'status': 404, 'message': 'FILE NOT FOUND'}
-|COMMAND_FAILURE | Update did not go through | {'status': 400, 'message': 'COMMAND FAILURE'}
+ | Message         | Description                           | Result                                        |
+|:----------------|:--------------------------------------|:----------------------------------------------|
+| COMMAND_SUCCESS | Post and pre-install check go through | {'status': 200, 'message': 'COMMAND SUCCESS'} |
+| FILE_NOT_FOUND  | File to be fetched is not found       | {'status': 404, 'message': 'FILE NOT FOUND'}  |
+ | COMMAND_FAILURE | Update did not go through             | {'status': 400, 'message': 'COMMAND FAILURE'} |
 
 # Return and Exit Codes
 
-| Return Code | Exit Code | Description |
-|:---:|:---:|:--- |
-|0    |0  |SUCCESS |
-| -1 | 1| FAIL |
-| -2 | 2 | COMMAND TIMED OUT |
-| -3 | 3 | HOST UNAVAILABLE |
-| -4 | 4 | NODE NOT FOUND |
-| -5 | 5 |  NODE UNRESPONSIVE |
-| -6 | 6 | HOST BUSY |
-| -11 | 11 | XLINK DEVICE NOT FOUND (OFF) |
-| -12 | 12 | XLINK DEVICE BUSY |
-| -13 | 13 | XLINK DRIVER UNAVAILABLE |
-| -14 | 14 | XLINK DRIVER ERROR |
+| Return Code | Exit Code | Description                  |
+|:-----------:|:---------:|:-----------------------------|
+|      0      |     0     | SUCCESS                      |
+|     -1      |     1     | FAIL                         |
+|     -2      |     2     | COMMAND TIMED OUT            |
+|     -3      |     3     | HOST UNAVAILABLE             |
+|     -4      |     4     | NODE NOT FOUND               |
+|     -5      |     5     | NODE UNRESPONSIVE            |
+|     -6      |     6     | HOST BUSY                    |
+|     -11     |    11     | XLINK DEVICE NOT FOUND (OFF) |
+|     -12     |    12     | XLINK DEVICE BUSY            |
+|     -13     |    13     | XLINK DRIVER UNAVAILABLE     |
+|     -14     |    14     | XLINK DRIVER ERROR           |
 
-## ❔ FAQ
+# ❔ FAQ
 
 <details><summary>[See answers to frequently asked questions]</summary>
 

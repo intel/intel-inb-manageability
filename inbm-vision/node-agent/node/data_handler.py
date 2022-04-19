@@ -9,11 +9,11 @@
 
 import logging
 import os.path
-import shutil
 from typing import Optional, Any
 from pathlib import Path
 
 from inbm_common_lib.validater import configuration_bounds_check
+from inbm_common_lib.utility import move_file
 from inbm_vision_lib.invoker import Invoker
 from inbm_vision_lib import checksum_validator
 from inbm_vision_lib.configuration_manager import ConfigurationManager
@@ -54,8 +54,8 @@ class DataHandler(idata_handler.IDataHandler):
         self._heartbeat_interval: Optional[int] = None
         self._nid: Optional[str] = None
         self._timer: Optional[HeartbeatTimer] = None
-        self._retry_limit: int = 0
-        self._retry_interval: int = 0
+        self._retry_count: int = 0
+        self._retry_limit: int = CONFIG_REGISTRATION_RETRY_LIMIT.default_value
         self._retry_timer: int = 0
         self._heartbeat_response: int = CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS.default_value
         self._heartbeat_response_timer: Optional[HeartbeatTimer] = None
@@ -158,7 +158,10 @@ class DataHandler(idata_handler.IDataHandler):
                     self._nid, self.node_callback.get_xlink(), self._config, dictionary, target_type)
             elif target_type == NODE_CLIENT:
                 if self.file_name:
-                    DataHandler.move_file(node_conf_path.name, CACHE, CACHE_MANAGEABILITY)
+                    src_file_path = os.path.join(CACHE, node_conf_path.name)
+                    new_dir = os.path.join(CACHE_MANAGEABILITY, node_conf_path.name)
+
+                    move_file(src_file_path, new_dir)
                     return SendOtaClientConfigurationCommand(
                         self.node_callback.get_broker(), os.path.join(CACHE_MANAGEABILITY,
                                                                       node_conf_path.name), LOAD)
@@ -231,24 +234,6 @@ class DataHandler(idata_handler.IDataHandler):
         return SendOtaClientConfigurationCommand(
             self.node_callback.get_broker(), dictionary, cmd_type)
 
-    @staticmethod
-    def move_file(file_name: str, file_path: str, destination: str) -> None:
-        """Move the file to new location.
-
-           @param file_name : name of file
-           @param file_path : original file location
-           @param destination : the new location
-        """
-        old_dir = os.path.join(file_path, file_name)
-        new_dir = os.path.join(destination, file_name)
-        try:
-            if os.path.exists(old_dir):
-                shutil.move(old_dir, new_dir)
-            else:
-                logger.error("Directory '{0}' does not exist.".format(old_dir))
-        except OSError as err:
-            raise NodeException("Unable to load new configuration file: {}".format(err))
-
     def register(self) -> None:
         """Add Register_command to invoker when node is being initialized.  In the event that a response is not received
         from the vision-agent in the allotted time, it will retry until the retry limit is hit."""
@@ -257,10 +242,10 @@ class DataHandler(idata_handler.IDataHandler):
             self._timer = None
         self._timer = HeartbeatTimer(self._retry_timer, self.register)
         if self._heartbeat_interval is None:
-            if self._retry_limit < self._retry_interval:
+            if self._retry_count < self._retry_limit:
                 command = RegisterCommand(self.node_callback.get_xlink())
                 self._invoker.add(command)
-                self._retry_limit += 1
+                self._retry_count += 1
             else:
                 self._timer.stop()
                 logger.error(
@@ -307,7 +292,7 @@ class DataHandler(idata_handler.IDataHandler):
         if self._timer is not None:
             self._timer.stop()
         self._heartbeat_interval = None
-        self._retry_limit = 0
+        self._retry_count = 0
 
     def downloaded_file(self, file_name, receive_status: bool) -> None:
         """Add Send_Download_Status_Name command into invoker if the OTA file exists
@@ -332,12 +317,15 @@ class DataHandler(idata_handler.IDataHandler):
             for child in children:
                 value = children[child]
                 if child == REGISTRATION_RETRY_TIMER_SECS:
-                    self._retry_timer = configuration_bounds_check(CONFIG_REGISTRATION_RETRY_TIMER_SECS, int(value))
+                    self._retry_timer = configuration_bounds_check(
+                        CONFIG_REGISTRATION_RETRY_TIMER_SECS, int(value))
                 if child == REGISTRATION_RETRY_LIMIT:
-                    self._retry_interval = configuration_bounds_check(CONFIG_REGISTRATION_RETRY_LIMIT, int(value))
+                    self._retry_limit = configuration_bounds_check(
+                        CONFIG_REGISTRATION_RETRY_LIMIT, int(value))
                 if child == HEARTBEAT_RESPONSE_TIMER_SECS:
                     self._heartbeat_response = \
-                        configuration_bounds_check(CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS, int(value))
+                        configuration_bounds_check(
+                            CONFIG_HEARTBEAT_RESPONSE_TIMER_SECS, int(value))
         else:
             logger.error('Children value is empty')
 

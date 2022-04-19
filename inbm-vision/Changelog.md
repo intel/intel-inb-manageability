@@ -3,6 +3,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## 3.0.10 - 2022-03-28
+
+## Fixed
+ - RTC 509991 Updated docker stats dashboard to display units for readability.
+ - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
+ - HSD 15010868044 - Remove checking for isfile on destination before moving file
+ - HSD 16016084283 - Change INBC to check for vision-agent process instead of waiting for MQTT message to determine the vision-agent service is running
+ - HSD 15010872669 - Add missing heartbeatResponseTimerSecs to the list of configuration keys to fix Get/Set of this configuration key/value pair
+ - RTC 511044 - Throw ValueError instead of VisionException when configuration set fails.
+ - HSD 15010865663 - Revert change of PR #22 as it caused xlink communication issues
+ - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+ - HSD 15010918893 - INBM does not reject unsupported file type
+
+## 3.0.9 - 2022-03-08
+NOTE: This release has not yet been security tested.
+
+### Fixed
+- 509266 Vision agent post-install script fails
+- HSD 1509485150, 47042 - Fix INBC fail to exit intermittently when using hddl_device_server
+- (507873) Added support for Ubuntu 21.10
+- HSD 15010686097, 509209 - Fix INBC query not printing correct time of fw-release-date
+- HSD 15010749354 - Use XML schema to check for boundary conditions on integers in configuration files.  Validate set operations against schema.
+- 505505 - Remove bootFlashlessDevice from vision configuration file
+- HSD 15010640268 - Send only the SWID to Secure XLink API to avoid receiving the same GUID for each TBH.
+- HSD 15010868050 - Fix manifest triggered POTA failed due to error "File does not exist or file path is not to a file"
+
 ## 3.0.8 - 2022-01-24
 
 ### Fixed
@@ -12,6 +38,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - 506874 - Fix node config schema error when upgrading from v2.16.0 to v2.17.2
 - 507151 - Add lower bound, upper bound, and default values to node-agent configuration values.
 - 507593 - Add lower bound, upper bound, and default values to vision-agent configuration values.
+- 507150 - Rename Signature_version to hash_algorithm in manifest.  Add restricted values to manifest for hash_algorithm.
 
 ## 3.0.7 - 2022-01-04
 

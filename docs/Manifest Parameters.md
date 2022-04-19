@@ -1,16 +1,38 @@
 # Manifest Overview
 
-The following outlines the manifest parameters used to perform the supported OTA updates, configuration commands and query.
+The following outlines the manifest parameters used to perform the supported OTA updates, configuration commands, query, and provision node.
 
 ## Table of Contents
-1. [FOTA](#FOTA)
-2. [SOTA](#SOTA)
-3. [POTA](#POTA)
-4. [AOTA](#AOTA)
-5. [Query](#Query)
-6. [Configuration SET](#Set)
-7. [Configuration GET](#Get)
-8. [Configuration LOAD](#Load)
+1. [Manifest Rules](#manifest-rules)
+3. [FOTA](#FOTA)
+4. [SOTA](#SOTA)
+5. [POTA](#POTA)
+6. [AOTA](#AOTA)
+7. [Query](#Query)
+8. [Configuration SET](#Set)
+9. [Configuration GET](#Get)
+10. [Configuration LOAD](#Load)
+11. [Provision Node](#Provision-Node)
+
+## Manifest Rules 
+
+- All tags marked as **required (R)** in the manifest examples below
+    must be in the manifest. Any tags marked as **optional (O)** can be
+    omitted.
+
+- The start of a section is indicated as follows **\<manifest\>**.
+
+- The end of a section is indicated by **\</manifest\>**. All sections
+    must have the start and the matching end tag.
+
+- Remove spaces, tabs, comments and so on. Make it a single continuous
+    long string.  
+    Example: **\<xml
+    ...\>\<manifest\>\<ota\>\<header\>...\</ota\>\<manifest\>**
+
+- Parameter within a tag cannot be empty.  
+    Example: **\<description\>\</description\>** is not allowed.
+
 
 ## FOTA
 
@@ -177,7 +199,7 @@ description will trigger a FOTA update via Manifest.
 </manifest>
 ```
 
-#### Sample SOTA Manifest - Target specific Intel Vision cards: 
+### Sample SOTA Manifest - Target specific Intel Vision cards: 
 
 - Specific targets identified in <targets></targets> section.
 
@@ -210,7 +232,7 @@ description will trigger a FOTA update via Manifest.
 </manifest>
 ```
 
-#### Sample SOTA Manifest - Target all eligible Intel Vision cards: 
+### Sample SOTA Manifest - Target all eligible Intel Vision cards: 
 
 - No <targets></targets> section included.
 - The Vision-agent will determine which Vision cards are eligible for the upgrade based on its internal registry.  It will compare the release-date in this manifest with the release date of each vision card in its registry.
@@ -252,7 +274,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `<id></id>`                              | `<id>yourid</id>`                                               |         O         |                                                                                                 |
 | `<name></name>`                          | `<name>SampleAOTA</name>`                                       |         O         |                                                                                                 |
 | `<description></description>`            | `<description>Yourdescription</description>`                    |         O         |                                                                                                 |
-| `<type></type>`                          | `<type>aota</type>`                                             |         R         | Always 'aota'                                                                                   |
+| `<type></type>`                          | `<type>pota</type>`                                             |         R         | Always 'pota'                                                                                   |
 | `<repo></repo>`                          | `<repo>remote</repo>`                                           |         R         | 'remote' or 'local'                                                                             |
 | `</header>`                              | `</header>`                                                     |         R         |                                                                                                 |
 | `<type>`                                 | `<type>`                                                        |         R         |                                                                                                 |
@@ -290,7 +312,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `</ota>`                                 | `</ota>`                                                        |         R         |                                                                                                 |
 | `</manifest>`                            | `</manifest>`                                                   |         R         |                                                                                                 |
 
-#### POTA Example Manifest - Targets not specified
+### POTA Example Manifest - Targets not specified
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -322,7 +344,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 </manifest>
 ```
 
-#### POTA Example Manifest - Targets specified
+### POTA Example Manifest - Targets specified
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -381,7 +403,6 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `<fetch></fetch>`                        | `<fetch>http://server name/AOTA/container.tar.gz<fetch>` |         R         | Trusted repo + name of package                                                      |
 | `<file></file>`                          | `<file>custom.yml</file>`                                |         O         | Name of custom YAML file to use with docker-compose                                 |
 | `<version></version>`                    | `<version>0.7.6</version>`                               |         O         | Update Package version.                                                             |
-| `<signature></signature`>                | `<signature>96e92d</signature>`                          |         O         | Signature of package–signed checksum of package.  Recommended for security purposes |
 | `<containerTag></containerTag>`          | `<containerTag>Modbusservice</containerTag>`             |         R         | Name of container image                                                             |
 | `<deviceReboot></deviceReboot>`          | `<deviceReboot>yes</deviceReboot>`                       |         O         | [yes or no] Used by application update.  If yes, reboot system after update.        |
 | `<username></username>`                  | `<username>user</username>`                              |         O         | Username credentials of the server where the package is hosted for downloads        |
@@ -696,16 +717,16 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 The query command can be used to gather information about the system and the Vision cards.
 
-| XML Tags                                 | Definition             | Required/Optional | Notes                  |
-|:-----------------------------------------|:-----------------------|:-----------------:|:-----------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` |                        |         R         |                        |
+| XML Tags                                 | Definition             | Required/Optional | Notes                         |
+|:-----------------------------------------|:-----------------------|:-----------------:|:------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` |                        |         R         |                               |
 | `<manifest>`                             | `<manifest>`           |         R         ||
-| `<type><type>`                           | `<type>cmd</type>`     |         R         | will always be 'cmd'   |
-| `<cmd></cmd>`                            | `<cmd>query</cmd>`     |         R         | will always be 'query' |
-| `<query>`                                | `<query>`              |         R         |                        |
-| `<option></option>`                      | `<option>all</option>` |         R         | [optional type]()      |
-| `</query>`                               | `</query>`             |         R         |                        |
-| `</manifest>`                            | `</manifest>`          |         R         |                        |
+| `<type><type>`                           | `<type>cmd</type>`     |         R         | will always be 'cmd'          |
+| `<cmd></cmd>`                            | `<cmd>query</cmd>`     |         R         | will always be 'query'        |
+| `<query>`                                | `<query>`              |         R         |                               |
+| `<option></option>`                      | `<option>all</option>` |         R         | [Available Options](Query.md) |
+| `</query>`                               | `</query>`             |         R         |                               |
+| `</manifest>`                            | `</manifest>`          |         R         |                               |
 
 
 #### Example of swbom query manifest examples
@@ -1278,5 +1299,40 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
             </remove>
         </configtype>
     </config>
+</manifest>
+```
+
+## Provision Node
+
+Provision Node is only used by the INBM Vision solution to provision a flashless device.
+
+#### Configuration Provision Node Manifest Parameters
+| Tag                                      | Example                                             | Required/Optional | Notes                                                                               |
+|:-----------------------------------------|:----------------------------------------------------|:-----------------:|:------------------------------------------------------------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`            |         R         |                                                                                     |
+| `<manifest>`                             | `<manifest>`                                        |         R         |                                                                                     |
+| `<type></type>`                          | `<type>cmd</type>`                                  |         R         | Always 'cmd'                                                                        |
+| `<cmd></cmd>`'`                          | `<cmd>provisionNode</cmd>`                          |         R         | Always 'provisionNode'                                                              |
+| `<provisionNode>`                        | `<provisionNode>`                                   |         R         |                                                                                     |
+| `<fetch></fetch>`                        | `<fetch>https://www.repo.com/provision.tar</fetch>` |         R         |                                                                                     |
+| `<signature></signature`>                | `<signature>96e92d</signature>`                     |         O         | Signature of package–signed checksum of package.  Recommended for security purposes |
+| `<hash_algorithm></hash_algorithm`       | `<hash_algorithm>384</hash_algorithm`               |         O         | 384 or 512                                                                          |
+| `<username></username>`                  | `<username>user</username>`                         |         O         | Username used during fetch from remote repository                                   |
+| `<password><password>`                   | `<password>pwd</password>`                          |         O         | Password used during fetch from remote repository                                   |
+| `</provisionNode>`                       | `</provisionNode>`                                  |         R         |                                                                                     |
+| `</manifest>`                            | `</manifest>`                                       |         R         |                                                                                     |
+
+#### Provision Node Example
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+	<type>cmd</type>
+	<cmd>provisionNode</cmd>
+	<provisionNode>
+		<fetch>https://www.repo.com/provision.tar</fetch>
+		<signature>signature</signature>
+		<hash_algorithm>384</hash_algorithm>
+	</provisionNode>
 </manifest>
 ```

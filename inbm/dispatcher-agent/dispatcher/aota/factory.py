@@ -1,16 +1,17 @@
 """
     AOTA Application Factory
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
+from ast import parse
 from typing import Optional, Any, Mapping
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
 
-from inbm_lib.detect_os import detect_os, LinuxDistType, is_cent_os_and_inside_container
+from inbm_lib.detect_os import detect_os, LinuxDistType, is_inside_container
 
 from .constants import DOCKER, COMPOSE, APPLICATION
 from .application_command import Application, CentOsApplication, UbuntuApplication
@@ -33,9 +34,10 @@ def get_app_instance(app_type: str, dispatcher_callbacks: DispatcherCallbacks,
 def get_app_os(dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]],
                dbs: ConfigDbs) -> Application:
     """Factory method to get the concrete Application based on OS"""
-    if is_cent_os_and_inside_container():
-        return CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
-    if detect_os() == LinuxDistType.Ubuntu.name:
+    our_os = detect_os()
+    if our_os == LinuxDistType.Ubuntu.name:
         return UbuntuApplication(dispatcher_callbacks, parsed_manifest, dbs)
+    elif our_os == LinuxDistType.CentOS.name and is_inside_container:
+        return CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
     else:
         raise AotaError(f'Application commands are unsupported on the OS: {detect_os()}')

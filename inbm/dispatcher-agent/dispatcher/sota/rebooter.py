@@ -1,14 +1,16 @@
 """
     SOTA reboot classes.  Abstract class and concrete classes.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
 import time
+import os
 
 from ..dispatcher_callbacks import DispatcherCallbacks
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +43,14 @@ class LinuxRebooter(Rebooter):
 
     def reboot(self) -> None:
         super().reboot()
-        (output, err, code) = PseudoShellRunner.run("reboot -f")
+        is_docker_app = os.environ.get("container", False)
+
+        cmd = "/sbin/reboot -f"
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            (output, err, code) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)
+        else:
+            (output, err, code) = PseudoShellRunner.run(cmd)
         # return code will be None if reboot is submitted but not yet executed.
         # In case of signal interruptions, it will be negative
         if code and code < 0:

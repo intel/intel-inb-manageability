@@ -52,7 +52,7 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.aota_command.DirectoryRepo.get_repo_path', return_value='abc/bdb')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=['', 'update failed', 2])
     @patch('dispatcher.aota.aota.cleanup_repo')
-    @patch('dispatcher.aota.application_command.is_cent_os_and_inside_container', return_value=False)
+    @patch('dispatcher.aota.application_command.is_inside_container', return_value=False)
     def test_raise_when_application_update_fails(self, check_os, mock_cleanup, mock_shell, mock_get_repo, mock_platform,
                                                  mock_create_repo,
                                                  mock_verify_source, mock_get_file, mock_osdir):
@@ -589,7 +589,7 @@ class TestAOTA(TestCase):
     #     except AotaError as e:
     #         self.assertEquals("No spaces allowed in Docker Username/Registry", str(e))
 
-    @patch('dispatcher.aota.application_command.is_cent_os_and_inside_container', return_value=False)
+    @patch('dispatcher.aota.application_command.is_inside_container', return_value=False)
     @patch('dispatcher.aota.checker.check_url')
     def test_application_centos_driver_update_raise_error_not_in_container(self, check_url, mock_detect_os):
         aota = self._build_aota(cmd='update', app_type='application',
@@ -599,20 +599,22 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.aota_command.get', return_value=Result(200, "OK"))
     @patch('dispatcher.aota.checker.verify_source')
     @patch('dispatcher.aota.application_command.AotaCommand.create_repository_cache_repo')
-    @patch('dispatcher.aota.application_command.is_cent_os_and_inside_container', return_value=True)
-    def test_application_centos_driver_update_raise_error_if_inb_driver_folder_not_found(self, mock_detect_os,
-                                                                                         create_repo, verify, get):
+    @patch('dispatcher.aota.application_command.is_inside_container', return_value=True)
+    @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
+    def test_application_centos_driver_update_raise_error_if_inb_driver_folder_not_found(self, detect_os,
+                                                                                         is_inside_container, create_repo, verify_source, get):
         aota = self._build_aota(cmd='update', app_type='application',
                                 uri="http://example.com", device_reboot="Yes")
         self.assertRaises(AotaError, aota.run)
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
-    @patch('shutil.move')
+    @patch('dispatcher.aota.application_command.move_file')
     @patch('os.listdir', return_value=[])
     @patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
-    @patch('dispatcher.aota.factory.is_cent_os_and_inside_container', return_value=True, device_reboot="Yes")
-    def test_application_centos_driver_update_raise_pass(self, mock_detect_os, create_repo, listdir, mock_move,
+    @patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
+    @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
+    def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, create_repo, listdir, mock_move,
                                                          support_driver, run):
         aota = self._build_aota(cmd='update', app_type='application', uri="http://example.com")
         self.assertIsNone(aota.run())

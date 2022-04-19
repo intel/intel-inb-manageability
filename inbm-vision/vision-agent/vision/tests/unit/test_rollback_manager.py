@@ -33,39 +33,27 @@ class TestRollbackManager(TestCase):
             flashless_node_list, mock_config_mgr, mock_node_connector, mock_broker)
         self.assertEqual(rollback_mgr._wait_time, DEFAULT_ROLLBACK_WAIT_TIME)
 
-    @patch('vision.rollback_manager.create_success_message', return_value="Status: 200, Command success")
-    @patch('inbm_vision_lib.shell_runner.PseudoShellRunner.run', return_value=['', 'Command success', 0])
-    @patch('vision.rollback_manager.sleep')
     @patch('threading.Thread.start')
     @patch('vision.flashless_utility.rollback_flashless_files')
-    def test_rollback_pass(self, backup, t_start, patch_sleep, run_tool, create_success_msg):
+    def test_rollback_pass(self, backup, t_start):
         mock_config_mgr = Mock()
         mock_config_mgr.get_element = MagicMock(return_value=["true"])
         self.rollback_mgr._config = mock_config_mgr
         self.rollback_mgr._rollback()
         backup.assert_called_once()
         assert t_start.call_count == 2
-        patch_sleep.assert_called_once()
-        assert self.mock_broker.publish_telemetry_response.call_count == 2
-        run_tool.assert_called_once()
-        create_success_msg.assert_called_once()
+        assert self.mock_broker.publish_telemetry_response.call_count == 1
 
-    @patch('vision.rollback_manager.create_error_message', return_value="Status: 400, Command fail")
-    @patch('inbm_vision_lib.shell_runner.PseudoShellRunner.run', return_value=['', 'Command fail', 2])
-    @patch('vision.rollback_manager.sleep')
-    @patch('threading.Thread.start')
+    @patch('threading.Thread.start', side_effect=OSError('Error'))
     @patch('vision.flashless_utility.rollback_flashless_files')
-    def test_rollback_fail(self, backup, t_start, patch_sleep, run_tool, create_fail_msg):
+    def test_rollback_fail(self, backup, t_start):
         mock_config_mgr = Mock()
         mock_config_mgr.get_element = MagicMock(return_value=["true"])
         self.rollback_mgr._config = mock_config_mgr
-        self.rollback_mgr._rollback()
+        self.assertRaises(OSError, self.rollback_mgr._rollback)
         backup.assert_called_once()
-        assert t_start.call_count == 2
-        patch_sleep.assert_called_once()
-        assert self.mock_broker.publish_telemetry_response.call_count == 2
-        run_tool.assert_called_once()
-        assert create_fail_msg.call_count == 2
+        assert t_start.call_count == 1
+        assert self.mock_broker.publish_telemetry_response.call_count == 1
 
     def test_reboot_device(self):
         self.rollback_mgr._reboot_device(Mock())

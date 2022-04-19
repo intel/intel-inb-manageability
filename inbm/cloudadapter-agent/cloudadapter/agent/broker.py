@@ -4,7 +4,7 @@
     An instance of this class will be created to start the agent and listen
     for incoming commands on the command channel
     
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 class Broker:
     """Connects to the MQTT Broker and subscribes to channels
 
-    @param tls: (bool, optional) Whether or not to use TLS
+    @param tls: (bool, optional) Whether to use TLS
     """
 
     def __init__(self, tls: bool = True) -> None:

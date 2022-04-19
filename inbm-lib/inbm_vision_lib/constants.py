@@ -1,7 +1,7 @@
 """
     Constants used by the common manageability library
     
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from typing import Dict
@@ -143,7 +143,6 @@ TARGET_TYPE = "targetType"
 # Flashless constant
 # The name of fip and os image may be different in other platform.
 FLASHLESS_FILE_PATH = 'flashlessFileLocation'
-BOOT_FLASHLESS_DEV = "bootFlashlessDevice"
 FIP_FILE = 'thb_fip.bin'
 OS_IMAGE = 'thb_os.bin'
 ROOTFS = 'thb_rootfs.bin'
@@ -169,6 +168,5 @@ VISION_REQUEST_CHANNEL = 'ma/request/'
 INSTALL_CHANNEL = VISION_REQUEST_CHANNEL + OTA_UPDATE
 RESTART_CHANNEL = VISION_REQUEST_CHANNEL + RESTART
 QUERY_CHANNEL = VISION_REQUEST_CHANNEL + QUERY
-STATUS_CHANNEL = VISION_REQUEST_CHANNEL + STATUS
 PROVISION_CHANNEL = VISION_REQUEST_CHANNEL + PROVISION
 DEVICE_STATUS_CHANNEL = 'ma/xlink/status'

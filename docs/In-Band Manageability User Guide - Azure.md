@@ -31,7 +31,8 @@
     3. [How to Generate Signature](#how-to-generate-signature)
 8. [OTA Commands](#ota-commands)
     1. [Commands - Definitions and Usage](#commands---definitions-and-usage)
-    2. [AOTA Updates](#aota-updates)
+    2. [AOTA](#aota)
+       1. [Supported AOTA commands and AOTA form Descriptions](#supported-aota-commands-and-aota-form-descriptions)
     3. [AOTA Docker-Compose Operations](#aota-docker-compose-operations)
         1. [Docker Compose Up](#docker-compose-up)
         2. [Docker-Compose Down](#docker-compose-down)
@@ -77,10 +78,9 @@
         1. [Static Telemetry:](#static-telemetry)
         2. [Dynamic Telemetry:](#dynamic-telemetry)
 10. [Issues and Troubleshooting](#issues-and-troubleshooting)
-    1. [Error viewing Devices on Azure&reg; Portal:](#error-viewing-devices-on-azurereg-portal)
+    1. [Error viewing Devices on Azure Portal](#error-viewing-devices-on-azure-portal)
     2. [OTA Error Status](#ota-error-status)
-    3. [Provisioning Unsuccessful or Device Not Connected to Cloud](#provisioning-unsuccessful-or-device-not-connected-to-cloud)
-    4. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
+    3. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
 
 </details>
 
@@ -235,7 +235,7 @@ the device to Azure&reg; cloud.
 
     <img src="media/In-Band Manageability User Guide - Azure/media/image12.png" style="width:5.99167in;height:0.68819in" />
 
--   As INB supports both SAS and X509 authentication types, the user must choose one of the Authentication types supported. If the user intends to select SAS based authentication, refer to [Shared Access Signature (SAS) authentication](#shared_access_signaturesas_authentication). Else, if the user wants X509 based Authentication, refer to [X509 Authentication](#x509_authentication).<span id="_2.3.1_Shared_Access" class="anchor"></span>
+-   As INBM supports both SAS and X509 authentication types, the user must choose one of the Authentication types supported. If the user intends to select SAS based authentication, refer to [Shared Access Signature (SAS) authentication](#shared-access-signature-sas-authentication). Else, if the user wants X509 based Authentication, refer to [X509 Authentication](#x509_authentication).<span id="_2.3.1_Shared_Access" class="anchor"></span>
 
 #### Shared Access Signature (SAS) authentication:
 
@@ -413,14 +413,13 @@ sudo PROVISION_TPM=disable provision-tc
 
 ## Using the IoT Central Application
 
-
 ### Viewing and Managing Devices
 
 -   To view and manage devices, go to the **Devices** tab on the side panel Ⓐ
     <img src="media/In-Band Manageability User Guide - Azure/media/image26.png" style="width:4.8375in;height:2.39375in" />
 -   Alternatively, to quickly view a device, use the **Devices** panel Ⓑ
 
-If the device list is showing an error: Refer to [Error viewing Devices on Azure&reg; Portal](#error-viewing-devices-on-azurereg-portal).
+If the device list is showing an error: Refer to [Error viewing Devices on Azure Portal](#error-viewing-devices-on-azure-portal).
 
 ### Navigating the Device Interface
 
@@ -489,14 +488,10 @@ Users shall be able to perform the updates listed below on the device
 that is provisioned:
 
 - AOTA (Application Over the Air update)
-
 - FOTA (Firmware-over-the-Air update)
-
 - SOTA (Software/OS-over-the-Air update)
 - POTA (Platform-over-the Air update)
-
 - Config Update (configuration parameter update)
-
 - Power Management (Remote Shutdown and Restart)
 
 ### Trusted Repositories 
@@ -638,42 +633,10 @@ To trigger OTA commands on the device provisioned with Azure*, navigate to the �
 | Shutdown              | Remotely shutdown the Endpoint                                                                                                                                                        |
 | Manifest Update       | Any OTA update type can be done via the Manifest Update, by entering XML text to update the Endpoint. Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md). |
 
-### AOTA Updates
+#### AOTA
 
-Supported AOTA commands and their functionality:
-
-`docker-compose` commands currently supported:
-
-| `docker-compose` Command | Definition  |
-|--------------------------|-------------------------------------------------------------------------------|
-| `up` | Deploying a service stack on the device |
-| `down` | Stopping a service stack on the device  |
-| `pull` | Pulls an image or a repository from a registry and starting the service stack |
-| `list` | Lists containers  |
-| `remove` | Removes docker images from the system |
-
-`docker` commands currently supported:
-
-| `docker` Command | Definition  |
-|------------------|-------------------------------------------------------------------------|
-| `import` | Importing an image to the device and starting a container |
-| `load` | Loading an image from the device and starting a container |
-| `pull` | Pulls an image or a repository from a registry and starting a container |
-| `remove` | Removes docker images from the system |
-| `stats`  | Returns a live data stream for all the running containers |
-
-**‘Application’** command currently supported:
-
-| ‘**application**’ Command | Definition  |
-|---------------------------------------|---------------------------------|
-| Update | Updating an application package |
-
-List of AOTA commands NOT supported
-
-| Command | Subcommand |
-|----------------|--------|
-| `docker-compose` | `import` |
-| `docker` | `load`<br>`stats`<br>`up`<br>`down`<br>`list` |
+##### Supported AOTA commands and AOTA form descriptions
+[AOTA Updates](AOTA.md)
 
 
 To trigger Application-over the Air updates:
@@ -692,14 +655,14 @@ To trigger Application-over the Air updates:
 
 AOTA Field Details
 
-|Field|Input description|
-|---|---|
-|App and its command|`docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `load`, `import`, `pull`, `remove` and `stats`<br>Application: update|
-|Container Tag|Name tag for image/container.<br>Note: Conatiner Tag can have both the Name and Version in this format Image:Version|
-|Docker&reg; Compose File|Field to specify the name of custom yaml file for docker-compose command. Example: `custom.yml`|
-|Fetch|Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)|
-|Server Username/<br>Server Password|If server where we host the package to download AOTA file needs credentials, we need to specify the username and password|
-|Docker&reg; Registry<br>Docker&reg; Registry Username/Password|Specify Docker&reg; Registry if accessing any registry other than the default ‘index.docker.io’.<br>Example for docker Registry: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands.|
+| Field                                                          | Input description                                                                                                                                                                                                                                                                                                               |
+|----------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| App and its command                                            | `docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `list', load`, `import`, `pull`, `remove` and `stats`<br>Application: update                                                                                                                                                        |
+| Container Tag                                                  | Name tag for image/container.<br>Note: Conatiner Tag can have both the Name and Version in this format Image:Version                                                                                                                                                                                                            |
+| Docker&reg; Compose File                                       | Field to specify the name of custom yaml file for docker-compose command. Example: `custom.yml`                                                                                                                                                                                                                                 |
+| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)                                                                                |
+| Server Username/<br>Server Password                            | If server where we host the package to download AOTA file needs credentials, we need to specify the username and password                                                                                                                                                                                                       |
+| Docker&reg; Registry<br>Docker&reg; Registry Username/Password | Specify Docker&reg; Registry if accessing any registry other than the default ‘index.docker.io’.<br>Example for docker Registry: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands. |
 
 **NOTE:**: 
 Following sections demonstrate what fields to fill for
@@ -1194,10 +1157,12 @@ the device item.
 <img src="media/In-Band Manageability User Guide - Azure/media/image67.png" style="width:6in;height:5.69444in" />
 
 ## Issues and Troubleshooting
-### Error viewing Devices on Azure&reg; Portal:
 
-While following the steps in [Section 2.5.1](#_2.5.1_Viewing_and), if
-there is an error viewing device, do as below:
+[General Troubleshooting](Issues%20and%20Troubleshooting.md)
+
+### Error viewing Devices on Azure Portal:
+
+While following the steps in [Viewing and Managing Devices](#viewing-and-managing-devices), if there is an error viewing device, do the following:
 
 -   Click **Edit** in the upper right-hand corner:
 
@@ -1222,35 +1187,7 @@ there is an error viewing device, do as below:
 
 ### OTA Error Status
 
-[Error Messages](Error Messages.md)
-
-### Provisioning Unsuccessful or Device Not Connected to Cloud
-
-If the provisioning script is struck while creating *symlinks* at the
-end of provisioning or Device is not connected to the cloud, there is a
-chance that other system services that are waiting might possibly
-blocked the INB services from starting. In order to fix this issue,
-follow the steps:
-
-Check if bootup is complete or not using the command:
-
-```shell
-sudo systemd-analyze critical-chain
-```
-
-If the boot-up isn’t complete, list all the jobs:
-
-```shell
-sudo systemctl list-jobs
-```
-
-Stop all the jobs that are under ‘waiting’ state:
-
-```shell
-sudo systemctl stop [job_unit_name]
-```
-
-And try provisioning the device again following the steps in [Provisioning a Device](#provisioning-a-device).
+[Error Messages](Error%20Messages.md)
 
 ### Acquiring Debug Messages from Agents
 

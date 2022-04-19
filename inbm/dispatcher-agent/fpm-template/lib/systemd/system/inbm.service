@@ -1,5 +1,5 @@
- # Copyright 2021 Intel Corporation All Rights Reserved.
- # SPDX-License-Identifier: Apache-2.0
+# Copyright (C) 2017-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
 
 [Unit]
 Description=INBM service: exists to start all INBM main services

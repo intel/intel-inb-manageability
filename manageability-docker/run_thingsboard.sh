@@ -23,14 +23,15 @@ function start {
 }
 
 function install_and_provision {
-  conf_file=tb_conf_file
+  conf_file=thingsboard_conf_file
   default_file=/usr/share/azure_conf_file
-  while read -r line; do declare "$line"; done <$conf_file
+  while read -r line; do declare $line; done <$conf_file
   local IP=$TB_IP_ADDR
   local TOKEN=$DEVICE_TOKEN
   local TLS=$TLS
   local PEM_FILE_LOCATION=$TLS_PEM_FILE_LOCATION
   local PORT=$TB_PORT
+  local DEVICE_CERTS=$x509_DEVICE_CERT
   CLOUD_DIR="/etc/intel-manageability/secret/cloudadapter-agent/"
 
   if [[ $TLS =~ ^[Yy]$ ]]; then
@@ -42,7 +43,8 @@ function install_and_provision {
 	printf "%s" "$PEM_INPUT" > $CA_PATH
 	# Use the TLS ThingsBoard template
 	JSON=$(cat $INSTALL_DIR/config_tls.json.template \
-      	| sed "s|{CA_PATH}|${CONTAINER_CA_PATH}|g")
+      	| sed "s|{CA_PATH}|${CONTAINER_CA_PATH}|g" \
+        | sed "s|{CLIENT_CERT_PATH}|${DEVICE_CERTS}|g")
     else
         echo
         echo "Invalid PEM file!"
@@ -69,7 +71,7 @@ function install_and_provision {
 
 function docker_start {
 
-  apparmor_parser -r docker-ble-policy
+  apparmor_parser -r docker-manageability-policy
 
   docker build \
       --build-arg HTTP_PROXY=${HTTP_PROXY:-} \
@@ -83,10 +85,22 @@ function docker_start {
       -f Dockerfile \
       .
 
-sudo docker run -d -it --name inb  --restart always --privileged=true --cap-add SYS_ADMIN --network=host --security-opt seccomp=unconfined --security-opt apparmor=docker-ble-policy --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /var/run/docker.sock:/var/run/docker.sock:ro --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket -v /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool -v /home/harsha/certs:/var/certs -v /:/host inb
-
-#sudo docker run -d -it --name inb  --restart always --privileged=true --cap-add SYS_ADMIN --network=host --security-opt seccomp=unconfined --security-opt apparmor=docker-ble-policy --tmpfs /run --tmpfs /run/lock -v /sys/fs/cgroup:/sys/fs/cgroup:ro -v /var/run/docker.sock:/var/run/docker.sock:ro --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket -v /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool -v /:/host inb
-
+  docker run \
+    -d \
+    -it \
+    --name inb \
+    --restart always \
+    --privileged=true \
+    --cap-add SYS_ADMIN \
+    --network=host \
+    --tmpfs /run \
+    --tmpfs /run/lock \
+    --security-opt seccomp=unconfined --security-opt apparmor=docker-manageability-policy \
+    -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool \
+    -v /:/host \
+    inb
 }
 
 start

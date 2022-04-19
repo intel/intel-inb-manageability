@@ -9,15 +9,20 @@ from dispatcher.dispatcher_exception import DispatcherException
 
 TEST_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
            '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
-           '</provisionNode></manifest>'
+           '<hash_algorithm>384</hash_algorithm><username>user</username>' \
+           '<password>pass123</password></provisionNode></manifest>'
 
-TEST_XML_INVAID_SIG_VERSION = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
-                              '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
-                              '<signature_version>384abc</signature_version></provisionNode></manifest>'
+TEST_XML_VALID_HASH_ALGO = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
+    '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
+    '<hash_algorithm>384</hash_algorithm></provisionNode></manifest>'
+
+TEST_XML_INVALID_HASH_ALGO = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
+    '<fetch>https://www.repo.com/provision.tar</fetch><signature>signature</signature>' \
+    '<hash_algorithm>384abc</hash_algorithm></provisionNode></manifest>'
 
 BAD_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
     '<path>https://www.repo.com/provision.tar</path><signature>signature</signature>' \
-    '</provisionNode></manifest>'
+          '<hash_algorithm>384</hash_algorithm></provisionNode></manifest>'
 
 MODIFIED_XML = '<manifest><type>cmd</type><cmd>provisionNode</cmd><provisionNode>' \
                '<blobPath>/var/cache/manageability/repository-tool/blob.bin</blobPath>' \
@@ -38,7 +43,8 @@ class TestProvisionTarget(TestCase):
     def setUp(self, mock_dispatcher):
         self.mocked_dispatcher = mock_dispatcher
         self.parsed = XmlHandler(xml=TEST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
-        self.parsed_sig_version = XmlHandler(xml=TEST_XML_INVAID_SIG_VERSION, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        self.parsed_hash_algo = XmlHandler(xml=TEST_XML_VALID_HASH_ALGO, is_file=False,
+                                           schema_location=TEST_SCHEMA_LOCATION)
 
     def test_successfully_verify_files(self):
         files = [blob_files, cert_files]
@@ -73,9 +79,11 @@ class TestProvisionTarget(TestCase):
 
     @patch('dispatcher.provision_target.extract_files_from_tar', return_value=([blob_files, cert_files], test_tar))
     @patch('dispatcher.provision_target.download')
-    def test_successfully_install_with_invalid_signature_version(self, mock_download, mock_extract):
-        p = ProvisionTarget(TEST_XML_INVAID_SIG_VERSION, self.mocked_dispatcher, TEST_SCHEMA_LOCATION)
-        p.install(self.parsed_sig_version)
+    def test_raise_on_install_with_invalid_hash_algorithm(self, mock_download, mock_extract):
+        p = ProvisionTarget(TEST_XML_INVALID_HASH_ALGO,
+                            self.mocked_dispatcher, TEST_SCHEMA_LOCATION)
+        with self.assertRaises(DispatcherException):
+            p.install(self.parsed_hash_algo)
 
     @patch('dispatcher.provision_target.extract_files_from_tar', return_value=(None, 'test.tar'))
     @patch('dispatcher.provision_target.download')

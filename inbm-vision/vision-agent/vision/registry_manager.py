@@ -202,7 +202,7 @@ class RegistryManager(object):
         self._registries.append(registry)
         self._data_handler_callback.send_node_register_response(registry.device_id)
         self._data_handler_callback.create_telemetry_event(registry.device_id, f'One node-agent added with information: '
-                                                                               + node_readable_info)
+                                                           + node_readable_info)
 
         self._register_lock.release()
 
@@ -393,7 +393,7 @@ class RegistryManager(object):
             logger.info("No device exist. Skip check heartbeat.")
 
     def _handle_inactive_heartbeat(self, node_device) -> None:
-        """Method to handle unresponsive node agent. It has following functions:
+        """Method to handle unresponsive node agent:
         - Update the heartbeat to Idle state
         - Increase the heartbeat retries
         - Send the IsAlive request to node agent if it reaches heartbeat retries limit

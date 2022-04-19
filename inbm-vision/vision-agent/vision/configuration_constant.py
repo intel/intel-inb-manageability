@@ -9,14 +9,20 @@
 from inbm_common_lib.validater import ConfigurationItem
 
 # Configuration items (key, lower bound, upper bound, default value)
-CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS = ConfigurationItem('Heartbeat Check Interval Seconds', 10, 1200, 300)
-CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS = ConfigurationItem('Heartbeat Transmission Interval Seconds', 10, 240, 60)
+CONFIG_HEARTBEAT_CHECK_INTERVAL_SECS = ConfigurationItem(
+    'Heartbeat Check Interval Seconds', 10, 1200, 300)
+CONFIG_HEARTBEAT_TRANSMISSION_INTERVAL_SECS = ConfigurationItem(
+    'Heartbeat Transmission Interval Seconds', 10, 240, 60)
 CONFIG_HEARTBEAT_RETRY_LIMIT = ConfigurationItem('Heartbeat Retry Limit', 2, 15, 3)
-CONFIG_FOTA_COMPLETION_TIMER_SECS = ConfigurationItem('FOTA Completion Timer Seconds', 120, 1200, 600)
-CONFIG_SOTA_COMPLETION_TIMER_SECS = ConfigurationItem('SOTA Completion Timer Seconds', 600, 1680, 900)
-CONFIG_POTA_COMPLETION_TIMER_SECS = ConfigurationItem('POTA Completion Timer Seconds', 600, 1680, 900)
+CONFIG_FOTA_COMPLETION_TIMER_SECS = ConfigurationItem(
+    'FOTA Completion Timer Seconds', 120, 1200, 600)
+CONFIG_SOTA_COMPLETION_TIMER_SECS = ConfigurationItem(
+    'SOTA Completion Timer Seconds', 300, 1680, 900)
+CONFIG_POTA_COMPLETION_TIMER_SECS = ConfigurationItem(
+    'POTA Completion Timer Seconds', 300, 1680, 900)
 CONFIG_IS_ALIVE_TIMER_SECS = ConfigurationItem('IsAlive Timer Seconds', 60, 600, 180)
-CONFIG_FLASHLESS_ROLLBACK_WAIT_TIMER_SECS = ConfigurationItem('Flash-less Rollback Wait Time Seconds', 120, 1200, 600)
+CONFIG_FLASHLESS_ROLLBACK_WAIT_TIMER_SECS = ConfigurationItem(
+    'Flash-less Rollback Wait Time Seconds', 120, 1200, 600)
 
 DEFAULT_FLASHLESS_FILE_PATH = "/lib/firmware/"
 
@@ -35,7 +41,6 @@ XLINK_LAST_CHANNEL_ID = 'xlinkLastChannel'
 XLINK_BOOT_DEV = 'xlinkBootDevice'
 FLASHLESS_OTA_BOOT_TIME = 'flashlessOTABootTimeSecs'
 ROLLBACK_WAIT_TIME = 'flashlessRollbackWaitTimeSecs'
-BOOT_FLASHLESS_DEV = 'bootFlashlessDevice'
 
 # Vision-agent Key constants
 KEY_MANIFEST = [FLASHLESS_FILE_PATH,
@@ -43,7 +48,6 @@ KEY_MANIFEST = [FLASHLESS_FILE_PATH,
                 XLINK_FIRST_CHANNEL_ID,
                 XLINK_LAST_CHANNEL_ID,
                 XLINK_BOOT_DEV,
-                BOOT_FLASHLESS_DEV,
                 ]
 # Included separately to ensure values are integers.
 INT_CONFIG_VALUES = [VISION_HB_CHECK_INTERVAL_SECS,

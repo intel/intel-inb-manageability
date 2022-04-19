@@ -17,7 +17,7 @@ class TestBroker(TestCase):
     def test_broker_subscribe_topics(self, m_sub, m_connect, t_start, timer_start):
         d = TestBroker._build_broker()
         self.assertTrue(m_sub.called)
-        self.assertEquals(len(d.mqttc.topics), 7)
+        self.assertEquals(len(d.mqttc.topics), 6)
         self.assertTrue(STATE_CHANNEL in d.mqttc.topics)
         self.assertTrue(INSTALL_CHANNEL in d.mqttc.topics)
         self.assertTrue(RESTART_CHANNEL in d.mqttc.topics)

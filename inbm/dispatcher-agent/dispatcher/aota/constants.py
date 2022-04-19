@@ -1,7 +1,7 @@
 """
     Constants and other config variables used throughout the AOTA module
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -18,17 +18,12 @@ DOCKER = 'docker'
 COMPOSE = 'compose'
 APPLICATION = 'application'
 
-# Docker stats telemetry key
-TELEMETRY_DOCKER_STATS = 'containersCpuPercent'
-
-DockerCommands = Enum('DockerCommands', 'import load pull remove stats')
+DockerCommands = Enum('DockerCommands', 'import load pull remove stats list')
 ComposeCommands = Enum('ComposeCommands', 'up pull down list remove')
 ApplicationCommands = Enum('ApplicationCommands', 'update')
 
 # CentOS driver path in docker
 CENTOS_DRIVER_PATH = "/host/inb_driver/"
-
-CHROOT_CMD = "/usr/sbin/chroot /host "
 
 # Supported driver upgrade
 

@@ -150,10 +150,14 @@ function install_vision_requirements {
   elif [ "$(lsb_release -rs)" == "20.04" ]; then
     OS_TYPE="Ubuntu-20.04"
     echo "Confirmed Supported Platform (Ubuntu 20.04)"
+  elif [ "$(lsb_release -rs)" == "21.10" ]; then
+    OS_TYPE="Ubuntu-21.10"
+    echo "Confirmed Supported Platform (Ubuntu 21.10)"
   else
     echo "Unsupported Platform. Hint: "
     echo "http://releases.ubuntu.com/18.04/ or"
-    echo "http://releases.ubuntu.com/20.04/"
+    echo "http://releases.ubuntu.com/20.04/ or"
+    echo "http://releases.ubuntu.com/21.10/"
     exit 1
   fi
   # Read proxy information from the environment

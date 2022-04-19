@@ -1,7 +1,7 @@
+# Copyright (C) 2021-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 version: "3.3"
-# Copyright: Copyright (C) 2021 Intel Corporation
-# Author: Wong Yeng Liong
-# Email: yeng.liong.wong@intel.com
 services:
   inb:
    cap_add:
@@ -12,7 +12,7 @@ services:
    network_mode: "host"
    security_opt:
      - seccomp:unconfined
-     - apparmor:docker-ble-policy
+     - apparmor:docker-manageability-policy
    build:
      context: .
      dockerfile: ./Dockerfile

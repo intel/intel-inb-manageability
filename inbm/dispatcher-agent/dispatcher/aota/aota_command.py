@@ -1,7 +1,7 @@
 """
     Docker and Docker compose related functions used throughout the AOTA module
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -12,9 +12,9 @@ from abc import ABC, abstractmethod
 from typing import Any, Optional, Mapping
 
 from inbm_common_lib.utility import canonicalize_uri
-from inbm_lib.detect_os import detect_os
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.trtl import Trtl
+from inbm_lib.constants import DOCKER_STATS
 
 from dispatcher.common.result_constants import INSTALL_FAILURE, CODE_OK
 from dispatcher.config_dbs import ConfigDbs
@@ -28,8 +28,7 @@ from .aota_error import AotaError
 from .checker import check_url, check_docker_parameters, check_no_username_password_on_http, \
     check_compose_command_supported, check_docker_command_supported, check_resource
 from .cleaner import cleanup_repo, remove_directory, remove_old_images, cleanup_docker_compose_instance
-from .constants import DOCKER_COMPOSE_CACHE, REPOSITORY_TOOL_CACHE, DOCKER, \
-    TELEMETRY_DOCKER_STATS
+from .constants import DOCKER_COMPOSE_CACHE, REPOSITORY_TOOL_CACHE, DOCKER
 from ..common import uri_utilities
 
 logger = logging.getLogger(__name__)
@@ -189,23 +188,32 @@ class Docker(AotaCommand):
         check_docker_command_supported(cmd)
 
     def cleanup(self) -> None:
-        if self.repo_to_clean_up is not None and self.resource is not None:
-            cleanup_repo(self.repo_to_clean_up, self.resource)
-            remove_directory(self.repo_to_clean_up)
-        if self._container_tag is not None and self._cmd != 'pull':
-            remove_old_images(self._trtl, self._container_tag)
+        if self._cmd != 'list':
+            if self.repo_to_clean_up is not None and self.resource is not None:
+                cleanup_repo(self.repo_to_clean_up, self.resource)
+                remove_directory(self.repo_to_clean_up)
+            if self._container_tag is not None and self._cmd != 'pull':
+                remove_old_images(self._trtl, self._container_tag)
+
+    def list(self) -> None:
+        """List all non-exited containers for all images stored on the system."""
+        logger.debug(f"Docker List command: container_tag->{self._container_tag}")
+        err, output = self._trtl.list(self._container_tag)
+        if err is None:
+            self._dispatcher_callbacks.broker_core.telemetry(str(output))
+        else:
+            raise AotaError(f'Docker List Failed {err}')
 
     def stats(self) -> None:
         """Displays info of running containers
         @raise: AotaError on failure
         """
         logger.debug("Docker Stats command")
-        stats = self._trtl.stats()
-        if stats == "" or stats is None:
-            raise AotaError(stats)
+        running_container_stats = self._trtl.stats()
+        logger.debug(f'docker stats: {running_container_stats}')
 
-        self._dispatcher_callbacks.broker_core.mqtt_publish(
-            TELEMETRY_UPDATE_CHANNEL, TELEMETRY_DOCKER_STATS)  # pragma: no cover
+        container_cpu_stats = DOCKER_STATS + ":" + str(running_container_stats)
+        self._dispatcher_callbacks.broker_core.telemetry(container_cpu_stats)
 
     def remove(self) -> None:
         super().remove()

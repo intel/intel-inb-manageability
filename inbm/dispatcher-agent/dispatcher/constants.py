@@ -1,7 +1,7 @@
 """
     Constants and other config variables used throughout the dispatcher module
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from enum import Enum
@@ -37,7 +37,6 @@ DIAGNOSTIC_RESP_CHANNEL = 'diagnostic/response/'
 CONFIGURATION_DISPATCHER_UPDATE_CHANNEL = 'configuration/update/dispatcher/+'
 CONFIGURATION_ALL_AGENTS_UPDATE_CHANNEL = 'configuration/update/all/+'
 CONFIGURATION_SOTA_UPDATE_CHANNEL = 'configuration/update/sota/+'
-CMD_CHANNEL = 'dispatcher/command'
 TARGET_OTA_CMD_CHANNEL = 'ma/request/install'
 TARGET_PROVISION = 'ma/request/provision'
 TARGET_CMD_RESTART = 'ma/request/restart'

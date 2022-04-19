@@ -2,7 +2,7 @@
     SOTA updates factory class. Used to trigger
     package installation, updates, security updates etc
     
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -15,6 +15,7 @@ from abc import ABC, abstractmethod
 
 from inbm_common_lib.utility import CanonicalUri
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
 
 from .command_list import CommandList
 from .constants import MENDER_ARTIFACT_INSTALL_COMMAND
@@ -84,7 +85,19 @@ class DebianBasedUpdater(OsUpdater):
         """
         logger.debug("")
         os.environ["DEBIAN_FRONTEND"] = "noninteractive"
-        cmds = ["apt-get update", "dpkg-query -f '${binary:Package}\\n' -W", "apt-get -yq upgrade"]
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            # get all packages ready for install (requires network and does
+            # not require host PID/DOCKER_CHROOT_PREFIX), then run the install locally
+            # (does not require network but does require host PID/DOCKER_CHROOT_PREFIX)
+            cmds = [CHROOT_PREFIX + "/usr/bin/apt-get update",  # needs network
+                    CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",
+                    CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only upgrade",  # needs network
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq upgrade"]  # local
+        else:
+            cmds = ["apt-get update",
+                    "dpkg-query -f '${binary:Package}\\n' -W", "apt-get -yq upgrade"]
         return CommandList(cmds).cmd_list
 
     def update_local_source(self, file_path: str) -> List[str]:
@@ -103,7 +116,14 @@ class DebianBasedUpdater(OsUpdater):
         @return: Returns 0 if size is freed. Returns in bytes of size consumed
         """
         logger.debug("")
-        (upgrade, _, _) = PseudoShellRunner.run("/usr/bin/apt-get -u upgrade --assume-no")
+        is_docker_app = os.environ.get("container", False)
+        cmd = "/usr/bin/apt-get -u upgrade --assume-no"
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+
+            (upgrade, _, _) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)
+        else:
+            (upgrade, _, _) = PseudoShellRunner.run(cmd)
         return DebianBasedUpdater._get_estimated_size_from_apt_get_upgrade(upgrade)
 
     @staticmethod

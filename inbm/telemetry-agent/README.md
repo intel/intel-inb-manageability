@@ -1,53 +1,78 @@
-# telemetry-agent
+# Telemetry Agent
 
-IoT Telemetry Agent
+<details>
+<summary>Table of Contents</summary>
 
-Central telemetry/logging service for the manageability framework
-TODO: expand this description
+- [Overview](#overview)
+- [Agent Communication](#agent-communication)
+    - [Publish Channels](#publish-channels)
+    - [Subscribe Channels](#subscribe-channels)
+- [Install from Source](#install-from-source)
+- [Usage](#usage)
+  - [Changing the logging level](#changing-the-logging-level)
+  - [Running the agent](#running-the-agent)
+  - [Testing the agent](#testing-the-agent)
+- [Debian package (DEB)](#debian-package-deb)
+</details>
 
-## Install (via Source)
-NOTE: Ensure any Python version greater than 3.8 is installed
+## Overview
 
-- Run `git clone https://gitlab.devtools.intel.com/OWR/IoTG/SMIE/Manageability/iotg-inb.git` into local directory
-- Run `cd iotg-inb/telemetry-agent`
-- Run `make init` to install necessary Python packages
+The Intel Manageability agent which is the central telemetry and logging service.
 
-## Usage (via Source)
-NOTE:  
-Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
-Some commands will require root privileges (sudo).  
-Be sure to run the commands in the `dispatcher-agent` directory
+## Agent Communication 
 
-Changing the logging level:
+Uses MQTT for communication with other tools/agents
+
+### Publish Channels
+The agent publishes to the following topics:
+  - Telemetry events to the cloud or INBC: `manageability/telemetry`
+  - Sends a command request to the diagnostic-agent: `diagnostic/command/{command}`
+  - Telemetry-agent state: `telemetry/state` when dead/running
+
+### Subscribe Channels
+The agent subscribes to the following topics:
+  - Dynamic telemetry updates: `telemetry/update`
+  - [Telemetry Configuration Settings](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Configuration%20Parameters.md#telemetry): `configuration/update/telemetry/+`
+  - Response from diagnostic command request: `diagnostic/response/{id}`
+  - Agent states: `+/state`
+ 
+❗`+` is a wild-card indicating single level thus matching `telemetry/state` or `<another-agent>/state`
+
+## Install from Source
+❗ Use a Python version greater than 3.8 is installed
+
+1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
+2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
+
+## Usage
+
+❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
+❗Some commands will require root privileges (sudo)  
+❗Run commands in the `inbm/telemetry-agent` directory
+
+### Changing the logging level:
 
 - Run: `make logging LEVEL=DEBUG`
-- Valid values for LEVEL:
-  - DEBUG
-  - ERROR
-  - INFO
+- Valid values for `LEVEL`:
+  - `DEBUG`
+  - `ERROR`
+  - `INFO`
 
-Runnning the agent:
+### Running the agent:
 
 - Run: `make run`
 
-Testing the agent:
+### Testing the agent:
 
 - Run: `make tests`
 
-## Install (via DEB)
+## Debian package (DEB)
 
-- Download DEB from Artifacts directory in telemetry-agent/ repo build in TeamCity
-- For Ubuntu: `dpkg -i dist/telemetry-agent-<latest>.deb`
-- Check telemetry agent is running correctly: `journalctl -fu telemetry`
+### Install (For Ubuntu)
+After building the above package, if you only want to install the telemetry-agent, you can do so by following these steps:
+- `cd dist/inbm`
+- Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
+- Install package: `dpkg -i telemetry-agent<latest>.deb`
 
-## Remove `telemetry-agent` (via DEB)
-- For Ubuntu: `dpkg --purge telemetry-agent`
-
-## Generate PyDoc for telemetry agent
-NOTE: TeamCity will generate API documentation for each commit
-
-- To generate API documentation locally for Telemetry agent:
-  1. Run `cd doc`
-  2. Run `make doc-init`
-  3. Run `make html`
-  4. Open `html/toc.html` in browser of choice
+### Uninstall (For Ubuntu)
+- `dpkg --purge telemetry-agent`

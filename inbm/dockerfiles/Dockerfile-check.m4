@@ -14,6 +14,7 @@ RUN source /venv-py3/bin/activate && \
     pip3 install \
         nose==1.3.7 \
         flake8==3.7.9 \
+        bandit==1.7.2 \
         flake8-bandit==2.1.2 \
         coverage==5.1 \
         flakehell==0.3.0 \
@@ -41,6 +42,7 @@ RUN source /venv-py3/bin/activate && \
 FROM venv-py3 as mypy-inbm-lib
 RUN source /venv-py3/bin/activate && \
     cd /src/inbm-lib && \
+    rm -rf build && \
     ./mypy-py3.sh . && \
     touch /passed.txt
 

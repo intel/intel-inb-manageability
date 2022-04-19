@@ -38,20 +38,19 @@
       8. [Platform TPM usage](#platform-tpm-usage)
 8. [Enable Debug Logging](#enable-debug-logging)
 9. [OTA Commands via Manifest](#ota-commands-via-manifest)
-   1. [Manifest Rules](#manifest-rules)
-   2. [AOTA Updates](#aota-updates)
+   1. [AOTA Updates](#aota-updates)
       1. [AOTA Manifest Parameters](#aota-manifest-parameters)
-   3. [FOTA Updates](#fota-updates)
+   2. [FOTA Updates](#fota-updates)
       1. [FOTA Manifest Parameters](#fota-manifest-parameters)
       2. [FOTA Class Diagram](#fota-class-diagram)
-   4. [SOTA Updates](#sota-updates)
+   3. [SOTA Updates](#sota-updates)
       1. [SOTA Manifest Parameters](#sota-manifest-parameters)
-   5. [POTA Updates](#pota-updates)
+   4. [POTA Updates](#pota-updates)
       1. [POTA Manifest Parameters](#pota-manifest-parameters)
-   6. [Configuration Operations](#configuration-operations)
+   5. [Configuration Operations](#configuration-operations)
       1. [Configuration Manifest](#configuration-manifest)
       2. [Manual Configuration Update](#manual-configuration-update)
-   7. [Power Management](#power-management)
+   6. [Power Management](#power-management)
       1. [Restart via Manifest](#restart-via-manifest)
       2. [Shutdown via Manifest](#shutdown-via-manifest)
 10. [Extending FOTA support](#extending-fota-support)
@@ -118,13 +117,21 @@ There are 5 Agents and 1 Binary associated with INBM which all reside on the sam
 <img src="media/In-Band Manageability Developer Guide/media/image3.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
 #### ⚙️CloudAdapter Agent
+
+**Service name:** inbm-cloudadapter
+
 Relays MQTT messages between the cloud API and dispatcher-agent.  
 
 #### ⚙️Configuration Agent
-Publishes the configuration parameter values to all other agents. The parameters are stored in the ``/etc/intel_manageability.conf``` file. 
+
+**Service name:** inbm-configuration
+
+Publishes the configuration parameter values to all other agents. The parameters are stored in the ``/etc/intel_manageability.conf`` file. 
 The parameters and their descriptions can be found in the [Configuration Parameters](Configuration%20Parameters.md) reference.
 
 #### ⚙️Diagnostic Agent
+
+**Service name:** inbm-diagnostic
 
 The Diagnostic-agent is responsible for the following:
 - Perform diagnostic system health checks prior to an OTA install.
@@ -142,6 +149,9 @@ The following checks may be performed:
 - Required software installed
 
 #### ⚙️Dispatcher Agent (DMS)
+
+**Service name:** inbm-dispatcher
+
 The Dispatcher-agent is the central agent.  It is responsible for the following:
 - Dispatching and executing the received commands/operations from the cloud or INBC. Determines the type of request and invokes the respective commands/threads to perform the operation.
 - Publishes the resulting status of the operation.
@@ -153,6 +163,9 @@ The Dispatcher-agent is the central agent.  It is responsible for the following:
     <img src="media/In-Band Manageability Developer Guide/media/image19.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
 #### ⚙️Telemetry Agent
+
+**Service name:** inbm-telemetry
+
 The Telemetry-agent is responsible for the following:
 - Collect and publish the system’s static telemetry information.
 - Collect and publish dynamic telemetry information at configured intervals.
@@ -196,9 +209,6 @@ The Vision-agent resides on the Host side of a system utilizing Intel Vision car
 - Push configuration values to nodes via xlink
 - Publish Telemetry events and results received from Vision cards
 
-<details>
-<summary>Vision Agent Class Diagrams</summary>
-
 ##### Vision Agent Overall Class Diagram
 The Vision Agent uses the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as the overall design with the following Participants: 
 - Command = Command class
@@ -221,8 +231,6 @@ Abstract Factory design patterns.  The class diagram of how these classes intera
 
 <img src="media/In-Band Manageability Developer Guide/media/image16.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
     
-</details>
-
 #### ⚙️Node Agent
 The Node-agent resides on each of the individual Intel Vision cards.  It manages the communication of each vision card via Xlink.  It is responsible for the following:
 - Registering with the Vision-agent on startup with its hardware, firmware, operating system, and security information 
@@ -234,7 +242,7 @@ The Node-agent resides on each of the individual Intel Vision cards.  It manages
 - Relay Telemetry events and results to the Vision-agent via Xlink 
 
 The Node Agent communicates with the Vision Agent over PCIe using Xlink.  The Xlink code uses several classes and two Abstract Factory design patterns.  The class diagram of how these classes interact
-can be found in the [Appendix](#vision-agent-xlink-connectivity-class-diagram).
+can be found in the [Vision-agent Xlink Connectivity Class Diagram](#vision-agent-xlink-connectivity-class-diagram).
 
 ##### Node Agent Class Diagram
 The Vision Agent uses the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as the overall design with the following Participants: 
@@ -325,7 +333,7 @@ to accommodate this health check tag with a certain value by following these ste
 
 3. (b) Copy the conf file in step 1 to ```/etc/intel_manageability.conf``` and the
 *xsd_schema* file in step 2 to ```/usr/share/configuration-agent/iotg_inb_schema.xsd```.  Then run the agents via 
-source code using the steps in [Section 2.2](#run-agents-via-source-code).
+source code using these [steps](#run-agents-via-source-code).
 
 ## Security 
 Security is a key aspect for any software solution to consider,
@@ -463,20 +471,21 @@ for each agent by changing **ERROR** to **DEBUG** with a text editor.  These *lo
 #### Option 1 (single agent):
 1. Open the logging file: 
 ```shell
-sudo vi  /etc/intel-manageability/public/\<agent-name\>-agent/logging.ini
+sudo vi  /etc/intel-manageability/public/<agent-name>-agent/logging.ini
 ```
 
 2. Change the value **ERROR** to **DEBUG**
 
-3. Restart the agent: 
-```shell
-sudo systemctl restart <agent-name>
-```
 
 #### Option 2 (multiple agents):
  If logging needs to be enabled on all the agents, the following command can be used: 
 ```shell
-sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/\*/logging.ini
+sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/*/logging.ini
+```
+
+### Restart the agents after changing the log level: 
+```shell
+sudo systemctl restart <agent-name>
 ```
 
 ### View Logs
@@ -504,67 +513,11 @@ To trigger manifest updates:
 
 <img src="media/In-Band Manageability Developer Guide/media/image12.png" style="width:5.61213in;height:2.12598in" />
 
-### Manifest Rules 
-
--   All tags marked as **required (R)** in the manifest examples below
-    must be in the manifest. Any tags marked as **optional (O)** can be
-    omitted.
-
--   The start of a section is indicated as follows **\<manifest\>**.
-
--   The end of a section is indicated by **\</manifest\>**. All sections
-    must have the start and the matching end tag.
-
--   Remove spaces, tabs, comments and so on. Make it a single continuous
-    long string.  
-    Example: **\<xml
-    ...\>\<manifest\>\<ota\>\<header\>...\</ota\>\<manifest\>**
-
--   Parameter within a tag cannot be empty.  
-    Example: **\<description\>\</description\>** is not allowed.
 
 ### AOTA Updates
 
-Supported AOTA commands and their functionality:
-
-Supported ***docker*** commands:
-
-| *docker* Command                | Definition                                                              |
-|:--------------------------------|:------------------------------------------------------------------------|
-| [Import](#_Example_of_docker)   | Importing an image to the device and starting a container               |
-| [Load](#_Example_of_docker_1)   | Loading an image from the device and starting a container               |
-| [Pull](#_Example_of_docker_2)   | Pulls an image or a repository from a registry and starting a container |
-| [Remove](#_Example_of_docker_3) | Removes docker images from the system                                   |
-| [Stats](#_Example_of_docker_4)  | Returns a live data stream for all the running containers               |
-
-Supported ***docker-compose*** commands:
-
-| *docker-compose* Command          | Definition                                                                    |
-|:----------------------------------|:------------------------------------------------------------------------------|
-| [Up](#_Example_of_docker-compose) | Deploying a service stack on the device                                       |
-| [Down](#_Example_of_docker_5)     | Stopping a service stack on the device                                        |
-| [Pull](#_Example_of_docker_6)     | Pulls an image or a repository from a registry and starting the service stack |
-| [List](#_Example_of_docker_7)     | Lists containers                                                              |
-| [Remove](#_Example_of_docker_8)   | Removes docker images from the system                                         |
-
-Supported **‘Application’** commands:
-
-| *application* Command | Definition                      |
-|:----------------------|:--------------------------------|
-| Update                | Updating an application package |
-
-Fields in the AOTA form:
-
-| Field                                             | Description                                                                                                                                                                                                                                                  |
-|:--------------------------------------------------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| App                                               | Docker or Docker-compose or Application                                                                                                                                                                                                                      |
-| Command                                           | **Docker-Compose:** Up, Down, Pull, List and Remove.  <p>**Docker operation**s: Load, Import, Pull, Remove and Stats</p>                                                                                                                                     |
-| Container Tag                                     | Name tag for image/container.                                                                                                                                                                                                                                |
-| Docker Compose File                               | Specify custom yaml file for docker-compose command. Example: *custom.yml*                                                                                                                                                                                   |
-| Fetch                                             | Server URL to download the AOTA container *tar.gz* <p>❗ If the server requires username/password to download the file then provide this information in server username server password                                                                       |
-| Server username/<p>Server Password</p>            | If server needs credentials; specify the username and password                                                                                                                                                                                               |
-| Version                                           | Each container will have a version number tag. You are recommended to use this version number under version in the AOTA trigger. ```docker images```. See image below for result.                                                                            |
-| Docker Registry Docker Registry Username/Password | Specify Docker Registry if accessing any registry other than the default <em>index.docker.io.  <p>Optional fields Docker Registry Username/Password can be used to access docker private images in AOTA through docker and docker-compose up, pull commands. |
+#### Supported AOTA commands and AOTA form descriptions
+[AOTA Updates](AOTA.md)
 
 #### AOTA Manifest Parameters
 [AOTA Manifest Parameters and Examples](Manifest%20Parameters.md#AOTA)
@@ -578,9 +531,7 @@ endpoint as shown below.
 
 Prior to sending the manifest the user needs to make sure that the
 platform information is present within the
-```/etc/firmwarm_tool_info.conf``` file. Refer to [Section
-7](#ota-updates-via-manifest) on how to modify the file and extend the
-FOTA support to a new platform.
+```/etc/firmwarm_tool_info.conf``` file. Refer to [Extending FOTA Support](#extending-fota-support) on how to modify the file and extend FOTA support to a new platform.
 
 1.  The following information must match the data sent in the FOTA
     update command for In-Band Manageability Framework to initiate a
@@ -791,7 +742,7 @@ triggering query commands via manifest returns query results through dynamic tel
 AppArmor Permissions:
 ---------------------
 
-Make sure the tool or script path used in [Section 7.2](#aota-updates) has AppArmor permissions granted to execute 
+Make sure the tool or script path used in [FOTA Manifest Parameter Values](Manifest%20Parameters.md#FOTA) has AppArmor permissions granted to execute 
 the firmware update.  
 
 For example, the tool or script used to update an Intel NUC  is located at */usr/bin/UpdateBIOS.sh*. 
@@ -881,7 +832,7 @@ WantedBy=inbm.service
 
 ### OTA Error Status
 
-[Error Messages](Error Messages.md)
+[Error Messages](Error%20Messages.md)
 
 ### Dispatcher-Agent Not Receiving Messages 
 If the dispatcher-agent does not receive the manifest message from the *cloudadapteragent* after triggering SOTA/FOTA, 

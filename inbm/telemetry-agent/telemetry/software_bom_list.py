@@ -1,7 +1,7 @@
 """
     Retrieves Software BOM information.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -45,7 +45,7 @@ def get_sw_bom_list() -> List[Any]:
             if swbom is not None:
                 output = output + swbom
         return output.splitlines()
-    except (OSError, FileNotFoundError) as e:
+    except (ValueError, OSError, FileNotFoundError) as e:
         raise SoftwareBomError(str(e))
 
 
@@ -95,7 +95,10 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
             list_num += 1
             sw_dict[f"swbom_package_list_{list_num}"] = sw_bom_list[i:i+number_of_swbom_lists]
             key = 'queryResult' if query_request else 'softwareBOM'
-            if i == math.floor(len(sw_bom_list)/number_of_swbom_lists) * number_of_swbom_lists:
+            # Calculate the final chunk of swbom, to incluce have the keyword "QueryEndResult".
+            if (i == 0 and len(sw_bom_list) == number_of_swbom_lists) or \
+                    i == math.floor(len(sw_bom_list)/number_of_swbom_lists) * number_of_swbom_lists:
+                # Inbc query to exit successfully when it has the keyword "QueryEndResult".
                 key = 'queryEndResult'
             swbom = {'values': {key: sw_dict}, 'type': "dynamic_telemetry"}
             telemetry_handling.publish_dynamic_telemetry(client, EVENTS_CHANNEL, swbom)

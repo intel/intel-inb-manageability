@@ -1,7 +1,7 @@
 """
     Module that handles parsing of XML files.
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -11,12 +11,14 @@ import pathlib
 import shutil
 import xmlschema
 from typing import Any, Optional, List, Union, Tuple, Dict
+from pathlib import Path
+
 
 from defusedxml import DefusedXmlException, DTDForbidden, EntitiesForbidden, ExternalReferenceForbidden, \
     NotSupportedError
-from inbm_vision_lib.constants import FLASHLESS_FILE_PATH, BOOT_FLASHLESS_DEV
+from inbm_vision_lib.constants import FLASHLESS_FILE_PATH
 from threading import Lock
-from inbm_common_lib.utility import remove_file
+from inbm_common_lib.utility import remove_file, copy_file
 import defusedxml.ElementTree as element_tree
 from defusedxml.ElementTree import parse, XMLParser, ParseError
 
@@ -54,13 +56,18 @@ class ConfigurationManager:
                     "Schema file is a symlink which is not allowed for security reasons.")
 
             with open(self._schema_location) as schema_file:
-                schema = xmlschema.XMLSchema11(schema_file)
-                if xml_file:
-                    # Check the xml file is valid. Will raise ParseError if the file is corrupted.
-                    test_xml_file = parse(xml_file).getroot()
-                    schema.validate(xml_file)
-                else:
-                    schema.validate(self._xml)
+                try:
+                    schema = xmlschema.XMLSchema11(schema_file)
+                    if xml_file:
+                        # Check the xml file is valid. Will raise ParseError if the file is corrupted.
+                        test_xml_file = parse(xml_file).getroot()
+                        schema.validate(xml_file)
+                    else:
+                        schema.validate(self._xml)
+                except (ConfigurationException, xmlschema.XMLSchemaValidationError, DefusedXmlException, DTDForbidden,
+                        EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, ParseError) as e:
+                    raise ConfigurationException(
+                        f'Unable to parse configuration file. Error: {e}')
 
     def get_root(self):
         """Called when a manifest is received from xlink.
@@ -72,6 +79,7 @@ class ConfigurationManager:
             parser = XMLParser(forbid_dtd=True)
 
             if self._is_file:
+                logger.debug(f"XML path: {self._xml}")
                 if not os.path.exists(self._xml):
                     raise ConfigurationException("XML file not found")
                 root = parse(self._xml, parser)
@@ -159,7 +167,7 @@ class ConfigurationManager:
         @return result : status SUCCESS or FAILED
         """
         def _check_value(e: str, v: str) -> Tuple[bool, str]:
-            if e == FLASHLESS_FILE_PATH or e == BOOT_FLASHLESS_DEV:
+            if e == FLASHLESS_FILE_PATH:
                 return True, v
             elif v.isdigit():
                 return True, v
@@ -167,6 +175,12 @@ class ConfigurationManager:
 
         self._acquire_lock()
         result = []
+
+        try:
+            backup_file = self._create_backup_file()
+        except IOError:
+            raise ConfigurationException("Unable to create backup for SET command.  SET aborted.")
+
         try:
             for i in range(len(key_value_pairs)):
                 ele = key_value_pairs[i].strip(',').split(':', 1)[0]
@@ -179,10 +193,20 @@ class ConfigurationManager:
                     result.append(status)
                 else:
                     result.append('Failed')
+            self._validate_schema(self._xml)
             return result
+        except ConfigurationException:
+            try:
+                logger.debug("Reverting configuration file changes.")
+                copy_file(backup_file, str(self._xml))
+            except IOError:
+                raise ConfigurationException("Unable to revert to backup configuration file after SET command.")
+            self.reload_xml()
+            raise
         except IndexError as err:
             raise ConfigurationException(f'Cannot find the input value: {err}')
         finally:
+            remove_file(backup_file)
             self._lock.release()
 
     def _set_value(self, path: str, value: Any) -> str:
@@ -209,6 +233,16 @@ class ConfigurationManager:
         except OSError as e:
             raise ConfigurationException(f'Unable to write XML file: {e}')
 
+    def _create_backup_file(self) -> str:
+        backup_file = "{}{}".format(self._xml, '_bak')
+        logger.debug(f"Create backup file of: {self._xml}")
+        try:
+            copy_file(str(self._xml), backup_file)
+            return backup_file
+        except IOError as error:
+            raise ConfigurationException(
+                f'Unable to create backup configuration file: {error}')
+
     def load(self, path: Union[str, pathlib.Path]) -> None:
         """Loads new XML file
 
@@ -225,20 +259,18 @@ class ConfigurationManager:
         self._acquire_lock()
         try:
             self._validate_schema(path)
-        except (ConfigurationException, xmlschema.XMLSchemaValidationError, DefusedXmlException, DTDForbidden,
-                EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, ParseError) as e:
+        except ConfigurationException:
             self._clean_up(path)
-            raise ConfigurationException(
-                f'Unable to parse configuration file. Error: {e}')
+            raise
 
         logger.debug('Loaded file was successfully validated.')
-        backup_file = "{}{}".format(self._xml, '_bak')
+
+        self._create_backup_file()
 
         try:
-            shutil.copy(self._xml, backup_file)
-            shutil.copyfile(path, self._xml)  # type: ignore
+            copy_file(str(path), str(self._xml))
             remove_file(path)
-        except (OSError, shutil.SameFileError, IsADirectoryError, PermissionError) as error:
+        except (OSError, IOError, IsADirectoryError, PermissionError) as error:
             self._clean_up(path)
             raise ConfigurationException(
                 f'Unable to create/replace existing configuration file: {error}')

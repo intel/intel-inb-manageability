@@ -1,5 +1,5 @@
- # Copyright 2021 Intel Corporation All Rights Reserved.
- # SPDX-License-Identifier: Apache-2.0
+# Copyright (C) 2017-2022 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
 
 [Unit]
 Description=Telemetry Agent Service
@@ -18,7 +18,7 @@ ExecStart=/usr/bin/inbm-telemetry
 RestartSec=5s
 Restart=on-failure
 Group=telemetry-agent
-SupplementaryGroups=pmsuser
+SupplementaryGroups=pmsuser docker
 
 [Install]
 WantedBy=inbm.service

@@ -1,7 +1,7 @@
 """
     FOTA update tool which is called from the dispatcher during installation
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -16,6 +16,9 @@ from inbm_common_lib.constants import AFULNX_64
 
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_common_lib.utility import move_file
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX
+
 from . import constants
 from typing import Tuple, Optional, Dict
 
@@ -241,7 +244,12 @@ class LinuxToolFirmware(BiosFactory):
         if self._fw_tool == AFULNX_64:
             self._dispatcher_callbacks.broker_core.telemetry(
                 "Device will be rebooting upon successful firmware install.")
-        (out, err, code) = runner.run(cmd)
+        is_docker_app = os.environ.get("container", False)
+        if is_docker_app:
+            logger.debug("APP ENV : {}".format(is_docker_app))
+            (out, err, code) = runner.run(DOCKER_CHROOT_PREFIX + cmd)
+        else:
+            (out, err, code) = runner.run(cmd)
         if code == 0:
             self._dispatcher_callbacks.broker_core.telemetry("Apply firmware command successful.")
         else:
@@ -291,7 +299,7 @@ class LinuxFileFirmware(BiosFactory):
 
         @param dispatcher_callbacks: callback to dispatcher
         @param repo: string representation of dispatcher's repository path
-        @param params: platform producct parameters from the fota conf file 
+        @param params: platform product parameters from the FOTA conf file
     """
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
@@ -314,10 +322,10 @@ class LinuxFileFirmware(BiosFactory):
             fw_file, cert_filename = extract_file_info(pkg_filename, repo_name)
             if fw_file is None:
                 raise FotaError("firmware file extraction failed")
-            shutil.move(str(Path(repo_name) / pkg_filename[:-3]) + 'fv', self._fw_dest)
+            move_file(str(Path(repo_name) / pkg_filename[:-3]) + 'fv', self._fw_dest)
             logger.debug("Firmware Update: File successfully moved, new path: {}".format(
                 self._fw_dest))
-        except OSError as e:
+        except (OSError, IOError) as e:
             raise FotaError(f"Firmware Update Aborted: File copy to path failed: error: {e}")
         finally:
             self.delete_files(pkg_filename, fw_file, cert_filename)

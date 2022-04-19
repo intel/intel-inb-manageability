@@ -4,7 +4,7 @@ creation of the cloud connection, termination, creating commands etc.
 
 Connects to Azure IoT Central via the General Cloud MQTT client
 
-Copyright (C) 2017-2021 Intel Corporation
+Copyright (C) 2017-2022 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -124,7 +124,7 @@ class AzureAdapter(Adapter):
 
         @param scope_id:  The device's Scope ID
         @param device_id: The device's ID
-        @param device_key:The device's Shared Access Key
+        @param device_auth_set:The device's Shared Access Key
         @param template_urn:The Template URN to be associated to device
         @return:          The IoT Central hostname
         """

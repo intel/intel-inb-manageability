@@ -156,16 +156,22 @@ trtl -cmd=exec -in=rpm-hdclite -iv=3
 
 ## ⚙️ List
 ### Description
-Lists all containers for all images that are either 'latest' or have a tag number.  It will list the container ID, state, and image name.  It will provide 'NONE' for the container ID and state if the image does not have an active container.
-
+Lists all containers for all images that are either 'latest' or have a tag number.  Exited containers will not be listed.  It will list the container ID, state, and image name.  It will provide 'NONE' for the container ID and state if the image does not have an active container.
+Optionally an image name may be provided.  In that case, only containers for that image will be listed.
 ### Usage
 ```
-trtl [-type=docker] -cmd=list -in=IMAGE_NAME
+trtl [-type=docker] -cmd=list [-in=IMAGE_NAME]
 ```
 
-### Example
-```
+### Example 
+#### List all non-exited containers
+```shell
 trtl -cmd=list
+```
+
+#### List containers for image 'redis'
+```shell
+trtl -cmd=list -in=redis
 ```
 
 ## ⚙️ ContainerRemove
@@ -561,24 +567,18 @@ trtl -cmd=start -in=sample-container -iv=2 -opt="[{\"Device\": [\"/dev/sdb1\"],
 
 ## ⚙️ Stats
 ### Description
-Gets the stats of container(s).
+Gets the Stats for all running containers.
+Returns the image name, containerID, and CPU % Usage, Memory Used, Memory Total, Memory % used
 
 ### Usage
 ```
 trtl [-type=docker] -cmd=stats 
-   [-all=(true | false); default=true] 
-   [-in=IMAGE_NAME] 
-   [-iv=IMAGE_VERSION]
 ```
 
 ### Example
-#### Stats for all containers
+#### Stats 
 ```
 trtl -cmd=stats
-```
-#### Stats for a specific container only
-```
-trtl -cmd=stats -all=false -in=sample-container -iv=3 (will grab stats for only one container.  -all=false MUST BE SET)
 ```
 
 ## ⚙️ Stop

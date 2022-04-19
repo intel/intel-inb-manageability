@@ -1,10 +1,8 @@
 from unittest import TestCase
 import logging
-from mock import patch, Mock, MagicMock
-from inbm_lib.detect_os import detect_os
+from mock import patch, Mock
 from telemetry.software_bom_list import *
-from telemetry.software_bom_list import get_sw_bom_list, read_mender_file
-from telemetry.telemetry_exception import TelemetryException
+from telemetry.software_bom_list import get_sw_bom_list, read_mender_file, publish_software_bom
 from telemetry.constants import UNKNOWN
 from inbm_lib.constants import SYSTEM_IS_YOCTO_PATH, MENDER_FILE_PATH
 
@@ -21,7 +19,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: False, MENDER_FILE_PATH: False}.get)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    @patch('inbm_lib.detect_os.get_lsb_release_name', return_value="Ubuntu")
+    @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="Ubuntu")
     @patch('inbm_lib.detect_os.verify_os_supported', return_value='Linux')
     def test_get_sw_bom_list_pass(self, mock_os, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system):
         mock_runner.return_value = ('xserver-xorg-video', "", 0)
@@ -33,7 +31,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: False, MENDER_FILE_PATH: False}.get)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    @patch('inbm_lib.detect_os.get_lsb_release_name', return_value="Ubuntu")
+    @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="Ubuntu")
     def test_get_sw_bom_list_fail(self, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system):
         mock_runner.return_value = ("", "Error", -1)
         mock_uname.return_value = ('Linux', 'abc', '#1 SMP Debian 4.19.67-2+deb10u1 (2019-09-20)',
@@ -48,7 +46,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: True, MENDER_FILE_PATH: False}.get)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    @patch('inbm_lib.detect_os.get_lsb_release_name', return_value="YoctoX86_64")
+    @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="YoctoX86_64")
     def test_get_sw_bom_list_fail2(self, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system):
         mock_runner.return_value = ("", "Error", -1)
         mock_uname.return_value = ('Linux', 'abc', '#1 SMP PREEMPT Wed Mar 7 16:03:28 UTC 2021',
@@ -63,7 +61,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: True, MENDER_FILE_PATH: False}.get)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    @patch('inbm_lib.detect_os.get_lsb_release_name', return_value="YoctoX86_64")
+    @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="YoctoX86_64")
     @patch('telemetry.software_bom_list.read_mender_file')
     def test_get_sw_bom_list_fail3(self, mock_read_file, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system):
         mock_runner.return_value = ("", "", 0)
@@ -77,7 +75,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: True, MENDER_FILE_PATH: True}.get)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    @patch('inbm_lib.detect_os.get_lsb_release_name', return_value="YoctoX86_64")
+    @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="YoctoX86_64")
     @patch('telemetry.software_bom_list.read_mender_file')
     def test_get_sw_bom_list_pass2(self, mock_read_file, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system):
         mock_runner.return_value = ("", "", 0)
@@ -94,9 +92,15 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: True, MENDER_FILE_PATH: False}.get)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    @patch('inbm_lib.detect_os.get_lsb_release_name', return_value="YoctoARM")
+    @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="YoctoARM")
     def test_get_sw_bom_list_fail4(self, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system):
         mock_runner.return_value = ("", "", 0)
         mock_uname.return_value = ('Linux', 'abc', '#1 SMP PREEMPT Wed Mar 7 16:03:28 UTC 2021',
                                    '4.14.22-yocto', 'aarch64')
         self.assertEquals(get_sw_bom_list(), [' mender version: Unknown'])
+
+    @patch('telemetry.telemetry_handling.publish_dynamic_telemetry')
+    @patch('telemetry.software_bom_list.get_sw_bom_list', return_value=[])
+    def test_publish_sw_bom_list_empty(self, mock_sw_bom, mock_publish):
+        publish_software_bom(Mock(), False)
+        assert mock_publish.call_count == 1

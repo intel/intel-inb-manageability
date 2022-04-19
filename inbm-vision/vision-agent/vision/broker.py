@@ -1,7 +1,7 @@
 """
     Broker service for the manageability framework
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -20,7 +20,7 @@ from .constant import AGENT, CLIENT_CERTS, CLIENT_KEYS, STATE_CHANNEL, \
 from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL, CONFIG_LOAD
 
 from inbm_vision_lib.constants import OTA_UPDATE, CONFIG_GET, CONFIG_SET, CONFIG_APPEND, \
-    CONFIG_REMOVE, INSTALL_CHANNEL, RESTART_CHANNEL, QUERY_CHANNEL, STATUS_CHANNEL, DEVICE_STATUS_CHANNEL, \
+    CONFIG_REMOVE, INSTALL_CHANNEL, RESTART_CHANNEL, QUERY_CHANNEL, DEVICE_STATUS_CHANNEL, \
     MQTT_CA_CERTS, PROVISION_CHANNEL
 from inbm_vision_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_vision_lib.mqttclient.mqtt import MQTT
@@ -60,9 +60,6 @@ class Broker(ibroker.IBroker):
             logger.debug('Subscribing to: %s', RESTART_CHANNEL)
             self.mqttc.subscribe(RESTART_CHANNEL, self._on_restart)
 
-            logger.debug('Subscribing to: %s', STATUS_CHANNEL)
-            self.mqttc.subscribe(STATUS_CHANNEL, self._on_status)
-
             logger.debug('Subscribing to: %s', CONFIGURATION_UPDATE_CHANNEL)
             self.mqttc.subscribe(CONFIGURATION_UPDATE_CHANNEL, self._on_config_update)
 
@@ -83,18 +80,6 @@ class Broker(ibroker.IBroker):
             logger.info('Received restart request')
             logger.debug("MANIFEST: {}".format(manifest))
             self.data_handler.receive_restart_request(manifest)
-
-    def _on_status(self, topic, message, qos) -> None:
-        """Callback for STATUS_CHANNEL
-
-        @param topic: topic on which message was published
-        @param message: message payload
-        @param qos: quality of service level
-        """
-        if message is not None:
-            logger.info('Received status checking request')
-            logger.debug("message: {}".format(message))
-            self.data_handler.create_telemetry_event(VISION_ID, "Vision agent is running.")
 
     def _on_message(self, topic, payload, qos) -> None:
         """Callback for STATE_CHANNEL

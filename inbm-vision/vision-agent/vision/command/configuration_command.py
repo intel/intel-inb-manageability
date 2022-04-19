@@ -81,8 +81,7 @@ class SetVisionConfigValuesCommand(Command):
         self.target_type = target_type
 
     def execute(self) -> None:
-        """Execute set config and publish the result to telemetry Event
-        """
+        """Execute set config and publish the result to telemetry Event"""
         logger.debug('Execute SetVisionConfigValuesCommand.')
         try:
             result = self.config_mgr.set_element(self.key, self.target_type)
@@ -95,7 +94,7 @@ class SetVisionConfigValuesCommand(Command):
                     self.broker.publish_telemetry_event(self.nid, message)
                     success_resp = create_success_message("Configuration command: SUCCESSFUL")
                     self.broker.publish_telemetry_response(self.nid, success_resp)
-        except (ConfigurationException, ValueError, KeyError) as error:
+        except (VisionException, ConfigurationException, ValueError, KeyError) as error:
             message = "Error on Set Element.{}".format(error)
             if self.broker:
                 self.broker.publish_telemetry_event(self.nid, message)

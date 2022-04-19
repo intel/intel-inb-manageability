@@ -1,6 +1,6 @@
 """Parser class to parse the system argument
 
-   Copyright (C) 2020-2021 Intel Corporation
+   Copyright (C) 2020-2022 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -414,7 +414,7 @@ def pota(args) -> str:
         'biosversion': args.biosversion,
         'manufacturer': args.manufacturer,
         'product': args.product,
-        'release_date': args.releasedate,
+        'release_date': args.release_date,
         'Target': args.target,
         FOTA_SIGNATURE: args.fotasignature,
         'nohddl': args.nohddl
@@ -467,12 +467,10 @@ def load(args) -> str:
     @return: Generated xml manifest string
     """
 
-    if args.nohddl:
-        raise InbcException('Load command is only supported for HDDL.')
-
     arguments = {
         'target': args.target,
-        'targetType': args.targettype,
+        'targetType': None if args.nohddl else args.targettype,
+        'fetch': args.uri,
         'path': args.path,
         'nohddl': args.nohddl,
         'username': args.username,
@@ -489,13 +487,15 @@ def load(args) -> str:
                 '{1}' +
                 '<load>' +
                 '{2}' +
+                '{3}' +
                 '</load>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
         create_xml_tag(arguments, "targetType"),
         create_xml_tag(arguments, "target"),
-        create_xml_tag(arguments, "path")
+        create_xml_tag(arguments, "path"),
+        create_xml_tag(arguments, "fetch")
     )
     print("manifest {0}".format(manifest))
     return manifest
@@ -508,12 +508,9 @@ def get(args) -> str:
     @return: Generated xml manifest string
     """
 
-    if args.nohddl:
-        raise InbcException('Get command is only supported for HDDL.')
-
     arguments = {
         'target': args.target,
-        'targetType': args.targettype,
+        'targetType': None if args.nohddl else args.targettype,
         'path': args.path,
         'nohddl': args.nohddl
     }
@@ -547,12 +544,9 @@ def set(args) -> str:
     @return: Generated xml manifest string
     """
 
-    if args.nohddl:
-        raise InbcException('Set command is only supported for HDDL.')
-
     arguments = {
         'target': args.target,
-        'targetType': args.targettype,
+        'targetType': None if args.nohddl else args.targettype,
         'path': args.path,
         'nohddl': args.nohddl
     }

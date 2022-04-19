@@ -1,8 +1,8 @@
 """
     Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2021 Intel Corporation
-# SPDX-License-Identifier: Apache-2.0
+    # Copyright (C) 2020-2022 Intel Corporation
+    # SPDX-License-Identifier: Apache-2.0
 """
 
 import os
@@ -15,11 +15,11 @@ from inbc import shared
 from ..constants import COMMAND_SUCCESS, COMMAND_FAIL, MAX_TIME_LIMIT, VISION_SERVICE_PATH
 from ..ibroker import IBroker
 from ..inbc_exception import InbcCode
-from ..utility import search_keyword, is_vision_agent_installed
+from ..utility import search_keyword, is_vision_agent_installed, is_vision_agent_active
 
 from inbm_vision_lib.timer import Timer
 from inbm_vision_lib.constants import DEVICE_STATUS_CHANNEL, RESTART, QUERY, \
-    XLINK_SIMULATOR_PC_LIB_PATH, QUERY_CHANNEL, STATUS_CHANNEL, RESTART_CHANNEL, NODE
+    XLINK_SIMULATOR_PC_LIB_PATH, QUERY_CHANNEL, RESTART_CHANNEL, NODE
 from inbm_common_lib.request_message_constants import COMMAND_SUCCESSFUL, DYNAMIC_TELEMETRY, \
     RESTART_SUCCESS, RESTART_FAILURE, QUERY_SUCCESS, QUERY_FAILURE, OTA_IN_PROGRESS, ACTIVE_NODE_NOT_FOUND, \
     ELIGIBLE_NODE_NOT_FOUND, QUERY_HOST_SUCCESS, QUERY_HOST_FAILURE, QUERY_HOST_KEYWORD
@@ -39,15 +39,13 @@ class Command(ABC):
     def __init__(self, timer_limit: int, broker: IBroker, cmd_type: str) -> None:
         self._update_timer = Timer(timer_limit, self._timer_expired, is_daemon=True)
         self._is_vision_agent_installed = is_vision_agent_installed()
-        if self._is_vision_agent_installed:
-            self._status_timer = Timer(10, self._vision_agent_not_active, is_daemon=True)
         self._broker = broker
         self._cmd_type = cmd_type
         """num_vision_targets is used to determine the number of expected successful messages to be received 
            from vision-agent.  After the OTA command is triggered the vision-agent sends the number of targets 
            to be updated."""
         self._num_vision_targets = 1
-        self._is_vision_agent_running = False
+        self._is_vision_agent_running = is_vision_agent_active()
         self.count = 0
         self._target_type: Optional[str] = None
 
@@ -72,13 +70,6 @@ class Command(ABC):
         """
         return self._num_vision_targets
 
-    def set_is_vision_agent_running(self, is_running: bool):
-        """Sets the running state of vision-agent to running.  True if vision-agent is running; otherwise, False.
-
-        @param is_running: running state of the vision-agent
-        """
-        self._is_vision_agent_running = is_running
-
     def stop_timer(self):
         """Stops the timer which is waiting for the command to execute."""
         self._update_timer.stop()
@@ -92,9 +83,7 @@ class Command(ABC):
         """
         manifest = args.func(args)
         if self._is_vision_agent_installed:
-            self._broker.publish(STATUS_CHANNEL, "Are you running?")
-            self._status_timer.start()
-            sleep(1)
+            self._vision_agent_not_active()
         self._broker.publish(topic, manifest)
         self._update_timer.start()
 

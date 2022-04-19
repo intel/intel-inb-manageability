@@ -1,7 +1,7 @@
 """
     SOTA to perform download during an update and is called from the dispatcher
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -62,6 +62,7 @@ class Downloader:
             platform_mender_date = datetime.strptime(platform_mender_date_str, "%Y%m%d%H%M%S")
         except (ValueError, FileNotFoundError) as err:
             raise SotaError(err)
+        logger.debug(f"System mender release date: {platform_mender_date}")
         return True if manifest_release_date > platform_mender_date else False
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
