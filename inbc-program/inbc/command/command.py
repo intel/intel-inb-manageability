@@ -108,8 +108,16 @@ class Command(ABC):
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """
+<<<<<<< HEAD
         
         if not search_keyword(payload, [DYNAMIC_TELEMETRY, DBS_LOG]):
+=======
+
+        if not search_keyword(payload, ["DBS"]):
+            logger.info('=======Message received: %s on topic: %s', payload, topic)
+        
+        if not search_keyword(payload, [DYNAMIC_TELEMETRY]):
+>>>>>>> 244db67b066a5e8ed7f1c1867b46d5db47cd9f83
             logger.info('******Message received: %s on topic: %s', payload, topic)
 
         if search_keyword(payload, ["/usr/bin/mender -install"]):
