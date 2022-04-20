@@ -109,7 +109,7 @@ class Command(ABC):
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """
-        if not search_keyword(payload, [DYNAMIC_TELEMETRY], [DBS_LOG], [DOCKER_NAME], [DOCKER_MESSAGE]):
+        if not search_keyword(payload, [DYNAMIC_TELEMETRY, DBS_LOG, DOCKER_NAME, DOCKER_MESSAGE]):
             logger.info('Message received: %s on topic: %s', payload, topic)
 
         if search_keyword(payload, ["/usr/bin/mender -install"]):
