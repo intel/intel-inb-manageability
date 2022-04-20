@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 from inbc.inbc import Inbc
-from inbc.parser import ArgsParser, fota, sota, load, get, set, append
+from inbc.parser import ArgsParser, fota, sota, load, get, set, append, remove
 from inbc.constants import COMMAND_FAIL, COMMAND_SUCCESS
 from inbc.inbc_exception import InbcCode, InbcException
 from inbc.command.ota_command import FotaCommand
@@ -671,12 +671,28 @@ class TestINBC(TestCase):
                    '</configtype></config></manifest>'
         self.assertEqual(append.func(append), expected)
 
+    
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_append_non_hddl(self, mock_stderr):
         s = self.arg_parser.parse_args(['append', '--path', 'trustedRepositories:https://abc.com'])
         with self.assertRaisesRegex(InbcException, 'Config Append is not supported on HDDL Platforms.'):
             s.func(s)
 
+
+    def test_remove_manifest(self):
+        remove = self.arg_parser.parse_args(['remove', '--nohddl', '--path', 'trustedRepositories:https://abc.com'])
+
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>config</type><config><cmd>remove' \
+                   '</cmd><configtype><remove>' \
+                   '<path>trustedRepositories:https://abc.com</path></remove>' \
+                   '</configtype></config></manifest>'
+        self.assertEqual(remove.func(remove), expected)
+
+    @patch('sys.stderr', new_callable=StringIO)
+    def test_raise_remove_non_hddl(self, mock_stderr):
+        s = self.arg_parser.parse_args(['remove', '--path', 'trustedRepositories:https://abc.com'])
+        with self.assertRaisesRegex(InbcException, 'Config Remove is not supported on HDDL Platforms.'):
+            s.func(s)
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.command.command.Command.terminate_operation')

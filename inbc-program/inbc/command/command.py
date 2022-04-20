@@ -151,9 +151,9 @@ class Command(ABC):
             if not os.path.exists(XLINK_SIMULATOR_PC_LIB_PATH):
                 sleep(3)
         if status == COMMAND_SUCCESS:
-            print(f"\n {self._cmd_type} Command Execution is Completed")
+            print(f"\n {self._cmd_type.upper()} Command Execution is Completed")
         elif status == COMMAND_FAIL:
-            print(f"\n {self._cmd_type} Command Execution FAILED")
+            print(f"\n {self._cmd_type.upper()} Command Execution FAILED")
             shared.exit_code = abs(return_code)
         logger.info("INBC code: {0}".format(return_code))
         shared.running = False

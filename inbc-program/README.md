@@ -373,6 +373,24 @@ inbc append --nohddl --path  trustedRepositories:https://abc.com/
 ```
 
 
+## Remove
+### Description
+Remove is only applicable to three config tags, which are trustedRepositories, sotaSW and ubuntuAptSource
+
+❗  This command is only supported on non-HDDL Platforms 
+### Usage
+```
+inbc remove [--nohddl]
+   {--path, -p KEY_PATH;...} 
+```
+
+
+### Examples
+#### Edge Device
+```
+inbc remove --nohddl --path  trustedRepositories:https://abc.com/
+```
+
 ## RESTART
 ### Description
 Restart nodes
