@@ -51,3 +51,5 @@ ELIGIBLE_NODE_NOT_FOUND = "No eligible nodes found"
 # Other message
 DYNAMIC_TELEMETRY = "dynamic_telemetry"
 DBS_LOG = "DBS"
+DOCKER_NAME = "Docker"
+DOCKER_MESSAGE = "docker"
