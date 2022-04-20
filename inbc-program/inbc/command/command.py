@@ -108,8 +108,11 @@ class Command(ABC):
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """
-        if not search_keyword(payload, [DYNAMIC_TELEMETRY]) or search_keyword(payload, ["DBS"]):
-            logger.info(' 2 ..Message received: %s on topic: %s', payload, topic)
+        if not search_keyword(payload, ["DBS"]):
+            logger.info(' ======= ..Message received: %s on topic: %s', payload, topic)
+
+        if not search_keyword(payload, [DYNAMIC_TELEMETRY])):
+            logger.info(' *****..Message received: %s on topic: %s', payload, topic)
 
         if search_keyword(payload, ["/usr/bin/mender -install"]):
             print("\n Flashing mender file. This will take several minutes...")
