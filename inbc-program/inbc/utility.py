@@ -25,9 +25,7 @@ def search_keyword(payload: str, words: List[str]) -> bool:
     """
     for word in words:
         if payload.find(word) >= 0:
-            print("True=========================")
             return True
-    print("False=========================")
     return False
 
 
