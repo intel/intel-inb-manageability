@@ -145,6 +145,8 @@
                                         <xs:enumeration value="security"/>
                                         <xs:enumeration value="guid"/>
                                         <xs:enumeration value="swbom"/>
+                                        <xs:enumeration value="static telemetry"/>
+                                        <xs:enumeration value="TC version"/>
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
