@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Fixed
  - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
+ - RTC 500237 - Remove DBS messages from node TC in INBC
 
 ### Added
 - RTC 508495 Support INBC Config Append command
