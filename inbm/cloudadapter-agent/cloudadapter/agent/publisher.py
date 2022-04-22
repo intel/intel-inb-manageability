@@ -297,12 +297,12 @@ class Publisher:
         
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
-                        '<type>cmd\</type>'
+                        '<type>cmd</type>'
                          '<cmd>query</cmd>'
                          '<query>'
                             '<option>swbom</option>'
                          '</query>'
-                        '</manifest>')
+                    '</manifest>')
         self._send_ota_action(manifest)
         return MESSAGE.QUERY
 
