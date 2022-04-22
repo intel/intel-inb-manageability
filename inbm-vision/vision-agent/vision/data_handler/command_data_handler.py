@@ -1,8 +1,7 @@
 """
     DataHandler for manifests received using the type: command (provision_node)
-    TODO:  move restart, etc. here too
 
-    @copyright: Copyright 2022 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2019-2022 Intel Corporation All Rights Reserved.
     @license: Intel, see licenses/LICENSE for more details.
 """
 

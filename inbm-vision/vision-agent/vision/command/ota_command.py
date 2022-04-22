@@ -2,7 +2,7 @@
     Different command object will be created according to different request.
     Each concrete classes have different execute method for different purpose.
 
-    Copyright (C) 2017-2021 Intel Corporation
+    Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 

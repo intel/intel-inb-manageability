@@ -11,7 +11,6 @@
 import logging
 import os
 from typing import List, Optional, Any, Dict
-from threading import Lock
 
 import vision
 import inbm_vision_lib

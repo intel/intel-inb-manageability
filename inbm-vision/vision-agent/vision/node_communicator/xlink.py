@@ -1,7 +1,7 @@
 """"
     A xlink struct to store the xlink object information.
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 

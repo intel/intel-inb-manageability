@@ -79,6 +79,8 @@ SW_DEVICE_ID_MTL = 0x4
 SW_DEVICE_ID_STF = 0x5
 SW_DEVICE_ID_PLATFORM_MASK = 0xF
 SW_DEVICE_ID_PLATFORM_SHIFT = 4
+SW_DEVICE_ID_MEDIA_FUNCTION = 0x1  # TBH Media Function
+XLINK_SW_DEV_ID_PCIE_FUNCTION_MASK = 0x1
 
 # Xlink boot device default value
 XLINK_BOOT_DEV_DEFAULT = False
@@ -92,8 +94,8 @@ MINIMUM_GUID_LENGTH = 16
 # GUID maximum buffer size
 MAXIMUM_GUID_BUFFER = 250
 
-# MQTT ca path
-MQTT_CA_CERTS = str(BROKER_ETC_PATH/'public'/'mqtt-ca'/'mqtt-ca.crt')
+# MQTT CA path
+MQTT_CA_CERTS = str(BROKER_ETC_PATH / 'public' / 'mqtt-ca' / 'mqtt-ca.crt')
 
 # Device local cache
 CACHE = str(INBM_VISION_CACHE_PATH_PREFIX / 'repository-tool/')

@@ -1,6 +1,6 @@
 """
-    Handle Query request from INBC tool
-    @copyright: Copyright 2021 Intel Corporation All Rights Reserved.
+    Handle Query request from cloud or INBC tool
+    @copyright: Copyright 2019-2022 Intel Corporation All Rights Reserved.
     @license: Intel, see licenses/LICENSE for more details.
 """
 from typing import List, Optional, Dict

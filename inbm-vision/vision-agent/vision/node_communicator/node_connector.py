@@ -2,7 +2,7 @@
     Highest level of abstraction for node communication.  Creates a concrete class for the method of communication
     to be used.
 
-    Copyright (C) 2019-2021 Intel Corporation
+    Copyright (C) 2019-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging

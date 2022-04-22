@@ -2,7 +2,7 @@
     Different command object will be created according to different request.
     Each concrete classes have different execute method for different purpose.
 
-    @copyright: Copyright 2021 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2019-2022 Intel Corporation All Rights Reserved.
     @license: Intel, see licenses/LICENSE for more details.
 """
 
