@@ -39,6 +39,7 @@
   /usr/bin/python2.7 ix,
   /usr/bin/trtl Pix,
   /usr/bin/lsb_release rUx,
+  /usr/bin/rpm Ux,
   /bin/lsb_release rUx,
   /bin/busybox.nosuid rUx,
   /usr/bin/inbm-telemetry rix,
