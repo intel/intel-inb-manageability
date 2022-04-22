@@ -65,6 +65,9 @@ class Client:
         loggers = [self._cloud_publisher.publish_event, logger.info]
 
         for name, callback in adapter_bindings.items():
+            print("IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII")
+            print("name")
+            print("callback")
             callback = self._with_log(callback, *loggers)
             self._adapter.bind_callback(name, callback)
 
