@@ -290,6 +290,7 @@ class Publisher:
         @return:          The accompanying message
         @exception ValueError: If an argument is an invalid value
         """
-        logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+        logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         logger.debug("Query Method Triggered")
+        return MESSAGE.QUERY
 
