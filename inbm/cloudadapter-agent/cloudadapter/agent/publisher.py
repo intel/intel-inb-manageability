@@ -300,7 +300,7 @@ class Publisher:
                        '<type>cmd</type>'
                        '<cmd>query</cmd>'
                         '<query>'
-                           '<option>swbom</option>'
+                           '<option>version</option>'
                         '</query>'
                     '</manifest>')
         
