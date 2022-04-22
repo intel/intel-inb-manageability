@@ -78,7 +78,7 @@ class METHOD:
     REBOOT = "reboot_device"
     DECOMMISSION = "decommission_device"
     UPLOAD = "file_upload"
-    QUERY = "triggerconfig"
+    QUERY = "triggerquery"
 
 # ========== Cloud configuration constants
 
