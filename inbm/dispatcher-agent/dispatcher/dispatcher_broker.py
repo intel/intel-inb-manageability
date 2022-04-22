@@ -40,6 +40,8 @@ class DispatcherBroker:
         @param message: message to be published to cloud
         """
         logger.debug('Received result message: %s', message)
+        logger.debug(".....................................>Received result message")
+        print(".....................................>Received result message")
         if not self.is_started():
             logger.error('Cannot send result: dispatcher core not initialized')
         else:

@@ -79,6 +79,7 @@ def _check_type_validate_manifest(xml: str,
     @return: Tuple of (ota-type, resource-name, URL of resource, resource-type)
     """
     # Added schema_location variable for unit tests
+    logger.debug("ccccccccccccccccccccccccccccccccccccccccccc")
     schema_location = get_canonical_representation_of_path(
         schema_location) if schema_location is not None else get_canonical_representation_of_path(SCHEMA_LOCATION)
     parsed = XmlHandler(xml=xml,
@@ -87,6 +88,7 @@ def _check_type_validate_manifest(xml: str,
     type_of_manifest = parsed.get_element('type')
     logger.debug(
         f"type_of_manifest: {type_of_manifest!r}. parsed: {mask_security_info(str(parsed))!r}.")
+    logger.debug("ooooooooooooooooooooooooooooooooooooooooooooooooooo")
     return type_of_manifest, parsed
 
 
@@ -371,6 +373,7 @@ class Dispatcher(WindowsService):
         @return (dict): returns success or failure dict from child methods
         """
         cmd = parsed_head.get_element('cmd')
+        #target_type = parsed_head.find_element('restart/targetType')
         target_type = parsed_head.find_element('*/targetType')
 
         if cmd == "shutdown":
@@ -424,11 +427,14 @@ class Dispatcher(WindowsService):
         """
         result: Result = Result()
         logger.debug("do_install")
+        logger.debug("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
         parsed_head = None
         try:  # TODO: Split into multiple try/except blocks
+            logger.debug("sssssssssssssssssssssssssssssssssssssss")
             type_of_manifest, parsed_head = \
                 _check_type_validate_manifest(xml, schema_location=schema_location)
             self.invoke_workload_orchestration_check(False, type_of_manifest, parsed_head)
+            logger.debug("iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii")
 
             if type_of_manifest == 'cmd':
                 logger.debug("Running command sent down ")
@@ -451,7 +457,6 @@ class Dispatcher(WindowsService):
                     # Perform manifest checking first before OTA
                     self._validate_pota_manifest(
                         repo_type, target_type, kwargs, parsed_head, ota_list)
-
                     for ota in sorted(ota_list.keys()):
                         kwargs['ota_type'] = ota
                         result = self._do_ota_update(
@@ -459,18 +464,24 @@ class Dispatcher(WindowsService):
                         if result == Result(CODE_BAD_REQUEST, "FAILED TO INSTALL") or result == OTA_FAILURE:
                             break
                 else:
+                    logger.debug("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv")
                     result = self._do_ota_update(
                         xml, ota_type, repo_type, target_type, resource, kwargs, parsed_head)
 
             elif type_of_manifest == 'config':
                 logger.debug('Running configuration command sent down ')
+                logger.debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa  elif part")
                 target_type = parsed_head.find_element('config/targetType')
+                logger.debug('ttttttttttttttttttttttttttttttttttttttttttt>elif type_of_manifest == config:')
                 if target_type is None:
+                    logger.debug('hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh>if target_type is None:')
                     target_type = TargetType.none.name
                 logger.debug(f"target_type : {target_type}")
                 if target_type is TargetType.none.name:
+                    logger.debug('testing...>')
                     result = self._do_config_operation(parsed_head, target_type)
                 else:
+                    logger.debug("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr>else:")
                     config_cmd_type = parsed_head.get_element('config/cmd')
                     logger.debug(f"cmd_type : {config_cmd_type}")
                     result = self._do_config_operation_on_target(
@@ -479,6 +490,7 @@ class Dispatcher(WindowsService):
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
         except XmlException as error:
+            logger.debug("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
         except (AotaError, FotaError, SotaError) as e:
             result = Result(CODE_BAD_REQUEST, str(e))
@@ -486,6 +498,7 @@ class Dispatcher(WindowsService):
             logger.info('Install result: %s', str(result))
             self._send_result(str(result))
             if result.status != CODE_OK and parsed_head:
+                logger.debug("ddddddddddddddddddddddddddddddddddddddddddddd")
                 self.invoke_workload_orchestration_check(True, type_of_manifest, parsed_head)
             return result.status
 
@@ -716,6 +729,7 @@ class Dispatcher(WindowsService):
         """
         logger.info('Cloud request received: %s on topic: %s',
                     mask_security_info(payload), topic)
+        logger.info('................................................................>Cloud request received')
         request_type = topic.split('/')[-1]
         manifest = payload
         if not self.update_queue.full():
@@ -859,6 +873,7 @@ class Dispatcher(WindowsService):
         @param type_of_manifest: type of manifest
         @param parsed_head: root of parsed xml
         """
+        logger.debug("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
         if self._wo is not None:
             if not type_of_manifest or type_of_manifest == 'cmd':
                 self._wo.set_workload_orchestration_mode(online_mode)
