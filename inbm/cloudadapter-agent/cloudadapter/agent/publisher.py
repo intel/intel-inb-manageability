@@ -306,6 +306,6 @@ class Publisher:
         
         command = arguments.get("query")
         logger.debug(command)
-        self._send_ota_action(manifest)
+        #self._send_ota_action(manifest)
         return MESSAGE.QUERY
 
