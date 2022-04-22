@@ -81,6 +81,7 @@ class Publisher:
         @return: The accompanying message
         @exception ValueError: If an empty manifest is given
         """
+        logger.debug("VVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV")
         logger.debug("Manifest Update Triggered")
 
         if not manifest or not manifest.strip():
@@ -241,6 +242,7 @@ class Publisher:
         @return:          The accompanying message
         @exception ValueError: If an argument is an invalid value
         """
+        logger.debug("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
         logger.debug("Configuration Method Triggered")
         self._sanitize_values(
             arguments, {
