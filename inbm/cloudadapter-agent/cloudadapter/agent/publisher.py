@@ -295,14 +295,17 @@ class Publisher:
         logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         logger.debug("Query Method Triggered")
         
-        manifest = ('<?xml version="1.0" encoding="utf-8"?>'
-                    '<manifest>'
-                        '<type>cmd</type>'
-                        '<cmd>query</cmd>'
-                        '<query>'
-                           '<option>swbom</option>'
-                        '</query>'
-                    '</manifest>')
+        #manifest = ('<?xml version="1.0" encoding="utf-8"?>'
+        #            '<manifest>'
+        #               '<type>cmd</type>'
+        #               '<cmd>query</cmd>'
+        #                '<query>'
+        #                   '<option>swbom</option>'
+        #                '</query>'
+        #            '</manifest>')
+        
+        command = arguments.get("query")
+        logger.debug(command)
         self._send_ota_action(manifest)
         return MESSAGE.QUERY
 
