@@ -63,7 +63,7 @@ class MESSAGE:
     FOTA = "FOTA Triggered"
     SOTA = "SOTA Triggered"
     CONFIG = "Configuration Method Triggered"
-
+    QUERY = "Query method triggered"
 
 # ========== Cloud method bindings
 
@@ -78,7 +78,7 @@ class METHOD:
     REBOOT = "reboot_device"
     DECOMMISSION = "decommission_device"
     UPLOAD = "file_upload"
-
+    QUERY = "triggerconfig"
 
 # ========== Cloud configuration constants
 

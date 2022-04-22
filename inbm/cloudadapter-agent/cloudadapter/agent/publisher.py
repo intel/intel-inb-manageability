@@ -283,3 +283,13 @@ class Publisher:
 
         self._send_ota_action(manifest)
         return MESSAGE.CONFIG
+    def publish_QUERY(self, **arguments: str) -> str:
+        """Publishes a configuration update
+
+        @param arguments: (**kwargs: str) The config arguments
+        @return:          The accompanying message
+        @exception ValueError: If an argument is an invalid value
+        """
+        logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+        logger.debug("Query Method Triggered")
+
