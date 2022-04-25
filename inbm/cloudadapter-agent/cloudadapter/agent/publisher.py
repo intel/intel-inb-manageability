@@ -294,6 +294,8 @@ class Publisher:
         """
         logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         logger.debug("Query Method Triggered")
+        hw = arguments.pop("hw", None)
+        logger.debug(hw)
 #         self._sanitize_values(
 #             arguments, {
 #                 "cmd": ["all", "hw", "fw", "guid", "os", "security", "status", "swbom", "version"]
