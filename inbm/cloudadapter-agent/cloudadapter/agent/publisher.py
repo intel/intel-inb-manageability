@@ -250,6 +250,10 @@ class Publisher:
             }
         )
 
+        logger.debug({0})
+        logger.debug({1})
+        logger.debug({2})
+
         manifest = ('<?xml version="1.0" encoding="UTF-8"?>'
                     '<manifest>'
                         '<type>config</type>'
