@@ -40,6 +40,7 @@ class Publisher:
         @exception ValueError: If a parameter is set to an invalid value
         """
         error_message = ""
+        logger.debug(valid_mapping.items())
 
         for parameter, valid_values in valid_mapping.items():
             value = arguments.get(parameter)
