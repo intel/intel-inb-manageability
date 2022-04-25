@@ -51,8 +51,11 @@ class Publisher:
                 continue
             valid = False
             for valid_value in valid_values:
+                logger.debug(valid_value)
                 if value.lower() == valid_value.lower():
+                    logger.debug(valid_value)
                     arguments[parameter] = valid_value
+                    logger.debug(arguments[parameter])
                     valid = True
                     break
             if not valid:
