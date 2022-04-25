@@ -317,7 +317,7 @@ class Publisher:
                        '<type>cmd</type>'
                        '<cmd>query</cmd>'
                         '<query>'
-                           '<option>{command}</option>'
+                           '<option>{$command}</option>'
                         '</query>'
                     '</manifest>')
         
