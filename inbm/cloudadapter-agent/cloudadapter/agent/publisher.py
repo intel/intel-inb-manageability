@@ -302,13 +302,14 @@ class Publisher:
             }
         )
         logger.debug(arguments.get("option"))
+        command = arguments.get("option")
         
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
                        '<type>cmd</type>'
                        '<cmd>query</cmd>'
                         '<query>'
-                           '<option>{0}</option>'
+                           '<option>$command</option>'
                         '</query>'
                     '</manifest>')
         
