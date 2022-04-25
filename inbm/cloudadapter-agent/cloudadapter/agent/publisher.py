@@ -268,6 +268,7 @@ class Publisher:
                         '</config>'
                     '</manifest>')  # noqa: E127
 
+        logger.debug(manifest)
         command = arguments.get("cmd")
         if command == "load":
             self._require_values(arguments, "fetch")
@@ -290,7 +291,6 @@ class Publisher:
                 create_xml_tags(arguments, "path")
             )
 
-        logger.debug(manifest)
         self._send_ota_action(manifest)
         return MESSAGE.CONFIG
     def publish_QUERY(self, **arguments: str) -> str:
@@ -306,11 +306,11 @@ class Publisher:
 #         logger.debug(hw)
         self._sanitize_values(
             arguments, {
-                "query": ["all", "hw", "fw", "guid", "os", "security", "status", "swbom", "version"]
+                "option": ["all", "hw", "fw", "guid", "os", "security", "status", "swbom", "version"]
             }
         )
-        logger.debug(arguments.get("query"))
-        command = arguments.get("query")
+        logger.debug(arguments.get("option"))
+        command = arguments.get("option")
         
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
