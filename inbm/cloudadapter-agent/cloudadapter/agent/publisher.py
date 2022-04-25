@@ -311,6 +311,17 @@ class Publisher:
         )
         logger.debug(arguments.get("option"))
         command = arguments.get("option")
+        manifest = ('<?xml version="1.0" encoding="UTF-8"?>'
+                    '<manifest>'
+                        '<type>config</type>'
+                        '<config>'
+                            '<cmd>{0}</cmd>'
+                            '<configtype>'
+                                '<{1}>{2}</{1}>'
+                            '</configtype>'
+                        '</config>'
+                    '</manifest>'
+        logger.debug(manifest)
         
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
