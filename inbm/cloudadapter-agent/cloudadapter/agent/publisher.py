@@ -44,6 +44,8 @@ class Publisher:
 
         for parameter, valid_values in valid_mapping.items():
             value = arguments.get(parameter)
+            logger.debug(parameter)
+            logger.debug(value)
             if not value:
                 error_message += f"No input given for '{parameter}'. "
                 continue
