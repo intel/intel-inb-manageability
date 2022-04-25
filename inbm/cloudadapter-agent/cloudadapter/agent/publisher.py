@@ -299,6 +299,7 @@ class Publisher:
                 "cmd": ["all", "hw", "fw", "guid", "os", "security", "status", "swbom", "version"]
             }
         )
+        logger.debug(arguments.get("cmd"))
         
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
