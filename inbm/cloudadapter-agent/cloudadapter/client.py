@@ -55,7 +55,7 @@ class Client:
             METHOD.AOTA: self._publisher.publish_aota,
             METHOD.FOTA: self._publisher.publish_fota,
             METHOD.SOTA: self._publisher.publish_sota,
-            METHOD.QUERY: self._publisher.publish_QUERY,
+            METHOD.QUERY: self._publisher.publish_query,
             METHOD.CONFIG: self._publisher.publish_config,
             METHOD.SHUTDOWN: self._device_manager.shutdown_device,
             METHOD.REBOOT: self._device_manager.reboot_device,

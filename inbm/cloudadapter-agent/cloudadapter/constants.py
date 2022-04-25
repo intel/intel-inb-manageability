@@ -63,7 +63,7 @@ class MESSAGE:
     FOTA = "FOTA Triggered"
     SOTA = "SOTA Triggered"
     CONFIG = "Configuration Method Triggered"
-    QUERY = "Query method triggered"
+    QUERY = "Query Method Triggered"
 
 # ========== Cloud method bindings
 

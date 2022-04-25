@@ -170,6 +170,19 @@ class TestPublisher(unittest.TestCase):
                                     '</config>'
                                 '</manifest>')  # noqa: E127
 
+        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>hw</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
+
+        self.QUERY_ARGUMENTS = {
+            "option": "hw",
+        }
+
     def test_publish_manifest_succeed(self):
         manifest = "<manifest></mainfest>"
 
@@ -330,3 +343,12 @@ class TestPublisher(unittest.TestCase):
         except ValueError:
             failed = True
         assert failed
+
+    def test_query_hw(self):
+        arguments = self.QUERY_ARGUMENTS
+
+        message = self.publisher.publish_query(**arguments)
+
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY)
