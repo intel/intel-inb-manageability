@@ -294,13 +294,18 @@ class Publisher:
         """
         logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         logger.debug("Query Method Triggered")
+        self._sanitize_values(
+            arguments, {
+                "cmd": ["all", "hw", "fw", "guid", "os", "security", "status", "swbom", "version"]
+            }
+        )
         
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
                        '<type>cmd</type>'
                        '<cmd>query</cmd>'
                         '<query>'
-                           '<option>version</option>'
+                           '<option>{0}</option>'
                         '</query>'
                     '</manifest>')
         
