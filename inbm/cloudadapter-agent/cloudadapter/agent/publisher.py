@@ -320,17 +320,17 @@ class Publisher:
                                 '<{1}>{2}</{1}>'
                             '</configtype>'
                         '</config>'
-                    '</manifest>'
+                    '</manifest>')
         logger.debug(manifest)
         
-#         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
-#                     '<manifest>'
-#                        '<type>cmd</type>'
-#                        '<cmd>query</cmd>'
-#                         '<query>'
-#                            '<option>{$command}</option>'
-#                         '</query>'
-#                     '</manifest>')
+        manifest = ('<?xml version="1.0" encoding="utf-8"?>'
+                    '<manifest>'
+                       '<type>cmd</type>'
+                       '<cmd>query</cmd>'
+                        '<query>'
+                           '<option>{$command}</option>'
+                        '</query>'
+                    '</manifest>')
         
 #         command = arguments.get("query")
         #logger.debug(command)
