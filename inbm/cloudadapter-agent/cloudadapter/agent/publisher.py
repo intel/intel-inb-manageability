@@ -294,25 +294,25 @@ class Publisher:
         """
         logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
         logger.debug("Query Method Triggered")
-        hw = arguments.pop("hw", None)
-        logger.debug(hw)
-#         self._sanitize_values(
-#             arguments, {
-#                 "cmd": ["all", "hw", "fw", "guid", "os", "security", "status", "swbom", "version"]
-#             }
-#         )
-        logger.debug(arguments.get("cmd"))
+#         hw = arguments.pop("hw", None)
+#         logger.debug(hw)
+        self._sanitize_values(
+            arguments, {
+                "option": ["all", "hw", "fw", "guid", "os", "security", "status", "swbom", "version"]
+            }
+        )
+        logger.debug(arguments.get("option"))
         
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
                        '<type>cmd</type>'
                        '<cmd>query</cmd>'
                         '<query>'
-                           '<option>arguments.get("cmd")</option>'
+                           '<option>{0}</option>'
                         '</query>'
                     '</manifest>')
         
-        command = arguments.get("query")
+#         command = arguments.get("query")
         #logger.debug(command)
         self._send_ota_action(manifest)
         return MESSAGE.QUERY
