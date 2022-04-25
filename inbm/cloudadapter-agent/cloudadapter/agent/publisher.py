@@ -287,6 +287,7 @@ class Publisher:
                 create_xml_tags(arguments, "path")
             )
 
+        logger.debug(manifest)
         self._send_ota_action(manifest)
         return MESSAGE.CONFIG
     def publish_QUERY(self, **arguments: str) -> str:
