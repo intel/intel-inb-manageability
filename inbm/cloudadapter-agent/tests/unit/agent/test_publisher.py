@@ -169,8 +169,13 @@ class TestPublisher(unittest.TestCase):
                                         '</configtype>'
                                     '</config>'
                                 '</manifest>')  # noqa: E127
+        
+        
+        self.QUERY_ARGUMENTS_ALL = {
+            "option": "all",
+        }
 
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_ALL = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -179,10 +184,10 @@ class TestPublisher(unittest.TestCase):
                         '</query>'
                       '</manifest>')  # noqa: E127
 
-        self.QUERY_ARGUMENTS = {
-            "option": "all",
-        }
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+#         self.QUERY_ARGUMENTS = {
+#             "option": "all",
+#         }
+        self.QUERY_HW = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -441,13 +446,13 @@ class TestPublisher(unittest.TestCase):
         assert failed
 
     def test_query_all(self):
-        arguments = self.QUERY_ARGUMENTS
+        arguments = self.QUERY_ARGUMENTS_ALL
 
         message = self.publisher.publish_query(**arguments)
 
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
-        mocked.publish_install.assert_called_once_with(self.QUERY)
+        mocked.publish_install.assert_called_once_with(self.QUERY_ALL)
     def test_query_hw(self):
         arguments = self.QUERY_ARGUMENTS
 
