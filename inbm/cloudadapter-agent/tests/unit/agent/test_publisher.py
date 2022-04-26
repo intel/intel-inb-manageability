@@ -172,7 +172,7 @@ class TestPublisher(unittest.TestCase):
         
         
         self.QUERY_ARGUMENTS = {
-            "option": "all", "hw",
+            "option": "all", "hw"
         }
 
         self.QUERY_ALL = ('<?xml version="1.0" encoding="UTF-8"?>'
