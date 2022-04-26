@@ -199,7 +199,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS = {
             "option": "hw",
         }
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_FW = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -211,7 +211,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS = {
             "option": "fw",
         }
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_STATUS = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -223,7 +223,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS = {
             "option": "status",
         }
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_SECURITY = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -235,7 +235,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS = {
             "option": "security",
         }
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_OS = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -247,7 +247,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS = {
             "option": "os",
         }
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_GUID = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -259,7 +259,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS = {
             "option": "guid",
         }
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_VERSION = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -271,7 +271,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS = {
             "option": "version",
         }
-        self.QUERY = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_SWBOM = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
@@ -502,10 +502,10 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY)  
     def test_query_guid(self):
-        arguments = self.QUERY_ARGUMENTS
+        arguments = self.QUERY_ARGUMENTS_ALL
 
         message = self.publisher.publish_query(**arguments)
 
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
-        mocked.publish_install.assert_called_once_with(self.QUERY)
+        mocked.publish_install.assert_called_once_with(self.QUERY_GUID)
