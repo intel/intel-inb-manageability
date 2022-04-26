@@ -196,90 +196,90 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS_HW = {
             "option": "hw",
         }
-#         self.QUERY_FW = ('<?xml version="1.0" encoding="UTF-8"?>'
-#                       '<manifest>'
-#                         '<type>cmd</type>'
-#                         '<cmd>query</cmd>'
-#                         '<query>'
-#                             '<option>fw</option>'
-#                         '</query>'
-#                       '</manifest>')  # noqa: E127
+        self.QUERY_FW = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>fw</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "fw",
-#         }
-#         self.QUERY_STATUS = ('<?xml version="1.0" encoding="UTF-8"?>'
-#                       '<manifest>'
-#                         '<type>cmd</type>'
-#                         '<cmd>query</cmd>'
-#                         '<query>'
-#                             '<option>status</option>'
-#                         '</query>'
-#                       '</manifest>')  # noqa: E127
+        self.QUERY_ARGUMENTS_FW = {
+            "option": "fw",
+        }
+        self.QUERY_STATUS_STATUS = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>status</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "status",
-#         }
-#         self.QUERY_SECURITY = ('<?xml version="1.0" encoding="UTF-8"?>'
-#                       '<manifest>'
-#                         '<type>cmd</type>'
-#                         '<cmd>query</cmd>'
-#                         '<query>'
-#                             '<option>security</option>'
-#                         '</query>'
-#                       '</manifest>')  # noqa: E127
+        self.QUERY_ARGUMENTS_STATUS = {
+            "option": "status",
+        }
+        self.QUERY_SECURITY = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>security</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "security",
-#         }
-#         self.QUERY_OS = ('<?xml version="1.0" encoding="UTF-8"?>'
-#                       '<manifest>'
-#                         '<type>cmd</type>'
-#                         '<cmd>query</cmd>'
-#                         '<query>'
-#                             '<option>os</option>'
-#                         '</query>'
-#                       '</manifest>')  # noqa: E127
+        self.QUERY_ARGUMENTS_SECURITY = {
+            "option": "security",
+        }
+        self.QUERY_OS = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>os</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "os",
-#         }
-#         self.QUERY_GUID = ('<?xml version="1.0" encoding="UTF-8"?>'
-#                       '<manifest>'
-#                         '<type>cmd</type>'
-#                         '<cmd>query</cmd>'
-#                         '<query>'
-#                             '<option>guid</option>'
-#                         '</query>'
-#                       '</manifest>')  # noqa: E127
+        self.QUERY_ARGUMENTS_OS = {
+            "option": "os",
+        }
+        self.QUERY_GUID = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>guid</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "guid",
-#         }
-#         self.QUERY_VERSION = ('<?xml version="1.0" encoding="UTF-8"?>'
-#                       '<manifest>'
-#                         '<type>cmd</type>'
-#                         '<cmd>query</cmd>'
-#                         '<query>'
-#                             '<option>version</option>'
-#                         '</query>'
-#                       '</manifest>')  # noqa: E127
+        self.QUERY_ARGUMENTS_GUID = {
+            "option": "guid",
+        }
+        self.QUERY_VERSION = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>version</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "version",
-#         }
-#         self.QUERY_SWBOM = ('<?xml version="1.0" encoding="UTF-8"?>'
-#                       '<manifest>'
-#                         '<type>cmd</type>'
-#                         '<cmd>query</cmd>'
-#                         '<query>'
-#                             '<option>swbom</option>'
-#                         '</query>'
-#                       '</manifest>')  # noqa: E127
+        self.QUERY_ARGUMENTS_VERSION = {
+            "option": "version",
+        }
+        self.QUERY_SWBOM = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>swbom</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "swbom",
-#         }
+        self.QUERY_ARGUMENTS_SWBOM = {
+            "option": "swbom",
+        }
 
     def test_publish_manifest_succeed(self):
         manifest = "<manifest></mainfest>"
@@ -458,52 +458,52 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_HW)
-#     def test_query_fw(self):
-#         arguments = self.QUERY_ARGUMENTS
+    def test_query_fw(self):
+        arguments = self.QUERY_ARGUMENTS_FW
 
-#         message = self.publisher.publish_query(**arguments)
+        message = self.publisher.publish_query(**arguments)
 
-#         assert message == MESSAGE.QUERY
-#         mocked = self.MockBroker.return_value
-#         mocked.publish_install.assert_called_once_with(self.QUERY)
-#     def test_query_os(self):
-#         arguments = self.QUERY_ARGUMENTS
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_FW)
+    def test_query_os(self):
+        arguments = self.QUERY_ARGUMENTS_OS
 
-#         message = self.publisher.publish_query(**arguments)
+        message = self.publisher.publish_query(**arguments)
 
-#         assert message == MESSAGE.QUERY
-#         mocked = self.MockBroker.return_value
-#         mocked.publish_install.assert_called_once_with(self.QUERY)
-#     def test_query_status(self):
-#         arguments = self.QUERY_ARGUMENTS
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_OS)
+    def test_query_status(self):
+        arguments = self.QUERY_ARGUMENTS_STATUS
 
-#         message = self.publisher.publish_query(**arguments)
+        message = self.publisher.publish_query(**arguments)
 
-#         assert message == MESSAGE.QUERY
-#         mocked = self.MockBroker.return_value
-#         mocked.publish_install.assert_called_once_with(self.QUERY)   
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_STATUS)   
         
-#     def test_query_security(self):
-#         arguments = self.QUERY_ARGUMENTS
+    def test_query_security(self):
+        arguments = self.QUERY_ARGUMENTS_SECURITY
 
-#         message = self.publisher.publish_query(**arguments)
+        message = self.publisher.publish_query(**arguments)
 
-#         assert message == MESSAGE.QUERY
-#         mocked = self.MockBroker.return_value
-#         mocked.publish_install.assert_called_once_with(self.QUERY)  
-#     def test_query_swbom(self):
-#         arguments = self.QUERY_ARGUMENTS
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_SECURITY)  
+    def test_query_swbom(self):
+        arguments = self.QUERY_ARGUMENTS_SWBOM
 
-#         message = self.publisher.publish_query(**arguments)
+        message = self.publisher.publish_query(**arguments)
 
-#         assert message == MESSAGE.QUERY
-#         mocked = self.MockBroker.return_value
-#         mocked.publish_install.assert_called_once_with(self.QUERY)  
-#     def test_query_guid(self):
-#         arguments = self.QUERY_ARGUMENTS_ALL
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_SWBOM)  
+    def test_query_guid(self):
+        arguments = self.QUERY_ARGUMENTS_GUID
 
-#         message = self.publisher.publish_query(**arguments)
+        message = self.publisher.publish_query(**arguments)
 
-#         assert message == MESSAGE.QUERY
-#         mocked = self.MockBroker.return_value
-#         mocked.publish_install.assert_called_once_with(self.QUERY_GUID)
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_GUID)
