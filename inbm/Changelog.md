@@ -8,13 +8,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Fixed
  - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
- - RTC 500237 - Remove DBS messages from node TC in INBC
  - HSD 15011009937 - Remove POTA Failure error on Success
  - HSD 15010766920 - Fix Telemetry apparmor issue on Yocto
 
 ### Added
 - RTC 508495 Support INBC Config Append command
 - RTC 508497 Support INBC Config Remove command
+- RTC 500237 - Remove DBS messages from appearing in INBC
 
 ## 3.0.10 - 2022-03-28
 
@@ -22,7 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 509991 Updated docker stats dashboard to display units for readability.
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
- - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+ - HSD 15010868047 - "Unsupported OS" when running POTA via INBC in CentOS container
  - RTC 511101 - Handle the null char in a URI
  - HSD 15010918893 INBM does not reject unsupported file type
  - Fixed new build error discovered by clearing docker cache and rebuilding
