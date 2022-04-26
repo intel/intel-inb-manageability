@@ -9,9 +9,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
  - RTC 500237 - Remove DBS messages from node TC in INBC
+ - HSD 15011009937 - Remove POTA Failure error on Success
+ - HSD 15010766920 - Fix Telemetry apparmor issue on Yocto
 
 ### Added
 - RTC 508495 Support INBC Config Append command
+- RTC 508497 Support INBC Config Remove command
 
 ## 3.0.10 - 2022-03-28
 

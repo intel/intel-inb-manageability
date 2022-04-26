@@ -722,79 +722,28 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 The query command can be used to gather information about the system and the Vision cards.
 
-| XML Tags                                 | Definition             | Required/Optional | Notes                         |
-|:-----------------------------------------|:-----------------------|:-----------------:|:------------------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` |                        |         R         |                               |
-| `<manifest>`                             | `<manifest>`           |         R         ||
-| `<type><type>`                           | `<type>cmd</type>`     |         R         | will always be 'cmd'          |
-| `<cmd></cmd>`                            | `<cmd>query</cmd>`     |         R         | will always be 'query'        |
-| `<query>`                                | `<query>`              |         R         |                               |
-| `<option></option>`                      | `<option>all</option>` |         R         | [Available Options](Query.md) |
-| `</query>`                               | `</query>`             |         R         |                               |
-| `</manifest>`                            | `</manifest>`          |         R         |                               |
+| XML Tags                                 | Definition                     | Required/Optional | Notes                         |
+|:-----------------------------------------|:-------------------------------|:-----------------:|:------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` |                                |         R         |                               |
+| `<manifest>`                             | `<manifest>`                   |         R         |                               |
+| `<type><type>`                           | `<type>cmd</type>`             |         R         | will always be 'cmd'          |
+| `<cmd></cmd>`                            | `<cmd>query</cmd>`             |         R         | will always be 'query'        |
+| `<query>`                                | `<query>`                      |         R         |                               |
+| `<option></option>`                      | `<option>all</option>`         |         R         | [Available Options](Query.md) |
+| `<targetType></targetType>`              | `<targetType>node</targetType>`|         O         | [vision, node] Used when updating either the host of vision cards (host) or vision cards (node) |
+| `<targets></targets>`                    | `<targets><target>389C0A</target></targets>` |         O         | Used when targetType=node.  Designates the Ids of the nodes to update    
+| `</query>`                               | `</query>`                     |         R         |                               |
+| `</manifest>`                            | `</manifest>`                  |         R         |                               |
 
 
-#### Example of swbom query manifest examples
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd\</type>
-    <cmd>query</cmd>
-    <query>
-        <option>swbom</option>
-    </query>
-</manifest>
-```
+## Query types supported on Edge and HDDL platforms
+  
+| Supported on Edge only  | Supported on HDDL only | Supported on both Edge and HDDL |
+|:------------------------|:-----------------------|:-------------------------------:|
+|  swbom                  | security, status, guid | all, hw, fw, os, version        |  
 
-#### Example of hw query manifest 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>hw</option>
-    </query>
-</manifest>
-```
 
-#### Example of fw query manifest 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>fw</option>
-    </query>
-</manifest>
-```
-
-#### Example of os query manifest 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>os</option>
-    </query>
-</manifest>
-```
-
-#### Example of version query manifest 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>version</option>
-    </query>
-</manifest>
-```
-
-#### Example of all query manifest 
+#### Example of all query manifest example on Edge device 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -806,6 +755,297 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
+#### Example of all query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>all</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of all query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>all</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of hw query manifest example on Edge device 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>hw</option>
+    </query>
+</manifest>
+```
+
+#### Example of hw query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>hw</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of hw query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>hw</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of fw query manifest example on Edge device 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>fw</option>
+    </query>
+</manifest>
+```
+
+#### Example of fw query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>fw</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of fw query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>fw</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of os query manifest example on Edge device 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>os</option>
+    </query>
+</manifest>
+```
+
+#### Example of os query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>os</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of os query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>os</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of version query manifest example on Edge device 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>version</option>
+    </query>
+</manifest>
+```
+
+#### Example of version query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>version</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of version query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>version</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of security query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>security</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of security query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>security</option>
+        <targetType>node</targetType>
+        <targets>
+	    <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of status query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>status</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of status query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>status</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of guid query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>guid</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of guid query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>guid</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+        </targets>
+    </query>
+</manifest>
+```
+
+#### Example of swbom query manifest on Edge device
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>swbom</option>
+    </query>
+</manifest>
+```
 
 ## Configuration Settings
 
