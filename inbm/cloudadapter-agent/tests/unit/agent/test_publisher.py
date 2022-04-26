@@ -181,8 +181,8 @@ class TestPublisher(unittest.TestCase):
                         '</query>'
                       '</manifest>')  # noqa: E127
 
-        self.QUERY_ARGUMENTS = {
-            "option": "all", "hw",
+        self.QUERY_ARGUMENTS_ALL = {
+            "option": "all", 
          }
 #         self.QUERY_HW = ('<?xml version="1.0" encoding="UTF-8"?>'
 #                       '<manifest>'
@@ -443,7 +443,7 @@ class TestPublisher(unittest.TestCase):
         assert failed
 
     def test_query_all(self):
-        arguments = self.QUERY_ARGUMENTS
+        arguments = self.QUERY_ARGUMENTS_ALL
 
         message = self.publisher.publish_query(**arguments)
 
