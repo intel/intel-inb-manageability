@@ -485,6 +485,7 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY)   
+        
     def test_query_security(self):
         arguments = self.QUERY_ARGUMENTS
 
