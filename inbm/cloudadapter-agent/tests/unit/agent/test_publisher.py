@@ -184,18 +184,18 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS_ALL = {
             "option": "all", 
          }
-#         self.QUERY_HW = ('<?xml version="1.0" encoding="UTF-8"?>'
-#                       '<manifest>'
-#                         '<type>cmd</type>'
-#                         '<cmd>query</cmd>'
-#                         '<query>'
-#                             '<option>hw</option>'
-#                         '</query>'
-#                       '</manifest>')  # noqa: E127
+        self.QUERY_HW = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>hw</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "hw",
-#         }
+        self.QUERY_ARGUMENTS_HW = {
+            "option": "hw",
+        }
 #         self.QUERY_FW = ('<?xml version="1.0" encoding="UTF-8"?>'
 #                       '<manifest>'
 #                         '<type>cmd</type>'
@@ -450,14 +450,14 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_ALL)
-#     def test_query_hw(self):
-#         arguments = self.QUERY_ARGUMENTS
+    def test_query_hw(self):
+        arguments = self.QUERY_ARGUMENTS_HW
 
-#         message = self.publisher.publish_query(**arguments)
+        message = self.publisher.publish_query(**arguments)
 
-#         assert message == MESSAGE.QUERY
-#         mocked = self.MockBroker.return_value
-#         mocked.publish_install.assert_called_once_with(self.QUERY)
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_HW)
 #     def test_query_fw(self):
 #         arguments = self.QUERY_ARGUMENTS
 
