@@ -170,10 +170,7 @@ class TestPublisher(unittest.TestCase):
                                     '</config>'
                                 '</manifest>')  # noqa: E127
         
-        
-        self.QUERY_ARGUMENTS = {
-            "option": "all",
-        }
+
 
         self.QUERY_ALL = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
@@ -184,9 +181,9 @@ class TestPublisher(unittest.TestCase):
                         '</query>'
                       '</manifest>')  # noqa: E127
 
-#         self.QUERY_ARGUMENTS = {
-#             "option": "all",
-# #         }
+        self.QUERY_ARGUMENTS = {
+            "option": "all",
+         }
 #         self.QUERY_HW = ('<?xml version="1.0" encoding="UTF-8"?>'
 #                       '<manifest>'
 #                         '<type>cmd</type>'
