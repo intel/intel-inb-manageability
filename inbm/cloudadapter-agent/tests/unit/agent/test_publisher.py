@@ -180,7 +180,7 @@ class TestPublisher(unittest.TestCase):
                       '</manifest>')  # noqa: E127
 
         self.QUERY_ARGUMENTS = {
-            "option": "all", "hw", "fw","guid","os","security","status","swbom", "version",
+            "option": "all",
         }
 
     def test_publish_manifest_succeed(self):
