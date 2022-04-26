@@ -450,6 +450,7 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_ALL)
+        
     def test_query_hw(self):
         arguments = self.QUERY_ARGUMENTS_HW
 
@@ -458,6 +459,7 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_HW)
+        
     def test_query_fw(self):
         arguments = self.QUERY_ARGUMENTS_FW
 
@@ -466,6 +468,7 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_FW)
+        
     def test_query_os(self):
         arguments = self.QUERY_ARGUMENTS_OS
 
@@ -482,7 +485,8 @@ class TestPublisher(unittest.TestCase):
 
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
-        mocked.publish_install.assert_called_once_with(self.QUERY_SECURITY)  
+        mocked.publish_install.assert_called_once_with(self.QUERY_SECURITY)
+        
     def test_query_swbom(self):
         arguments = self.QUERY_ARGUMENTS_SWBOM
 
@@ -490,7 +494,8 @@ class TestPublisher(unittest.TestCase):
 
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
-        mocked.publish_install.assert_called_once_with(self.QUERY_SWBOM)  
+        mocked.publish_install.assert_called_once_with(self.QUERY_SWBOM)
+        
     def test_query_guid(self):
         arguments = self.QUERY_ARGUMENTS_GUID
 
@@ -499,6 +504,7 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_GUID)
+        
     def test_query_status(self):
         arguments = self.QUERY_ARGUMENTS_STATUS
 
