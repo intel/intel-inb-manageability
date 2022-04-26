@@ -175,12 +175,12 @@ class TestPublisher(unittest.TestCase):
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
                         '<query>'
-                            '<option>fw</option>'
+                            '<option>all</option>'
                         '</query>'
                       '</manifest>')  # noqa: E127
 
         self.QUERY_ARGUMENTS = {
-            "option": "fw",
+            "option": "all", "hw", "fw","guid","os","security","status","swbom", "version"
         }
 
     def test_publish_manifest_succeed(self):
@@ -344,7 +344,7 @@ class TestPublisher(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_query_fw(self):
+    def test_query_all(self):
         arguments = self.QUERY_ARGUMENTS
 
         message = self.publisher.publish_query(**arguments)
