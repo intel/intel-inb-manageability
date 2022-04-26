@@ -474,14 +474,6 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_OS)
-    def test_query_status(self):
-        arguments = self.QUERY_ARGUMENTS_STATUS
-
-        message = self.publisher.publish_query(**arguments)
-
-        assert message == MESSAGE.QUERY
-        mocked = self.MockBroker.return_value
-        mocked.publish_install.assert_called_once_with(self.QUERY_STATUS)   
         
     def test_query_security(self):
         arguments = self.QUERY_ARGUMENTS_SECURITY
@@ -507,3 +499,11 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_GUID)
+    def test_query_status(self):
+        arguments = self.QUERY_ARGUMENTS_STATUS
+
+        message = self.publisher.publish_query(**arguments)
+
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_STATUS)
