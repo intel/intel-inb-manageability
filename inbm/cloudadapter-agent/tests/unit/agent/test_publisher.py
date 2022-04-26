@@ -171,7 +171,7 @@ class TestPublisher(unittest.TestCase):
                                 '</manifest>')  # noqa: E127
         
         
-         self.QUERY_ARGUMENTS_ALL = {
+        self.QUERY_ARGUMENTS_ALL = {
              "option": "all", "guid"
          }
 
