@@ -82,6 +82,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
     @param password: password  provided for download
     """
 
+    logger.info("Test=======================line 85")
     if not isinstance(uri, CanonicalUri):
         raise DispatcherException(
             "Internal error: URI improperly passed to is_enough_space_to_download function")
