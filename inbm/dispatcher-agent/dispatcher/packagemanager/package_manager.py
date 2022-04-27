@@ -101,8 +101,8 @@ def is_enough_space_to_download(uri: CanonicalUri,
         with requests.get(uri.value, auth=auth, verify=get_platform_ca_certs(), stream=True) as response:
             logger.info("Test==================line 101")
             logger.debug(response)
-            print(response.raise_for_status())
-            #response.raise_for_status()
+            #print(response.raise_for_status())
+            response.raise_for_status()
             logger.info("Test==================line 103")
             # Read Content-Length header
             try:
@@ -119,9 +119,11 @@ def is_enough_space_to_download(uri: CanonicalUri,
                     if chunk:
                         content_length += len(chunk)
     except HTTPError as e:
+        logger.info("Test==================line 122")
         raise DispatcherException('Status code for ' + uri.value +
                                   ' is ' + str(e.response.status_code))
     except Exception as e:
+        logger.info("Test==================line 126")
         raise DispatcherException('Exception checking package content size: ' + str(e))
 
     logger.debug("Content-length: " + repr(content_length))
