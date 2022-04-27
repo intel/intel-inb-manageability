@@ -375,6 +375,7 @@ def get(url: CanonicalUri,
     code = CODE_BAD_REQUEST
     message = "Generic Error"
 
+    logger.info("Test=======================line 378")
     if not isinstance(url, CanonicalUri):
         raise DispatcherException("Internal error: uri improperly passed to download function")
 
