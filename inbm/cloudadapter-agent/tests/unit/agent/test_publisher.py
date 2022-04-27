@@ -275,7 +275,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS_SWBOM = {
             "option": "swbom",
         }
-                self.QUERY_STATUS = ('<?xml version="1.0" encoding="UTF-8"?>'
+        self.QUERY_STATUS = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
                         '<type>cmd</type>'
                         '<cmd>query</cmd>'
