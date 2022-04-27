@@ -275,6 +275,18 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS_SWBOM = {
             "option": "swbom",
         }
+                self.QUERY_STATUS = ('<?xml version="1.0" encoding="UTF-8"?>'
+                      '<manifest>'
+                        '<type>cmd</type>'
+                        '<cmd>query</cmd>'
+                        '<query>'
+                            '<option>status</option>'
+                        '</query>'
+                      '</manifest>')  # noqa: E127
+
+        self.QUERY_ARGUMENTS_STATUS = {
+            "option": "status",
+        }
 
     def test_publish_manifest_succeed(self):
         manifest = "<manifest></mainfest>"
@@ -499,3 +511,12 @@ class TestPublisher(unittest.TestCase):
         assert message == MESSAGE.QUERY
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_GUID)
+ 
+    def test_query_status(self):
+        arguments = self.QUERY_ARGUMENTS_STATUS
+
+        message = self.publisher.publish_query(**arguments)
+
+        assert message == MESSAGE.QUERY
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.QUERY_STATUS)
