@@ -101,12 +101,15 @@ def is_enough_space_to_download(uri: CanonicalUri,
             response.raise_for_status()
             # Read Content-Length header
             try:
+                logger.info("Test Print ================1")
                 content_length = int(response.headers.get("Content-Length", "0"))
             except ValueError:
+                logger.info("Test Print ================2")
                 content_length = 0
 
             if content_length == 0:
                 # Stream file to measure the file size
+                logger.info("Test Print ================3")
                 for chunk in response.iter_content(chunk_size=16384):
                     if chunk:
                         content_length += len(chunk)
@@ -118,9 +121,13 @@ def is_enough_space_to_download(uri: CanonicalUri,
 
     logger.debug("Content-length: " + repr(content_length))
     file_size: int = int(content_length)
+    logger.info("Test Print ================5")
+    logger.debug(file_size)
     if destination_repo.exists():
+        logger.info("Test Print ================4")
         get_free_space = destination_repo.get_free_space()
         free_space: int = int(get_free_space)
+        logger.debug(free_space)
     else:
         raise DispatcherException("Repository does not exist : " +
                                   destination_repo.get_repo_path())
