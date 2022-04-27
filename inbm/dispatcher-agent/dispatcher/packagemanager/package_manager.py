@@ -97,9 +97,11 @@ def is_enough_space_to_download(uri: CanonicalUri,
     try:
         env_proxies = get_environ_proxies(uri.value)
         logger.debug("Proxies: " + str(env_proxies))
+        logger.debug(uri.value)
         with requests.get(uri.value, auth=auth, verify=get_platform_ca_certs(), stream=True) as response:
             logger.info("Test==================line 101")
-            logger.debug(f'{response.raise_for_status()}')
+            logger.debug(response)
+            logger.debug(response.raise_for_status())
             response.raise_for_status()
             logger.info("Test==================line 103")
             # Read Content-Length header
