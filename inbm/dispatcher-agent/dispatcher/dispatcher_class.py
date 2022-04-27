@@ -807,6 +807,8 @@ class Dispatcher(WindowsService):
                 if cleaned_payload is None:
                     logger.error("No ubuntuAptSource selected!")
                 else:
+                    logger.debug("Test print........line 810")
+                    logger.debug(cleaned_payload)
                     self.sota_repos = cleaned_payload
 
         try:
