@@ -64,6 +64,7 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
 
     try:
         logger.debug("Test=================================line 66")
+        logger.debug(uri)
         enough_space = is_enough_space_to_download(
             uri, DirectoryRepo(str(CACHE)), username, password)
         logger.debug(enough_space)
