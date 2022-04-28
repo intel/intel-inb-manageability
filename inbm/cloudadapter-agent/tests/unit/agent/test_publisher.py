@@ -170,6 +170,9 @@ class TestPublisher(unittest.TestCase):
                                     '</config>'
                                 '</manifest>')  # noqa: E127
 
+        self.QUERY_ARGUMENTS = {
+            "option": "all",
+        }
 
         self.QUERY_ALL = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
@@ -440,6 +443,13 @@ class TestPublisher(unittest.TestCase):
         arguments.update(cmd="invalid")
 
         self.assertRaises(ValueError, self.publisher.publish_config, **arguments)
+
+    def test_publish_query_with_invalid_option_fail(self):
+        arguments = self.QUERY_ARGUMENTS
+        arguments.update(option="invalid")
+
+        self.assertRaises(ValueError, self.publisher.publish_query, **arguments)
+
 
     def test_publish_config_without_arguments_fail(self):
         failed = False
