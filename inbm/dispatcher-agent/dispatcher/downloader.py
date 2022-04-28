@@ -10,7 +10,8 @@ from typing import Optional
 from urllib.parse import urlsplit
 
 from dispatcher.dispatcher_exception import DispatcherException
-from dispatcher.packagemanager.package_manager import get, verify_source, is_enough_space_to_download, validate_uri
+from dispatcher.packagemanager.package_manager import get, verify_source, is_enough_space_to_download
+#from dispatcher.packagemanager.package_manager import get, verify_source, is_enough_space_to_download, validate_uri
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from inbm_common_lib.utility import validate_file_type, remove_file
 from inbm_common_lib.utility import CanonicalUri
@@ -63,7 +64,7 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
             'Bad request: username/password will not be processed on HTTP server')
 
     """ Validata URI"""
-    validate_uri(uri, username, password);
+    #validate_uri(uri, username, password);
     try:
         logger.debug("Test=================================line 66")
         logger.debug(uri)
@@ -72,7 +73,8 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
         logger.debug(enough_space)
     except DispatcherException as e:
         logger.info("Test=======================line 71")
-        raise DispatcherException("Errorrr Error checking free space to download") from e
+        raise DispatcherException(e)
+        #raise DispatcherException("Errorrr Error checking free space to download") from e
 
     if not enough_space:
         err_msg = " Insufficient free space available on " + repo.get_repo_path() + \
