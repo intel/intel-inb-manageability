@@ -75,15 +75,16 @@ class DebianBasedSetupHelper(SetupHelper):
         @param payload: String, http url value retrieved from config manager
         @param filename: file name for sources
         """
-        logger.debug("")
         logger.debug("Test Print ================================78")
+        logger.debug(payload)
         temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
 
+        logger.debug(temp_payload)
         # solves bug 38278
         if not temp_payload.startswith('http'):
+            logger.debug("Test Print ================================84")
             return
 
-        logger.debug("Test Print ================================85")
         apt_file = fileinput.input(filename, inplace=True, backup='.bak')
         for line in apt_file:
             if line.startswith("#") or line.startswith("\n"):
