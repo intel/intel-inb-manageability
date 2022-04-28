@@ -131,17 +131,23 @@ def is_enough_space_to_download(uri: CanonicalUri,
 
             if content_length == 0:
                 # Stream file to measure the file size
-                logger.info("Test Print ================3")
-                for chunk in response.iter_content(chunk_size=16384):
-                    if chunk:
-                        content_length += len(chunk)
+                try:
+                    logger.info("Test Print ================3")
+                    for chunk in response.iter_content(chunk_size=16384):
+                        if chunk:
+                            content_length += len(chunk)
+                            
+                except Exception as e:
+                    logger.info("Test==================line 141")
+                    raise DispatcherException('Exception checking package content size: ' + str(e))
     except HTTPError as e:
-        logger.info("Test==================line 122")
+        logger.info("Test==================line 144")
         raise DispatcherException('Status code for ' + uri.value +
                                   ' is ' + str(e.response.status_code))
     except Exception as e:
-        logger.info("Test==================line 126")
-        raise DispatcherException('Exception checking package content size: ' + str(e))
+        logger.info("Test==================line 148")
+        raise DispatcherException('Status code for ' + uri.value +
+                                  ' is ' + str(e.response.status_code))
 
     logger.debug("Content-length: " + repr(content_length))
     file_size: int = int(content_length)
