@@ -441,6 +441,13 @@ class TestPublisher(unittest.TestCase):
 
         self.assertRaises(ValueError, self.publisher.publish_config, **arguments)
 
+    def test_publish_query_with_invalid_option_fail(self):
+        arguments = self.CONFIG_ARGUMENTS
+        arguments.update(option="invalid")
+
+        self.assertRaises(ValueError, self.publisher.publish_option, **arguments)
+
+
     def test_publish_config_without_arguments_fail(self):
         failed = False
         try:
