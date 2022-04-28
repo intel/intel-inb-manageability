@@ -77,8 +77,9 @@ class DebianBasedSetupHelper(SetupHelper):
         """
         logger.debug("Test Print ================================78")
         logger.debug(payload)
-        #temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
-        temp_payload = payload
+        test_payload = payload;
+        temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
+        temp_payload = test_payload
 
         logger.debug(temp_payload)
         # solves bug 38278
