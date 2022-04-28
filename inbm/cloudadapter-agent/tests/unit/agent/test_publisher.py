@@ -445,7 +445,7 @@ class TestPublisher(unittest.TestCase):
         arguments = self.CONFIG_ARGUMENTS
         arguments.update(option="invalid")
 
-        self.assertRaises(ValueError, self.publisher.publish_option, **arguments)
+        self.assertRaises(ValueError, self.publisher.publish_query, **arguments)
 
 
     def test_publish_config_without_arguments_fail(self):
