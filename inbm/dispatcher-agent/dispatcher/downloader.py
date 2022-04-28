@@ -62,6 +62,8 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
         raise DispatcherException(
             'Bad request: username/password will not be processed on HTTP server')
 
+    """ Validata URI"""
+    validate_uri(uri);
     try:
         logger.debug("Test=================================line 66")
         logger.debug(uri)

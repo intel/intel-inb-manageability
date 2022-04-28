@@ -67,6 +67,21 @@ def get_platform_ca_certs() -> Union[bool, str]:
     else:
         return LINUX_CA_FILE
 
+def validate_uri(uri: CanonicalUri) -> bool:
+    try:
+        logger.debug("Proxies: " + str(env_proxies))
+        logger.debug(uri.value)
+        with requests.get(uri.value, auth=auth, verify=get_platform_ca_certs(), stream=True) as response:
+            logger.info("Test==================line 75")
+            logger.debug(response)
+            #print(response.raise_for_status())
+            response.raise_for_status()
+     
+    except HTTPError as e:
+        logger.info("Test==================line 81")
+        raise DispatcherException('Status code for ' + uri.value + ' is ' + str(e.response.status_code))
+
+    return True
 
 def is_enough_space_to_download(uri: CanonicalUri,
                                 destination_repo: IRepo,
@@ -82,7 +97,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
     @param password: password  provided for download
     """
 
-    logger.info("Test=======================line 85")
+    logger.info("Test=======================line 98")
     if not isinstance(uri, CanonicalUri):
         raise DispatcherException(
             "Internal error: URI improperly passed to is_enough_space_to_download function")
@@ -99,11 +114,11 @@ def is_enough_space_to_download(uri: CanonicalUri,
         logger.debug("Proxies: " + str(env_proxies))
         logger.debug(uri.value)
         with requests.get(uri.value, auth=auth, verify=get_platform_ca_certs(), stream=True) as response:
-            logger.info("Test==================line 101")
+            logger.info("Test==================line 115")
             logger.debug(response)
             #print(response.raise_for_status())
             response.raise_for_status()
-            logger.info("Test==================line 103")
+            logger.info("Test==================line 119")
             # Read Content-Length header
             try:
                 logger.info("Test Print ================1")
