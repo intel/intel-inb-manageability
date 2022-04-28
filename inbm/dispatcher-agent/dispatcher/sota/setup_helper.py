@@ -66,6 +66,7 @@ class DebianBasedSetupHelper(SetupHelper):
         """
         logger.debug("")
         if self._dispatcher_callbacks.sota_repos:
+            logger.debug("Test Print ================================69")
             self.update_sources(self._dispatcher_callbacks.sota_repos)
         return True  # FIXME why do we always return True?
 
@@ -75,12 +76,14 @@ class DebianBasedSetupHelper(SetupHelper):
         @param filename: file name for sources
         """
         logger.debug("")
+        logger.debug("Test Print ================================78")
         temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
 
         # solves bug 38278
         if not temp_payload.startswith('http'):
             return
 
+        logger.debug("Test Print ================================85")
         apt_file = fileinput.input(filename, inplace=True, backup='.bak')
         for line in apt_file:
             if line.startswith("#") or line.startswith("\n"):
@@ -89,6 +92,7 @@ class DebianBasedSetupHelper(SetupHelper):
             line_items = line.split()
             need_change = [True if x.find(payload) == -1 else False for x in line_items][0]
             if need_change:
+                logger.debug("Test Print ================================94")
                 source_url_list = [line_items.index(x) if x.startswith(
                     "http") else -1 for x in line_items]
                 source_url_list.sort()
