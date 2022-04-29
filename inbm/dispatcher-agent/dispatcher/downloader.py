@@ -10,7 +10,7 @@ from typing import Optional
 from urllib.parse import urlsplit
 
 from dispatcher.dispatcher_exception import DispatcherException
-from dispatcher.packagemanager.package_manager import get, verify_source, is_enough_space_to_download, validate_uri
+from dispatcher.packagemanager.package_manager import get, verify_source, is_enough_space_to_download
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from inbm_common_lib.utility import validate_file_type, remove_file
 from inbm_common_lib.utility import CanonicalUri

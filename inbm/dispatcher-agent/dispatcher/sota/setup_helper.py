@@ -77,11 +77,11 @@ class DebianBasedSetupHelper(SetupHelper):
         """
         logger.debug("Test Print ================================78")
         logger.debug(payload)
-        test_payload = payload;
-        temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
+        #test_payload = payload;
+        #temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
         #temp_payload = payload.split(':', 1)[0].strip(' \t\n\r')
+        temp_payload = payload.strip()
         #temp_payload = test_payload.strip()
-        temp_payload = test_payload.strip()
         logger.debug(temp_payload)
         # solves bug 38278
         if not temp_payload.startswith('http'):
