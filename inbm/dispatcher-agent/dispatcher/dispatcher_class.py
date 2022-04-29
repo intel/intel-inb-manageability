@@ -647,12 +647,17 @@ class Dispatcher(WindowsService):
                 # Release lock
                 latch.count_down()
 
+        logger.debug("=================Test print==========line 650")
+        logger.debug(cmd.response)
         cmd = ConfigCommand(cmd_type, path=file_path,
                             value_string=value_string)
+        logger.debug(cmd.response)
 
         self._broker.mqtt_subscribe(cmd.create_response_topic(), on_command)
+        logger.debug(cmd.response)
         self._broker.mqtt_publish(cmd.create_request_topic(), cmd.create_payload())
 
+        logger.debug(cmd.response)
         latch.await_()
         if cmd.response is None and cmd_type != 'load':
             self._telemetry('Failure in fetching element requested for'
