@@ -634,21 +634,20 @@ class Dispatcher(WindowsService):
         latch = CountDownLatch(1)
         logger.debug(" ")
 
-    def on_command(topic: str, payload: str, qos: int) -> None:
-        logger.info('Message received: %s on topic: %s', payload, topic)
+        def on_command(topic: str, payload: str, qos: int) -> None:
+            logger.info('Message received: %s on topic: %s', payload, topic)
 
-        try:
-            cmd.response = json.loads(payload)
+            try:
+                cmd.response = json.loads(payload)
 
-        except ValueError as error:
-            logger.error('Unable to parse payload: %s', str(error))
+            except ValueError as error:
+                logger.error('Unable to parse payload: %s', str(error))
 
-        finally:
-            # Release lock
-            latch.count_down()
+            finally:
+                # Release lock
+                latch.count_down()
 
         logger.debug("=================Test print==========line 650")
-        logger.debug(cmd.response)
         cmd = ConfigCommand(cmd_type, path=file_path,
                             value_string=value_string)
         logger.debug(cmd.response)
