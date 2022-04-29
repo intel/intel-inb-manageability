@@ -19,7 +19,6 @@ class ConfigCommand:
     """
 
     def __init__(self, command: str, path: str = None, value: str = None, header_string: str = None, value_string: str = None) -> None:
-        logger.debug("=============Test print===============22")
         self.command = command
         self._id = self._create_request_id()
         self._path = path
@@ -41,7 +40,7 @@ class ConfigCommand:
 
         @return: String representing request topic
         """
-        logger.debug("=============Test print===============44")
+        print("=============Test print===============44")
         return CONFIGURATION_CMD_CHANNEL + self.command
 
     def create_response_topic(self) -> str:
@@ -49,7 +48,7 @@ class ConfigCommand:
 
         @return: String representing response topic
         """
-        logger.debug("=============Test print===============52")
+        print("=============Test print===============52")
         return CONFIGURATION_RESP_CHANNEL + self._id
 
     def create_payload(self) -> str:
@@ -57,13 +56,13 @@ class ConfigCommand:
 
         @return: JSON payload [cmd, id, path]
         """
-        logger.debug("=============Test print===============60")
+        print("=============Test print===============60")
 
         if self._value_string is None and self._path is None:
             raise ValueError
 
         payload = {'cmd': self.command, 'id': self._id, 'path': self._path, 'value': self._value,
                    'headers': self._header, 'valueString': self._value_string}
-        logger.debug(payload)    
+        print(payload)    
 
         return json.dumps(payload)
