@@ -66,24 +66,6 @@ def get_platform_ca_certs() -> Union[bool, str]:
         return True
     else:
         return LINUX_CA_FILE
-"""
-def validate_uri(uri: CanonicalUri, username: str = None, password: str = None) -> None:
-    auth: Optional[Tuple[str, str]] = None
-    if username and password and uri.value.startswith("https://"):
-        auth = (username, password)
-
-    try:
-        logger.debug(uri.value)
-        with requests.get(uri.value, auth=auth, verify=get_platform_ca_certs(), stream=True) as response:
-            logger.info("Test==================line 75")
-            logger.debug(response)
-            #print(response.raise_for_status())
-            response.raise_for_status()
-     
-    except HTTPError as e:
-        logger.info("Test==================line 81")
-        raise DispatcherException('Status code for ' + uri.value + ' is ' + str(e.response.status_code))
-"""
 
 def is_enough_space_to_download(uri: CanonicalUri,
                                 destination_repo: IRepo,
