@@ -28,7 +28,8 @@ from future.moves.urllib.parse import urlparse
 from inbm_common_lib.utility import CanonicalUri, canonicalize_uri
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_lib.count_down_latch import CountDownLatch
-from requests import HTTPError, ProxyError
+from requests import HTTPError
+from requests.exceptions import ProxyError
 from requests.utils import get_environ_proxies
 
 from .constants import LINUX_CA_FILE
