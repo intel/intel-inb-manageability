@@ -124,6 +124,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
                                   ' is ' + str(e.response.status_code))
     except Exception as e:
         logger.info("Test==================line 148")
+        logger.debug(type(e))
         raise DispatcherException(e)
 
     logger.debug("Content-length: " + repr(content_length))
