@@ -145,7 +145,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
     #return True if free_space > file_size else False
     if free_space > file_size:
         return True;
-    else
+    else:
         raise DispatcherException("Error No fress space : ")
 
 def verify_signature(signature: str,
