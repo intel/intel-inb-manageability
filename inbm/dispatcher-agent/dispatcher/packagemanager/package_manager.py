@@ -28,7 +28,7 @@ from future.moves.urllib.parse import urlparse
 from inbm_common_lib.utility import CanonicalUri, canonicalize_uri
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_lib.count_down_latch import CountDownLatch
-from requests import HTTPError
+from requests import HTTPError, ProxyError
 from requests.utils import get_environ_proxies
 
 from .constants import LINUX_CA_FILE
@@ -122,6 +122,10 @@ def is_enough_space_to_download(uri: CanonicalUri,
         logger.info("Test==================line 144")
         raise DispatcherException('Status code for ' + uri.value +
                                   ' is ' + str(e.response.status_code))
+    except ProxyError as e:
+        logger.info("Test==================line 144")
+        raise DispatcherException('Proxy Error ' + uri.value +
+                                  ' is ' + str(e))
     except Exception as e:
         logger.info("Test==================line 148")
         logger.debug(type(e))
