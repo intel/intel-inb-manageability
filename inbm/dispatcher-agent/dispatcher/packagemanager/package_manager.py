@@ -122,16 +122,19 @@ def is_enough_space_to_download(uri: CanonicalUri,
                             
     except HTTPError as e:
         logger.info("Test==================line 144")
-        raise DispatcherException('Status code for ' + uri.value +
+        raise DispatcherException('Invalid URI: ' + uri.value +
                                   ' is ' + str(e.response.status_code))
-    except ProxyError as e:
-        logger.info("Test==================line 144")
-        raise DispatcherException('Proxy Error ' + uri.value +
+#    except ProxyError as e:
+#        logger.info("Test==================line 144")
+#        raise DispatcherException('Proxy Error: ' + uri.value +
                                   ' is ' + str(e))
     except Exception as e:
         logger.info("Test==================line 148")
-        logger.debug(type(e))
-        raise DispatcherException(e)
+        if type(e).find("ProxyError"): 
+            raise DispatcherException('Proxy Error: ' + uri.value +
+                                      ' is ' + str(e))
+        else:
+            raise DispatcherException(e)
 
     logger.debug("Content-length: " + repr(content_length))
     file_size: int = int(content_length)
@@ -149,12 +152,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
     logger.debug("get_free_space: " + repr(get_free_space))
     logger.debug("Free space available on destination_repo is " + repr(free_space))
     logger.debug("Free space needed on destination repo is " + repr(file_size))
-    #return True if free_space > file_size else raise DispatcherException("Error No fress space : ")
-    if free_space > file_size:
-        return True;
-    else:
-        #return False
-        raise DispatcherException("Error checking free space to download")
+    return True if free_space > file_size else False
 
 def verify_signature(signature: str,
                      path_to_file: str,
