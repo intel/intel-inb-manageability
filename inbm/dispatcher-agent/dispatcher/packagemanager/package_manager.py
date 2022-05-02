@@ -125,8 +125,8 @@ def is_enough_space_to_download(uri: CanonicalUri,
         raise DispatcherException('Invalid URI: ' + uri.value +
                                   ' is ' + str(e.response.status_code))
    
-    except ProxyError as e:
-        raise DispatcherException('Proxy Error: ' + uri.value + ' is ' + str(e))
+    #except ProxyError as e:
+    #    raise DispatcherException('Proxy Error: ' + uri.value + ' is ' + str(e))
 
     except Exception as e:
         raise DispatcherException(e)
