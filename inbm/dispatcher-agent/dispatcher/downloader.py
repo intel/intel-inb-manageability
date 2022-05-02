@@ -71,7 +71,7 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
     except DispatcherException as e:
         logger.info("Test=======================line 71")
         raise DispatcherException(e)
-        #raise DispatcherException("Errorrr Error checking free space to download") from e
+        #raise DispatcherException("Error checking free space to download") from e
 
     if not enough_space:
         err_msg = " Insufficient free space available on " + repo.get_repo_path() + \

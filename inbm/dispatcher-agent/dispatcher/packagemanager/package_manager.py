@@ -146,8 +146,8 @@ def is_enough_space_to_download(uri: CanonicalUri,
     if free_space > file_size:
         return True;
     else:
-        return False
-        #raise DispatcherException("Repository does not exist : " + repr(free_space))
+        #return False
+        raise DispatcherException("Error checking free space to download")
 
 def verify_signature(signature: str,
                      path_to_file: str,
