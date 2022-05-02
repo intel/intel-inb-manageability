@@ -126,9 +126,10 @@ def is_enough_space_to_download(uri: CanonicalUri,
                                   ' is ' + str(e.response.status_code))
    
     except ProxyError as e:
-            raise DispatcherException('Proxy Error: ' + uri.value + ' is ' + str(e))
+        raise DispatcherException('Proxy Error: ' + uri.value + ' is ' + str(e))
+
     except Exception as e:
-            raise DispatcherException(e)
+        raise DispatcherException(e)
 
     logger.debug("Content-length: " + repr(content_length))
     file_size: int = int(content_length)
