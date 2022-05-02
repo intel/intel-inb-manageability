@@ -131,8 +131,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
     except Exception as e:
         logger.info("Test==================line 148")
         if type(e).find("ProxyError"): 
-            raise DispatcherException('Proxy Error: ' + uri.value +
-                                      ' is ' + str(e))
+            raise DispatcherException('Proxy Error: ' + uri.value + ' is ' + str(e))
         else:
             raise DispatcherException(e)
 
