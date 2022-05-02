@@ -142,11 +142,11 @@ def is_enough_space_to_download(uri: CanonicalUri,
     logger.debug("get_free_space: " + repr(get_free_space))
     logger.debug("Free space available on destination_repo is " + repr(free_space))
     logger.debug("Free space needed on destination repo is " + repr(file_size))
-    return True if free_space > file_size else raise DispatcherException("Error No fress space : ")
-    #if free_space > file_size:
-    #    return True;
-    #else:
-    #    raise DispatcherException("Error No fress space : ")
+    #return True if free_space > file_size else raise DispatcherException("Error No fress space : ")
+    if free_space > file_size:
+        return True;
+    else:
+        raise DispatcherException("Repository does not exist : " + repr(free_space))
 
 def verify_signature(signature: str,
                      path_to_file: str,
