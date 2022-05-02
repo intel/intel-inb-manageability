@@ -111,7 +111,8 @@ def is_enough_space_to_download(uri: CanonicalUri,
             except ValueError:
                 logger.info("Test Print ================2")
                 content_length = 0
-
+            #Hard coding content_length to 0 
+            content_length = 0
             if content_length == 0:
                 # Stream file to measure the file size
                 logger.info("Test Print ================3")
