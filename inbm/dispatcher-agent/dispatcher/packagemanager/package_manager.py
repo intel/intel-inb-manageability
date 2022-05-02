@@ -127,6 +127,10 @@ def is_enough_space_to_download(uri: CanonicalUri,
         raise DispatcherException('Status code for ' + uri.value +
                                   ' is ' + str(e.response.status_code))
     except Exception as e:
+        #if chunkexept:
+         #   raise
+        #if getresonse
+        #    raise
         logger.info("Test==================line 148")
         raise DispatcherException('Failed to get Request for' + uri.value + 'due to' + str(e))
 
@@ -146,8 +150,11 @@ def is_enough_space_to_download(uri: CanonicalUri,
     logger.debug("get_free_space: " + repr(get_free_space))
     logger.debug("Free space available on destination_repo is " + repr(free_space))
     logger.debug("Free space needed on destination repo is " + repr(file_size))
-    return True if free_space > file_size else False
-
+    #return True if free_space > file_size else False
+    if free_space > file_size
+        return True;
+    else
+        raise DispatcherException("Error No fress space : ")
 
 def verify_signature(signature: str,
                      path_to_file: str,
