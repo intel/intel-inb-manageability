@@ -113,26 +113,18 @@ def is_enough_space_to_download(uri: CanonicalUri,
 
             if content_length == 0:
                 # Stream file to measure the file size
-                try:
-                    logger.info("Test Print ================3")
-                    for chunk in response.iter_content(chunk_size=16384):
-                        if chunk:
-                            content_length += len(chunk)
+                logger.info("Test Print ================3")
+                for chunk in response.iter_content(chunk_size=16384):
+                    if chunk:
+                        content_length += len(chunk)
                             
-                except Exception as e:
-                    logger.info("Test==================line 141")
-                    raise DispatcherException('Exception checking package content size: ' + str(e))
     except HTTPError as e:
         logger.info("Test==================line 144")
         raise DispatcherException('Status code for ' + uri.value +
                                   ' is ' + str(e.response.status_code))
     except Exception as e:
-        #if chunkexept:
-         #   raise
-        #if getresonse
-        #    raise
         logger.info("Test==================line 148")
-        raise DispatcherException('Failed to get Request for' + uri.value + 'due to' + str(e))
+        raise DispatcherException(e)
 
     logger.debug("Content-length: " + repr(content_length))
     file_size: int = int(content_length)
@@ -151,7 +143,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
     logger.debug("Free space available on destination_repo is " + repr(free_space))
     logger.debug("Free space needed on destination repo is " + repr(file_size))
     #return True if free_space > file_size else False
-    if free_space > file_size
+    if free_space > file_size:
         return True;
     else
         raise DispatcherException("Error No fress space : ")
