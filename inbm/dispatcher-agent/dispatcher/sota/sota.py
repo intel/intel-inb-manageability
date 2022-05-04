@@ -243,7 +243,7 @@ class SOTA:
         success = False
         download_success = False
 
-            logger.debug("==========================Test print============================246")
+        logger.debug("==========================Test print============================246")
         try:
             if setup_helper.pre_processing():
                 sota_cache_repo.delete_all()  # clean cache directory
