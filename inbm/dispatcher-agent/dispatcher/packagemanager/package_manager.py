@@ -126,7 +126,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
                                   ' is ' + str(e.response.status_code))
    
     except (ProxyError, ChunkedEncodingError, ContentDecodingError, ConnectionError) as e:
-        raise DispatcherException(type(e):  + str(e))
+        raise DispatcherException(type(e)':' + str(e))
 
     except Exception as e:
         raise DispatcherException(e)
