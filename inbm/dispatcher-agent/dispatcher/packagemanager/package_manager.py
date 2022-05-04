@@ -125,17 +125,8 @@ def is_enough_space_to_download(uri: CanonicalUri,
         raise DispatcherException('Invalid URI: ' + uri.value +
                                   ' is ' + str(e.response.status_code))
    
-    except ProxyError as e:
-        raise DispatcherException('Proxy Error: ' + uri.value + ' is ' + str(e))
-
-    except ChunkedEncodingError as e:
-        raise DispatcherException('Chunk Encoding Error: ' + str(e))
-
-    except ContentDecodingError as e:
-        raise DispatcherException('Content Decoding Error: ' + str(e))
-
-    except ConnectionError as e:
-        raise DispatcherException('Connection Error: ' + str(e))
+    except (ProxyError, ChunkedEncodingError, ContentDecodingError, ConnectionError) as e:
+        raise DispatcherException(type(e):  + str(e))
 
     except Exception as e:
         raise DispatcherException(e)
