@@ -36,6 +36,7 @@ class SetupHelper:
         """Perform checks immediately before applying an OS update or upgrade.
         @return: True if OK to proceed; False otherwise
         """
+        logger.debug("==========================Test print============================39")
         pass
 
     def get_snapper_snapshot_number(self) -> str:
