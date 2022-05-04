@@ -29,7 +29,7 @@ from inbm_common_lib.utility import CanonicalUri, canonicalize_uri
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_lib.count_down_latch import CountDownLatch
 from requests import HTTPError
-from requests.exceptions import ProxyError
+from requests.exceptions import ProxyError, ChunkedEncodingError, ContentDecodingError, ConnectionError 
 from requests.utils import get_environ_proxies
 
 from .constants import LINUX_CA_FILE
@@ -127,6 +127,15 @@ def is_enough_space_to_download(uri: CanonicalUri,
    
     except ProxyError as e:
         raise DispatcherException('Proxy Error: ' + uri.value + ' is ' + str(e))
+
+    except ChunkedEncodingError as e:
+        raise DispatcherException('Chunk Encoding Error: ' + str(e))
+
+    except ContentDecodingError as e:
+        raise DispatcherException('Content Decoding Error: ' + str(e))
+
+    except ConnectionError as e:
+        raise DispatcherException('Connection Error: ' + str(e))
 
     except Exception as e:
         raise DispatcherException(e)
