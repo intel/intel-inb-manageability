@@ -1118,16 +1118,16 @@ To trigger a **Trigger Query**, follow the steps below:
 
 In order to query updates, click the **Trigger Query button** as seen below.
 
-<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image65.png" style="width:5.78125in;height:3.59762in" />
+<img src="media/In-Band Manageability User Guide - Azure/media/image81.png" style="width:5.78125in;height:3.59762in" />
 
-Populate the **Trigger Query** pop-up window with the required parameters and click **send** to trigger the query Update.
+Populate the **Trigger Query** pop-up window with the required parameters and click **run** to trigger the query Update.
 
-<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image64.png" style="width:5.78125in;height:3.59762in" />
+<img src="media/In-Band Manageability User Guide - Azure/media/image80.png" style="width:5.78125in;height:3.59762in" />
 
 **Find the Query Option and the Description below:**
 
 
-**Query-Option?** | **Description**
+**Options** | **Description**
 ------------ |-------------
 **'hw' - Hardware** | It will provide the information of Hardware manufacture, Platform type, Product type, Model number, Serial number
 **'fw' - Firmware** | It will provide the information of Firmware date, Firmware version, Firmware vendor							
