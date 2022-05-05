@@ -1202,7 +1202,7 @@ Populate the **Trigger Query** pop-up window with the required parameters and cl
 **Find the Query Option and the Description below:**
 
 
-**Query-Option?** | **Description**
+**Query-Option** | **Description**
 ------------ |-------------
 **'hw' - Hardware** | It will provide the information of Hardware manufacture, Platform type, Product type, Model number, Serial number
 **'fw' - Firmware** | It will provide the information of Firmware date, Firmware version, Firmware vendor							
