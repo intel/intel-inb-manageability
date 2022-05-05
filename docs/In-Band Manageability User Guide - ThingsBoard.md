@@ -1193,14 +1193,14 @@ To trigger a Trigger Query, follow the steps below:
 
 In order to query updates, click the Trigger Query button as seen below.
 
-<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image61.png" style="width:5.78125in;height:3.59762in" />
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image65.png" style="width:5.78125in;height:3.59762in" />
 
 Populate the Trigger Query pop-up window with the required parameters and click send to trigger the query Update.
 
-<p align="left">
-<img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image63.PNG" />
-</p>
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image64.png" style="width:5.78125in;height:3.59762in" />
+
 **Find the Query Option and the Description below:**
+
 
 Query-Option | Description 
 ------------ |-------------
