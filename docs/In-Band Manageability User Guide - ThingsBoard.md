@@ -1197,9 +1197,9 @@ In order to query updates, click the Trigger Query button as seen below.
 
 Populate the Trigger Query pop-up window with the required parameters and click send to trigger the query Update.
 
-
+<p align="left">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image63.png" style="width:5.78125in;height:3.59762in" />
-
+</p>
 Find the Query Option and the Description below:
 
 
