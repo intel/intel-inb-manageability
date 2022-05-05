@@ -1189,7 +1189,7 @@ How to Call
 
 •[INBC](https://github.com/intel/intel-inb-manageability/blob/develop/inbc-program/README.md#Query)
 
-To trigger a Trigger Query, follow the steps below:
+To trigger a ###Trigger Query, follow the steps below:
 
 In order to query updates, click the Trigger Query button as seen below.
 
