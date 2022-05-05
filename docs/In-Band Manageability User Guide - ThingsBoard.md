@@ -1182,15 +1182,21 @@ titled **`Decommission Device`**.
 
 ### Query Commands
 Description
+
 The Query command can be called by either the cloud or INBC. It will provide attribute information on either the Host, Edge Device, or Nodes.
+
 How to Call
+
 •	INBC
+
 To trigger a Trigger Query, follow the steps below:
+
 In order to query updates, click the Trigger Query button as seen below.
 
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image61.png" style="width:5.78125in;height:3.59762in" />
 
 Populate the Trigger Query pop-up window with the required parameters and click send to trigger the query Update.
+
 
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image62.png" style="width:5.78125in;height:3.59762in" />
 
