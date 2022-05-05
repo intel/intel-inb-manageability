@@ -1187,7 +1187,7 @@ The Query command can be called by either the cloud or INBC. It will provide att
 
 How to Call
 
-•INBC
+•[INBC](https://github.com/intel/intel-inb-manageability/blob/develop/inbc-program/README.md#Query)
 
 To trigger a Trigger Query, follow the steps below:
 
