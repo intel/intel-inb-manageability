@@ -1200,7 +1200,8 @@ Populate the Trigger Query pop-up window with the required parameters and click 
 <p align="left">
 <img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image63.PNG" />
 </p>
-Find the Query Option and the Description below:
+**Find the Query Option and the Description below:**
+
 |Query-Option | Description                                                                                                                                      
                                                          |
 							
