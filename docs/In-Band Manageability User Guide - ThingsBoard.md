@@ -1202,7 +1202,6 @@ Populate the Trigger Query pop-up window with the required parameters and click 
 </p>
 Find the Query Option and the Description below:
 
-
 **'hw' - Hardware**
 
 	It will provide the information of Hardware manufacture, Platform type, Product type, Model number, Serial number
