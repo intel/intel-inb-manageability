@@ -1118,11 +1118,11 @@ To trigger a **Trigger Query**, follow the steps below:
 
 In order to query updates, click the **Trigger Query button** as seen below.
 
-<img src="media/In-Band Manageability User Guide - Azure/media/image81.png" style="width:5.78125in;height:3.59762in" />
+<img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20Azure/media/image81.PNG" style="width:5.78125in;height:3.59762in" />
 
 Populate the **Trigger Query** pop-up window with the required parameters and click **run** to trigger the query Update.
 
-<img src="media/In-Band Manageability User Guide - Azure/media/image80.png" style="width:5.78125in;height:3.59762in" />
+<img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20Azure/media/image80.PNG" style="width:5.78125in;height:3.59762in" />
 
 **Find the Query Option and the Description below:**
 
