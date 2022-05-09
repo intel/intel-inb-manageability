@@ -334,6 +334,7 @@ class Dispatcher(WindowsService):
                             "Given parameters doesn't support Config append or remove method...")
                         return Result(status=CODE_BAD_REQUEST, message=f'Configuration {config_cmd_type} command: FAILED')
                 try:
+                    logger.debug("=====================Test print=========================");
                     self._request_config_agent(config_cmd_type, file_path=None,
                                                value_string=value_list[i])
                 except DispatcherException as err:
