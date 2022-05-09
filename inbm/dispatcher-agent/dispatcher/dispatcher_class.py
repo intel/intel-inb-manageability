@@ -317,6 +317,7 @@ class Dispatcher(WindowsService):
         @return dict: {'status': 400, 'message': 'Configuration update: FAILED'}
         or {'status': 200, 'message': 'Configuration update: SUCCESSFUL'}
         """
+        logger.debug("========================Test ptint =============================================")
         try:
             value_list = value_object.strip().split(';') if value_object else ""
 
@@ -354,6 +355,7 @@ class Dispatcher(WindowsService):
         @param parsed_head: The root parsed xml. It determines config_cmd_type
         @return (dict): returns success or failure dict from child methods
         """
+        logger.debug("==================Test Print ==================================")
         try:
             self.install_check(check_type='check_network')
         except DispatcherException:
@@ -363,6 +365,7 @@ class Dispatcher(WindowsService):
         if config_cmd_type == 'load':
             return self._do_config_install_load(parsed_head=parsed_head, target_type=target_type)
         else:
+            logger.debug("==================Test Print ==================================")
             return self._do_config_install_update_config_items(config_cmd_type, value_object)
 
     def _perform_cmd_type_operation(self, parsed_head: XmlHandler, xml: str) -> Result:
@@ -471,8 +474,10 @@ class Dispatcher(WindowsService):
                     target_type = TargetType.none.name
                 logger.debug(f"target_type : {target_type}")
                 if target_type is TargetType.none.name:
+                    logger.debug("===================================Test Print==================================")
                     result = self._do_config_operation(parsed_head, target_type)
                 else:
+                    logger.debug("===================================Test Print==================================")
                     config_cmd_type = parsed_head.get_element('config/cmd')
                     logger.debug(f"cmd_type : {config_cmd_type}")
                     result = self._do_config_operation_on_target(
