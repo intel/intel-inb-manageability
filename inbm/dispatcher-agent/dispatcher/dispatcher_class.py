@@ -610,9 +610,11 @@ class Dispatcher(WindowsService):
         @raises DispatcherException: if unsuccessful or if MQTT object is None
         """
         logger.debug("")
+        logger.debug("=======================Test print============================= 613")
         if config_cmd == CONFIG_LOAD:
             return self._do_config_install_load(parsed_head=parsed_head, target_type=target_type, xml=xml)
         else:
+            logger.debug("=======================Test print============================= 617")
             broker_core.mqtt_publish(CONFIG_CHANNEL + config_cmd, xml)
             return PUBLISH_SUCCESS
 
