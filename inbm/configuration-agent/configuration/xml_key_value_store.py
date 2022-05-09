@@ -195,10 +195,14 @@ class XmlKeyValueStore(IKeyValueStore):
         """
         logger.debug("")
         path_values = self.get_element(path, value_string)
+        logger.debug(path_values)
         element_header = path_values.strip('{').strip('}').split(":", 1)[0].split("/", 1)[0]
+        logger.debug(element_header)
         element_value = path_values.strip('{').strip('},').split(
             "/", 1)[1] + '\n\t    ' + value_string.split(":", 1)[1] + "\n\t"
+        logger.debug(element_value)
         paths = self.set_element(element_header, value_string=element_value)
+        logger.debug(paths)
         return paths
 
     def remove(self, path, value=None, value_string=None):
