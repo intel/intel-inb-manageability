@@ -328,7 +328,9 @@ class Dispatcher(WindowsService):
                     raise DispatcherException("Error '\"' not allowed in config set command")
 
                 if config_cmd_type == "append" or config_cmd_type == "remove":
+                    logger.debug("==========================Test Print======================================")
                     append_remove_path = value_list[i].split(":")[0]
+                    logger.debug(append_remove_path)
                     if append_remove_path not in CONFIGURATION_APPEND_REMOVE_PATHS_LIST:
                         logger.error(
                             "Given parameters doesn't support Config append or remove method...")
@@ -640,6 +642,7 @@ class Dispatcher(WindowsService):
             logger.info('Message received: %s on topic: %s', payload, topic)
 
             try:
+                logger.debug(payload)
                 cmd.response = json.loads(payload)
 
             except ValueError as error:
