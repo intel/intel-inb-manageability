@@ -1208,7 +1208,11 @@ Populate the **Trigger Query** pop-up window with the required parameters and cl
 **'fw' - Firmware** | It will provide the information of Firmware date, Firmware version, Firmware vendor							
 **'guid' - GUID**   | It will provide the information of GUID of HDDL plug-in card and whether the HDDL plug in card is provisioned or not
 **'os' - Operating System**         | It will provide the information of Operating System type, Operating System version, Operating System release date
-**'security' - Security**           |It will provide the information of1.whether DM verity is enabled or not2.whether Measured Boot is enabled or not3.whether HDDL plug-in card is provisioned or not4.whether using Secured Xlink or not
+**'security' - Security**           |It will provide the information of
+1.whether DM verity is enabled or not
+2.whether Measured Boot is enabled or not
+3.whether HDDL plug-in card is provisioned or not
+4.whether using Secured Xlink or not
 **'status' - Status**      | It will provide the information of Heartbeat status of HDDL plug-in card (Active, Idle) and Number of heartbeat retries attempted for the HDDL plug-in card
 **'swbom' - Software BOM**           |It will provide the information of Software BOM dynamic telemetry data          
 **'version' - Version**       | It will provide the information of Version of the vision-agent service and INBM Version
