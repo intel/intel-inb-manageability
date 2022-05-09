@@ -317,7 +317,6 @@ class Dispatcher(WindowsService):
         @return dict: {'status': 400, 'message': 'Configuration update: FAILED'}
         or {'status': 200, 'message': 'Configuration update: SUCCESSFUL'}
         """
-        logger.debug("========================Test ptint =============================================")
         try:
             value_list = value_object.strip().split(';') if value_object else ""
 
@@ -329,9 +328,7 @@ class Dispatcher(WindowsService):
                     raise DispatcherException("Error '\"' not allowed in config set command")
 
                 if config_cmd_type == "append" or config_cmd_type == "remove":
-                    logger.debug("==========================Test Print======================================")
                     append_remove_path = value_list[i].split(":")[0]
-                    logger.debug(append_remove_path)
                     if append_remove_path not in CONFIGURATION_APPEND_REMOVE_PATHS_LIST:
                         logger.error(
                             "Given parameters doesn't support Config append or remove method...")
@@ -355,7 +352,6 @@ class Dispatcher(WindowsService):
         @param parsed_head: The root parsed xml. It determines config_cmd_type
         @return (dict): returns success or failure dict from child methods
         """
-        logger.debug("==================Test Print ==================================")
         try:
             self.install_check(check_type='check_network')
         except DispatcherException:
@@ -365,7 +361,6 @@ class Dispatcher(WindowsService):
         if config_cmd_type == 'load':
             return self._do_config_install_load(parsed_head=parsed_head, target_type=target_type)
         else:
-            logger.debug("==================Test Print ==================================")
             return self._do_config_install_update_config_items(config_cmd_type, value_object)
 
     def _perform_cmd_type_operation(self, parsed_head: XmlHandler, xml: str) -> Result:
@@ -474,10 +469,8 @@ class Dispatcher(WindowsService):
                     target_type = TargetType.none.name
                 logger.debug(f"target_type : {target_type}")
                 if target_type is TargetType.none.name:
-                    logger.debug("===================================Test Print==================================")
                     result = self._do_config_operation(parsed_head, target_type)
                 else:
-                    logger.debug("===================================Test Print==================================")
                     config_cmd_type = parsed_head.get_element('config/cmd')
                     logger.debug(f"cmd_type : {config_cmd_type}")
                     result = self._do_config_operation_on_target(
@@ -617,11 +610,9 @@ class Dispatcher(WindowsService):
         @raises DispatcherException: if unsuccessful or if MQTT object is None
         """
         logger.debug("")
-        logger.debug("=======================Test print============================= 613")
         if config_cmd == CONFIG_LOAD:
             return self._do_config_install_load(parsed_head=parsed_head, target_type=target_type, xml=xml)
         else:
-            logger.debug("=======================Test print============================= 617")
             broker_core.mqtt_publish(CONFIG_CHANNEL + config_cmd, xml)
             return PUBLISH_SUCCESS
 
@@ -647,7 +638,6 @@ class Dispatcher(WindowsService):
             logger.info('Message received: %s on topic: %s', payload, topic)
 
             try:
-                logger.debug(payload)
                 cmd.response = json.loads(payload)
 
             except ValueError as error:
@@ -657,16 +647,12 @@ class Dispatcher(WindowsService):
                 # Release lock
                 latch.count_down()
 
-        logger.debug("=================Test print==========line 650")
         cmd = ConfigCommand(cmd_type, path=file_path,
                             value_string=value_string)
-        logger.debug(cmd.response)
 
         self._broker.mqtt_subscribe(cmd.create_response_topic(), on_command)
-        logger.debug(cmd.response)
         self._broker.mqtt_publish(cmd.create_request_topic(), cmd.create_payload())
 
-        logger.debug(cmd.response)
         latch.await_()
         if cmd.response is None and cmd_type != 'load':
             self._telemetry('Failure in fetching element requested for'
@@ -731,15 +717,10 @@ class Dispatcher(WindowsService):
         logger.info('Cloud request received: %s on topic: %s',
                     mask_security_info(payload), topic)
         request_type = topic.split('/')[-1]
-        logger.debug("==============================Test print ===============================")
-        logger.debug(request_type)
         manifest = payload
-        logger.debug(manifest)
         if not self.update_queue.full():
-            logger.debug("==============================Test print ===============================")
             self.update_queue.put((request_type, manifest))
         else:
-            logger.debug("==============================Test print ===============================")
             self._send_result(
                 str(Result(CODE_BAD_REQUEST, "Update Queue Full, Please try again later")))
 
@@ -826,8 +807,6 @@ class Dispatcher(WindowsService):
                 if cleaned_payload is None:
                     logger.error("No ubuntuAptSource selected!")
                 else:
-                    logger.debug("Test print........line 810")
-                    logger.debug(cleaned_payload)
                     self.sota_repos = cleaned_payload
 
         try:
