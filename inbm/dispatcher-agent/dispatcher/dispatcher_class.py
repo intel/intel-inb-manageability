@@ -723,10 +723,15 @@ class Dispatcher(WindowsService):
         logger.info('Cloud request received: %s on topic: %s',
                     mask_security_info(payload), topic)
         request_type = topic.split('/')[-1]
+        logger.debug("==============================Test print ===============================")
+        logger.debug(request_type)
         manifest = payload
+        logger.debug(manifest)
         if not self.update_queue.full():
+            logger.debug("==============================Test print ===============================")
             self.update_queue.put((request_type, manifest))
         else:
+            logger.debug("==============================Test print ===============================")
             self._send_result(
                 str(Result(CODE_BAD_REQUEST, "Update Queue Full, Please try again later")))
 
