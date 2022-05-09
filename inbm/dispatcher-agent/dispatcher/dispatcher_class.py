@@ -651,9 +651,9 @@ class Dispatcher(WindowsService):
         cmd = ConfigCommand(cmd_type, path=file_path,
                             value_string=value_string)
 
-        logger.debug(cmd.cmd_type)
-        logger.debug(cmd.path)
-        logger.debug(value_string)
+        logger.debug(cmd.command)
+        logger.debug(cmd._path)
+        logger.debug(cmd._value_string)
 
 
         self._broker.mqtt_subscribe(cmd.create_response_topic(), on_command)
