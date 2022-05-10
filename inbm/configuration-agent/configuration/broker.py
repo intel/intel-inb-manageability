@@ -113,8 +113,10 @@ class Broker:  # pragma: no cover
                     logger.debug("===================================Test print 113==========================")
                     resp = self._get_element_name(headers, path, value_string)
                     logger.debug(resp)
-
-                self._append(headers, path, value, value_string)
+                    if "http" in str(resp):
+                        raise ConfigurationException("Can't add new repository while one repository already present")
+                    else:
+                        self._append(headers, path, value, value_string)
             elif command == Commands.remove.name:
                 self._remove(headers, path, value, value_string)
             else:
