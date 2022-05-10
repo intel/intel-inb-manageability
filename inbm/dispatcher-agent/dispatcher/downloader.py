@@ -44,7 +44,6 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
     @raises DispatcherException: any exception
     """
 
-    logger.debug("Test=================================line 47")
     dispatcher_callbacks.broker_core.telemetry(f'Package to be fetched from {uri.value}')
     dispatcher_callbacks.broker_core.telemetry(
         'Checking authenticity of package by checking signature and source')
@@ -63,15 +62,10 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
             'Bad request: username/password will not be processed on HTTP server')
 
     try:
-        logger.debug("Test=================================line 66")
-        logger.debug(uri)
         enough_space = is_enough_space_to_download(
             uri, DirectoryRepo(str(CACHE)), username, password)
-        logger.debug(enough_space)
     except DispatcherException as e:
-        logger.info("Test=======================line 71")
         raise DispatcherException(e)
-        #raise DispatcherException("Error checking free space to download") from e
 
     if not enough_space:
         err_msg = " Insufficient free space available on " + repo.get_repo_path() + \

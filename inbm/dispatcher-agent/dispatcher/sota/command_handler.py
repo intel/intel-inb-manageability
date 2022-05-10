@@ -64,7 +64,6 @@ def get_command_status(cmd_list: List) -> str:
     @return: 'Success' if all commands pass or 'Failure' if any command fails
     """
     logger.debug("")
-    logger.debug("==========================Test print============================67")
     if cmd_list:
         for cmd in cmd_list:
             status = FAILED if cmd.status in ('Not Executed', 'Failed', 'Skipped') else SUCCESS

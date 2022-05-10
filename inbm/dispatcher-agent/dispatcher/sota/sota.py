@@ -158,8 +158,6 @@ class SOTA:
         skip_sleeps shall be set to True to skip sleeps in this method (for unit testing)
         """
         logger.debug("")
-       
-        logger.debug("==========================Test print============================162")
 
         self.proceed_without_rollback = proceed_without_rollback
         self.log_to_file = self._parsed_manifest['log_to_file']
@@ -212,7 +210,6 @@ class SOTA:
                 self._dispatcher_callbacks.broker_core.send_result(msg)
                 snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:
-            logger.debug("==========================Test print============================215")
             self.execute_from_manifest(setup_helper=setup_helper,
                                        sota_cache_repo=sota_cache_repo,
                                        snapshotter=snapshot,
@@ -243,7 +240,6 @@ class SOTA:
         success = False
         download_success = False
 
-        logger.debug("==========================Test print============================246")
         try:
             if setup_helper.pre_processing():
                 sota_cache_repo.delete_all()  # clean cache directory
@@ -264,10 +260,8 @@ class SOTA:
                 download_success = True
                 snapshotter.take_snapshot()
                 cmd_list = self.calculate_and_execute_sota_upgrade(sota_cache_repo)
-                logger.debug(f"Command list {cmd_list}")
                 sota_cache_repo.delete_all()  # clean cache directory
                 if get_command_status(cmd_list) == SUCCESS:
-                    logger.debug("==========================Test print============================269")
                     self._dispatcher_callbacks.broker_core.send_result(
                         '{"status": 200, "message": SOTA command status: SUCCESSFUL"}')
                     success = True

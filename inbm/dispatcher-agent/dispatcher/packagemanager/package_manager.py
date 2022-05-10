@@ -68,6 +68,7 @@ def get_platform_ca_certs() -> Union[bool, str]:
     else:
         return LINUX_CA_FILE
 
+
 def is_enough_space_to_download(uri: CanonicalUri,
                                 destination_repo: IRepo,
                                 username: str = None,
@@ -82,7 +83,6 @@ def is_enough_space_to_download(uri: CanonicalUri,
     @param password: password  provided for download
     """
 
-    logger.info("Test=======================line 98")
     if not isinstance(uri, CanonicalUri):
         raise DispatcherException(
             "Internal error: URI improperly passed to is_enough_space_to_download function")
@@ -95,33 +95,23 @@ def is_enough_space_to_download(uri: CanonicalUri,
         auth = (username, password)
 
     try:
+        logger.info("Checking content size...")
         env_proxies = get_environ_proxies(uri.value)
         logger.debug("Proxies: " + str(env_proxies))
-        logger.debug(uri.value)
         with requests.get(uri.value, auth=auth, verify=get_platform_ca_certs(), stream=True) as response:
-            logger.info("Test==================line 115")
-            logger.debug(response)
-            #print(response.raise_for_status())
             response.raise_for_status()
-            logger.info("Test==================line 119")
             # Read Content-Length header
             try:
-                logger.info("Test Print ================1")
                 content_length = int(response.headers.get("Content-Length", "0"))
             except ValueError:
-                logger.info("Test Print ================2")
                 content_length = 0
-            #Hard coding content_length to 0 
-            content_length = 0
+
             if content_length == 0:
                 # Stream file to measure the file size
-                logger.info("Test Print ================3")
                 for chunk in response.iter_content(chunk_size=16384):
                     if chunk:
                         content_length += len(chunk)
-                            
     except HTTPError as e:
-        logger.info("Test==================line 144")
         raise DispatcherException('Invalid URI: ' + uri.value +
                                   ' is ' + str(e.response.status_code))
    
@@ -133,13 +123,9 @@ def is_enough_space_to_download(uri: CanonicalUri,
 
     logger.debug("Content-length: " + repr(content_length))
     file_size: int = int(content_length)
-    logger.info("Test Print ================5")
-    logger.debug(file_size)
     if destination_repo.exists():
-        logger.info("Test Print ================4")
         get_free_space = destination_repo.get_free_space()
         free_space: int = int(get_free_space)
-        logger.debug(free_space)
     else:
         raise DispatcherException("Repository does not exist : " +
                                   destination_repo.get_repo_path())
@@ -148,6 +134,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
     logger.debug("Free space available on destination_repo is " + repr(free_space))
     logger.debug("Free space needed on destination repo is " + repr(file_size))
     return True if free_space > file_size else False
+
 
 def verify_signature(signature: str,
                      path_to_file: str,
@@ -385,7 +372,6 @@ def get(url: CanonicalUri,
     code = CODE_BAD_REQUEST
     message = "Generic Error"
 
-    logger.info("Test=======================line 378")
     if not isinstance(url, CanonicalUri):
         raise DispatcherException("Internal error: uri improperly passed to download function")
 

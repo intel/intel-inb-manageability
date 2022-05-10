@@ -36,7 +36,6 @@ class SetupHelper:
         """Perform checks immediately before applying an OS update or upgrade.
         @return: True if OK to proceed; False otherwise
         """
-        logger.debug("==========================Test print============================39")
         pass
 
     def get_snapper_snapshot_number(self) -> str:
@@ -67,7 +66,6 @@ class DebianBasedSetupHelper(SetupHelper):
         """
         logger.debug("")
         if self._dispatcher_callbacks.sota_repos:
-            logger.debug("Test Print ================================69")
             self.update_sources(self._dispatcher_callbacks.sota_repos)
         return True  # FIXME why do we always return True?
 
@@ -76,17 +74,11 @@ class DebianBasedSetupHelper(SetupHelper):
         @param payload: String, http url value retrieved from config manager
         @param filename: file name for sources
         """
-        logger.debug("Test Print ================================78")
-        logger.debug(payload)
-        #test_payload = payload;
-        #temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
-        #temp_payload = payload.split(':', 1)[0].strip(' \t\n\r')
-        temp_payload = payload.strip()
-        #temp_payload = test_payload.strip()
-        logger.debug(temp_payload)
+        logger.debug("")
+        temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
+
         # solves bug 38278
         if not temp_payload.startswith('http'):
-            logger.debug("Test Print ================================84")
             return
 
         apt_file = fileinput.input(filename, inplace=True, backup='.bak')
@@ -97,7 +89,6 @@ class DebianBasedSetupHelper(SetupHelper):
             line_items = line.split()
             need_change = [True if x.find(payload) == -1 else False for x in line_items][0]
             if need_change:
-                logger.debug("Test Print ================================94")
                 source_url_list = [line_items.index(x) if x.startswith(
                     "http") else -1 for x in line_items]
                 source_url_list.sort()

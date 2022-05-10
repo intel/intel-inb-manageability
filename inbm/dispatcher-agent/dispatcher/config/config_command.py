@@ -40,7 +40,6 @@ class ConfigCommand:
 
         @return: String representing request topic
         """
-        print("=============Test print===============44")
         return CONFIGURATION_CMD_CHANNEL + self.command
 
     def create_response_topic(self) -> str:
@@ -48,7 +47,6 @@ class ConfigCommand:
 
         @return: String representing response topic
         """
-        print("=============Test print===============52")
         return CONFIGURATION_RESP_CHANNEL + self._id
 
     def create_payload(self) -> str:
@@ -56,13 +54,11 @@ class ConfigCommand:
 
         @return: JSON payload [cmd, id, path]
         """
-        print("=============Test print===============60")
 
         if self._value_string is None and self._path is None:
             raise ValueError
 
         payload = {'cmd': self.command, 'id': self._id, 'path': self._path, 'value': self._value,
                    'headers': self._header, 'valueString': self._value_string}
-        print(payload)    
 
         return json.dumps(payload)

@@ -334,7 +334,6 @@ class Dispatcher(WindowsService):
                             "Given parameters doesn't support Config append or remove method...")
                         return Result(status=CODE_BAD_REQUEST, message=f'Configuration {config_cmd_type} command: FAILED')
                 try:
-                    logger.debug("=====================Test print=========================");
                     self._request_config_agent(config_cmd_type, file_path=None,
                                                value_string=value_list[i])
                 except DispatcherException as err:
@@ -650,11 +649,6 @@ class Dispatcher(WindowsService):
 
         cmd = ConfigCommand(cmd_type, path=file_path,
                             value_string=value_string)
-
-        logger.debug(cmd.command)
-        logger.debug(cmd._path)
-        logger.debug(cmd._value_string)
-
 
         self._broker.mqtt_subscribe(cmd.create_response_topic(), on_command)
         self._broker.mqtt_publish(cmd.create_request_topic(), cmd.create_payload())
