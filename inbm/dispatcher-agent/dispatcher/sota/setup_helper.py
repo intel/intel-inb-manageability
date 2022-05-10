@@ -97,8 +97,10 @@ class DebianBasedSetupHelper(SetupHelper):
                     "http") else -1 for x in line_items]
                 source_url_list.sort()
                 source_url_index = source_url_list[-1]
+                logger.debug(source_url_index)
                 line_items[source_url_index] = line_items[source_url_index] if line_items[source_url_index].startswith(
                     "https://download.docker.com/") else temp_payload
+                logger.debug(line_items[source_url_index])
                 print(" ".join(line_items))
             else:
                 break
