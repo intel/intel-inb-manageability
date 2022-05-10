@@ -26,6 +26,7 @@ class TestSetupHelper(unittest.TestCase):
 
     def test_ubuntu_update_apt_sources_fixtures(self):
 
+        print("==============================================================================")
         def setup_function():
             fd = tempfile.NamedTemporaryFile(prefix="sotatest", delete=False, mode="w+")
             for each in mock_apt_sources_list:
@@ -48,12 +49,13 @@ class TestSetupHelper(unittest.TestCase):
             for line in f:
                 c += line
 
+        print(c)
+        print(mock_apt_sources_list)
         self.assertEqual(mock_apt_expected, c)
         fixture.cleanUp()
 
     def test_ubuntu_update_apt_sources_fixtures_dont_update(self):
 
-        print("=============================================================================="))
         def setup_function():
             fd = tempfile.NamedTemporaryFile(prefix="sotatest", delete=False, mode="w+")
             for each in mock_apt_sources_list:
@@ -76,8 +78,6 @@ class TestSetupHelper(unittest.TestCase):
             for line in f:
                 c += line
 
-        print(c)
-        print(mock_apt_sources_list)
         self.assertEqual(mock_apt_sources_list, c)
         fixture.cleanUp()
 
