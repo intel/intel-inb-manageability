@@ -53,6 +53,7 @@ class TestSetupHelper(unittest.TestCase):
 
     def test_ubuntu_update_apt_sources_fixtures_dont_update(self):
 
+        print("=============================================================================="))
         def setup_function():
             fd = tempfile.NamedTemporaryFile(prefix="sotatest", delete=False, mode="w+")
             for each in mock_apt_sources_list:
