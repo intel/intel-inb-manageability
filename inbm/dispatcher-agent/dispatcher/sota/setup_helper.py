@@ -81,8 +81,10 @@ class DebianBasedSetupHelper(SetupHelper):
         #temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
         temp_payload = test_payload.strip()
 
+        logger.debug(temp_payload)
         # solves bug 38278
         if not temp_payload.startswith('http'):
+            logger.debug("=========================================Test print 87====================================")
             return
 
         apt_file = fileinput.input(filename, inplace=True, backup='.bak')
@@ -93,6 +95,7 @@ class DebianBasedSetupHelper(SetupHelper):
             line_items = line.split()
             need_change = [True if x.find(payload) == -1 else False for x in line_items][0]
             if need_change:
+                logger.debug("=========================================Test print 98====================================")
                 source_url_list = [line_items.index(x) if x.startswith(
                     "http") else -1 for x in line_items]
                 source_url_list.sort()
@@ -103,6 +106,7 @@ class DebianBasedSetupHelper(SetupHelper):
                 logger.debug(line_items[source_url_index])
                 print(" ".join(line_items))
             else:
+                logger.debug("=========================================Test print 109====================================")
                 break
         apt_file.close()
 
