@@ -105,6 +105,10 @@ class Broker:  # pragma: no cover
             elif command == Commands.load.name:
                 self._load(path)
             elif command == Commands.append.name:
+                logger.debug(path)
+                logger.debug(value_string)
+                logger.debug(headers)
+                logger.debug(value)
                 self._append(headers, path, value, value_string)
             elif command == Commands.remove.name:
                 self._remove(headers, path, value, value_string)
@@ -153,8 +157,6 @@ class Broker:  # pragma: no cover
             raise ConfigurationException('Value and value string are not set')
 
         if path and value:
-            logger.debug(path)
-            logger.debug(value)
             if self.key_value_store.append(path=path, value_string=value):
                 self.mqttc.publish(UPDATE_CHANNEL + str(path), json.dumps(value))
         elif headers and value_string:
