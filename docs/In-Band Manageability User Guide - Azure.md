@@ -1120,7 +1120,8 @@ Populate the **Trigger Query** pop-up window with the required parameters and cl
 
 <img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20Azure/media/image88.PNG" style="width:5.78125in;height:3.59762in" />
 
-Refer to [For the iformation of query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)
+For the details on **Query options**
+Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md) 
 
 The query command capabilities are supported via manifest.
 ### Query Commands via Manifest
