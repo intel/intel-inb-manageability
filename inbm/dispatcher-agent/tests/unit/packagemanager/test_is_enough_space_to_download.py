@@ -51,8 +51,8 @@ class TestIsEnoughSpaceToDownload(unittest.TestCase):
             response_data = '1234567890'
             m.get(url.value, text=response_data, headers={'Content-Length': '9'})
             setattr(self.repo.get_free_space, "return_value", 10)
-            #result = is_enough_space_to_download(url, self.repo)
-            #assert result is True
+            result = is_enough_space_to_download(url, self.repo)
+            assert result is True
 
     def test_fails_with_headers_content_size_equal_to_space(self):
         url = canonicalize_uri('https://www.example.com/')
