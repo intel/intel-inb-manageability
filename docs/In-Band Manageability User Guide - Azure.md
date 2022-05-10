@@ -1108,11 +1108,9 @@ In order to trigger Decommission:
 ### Query Commands
 Description
 
-The Query command can be called by either the **cloud or INBC**. It will provide attribute information on either the Host, Edge Device, or Nodes.
+The Query command can be called by the **cloud**. It will provide attribute information on either the Host, Edge Device, or Nodes.
 
 How to Call
-
-•[INBC](https://github.com/intel/intel-inb-manageability/blob/develop/inbc-program/README.md#Query)
 
 To trigger a **Trigger Query**, follow the steps below:
 
@@ -1123,20 +1121,6 @@ In order to query updates, click the **Trigger Query button** as seen below.
 Populate the **Trigger Query** pop-up window with the required parameters and click **run** to trigger the query Update.
 
 <img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20Azure/media/image88.PNG" style="width:5.78125in;height:3.59762in" />
-
-**Find the Query Option and the Description below:**
-
-
-**Options** | **Description**
------------- |-------------
-**'hw' - Hardware** | It will provide the information of Hardware manufacture, Platform type, Product type, Model number, Serial number
-**'fw' - Firmware** | It will provide the information of Firmware date, Firmware version, Firmware vendor							
-**'guid' - GUID**   | It will provide the information of GUID of HDDL plug-in card and whether the HDDL plug in card is provisioned or not
-**'os' - Operating System**         | It will provide the information of Operating System type, Operating System version, Operating System release date
-**'security' - Security**           |It will provide the information of <br> 1.whether DM verity is enabled or not <br> 2.whether Measured Boot is enabled or not <br> 3.whether HDDL plug-in card is provisioned or not <br> 4.whether using Secured Xlink or not
-**'status' - Status**      | It will provide the information of Heartbeat status of HDDL plug-in card (Active, Idle) and Number of heartbeat retries attempted for the HDDL plug-in card
-**'swbom' - Software BOM**           |It will provide the information of Software BOM dynamic telemetry data          
-**'version' - Version**       | It will provide the information of Version of the vision-agent service and INBM Version
 
 The query command capabilities are supported via manifest.
 ### Query Commands via Manifest
