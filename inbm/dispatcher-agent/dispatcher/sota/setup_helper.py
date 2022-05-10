@@ -75,7 +75,8 @@ class DebianBasedSetupHelper(SetupHelper):
         @param filename: file name for sources
         """
         logger.debug("")
-        temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
+        #temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
+        temp_payload = payload.strip(' \t\n\r')
 
         # solves bug 38278
         if not temp_payload.startswith('http'):
