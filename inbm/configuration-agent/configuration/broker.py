@@ -153,9 +153,12 @@ class Broker:  # pragma: no cover
             raise ConfigurationException('Value and value string are not set')
 
         if path and value:
+            logger.debug(path)
+            logger.debug(value)
             if self.key_value_store.append(path=path, value_string=value):
                 self.mqttc.publish(UPDATE_CHANNEL + str(path), json.dumps(value))
         elif headers and value_string:
+            logger.debug("======================================Test print======================= 161")
             paths = self.key_value_store.append(
                 path=headers, value_string=value_string)
             self._publish_new_values(paths)
