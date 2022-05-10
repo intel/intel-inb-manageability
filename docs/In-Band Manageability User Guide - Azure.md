@@ -1106,11 +1106,9 @@ In order to trigger Decommission:
     <img src="media/In-Band Manageability User Guide - Azure/media/image65.png" style="width:3.02153in;height:1.91736in" />
 
 ### Query Commands
-Description
+**Description**
 
 The Query command can be called by the **cloud**. It will provide attribute information on either the Host, Edge Device, or Nodes.
-
-How to Call
 
 To trigger a **Trigger Query**, follow the steps below:
 
@@ -1121,6 +1119,8 @@ In order to query updates, click the **Trigger Query button** as seen below.
 Populate the **Trigger Query** pop-up window with the required parameters and click **run** to trigger the query Update.
 
 <img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20Azure/media/image88.PNG" style="width:5.78125in;height:3.59762in" />
+
+Refer to [For the iformation of query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)
 
 The query command capabilities are supported via manifest.
 ### Query Commands via Manifest
