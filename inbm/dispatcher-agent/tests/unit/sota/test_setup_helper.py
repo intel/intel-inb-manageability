@@ -75,6 +75,8 @@ class TestSetupHelper(unittest.TestCase):
             for line in f:
                 c += line
 
+        print(c)
+        print(mock_apt_sources_list)
         self.assertEqual(mock_apt_sources_list, c)
         fixture.cleanUp()
 
