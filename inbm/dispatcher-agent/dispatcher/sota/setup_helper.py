@@ -75,6 +75,8 @@ class DebianBasedSetupHelper(SetupHelper):
         @param filename: file name for sources
         """
         logger.debug("")
+        logger.debug("===========================================Tets print 78=======================================")
+        loger.debug(payload)
         test_payload = payload
         #temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
         temp_payload = test_payload.strip()
