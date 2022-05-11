@@ -133,6 +133,7 @@ class MQTT:
         assert isinstance(payload, str)
         logger.info('Publishing message: %s on topic: %s with retain: %s',
                     mask_security_info(payload), topic, retain)
+        logger.debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
         self._mqttc.publish(topic, payload.encode('utf-8'), qos, retain)
 
     def subscribe(self, topic: str, callback: Callable[[str, str, int], None], qos=0) -> None:
