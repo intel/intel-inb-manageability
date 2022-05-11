@@ -424,6 +424,7 @@ class Dispatcher(WindowsService):
         """
         result: Result = Result()
         logger.debug("do_install")
+        logger.debug("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&****************************")
         parsed_head = None
         try:  # TODO: Split into multiple try/except blocks
             type_of_manifest, parsed_head = \
@@ -716,6 +717,7 @@ class Dispatcher(WindowsService):
         """
         logger.info('Cloud request received: %s on topic: %s',
                     mask_security_info(payload), topic)
+        logger.debug("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$^^^^^^^^^^^^^^^^^^^^")
         request_type = topic.split('/')[-1]
         manifest = payload
         if not self.update_queue.full():
