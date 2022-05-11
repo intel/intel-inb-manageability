@@ -109,6 +109,11 @@ class Broker:  # pragma: no cover
                 logger.debug(value_string)
                 logger.debug(headers)
                 logger.debug(value)
+
+                if "ubuntuAptSource" in str(value_string):
+                    resp = self._get_element_name(headers, path, value_string)
+                    logger.debug(resp)
+
                 """if "ubuntuAptSource" in str(value_string):
                     logger.debug("===================================Test print 113==========================")
                     resp = self._get_element_name(headers, path, value_string)
