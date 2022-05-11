@@ -74,8 +74,9 @@ class DebianBasedSetupHelper(SetupHelper):
         @param payload: String, http url value retrieved from config manager
         @param filename: file name for sources
         """
-        logger.debug("")
-        temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
+        temp_payload = payload.strip()
+        if not temp_payload.startswith('http'):
+            temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
 
         # solves bug 38278
         if not temp_payload.startswith('http'):
