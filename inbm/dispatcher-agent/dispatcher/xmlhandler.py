@@ -40,8 +40,9 @@ class XmlHandler:
     @param is_file: False by default, True if XML to be parsed is a file
     @param schema_location: location of schema file
     """
-
+    
     def __init__(self, xml: str, is_file: bool, schema_location: Union[str, pathlib.Path]) -> None:
+        logger.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$######################################")
         self._is_file = is_file
         self._schema_location = schema_location
         logger.debug(f"SCHEMA LOC : {self._schema_location}")
@@ -63,6 +64,7 @@ class XmlHandler:
         @return parsed document
         @raises XmlException
         """
+        logger.debug("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
         logger.debug('validating XML file: {}'.format(mask_security_info(xml)))
         try:
             if not os.path.exists(self._schema_location):
@@ -103,6 +105,7 @@ class XmlHandler:
         @return: Value of the element in the parsed XML object
         """
         logger.debug("")
+        logger.debug("UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV")
         element = self._root.findtext(xpath)
         if element is None:
             raise XmlException('Cannot find element at specified '
@@ -243,5 +246,7 @@ class XmlHandler:
         @param xml: xml contents
         @return: root path
         """
+        logger.debug("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR")
         logger.debug(f"XML : {mask_security_info(xml)}")
+        logger.debug("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@!!!!!!!!!!!!!!!!!!")
         return self._validate(xml).getroot()
