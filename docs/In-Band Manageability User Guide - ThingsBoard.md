@@ -24,7 +24,7 @@
     3. [Configuration Update](#configuration-update)
     4. [Power Management](#power-management)
     5. [Decommission Command](#decommission-command)
-    6. [Query Commands](#query-commands)
+    6. [Query Command](#query-command)
 4. [Telemetry Data](#telemetry-data)
     1. [Static Telemetry Data](#static-telemetry-data)
     2. [Dynamic Telemetry Data](#dynamic-telemetry-data)
@@ -1180,14 +1180,9 @@ dashboard to trigger a Device Reboot.
 Now on the pop-up window shows up, click the `Send` button on the box
 titled **`Decommission Device`**.
 
-### Query Commands
-Description
+### Query Command
 
-The Query command can be called by either the **cloud or INBC**. It will provide attribute information on either the Host, Edge Device, or Nodes.
-
-How to Call
-
-•[INBC](https://github.com/intel/intel-inb-manageability/blob/develop/inbc-program/README.md#Query)
+The Intel® In-Band Manageability provides a way to query attribute information on either the Host, Edge Device, or Nodes.
 
 To trigger a **Trigger Query**, follow the steps below:
 
