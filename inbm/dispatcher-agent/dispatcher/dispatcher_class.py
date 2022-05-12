@@ -639,6 +639,8 @@ class Dispatcher(WindowsService):
 
             try:
                 cmd.response = json.loads(payload)
+                loggr.debug("======================Test print ===============================")
+                logger.debug(cmd.response)
 
             except ValueError as error:
                 logger.error('Unable to parse payload: %s', str(error))

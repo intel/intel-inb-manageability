@@ -47,6 +47,7 @@ class ConfigCommand:
 
         @return: String representing response topic
         """
+        logger.debug("========================Test print=========================")
         return CONFIGURATION_RESP_CHANNEL + self._id
 
     def create_payload(self) -> str:
