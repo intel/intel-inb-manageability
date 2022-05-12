@@ -78,7 +78,7 @@ class DebianBasedSetupHelper(SetupHelper):
         logger.debug("===========================================Tets print 78=======================================")
         logger.debug(payload)
         #test_payload = payload
-        #temp_payload = payload.strip()
+        temp_payload = payload
         logger.debug(payload)
         if not temp_payload.startswith('http'):
             temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
