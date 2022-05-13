@@ -1192,7 +1192,7 @@ In order to query updates, click the **Trigger Query button** as seen below.
 
 Populate the **Trigger Query** pop-up window with the required parameters and click **send** to trigger the query Update.
 
-<img  src="media/In-Band Manageability User Guide - ThingsBoard/media/image64.png" style="width:5.78125in;height:3.59762in" />
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image64.png" style="width:5.78125in;height:3.59762in" />
 
 For the details on **Query options**
 Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)							 
