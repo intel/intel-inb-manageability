@@ -26,7 +26,7 @@ MENDER_FILE_PATH = get_canonical_representation_of_path('/usr/bin/mender')
 
 # Mender commands/arguments
 MENDER_COMMAND = MENDER_FILE_PATH
-MENDER_INSTALL_ARGUMENT = "-install"
+MENDER_INSTALL_ARGUMENT = "install"
 MENDER_MINIMIZE_LOGS_ARGUMENT = "-log-level panic"
 MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifact_info")
 MENDER_COMMIT_COMMAND = "mender -commit"
