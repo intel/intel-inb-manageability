@@ -1194,24 +1194,12 @@ Populate the **Trigger Query** pop-up window with the required parameters and cl
 
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image64.png" style="width:5.78125in;height:3.59762in" />
 
-**Find the Query Option and the Description below:**
-
-
-**Query-Option** | **Description**
------------- |-------------
-**'hw' - Hardware** | It will provide the information of Hardware manufacture, Platform type, Product type, Model number, Serial number
-**'fw' - Firmware** | It will provide the information of Firmware date, Firmware version, Firmware vendor							
-**'guid' - GUID**   | It will provide the information of GUID of HDDL plug-in card and whether the HDDL plug in card is provisioned or not
-**'os' - Operating System**         | It will provide the information of Operating System type, Operating System version, Operating System release date
-**'security' - Security**           |It will provide the information of <br> 1.whether DM verity is enabled or not <br> 2.whether Measured Boot is enabled or not <br> 3.whether HDDL plug-in card is provisioned or not <br> 4.whether using Secured Xlink or not
-**'status' - Status**      | It will provide the information of Heartbeat status of HDDL plug-in card (Active, Idle) and Number of heartbeat retries attempted for the HDDL plug-in card
-**'swbom' - Software BOM**           |It will provide the information of Software BOM dynamic telemetry data          
-**'version' - Version**       | It will provide the information of Version of the vision-agent service and INBM Version
-							 
+For the details on **Query options**
+Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)							 
 	
 The query command capabilities are supported via manifest.
 
-### Query Commands via Manifest
+### Query Command via Manifest
 
 [Query Manifest and Examples](Manifest%20Parameters.md#Query)
 
