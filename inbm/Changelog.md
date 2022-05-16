@@ -14,15 +14,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 - RTC 508495 Support INBC Config Append command
 - RTC 508497 Support INBC Config Remove command
-- RTC 497530 Add fields in TB for Query cmd
+- RTC 497530 Add fields in Thingsboard and Azure to support Query command via button click.
+- RTC 500237 - Remove DBS messages from appearing in INBC
 
 ## 3.0.10 - 2022-03-28
 
-## NEXT - 3.0.9 - 2022-03-08
  - RTC 509991 Updated docker stats dashboard to display units for readability.
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
- - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+ - HSD 15010868047 - "Unsupported OS" when running POTA via INBC in CentOS container
  - RTC 511101 - Handle the null char in a URI
  - HSD 15010918893 INBM does not reject unsupported file type
  - Fixed new build error discovered by clearing docker cache and rebuilding

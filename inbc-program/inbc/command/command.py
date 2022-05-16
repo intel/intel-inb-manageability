@@ -23,6 +23,7 @@ from inbm_vision_lib.constants import DEVICE_STATUS_CHANNEL, RESTART, QUERY, \
 from inbm_common_lib.request_message_constants import COMMAND_SUCCESSFUL, DYNAMIC_TELEMETRY, \
     RESTART_SUCCESS, RESTART_FAILURE, QUERY_SUCCESS, QUERY_FAILURE, OTA_IN_PROGRESS, ACTIVE_NODE_NOT_FOUND, \
     ELIGIBLE_NODE_NOT_FOUND, QUERY_HOST_SUCCESS, QUERY_HOST_FAILURE, QUERY_HOST_KEYWORD
+from inbm_common_lib.request_message_constants import DBS_LOG, DOCKER_NAME, DOCKER_MESSAGE
 from inbm_lib.constants import HOST_QUERY_CHANNEL
 
 logger = logging.getLogger(__name__)
@@ -108,7 +109,7 @@ class Command(ABC):
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """
-        if not search_keyword(payload, [DYNAMIC_TELEMETRY]):
+        if not search_keyword(payload, [DYNAMIC_TELEMETRY, DBS_LOG, DOCKER_NAME, DOCKER_MESSAGE]):
             logger.info('Message received: %s on topic: %s', payload, topic)
 
         if search_keyword(payload, ["/usr/bin/mender -install"]):
