@@ -1184,20 +1184,22 @@ titled **`Decommission Device`**.
 
 The Intel® In-Band Manageability provides a way to query attribute information on either the Host, Edge Device, or Nodes.
 
-To trigger a **Trigger Query**, follow the steps below:
+To trigger a query request, click the **Trigger Query** button as seen below.
 
-In order to query updates, click the **Trigger Query button** as seen below.
+<p align="left">
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image65.png" style="width:5.70833in;height:2.83333in" />
+</p>
 
-<img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image65.PNG" style="width:5.78125in;height:3.59762in" />
+Populate the **Trigger Query** pop-up window with the required parameters and click **send** to trigger the query request.
 
-Populate the **Trigger Query** pop-up window with the required parameters and click **send** to trigger the query Update.
-
-<img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_497530/docs/media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image64.PNG" style="width:5.78125in;height:3.59762in" />
+<p align="left">
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image64.png" style="width:5.70833in;height:2.83333in" />
+</p>
 
 For the details on **Query options**
 Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)							 
 	
-The query command capabilities are supported via manifest.
+The query command capabilities are also supported via manifest.
 
 ### Query Command via Manifest
 

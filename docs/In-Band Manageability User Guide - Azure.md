@@ -1126,15 +1126,16 @@ the health of each endpoint.
 
 This contains the following information and can be viewed under the
 **Properties** tab for a selected *Device*.
--   BIOS-release-date
--   BIOS-vendor
--   BIOS-version
--   CPU-ID
--   OS-information
--   System-Manufacturer
--   System-Product-Name
--   Total-physical-memory
--   System-Product-Name
+- BIOS-release-date
+- BIOS-vendor
+- BIOS-version
+- CPU-ID
+- OS-information
+- System-Manufacturer
+- System-Product-Name
+- Total-physical-memory
+- System-Product-Name
+
 ### Dynamic Telemetry Data
 Each endpoint publishes the following Dynamic Telemetry Data in 5-minute
 intervals.
