@@ -29,7 +29,7 @@ MENDER_COMMAND = MENDER_FILE_PATH
 MENDER_INSTALL_ARGUMENT = "install"
 MENDER_MINIMIZE_LOGS_ARGUMENT = "-log-level panic"
 MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifact_info")
-MENDER_COMMIT_COMMAND = "mender -commit"
+MENDER_COMMIT_COMMAND = "mender commit"
 MENDER_UPDATE_SCRIPT_EHL = "/etc/mender/scripts/ArtifactInstall_Leave_00_relabel_ext4"
 MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
 
