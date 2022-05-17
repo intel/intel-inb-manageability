@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
  - HSD 15011009937 - Remove POTA Failure error on Success
  - HSD 15010766920 - Fix Telemetry apparmor issue on Yocto
+ - HSD 15011207622 - Fixed SOTA update failed due to mender command changed
 
 ### Added
 - RTC 508495 Support INBC Config Append command
