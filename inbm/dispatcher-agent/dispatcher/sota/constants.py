@@ -11,6 +11,8 @@ from inbm_common_lib.utility import get_canonical_representation_of_path
 # Mender file path
 MENDER_FILE_PATH = get_canonical_representation_of_path('/usr/bin/mender')
 
+# Mender artifact path
+MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifact_info")
 
 GET_UBUNTU_PKG_REPO = "dispatcher/sota/ubuntuAptSource"
 

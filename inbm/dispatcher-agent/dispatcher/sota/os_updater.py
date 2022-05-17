@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 # Mender commands/arguments
 MENDER_COMMAND = MENDER_FILE_PATH
 MENDER_MINIMIZE_LOGS_ARGUMENT = "-log-level panic"
-MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifact_info")
 MENDER_UPDATE_SCRIPT_EHL = "/etc/mender/scripts/ArtifactInstall_Leave_00_relabel_ext4"
 MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
 
@@ -43,7 +42,7 @@ def mender_install_argument():
         return "install"
 
 
-class OsUpdater(ABC):
+class OsUpdater(ABC):  # pragma: no cover
     """Abstract class for handling OS update related tasks for the system."""
 
     def __init__(self) -> None:

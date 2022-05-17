@@ -347,7 +347,7 @@ class YoctoSnapshot(Snapshot):
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
-        cmd = MENDER_COMMIT_COMMAND
+        cmd = mender_commit_command()
         logger.debug("Running Mender commit: " + str(cmd))
         PseudoShellRunner.run(cmd)
 
