@@ -10,12 +10,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
  - HSD 15011009937 - Remove POTA Failure error on Success
  - HSD 15010766920 - Fix Telemetry apparmor issue on Yocto
+ - RTC 513178 - apt-get failed to update from a different location for the main Ubuntu sources
 
 ### Added
 - RTC 508495 Support INBC Config Append command
 - RTC 508497 Support INBC Config Remove command
 - RTC 500237 - Remove DBS messages from appearing in INBC
-- RTC 513178 - apt-get fail to update from a different location for the main Ubuntu sources
 
 ## 3.0.10 - 2022-03-28
 
