@@ -22,7 +22,7 @@ from ..dispatcher_exception import DispatcherException
 
 logger = logging.getLogger(__name__)
 
-def mender_commit_command():
+def mender_commit_command():  # pragma: no cover
     (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
     if "-commit" in out or ((err is not None) and "-commit" in err):
         return "mender -commit"
