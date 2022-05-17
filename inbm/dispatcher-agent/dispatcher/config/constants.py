@@ -14,4 +14,4 @@ TRUSTED_REPOSITORIES_LIST = 'trustedRepositories'
 
 # Configuration paths that support append and remove
 CONFIGURATION_APPEND_REMOVE_PATHS_LIST = [
-    'sotaSW', 'trustedRepositories', 'ubuntuAptSource']
+    'sotaSW', 'trustedRepositories']
