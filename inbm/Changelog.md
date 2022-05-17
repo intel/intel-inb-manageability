@@ -15,7 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - RTC 508495 Support INBC Config Append command
 - RTC 508497 Support INBC Config Remove command
 - RTC 500237 - Remove DBS messages from appearing in INBC
-- RTC 514101 - Remove support of remove and append command for apt source in TC configuration file
+- RTC 514101 - Remove support of remove and append command for apt source in configuration file
 
 ## 3.0.10 - 2022-03-28
 
