@@ -16,19 +16,31 @@ from abc import ABC, abstractmethod
 from inbm_common_lib.utility import CanonicalUri
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
+from inbm_common_lib.utility import get_canonical_representation_of_path
 
 from .command_list import CommandList
-from .constants import MENDER_ARTIFACT_INSTALL_COMMAND
-from .constants import MENDER_UPDATE_SCRIPT_EHL
-from .constants import MENDER_COMMAND
-from .constants import MENDER_MINIMIZE_LOGS_ARGUMENT
-from .constants import MENDER_INSTALL_ARGUMENT
+from .constants import MENDER_FILE_PATH
 from .converter import size_to_bytes
 from .sota_error import SotaError
 from ..common import uri_utilities
 from ..packagemanager import irepo
 
 logger = logging.getLogger(__name__)
+
+
+# Mender commands/arguments
+MENDER_COMMAND = MENDER_FILE_PATH
+MENDER_MINIMIZE_LOGS_ARGUMENT = "-log-level panic"
+MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifact_info")
+MENDER_UPDATE_SCRIPT_EHL = "/etc/mender/scripts/ArtifactInstall_Leave_00_relabel_ext4"
+MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
+
+def mender_install_argument():
+    (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
+    if "-install" in out:
+        return "-install"
+    else:
+        return "install"
 
 
 class OsUpdater(ABC):
@@ -65,7 +77,7 @@ class OsUpdater(ABC):
 
     @staticmethod
     def _create_local_mender_cmd(file_path: str) -> List[str]:
-        commands = [" " + MENDER_COMMAND + " " + MENDER_INSTALL_ARGUMENT + " " +
+        commands = [" " + MENDER_COMMAND + " " + mender_install_argument() + " " +
                     file_path + " " + MENDER_MINIMIZE_LOGS_ARGUMENT]
         return CommandList(commands).cmd_list
 
@@ -166,7 +178,7 @@ class YoctoX86_64Updater(OsUpdater):
         if uri is None:
             raise SotaError("missing URI.")
         filename = uri_utilities.uri_to_filename(uri.value)
-        commands = [" " + MENDER_COMMAND + " " + MENDER_INSTALL_ARGUMENT + " " +
+        commands = [" " + MENDER_COMMAND + " " + mender_install_argument() + " " +
                     str(Path(repo.get_repo_path()) / filename) + " "
                     + MENDER_MINIMIZE_LOGS_ARGUMENT]
 
@@ -211,7 +223,7 @@ class YoctoARMUpdater(OsUpdater):
             filename = uri.value[uri.value.rfind("/") + 1:]
         except IndexError:
             raise SotaError('URI ' + str(uri) + ' is improperly formatted')
-        commands = [" " + MENDER_COMMAND + " " + MENDER_INSTALL_ARGUMENT + " " +
+        commands = [" " + MENDER_COMMAND + " " + mender_install_argument() + " " +
                     str(Path(repo.get_repo_path()) / filename) + " "
                     + MENDER_MINIMIZE_LOGS_ARGUMENT]
         return CommandList(commands).cmd_list
