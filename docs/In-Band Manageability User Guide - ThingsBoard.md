@@ -24,7 +24,7 @@
     3. [Configuration Update](#configuration-update)
     4. [Power Management](#power-management)
     5. [Decommission Command](#decommission-command)
-    6. [Query Commands](#query-commands)
+    6. [Query Command](#query-command)
 4. [Telemetry Data](#telemetry-data)
     1. [Static Telemetry Data](#static-telemetry-data)
     2. [Dynamic Telemetry Data](#dynamic-telemetry-data)
@@ -1180,11 +1180,28 @@ dashboard to trigger a Device Reboot.
 Now on the pop-up window shows up, click the `Send` button on the box
 titled **`Decommission Device`**.
 
-### Query Commands
+### Query Command
 
-The query command capabilities are supported via manifest.
+The Intel® In-Band Manageability provides a way to query attribute information on either the Host, Edge Device, or Nodes.
 
-### Query Commands via Manifest
+To trigger a query request, click the **Trigger Query** button as seen below.
+
+<p align="left">
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image65.png" style="width:5.70833in;height:2.83333in" />
+</p>
+
+Populate the **Trigger Query** pop-up window with the required parameters and click **send** to trigger the query request.
+
+<p align="left">
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image64.png" style="width:5.70833in;height:2.83333in" />
+</p>
+
+For the details on **Query options**
+Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)							 
+	
+The query command capabilities are also supported via manifest.
+
+### Query Command via Manifest
 
 [Query Manifest and Examples](Manifest%20Parameters.md#Query)
 
