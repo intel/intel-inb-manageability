@@ -29,6 +29,7 @@ from inbm_common_lib.utility import CanonicalUri, canonicalize_uri
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_lib.count_down_latch import CountDownLatch
 from requests import HTTPError
+from requests.exceptions import ProxyError, ChunkedEncodingError, ContentDecodingError, ConnectionError
 from requests.utils import get_environ_proxies
 
 from .constants import LINUX_CA_FILE
@@ -111,16 +112,19 @@ def is_enough_space_to_download(uri: CanonicalUri,
                     if chunk:
                         content_length += len(chunk)
     except HTTPError as e:
-        raise DispatcherException('Status code for ' + uri.value +
+        raise DispatcherException('Invalid URI:' 'Status code for ' + uri.value +
                                   ' is ' + str(e.response.status_code))
+    except (ProxyError, ChunkedEncodingError, ContentDecodingError, ConnectionError) as e:
+        raise DispatcherException(str(e))
+
     except Exception as e:
-        raise DispatcherException('Exception checking package content size: ' + str(e))
+        raise DispatcherException(e)
 
     logger.debug("Content-length: " + repr(content_length))
-    file_size: int = int(content_length)
+    file_size: int=int(content_length)
     if destination_repo.exists():
-        get_free_space = destination_repo.get_free_space()
-        free_space: int = int(get_free_space)
+        get_free_space=destination_repo.get_free_space()
+        free_space: int=int(get_free_space)
     else:
         raise DispatcherException("Repository does not exist : " +
                                   destination_repo.get_repo_path())
