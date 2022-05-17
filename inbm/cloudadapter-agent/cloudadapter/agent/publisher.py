@@ -24,12 +24,12 @@ class Publisher:
     def __init__(self, broker: Broker) -> None:
         self._broker = broker
 
-    def _send_ota_action(self, manifest: str) -> None:
-        """Sends an OTA action to the TC Broker with the manifest
+    def _send_manifest(self, manifest: str) -> None:
+        """Sends manifest to the MQTT Broker
 
-        @param manifest: (str) The properly formatted manifest to send
+        @param manifest: The properly formatted manifest to send
         """
-        logger.info("OTA action invoked")
+        logger.info("Send manifest invoked")
         self._broker.publish_install(manifest)
 
     def _sanitize_values(self, arguments: Dict[str, str], valid_mapping: Dict[str, List[str]]) -> None:
@@ -86,7 +86,7 @@ class Publisher:
         if not manifest or not manifest.strip():
             raise ValueError("No manifest was given!")
 
-        self._send_ota_action(manifest)
+        self._send_manifest(manifest)
         return MESSAGE.MANIFEST
 
     def publish_aota(self, **arguments: str) -> str:
@@ -114,33 +114,33 @@ class Publisher:
 
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
-                        '<type>ota</type>'
-                        '<ota>'
-                            '<header>'
-                                '<type>aota</type>'
-                                '<repo>remote</repo>'
-                            '</header>'
-                            '<type><aota name="sample-rpm">{}</aota></type>'
-                        '</ota>'
+                    '<type>ota</type>'
+                    '<ota>'
+                    '<header>'
+                    '<type>aota</type>'
+                    '<repo>remote</repo>'
+                    '</header>'
+                    '<type><aota name="sample-rpm">{}</aota></type>'
+                    '</ota>'
                     '</manifest>').format(
             create_xml_tags(arguments,
-                                  "cmd",
-                                  "app",
-                                  "fetch",
-                                  "file",
-                                  "version",
-                                  "signature",
-                                  "containerTag",
-                                  "deviceReboot",
-                                  "username",
-                                  "password",
-                                  "dockerRegistry",
-                                  "dockerUsername",
-                                  "dockerPassword"
-                                  )  # noqa: E127
+                            "cmd",
+                            "app",
+                            "fetch",
+                            "file",
+                            "version",
+                            "signature",
+                            "containerTag",
+                            "deviceReboot",
+                            "username",
+                            "password",
+                            "dockerRegistry",
+                            "dockerUsername",
+                            "dockerPassword"
+                            )  # noqa: E127
         )
 
-        self._send_ota_action(manifest)
+        self._send_manifest(manifest)
         return MESSAGE.AOTA
 
     def publish_fota(self, **arguments: str) -> str:
@@ -162,32 +162,32 @@ class Publisher:
         )
 
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
-                        '<manifest>'
-                        '<type>ota</type>'
-                        '<ota>'
-                            '<header>'
-                                '<type>fota</type>'
-                                '<repo>remote</repo>'
-                            '</header>'
-                            '<type><fota name="sample">{}</fota></type>'
-                        '</ota>'
+                    '<manifest>'
+                    '<type>ota</type>'
+                    '<ota>'
+                    '<header>'
+                    '<type>fota</type>'
+                    '<repo>remote</repo>'
+                    '</header>'
+                    '<type><fota name="sample">{}</fota></type>'
+                    '</ota>'
                     '</manifest>').format(
             create_xml_tags(arguments,
-                                  "signature",
-                                  "fetch",
-                                  "biosversion",
-                                  "vendor",
-                                  "manufacturer",
-                                  "product",
-                                  "releasedate",
-                                  "path",
-                                  "tooloptions",
-                                  "username",
-                                  "password"
-                                  )  # noqa: E127
+                            "signature",
+                            "fetch",
+                            "biosversion",
+                            "vendor",
+                            "manufacturer",
+                            "product",
+                            "releasedate",
+                            "path",
+                            "tooloptions",
+                            "username",
+                            "password"
+                            )  # noqa: E127
         )
 
-        self._send_ota_action(manifest)
+        self._send_manifest(manifest)
         return MESSAGE.FOTA
 
     def publish_sota(self, **arguments: str) -> str:
@@ -207,31 +207,31 @@ class Publisher:
 
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
-                        '<type>ota</type>'
-                        '<ota>'
-                            '<header>'
-                                '<type>sota</type>'
-                                '<repo>remote</repo>'
-                            '</header>'
-                            '<type><sota>'
-                                '<cmd logtofile="{}">{}</cmd>'
-                                '{}'
-                            '</sota></type>'
-                        '</ota>'
+                    '<type>ota</type>'
+                    '<ota>'
+                    '<header>'
+                    '<type>sota</type>'
+                    '<repo>remote</repo>'
+                    '</header>'
+                    '<type><sota>'
+                    '<cmd logtofile="{}">{}</cmd>'
+                    '{}'
+                    '</sota></type>'
+                    '</ota>'
                     '</manifest>').format(
             arguments.get("log_to_file"),
             arguments.get("cmd"),
             create_xml_tags(arguments,
-                                  "fetch",
-                                  "signature",
-                                  "version",
-                                  "username",
-                                  "password",
-                                  "release_date"
-                                  )  # noqa: E127
+                            "fetch",
+                            "signature",
+                            "version",
+                            "username",
+                            "password",
+                            "release_date"
+                            )  # noqa: E127
         )
 
-        self._send_ota_action(manifest)
+        self._send_manifest(manifest)
         return MESSAGE.SOTA
 
     def publish_config(self, **arguments: str) -> str:
@@ -250,13 +250,13 @@ class Publisher:
 
         manifest = ('<?xml version="1.0" encoding="UTF-8"?>'
                     '<manifest>'
-                        '<type>config</type>'
-                        '<config>'
-                            '<cmd>{0}</cmd>'
-                            '<configtype>'
-                                '<{1}>{2}</{1}>'
-                            '</configtype>'
-                        '</config>'
+                    '<type>config</type>'
+                    '<config>'
+                    '<cmd>{0}</cmd>'
+                    '<configtype>'
+                    '<{1}>{2}</{1}>'
+                    '</configtype>'
+                    '</config>'
                     '</manifest>')  # noqa: E127
 
         command = arguments.get("cmd")
@@ -281,5 +281,35 @@ class Publisher:
                 create_xml_tags(arguments, "path")
             )
 
-        self._send_ota_action(manifest)
+        self._send_manifest(manifest)
         return MESSAGE.CONFIG
+
+    def publish_query(self, **arguments: str) -> str:
+        """Publishes a configuration update
+
+        @param arguments: (**kwargs: str) Query arguments
+        @return:          The accompanying message
+        @exception ValueError: If an argument is an invalid value
+        """
+        logger.debug("Query Method Triggered")
+        self._sanitize_values(
+            arguments, {
+                "option": ["all", "hw", "fw", "guid", "os", "security", "status", "swbom", "version"]
+            }
+        )
+
+        manifest = ('<?xml version="1.0" encoding="UTF-8"?>'
+                    '<manifest>'
+                    '<type>cmd</type>'
+                    '<cmd>query</cmd>'
+                    '<query>'
+                    '<option>{0}</option>'
+                    '</query>'
+                    '</manifest>')
+
+        option = arguments.get("option")
+        manifest = manifest.format(option,
+                                   create_xml_tags(arguments, "option"))
+
+        self._send_manifest(manifest)
+        return MESSAGE.QUERY
