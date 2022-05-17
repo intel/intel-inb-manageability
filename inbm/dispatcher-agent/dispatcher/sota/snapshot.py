@@ -12,7 +12,7 @@ from abc import ABC, abstractmethod
 from inbm_lib.trtl import Trtl
 from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from .constants import MENDER_COMMIT_COMMAND
+from .constants import MENDER_FILE_PATH
 from .mender_util import read_current_mender_version
 from .rebooter import Rebooter
 from ..common import dispatcher_state
@@ -21,6 +21,14 @@ from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
 
 logger = logging.getLogger(__name__)
+
+def mender_commit_command():  # pragma: no cover
+    (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
+    if "-commit" in out or ((err is not None) and "-commit" in err):
+        return "mender -commit"
+    else:
+        return "mender commit"
+
 
 
 class Snapshot(ABC):  # pragma: no cover
@@ -339,7 +347,7 @@ class YoctoSnapshot(Snapshot):
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
-        cmd = MENDER_COMMIT_COMMAND
+        cmd = mender_commit_command()
         logger.debug("Running Mender commit: " + str(cmd))
         PseudoShellRunner.run(cmd)
 
