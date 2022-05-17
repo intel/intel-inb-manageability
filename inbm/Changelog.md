@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - RTC 508495 Support INBC Config Append command
 - RTC 508497 Support INBC Config Remove command
 - RTC 500237 - Remove DBS messages from appearing in INBC
+- RTC 497932 - Incorrect error message when OTA fetching fail
 
 ## 3.0.10 - 2022-03-28
 
