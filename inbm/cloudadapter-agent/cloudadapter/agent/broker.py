@@ -93,7 +93,7 @@ class Broker:
         self.mqttc.publish(TC_REQUEST_CHANNEL + DECOMMISSION, '', retain=True)
 
     def publish_install(self, manifest: str) -> None:
-        """Publishes a request to install a manifest
+        """Publishes a manifest request
 
         @param manifest: (str) The XML formatted manifest to send
         """

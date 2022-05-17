@@ -56,12 +56,11 @@
         2. [SOTA Update Via ‘Trigger SOTA’ Button Click (Mender)](#sota-update-via-trigger-sota-button-click-mender)
         3. [SOTA Update via Manifest](#sota-update-via-manifest)
     9. [Configuration Update ](#configuration-update)
-    10. [Configuration Operation via Button Click](#configuration-operation-via-button-click)
         1. [Configuration Set](#configuration-set)
-        2. [Configuration Get:](#configuration-get)
-        3. [Configuration Load:](#configuration-load)
-        4. [Configuration Append:](#configuration-append)
-        5. [Configuration Remove:](#configuration-remove)
+        2. [Configuration Get](#configuration-get)
+        3. [Configuration Load](#configuration-load)
+        4. [Configuration Append](#configuration-append)
+        5. [Configuration Remove](#configuration-remove)
         6. [Configuration Operation via Manifest](#configuration-operation-via-manifest)
     11. [Power Management](#power-management)
         1. [Power Management via Button Click](#power-management-via-button-click)
@@ -69,8 +68,8 @@
         3. [System Shutdown](#system-shutdown)
     12. [Power Management via Manifest](#power-management-via-manifest)
     13. [Decommission Command](#decommission-command)
-    14. [Query Commands](#query-commands)
-    15. [Query Commands via Manifest](#query-commands-via-manifest)
+    14. [Query Command](#query-command)
+        1. [Query Command via Manifest](#query-command-via-manifest)
 9. [Telemetry Data](#telemetry-data)
     1. [Static Telemetry Data](#static-telemetry-data)
     2. [Dynamic Telemetry Data](#dynamic-telemetry-data)
@@ -977,8 +976,6 @@ In order to trigger Configuration updates:
 
 <img src="media/In-Band Manageability User Guide - Azure/media/image37.png" style="width:0.17431in;height:0.17361in" />
 
-### Configuration Operation via Button Click
-
 #### Configuration Set
 
 > **Examples:**
@@ -994,7 +991,7 @@ To set multiple values at once: `minStorageMB:10;minMemoryMB:250`
 
 <img src="media/In-Band Manageability User Guide - Azure/media/image58.png" style="width:4.85356in;height:4.92647in" />
 
-#### Configuration Get:
+#### Configuration Get
 
 > **Examples:**
 To get one value: `minStorageMB`
@@ -1009,7 +1006,7 @@ To get multiple values at once: `minStorageMB;minMemoryMB`
 
 <img src="media/In-Band Manageability User Guide - Azure/media/image59.png" style="width:4.79861in;height:4.93333in" />
 
-#### Configuration Load:
+#### Configuration Load
 
 **NOTE:** 
 > The configuration file you provide in Fetch needs to be
@@ -1019,7 +1016,7 @@ To get multiple values at once: `minStorageMB;minMemoryMB`
 
 <img src="media/In-Band Manageability User Guide - Azure/media/image60.png" style="width:4.72639in;height:4.77292in" />
 
-#### Configuration Append:
+#### Configuration Append
 
 **NOTE:**
 > Append is only applicable to three configuration tags i.e
@@ -1030,7 +1027,7 @@ To get multiple values at once: `minStorageMB;minMemoryMB`
 
 <img src="media/In-Band Manageability User Guide - Azure/media/image61.png" style="width:4.75034in;height:4.85849in" />
 
-#### Configuration Remove:
+#### Configuration Remove
 
 **NOTE:** 
 > Remove is only applicable to three configuration tags i.e
@@ -1101,13 +1098,23 @@ In order to trigger Decommission:
 
     <img src="media/In-Band Manageability User Guide - Azure/media/image35.png" style="width:6in;height:1.47639in" />
 
--   On the text area named *Decommission* and click **Run.**
+-   Select **Run** in the  *Decommission* section.
 
     <img src="media/In-Band Manageability User Guide - Azure/media/image65.png" style="width:3.02153in;height:1.91736in" />
 
-### Query Commands
+### Query Command
+The Intel® In-Band Manageability provides a way to query attribute information on either the Host, Edge Device, or Nodes.
+
+-   To query attributes, provide the desire option type in the text box.  Then click the **Trigger Query** button.
+
+    <img src="media/In-Band Manageability User Guide - Azure/media/image87.png" style="width:6in;height:1.47639in"/>
+
+For the details on **Query options**
+Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md) 
+
 The query command capabilities are supported via manifest.
-### Query Commands via Manifest
+
+#### Query Command via Manifest
 Refer to [Query Manifest and Examples](Manifest%20Parameters.md#Query)
 
 ## Telemetry Data
@@ -1119,15 +1126,16 @@ the health of each endpoint.
 
 This contains the following information and can be viewed under the
 **Properties** tab for a selected *Device*.
--   BIOS-release-date
--   BIOS-vendor
--   BIOS-version
--   CPU-ID
--   OS-information
--   System-Manufacturer
--   System-Product-Name
--   Total-physical-memory
--   System-Product-Name
+- BIOS-release-date
+- BIOS-vendor
+- BIOS-version
+- CPU-ID
+- OS-information
+- System-Manufacturer
+- System-Product-Name
+- Total-physical-memory
+- System-Product-Name
+
 ### Dynamic Telemetry Data
 Each endpoint publishes the following Dynamic Telemetry Data in 5-minute
 intervals.

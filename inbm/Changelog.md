@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 - RTC 508495 Support INBC Config Append command
 - RTC 508497 Support INBC Config Remove command
+- RTC 497530 Add fields in Thingsboard and Azure to support Query command via button click.
 - RTC 500237 - Remove DBS messages from appearing in INBC
 - RTC 514101 - Remove support of remove and append command for apt source in configuration file
 
