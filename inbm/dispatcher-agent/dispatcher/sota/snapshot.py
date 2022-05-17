@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 def mender_commit_command():
     (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
-    if "-commit" in out:
+    if "-commit" in out or "-commit" in err:
         return "mender -commit"
     else:
         return "mender commit"
