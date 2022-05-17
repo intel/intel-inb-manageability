@@ -36,7 +36,7 @@ MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
 
 def mender_install_argument():
     (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
-    if "-install" in out or "-install" in err:
+    if "-install" in out or ((err is not None) and "-install" in err):
         return "-install"
     else:
         return "install"
