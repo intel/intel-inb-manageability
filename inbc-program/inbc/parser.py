@@ -497,7 +497,7 @@ def load(args) -> str:
         'targetType': None if args.nohddl else args.targettype,
         'fetch': args.uri,
         'path': args.path,
-       'signature': args.signature,
+        'signature': args.signature,
         'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args)
@@ -521,7 +521,8 @@ def load(args) -> str:
         create_xml_tag(arguments, "targetType"),
         create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path"),
-        create_xml_tag(arguments, "fetch")
+        create_xml_tag(arguments, "fetch"),
+        create_xml_tag(arguments, "signature")
     )
     print("manifest {0}".format(manifest))
     return manifest
