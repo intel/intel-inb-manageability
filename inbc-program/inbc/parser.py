@@ -173,6 +173,8 @@ class ArgsParser(object):
 
         parser_load.add_argument('--targettype', '-tt', default='node', required=False,
                                  help='Type of target [vision | node | node-client]')
+        parser_load.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
+                                 type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         parser_load.set_defaults(func=load)
 
     def parse_get_args(self) -> None:
