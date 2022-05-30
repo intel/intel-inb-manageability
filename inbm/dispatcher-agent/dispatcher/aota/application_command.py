@@ -136,7 +136,6 @@ class CentOsApplication(Application):
             move_file(driver_path, driver_centos_path)
 
             old_driver_name = self.identify_package(driver_path.split('/')[-1])
-            logger.debug(old_driver_name)
             if not old_driver_name:
                 raise AotaError(
                     f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
