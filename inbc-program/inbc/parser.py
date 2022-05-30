@@ -497,6 +497,7 @@ def load(args) -> str:
         'targetType': None if args.nohddl else args.targettype,
         'fetch': args.uri,
         'path': args.path,
+       'signature': args.signature,
         'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args)
