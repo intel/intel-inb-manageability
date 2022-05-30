@@ -135,6 +135,20 @@ class CentOsApplication(Application):
             # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
 
+            old_driver_name = self.identify_package(driver_path.split('/')[-1])
+            logger.debug(old_driver_name)
+            if not old_driver_name:
+                raise AotaError(
+                    f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
+            uninstall_driver_cmd = CHROOT_PREFIX + \
+                f'/usr/bin/rpm -e --nodeps {old_driver_name}'
+            out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
+            logger.debug(out)
+            # If old packages wasn't install on system, it will return error too.
+            if code != 0 and "is not installed" not in str(err):
+                raise AotaError(err)
+
+
             chroot_driver_path = driver_centos_path.replace("/host", "")
             install_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
