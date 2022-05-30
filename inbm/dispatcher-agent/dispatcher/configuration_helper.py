@@ -84,6 +84,7 @@ class ConfigurationHelper:
         @param repo: destination repo for download
         @return: configuration file
         """
+        logger.debug("##########################################")
         logger.debug("download_config(parsed=" + parsed.__repr__() + ")")
         self._repo = repo if repo else DirectoryRepo(CACHE)
         url = self.parse_url(parsed)
@@ -129,9 +130,11 @@ class ConfigurationHelper:
                                          self._dispatcher_callbacks, hash_algorithm)
                     except DispatcherException as err:
                         self._repo.delete(tar_file_name)
+                        logger.debug("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
                         raise DispatcherException(f'Configuration Load Aborted. {str(err)}')
                 else:
                     self._repo.delete(tar_file_name)
+                    logger.debug("************************************************")
                     raise DispatcherException('Configuration Load Aborted: Signature is required to '
                                               'proceed with the update.')
             else:
