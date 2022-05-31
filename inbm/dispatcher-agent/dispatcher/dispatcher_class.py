@@ -277,6 +277,7 @@ class Dispatcher(WindowsService):
                     return Result(CODE_BAD_REQUEST,
                                   'Configuration load: Invalid configuration load manifest without <path> tag')
             else:
+                logger.debug("JJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJJ")
                 return Result(CODE_BAD_REQUEST, 'Configuration load: unable to download configuration (bad URI)')
 
         if uri:
@@ -284,6 +285,7 @@ class Dispatcher(WindowsService):
                 conf_file = configuration_helper.download_config(
                     parsed_head, DirectoryRepo(CACHE))
             except DispatcherException as err:
+                logger.debug("KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK")
                 self._telemetry(str(err))
                 return Result(CODE_BAD_REQUEST, 'Configuration load: unable to download configuration')
             if conf_file:
