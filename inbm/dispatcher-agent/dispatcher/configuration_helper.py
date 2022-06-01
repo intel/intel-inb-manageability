@@ -106,7 +106,7 @@ class ConfigurationHelper:
         tar_file_path = os.path.join(self._repo.get_repo_path(), tar_file_name)
         source = url[:-(len(url.split('/')[-1]) + 1)]
         logger.debug(f"source: {source}")
-
+        logger.debug("LLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL")
         verify_source(source=source, dispatcher_callbacks=self._dispatcher_callbacks)
         self._dispatcher_callbacks.broker_core.telemetry('Source Verification check passed')
         self._dispatcher_callbacks.broker_core.telemetry(
