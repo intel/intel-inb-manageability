@@ -150,7 +150,8 @@ class CentOsApplication(Application):
 
             chroot_driver_path = driver_centos_path.replace("/host", "")
             if not chroot_driver_path.endswith('.rpm'):
-                raise AotaError('AOTA Command Failed: Invalid file')
+                msg =  'Invalid file'
+                raise AotaError(f'AOTA Command Failed: {msg}')
             install_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
