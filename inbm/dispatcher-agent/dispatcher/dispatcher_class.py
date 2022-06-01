@@ -107,6 +107,9 @@ def _get_config_value(parsed: XmlHandler) -> Tuple[str, Optional[str]]:
     elif config_cmd_type == 'append':
         header = parsed.get_children('config/configtype/append')
         value_object = header['path'].strip()
+    elif config_cmd_type == 'load':
+        header = parsed.get_children('config/configtype/load')
+        value_object = header['path'].strip()    
     elif config_cmd_type == 'remove':
         header = parsed.get_children('config/configtype/remove')
         value_object = header['path'].strip()
