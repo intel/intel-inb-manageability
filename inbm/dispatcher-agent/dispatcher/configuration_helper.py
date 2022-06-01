@@ -94,6 +94,7 @@ class ConfigurationHelper:
         try:
             canonical_url = canonicalize_uri(url)
             header = parsed.get_children('config/configtype/load')
+            logger.debug(header)
             signature = header.get('signature')
             logger.debug(f"SIGN : {signature}")
             hash_algorithm = 384 if signature else None
