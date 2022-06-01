@@ -135,6 +135,9 @@ class CentOsApplication(Application):
             # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
 
+            chroot_driver_path = driver_centos_path.replace("/host", "")
+            if not chroot_driver_path.endswith('.rpm'):
+                raise AotaError(err)
             old_driver_name = self.identify_package(driver_path.split('/')[-1])
             if not old_driver_name:
                 raise AotaError(
@@ -147,11 +150,6 @@ class CentOsApplication(Application):
             if code != 0 and "is not installed" not in str(err):
                 raise AotaError(err)
 
-
-            chroot_driver_path = driver_centos_path.replace("/host", "")
-            if not chroot_driver_path.endswith('.rpm'):
-                err =  'Invalid file'
-                raise AotaError(err)
             install_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
