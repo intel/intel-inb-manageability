@@ -137,7 +137,7 @@ class CentOsApplication(Application):
 
             chroot_driver_path = driver_centos_path.replace("/host", "")
             if not chroot_driver_path.endswith('.rpm'):
-                raise AotaError(err)
+                raise AotaError('Invalid file'))
             old_driver_name = self.identify_package(driver_path.split('/')[-1])
             if not old_driver_name:
                 raise AotaError(
