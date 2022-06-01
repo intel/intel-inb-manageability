@@ -56,6 +56,7 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
     logger.debug(f"source: {source}, filename: {file_name}")
 
     verify_source(source=source, dispatcher_callbacks=dispatcher_callbacks)
+    logger.debug(f"passedddddddddddddddddddddddddddddddddddddddddddd")
     dispatcher_callbacks.broker_core.telemetry('Source Verification check passed')
     if username and password and uri.value.startswith("http://"):
         raise DispatcherException(
