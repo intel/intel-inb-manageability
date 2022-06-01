@@ -149,6 +149,7 @@ class CentOsApplication(Application):
             if code != 0 and "is not installed" not in str(err):
                 raise AotaError(err)
 
+            chroot_driver_path = driver_centos_path.replace("/host", "")
             install_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
