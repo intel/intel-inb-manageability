@@ -149,11 +149,11 @@ class CentOsApplication(Application):
 
 
             chroot_driver_path = driver_centos_path.replace("/host", "")
+            logger.debug(chroot_driver_path)
             install_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
             out, err, code = PseudoShellRunner().run(install_driver_cmd)
-            logger.debug(out)
             if code != 0:
                 raise AotaError(err)
             self._reboot(CHROOT_PREFIX + '/usr/sbin/shutdown -r 0')
