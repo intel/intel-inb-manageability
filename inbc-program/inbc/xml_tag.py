@@ -42,7 +42,7 @@ def create_signature_tag(val: str, name: str) -> str:
     @param name: name of tag
     @return:      The xml tag
     """
-    if name == FOTA_SIGNATURE or name == SIGNATURE:
+    if name == FOTA_SIGNATURE or name == SIGNATURE name == LOAD_SIGNATURE:
         return "<signature>{0}</signature>".format(val) if val != "None" else ""
     else:
         return "<{0}>{1}</{0}>".format(name, val)
