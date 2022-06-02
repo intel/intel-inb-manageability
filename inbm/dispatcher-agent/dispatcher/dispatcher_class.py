@@ -107,9 +107,9 @@ def _get_config_value(parsed: XmlHandler) -> Tuple[str, Optional[str]]:
     elif config_cmd_type == 'append':
         header = parsed.get_children('config/configtype/append')
         value_object = header['path'].strip()
-    elif config_cmd_type == 'load':
-        header = parsed.get_children('config/configtype/load')
-        value_object = header['path'].strip()    
+#     elif config_cmd_type == 'load':
+#         header = parsed.get_children('config/configtype/load')
+#         value_object = header['path'].strip()    
     elif config_cmd_type == 'remove':
         header = parsed.get_children('config/configtype/remove')
         value_object = header['path'].strip()
@@ -273,6 +273,7 @@ class Dispatcher(WindowsService):
             if target_type is TargetType.none.name:
                 logger.debug("Config load operation using local path.")
                 path_header = parsed_head.get_children('config/configtype/load')
+                logger.debug(path_header)
                 new_file_loc = path_header.get('path', None)
                 if CACHE not in new_file_loc.rsplit('/', 1):
                     return CONFIG_LOAD_FAIL_WRONG_PATH
