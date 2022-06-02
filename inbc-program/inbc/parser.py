@@ -175,8 +175,8 @@ class ArgsParser(object):
                                  help='Type of target [vision | node | node-client]')
         parser_load.add_argument('--loadsignature', '-l', default='None', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'FOTA Signature', 1000),
-                                 help='FOTA Signature string')
+                                     x, 'LOAD Signature', 1000),
+                                 help='LOAD Signature string')
         parser_load.set_defaults(func=load)
 
     def parse_get_args(self) -> None:
