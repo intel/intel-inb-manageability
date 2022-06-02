@@ -19,7 +19,7 @@ from inbm_lib.detect_os import detect_os, LinuxDistType
 from inbm_vision_lib.constants import TARGET, TARGET_TYPE
 
 from .inbc_exception import InbcException
-from .constants import FOTA_SIGNATURE, TARGETS_HELP, TARGETS_NODE_AND_CLIENT_ONLY_HELP, \
+from .constants import FOTA_SIGNATURE, LOAD_SIGNATURE, TARGETS_HELP, TARGETS_NODE_AND_CLIENT_ONLY_HELP, \
     TARGETS_NODE_ONLY_HELP, PATH_STRING
 
 logger = logging.getLogger(__name__)
