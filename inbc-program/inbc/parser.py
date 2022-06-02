@@ -173,7 +173,7 @@ class ArgsParser(object):
 
         parser_load.add_argument('--targettype', '-tt', default='node', required=False,
                                  help='Type of target [vision | node | node-client]')
-        parser_load.add_argument('--fotasignature', '-fs', default='None', required=False,
+        parser_load.add_argument('--loadsignature', '-l', default='None', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'FOTA Signature', 1000),
                                  help='FOTA Signature string')
@@ -499,7 +499,7 @@ def load(args) -> str:
         'targetType': None if args.nohddl else args.targettype,
         'fetch': args.uri,
         'path': args.path,
-        FOTA_SIGNATURE: args.fotasignature,
+        LOAD_SIGNATURE: args.loadsignature,
         'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args)
@@ -525,7 +525,7 @@ def load(args) -> str:
         create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path"),
         create_xml_tag(arguments, "fetch"),
-        create_xml_tag(arguments, "FOTA_SIGNATURE")
+        create_xml_tag(arguments, "LOAD_SIGNATURE")
     )
     print("manifest {0}".format(manifest))
     return manifest
