@@ -51,20 +51,24 @@ class AOTA:
         @raise: AotaError : on failure with error string
         """
         try:
+            logger.debug("In run method")
             if self._cmd is None:
                 raise AotaError("no cmd given for AOTA")
             self._app_instance.verify_command(self._cmd)
             if self._cmd == "import":
                 self._cmd = "import_image"
 
+            logger.debug("In run method")
             app_method = getattr(self._app_instance, self._cmd)
             app_method()
             self._dispatcher_callbacks.broker_core.telemetry(
                 f'AOTA {self._app_type} {self._cmd} {COMMAND_SUCCESS}')
+            logger.debug("In run method")
             self._app_instance.cleanup()
         except (AotaError, UrlSecurityException) as e:
             err = f"AOTA {self._app_type} {self._cmd} FAILED: {e}"
             if self._app_instance.repo_to_clean_up and self._app_instance.resource:
                 cleanup_repo(self._app_instance.repo_to_clean_up, self._app_instance.resource)
             self._dispatcher_callbacks.broker_core.telemetry(err)
+            logger.debug("In run method")
             raise AotaError(err)
