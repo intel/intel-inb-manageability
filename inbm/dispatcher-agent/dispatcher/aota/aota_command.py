@@ -104,10 +104,10 @@ class AotaCommand(ABC):
         """
         shell = PseudoShellRunner()
         dir_name = time.time()
-        out, err, code = shell.run(
-            "mkdir " + os.path.join(REPOSITORY_TOOL_CACHE, "aota" + str(dir_name)))
-        if err:
-            raise AotaError(f'{err}. {INSTALL_FAILURE.message}')
+        #out, err, code = shell.run(
+        #    "mkdir " + os.path.join(REPOSITORY_TOOL_CACHE, "aota" + str(dir_name)))
+        #if err:
+        #    raise AotaError(f'{err}. {INSTALL_FAILURE.message}')
         logger.debug("create_repository_cache_repo======================================")
         return DirectoryRepo(os.path.join(REPOSITORY_TOOL_CACHE, "aota" + str(dir_name)))
 
