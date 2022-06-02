@@ -9,9 +9,9 @@ from datetime import datetime
 UNKNOWN = 'Unknown'
 UNKNOWN_DATETIME = datetime.strptime("9999-01-01", "%Y-%m-%d")
 
-VALID_MAGIC_FILE_TYPE_PREFIXES = ['data', 'POSIX tar archive', 'gzip compressed data', 'exported SGML document', 'ASCII text',
-                         'PEM certificate', 'empty', 'u-boot legacy uImage', 'Intel serial flash for PCH ROM',
-                         'XML 1.0 document', 'Debian binary', 'RPM ']
+VALID_MAGIC_FILE_TYPE_PREFIXES = ['data', 'POSIX tar archive', 'gzip compressed data', 'exported SGML document',
+                                  'ASCII text', 'PEM certificate', 'empty', 'u-boot legacy uImage',
+                                  'Intel serial flash for PCH ROM', 'XML 1.0 document', 'Debian binary', 'RPM ']
 
 TEMP_EXT_FOLDER = "/var/cache/manageability/repository-tool/temp_ext"
 URL_NULL_CHAR = '%00'
@@ -24,6 +24,8 @@ CONFIG_CHANNEL = 'ma/configuration/update/'
 
 # Request constants
 CONFIG_LOAD = "load"
+CONFIG_APPEND = "append"
+CONFIG_REMOVE = "remove"
 
 # Source
 LOCAL_SOURCE = 'local'
@@ -55,4 +57,4 @@ FW_DEVICE_TREE_PATH = '/proc/device-tree/firmware/bios/'
 AFULNX_64 = 'afulnx_64'
 
 # Default signature version
-DEFAULT_HASH_ALGORITHM= 384
+DEFAULT_HASH_ALGORITHM = 384

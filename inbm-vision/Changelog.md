@@ -3,9 +3,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## 3.0.11 - 2022-05-17
+
+### Fixed
+ - HSD 15010982715 - inbm-vision failed to receive query request from cloud
+
 ## 3.0.10 - 2022-03-28
 
-## Fixed
+### Fixed
  - RTC 509991 Updated docker stats dashboard to display units for readability.
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
@@ -20,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 NOTE: This release has not yet been security tested.
 
 ### Fixed
+- HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
 - 509266 Vision agent post-install script fails
 - HSD 1509485150, 47042 - Fix INBC fail to exit intermittently when using hddl_device_server
 - (507873) Added support for Ubuntu 21.10

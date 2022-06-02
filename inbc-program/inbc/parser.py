@@ -40,6 +40,8 @@ class ArgsParser(object):
         self.parse_load_args()
         self.parse_get_args()
         self.parse_set_args()
+        self.parse_append_args()
+        self.parse_remove_args()
         self.parse_restart_args()
         self.parse_query_args()
 
@@ -202,6 +204,27 @@ class ArgsParser(object):
         parser_set.add_argument('--targettype', '-tt', default='node', required=False,
                                 help='Type of target [vision | node | node-client]')
         parser_set.set_defaults(func=set)
+
+
+    def parse_remove_args(self) -> None:
+        """Parse remove arguments"""
+        parser_remove = self._create_subparser('remove')
+
+        parser_remove.add_argument('--path', '-p', required=True,
+                                   type=lambda x: validate_string_less_than_n_characters(
+                                       x, 'Path', 500),
+                                   help='Full path to key(s)')
+        parser_remove.set_defaults(func=remove)
+
+    def parse_append_args(self) -> None:
+        """Parse append arguments"""
+        parser_append = self._create_subparser('append')
+
+        parser_append.add_argument('--path', '-p', required=True,
+                                   type=lambda x: validate_string_less_than_n_characters(
+                                       x, 'Path', 500),
+                                   help='Full path to key(s)')
+        parser_append.set_defaults(func=append)
 
     def parse_restart_args(self) -> None:
         """Parse restart arguments"""
@@ -562,6 +585,84 @@ def set(args) -> str:
                 '<set>' +
                 '{2}' +
                 '</set>' +
+                '</configtype>' +
+                '</config>' +
+                '</manifest>').format(
+        create_xml_tag(arguments, "targetType"),
+        create_xml_tag(arguments, "target"),
+        create_xml_tag(arguments, "path")
+    )
+    print("manifest {0}".format(manifest))
+    return manifest
+
+
+def append(args) -> str:
+    """Creates manifest in XML format.
+    @param args: Arguments provided by the user from command line
+    @return: Generated xml manifest string
+    """
+    if not args.nohddl:
+        raise InbcException(
+            "Config Append is not supported on HDDL Platforms.")
+
+    if args.nohddl and not args.path:
+        raise InbcException('argument --path/-p: required with Non-HDDL command.')
+
+    arguments = {
+        'path': args.path,
+        'nohddl': args.nohddl
+    }
+
+    manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
+                '<manifest>' +
+                '<type>config</type>' +
+                '<config>' +
+                '<cmd>append</cmd>' +
+                '{0}' +
+                '<configtype>' +
+                '{1}' +
+                '<append>' +
+                '{2}'
+                '</append>' +
+                '</configtype>' +
+                '</config>' +
+                '</manifest>').format(
+        create_xml_tag(arguments, "targetType"),
+        create_xml_tag(arguments, "target"),
+        create_xml_tag(arguments, "path")
+    )
+    print("manifest {0}".format(manifest))
+    return manifest
+
+
+def remove(args) -> str:
+    """Creates manifest in XML format.
+    @param args: Arguments provided by the user from command line
+    @return: Generated xml manifest string
+    """
+    if not args.nohddl:
+        raise InbcException(
+                "Config Remove is not supported on HDDL Platforms.")
+
+    if args.nohddl and not args.path:
+            raise InbcException('argument --path/-p: required with Non-HDDL command.')
+
+    arguments = {
+        'path': args.path,
+        'nohddl': args.nohddl
+    }
+
+    manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
+                '<manifest>' +
+                '<type>config</type>' +
+                '<config>' +
+                '<cmd>remove</cmd>' +
+                '{0}' +
+                '<configtype>' +
+                '{1}' +
+                '<remove>' +
+                '{2}'
+                '</remove>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(

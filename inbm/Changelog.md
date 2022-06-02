@@ -3,13 +3,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## 3.0.11 - 2022-05-17
+
+### Fixed
+ - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
+ - HSD 15010982715 - inbm-vision failed to receive query request from cloud
+ - HSD 15011009937 - Remove POTA Failure error on Success
+ - HSD 15010766920 - Fix Telemetry apparmor issue on Yocto
+ - HSD 15011207622 - Fixed SOTA update failed due to mender command changed
+ - RTC 513178 - apt-get failed to update from a different location for the main Ubuntu sources
+ - RTC 497932 - Incorrect error message when OTA fetching fail
+
+### Added
+- RTC 508495 Support INBC Config Append command
+- RTC 508497 Support INBC Config Remove command
+- RTC 497530 Add fields in Thingsboard and Azure to support Query command via button click.
+- RTC 500237 - Remove DBS messages from appearing in INBC
+- RTC 514101 - Remove support of remove and append command for apt source in configuration file
+
 ## 3.0.10 - 2022-03-28
 
-## Fixed
  - RTC 509991 Updated docker stats dashboard to display units for readability.
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
- - HSD 15010868047 - "Unsupported OS" when running POTA via inbc in CentOS container
+ - HSD 15010868047 - "Unsupported OS" when running POTA via INBC in CentOS container
  - RTC 511101 - Handle the null char in a URI
  - HSD 15010918893 INBM does not reject unsupported file type
  - Fixed new build error discovered by clearing docker cache and rebuilding

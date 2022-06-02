@@ -8,9 +8,9 @@ from ..ibroker import IBroker
 from ..inbc_exception import InbcException
 from .command import Command, RestartCommand, QueryCommand
 from .ota_command import FotaCommand, SotaCommand, PotaCommand
-from .config_command import GetConfigCommand, SetConfigCommand, LoadConfigCommand
+from .config_command import GetConfigCommand, SetConfigCommand, LoadConfigCommand, AppendConfigCommand, RemoveConfigCommand
 
-from inbm_common_lib.constants import CONFIG_LOAD
+from inbm_common_lib.constants import CONFIG_LOAD, CONFIG_APPEND, CONFIG_REMOVE
 from inbm_vision_lib.constants import FOTA, SOTA, POTA, RESTART, QUERY
 
 
@@ -37,5 +37,10 @@ def create_command_factory(cmd: str, broker: IBroker) -> Command:
         return GetConfigCommand(broker)
     if cmd == 'set':
         return SetConfigCommand(broker)
+    if cmd == CONFIG_APPEND:
+        return AppendConfigCommand(broker)
+    if cmd == CONFIG_REMOVE:
+        return RemoveConfigCommand(broker)
+
 
     raise InbcException(f"Unsupported command {cmd}")

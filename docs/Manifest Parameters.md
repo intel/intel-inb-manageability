@@ -4,15 +4,17 @@ The following outlines the manifest parameters used to perform the supported OTA
 
 ## Table of Contents
 1. [Manifest Rules](#manifest-rules)
-3. [FOTA](#FOTA)
-4. [SOTA](#SOTA)
-5. [POTA](#POTA)
-6. [AOTA](#AOTA)
-7. [Query](#Query)
-8. [Configuration SET](#Set)
-9. [Configuration GET](#Get)
-10. [Configuration LOAD](#Load)
-11. [Provision Node](#Provision-Node)
+2. [FOTA](#FOTA)
+3. [SOTA](#SOTA)
+4. [POTA](#POTA)
+5. [AOTA](#AOTA)
+6. [Query](#Query)
+7. [Configuration SET](#Set)
+8. [Configuration GET](#Get)
+9. [Configuration LOAD](#Load)
+10. [Configuration APPEND](#Append)
+11. [Configuration REMOVE](#Remove)
+12. [Provision Node](#Provision-Node)
 
 ## Manifest Rules 
 
@@ -92,8 +94,7 @@ description will trigger a FOTA update via Manifest.
                 <vendor>American Megatrends Inc.</vendor>
                 <manufacturer>Default string</manufacturer>
                 <product>Default string</product>
-                <releasedate>2017-1120</releasedate>
-                <path>/var/cache/repositorytool</path>
+                <releasedate>2017-11-20</releasedate>
             </fota>
         </type>
     </ota>
@@ -112,13 +113,17 @@ description will trigger a FOTA update via Manifest.
         </header>
         <type>
             <fota name='sample'>
-                <fetch>http://yoururl/Afulnx+X041_BIOS.tar</fetch>
-                <biosversion>5.12</biosversion>
-                <vendor>American Megatrends Inc.</vendor>
-                <manufacturer>Default string</manufacturer>
-                <product>Default string</product>
-                <releasedate>2017-1120</releasedate>
-                <path>/var/cache/repositorytool</path>
+                <fetch>http://yoururl/package.tar</fetch>
+                <targetType>node</targetType>
+                <targets>
+                    <target>000732767ffb-16781312</target>
+                    <target>000732767ffb-16780544</target>
+                </targets>
+                <biosversion>U-boot 2021.01</biosversion>
+                <vendor>Intel</vendor>
+                <manufacturer>intel</manufacturer>
+                <product>kmb-m2</product>
+                <releasedate>2022-04-15</releasedate>
             </fota>
         </type>
     </ota>
@@ -717,79 +722,28 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 The query command can be used to gather information about the system and the Vision cards.
 
-| XML Tags                                 | Definition             | Required/Optional | Notes                         |
-|:-----------------------------------------|:-----------------------|:-----------------:|:------------------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` |                        |         R         |                               |
-| `<manifest>`                             | `<manifest>`           |         R         ||
-| `<type><type>`                           | `<type>cmd</type>`     |         R         | will always be 'cmd'          |
-| `<cmd></cmd>`                            | `<cmd>query</cmd>`     |         R         | will always be 'query'        |
-| `<query>`                                | `<query>`              |         R         |                               |
-| `<option></option>`                      | `<option>all</option>` |         R         | [Available Options](Query.md) |
-| `</query>`                               | `</query>`             |         R         |                               |
-| `</manifest>`                            | `</manifest>`          |         R         |                               |
+| XML Tags                                 | Definition                     | Required/Optional | Notes                         |
+|:-----------------------------------------|:-------------------------------|:-----------------:|:------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` |                                |         R         |                               |
+| `<manifest>`                             | `<manifest>`                   |         R         |                               |
+| `<type><type>`                           | `<type>cmd</type>`             |         R         | will always be 'cmd'          |
+| `<cmd></cmd>`                            | `<cmd>query</cmd>`             |         R         | will always be 'query'        |
+| `<query>`                                | `<query>`                      |         R         |                               |
+| `<option></option>`                      | `<option>all</option>`         |         R         | [Available Options](Query.md) |
+| `<targetType></targetType>`              | `<targetType>node</targetType>`|         O         | [vision, node] Used when updating either the host of vision cards (host) or vision cards (node) |
+| `<targets></targets>`                    | `<targets><target>389C0A</target></targets>` |         O         | Used when targetType=node.  Designates the Ids of the nodes to update    
+| `</query>`                               | `</query>`                     |         R         |                               |
+| `</manifest>`                            | `</manifest>`                  |         R         |                               |
 
 
-#### Example of swbom query manifest examples
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd\</type>
-    <cmd>query</cmd>
-    <query>
-        <option>swbom</option>
-    </query>
-</manifest>
-```
+## Query types supported on Edge and HDDL platforms
+  
+| Supported on Edge only  | Supported on HDDL only | Supported on both Edge and HDDL |
+|:------------------------|:-----------------------|:-------------------------------:|
+|  swbom                  | security, status, guid | all, hw, fw, os, version        |  
 
-#### Example of hw query manifest 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>hw</option>
-    </query>
-</manifest>
-```
 
-#### Example of fw query manifest 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>fw</option>
-    </query>
-</manifest>
-```
-
-#### Example of os query manifest 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>os</option>
-    </query>
-</manifest>
-```
-
-#### Example of version query manifest 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>version</option>
-    </query>
-</manifest>
-```
-
-#### Example of all query manifest 
+#### Example of all query manifest example on Edge device 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -801,6 +755,297 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
+#### Example of all query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>all</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of all query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>all</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of hw query manifest example on Edge device 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>hw</option>
+    </query>
+</manifest>
+```
+
+#### Example of hw query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>hw</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of hw query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>hw</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of fw query manifest example on Edge device 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>fw</option>
+    </query>
+</manifest>
+```
+
+#### Example of fw query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>fw</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of fw query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>fw</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of os query manifest example on Edge device 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>os</option>
+    </query>
+</manifest>
+```
+
+#### Example of os query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>os</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of os query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>os</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of version query manifest example on Edge device 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>version</option>
+    </query>
+</manifest>
+```
+
+#### Example of version query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>version</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of version query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>version</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of security query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>security</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of security query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>security</option>
+        <targetType>node</targetType>
+        <targets>
+	    <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of status query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>status</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of status query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>status</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+	</targets>
+    </query>
+</manifest>
+```
+
+#### Example of guid query manifest on Vision-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>guid</option>
+        <targetType>vision</targetType>  
+    </query>
+</manifest>
+```
+
+#### Example of guid query manifest on Node-agent 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>guid</option>
+        <targetType>node</targetType>
+        <targets>
+            <target>node-id</target>
+        </targets>
+    </query>
+</manifest>
+```
+
+#### Example of swbom query manifest on Edge device
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+    <type>cmd</type>
+    <cmd>query</cmd>
+    <query>
+        <option>swbom</option>
+    </query>
+</manifest>
+```
 
 ## Configuration Settings
 
@@ -1226,24 +1471,25 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 ## Append
 
 #### Configuration Append Manifest Parameters
-| Tag                                      | Example                                         | Required/Optional | Notes           |
-|:-----------------------------------------|:------------------------------------------------|:-----------------:|:----------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`        |         R         |                 |
-| `<manifest>`                             | `<manifest>`                                    |         R         |                 |
-| `<type></type>`                          | `<type>config</type>`                           |         R         | Always 'config' |
-| `<config>`                               | `<config>`                                      |         R         |                 |
-| `<cmd></cmd>`                            | `<cmd>append</cmd>`                             |         R         |                 |
-| `<configtype>`                           | `<configtype>`                                  |         R         |                 |
-| `<append>`                               | `<append>`                                      |         R         |                 |
-| `<path></path>`                          | `<path>minStorageMB:100;minMemoryMB:200</path>` |         R         |                 |
-| `</append>`                              | `</append>`                                     |         R         |                 |
-| `</configtype>`                          | `</configtype>`                                 |         R         |                 |
-| `</config>`                              | `</config`                                      |         R         |                 |
-| `</manifest>`                            | `</manifest>`                                   |         R         |                 |
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>config</type>`                    |         R         | Always 'config' |
+| `<config>`                               | `<config>`                               |         R         |                 |
+| `<cmd></cmd>`                            | `<cmd>append</cmd>`                      |         R         |                 |
+| `<configtype>`                           | `<configtype>`                           |         R         |                 |
+| `<append>`                               | `<append>`                               |         R         |                 |
+| `<path></path>`                          | `<path>sotaSW:trtl</path>`               |         R         |                 |
+| `</append>`                              | `</append>`                              |         R         |                 |
+| `</configtype>`                          | `</configtype>`                          |         R         |                 |
+| `</config>`                              | `</config`                               |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
 
 #### Append Example
 
 * Append can currently only be used on INB agents in either the Edge or Vision card solution.
+* Append would not be used on the vision or node agents
 * Append is only applicable to three configuration tags, for example,
     **trustedRepositories**, **sotaSW** and **ubuntuAptSource**
 * Path takes in key value pair format, example: trustedRepositories:  https://dummyURL.com
@@ -1262,26 +1508,48 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 </manifest>
 ```
 
+#### Append Example on **SPECIFIC** INB Nodes
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>config</type>
+    <config>
+        <cmd>append</cmd>
+        <targetType>node_client</targetType>
+        <configtype>
+            <targets>
+                <target>000732767ffb-16781312</target>
+                <target>000732767ffb-16780544</target>
+            </targets>
+            <append>
+                <path>sotaSW:trtl</path>
+            </append>
+        </configtype>
+    </config>
+</manifest>
+```
+
 ## Remove
 
 #### Configuration Remove Manifest Parameters
-| Tag                                      | Example                                         | Required/Optional | Notes           |
-|:-----------------------------------------|:------------------------------------------------|:-----------------:|:----------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`        |         R         |                 |
-| `<manifest>`                             | `<manifest>`                                    |         R         |                 |
-| `<type></type>`                          | `<type>config</type>`                           |         R         | Always 'config' |
-| `<config>`                               | `<config>`                                      |         R         |                 |
-| `<cmd></cmd>`                            | `<cmd>remove</cmd>`                             |         R         |                 |
-| `<configtype>`                           | `<configtype>`                                  |         R         |                 |
-| `<remove>`                               | `<remove>`                                      |         R         |                 |
-| `<path></path>`                          | `<path>minStorageMB:100;minMemoryMB:200</path>` |         R         |                 |
-| `</remove>`                              | `</remove>`                                     |         R         |                 |
-| `</configtype>`                          | `</configtype>`                                 |         R         |                 |
-| `</config>`                              | `</config>`                                     |         R         |                 |
-| `</manifest>`                            | `</manifest>`                                   |         R         |                 |
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>config</type>`                    |         R         | Always 'config' |
+| `<config>`                               | `<config>`                               |         R         |                 |
+| `<cmd></cmd>`                            | `<cmd>remove</cmd>`                      |         R         |                 |
+| `<configtype>`                           | `<configtype>`                           |         R         |                 |
+| `<remove>`                               | `<remove>`                               |         R         |                 |
+| `<path></path>`                          | `<path>sotaSW:trtl</path>`               |         R         |                 |
+| `</remove>`                              | `</remove>`                              |         R         |                 |
+| `</configtype>`                          | `</configtype>`                          |         R         |                 |
+| `</config>`                              | `</config>`                              |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
 
 #### Remove Example
-* Append can currently only be used on INB agents in either the Edge or Vision card solution.
+* Remove can currently only be used on INB agents in either the Edge or Vision card solution.
+* Remove would not be used on the vision or node agents
 * *Remove* is only applicable to three configuration tags, for
     example, **trustedRepositories**, **sotaSW** and
     **ubuntuAptSource**.
@@ -1296,6 +1564,27 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
         <configtype>
             <remove>
                 <path>trustedRepositories:https://dummyURL.com</path>
+            </remove>
+        </configtype>
+    </config>
+</manifest>
+```
+
+#### Remove Example on **SPECIFIC** INB Nodes
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>config</type>
+    <config>
+        <cmd>remove</cmd>
+        <targetType>node_client</targetType>
+        <configtype>
+            <targets>
+                <target>000732767ffb-16781312</target>
+                <target>000732767ffb-16780544</target>
+            </targets>
+            <remove>
+                <path>sotaSW:trtl</path>
             </remove>
         </configtype>
     </config>

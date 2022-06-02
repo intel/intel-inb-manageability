@@ -371,7 +371,7 @@ class Dispatcher(WindowsService):
         @return (dict): returns success or failure dict from child methods
         """
         cmd = parsed_head.get_element('cmd')
-        target_type = parsed_head.find_element('restart/targetType')
+        target_type = parsed_head.find_element('*/targetType')
 
         if cmd == "shutdown":
             message = self.device_manager.shutdown()

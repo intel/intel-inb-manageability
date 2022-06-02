@@ -23,6 +23,7 @@ from inbm_vision_lib.constants import DEVICE_STATUS_CHANNEL, RESTART, QUERY, \
 from inbm_common_lib.request_message_constants import COMMAND_SUCCESSFUL, DYNAMIC_TELEMETRY, \
     RESTART_SUCCESS, RESTART_FAILURE, QUERY_SUCCESS, QUERY_FAILURE, OTA_IN_PROGRESS, ACTIVE_NODE_NOT_FOUND, \
     ELIGIBLE_NODE_NOT_FOUND, QUERY_HOST_SUCCESS, QUERY_HOST_FAILURE, QUERY_HOST_KEYWORD
+from inbm_common_lib.request_message_constants import DBS_LOG, DOCKER_NAME, DOCKER_MESSAGE
 from inbm_lib.constants import HOST_QUERY_CHANNEL
 
 logger = logging.getLogger(__name__)
@@ -108,7 +109,7 @@ class Command(ABC):
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """
-        if not search_keyword(payload, [DYNAMIC_TELEMETRY]):
+        if not search_keyword(payload, [DYNAMIC_TELEMETRY, DBS_LOG, DOCKER_NAME, DOCKER_MESSAGE]):
             logger.info('Message received: %s on topic: %s', payload, topic)
 
         if search_keyword(payload, ["/usr/bin/mender -install"]):
@@ -116,11 +117,11 @@ class Command(ABC):
 
     def _search_for_busy(self, payload: str) -> None:
         if search_keyword(payload, [OTA_IN_PROGRESS]):
-            self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_HOST_BUSY.value)
+            self.terminate_operation(COMMAND_FAIL, InbcCode.HOST_BUSY.value)
 
     def _search_for_error(self, payload: str) -> None:
         if search_keyword(payload, [ACTIVE_NODE_NOT_FOUND, ELIGIBLE_NODE_NOT_FOUND]):
-            self.terminate_operation(COMMAND_FAIL, InbcCode.BITCREEK_NODE_NOT_FOUND.value)
+            self.terminate_operation(COMMAND_FAIL, InbcCode.NODE_NOT_FOUND.value)
 
     def _timer_expired(self) -> None:
         """Callback method when timer has expired"""
@@ -132,7 +133,7 @@ class Command(ABC):
         if not self._is_vision_agent_running:
             logger.error("vision-agent is not running. Please start vision-agent service.")
             self.terminate_operation(
-                COMMAND_FAIL, InbcCode.BITCREEK_VISION_AGENT_UNAVABILABLE.value)
+                COMMAND_FAIL, InbcCode.VISION_AGENT_UNAVAILABLE.value)
 
     def terminate_operation(self, status: str, return_code: int) -> None:
         """Stop INBC after getting expected response from vision-agent
@@ -151,9 +152,9 @@ class Command(ABC):
             if not os.path.exists(XLINK_SIMULATOR_PC_LIB_PATH):
                 sleep(3)
         if status == COMMAND_SUCCESS:
-            print(f"\n {self._cmd_type} Command Execution is Completed")
+            print(f"\n {self._cmd_type.upper()} Command Execution is Completed")
         elif status == COMMAND_FAIL:
-            print(f"\n {self._cmd_type} Command Execution FAILED")
+            print(f"\n {self._cmd_type.upper()} Command Execution FAILED")
             shared.exit_code = abs(return_code)
         logger.info("INBC code: {0}".format(return_code))
         shared.running = False
