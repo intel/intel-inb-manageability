@@ -6,7 +6,7 @@
 
 from typing import Dict
 from inbm_common_lib.utility import clean_input
-from .constants import FOTA_SIGNATURE, SIGNATURE
+from .constants import FOTA_SIGNATURE, SIGNATURE, LOAD_SIGNATURE
 
 
 def create_xml_tag(tags: Dict[str, str], *names: str) -> str:
