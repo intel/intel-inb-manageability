@@ -114,6 +114,7 @@ class DirectoryRepo(IRepo):  # pragma: no cover
 
         @param filename: Filename to be removed
         """
+        logger.debug("TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT")
         logger.debug(f"DELETING file {filename}")
         if self.is_present(filename):
             remove_file(os.path.join(self.__directory, filename))
