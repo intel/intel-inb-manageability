@@ -132,8 +132,8 @@ class CentOsApplication(Application):
 
             driver_centos_path = os.path.join(CENTOS_DRIVER_PATH, driver_path.split('/')[-1])
             logger.debug(f"driver_centos_path = {driver_centos_path}")
-            test_path = str(driver_centos_path)
-            if not str.endswith('.rpm'):
+            #test_path = str(driver_centos_path)
+            if not str(driver_centos_path).endswith('.rpm'):
                 raise AotaError('Invalid file')
             # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
