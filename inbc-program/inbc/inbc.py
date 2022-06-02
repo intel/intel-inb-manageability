@@ -29,7 +29,7 @@ class Inbc(object):
     """
 
     def __init__(self, parsed_args: Any, cmd_type: str, tls: bool = True) -> None:
-        logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
+        logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.DEBUG)
 
         self._broker = Broker(cmd_type, parsed_args, XlinkChecker(self.stop), tls)
         self.is_vision_agent_running = False
