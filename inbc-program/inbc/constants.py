@@ -35,7 +35,7 @@ INBM_INSTALL_CHANNEL = 'manageability/request/install'
 # Signature Tag Name
 FOTA_SIGNATURE = "fota_signature"
 SIGNATURE = "signature"
-LOAD_SIGNATURE = "loadsignature"
+LOAD_SIGNATURE = "load_signature"
 
 TARGETS_HELP = 'List of targets to be updated.  Use only if specific targets are to be updated.'
 TARGETS_NODE_AND_CLIENT_ONLY_HELP = 'List of targets to be updated if target type is [node or node-client].  ' \
