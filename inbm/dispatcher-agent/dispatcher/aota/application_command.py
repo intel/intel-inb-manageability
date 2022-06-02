@@ -135,9 +135,9 @@ class CentOsApplication(Application):
             #test_path = str(driver_centos_path)
             #if not str(driver_centos_path).endswith('.rpm'):
             #    raise AotaError('Invalid file')
-            if "xlink" in str(driver_centos_path):
+            if "thb" in str(driver_centos_path):
                 if not str(driver_centos_path).endswith('.rpm'):
-                    raise AotaError('Invalid file')
+                    raise AotaError('Invalid file type')
             # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
 
