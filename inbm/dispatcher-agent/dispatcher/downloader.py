@@ -54,8 +54,7 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
     source = uri.value[:-(len(uri.value.split('/')[-1]) + 1)]
     file_name = os.path.basename(urlsplit(uri.value).path)
     logger.debug(f"source: {source}, filename: {file_name}")
-    logger.debug(source)
-    logger(file_name)
+
     verify_source(source=source, dispatcher_callbacks=dispatcher_callbacks)
     logger.debug("dddddddddddddddddddddddddddddddddddddddddddd")
     dispatcher_callbacks.broker_core.telemetry('Source Verification check passed')
