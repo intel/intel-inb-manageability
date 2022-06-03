@@ -525,7 +525,7 @@ def load(args) -> str:
         create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path"),
         create_xml_tag(arguments, "fetch"),
-        create_xml_tag(arguments, "LOAD_SIGNATURE")
+        create_xml_tag(arguments, "signature")
     )
     print("manifest {0}".format(manifest))
     return manifest
