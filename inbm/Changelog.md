@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15011207622 - Fixed SOTA update failed due to mender command changed
  - RTC 513178 - apt-get failed to update from a different location for the main Ubuntu sources
  - RTC 497932 - Incorrect error message when OTA fetching fail
+ - HSD 15011248619 - Support Signature argument in INBC Load command
 
 ### Added
 - RTC 508495 Support INBC Config Append command

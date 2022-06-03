@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Fixed
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
+ - HSD 15011248619 - Support Signature argument in INBC Load command
 
 ## 3.0.10 - 2022-03-28
 
