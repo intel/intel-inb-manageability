@@ -6,7 +6,7 @@
 
 from typing import Dict
 from inbm_common_lib.utility import clean_input
-from .constants import FOTA_SIGNATURE, SIGNATURE, LOAD_SIGNATURE
+from .constants import FOTA_SIGNATURE, SIGNATURE
 
 
 def create_xml_tag(tags: Dict[str, str], *names: str) -> str:
@@ -42,7 +42,7 @@ def create_signature_tag(val: str, name: str) -> str:
     @param name: name of tag
     @return:      The xml tag
     """
-    if name == FOTA_SIGNATURE or name == SIGNATURE or name == LOAD_SIGNATURE:
+    if name == FOTA_SIGNATURE or name == SIGNATURE:
         return "<signature>{0}</signature>".format(val) if val != "None" else ""
     else:
         return "<{0}>{1}</{0}>".format(name, val)
