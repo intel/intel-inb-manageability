@@ -173,10 +173,10 @@ class ArgsParser(object):
 
         parser_load.add_argument('--targettype', '-tt', default='node', required=False,
                                  help='Type of target [vision | node | node-client]')
-        parser_load.add_argument('--loadsignature', '-l', default='None', required=False,
+        parser_load.add_argument('--signature', '-s', default='None', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'LOAD Signature', 1000),
-                                 help='LOAD Signature string')
+                                     x, 'Signature', 1000),
+                                 help='Signature string')
         parser_load.set_defaults(func=load)
 
     def parse_get_args(self) -> None:
@@ -499,7 +499,7 @@ def load(args) -> str:
         'targetType': None if args.nohddl else args.targettype,
         'fetch': args.uri,
         'path': args.path,
-        LOAD_SIGNATURE: args.loadsignature,
+        SIGNATURE: args.signature,
         'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args)
