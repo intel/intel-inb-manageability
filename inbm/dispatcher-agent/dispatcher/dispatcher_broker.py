@@ -70,7 +70,9 @@ class DispatcherBroker:
         self.mqttc.subscribe(topic, callback, qos)
 
     def telemetry(self, message: str) -> None:
+        logger.debug("NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
         logger.debug('Received event message: %s', message)
+        logger.debug(message)
         if not self.is_started():
             logger.error('Cannot log event message: dispatcher core not initialized')
         else:
