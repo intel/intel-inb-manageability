@@ -197,12 +197,15 @@ class Docker(AotaCommand):
 
     def list(self) -> None:
         """List all non-exited containers for all images stored on the system."""
+        logger.debug("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB")
         logger.debug(f"Docker List command: container_tag->{self._container_tag}")
         err, output = self._trtl.list(self._container_tag)
         if err is None:
             self._dispatcher_callbacks.broker_core.telemetry(str(output))
+            logger.debug(output)
         else:
             raise AotaError(f'Docker List Failed {err}')
+            logger.debug(err)
 
     def stats(self) -> None:
         """Displays info of running containers
