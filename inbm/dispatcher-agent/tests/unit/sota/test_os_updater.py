@@ -53,21 +53,13 @@ class TestOsUpdater(unittest.TestCase):
 
         cmd_list = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
+                    "apt-get -yq -f install",
                     "apt-get -yq upgrade"]
         x_cmd_list = installer.update_remote_source(  # type: ignore
             mock_url, TestOsUpdater._build_mock_repo(0))
 
-        def get_next_index():
-            i = 0
-            while i < len(x_cmd_list):
-                yield i
-                i = i + 1
-
-        gen = get_next_index()
-
-        for each in cmd_list:
-            expected = x_cmd_list[next(gen)].text
-            assert (each == expected)
+        for (each, expected) in zip(x_cmd_list, cmd_list):
+            self.assertEqual(str(each), str(expected))
 
     def test_33_2_kB_used(self):
         assert TestOsUpdater.sota_instance
