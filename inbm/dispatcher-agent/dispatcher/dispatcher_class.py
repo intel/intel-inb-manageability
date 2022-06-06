@@ -480,6 +480,7 @@ class Dispatcher(WindowsService):
                         config_cmd_type, parsed_head, xml, target_type, self._broker)
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
+            logger.debug("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
         except XmlException as error:
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
@@ -487,6 +488,8 @@ class Dispatcher(WindowsService):
             result = Result(CODE_BAD_REQUEST, str(e))
         finally:
             logger.info('Install result: %s', str(result))
+            logger.debug("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD")
+            logger.debug(result)
             self._send_result(str(result))
             if result.status != CODE_OK and parsed_head:
                 self.invoke_workload_orchestration_check(True, type_of_manifest, parsed_head)
@@ -691,6 +694,7 @@ class Dispatcher(WindowsService):
         cmd.execute()
 
         if cmd.log_info != "":
+            logger.debug("???????????????????????????????????????????????????????????????")
             logger.info(cmd.log_info)
         if cmd.log_error != "":
             logger.error(cmd.log_error)
