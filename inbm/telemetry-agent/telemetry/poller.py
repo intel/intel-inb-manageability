@@ -112,7 +112,7 @@ class Poller(IPoller):
             if Poller.is_between_bounds(SOFTWARE_BOM_INTERVAL_HOURS, val,
                                         self._lower_bound_swbom_interval_hours,
                                         self._upper_bound_swbom_interval_hours):
-                self._swbom_interval_seconds = val * 60 * 60
+                self._swbom_interval_seconds = int(val) * 60 * 60
         else:
             logger.error('Received path that is not configured: ' + path)
 
