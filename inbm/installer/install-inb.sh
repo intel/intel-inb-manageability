@@ -145,21 +145,37 @@ EOF
 function install_vision_requirements {
   # Ensure we're running a supported OS
   if [ "$(lsb_release -rs)" == "18.04" ]; then
-    OS_TYPE="Ubuntu-18.04"
-    echo "Confirmed Supported Platform (Ubuntu 18.04)"
+	  OS_TYPE="Ubuntu-18.04"
+	  echo "Confirmed Supported Platform (Ubuntu 18.04)"
   elif [ "$(lsb_release -rs)" == "20.04" ]; then
-    OS_TYPE="Ubuntu-20.04"
-    echo "Confirmed Supported Platform (Ubuntu 20.04)"
-  elif [ "$(lsb_release -rs)" == "21.10" ]; then
-    OS_TYPE="Ubuntu-21.10"
-    echo "Confirmed Supported Platform (Ubuntu 21.10)"
+	  OS_TYPE="Ubuntu-20.04"
+	  echo "Confirmed Supported Platform (Ubuntu 20.04)"
+  elif [ "$(lsb_release -rs)" == "20.10" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
+	  OS_TYPE="Ubuntu-20.10"
+	  echo "Confirmed Supported Platform (Ubuntu 20.10)"
+	  echo "Warning: This ubuntu release not a LTS release"
+  elif [ "$(lsb_release -rs)" == "21.04" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
+	  OS_TYPE="Ubuntu-21.04"
+	  echo "Confirmed Supported Platform (Ubuntu 21.04)"
+	  echo "Warning: This ubuntu release not a LTS release"
+  elif [ "$(lsb_release -rs)" == "21.10" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
+	  OS_TYPE="Ubuntu-21.10"
+	  echo "Confirmed Supported Platform (Ubuntu 21.10)"
+	  echo "Warning: This ubuntu release not a LTS release"
+  elif [ "$(lsb_release -rs)" == "22.04" ]; then
+	  OS_TYPE="Ubuntu-22.04"
+	  echo "Confirmed Supported Platform (Ubuntu 22.04)"
   else
-    echo "Unsupported Platform. Hint: "
-    echo "http://releases.ubuntu.com/18.04/ or"
-    echo "http://releases.ubuntu.com/20.04/ or"
-    echo "http://releases.ubuntu.com/21.10/"
-    exit 1
+	  echo "Unsupported Platform. Hint: "
+	  echo "http://releases.ubuntu.com/18.04/ or"
+	  echo "http://releases.ubuntu.com/20.04/ or"
+	  echo "http://releases.ubuntu.com/20.10/ or"
+	  echo "http://releases.ubuntu.com/21.04/ or"
+	  echo "http://releases.ubuntu.com/21.10/ or"
+	  echo "http://releases.ubuntu.com/22.04/"
+	  exit 1
   fi
+
   # Read proxy information from the environment
 
   if [[ "x$http_proxy" == "x" ]]; then
