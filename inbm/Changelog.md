@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
+### Fixed
+### Added
 
-## Fixed
+## 3.0.11 - 2022-05-17
+
+### Fixed
  - HSD 15010509095 - INBC fail to return correct Exit Code for difference scenario (-4/-6/-11)
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
  - HSD 15011009937 - Remove POTA Failure error on Success
@@ -21,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - RTC 497530 Add fields in Thingsboard and Azure to support Query command via button click.
 - RTC 500237 - Remove DBS messages from appearing in INBC
 - RTC 514101 - Remove support of remove and append command for apt source in configuration file
+- RTC 515264 - [INBM] [SOTA] Execute 'apt-get -f install -y' after update and prior to upgrade commands
 
 ## 3.0.10 - 2022-03-28
 
