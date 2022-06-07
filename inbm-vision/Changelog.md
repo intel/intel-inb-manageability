@@ -5,12 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
-## Fixed
+### Fixed
+### Added
+
+## 3.0.11 - 2022-05-17
+
+### Fixed
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
 
 ## 3.0.10 - 2022-03-28
 
-## Fixed
+### Fixed
  - RTC 509991 Updated docker stats dashboard to display units for readability.
  - HSD 15010649794 - INBC POTA/SOTA release date incorrect, SOTA schema change
  - HSD 15010868044 - Remove checking for isfile on destination before moving file
