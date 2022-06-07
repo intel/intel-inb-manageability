@@ -80,4 +80,5 @@
   /usr/share/misc/magic.mgc r,
   /usr/bin/file rix,
   /usr/** r,
+  /sys/** r,
 }

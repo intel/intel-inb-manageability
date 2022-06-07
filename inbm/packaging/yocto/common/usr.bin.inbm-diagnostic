@@ -68,4 +68,5 @@
   /usr/** r,
   /bin/lsb_release rUx,
   /bin/busybox.nosuid rUx,
+  /sys/** r,
 }
