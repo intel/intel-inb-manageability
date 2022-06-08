@@ -19,13 +19,13 @@ if [ "$(lsb_release -rs)" == "18.04" ] || [ "$(lsb_release -rs)" == "20.04" ] ||
   echo "Confirmed Supported Platform"
 elif [ "$(lsb_release -rs)" == "20.10" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
 	echo "Confirmed Supported Platform (Ubuntu 20.10)"
-	echo "Warning: This ubuntu release not a LTS release"
+	echo "WARNING: This ubuntu release not a LTS release"
 elif [ "$(lsb_release -rs)" == "21.04" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
 	echo "Confirmed Supported Platform (Ubuntu 21.04)"
-	echo "Warning: This ubuntu release not a LTS release"
+	echo "WARNING: This ubuntu release not a LTS release"
 elif [ "$(lsb_release -rs)" == "21.10" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
 	echo "Confirmed Supported Platform (Ubuntu 21.10)"
-	echo "Warning: This ubuntu release not a LTS release"
+	echo "WARNING: This ubuntu release not a LTS release"
 else
   echo "Unsupported Platform. Hint: http://releases.ubuntu.com/18.04/ (or 20.04/20.10/21.04/21.10/22.04)"
   exit 1
