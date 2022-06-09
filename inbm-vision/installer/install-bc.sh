@@ -14,21 +14,13 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Ensure we're running Ubuntu 18.04 or 20.04 or 22.04 LTS release and Ubuntu 20.10 or 21.04 or 21.10 non LTS release
-if [ "$(lsb_release -rs)" == "18.04" ] || [ "$(lsb_release -rs)" == "20.04" ] || [ "$(lsb_release -rs)" == "22.04" ]; then
+os_version_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10")
+
+# Ensure we're running Ubuntu 18 or 20 or 21.10
+if [ "$(lsb_release -rs)" == "18.04" ] || [ "$(lsb_release -rs)" == "20.04" ] || [ "$(lsb_release -rs)" == "21.10" ]; then
   echo "Confirmed Supported Platform"
-elif [ "$(lsb_release -rs)" == "20.10" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
-	echo "Confirmed Supported Platform (Ubuntu 20.10)"
-	echo "WARNING: This ubuntu release not a LTS release"
-elif [ "$(lsb_release -rs)" == "21.04" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
-	echo "Confirmed Supported Platform (Ubuntu 21.04)"
-	echo "WARNING: This ubuntu release not a LTS release"
-elif [ "$(lsb_release -rs)" == "21.10" ] && [[ "$(lsb_release -ds)" != *"LTS"* ]]; then
-	echo "Confirmed Supported Platform (Ubuntu 21.10)"
-	echo "WARNING: This ubuntu release not a LTS release"
 else
-  echo "Unsupported Platform. Hint: http://releases.ubuntu.com/18.04/ (or 20.04/20.10/21.04/21.10/22.04)"
-  exit 1
+  echo "WARNING: Unverified OS version detected. Recommend use of verified OS versions: ${os_version_list[@]}"
 fi
 
 # Ensure TC is installed
