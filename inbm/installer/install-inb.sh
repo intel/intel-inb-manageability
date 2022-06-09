@@ -149,9 +149,6 @@ function install_vision_requirements {
 if [ "$(lsb_release -rs)" == "18.04" ] || [ "$(lsb_release -rs)" == "20.04" ] || [ "$(lsb_release -rs)" == "21.10" ]; then
 	OS_TYPE="Ubuntu-$(lsb_release -rs)"
 	echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
-elif [ "$(lsb_release -sc)" == "buster" ]; then
-	OS_TYPE="Debian"
-	echo "Confirmed Supported Platform (Debian 10)"
 else
 	echo "WARNING: Unverified OS version detected. Recommend use of verified OS versions: ${os_version_list[@]}"
 fi
