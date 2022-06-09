@@ -192,7 +192,7 @@ class Docker(AotaCommand):
             if self.repo_to_clean_up is not None and self.resource is not None:
                 cleanup_repo(self.repo_to_clean_up, self.resource)
                 remove_directory(self.repo_to_clean_up)
-            if self._container_tag is not None and self._cmd != 'pull':
+            if self._container_tag is not None and self._cmd != 'pull' and self._cmd != 'remove':
                 remove_old_images(self._trtl, self._container_tag)
 
     def list(self) -> None:
