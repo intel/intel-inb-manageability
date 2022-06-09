@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
+
 ### Fixed
+ - HSD 15011298374 - Missing AppArmor profile entries under /sys for diagnostic agent
+
 ### Added
 
 ## 3.0.11 - 2022-05-17
