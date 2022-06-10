@@ -144,7 +144,7 @@ EOF
 
 function install_vision_requirements {
 
-verified_os_list=("Ubuntu 18.03" "Ubuntu 20.04" "Ubuntu 21.10")
+verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10")
 
 # Ensure we're running a supported OS
 if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
