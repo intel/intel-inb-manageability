@@ -14,13 +14,15 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
-# Ensure we're running Ubuntu 18 or 20 or 21.10
-if [ "$(lsb_release -rs)" == "18.04" ] || [ "$(lsb_release -rs)" == "20.04" ] || [ "$(lsb_release -rs)" == "21.10" ]; then
-  echo "Confirmed Supported Platform"
+# Ensure we're running a supported OS
+verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10")
+
+if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
+  echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
 else
-  echo "Unsupported Platform. Hint: http://releases.ubuntu.com/18.04/ (or 20.04/21.10)"
-  exit 1
+  echo "WARNING: Unverified OS version detected. Recommend use of verified OS versions: ${verified_os_list[@]}"
 fi
+
 
 # Ensure TC is installed
 INTEL_MANAGEABILITY_PUBLIC="/etc/intel-manageability/public/"
