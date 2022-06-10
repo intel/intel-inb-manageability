@@ -143,16 +143,16 @@ EOF
 }
 
 function install_vision_requirements {
-	os_version_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10")
+
+verified_os_list=("Ubuntu 18.03" "Ubuntu 20.04" "Ubuntu 21.10")
 
 # Ensure we're running a supported OS
-if [ "$(lsb_release -rs)" == "18.04" ] || [ "$(lsb_release -rs)" == "20.04" ] || [ "$(lsb_release -rs)" == "21.10" ]; then
-	OS_TYPE="Ubuntu-$(lsb_release -rs)"
-	echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
+if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
+  OS_TYPE="Ubuntu-$(lsb_release -rs)"
+  echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
 else
-	echo "WARNING: Unverified OS version detected. Recommend use of verified OS versions: ${os_version_list[@]}"
+  echo "WARNING: Unverified OS version detected. Recommend use of verified OS versions: ${verified_os_list[@]}"
 fi
-
 
 
   # Read proxy information from the environment
