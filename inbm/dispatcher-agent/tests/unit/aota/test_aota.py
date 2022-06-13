@@ -624,7 +624,7 @@ class TestAOTA(TestCase):
 
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
-    @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
+    #@patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     #@patch('dispatcher.aota.application_command.move_file')
     @patch('os.listdir', return_value=[])
     #@patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
