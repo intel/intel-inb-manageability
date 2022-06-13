@@ -483,6 +483,7 @@ class Dispatcher(WindowsService):
         except (AotaError, FotaError, SotaError) as e:
             result = Result(CODE_BAD_REQUEST, str(e))
         finally:
+            logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
             logger.info('Install result: %s', str(result))
             self._send_result(str(result))
             if result.status != CODE_OK and parsed_head:
