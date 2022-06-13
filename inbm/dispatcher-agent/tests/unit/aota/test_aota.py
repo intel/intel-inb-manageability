@@ -628,9 +628,9 @@ class TestAOTA(TestCase):
     #@patch('dispatcher.aota.application_command.move_file')
     @patch('os.listdir', return_value=[])
     #@patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
-    #@patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
+    @patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
-    def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, listdir, run):
+    def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, listdir, support_driver, run):
         aota = self._build_aota(cmd='update', app_type='application', uri="http://example.com")
         self.assertIsNone(aota.run())
 
