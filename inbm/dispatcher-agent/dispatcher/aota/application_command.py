@@ -71,12 +71,15 @@ class Application(AotaCommand):
         logger.debug("AOTA to download a package")
         self._dispatcher_callbacks.broker_core.telemetry(
             f'OTA Trigger Install command invoked for package: {self._uri}')
+        logger.debug("===============================In download_package 1==================")
         application_repo = AotaCommand.create_repository_cache_repo()
+        logger.debug("===============================In download_package 2==================")
         get_result = get(url=canonicalize_uri(self._uri),
                          repo=application_repo,
                          umask=UMASK_OTA,
                          username=self._username,
                          password=self._password)
+        logger.debug("===============================In download_package 3==================")
         self._dispatcher_callbacks.broker_core.telemetry(
             f'Package: {self._uri} Fetch Result: {get_result}')
 
@@ -119,6 +122,7 @@ class CentOsApplication(Application):
     def update(self) -> None:
         """ Update CentOS driver"""
         super().update()
+        logger.debug("=========================================In CentOS application updaye")
         application_repo = self._download_package()
 
         # Check if it's CentOS and inside container. In CentOS inb container, chroot is used to switch to CentOS
