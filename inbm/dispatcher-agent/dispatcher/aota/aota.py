@@ -60,7 +60,9 @@ class AOTA:
 
             logger.debug("In run method2")
             app_method = getattr(self._app_instance, self._cmd)
+            logger.debug("In run method3")
             app_method()
+            logger.debug("In run method4")
             self._dispatcher_callbacks.broker_core.telemetry(
                 f'AOTA {self._app_type} {self._cmd} {COMMAND_SUCCESS}')
             logger.debug("In run method3")
