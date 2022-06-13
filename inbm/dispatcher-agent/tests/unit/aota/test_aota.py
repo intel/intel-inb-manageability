@@ -607,8 +607,8 @@ class TestAOTA(TestCase):
                                 uri="http://example.com", device_reboot="Yes")
         self.assertRaises(AotaError, aota.run)
   
-    @patch('dispatcher.aota.application_command.is_inside_container', return_value=False)
-    @patch('dispatcher.aota.checker.check_url')
+    #@patch('dispatcher.aota.application_command.is_inside_container', return_value=False)
+    #@patch('dispatcher.aota.checker.check_url')
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, check_url, mock_detect_os):
         aota = self._build_aota(cmd='update', app_type='application',
                                 uri="http://example.com")
