@@ -7,8 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - HSD 15011298374 - Missing AppArmor profile entries under /sys for diagnostic agent
-
+ - HSD 15011298299 - "Unsupported platform" error in provision-tc
 ### Added
+ - RTC 515263 - Support non-LTS versions of Ubuntu
 
 ## 3.0.11 - 2022-05-17
 
