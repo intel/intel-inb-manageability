@@ -607,6 +607,12 @@ class TestAOTA(TestCase):
                                 uri="http://example.com", device_reboot="Yes")
         self.assertRaises(AotaError, aota.run)
   
+    def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self):
+        with self.assertRaisesRegex(AotaError, "File is not valid"):
+            self._build_aota(cmd='update', app_type='application',
+                                uri="http://example.com")
+
+
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     @patch('dispatcher.aota.application_command.move_file')
@@ -614,25 +620,10 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
-    def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, detect_os, mock_detect_os, create_repo, listdir, mock_move,
+    def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, create_repo, listdir, mock_move,
                                                          support_driver, run):
-    #def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, check_url, mock_detect_os):
-        aota = self._build_aota(cmd='update', app_type='application',
-                                uri="http://example.com")
-        self.assertRaises(AotaError, aota.run)
-        #self.assertIsNone(aota.run())
-
-
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
-    #@patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
-    #@patch('dispatcher.aota.application_command.move_file')
-    @patch('os.listdir', return_value=[])
-    #@patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
-    @patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
-    @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
-    def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, listdir, support_driver, run):
         aota = self._build_aota(cmd='update', app_type='application', uri="http://example.com")
-        self.assertIsNone(aota.run())
+        #self.assertIsNone(aota.run())
 
 
 if __name__ == '__main__':
