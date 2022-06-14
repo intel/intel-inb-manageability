@@ -623,7 +623,7 @@ class TestAOTA(TestCase):
 
 
     #@patch("dispatcher.packagemanager.package_manager.get", return_value=Result(200, "ok"))
-    @patch('dispatcher.aota.application_command.get', return_value=Result(200, "ok"))
+    #@patch('dispatcher.aota.application_command.get', return_value=Result(200, "ok"))
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     @patch('dispatcher.aota.application_command.move_file')
@@ -632,8 +632,8 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
     def test_application_centos_driver_update_raise_file_error(self, detect_os, mock_detect_os, create_repo, listdir, mock_move,
-                                                         support_driver, mock_get_file, run):
-        aota = self._build_aota(cmd='update', app_type='application', uri="http://example/sample.deb")
+                                                         support_driver, run):
+        aota = self._build_aota(cmd='update', app_type='application', uri="https://af01p-png.devtools.intel.com/artifactory/turtlecreek-swval-public-png-local/test_files/THB/aota/thb-hddl-xlink-pci-net-driver-dkms_0.1.0-a551d_all.deb")
         with self.assertRaisesRegex(AotaError, "File is not valid"):
             aota.run()
 
