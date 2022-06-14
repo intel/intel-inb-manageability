@@ -611,18 +611,8 @@ class TestAOTA(TestCase):
                                 uri="http://example.com", device_reboot="Yes")
         self.assertRaises(AotaError, aota.run)
   
-    #@patch('os.rmdir')
-    #@patch('dispatcher.aota.aota_command.get', return_value=Result(400, "Unable to download application package."))
-    #@patch('dispatcher.aota.checker.verify_source')
-    #@patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
-    #def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, mock_create_repo, mock_verify_source, mock_get_file, mock_osdir):
-    #    aota = TestAOTA._build_aota(uri='file://sample/test.deb',
-    #                                app_type='application', cmd='update')
-    #    with self.assertRaisesRegex(AotaError, "File is not valid"):
-     #       aota.run()
 
-
-
+    @patch('dispatcher.dispatcher_callbacks')
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs):
         with self.assertRaisesRegex(AotaError, "File is not valid"):
             a = CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
