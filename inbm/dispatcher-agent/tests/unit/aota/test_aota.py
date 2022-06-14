@@ -607,10 +607,21 @@ class TestAOTA(TestCase):
                                 uri="http://example.com", device_reboot="Yes")
         self.assertRaises(AotaError, aota.run)
   
+    @patch('os.rmdir')
+    #@patch('dispatcher.aota.aota_command.get', return_value=Result(400, "Unable to download application package."))
+    @patch('dispatcher.aota.checker.verify_source')
+    @patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self):
-        a = TestAOTA._build_aota(app_type='application', cmd='update', uri="http://example.com")
-        with self.assertRaisesRegex(AotaError, 'missing URL.'):
-            a.run()
+        aota = TestAOTA._build_aota(uri='file://sample/test.deb',
+                                    app_type='application', cmd='update')
+        with self.assertRaisesRegex(AotaError, "File is not valid")
+            aota.run()
+
+
+    #def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self):
+     #   a = TestAOTA._build_aota(app_type='application', cmd='update', uri="http://example.com")
+     #   with self.assertRaisesRegex(AotaError, 'missing URL.'):
+     #       a.run()
         #with self.assertRaisesRegex(AotaError, "File is not valid"):
         #    self._build_aota(cmd='update', app_type='application',
          #                       uri="http://example.com")
