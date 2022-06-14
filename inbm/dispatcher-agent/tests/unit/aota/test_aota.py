@@ -608,9 +608,12 @@ class TestAOTA(TestCase):
         self.assertRaises(AotaError, aota.run)
   
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self):
-        with self.assertRaisesRegex(AotaError, "File is not valid"):
-            self._build_aota(cmd='update', app_type='application',
-                                uri="http://example.com")
+        a = TestAOTA._build_aota(app_type='application', cmd='update')
+        with self.assertRaisesRegex(AotaError, 'missing URL.'):
+            a.run()
+        #with self.assertRaisesRegex(AotaError, "File is not valid"):
+        #    self._build_aota(cmd='update', app_type='application',
+         #                       uri="http://example.com")
 
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
