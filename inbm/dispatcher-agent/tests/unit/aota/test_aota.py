@@ -2,6 +2,8 @@ import unittest
 import os
 from unittest import TestCase
 
+from dispatcher.dispatcher_callbacks import DispatcherCallbacks
+from dispatcher.config_dbs import ConfigDbs
 from dispatcher.aota.aota import AOTA
 from dispatcher.aota.aota_command import Docker, DockerCompose
 from dispatcher.aota.application_command import CentOsApplication
@@ -619,7 +621,8 @@ class TestAOTA(TestCase):
      #       aota.run()
 
 
-    def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self):
+
+        def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs):
         with self.assertRaisesRegex(AotaError, "File is not valid"):
             a = CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
             #a=CentOsApplication()
