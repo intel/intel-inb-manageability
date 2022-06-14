@@ -614,7 +614,7 @@ class TestAOTA(TestCase):
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self):
         aota = TestAOTA._build_aota(uri='file://sample/test.deb',
                                     app_type='application', cmd='update')
-        with self.assertRaisesRegex(AotaError, "File is not valid")
+        with self.assertRaisesRegex(AotaError, "File is not valid"):
             aota.run()
 
 
