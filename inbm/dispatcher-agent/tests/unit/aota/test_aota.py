@@ -621,8 +621,9 @@ class TestAOTA(TestCase):
 
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self):
         with self.assertRaisesRegex(AotaError, "File is not valid"):
-            a=CentOsApplication()
-            a.Update()
+            a = CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
+            #a=CentOsApplication()
+            a.update()
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
