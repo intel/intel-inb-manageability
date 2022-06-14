@@ -621,7 +621,7 @@ class TestAOTA(TestCase):
 
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self):
         with self.assertRaisesRegex(AotaError, "File is not valid"):
-            a=self.CentOsApplication()
+            a=CentOsApplication()
             a.Update()
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
