@@ -620,8 +620,9 @@ class TestAOTA(TestCase):
             a = CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
             #a=CentOsApplication()
             a.update()
- 
-    @patch("dispatcher.packagemanager.package_manager.get")
+
+
+    @patch("dispatcher.packagemanager.package_manager.get", return_value=Result(200, "ok")
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     @patch('dispatcher.aota.application_command.move_file')
