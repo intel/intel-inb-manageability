@@ -622,7 +622,7 @@ class TestAOTA(TestCase):
 
 
 
-        def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs):
+    def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs):
         with self.assertRaisesRegex(AotaError, "File is not valid"):
             a = CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
             #a=CentOsApplication()
