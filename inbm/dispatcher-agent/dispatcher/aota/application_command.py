@@ -130,6 +130,9 @@ class CentOsApplication(Application):
         driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
         logger.debug(f"driver path = {driver_path}")
         try:
+
+            if not str(driver_path).endswith('.rpm'):
+                raise AotaError('Invalid file type')
             # Remove all files in inb_driver
             for file in os.listdir(CENTOS_DRIVER_PATH):
                 remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
@@ -140,8 +143,6 @@ class CentOsApplication(Application):
             #if not str(driver_centos_path).endswith('.rpm'):
             #    raise AotaError('Invalid file')
             #if "thb" in str(driver_centos_path):
-            if not str(driver_centos_path).endswith('.rpm'):
-                raise AotaError('Invalid file type')
             # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
 
