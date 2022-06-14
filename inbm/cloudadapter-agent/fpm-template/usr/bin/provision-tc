@@ -91,6 +91,7 @@ function check_requirements {
     echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
   elif [ "$(lsb_release -sc)" == "buster" ]; then
     echo "Confirmed Supported Platform (Debian 10)"
+    return 0
   else
     echo "WARNING: Unverified OS version detected. Recommend use of verified OS versions: ${verified_os_list[@]}"
   fi
