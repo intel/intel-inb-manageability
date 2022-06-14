@@ -614,7 +614,7 @@ class TestAOTA(TestCase):
 
     @patch('dispatcher.config_dbs')
     @patch('dispatcher.dispatcher_callbacks')
-    @patch('typing.Mapping')
+    @patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs):
         with self.assertRaisesRegex(AotaError, "File is not valid"):
             a = CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
