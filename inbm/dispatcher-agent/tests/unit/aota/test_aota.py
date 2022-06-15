@@ -619,7 +619,9 @@ class TestAOTA(TestCase):
     def test_application_centos_driver_update_raise_file_error(self, detect_os, run, get):
         aota = self._build_aota(cmd='update', app_type='application', uri="https://example.com/sample/sample.deb")
         #self.assertRaises(AotaError, aota.run)
-        self.assertIsNone(aota.run())
+        with self.assertRaisesRegex(AotaError, "Invalid file type"):
+            aota.run()
+        #self.assertIsNone(aota.run())
 
 
 
