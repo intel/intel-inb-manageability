@@ -127,7 +127,8 @@ class CentOsApplication(Application):
 
         # Check if it's CentOS and inside container. In CentOS inb container, chroot is used to switch to CentOS
         # rootfs and install the driver.
-        driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
+        #driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
+        driver_path = application_repo.get_repo_path() 
         logger.debug(f"driver path = {driver_path}")
         try:
 
