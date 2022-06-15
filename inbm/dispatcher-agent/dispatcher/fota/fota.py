@@ -102,11 +102,11 @@ class FOTA:
         try:
             factory = OsFactory.get_factory(
                 self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
-            logger.debug("=================================================>55555555")
+            #logger.debug("=================================================>55555555")
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
-            logger.debug("=================================================>444444444")
+            #logger.debug("=================================================>444444444")
             if self._repo_type.lower() == REMOTE_SOURCE:
-                #logger.debug("=================================================>66666666")
+                logger.debug("=================================================>66666666")
                 # need to perform this check here because some FOTA commands don't have a URI -- see constructor
                 # (instead they have a path)
                 if self._uri is None:
@@ -121,7 +121,7 @@ class FOTA:
                          username=self._username,
                          password=self._password)
             else:
-                logger.debug("Skipping FOTA upgradable check for local repo")
+                #ogger.debug("Skipping FOTA upgradable check for local repo")
             if self._ota_element is None:
                 raise FotaError("missing ota_element")
             tool_options = parse_tool_options(self._ota_element)
@@ -140,6 +140,7 @@ class FOTA:
 
             def trigger_reboot() -> None:
                 """This method triggers a reboot."""
+                logger.debug("=================================================>444444444")
                 factory.create_rebooter().reboot()
             if not hold_reboot:
                 logger.debug("")
@@ -155,7 +156,7 @@ class FOTA:
                 logger.debug(status)
                 self._dispatcher_callbacks.broker_core.telemetry(status)
         except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError) as e:
-            logger.debug("=================================================>777777777")
+            #logger.debug("=================================================>777777777")
             error = 'Firmware Update Aborted: ' + str(e)
             logger.error(error)
             self._dispatcher_callbacks.broker_core.telemetry(error)
@@ -165,6 +166,7 @@ class FOTA:
             if hold_reboot:
                 self._repo.delete_all()
         finally:
+            logger.debug(return_message)
             if return_message == COMMAND_SUCCESS:
                 status = 'Firmware update in process...'
             else:
