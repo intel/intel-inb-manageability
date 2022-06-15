@@ -429,13 +429,11 @@ class Dispatcher(WindowsService):
             type_of_manifest, parsed_head = \
                 _check_type_validate_manifest(xml, schema_location=schema_location)
             self.invoke_workload_orchestration_check(False, type_of_manifest, parsed_head)
-            logger.debug("=======================================================>1111")
 
             if type_of_manifest == 'cmd':
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
             elif type_of_manifest == 'ota':
-                logger.debug("====================================================>22222")
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
@@ -478,17 +476,13 @@ class Dispatcher(WindowsService):
                     result = self._do_config_operation_on_target(
                         config_cmd_type, parsed_head, xml, target_type, self._broker)
         except (DispatcherException, UrlSecurityException) as error:
-            logger.info("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%")
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
         except XmlException as error:
-            logger.info("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
         except (AotaError, FotaError, SotaError) as e:
-            logger.info("**************************************************")
             result = Result(CODE_BAD_REQUEST, str(e))
         finally:
-            logger.info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
             logger.info('Install result: %s', str(result))
             self._send_result(str(result))
             if result.status != CODE_OK and parsed_head:

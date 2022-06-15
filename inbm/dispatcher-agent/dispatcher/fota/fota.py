@@ -102,7 +102,7 @@ class FOTA:
         try:
             factory = OsFactory.get_factory(
                 self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
-            #logger.debug("=================================================>55555555")
+            logger.debug("=================================================>55555555")
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
             #logger.debug("=================================================>444444444")
             if self._repo_type.lower() == REMOTE_SOURCE:
@@ -156,7 +156,7 @@ class FOTA:
                 logger.debug(status)
                 self._dispatcher_callbacks.broker_core.telemetry(status)
         except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError) as e:
-            #logger.debug("=================================================>777777777")
+            logger.debug("=================================================>777777777")
             error = 'Firmware Update Aborted: ' + str(e)
             logger.error(error)
             self._dispatcher_callbacks.broker_core.telemetry(error)
@@ -166,7 +166,6 @@ class FOTA:
             if hold_reboot:
                 self._repo.delete_all()
         finally:
-            #logger.debug("=================================================>8888888888")
             if return_message == COMMAND_SUCCESS:
                 status = 'Firmware update in process...'
             else:
