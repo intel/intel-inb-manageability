@@ -622,7 +622,8 @@ class TestAOTA(TestCase):
             aota.run()
 
 
-    @patch('driver_path', return_value="sample.rpm")
+    @patch('dispatcher.aota.aota_command.DirectoryRepo.get_repo_path', return_value='sample.rpm')
+    #@patch('driver_path', return_value="sample.rpm")
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     @patch('dispatcher.aota.application_command.move_file')
@@ -631,7 +632,7 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
     def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, create_repo, listdir, mock_move,
-                                                         support_driver, run):
+                                                         support_driver, run, get_rep_path):
         aota = self._build_aota(cmd='update', app_type='application', uri="http://example.com")
         self.assertIsNone(aota.run())
 
