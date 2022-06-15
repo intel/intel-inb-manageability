@@ -121,7 +121,7 @@ class FOTA:
                          username=self._username,
                          password=self._password)
             else:
-                #ogger.debug("Skipping FOTA upgradable check for local repo")
+                #logger.debug("Skipping FOTA upgradable check for local repo")
             if self._ota_element is None:
                 raise FotaError("missing ota_element")
             tool_options = parse_tool_options(self._ota_element)
