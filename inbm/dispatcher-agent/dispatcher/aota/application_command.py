@@ -126,6 +126,9 @@ class CentOsApplication(Application):
         driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
         logger.debug(f"driver path = {driver_path}")
         try:
+
+            if not str(driver_path).endswith('.rpm'):
+                raise IOError('Invalid file type')
             # Remove all files in inb_driver
             for file in os.listdir(CENTOS_DRIVER_PATH):
                 remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
@@ -134,6 +137,18 @@ class CentOsApplication(Application):
             logger.debug(f"driver_centos_path = {driver_centos_path}")
             # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
+
+            old_driver_name = self.identify_package(driver_path.split('/')[-1])
+            if not old_driver_name:
+                raise AotaError(
+                    f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
+            uninstall_driver_cmd = CHROOT_PREFIX + \
+                f'/usr/bin/rpm -e --nodeps {old_driver_name}'
+            out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
+            logger.debug(out)
+            # If old packages wasn't install on system, it will return error too.
+            if code != 0 and "is not installed" not in str(err):
+                raise AotaError(err)
 
             chroot_driver_path = driver_centos_path.replace("/host", "")
             install_driver_cmd = CHROOT_PREFIX + \
