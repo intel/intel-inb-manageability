@@ -126,7 +126,6 @@ class CentOsApplication(Application):
         driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
         logger.debug(f"driver path = {driver_path}")
         try:
-
             if not str(driver_path).endswith('.rpm'):
                 raise IOError('Invalid file type')
             # Remove all files in inb_driver
