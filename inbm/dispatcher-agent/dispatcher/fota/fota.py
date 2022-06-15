@@ -48,9 +48,9 @@ class FOTA:
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: DispatcherCallbacks instance
         """
-        logger.debug(f"parsed_manifest: {parsed_manifest}")
+        #logger.debug(f"parsed_manifest: {parsed_manifest}")
         self._ota_element = parsed_manifest.get('resource')
-        logger.debug(f"ota_element: {self._ota_element}")
+        #logger.debug(f"ota_element: {self._ota_element}")
         self._dispatcher_callbacks = dispatcher_callbacks
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
@@ -68,7 +68,7 @@ class FOTA:
                 raise FotaError('attempting to use local repo for FOTA but no path specified')
             self._pkg_filename = os.path.basename(self._ota_element['path'])
             path = self._ota_element.get('path', None)
-            logger.debug(f"path: {path}")
+            #logger.debug(f"path: {path}")
             if path is None:
                 repo_path = None
             else:
