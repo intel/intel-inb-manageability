@@ -84,10 +84,10 @@ class FOTA:
             raise FotaError("dispatcher_callbacks not specified in FOTA constructor")
         self._dispatcher_callbacks.broker_core.telemetry("Firmware Update Tool launched")
         if repo_path:
-            logger.debug("Using manifest specified repo path")
+            #logger.debug("Using manifest specified repo path")
             self._repo = DirectoryRepo(repo_path)
         else:
-            logger.debug("Using default repo path")
+            #logger.debug("Using default repo path")
             self._repo = DirectoryRepo(CACHE)
 
     def install(self) -> Result:
@@ -104,7 +104,7 @@ class FOTA:
                 self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
             logger.debug("=================================================>55555555")
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
-            #logger.debug("=================================================>444444444")
+            logger.debug("=================================================>444444444")
             if self._repo_type.lower() == REMOTE_SOURCE:
                 #logger.debug("=================================================>66666666")
                 # need to perform this check here because some FOTA commands don't have a URI -- see constructor
@@ -121,7 +121,7 @@ class FOTA:
                          username=self._username,
                          password=self._password)
             else:
-                logger.debug("Skipping FOTA upgradable check for local repo")
+                #logger.debug("Skipping FOTA upgradable check for local repo")
             if self._ota_element is None:
                 raise FotaError("missing ota_element")
             tool_options = parse_tool_options(self._ota_element)
