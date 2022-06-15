@@ -156,7 +156,7 @@ class FOTA:
                 logger.debug(status)
                 self._dispatcher_callbacks.broker_core.telemetry(status)
         except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError) as e:
-            logger.debug("=================================================>777777777")
+            #logger.debug("=================================================>777777777")
             error = 'Firmware Update Aborted: ' + str(e)
             logger.error(error)
             self._dispatcher_callbacks.broker_core.telemetry(error)
@@ -166,11 +166,11 @@ class FOTA:
             if hold_reboot:
                 self._repo.delete_all()
         finally:
-            logger.debug("=================================================>8888888888")
+            #logger.debug("=================================================>8888888888")
             if return_message == COMMAND_SUCCESS:
                 status = 'Firmware update in process...'
             else:
-                logger.debug("=================================================>99999999")
+                #logger.debug("=================================================>99999999")
                 status = 'Firmware Update Aborted'
                 dispatcher_state.clear_dispatcher_state()
             logger.debug('Firmware update status: ' + status)
