@@ -104,9 +104,9 @@ class FOTA:
                 self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
             #logger.debug("=================================================>55555555")
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
-            logger.debug("=================================================>444444444")
+            #logger.debug("=================================================>444444444")
             if self._repo_type.lower() == REMOTE_SOURCE:
-                logger.debug("=================================================>66666666")
+                #logger.debug("=================================================>66666666")
                 # need to perform this check here because some FOTA commands don't have a URI -- see constructor
                 # (instead they have a path)
                 if self._uri is None:
