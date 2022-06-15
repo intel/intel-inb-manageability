@@ -102,7 +102,7 @@ class FOTA:
         try:
             factory = OsFactory.get_factory(
                 self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
-            logger.debug("=================================================>55555555")
+            #logger.debug("=================================================>55555555")
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
             logger.debug("=================================================>444444444")
             if self._repo_type.lower() == REMOTE_SOURCE:
