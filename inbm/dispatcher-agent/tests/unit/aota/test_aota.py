@@ -618,11 +618,8 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
     def test_application_centos_driver_update_raise_file_error(self, detect_os, run, get):
         aota = self._build_aota(cmd='update', app_type='application', uri="https://example.com/sample/sample.deb")
-        #self.assertRaises(AotaError, aota.run)
         with self.assertRaisesRegex(AotaError, "Invalid file type"):
             aota.run()
-        #self.assertIsNone(aota.run())
-
 
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
@@ -635,7 +632,7 @@ class TestAOTA(TestCase):
     def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, create_repo, listdir, mock_move,
                                                          support_driver, run):
         aota = self._build_aota(cmd='update', app_type='application', uri="http://example.com")
-        #self.assertIsNone(aota.run())
+        self.assertIsNone(aota.run())
 
 
 if __name__ == '__main__':
