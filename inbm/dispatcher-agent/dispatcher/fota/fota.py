@@ -125,7 +125,6 @@ class FOTA:
             if self._ota_element is None:
                 raise FotaError("missing ota_element")
             tool_options = parse_tool_options(self._ota_element)
-            logger.debug(f"tool_options: {tool_options}")
             guid = parse_guid(self._ota_element)
             logger.debug(f"guid: {guid}")
             hold_reboot = parse_hold_reboot_flag(self._ota_element)
@@ -169,10 +168,8 @@ class FOTA:
             if return_message == COMMAND_SUCCESS:
                 status = 'Firmware update in process...'
             else:
-                #logger.debug("=================================================>99999999")
                 status = 'Firmware Update Aborted'
                 dispatcher_state.clear_dispatcher_state()
-            logger.debug('Firmware update status: ' + status)
             self._dispatcher_callbacks.broker_core.telemetry(status)
             return return_message
 
