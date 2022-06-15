@@ -132,8 +132,7 @@ class CentOsApplication(Application):
         try:
 
             if not str(driver_path).endswith('.rpm'):
-                pass
-                #raise IOError('Invalid file type')
+                raise IOError('Invalid file type')
             # Remove all files in inb_driver
             for file in os.listdir(CENTOS_DRIVER_PATH):
                 remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
