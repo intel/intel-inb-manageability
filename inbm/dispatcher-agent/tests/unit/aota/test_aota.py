@@ -622,7 +622,7 @@ class TestAOTA(TestCase):
             aota.run()
 
 
-    @patch('driver_code', return_value="sample.rpm")
+    @patch('driver_path', return_value="sample.rpm")
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     @patch('dispatcher.aota.application_command.move_file')
