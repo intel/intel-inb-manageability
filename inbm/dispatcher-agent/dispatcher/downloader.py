@@ -81,6 +81,7 @@ def download(dispatcher_callbacks: DispatcherCallbacks, uri: CanonicalUri, repo:
         dispatcher_callbacks.broker_core.telemetry(info_msg)
     result = get(url=uri, repo=repo, umask=umask, username=username, password=password)
     if result.status == 200:
+        logger.debug("======================================================>successfullllllllllllllllll")
         dispatcher_callbacks.broker_core.telemetry('OTA Download Successful')
         _check_if_valid_file(file_name, repo)
     else:
