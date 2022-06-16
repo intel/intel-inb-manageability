@@ -128,8 +128,6 @@ class FOTA:
             logger.debug(f"holdReboot: {hold_reboot}; pkg_filename: {self._pkg_filename}")
             logger.debug(guid)
             logger.debug(tool_options)
-            logger.debug(bios_vendor)
-            logger.debug(platform_product)
             factory.create_installer(self._repo, FOTA_CONF_PATH, FOTA_CONF_SCHEMA_LOC).\
                 install(guid=guid,
                         tool_options=tool_options,
