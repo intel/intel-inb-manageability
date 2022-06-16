@@ -2,7 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <xs:simpleType name="Max50Chars">
          <xs:restriction base="xs:string">
-             <xs:maxLength value="50"/>
+             <xs:maxLength value="500"/>
          </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="PathMax500Chars">
