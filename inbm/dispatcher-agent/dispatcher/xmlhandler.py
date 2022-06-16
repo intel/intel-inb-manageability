@@ -63,7 +63,9 @@ class XmlHandler:
         @return parsed document
         @raises XmlException
         """
+        logger.debug("====================================================>validate")
         logger.debug('validating XML file: {}'.format(mask_security_info(xml)))
+        logger.debug(mask_security_info(xml))
         try:
             if not os.path.exists(self._schema_location):
                 raise XmlException("Schema file not found at location: " +
@@ -209,6 +211,7 @@ class XmlHandler:
         @raises: XmlException when failed to update
         """
         try:
+            logger.debug("==========================================================>remove")
             logger.debug("XML remove attr")
             element = self._root.find(xpath)
             if element is not None:
@@ -243,5 +246,6 @@ class XmlHandler:
         @param xml: xml contents
         @return: root path
         """
+        logger.debug("==================================================>_getroot")
         logger.debug(f"XML : {mask_security_info(xml)}")
         return self._validate(xml).getroot()
