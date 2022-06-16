@@ -123,11 +123,11 @@ class FOTA:
                 raise FotaError("missing ota_element")
             tool_options = parse_tool_options(self._ota_element)
             guid = parse_guid(self._ota_element)
-            logger.debug(f"guid: {guid}")
+            logger.debug(self._ota_element)
             hold_reboot = parse_hold_reboot_flag(self._ota_element)
-            logger.debug(f"holdReboot: {hold_reboot}; pkg_filename: {self._pkg_filename}")
-            logger.debug(f"guid: {guid}; tool_options: {tool_options}; signature: {self.__signature}")
-            logger.debug(f"hash_algorithm: {self._hash_algorithm}; bios_vendor: {bios_vendor}; platform_product: {platform_product}")
+#             logger.debug(f"holdReboot: {hold_reboot}; pkg_filename: {self._pkg_filename}")
+#             logger.debug(f"guid: {guid}; tool_options: {tool_options}; signature: {self.__signature}")
+#             logger.debug(f"hash_algorithm: {self._hash_algorithm}; bios_vendor: {bios_vendor}; platform_product: {platform_product}")
             factory.create_installer(self._repo, FOTA_CONF_PATH, FOTA_CONF_SCHEMA_LOC).\
                 install(guid=guid,
                         tool_options=tool_options,
@@ -136,6 +136,7 @@ class FOTA:
                         hash_algorithm=self._hash_algorithm,
                         bios_vendor=bios_vendor,
                         platform_product=platform_product)
+            logger.debug("=========================================================>after install")
 
             def trigger_reboot() -> None:
                 """This method triggers a reboot."""
