@@ -102,11 +102,8 @@ class FOTA:
         try:
             factory = OsFactory.get_factory(
                 self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
-            #logger.debug("=================================================>55555555")
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
-            #logger.debug("=================================================>444444444")
             if self._repo_type.lower() == REMOTE_SOURCE:
-                logger.debug("=================================================>66666666")
                 # need to perform this check here because some FOTA commands don't have a URI -- see constructor
                 # (instead they have a path)
                 if self._uri is None:
@@ -129,6 +126,8 @@ class FOTA:
             logger.debug(f"guid: {guid}")
             hold_reboot = parse_hold_reboot_flag(self._ota_element)
             logger.debug(f"holdReboot: {hold_reboot}; pkg_filename: {self._pkg_filename}")
+            logger.debug("====================================================>coming here")
+            logger.debug(self._repo)
             factory.create_installer(self._repo, FOTA_CONF_PATH, FOTA_CONF_SCHEMA_LOC).\
                 install(guid=guid,
                         tool_options=tool_options,
@@ -140,7 +139,6 @@ class FOTA:
 
             def trigger_reboot() -> None:
                 """This method triggers a reboot."""
-                logger.debug("=================================================>444444444")
                 factory.create_rebooter().reboot()
             if not hold_reboot:
                 logger.debug("")
@@ -156,7 +154,6 @@ class FOTA:
                 logger.debug(status)
                 self._dispatcher_callbacks.broker_core.telemetry(status)
         except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError) as e:
-            #logger.debug("=================================================>777777777")
             error = 'Firmware Update Aborted: ' + str(e)
             logger.error(error)
             self._dispatcher_callbacks.broker_core.telemetry(error)
