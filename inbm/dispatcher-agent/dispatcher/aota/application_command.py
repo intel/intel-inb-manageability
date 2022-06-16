@@ -147,12 +147,6 @@ class CentOsApplication(Application):
                 remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
             driver_centos_path = os.path.join(CENTOS_DRIVER_PATH, driver_path.split('/')[-1])
-            logger.debug(f"driver_centos_path = {driver_centos_path}")
-            #test_path = str(driver_centos_path)
-            #if not str(driver_centos_path).endswith('.rpm'):
-            #    raise AotaError('Invalid file')
-            #if "thb" in str(driver_centos_path):
-            # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
 
             old_driver_name = self.identify_package(driver_path.split('/')[-1])
@@ -162,7 +156,6 @@ class CentOsApplication(Application):
             uninstall_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -e --nodeps {old_driver_name}'
             out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
-            logger.debug(out)
             # If old packages wasn't install on system, it will return error too.
             if code != 0 and "is not installed" not in str(err):
                 raise AotaError(err)
