@@ -119,7 +119,7 @@ class CentOsApplication(Application):
         for file in os.listdir(CENTOS_DRIVER_PATH):
             remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
-    def check_file_type(drive_path):
+    def check_file_type(self, drive_path):
             if not str(drive_path).endswith('.rpm'):
                 return False
 
