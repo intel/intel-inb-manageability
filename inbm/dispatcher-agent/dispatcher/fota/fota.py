@@ -126,8 +126,8 @@ class FOTA:
             logger.debug(f"guid: {guid}")
             hold_reboot = parse_hold_reboot_flag(self._ota_element)
             logger.debug(f"holdReboot: {hold_reboot}; pkg_filename: {self._pkg_filename}")
-            logger.debug(pkg_filename)
-            logger.debug(signature)
+            logger.debug(bios_vendor)
+            logger.debug(platform_product)
             factory.create_installer(self._repo, FOTA_CONF_PATH, FOTA_CONF_SCHEMA_LOC).\
                 install(guid=guid,
                         tool_options=tool_options,
