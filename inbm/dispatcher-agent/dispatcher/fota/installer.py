@@ -33,6 +33,8 @@ class Installer(ABC):
         logger.debug(f"_repo name is {self._repo.name()}")
         self._parsed_fota_conf = XmlHandler(xml=xml_file, is_file=True, schema_location=xml_schema)
 
+        logger.debug("==================In Installer class==========================")
+
     @abstractmethod
     def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
                 hash_algorithm: Optional[int], bios_vendor: str = None, platform_product: str = None) -> None:

@@ -95,6 +95,7 @@ class BiosFactory(ABC):
         @param tool_options: tools options to update firmware
         @param guid: system firmware type
         """
+        logger.debug("======================In BiosFactory install===================")
         pass
 
     @staticmethod
@@ -108,6 +109,7 @@ class BiosFactory(ABC):
         @raises: FotaError
         """
         logger.debug("")
+        logger.debug("======================In BiosFactory get_factory===================")
         fw_dest = params.get('firmware_dest_path', None)
         if platform.system() == "Linux":
             if fw_dest:
@@ -130,6 +132,7 @@ class BiosFactory(ABC):
         @param out: output of untarring the downloaded package
         @return: True, firmware file and cert file on success or False on Failure
         """
+        logger.debug("======================In BiosFactory get_files===================")
         fw_file = cert_file = None
         lines = out.splitlines()
         lines_list = list(dict.fromkeys(lines))
@@ -167,6 +170,7 @@ class BiosFactory(ABC):
         @param fw_filename: firmware filename
         @param cert_filename: cert filename
         """
+        logger.debug("======================In BiosFactory delete files===================")
         logger.debug(" ")
         if pkg_filename:
             self._repo.delete(pkg_filename)
@@ -194,6 +198,7 @@ class LinuxToolFirmware(BiosFactory):
         @param output: shell command output of ehl firmware tool
         @return: string value if system firmware type is present if not return None
         """
+        logger.debug("======================In BiosFactory parse guid===================")
         for line in output.splitlines():
             if "System Firmware type" in line or "system-firmware type" in line:
                 return line.split(',')[1].split()[0].strip('{').strip('}')
@@ -205,6 +210,7 @@ class LinuxToolFirmware(BiosFactory):
         @param runner: To run shell commands
         @return: None or guid
         """
+        logger.debug("======================In BiosFactory extract guid===================")
         cmd = self._fw_tool + " -l"
         (out, err, code) = runner.run(cmd)
         if code != 0:
@@ -225,6 +231,7 @@ class LinuxToolFirmware(BiosFactory):
         @param runner: To run shell commands
         @raises FotaError: on failed firmware attempt
         """
+        logger.debug("======================In BiosFactory apply firmware===================")
         if self._guid_required:
             if not guid:
                 guid = self._extract_guid(runner)
@@ -270,6 +277,7 @@ class LinuxToolFirmware(BiosFactory):
         logger.debug(f"pkg_filename: {pkg_filename}, repo_name: {repo_name}")
         if '/' in self._fw_tool:
             if not os.path.isfile(self._fw_tool):
+                logger.debug("======================In linux tool firmware install===================")
                 e = "Firmware Update Aborted:  Firmware tool does not exist at {}".format(
                     self._fw_tool)
                 raise FotaError(e)
