@@ -612,7 +612,7 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.application_command.get', return_value=Result(200, "ok"))
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
-    def test_application_centos_driver_update_raise_file_error(self, detect_os, run, get):
+    def test_application_centos_driver_update_raise_error_if_file_is_not_rpm_type(self, detect_os, run, get):
         aota = self._build_aota(cmd='update', app_type='application', uri="https://example.com/sample/sample.deb")
         with self.assertRaisesRegex(AotaError, "Invalid file type"):
             aota.run()
