@@ -139,7 +139,7 @@ class CentOsApplication(Application):
         logger.debug(f"driver path = {driver_path}")
         try:
 
-            if not self.check_file_type(driver_path)
+            if not self.check_file_type(driver_path):
                 raise AotaError('Invalid file type')
 
             # Remove all files in inb_driver
