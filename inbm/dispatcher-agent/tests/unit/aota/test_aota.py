@@ -2,9 +2,7 @@ import unittest
 import os
 from unittest import TestCase
 
-from typing import Optional, Any, Mapping
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
-from dispatcher.config_dbs import ConfigDbs
 from dispatcher.aota.aota import AOTA
 from dispatcher.aota.aota_command import Docker, DockerCompose
 from dispatcher.aota.application_command import CentOsApplication
@@ -622,18 +620,14 @@ class TestAOTA(TestCase):
             aota.run()
 
 
-    #@patch('dispatcher.aota.aota_command.DirectoryRepo.get_repo_path', return_value='sample.rpm')
-    #@patch('driver_path', return_value="sample.rpm")
     @patch('dispatcher.aota.application_command.CentOsApplication.check_file_type', return_value=True)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     @patch('dispatcher.aota.application_command.move_file')
     @patch('os.listdir', return_value=[])
-    #@patch('dispatcher.aota.aota_command.DirectoryRepo.get_repo_path', return_value='sample/test')
     @patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
-    #def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, create_repo, mock_get_reo, listdir, mock_move,
     def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, create_repo, listdir, mock_move,
                                                          support_driver, run, mock_check_file_type):
         aota = self._build_aota(cmd='update', app_type='application', uri="http://example.com")

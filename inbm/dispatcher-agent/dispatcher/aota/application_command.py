@@ -119,14 +119,17 @@ class CentOsApplication(Application):
         for file in os.listdir(CENTOS_DRIVER_PATH):
             remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
-    def check_file_type(self, drive_path):
-            if not str(drive_path).endswith('.rpm'):
-                return False
+    def check_file_type(self, file_path:str) -> bool:
+        """Check the driver file is rpm type or not
+
+        @return: return False if file is not rpm type
+        """
+        if not file_path.endswith('.rpm'):
+            return False
 
     def update(self) -> None:
         """ Update CentOS driver"""
         super().update()
-        logger.debug("=========================================In CentOS application updaye")
         application_repo = self._download_package()
 
         # Check if it's CentOS and inside container. In CentOS inb container, chroot is used to switch to CentOS
@@ -136,12 +139,9 @@ class CentOsApplication(Application):
         logger.debug(f"driver path = {driver_path}")
         try:
 
-            test_path = self.check_file_type(driver_path)
-            if not test_path:
+            if not self.check_file_type(driver_path)
                 raise AotaError('Invalid file type')
 
-            #if not str(driver_path).endswith('.rpm'):
-            #    raise IOError('Invalid file type')
             # Remove all files in inb_driver
             for file in os.listdir(CENTOS_DRIVER_PATH):
                 remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
