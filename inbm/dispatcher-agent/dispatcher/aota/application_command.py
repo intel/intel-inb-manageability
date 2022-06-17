@@ -158,7 +158,7 @@ class CentOsApplication(Application):
             uninstall_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -e --nodeps {old_driver_name}'
             out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
-            logger.debug(out)
+           
             # If old packages wasn't install on system, it will return error too.
             if code != 0 and "is not installed" not in str(err):
                 raise AotaError(err)
