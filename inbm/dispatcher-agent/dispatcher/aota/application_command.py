@@ -127,7 +127,7 @@ class CentOsApplication(Application):
         if file_path.endswith('.rpm'):
             return True
         else:
-            False
+            return False
 
     def update(self) -> None:
         """ Update CentOS driver"""
