@@ -8,7 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
  - HSD 15011298374 - Missing AppArmor profile entries under /sys for diagnostic agent
  - HSD 15011258925 - Kernel modules missing after AOTA update HDDL driver
- - RTC 495463 - Existing driver get uninstalled if AOTA update failed using .deb file package
 ### Added
 
 ## 3.0.11 - 2022-05-17
