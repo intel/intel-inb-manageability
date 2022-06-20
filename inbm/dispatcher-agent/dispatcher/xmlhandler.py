@@ -49,7 +49,8 @@ class XmlHandler:
         self._xml: str = xml
         with ThreadPoolExecutor(max_workers=1) as executor:
             tasks = {executor.submit(self._getroot, x): x for x in [xml]}
-
+            logger.debug("======================================In xml handler init=====================")
+            
             for task in as_completed(tasks, timeout=PARSE_TIME_SECS):
                 try:
                     self._root = task.result()
@@ -67,10 +68,12 @@ class XmlHandler:
         logger.debug('validating XML file: {}'.format(mask_security_info(xml)))
         logger.debug(mask_security_info(xml))
         try:
+            logger.debug("====================================================>validate")
             if not os.path.exists(self._schema_location):
                 raise XmlException("Schema file not found at location: " +
                                    str(self._schema_location))
 
+            logger.debug("====================================================>validate")
             parser = XMLParser(forbid_dtd=True, forbid_entities=True, forbid_external=True)
 
             if self._is_file:
@@ -91,6 +94,7 @@ class XmlHandler:
             return parsed_doc
         except (xmlschema.XMLSchemaValidationError, ParseError, DefusedXmlException, DTDForbidden,
                 EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, xmlschema.XMLSchemaParseError) as error:
+            logger.debug("====================================================>validate")
             raise XmlException(f'XML validation error: {error}')
 
     def __repr__(self) -> str:
