@@ -448,6 +448,7 @@ class Dispatcher(WindowsService):
                 logger.debug(f"Target type: {target_type}")
 
                 if target_type is TargetType.none.name and ota_type == OtaType.POTA.name.lower():
+                    logger.info('=====================================> I am waiting')
                     ota_list = self._create_ota_resource_list(parsed_head, resource)
                     # Perform manifest checking first before OTA
                     self._validate_pota_manifest(
@@ -455,6 +456,7 @@ class Dispatcher(WindowsService):
 
                     for ota in sorted(ota_list.keys()):
                         kwargs['ota_type'] = ota
+                        logger.info('=====================================> some one is waiting')
                         result = self._do_ota_update(
                             xml, ota, repo_type, target_type, ota_list[ota], kwargs, parsed_head)
                         logger.debug('=======> Install result: %s', str(result))
@@ -462,6 +464,7 @@ class Dispatcher(WindowsService):
                             logger.info('=======> Install result: %s', str(result))
                             break
                 else:
+                    logger.info('=====================================> you waiting')
                     result = self._do_ota_update(
                         xml, ota_type, repo_type, target_type, resource, kwargs, parsed_head)
                     logger.info('=======> Install result: %s', str(result))
@@ -543,9 +546,11 @@ class Dispatcher(WindowsService):
 
         # target_type is only used for Accelerator Manageability Framework
         if target_type is TargetType.none.name:
+            logger.info('=====================================> hahahahhahahhah')
             t = factory.create_thread(parsed_manifest)
             return t.start()
         else:
+            logger.info('=====================================> come come come')
             return self._do_install_on_target(
                 ota_type.upper(), xml, repo_type, parsed_manifest)
 
