@@ -116,7 +116,7 @@ class CentOsApplication(Application):
         for file in os.listdir(CENTOS_DRIVER_PATH):
             remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
-    def __is_rpm_file_type(self, file_path:str) -> bool:
+    def is_rpm_file_type(self, file_path:str) -> bool:
         """Check the driver file is rpm type or not
 
         @return: return False if file is not rpm type
@@ -134,7 +134,7 @@ class CentOsApplication(Application):
         
         logger.debug(f"driver path = {driver_path}")
         try:
-            if not self.__is_rpm_file_type(driver_path):
+            if not self.is_rpm_file_type(driver_path):
                 raise AotaError('Invalid file type')
 
             # Remove all files in inb_driver
@@ -160,7 +160,7 @@ class CentOsApplication(Application):
 
             chroot_driver_path = driver_centos_path.replace("/host", "")
             install_driver_cmd = CHROOT_PREFIX + \
-                f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
+                f'/usr/bin/rpm -ivh --oldpackage {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
             out, err, code = PseudoShellRunner().run(install_driver_cmd)
             logger.debug(out)
