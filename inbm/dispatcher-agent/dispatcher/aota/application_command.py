@@ -116,7 +116,7 @@ class CentOsApplication(Application):
         for file in os.listdir(CENTOS_DRIVER_PATH):
             remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
-    def is_rpm_file_type(self, file_path:str) -> bool:
+    def __is_rpm_file_type(self, file_path:str) -> bool:
         """Check the driver file is rpm type or not
 
         @return: return False if file is not rpm type
@@ -135,7 +135,7 @@ class CentOsApplication(Application):
         logger.debug(f"driver path = {driver_path}")
         try:
 
-            is_rpm = self.is_rpm_file_type(driver_path)
+            is_rpm = self.__is_rpm_file_type(driver_path)
             if not is_rpm:
                 raise AotaError('Invalid file type')
 
