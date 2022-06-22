@@ -456,7 +456,9 @@ class Dispatcher(WindowsService):
                         kwargs['ota_type'] = ota
                         result = self._do_ota_update(
                             xml, ota, repo_type, target_type, ota_list[ota], kwargs, parsed_head)
+                        logger.info('=======> Install result: %s', str(result))
                         if result == Result(CODE_BAD_REQUEST, "FAILED TO INSTALL") or result == OTA_FAILURE:
+                            logger.info('=======> Install result: %s', str(result))
                             break
                 else:
                     result = self._do_ota_update(
@@ -470,18 +472,23 @@ class Dispatcher(WindowsService):
                 logger.debug(f"target_type : {target_type}")
                 if target_type is TargetType.none.name:
                     result = self._do_config_operation(parsed_head, target_type)
+                    logger.info('=======> Install result: %s', str(result))
                 else:
                     config_cmd_type = parsed_head.get_element('config/cmd')
                     logger.debug(f"cmd_type : {config_cmd_type}")
                     result = self._do_config_operation_on_target(
                         config_cmd_type, parsed_head, xml, target_type, self._broker)
+                    logger.info('=======> Install result: %s', str(result))
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
+            logger.info('=======> Install result: %s', str(result))
         except XmlException as error:
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
+            logger.info('=======> Install result: %s', str(result))
         except (AotaError, FotaError, SotaError) as e:
             result = Result(CODE_BAD_REQUEST, str(e))
+            logger.info('=======> Install result: %s', str(result))
         finally:
             logger.info('Install result: %s', str(result))
             self._send_result(str(result))
