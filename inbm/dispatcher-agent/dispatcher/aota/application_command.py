@@ -134,7 +134,6 @@ class CentOsApplication(Application):
         
         logger.debug(f"driver path = {driver_path}")
         try:
-
             is_rpm = self.__is_rpm_file_type(driver_path)
             if not is_rpm:
                 raise AotaError('Invalid file type')
@@ -165,6 +164,7 @@ class CentOsApplication(Application):
                 f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
             out, err, code = PseudoShellRunner().run(install_driver_cmd)
+            logger.debug(out)
             if code != 0:
                 raise AotaError(err)
             self._reboot(CHROOT_PREFIX + '/usr/sbin/shutdown -r 0')
