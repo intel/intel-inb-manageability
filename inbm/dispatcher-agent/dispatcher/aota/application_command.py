@@ -134,8 +134,7 @@ class CentOsApplication(Application):
         
         logger.debug(f"driver path = {driver_path}")
         try:
-            is_rpm = self.__is_rpm_file_type(driver_path)
-            if not is_rpm:
+            if not self.__is_rpm_file_type(driver_path)
                 raise AotaError('Invalid file type')
 
             # Remove all files in inb_driver
