@@ -434,6 +434,7 @@ class Dispatcher(WindowsService):
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
             elif type_of_manifest == 'ota':
+                logger.info('=============================>otaaaaaaaaaa')
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
@@ -463,6 +464,7 @@ class Dispatcher(WindowsService):
                 else:
                     result = self._do_ota_update(
                         xml, ota_type, repo_type, target_type, resource, kwargs, parsed_head)
+                    logger.info('=======> Install result: %s', str(result))
 
             elif type_of_manifest == 'config':
                 logger.debug('Running configuration command sent down ')
