@@ -456,7 +456,7 @@ class Dispatcher(WindowsService):
                         kwargs['ota_type'] = ota
                         result = self._do_ota_update(
                             xml, ota, repo_type, target_type, ota_list[ota], kwargs, parsed_head)
-                        logger.info('=======> Install result: %s', str(result))
+                        logger.debug('=======> Install result: %s', str(result))
                         if result == Result(CODE_BAD_REQUEST, "FAILED TO INSTALL") or result == OTA_FAILURE:
                             logger.info('=======> Install result: %s', str(result))
                             break
