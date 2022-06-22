@@ -47,6 +47,8 @@ class Updater(ABC):
         self.updater_timer.start()
         self._update_type = update_type
         self._file_size = self._get_file_size()
+        logger.debug(self._timer)
+
 
     @abstractmethod
     def revise_manifest(self, manifest: Dict[str, str]) -> str:
