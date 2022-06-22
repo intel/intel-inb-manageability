@@ -616,7 +616,8 @@ class TestAOTA(TestCase):
         with self.assertRaisesRegex(AotaError, "Invalid file type"):
             aota.run()
 
-    @patch('dispatcher.aota.application_command.CentOsApplication.check_file_type', return_value=True)
+
+    @patch('dispatcher.aota.application_command.CentOsApplication.is_rpm_file_type', return_value=True)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     @patch('dispatcher.aota.application_command.move_file')
@@ -625,7 +626,7 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True, device_reboot="Yes")
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
     def test_application_centos_driver_update_raise_pass(self, detect_os, mock_detect_os, create_repo, listdir, mock_move,
-                                                         support_driver, run, mock_check_file_type):
+                                                         support_driver, run, mock_is_rpm_file_type):
         aota = self._build_aota(cmd='update', app_type='application', uri="http://example.com")
         self.assertIsNone(aota.run())
 
