@@ -542,6 +542,8 @@ class Dispatcher(WindowsService):
         p = factory.create_parser()
         # NOTE: p.parse can raise one of the *otaError exceptions
         parsed_manifest = p.parse(resource, kwargs, parsed_head)
+        logger.debug("value of parsed_manifest", parsed_manifest)
+#         logger.debug(parsed_manifest)
         self.check_username_password(parsed_manifest)
 
         # target_type is only used for Accelerator Manageability Framework
