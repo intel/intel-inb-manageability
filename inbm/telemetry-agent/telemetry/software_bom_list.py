@@ -11,6 +11,7 @@ import math
 import logging
 from typing import Any, List
 from . import telemetry_handling
+from time import sleep
 from inbm_lib.mqttclient.mqtt import MQTT
 from inbm_lib.detect_os import detect_os, LinuxDistType
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -87,6 +88,7 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
         if sys.getsizeof(sw_bom_list) > SWBOM_BYTES_SIZE:
             number_of_swbom_lists = math.ceil(
                 SWBOM_BYTES_SIZE/math.ceil(sys.getsizeof(sw_bom_list)/len(sw_bom_list)))
+            #logger.debug("check1 sw_bom_list size ----- {}, check2 getsize of swbom_list {}, check3 number of sw_bom lists {}".format(len(sw_bom_list),sys.getsizeof(sw_bom_list), number_of_swbom_lists))
         else:
             number_of_swbom_lists = len(sw_bom_list)
         list_num = 0
@@ -95,12 +97,13 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
             list_num += 1
             sw_dict[f"swbom_package_list_{list_num}"] = sw_bom_list[i:i+number_of_swbom_lists]
             key = 'queryResult' if query_request else 'softwareBOM'
-            # Calculate the final chunk of swbom, to incluce have the keyword "QueryEndResult".
+            # Calculate the final chunk of swbom, to include have the keyword "QueryEndResult".
             if (i == 0 and len(sw_bom_list) == number_of_swbom_lists) or \
                     i == math.floor(len(sw_bom_list)/number_of_swbom_lists) * number_of_swbom_lists:
                 # Inbc query to exit successfully when it has the keyword "QueryEndResult".
                 key = 'queryEndResult'
             swbom = {'values': {key: sw_dict}, 'type': "dynamic_telemetry"}
+            sleep(1)
             telemetry_handling.publish_dynamic_telemetry(client, EVENTS_CHANNEL, swbom)
     else:
         key = 'queryEndResult' if query_request else 'softwareBOM'
