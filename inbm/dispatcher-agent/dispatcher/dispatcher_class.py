@@ -542,17 +542,18 @@ class Dispatcher(WindowsService):
         p = factory.create_parser()
         # NOTE: p.parse can raise one of the *otaError exceptions
         parsed_manifest = p.parse(resource, kwargs, parsed_head)
-        logger.debug("value of parsed_manifest", parsed_manifest)
+        logger.debug("==============> value of parsed_manifest")
+        logger.debug(parsed_manifest)
 #         logger.debug(parsed_manifest)
         self.check_username_password(parsed_manifest)
 
         # target_type is only used for Accelerator Manageability Framework
         if target_type is TargetType.none.name:
-            logger.info('=====================================> hahahahhahahhah')
+            logger.info('=====================================> if TT none')
             t = factory.create_thread(parsed_manifest)
             return t.start()
         else:
-            logger.info('=====================================> come come come')
+            logger.info('=====================================> else of TT none')
             return self._do_install_on_target(
                 ota_type.upper(), xml, repo_type, parsed_manifest)
 
