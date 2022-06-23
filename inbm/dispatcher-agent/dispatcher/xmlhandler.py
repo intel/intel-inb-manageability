@@ -155,6 +155,8 @@ class XmlHandler:
         """
         logger.debug("XML get attr")
         element = self._root.find(xpath)
+        logger.debug("=======>")
+        logger.debug(element)
         if element is not None:
             logger.debug("=======>")
             logger.debug(element.attrib[attribute_name])
