@@ -158,9 +158,12 @@ class XmlHandler:
         if element is not None:
             logger.debug("=======>")
             logger.debug(element.attrib[attribute_name])
+            logger.info("=======>")
+            logger.info(element.attrib[attribute_name])
             return element.attrib[attribute_name]
         else:
             logger.debug("=======> else xml exception")
+            logger.info("=======> else xml exception")
             raise XmlException("Could not find element in get_attribute")
 
     def add_attribute(self, xpath, attribute_name, attribute_value) -> bytes:
