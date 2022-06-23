@@ -55,6 +55,7 @@ class OtaThread(metaclass=abc.ABCMeta):
             self._dispatcher_callbacks.install_check()
             logger.info('Manifest has been parsed successfully')
         except DispatcherException:
+            logger.info('======> except inside of def start(self):')
             raise DispatcherException('Pre OTA check failed')
 
     def post_install_check(self) -> None:
@@ -145,6 +146,7 @@ class SotaThread(OtaThread):
         except DispatcherException as e:
             self._dispatcher_callbacks.broker_core.telemetry(
                 "Error executing SOTA: " + str(e))
+            logger.debug(" =====> in except DispatcherException")
             return OTA_FAILURE
 
         global ota_lock
@@ -159,12 +161,14 @@ class SotaThread(OtaThread):
                 except SotaError as e:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         "Error executing SOTA: " + str(e))
+                    logger.debug(" =====> in except of if ota_lock.acquire(False)")
                     return OTA_FAILURE
             finally:
                 ota_lock.release()
         else:
             self._dispatcher_callbacks.broker_core.telemetry(
                 "Another OTA in progress, Try Later")
+            logger.debug(" =====> else")
             return OTA_FAILURE_IN_PROGRESS
 
     def check(self) -> None:

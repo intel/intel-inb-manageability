@@ -434,7 +434,7 @@ class Dispatcher(WindowsService):
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
             elif type_of_manifest == 'ota':
-                logger.info('=============================>otaaaaaaaaaa')
+                logger.info('=============================>ota')
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
@@ -448,7 +448,7 @@ class Dispatcher(WindowsService):
                 logger.debug(f"Target type: {target_type}")
 
                 if target_type is TargetType.none.name and ota_type == OtaType.POTA.name.lower():
-                    logger.info('=====================================> I am waiting')
+                    logger.info('=====================================> TT')
                     ota_list = self._create_ota_resource_list(parsed_head, resource)
                     # Perform manifest checking first before OTA
                     self._validate_pota_manifest(
@@ -456,7 +456,7 @@ class Dispatcher(WindowsService):
 
                     for ota in sorted(ota_list.keys()):
                         kwargs['ota_type'] = ota
-                        logger.info('=====================================> some one is waiting')
+                        logger.info('=====================================> for sorted')
                         result = self._do_ota_update(
                             xml, ota, repo_type, target_type, ota_list[ota], kwargs, parsed_head)
                         logger.debug('=======> Install result: %s', str(result))
@@ -464,7 +464,7 @@ class Dispatcher(WindowsService):
                             logger.info('=======> Install result: %s', str(result))
                             break
                 else:
-                    logger.info('=====================================> you waiting')
+                    logger.info('=====================================> before do update')
                     result = self._do_ota_update(
                         xml, ota_type, repo_type, target_type, resource, kwargs, parsed_head)
                     logger.info('=======> Install result: %s', str(result))

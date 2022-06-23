@@ -248,7 +248,6 @@ class SOTA:
                 if self._repo_type.lower() == REMOTE_SOURCE:
                     downloader: Downloader = self.factory.create_downloader()
                     logger.debug(f"SOTA Download URI: {self._uri}")
-                    logger.debug(f"SOTA Download URI: {self._uri}")
                     if self._uri is None:
                         downloader.download(
                             self._dispatcher_callbacks, None, sota_cache_repo,
@@ -272,7 +271,6 @@ class SOTA:
                     snapshotter.recover(rebooter, time_to_wait_before_reboot)
         except (DispatcherException, SotaError, UrlSecurityException) as e:
             msg = "Caught exception during SOTA: " + str(e)
-            logger.debug(msg)
             logger.debug(msg)
             self._dispatcher_callbacks.broker_core.telemetry(str(e))
             self._dispatcher_callbacks.broker_core.send_result(
