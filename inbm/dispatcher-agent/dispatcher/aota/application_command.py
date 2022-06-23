@@ -160,7 +160,7 @@ class CentOsApplication(Application):
 
             chroot_driver_path = driver_centos_path.replace("/host", "")
             install_driver_cmd = CHROOT_PREFIX + \
-                f'/usr/bin/rpm -ivh --oldpackage {chroot_driver_path}'
+                f'/usr/bin/rpm -ivh {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
             out, err, code = PseudoShellRunner().run(install_driver_cmd)
             logger.debug(out)
