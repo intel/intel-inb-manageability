@@ -215,6 +215,10 @@ class AotaThread(OtaThread):
         """
         logger.debug(" ")
         super().start()
+        except DispatcherException as e:
+            self._dispatcher_callbacks.broker_core.telemetry(
+                "Error executing AOTA: " + str(e))
+            return OTA_FAILURE
 
         global ota_lock
         if ota_lock.acquire(False):
