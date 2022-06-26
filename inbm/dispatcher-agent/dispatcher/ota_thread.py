@@ -214,7 +214,8 @@ class AotaThread(OtaThread):
         @return (dict): result of the OTA
         """
         logger.debug(" ")
-        super().start()
+        try:
+            super().start()
         except DispatcherException as e:
             self._dispatcher_callbacks.broker_core.telemetry(
                 "Error executing AOTA: " + str(e))
