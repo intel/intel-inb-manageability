@@ -6,7 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Fixed
- - HSD 15011298374 - Missing AppArmor profile entries under /sys for diagnostic agent
+ - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
+ - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
 
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
