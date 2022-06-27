@@ -9,6 +9,7 @@ import os
 import sys
 import math
 import logging
+from time import sleep
 from typing import Any, List
 from . import telemetry_handling
 from inbm_lib.mqttclient.mqtt import MQTT
@@ -90,6 +91,9 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
         else:
             number_of_swbom_lists = len(sw_bom_list)
         list_num = 0
+        #logger.debug("check1 sw_bom_list size ----- {}, \
+        #    check2 getsize of swbom_list {}, check3 number of sw_bom lists \
+        #        {}".format(len(sw_bom_list),sys.getsizeof(sw_bom_list), number_of_swbom_lists))
         for i in range(0, len(sw_bom_list), number_of_swbom_lists):
             sw_dict = {}
             list_num += 1
@@ -101,6 +105,7 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
                 # Inbc query to exit successfully when it has the keyword "QueryEndResult".
                 key = 'queryEndResult'
             swbom = {'values': {key: sw_dict}, 'type': "dynamic_telemetry"}
+            sleep(1)
             telemetry_handling.publish_dynamic_telemetry(client, EVENTS_CHANNEL, swbom)
     else:
         key = 'queryEndResult' if query_request else 'softwareBOM'
