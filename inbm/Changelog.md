@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15011258925 - Kernel modules missing after AOTA update HDDL driver
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
+ - RTC 516194 Add Query OTA cmd to ThingsBoard Batch dashboard
 
 ## 3.0.11 - 2022-05-17
 
