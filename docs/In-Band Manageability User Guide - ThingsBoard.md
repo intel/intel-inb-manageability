@@ -471,7 +471,7 @@ Manageability Batch` entry:
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image16.png" style="width:5.78333in;height:2.34975in" />
 
 A dashboard similar to the one below should appear:  
-<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image17.png" style="width:5.78333in;height:3.0in" />
+<img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_516194/docs/media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image17.PNG" style="width:5.78333in;height:3.0in" />
 
 A. Change the dashboard (i.e. to the Intel Manageability Devices; refer
     [Setting up the Dashboards](#setting-up-the-dashboards))
