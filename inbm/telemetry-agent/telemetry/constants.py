@@ -66,7 +66,7 @@ MENDER_PATH = get_canonical_representation_of_path('/etc/mender/artifact_info')
 UNKNOWN = 'Unknown'
 
 # Software BOM list bytes to send at a time
-SWBOM_BYTES_SIZE = 6500
+SWBOM_BYTES_SIZE = 2500
 
 SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
                       'dispatcher-agent' / 'manifest_schema.xsd')
