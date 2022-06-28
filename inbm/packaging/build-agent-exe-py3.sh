@@ -110,6 +110,7 @@ fpm -t "$FORMAT"\
     -n ${NAME}\
     -v ${VERSION}\
     --no-auto-depends\
+    --depends lxc-common\
     -a all\
     -m none\
     .

@@ -62,6 +62,7 @@ fpm -t $2\
     -n ${NAME}\
     -v ${VERSION}\
     --no-auto-depends\
+    --depends lxc-common\
     -a all\
     -m none\
     .
