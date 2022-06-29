@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
  - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
  - HSD 15011258925 - Kernel modules missing after AOTA update HDDL driver
+ - HSD 15011243931 - Fix cloudadapter-agent disconnection issue
 
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
