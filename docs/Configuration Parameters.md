@@ -76,9 +76,7 @@ The best way to update the file is either by using the cloud or INBC.
 | XLinkPCIeDevID                    |       0        | N/A         | N/A         | Number used to connect the Xlink PCIe devices to the Vision agent.                                                                                                                          | 
 | xlinkFirstChannel                 |      1530      | N/A         | N/A         | First channel of xlink channel range.                                                                                                                                                       |
 | xlinkLastChannel                  |      1730      | N/A         | N/A         | Last channel of xlink channel range.                                                                                                                                                        |
-| flashlessRollbackWaitTimeSecs     |      600       | 120         | 1200        | Time interval to wait for flashless rollback to complete. 
-
-**NOTE:** In a Flashless System for POTA update flashlessRollbackWaitTimeSecs time supersedes potaCompletionTimerSecs.                                                                                                                                                                                  
+| flashlessRollbackWaitTimeSecs     |      600       | 120         | 1200        | Time interval to wait for flashless rollback to complete.                                                                                                                                   |                                                                                                                                                                                  |
 
 ### Node Agent
 
