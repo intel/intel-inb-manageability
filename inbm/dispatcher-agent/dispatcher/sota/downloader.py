@@ -67,6 +67,7 @@ class Downloader:
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         logger.debug("===================================Downloader=======================")
+        return False
         #pass
 
 
@@ -90,6 +91,7 @@ class DebianBasedDownloader(Downloader):
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         logger.debug("===================================Debian=======================")
+        return False
         #pass
 
 
@@ -121,6 +123,7 @@ class WindowsDownloader(Downloader):
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         logger.debug("===================================Windows=======================")
+        return Flase
         #pass
 
 
