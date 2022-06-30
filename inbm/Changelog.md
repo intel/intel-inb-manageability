@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
 
+### Security
+ - Updated trtl dependencies
+
 ## 3.0.11 - 2022-05-17
 
 ### Fixed
