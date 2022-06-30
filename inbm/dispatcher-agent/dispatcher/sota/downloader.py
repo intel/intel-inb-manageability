@@ -123,7 +123,7 @@ class WindowsDownloader(Downloader):
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         logger.debug("===================================Windows=======================")
-        return Flase
+        return False
         #pass
 
 
