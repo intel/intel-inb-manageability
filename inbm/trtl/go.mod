@@ -3,20 +3,26 @@ module iotg-inb/trtl
 go 1.16
 
 require (
-	github.com/containerd/containerd v1.6.1 // indirect
+	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/docker/distribution v2.8.1+incompatible // indirect
-	github.com/docker/docker v20.10.12+incompatible
+	github.com/docker/docker v20.10.17+incompatible
 	github.com/docker/go-connections v0.4.0
+	github.com/docker/go-units v0.4.0 // indirect
+	github.com/go-logr/logr v1.2.3 // indirect
+	github.com/google/go-cmp v0.5.6 // indirect
 	github.com/moby/term v0.0.0-20210619224110-3f7ff695adc6 // indirect
-	github.com/opencontainers/image-spec v1.0.2
+	github.com/morikuni/aec v1.0.0 // indirect
+	github.com/opencontainers/go-digest v1.0.0 // indirect
+	github.com/opencontainers/image-spec v1.0.3-0.20211202183452-c5a74bcca799
 	github.com/pkg/errors v0.9.1
-	github.com/spf13/afero v1.8.0
+	github.com/sirupsen/logrus v1.8.1 // indirect
+	github.com/spf13/afero v1.8.2
 	github.com/stretchr/testify v1.7.0
-	golang.org/x/net v0.0.0-20220121170024-4395403b659a
-	golang.org/x/sys v0.0.0-20220114195835-da31bd327af9 // indirect
-	golang.org/x/xerrors v0.0.0-20200806184451-1a77d5e9f316 // indirect
-	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5 // indirect
-	k8s.io/apimachinery v0.23.2
-	k8s.io/klog/v2 v2.40.1 // indirect
-	k8s.io/utils v0.0.0-20211208161948-7d6a63dca704 // indirect
+	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e
+	golang.org/x/sys v0.0.0-20220627191245-f75cf1eec38b // indirect
+	golang.org/x/time v0.0.0-20210723032227-1f47c861a9ac // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gotest.tools/v3 v3.0.3 // indirect
+	k8s.io/apimachinery v0.24.2
+	k8s.io/klog/v2 v2.70.0 // indirect
 )

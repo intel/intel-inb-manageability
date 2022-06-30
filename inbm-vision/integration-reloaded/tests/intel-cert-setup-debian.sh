@@ -81,7 +81,7 @@ cert_setup() {
     root_sha2.zip
   # Validate hashs
   cat > sha.sums <<'EOF'
-  93172bfb95c7c92f617bfc5d81d55bc87632cdbdf456445d1faac400a6e512e049b8887ce91800341d50625438c55d11 root_sha2.zip
+  47225be272d8d2fba0962939710f31a37f13d2cf929e94b021a7305059c25c6a8735a2dbb812e20d06ca76e91217d1cc root_sha2.zip
 1aefbefe8fb9a5235f2edff2481bd3849fefbbc0b7f4369faa9bccb49b57dac8053c71d7fe9d983c302ef99e227d70df root.zip
 EOF
   sha384sum -c sha.sums 1>/dev/null 2>&1 \
