@@ -78,6 +78,8 @@ The best way to update the file is either by using the cloud or INBC.
 | xlinkLastChannel                  |      1730      | N/A         | N/A         | Last channel of xlink channel range.                                                                                                                                                        |
 | flashlessRollbackWaitTimeSecs     |      600       | 120         | 1200        | Time interval to wait for flashless rollback to complete.                                                                                                                                   |                                                                                                                                                                                  |
 
+**NOTE:** In a Flashless System for POTA update flashlessRollbackWaitTimeSecs time supersedes potaCompletionTimerSecs.
+
 ### Node Agent
 
 Node Agent configuration file is located at: ````/etc/intel-manageability/public/node-agent/intel_manageability_node.conf````.
