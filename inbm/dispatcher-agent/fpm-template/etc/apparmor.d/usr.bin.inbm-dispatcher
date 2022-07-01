@@ -231,4 +231,5 @@
   /usr/bin/file.file rix,
   /usr/sbin/chroot rUx,
   /usr/** r,
+  /usr/bin/fwupdate rUx
 }
