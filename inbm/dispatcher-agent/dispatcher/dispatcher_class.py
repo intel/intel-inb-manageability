@@ -434,6 +434,7 @@ class Dispatcher(WindowsService):
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
             elif type_of_manifest == 'ota':
+                logger.debug("===============================do install============================")
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
@@ -454,11 +455,13 @@ class Dispatcher(WindowsService):
 
                     for ota in sorted(ota_list.keys()):
                         kwargs['ota_type'] = ota
+                        logger.debug("===============================DO install============================")
                         result = self._do_ota_update(
                             xml, ota, repo_type, target_type, ota_list[ota], kwargs, parsed_head)
                         if result == Result(CODE_BAD_REQUEST, "FAILED TO INSTALL") or result == OTA_FAILURE:
                             break
                 else:
+                    logger.debug("===============================do INSTALL============================")
                     result = self._do_ota_update(
                         xml, ota_type, repo_type, target_type, resource, kwargs, parsed_head)
 

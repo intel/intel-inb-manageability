@@ -101,6 +101,9 @@ class SotaFactory(OtaFactory):
 
     def create_thread(self, parsed_manifest: Mapping[str, Optional[Any]]) -> OtaThread:
         logger.debug(" ")
+        logger.debug(self._repo_type)
+        logger.debug(self._dispatcher_callbacks)
+        logger.debug(parsed_manifest)
         return SotaThread(self._repo_type, self._dispatcher_callbacks, parsed_manifest)
 
 
