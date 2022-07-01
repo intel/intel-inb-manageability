@@ -52,8 +52,8 @@
   /run/systemd/private rw,
   /sbin/ldconfig rix,
   /sbin/ldconfig.real rix,
-  /sys/fs/** r,
-  /sys/class/power_supply/ r,
+  /sys/ r,
+  /sys/** r,
   /tmp/ rw,
   /tmp/** mrw,
   /usr/bin/awk rix,
@@ -75,10 +75,8 @@
   /usr/bin/trtl Pix,
   /usr/bin/btrfs rix,
   /usr/bin/systemctl rix,
-  /sys/devices/** r,
   capability sys_admin, # for btrfs
   /usr/share/misc/magic.mgc r,
   /usr/bin/file rix,
   /usr/** r,
-  /sys/** r,
 }
