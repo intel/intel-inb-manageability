@@ -304,4 +304,5 @@ class SOTA:
         self.factory = os_factory.get_os(os_type)
         downloader: Downloader = self.factory.create_downloader()
         if not downloader.check_release_date(self._parsed_manifest['release_date']):
+            logger.debug("==================Test print====================")
             raise SotaError("SOTA release date older than the system's release date")
