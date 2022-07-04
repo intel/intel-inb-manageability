@@ -66,9 +66,7 @@ class Downloader:
         return True if manifest_release_date > platform_mender_date else False
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
-        logger.debug("===================================Downloader=======================")
-        return False
-        #pass
+        pass
 
 
 class DebianBasedDownloader(Downloader):
@@ -90,7 +88,10 @@ class DebianBasedDownloader(Downloader):
                      "perform a software update")
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
-        pass
+        """
+        @return True alwyas as ubuntu doesn't need to check release date
+        """
+        return True
 
 
 class WindowsDownloader(Downloader):
@@ -120,9 +121,7 @@ class WindowsDownloader(Downloader):
         logger.debug("")
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
-        logger.debug("===================================Windows=======================")
-        return False
-        #pass
+        pass
 
 
 class YoctoDownloader(Downloader):
