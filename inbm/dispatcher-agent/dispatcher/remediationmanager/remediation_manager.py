@@ -50,7 +50,7 @@ class RemediationManager:
             logger.exception('Subscribe failed: %s', exception)
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
-        loggerdebug("INDIAINDIAINDIAINDIAINDIA................................")
+        logger.debug("INDIAINDIAINDIAINDIAINDIA................................")
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
         try:
             logger.debug("hereitiscominghereherehere.............................")
