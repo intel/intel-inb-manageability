@@ -37,19 +37,23 @@ class RemediationManager:
     def run(self) -> None:
         """Subscribes to remediation channels"""
         try:
+            logger.debug("+++++++_______________***************************%%%%%%%%%%%%%%%%%%%%%%")
             logger.debug('Subscribing to: %s', REMEDIATION_CONTAINER_CMD_CHANNEL)
             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
                 REMEDIATION_CONTAINER_CMD_CHANNEL, self._on_stop_container)
 
             logger.debug('Subscribing to: %s', REMEDIATION_IMAGE_CMD_CHANNEL)
+            logger.debug("jkjkkjjjkkkkkkkjjjjjjjjjjkkkkkkkkkkkkkkkkkkkjjjkkkk")
             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
                 REMEDIATION_IMAGE_CMD_CHANNEL, self._on_remove_image)
         except Exception as exception:  # TODO (Nat): Should catch specific exception
             logger.exception('Subscribe failed: %s', exception)
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
+        loggerdebug("INDIAINDIAINDIAINDIAINDIA................................")
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
         try:
+            logger.debug("hereitiscominghereherehere.............................")
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_container(literal_eval(payload))
