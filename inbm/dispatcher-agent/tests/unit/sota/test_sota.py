@@ -183,9 +183,4 @@ class TestSota(testtools.TestCase):
         TestSota.sota_instance._parsed_manifest = parsed_manifest
         #self.assertNotRaises(SotaError, TestSota.sota_instance.check)
         with self.assertRaises(SotaError):
-            try:
-                TestSota.sota_instance.check()
-            except:
-                pass
-            else:
-                raise SotaError
+            TestSota.sota_instance.check()
