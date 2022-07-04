@@ -91,8 +91,8 @@ class DebianBasedDownloader(Downloader):
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         logger.debug("===================================Debian=======================")
-        return True
-        #pass
+        #return True
+        pass
 
 
 class WindowsDownloader(Downloader):

@@ -184,7 +184,5 @@ class TestSota(testtools.TestCase):
         try:
             TestSota.sota_instance.check()
         except SotaError:
-            self.fail("raised unexpectedly")
+            self.fail("Sota check() method raised exception unexpectedly")
 
-        #self.assertNotRaises(SotaError, TestSota.sota_instance.check)
-        #with self.assertRaises(SotaError):
