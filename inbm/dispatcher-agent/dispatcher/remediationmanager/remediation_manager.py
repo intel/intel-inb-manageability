@@ -39,8 +39,8 @@ class RemediationManager:
         try:
             logger.debug("+++++++_______________***************************%%%%%%%%%%%%%%%%%%%%%%")
             logger.debug('Subscribing to: %s', REMEDIATION_CONTAINER_CMD_CHANNEL)
-            self._dispatcher_callbacks.broker_core.mqtt_subscribe(
-                REMEDIATION_CONTAINER_CMD_CHANNEL, self._on_stop_container)
+#             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
+#                 REMEDIATION_CONTAINER_CMD_CHANNEL, self._on_stop_container)
 
             logger.debug('Subscribing to: %s', REMEDIATION_IMAGE_CMD_CHANNEL)
             logger.debug("jkjkkjjjkkkkkkkjjjjjjjjjjkkkkkkkkkkkkkkkkkkkjjjkkkk")
