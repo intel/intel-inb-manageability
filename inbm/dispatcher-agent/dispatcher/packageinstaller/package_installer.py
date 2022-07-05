@@ -43,6 +43,8 @@ class TrtlContainer:  # pragma: no cover
         if self._dbs == ConfigDbs.ON or self._dbs == ConfigDbs.WARN:
             logger.debug("dbs is ON or WARN")
             try:
+                logger.debug(message)
+                logger.debug("seeeeeeeeeeeseeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeSeeeeeeeeeeeeeeeeee")
                 message = DbsChecker(self._dispatcher_callbacks, self, self.__trtl, self.__name,
                                      self.__last_version, self._dbs) \
                     .run_docker_security_test()
