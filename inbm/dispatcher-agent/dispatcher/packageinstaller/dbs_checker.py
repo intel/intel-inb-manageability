@@ -54,6 +54,7 @@ class DbsChecker:
             logger.debug("UUUUUUUUUUUUUUUUUUUUUUUUVVVVVVVVVVVVVVVVVVVVVVSSSSSSSSSSSSSSSSSSSSSSSSSSS")
             self.run_docker_security_test()
             if self._trtl.stop(self._name, self._last_version - 1):
+                logger.debug("insidefunctionnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
                 container_id = self._find_current_container()
                 self._trtl.commit(self._name, self._last_version)
                 logger.debug("rpm_install: based on smart install, detected success")
@@ -115,7 +116,7 @@ class DbsChecker:
             self._dispatcher_callbacks.broker_core.mqtt_publish(
                 REMEDIATION_CONTAINER_CMD_CHANNEL, str(failed_containers))
         if failed_images and len(failed_images) > 0:
-                         logger.debug("nextstepppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp")
+            logger.debug("nextstepppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp")
             self._dispatcher_callbacks.broker_core.mqtt_publish(
                 REMEDIATION_IMAGE_CMD_CHANNEL, str(failed_images))
 
