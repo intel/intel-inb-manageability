@@ -112,7 +112,7 @@ class DbsChecker:
 
     def _publish_remediation_request(self, failed_containers: Any, failed_images: Any) -> None:
         if failed_containers and len(failed_containers) > 0:
-            logger.debug{"calling here calling here..............................................................")
+            logger.debug("calling here calling here..............................................................")
             self._dispatcher_callbacks.broker_core.mqtt_publish(
                 REMEDIATION_CONTAINER_CMD_CHANNEL, str(failed_containers))
         if failed_images and len(failed_images) > 0:
