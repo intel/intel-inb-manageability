@@ -51,6 +51,7 @@ class DbsChecker:
         @return: status
         """
         try:
+            logger.debug("UUUUUUUUUUUUUUUUUUUUUUUUVVVVVVVVVVVVVVVVVVVVVVSSSSSSSSSSSSSSSSSSSSSSSSSSS")
             self.run_docker_security_test()
             if self._trtl.stop(self._name, self._last_version - 1):
                 container_id = self._find_current_container()
@@ -95,6 +96,7 @@ class DbsChecker:
             result += "All Passed"
             return result.strip(',')
         else:
+            logger.debug("ooooooooooooooooooooooooooooooohhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh")
             result += fails
             logger.debug("Failed Images:" + str(failed_images))
             logger.debug("Failed Containers:" + str(failed_containers))
@@ -109,9 +111,11 @@ class DbsChecker:
 
     def _publish_remediation_request(self, failed_containers: Any, failed_images: Any) -> None:
         if failed_containers and len(failed_containers) > 0:
+            logger.debug{"calling here calling here..............................................................")
             self._dispatcher_callbacks.broker_core.mqtt_publish(
                 REMEDIATION_CONTAINER_CMD_CHANNEL, str(failed_containers))
         if failed_images and len(failed_images) > 0:
+                         logger.debug("nextstepppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppppp")
             self._dispatcher_callbacks.broker_core.mqtt_publish(
                 REMEDIATION_IMAGE_CMD_CHANNEL, str(failed_images))
 
