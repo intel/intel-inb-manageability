@@ -36,6 +36,7 @@ class RemediationManager:
 
     def run(self) -> None:
         """Subscribes to remediation channels"""
+        logger.debug("+++++++_______________***************************%%%%%%%%%%%%%%%%%%%%%%$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4")
         try:
             logger.debug("+++++++_______________***************************%%%%%%%%%%%%%%%%%%%%%%")
             logger.debug('Subscribing to: %s', REMEDIATION_CONTAINER_CMD_CHANNEL)
