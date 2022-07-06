@@ -129,16 +129,18 @@ class RemediationManager:
         global flag
         for container_id in ids:
             if not self.ignore_dbs_results:
+                logger.debug("...........................................................................if not self.ignore_dbs_results")
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
                 if self.dbs_remove_image_on_failed_container:
+                    logger.debug("....................................................................self.dbs_remove_image_on_failed_container")
                     image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
                     self.container_image_list.append(image_name)
                 
-                logger.debug(image_id)
-                logger.debug(image_name)
+#                 logger.debug(image_id)
+#                 logger.debug(image_name)
                 if flag == 1:
                     logger.debug("..............................................Containers are already removed")
                     raise ValueError('Containers are already removed')
