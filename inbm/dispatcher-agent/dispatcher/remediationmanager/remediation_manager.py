@@ -19,6 +19,7 @@ from ..packageinstaller.constants import REMEDIATION_CONTAINER_CMD_CHANNEL, \
     REMEDIATION_IMAGE_CMD_CHANNEL
 
 logger = logging.getLogger(__name__)
+flag=0
 
 
 class RemediationManager:
@@ -135,6 +136,9 @@ class RemediationManager:
                         raise ValueError('Cannot read image ID')
                     self.container_image_list.append(image_name)
 
+                if flag == 1:
+                    raise ValueError('Containers are already removed')
+
                 (out, err, code) = trtl.stop_by_id(str(container_id))
                 if err is None:
                     err = ""
@@ -155,6 +159,7 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + 'unable to remove container. Error: ' + err)
                 else:
+                    flag=1
                     logger.debug("...........................................................Container has been removed")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
