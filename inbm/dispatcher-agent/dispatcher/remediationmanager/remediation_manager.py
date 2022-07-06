@@ -27,7 +27,8 @@ class RemediationManager:
 
     @param dispatcher_callbacks: DispatcherCallbacks instance
     """
-    global flag=0
+    global flag
+    flag = 0
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
