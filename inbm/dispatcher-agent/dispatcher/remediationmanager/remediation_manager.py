@@ -148,7 +148,7 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been stopped.')
 
-                err = trtl.remove_container(str(container_id), True)
+                err = trtl.remove_container(str(container_id), False)
                 if err:
                     logger.debug("...........................................................unable to remove container. Error")
                     self._dispatcher_callbacks.broker_core.telemetry(
