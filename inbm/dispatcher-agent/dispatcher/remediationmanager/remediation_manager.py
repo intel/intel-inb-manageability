@@ -136,8 +136,11 @@ class RemediationManager:
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
                     self.container_image_list.append(image_name)
-
+                
+                logger.debug(image_id)
+                logger.debug(image_name)
                 if flag == 1:
+                    logger.debug("..............................................Containers are already removed")
                     raise ValueError('Containers are already removed')
 
                 (out, err, code) = trtl.stop_by_id(str(container_id))
