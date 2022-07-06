@@ -19,7 +19,6 @@ from ..packageinstaller.constants import REMEDIATION_CONTAINER_CMD_CHANNEL, \
     REMEDIATION_IMAGE_CMD_CHANNEL
 
 logger = logging.getLogger(__name__)
-flag=0
 
 
 class RemediationManager:
@@ -28,6 +27,7 @@ class RemediationManager:
 
     @param dispatcher_callbacks: DispatcherCallbacks instance
     """
+    global flag=0
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
