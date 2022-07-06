@@ -93,7 +93,7 @@ class PseudoShellRunner:
         @return: Result of subprocess along with output, error (possibly None), exit status, and absolute log path
         """
         shlex_split_cmd = cls.interpret_shell_like_command(cmd)
-
+        logger.debug("..............................................run_with_log_path calling subprocess")
         logger.debug(
             "run_with_log_path calling subprocess.Popen " +
             str(shlex_split_cmd) +
@@ -125,7 +125,8 @@ class PseudoShellRunner:
                 logfile.close()
         else:
             abs_log_path = None
-
+        
+        logger.debug("...........................................................empty message")
         logger.debug("")
         (out, err) = proc.communicate(b'yes\n') if AFULNX_64 in cmd else proc.communicate()
 
