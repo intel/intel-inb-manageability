@@ -99,7 +99,7 @@ class TestTelemetryHandling(TestCase):
     def test_publish_initial_telemetry(self, mock_static, mock_publish):
         send_initial_telemetry(None, None)
         mock_static.assert_called_once()
-        assert mock_publish.call_count == 2
+        mock_publish.assert_called()
 
     @patch('telemetry.telemetry_handling.publish_dynamic_telemetry', autospec=True)
     @patch('telemetry.telemetry_handling.get_dynamic_telemetry', autospec=True)
