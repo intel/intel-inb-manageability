@@ -496,11 +496,15 @@ class Trtl:
         @param force: Whether if should do force removal or not (e.g of a running container)
         @return: error if any
         """
+        
+        logger.debug("...................................................................Trtl.containerRemove")
         logger.debug("Trtl.containerRemove(" + container_id + ")")
         if force:
+            logger.debug("........................................................force self.runner.run")
             (out, err, code) = self.runner.run(self._boilerplate(
                 "containerRemoveByID" + " -f") + " -id=" + container_id)
         else:
+            logger.debug("..................................................................entering else part if not force")
             (out, err, code) = self.runner.run(self._boilerplate(
                 "containerRemoveByID") + " -id=" + container_id)
 
