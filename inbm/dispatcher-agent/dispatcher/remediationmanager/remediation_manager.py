@@ -36,25 +36,24 @@ class RemediationManager:
 
     def run(self) -> None:
         """Subscribes to remediation channels"""
-        logger.debug("+++++++_______________***************************%%%%%%%%%%%%%%%%%%%%%%$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4")
+        logger.debug("..............................................calling run method")
         try:
-            logger.debug("+++++++_______________***************************%%%%%%%%%%%%%%%%%%%%%%")
+            logger.debug("...............................................checking try block")
             logger.debug('Subscribing to: %s', REMEDIATION_CONTAINER_CMD_CHANNEL)
-#             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
-#                 REMEDIATION_CONTAINER_CMD_CHANNEL, self._on_stop_container)
+            self._dispatcher_callbacks.broker_core.mqtt_subscribe(
+                REMEDIATION_CONTAINER_CMD_CHANNEL, self._on_stop_container)
 
             logger.debug('Subscribing to: %s', REMEDIATION_IMAGE_CMD_CHANNEL)
-            logger.debug("jkjkkjjjkkkkkkkjjjjjjjjjjkkkkkkkkkkkkkkkkkkkjjjkkkk")
             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
                 REMEDIATION_IMAGE_CMD_CHANNEL, self._on_remove_image)
         except Exception as exception:  # TODO (Nat): Should catch specific exception
             logger.exception('Subscribe failed: %s', exception)
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
-        logger.debug("INDIAINDIAINDIAINDIAINDIA................................")
+        logger.debug("......................................................._on_stop_container")
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
         try:
-            logger.debug("hereitiscominghereherehere.............................")
+            logger.debug("=======================================try block checking")
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_container(literal_eval(payload))
@@ -144,16 +143,19 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' unable to stop container. Error: ' + err)
                 else:
+                    logger.debug(".....................................................Container has been stopped")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been stopped.')
 
                 err = trtl.remove_container(str(container_id), True)
                 if err:
+                    logger.debug("...........................................................unable to remove container. Error")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + 'unable to remove container. Error: ' + err)
                 else:
+                    logger.debug("...........................................................Container has been removed")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been removed.')
