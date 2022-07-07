@@ -811,7 +811,11 @@ class Dispatcher(WindowsService):
                 if cleaned_payload is None:
                     logger.error("No dbsRemoveImageOnFailedContainer selected!")
                 else:
+                    logger.debug("========>")
+                    logger.debug(cleaned_payload)
                     self.remediation_instance.dbs_remove_image_on_failed_container = cleaned_payload
+                    logger.debug("========> after remediation_instance")
+                    logger.debug(cleaned_payload)
                     self.dbs_remove_image_on_failed_container = cleaned_payload
 
             if config_name == "proceedWithoutRollback":
