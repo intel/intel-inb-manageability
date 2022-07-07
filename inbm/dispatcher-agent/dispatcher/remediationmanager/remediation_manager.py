@@ -20,7 +20,7 @@ from ..packageinstaller.constants import REMEDIATION_CONTAINER_CMD_CHANNEL, \
 
 logger = logging.getLogger(__name__)
 
-flag=0
+# flag=0
 class RemediationManager:
     """Receives notification from diagnostic to perform remediation management on
     containers/images via TRTL application
@@ -127,7 +127,7 @@ class RemediationManager:
     def _remove_container(self, ids: Any) -> None:
         for line in traceback.format_stack():
             logger.debug(line.strip())
-        global flag
+#         global flag
         for container_id in ids:
             if not self.ignore_dbs_results:
                 logger.debug("...........................................................................if not self.ignore_dbs_results")
@@ -143,9 +143,9 @@ class RemediationManager:
                 
 #                 logger.debug(image_id)
 #                 logger.debug(image_name)
-                if flag == 1:
-                    logger.debug("..............................................Containers are already removed")
-                    raise ValueError('Containers are already removed')
+#                 if flag == 1:
+#                     logger.debug("..............................................Containers are already removed")
+#                     raise ValueError('Containers are already removed')
 
                 (out, err, code) = trtl.stop_by_id(str(container_id))
                 if err is None:
@@ -167,7 +167,7 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + 'unable to remove container. Error: ' + err)
                 else:
-                    flag=1
+#                     flag=1
                     logger.debug("...........................................................Container has been removed")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
