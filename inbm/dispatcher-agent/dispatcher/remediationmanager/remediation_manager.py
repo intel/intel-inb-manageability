@@ -6,7 +6,7 @@
     Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
-
+import traceback
 import logging
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
@@ -125,6 +125,8 @@ class RemediationManager:
         return image_id, image_name
 
     def _remove_container(self, ids: Any) -> None:
+        for line in traceback.format_stack():
+            print(line.strip())
         global flag
         for container_id in ids:
             if not self.ignore_dbs_results:
