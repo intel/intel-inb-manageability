@@ -142,8 +142,8 @@ class RemediationManager:
                         raise ValueError('Cannot read image ID')
                     self.container_image_list.append(image_name)
                 
-#                 logger.debug(image_id)
-#                 logger.debug(image_name)
+                logger.debug(image_id)
+                logger.debug(image_name)
 #                 if flag == 1:
 #                     logger.debug("..............................................Containers are already removed")
 #                     raise ValueError('Containers are already removed')
