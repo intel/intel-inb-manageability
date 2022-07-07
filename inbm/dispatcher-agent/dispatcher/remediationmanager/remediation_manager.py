@@ -133,6 +133,7 @@ class RemediationManager:
                 logger.debug("...........................................................................if not self.ignore_dbs_results")
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
+                logger.debug(self.dbs_remove_image_on_failed_container)
                 if self.dbs_remove_image_on_failed_container:
                     logger.debug("....................................................................self.dbs_remove_image_on_failed_container")
                     image_id, image_name = self._get_image_id(trtl, container_id)
