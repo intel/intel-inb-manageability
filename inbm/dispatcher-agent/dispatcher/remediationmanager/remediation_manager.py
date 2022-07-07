@@ -32,7 +32,7 @@ class RemediationManager:
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
-        self.dbs_remove_image_on_failed_container = True
+        self.dbs_remove_image_on_failed_container = False
         self.container_image_list: List = []
 
     def run(self) -> None:
