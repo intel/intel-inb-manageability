@@ -126,7 +126,7 @@ class RemediationManager:
 
     def _remove_container(self, ids: Any) -> None:
         for line in traceback.format_stack():
-            print(line.strip())
+            logger.debug(line.strip())
         global flag
         for container_id in ids:
             if not self.ignore_dbs_results:
