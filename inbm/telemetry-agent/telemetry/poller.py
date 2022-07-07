@@ -112,8 +112,10 @@ class Poller(IPoller):
             if Poller.is_between_bounds(SOFTWARE_BOM_INTERVAL_HOURS, val,
                                         self._lower_bound_swbom_interval_hours,
                                         self._upper_bound_swbom_interval_hours):
-                #self._swbom_interval_seconds = int(val) * 60 * 60
-                self._swbom_interval_seconds = 100
+                self._swbom_interval_seconds = int(val) * 60 * 60
+                """
+                Remove later : self._swbom_interval_seconds = 100
+                """
                 logger.info('am here -------------------------------------------------------------->')
                 logger.info(val)
                 self._swbom_timer_seconds = self._swbom_interval_seconds
@@ -171,8 +173,8 @@ class Poller(IPoller):
             if self._enable_swbom:
                 if self._swbom_timer_seconds <= 0:
                     publish_software_bom(client, False)
-                    #self._swbom_timer_seconds = self._swbom_interval_seconds
+                    self._swbom_timer_seconds = self._swbom_interval_seconds
                     logger.info("am there -------------------------------------------------------------->")
-                    self._swbom_timer_seconds = 200
+                    #Remove later : self._swbom_timer_seconds = 200
                 else:
                     self._swbom_timer_seconds -= 1
