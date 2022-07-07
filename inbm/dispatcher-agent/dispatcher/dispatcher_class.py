@@ -34,7 +34,7 @@ from .aota.aota_error import AotaError
 from .command import Command
 from .common import dispatcher_state
 from .common.result_constants import CODE_OK, CODE_BAD_REQUEST, CODE_MULTIPLE, \
-    CONFIG_LOAD_FAIL_WRONG_PATH
+    CONFIG_LOAD_FAIL_WRONG_PATH, CODE_FOUND
 from .common.uri_utilities import is_valid_uri
 from .config.config_command import ConfigCommand
 from .config.constants import CONFIGURATION_APPEND_REMOVE_PATHS_LIST
@@ -722,7 +722,7 @@ class Dispatcher(WindowsService):
             self.update_queue.put((request_type, manifest))
         else:
             self._send_result(
-                str(Result(CODE_FOUND, "'OTA In Progress, Try Later")))
+                str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
 
     def _on_message(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
