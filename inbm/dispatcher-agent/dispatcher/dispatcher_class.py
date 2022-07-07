@@ -722,7 +722,7 @@ class Dispatcher(WindowsService):
             self.update_queue.put((request_type, manifest))
         else:
             self._send_result(
-                str(Result(CODE_BAD_REQUEST, "Update Queue Full, Please try again later")))
+                str(Result(CODE_FOUND, "'OTA In Progress, Try Later")))
 
     def _on_message(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
