@@ -171,6 +171,7 @@ class Poller(IPoller):
                 if self._swbom_timer_seconds <= 0:
                     publish_software_bom(client, False)
                     #self._swbom_timer_seconds = self._swbom_interval_seconds
+                    logger.info("am there -------------------------------------------------------------->")
                     self._swbom_timer_seconds = 200
                 else:
                     self._swbom_timer_seconds -= 1
