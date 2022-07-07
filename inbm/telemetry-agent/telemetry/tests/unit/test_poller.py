@@ -51,13 +51,14 @@ class TestTelemetry(TestCase):
         poller.set_configuration_value(300, CONTAINER_HEALTH_INTERVAL_SECONDS)
         self.assertEquals(poller._container_health_interval_seconds, 300)
         self.assertEquals(poller._container_health_temp, 300)
-
+    """
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     def test_set_configuration_value_software_bom_interval(self, mock_run):
         poller = Poller()
         poller.set_configuration_value(24, SOFTWARE_BOM_INTERVAL_HOURS)
         self.assertEquals(poller._swbom_interval_seconds, 86400)
         self.assertEquals(poller._swbom_timer_seconds, 86400)
+    """
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     def test_set_configuration_value_enable_software_bom(self, mock_run):
