@@ -419,6 +419,7 @@ def pota(args) -> str:
 
     if args.fotapath:
         if args.nohddl and os_type == LinuxDistType.Ubuntu.name:
+            logger.info("===========================In INBC POTA===================")
             raise InbcException(
                 "POTA is not supported with local 'path' tags on non HDDL Ubuntu device.")
         if not args.sotapath:
