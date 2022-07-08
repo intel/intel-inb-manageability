@@ -450,7 +450,7 @@ class TestINBC(TestCase):
                    '<cmd logtofile="y">update</cmd><release_date>2024-12-31</release_date>' \
                    '<path>/var/cache/temp/test.mender</path></sota></pota></type></ota></manifest>'
         self.assertEqual(pota.func(pota), expected)
-
+    """
     @patch('inbc.parser.detect_os', return_value='Ubuntu')
     def test_ubuntu_supported_no_hddl_pota_manifest(self, mock_os):
         pota = self.arg_parser.parse_args(
@@ -458,7 +458,7 @@ class TestINBC(TestCase):
         with self.assertRaisesRegex(InbcException,
                                     "POTA is not supported with local 'path' tags on non HDDL Ubuntu device."):
             pota.func(pota)
-
+    """
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_hddl_no_path(self, mock_stderr):
         s = self.arg_parser.parse_args(['sota', '-t', '123ABC', '456DEF'])
@@ -561,6 +561,7 @@ class TestINBC(TestCase):
                    '</path></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
+    """
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     def test_create_hddl_pota_uri_manifest_nohddl_ubuntu(self, mock_agent):
         s = self.arg_parser.parse_args(
@@ -593,7 +594,7 @@ class TestINBC(TestCase):
                    '<fetch>/var/cache/manageability/repository-tool/file.mender</fetch>' \
                    '</sota></pota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
-
+     
     def test_raise_invalid_pota_path_manifest(self):
         pota = self.arg_parser.parse_args(
             ['pota', '-fp', '/var/cache/manageability/intel_manageability_node.conf',
@@ -610,6 +611,7 @@ class TestINBC(TestCase):
                                     "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags."):
             pota.func(pota)
 
+    """
     def test_load_manifest(self):
         load = self.arg_parser.parse_args(
             ['load', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-tt', 'node'])
