@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Fixed
+ - RTC 509640      - Shorten the SWBOM publish time and added logic to cancell / update timer
  - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
  - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
  - HSD 15011258925 - Kernel modules missing after AOTA update HDDL driver
