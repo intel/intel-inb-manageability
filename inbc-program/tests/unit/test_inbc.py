@@ -275,6 +275,7 @@ class TestINBC(TestCase):
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
+    """       
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -285,7 +286,6 @@ class TestINBC(TestCase):
     @patch('inbc.command.ota_command.copy_file_to_target_location',
            side_effect=['/var/cache/manageability/repository-tool/fip.bin',
                         '/var/cache/manageability/repository-tool/test.mender'])
-    """       
     def test_create_pota_manifest_with_different_release_dates(self, copy_file, mock_installed, mock_active, t_start,
                                                                mock_subscribe, mock_publish, mock_connect,
                                                                mock_reconnect):
