@@ -450,10 +450,12 @@ def pota(args) -> str:
     logger.info("===========================In INBC POTA Bypassing Arguments check===================")
     if repo == "local":
         fota_tag = f'<path>{args.fotapath}</path>'
-        sota_tag = f'<path>{args.sotapath}</path>'
+        #sota_tag = f'<path>{args.sotapath}</path>'
     else:
         fota_tag = f'<fetch>{args.fotauri}</fetch>'
-        sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
+        #sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
+        
+    sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
