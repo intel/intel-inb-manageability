@@ -618,6 +618,7 @@ class TestINBC(TestCase):
             pota.func(pota)
 
     """
+    """
     def test_load_manifest(self):
         load = self.arg_parser.parse_args(
             ['load', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-tt', 'node'])
