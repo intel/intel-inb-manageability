@@ -135,7 +135,10 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
                 logger.debug(self.dbs_remove_image_on_failed_container)
-                self.dbs_remove_image_on_failed_container = True
+                image_id, image_name = self._get_image_id(trtl, container_id)
+                logger.debug(image_id)
+                logger.debug(image_name)                
+#                 self.dbs_remove_image_on_failed_container = True
                 if self.dbs_remove_image_on_failed_container:
                     logger.debug("....................................................................self.dbs_remove_image_on_failed_container")
                     image_id, image_name = self._get_image_id(trtl, container_id)
@@ -143,8 +146,7 @@ class RemediationManager:
                         raise ValueError('Cannot read image ID')
                     self.container_image_list.append(image_name)
                 
-                logger.debug(image_id)
-                logger.debug(image_name)
+
 #                 if flag == 1:
 #                     logger.debug("..............................................Containers are already removed")
 #                     raise ValueError('Containers are already removed')
