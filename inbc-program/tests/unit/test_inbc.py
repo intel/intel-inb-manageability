@@ -763,3 +763,5 @@ class TestINBC(TestCase):
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         t_stop.assert_called_once()
+
+    """
