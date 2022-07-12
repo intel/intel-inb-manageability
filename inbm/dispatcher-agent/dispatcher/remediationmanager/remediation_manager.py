@@ -133,7 +133,9 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 logger.debug("...........................................................................if not self.ignore_dbs_results")
                 trtl = Trtl(PseudoShellRunner())
-#                 image_id = None
+                logger.debug("=====> image_id")
+                logger.debug(image_id)
+                image_id = None
 #                 logger.debug(self.dbs_remove_image_on_failed_container)
 #                 image_id, image_name = self._get_image_id(trtl, container_id)
 #                 logger.debug(image_id)
@@ -149,6 +151,8 @@ class RemediationManager:
                         raise ValueError('Cannot read image ID')
                     self.container_image_list.append(image_name)
                     
+                logger.debug("=====> image_id")
+                logger.debug(image_id)
 #                 if flag == 1:
 #                     logger.debug("..............................................Containers are already removed")
 #                     raise ValueError('Containers are already removed')                    
@@ -178,8 +182,11 @@ class RemediationManager:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been removed.')
+                logger.debug("=====> image_id")
+                logger.debug(image_id)
 
                 if self.dbs_remove_image_on_failed_container and image_id is not None:
+                    logger.debug("=====> if self.dbs_remove_image_on_failed_container")
                     self._remove_single_image(image_id)
             else:
                 self._dispatcher_callbacks.broker_core.telemetry(
