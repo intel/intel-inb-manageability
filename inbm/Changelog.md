@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Fixed
+ - RTC 509640      - Shortened the SWBOM publish timer and added logic to cancel and update the timer
  - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
  - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
  - HSD 15011258925 - Kernel modules missing after AOTA update HDDL driver
@@ -16,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
  - RTC 516194 Add Query OTA cmd to ThingsBoard Batch dashboard
+ - RTC 496923 - Changed return status during preinstall check fail from 302 to 400 and updated the error message 
 
 ### Security
  - Updated trtl dependencies
