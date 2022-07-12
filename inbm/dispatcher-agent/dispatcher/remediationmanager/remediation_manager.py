@@ -51,6 +51,8 @@ class RemediationManager:
             logger.exception('Subscribe failed: %s', exception)
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
         logger.debug("......................................................._on_stop_container")
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
         try:
@@ -102,6 +104,8 @@ class RemediationManager:
                                                              'DBS WARN mode.')
 
     def _get_image_id(self, trtl: Trtl, container_id: str) -> Tuple[Optional[str], Optional[str]]:
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
         """Get the image id associated with the container id via TRTL
 
         @param trtl: TRTL object
