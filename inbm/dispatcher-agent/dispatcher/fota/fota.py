@@ -48,9 +48,9 @@ class FOTA:
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: DispatcherCallbacks instance
         """
-        logger.debug(f"parsed_manifest: {parsed_manifest}")
+        #logger.debug(f"parsed_manifest: {parsed_manifest}")
         self._ota_element = parsed_manifest.get('resource')
-        logger.debug(f"ota_element: {self._ota_element}")
+        #logger.debug(f"ota_element: {self._ota_element}")
         self._dispatcher_callbacks = dispatcher_callbacks
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
@@ -68,12 +68,12 @@ class FOTA:
                 raise FotaError('attempting to use local repo for FOTA but no path specified')
             self._pkg_filename = os.path.basename(self._ota_element['path'])
             path = self._ota_element.get('path', None)
-            logger.debug(f"path: {path}")
+            #logger.debug(f"path: {path}")
             if path is None:
                 repo_path = None
             else:
                 repo_path = os.path.dirname(path)
-            logger.debug(f"repo_path: {repo_path}")
+            #logger.debug(f"repo_path: {repo_path}")
 
         self.__signature = parsed_manifest['signature']
         self._hash_algorithm = parsed_manifest['hash_algorithm']
@@ -84,10 +84,10 @@ class FOTA:
             raise FotaError("dispatcher_callbacks not specified in FOTA constructor")
         self._dispatcher_callbacks.broker_core.telemetry("Firmware Update Tool launched")
         if repo_path:
-            logger.debug("Using manifest specified repo path")
+            #logger.debug("Using manifest specified repo path")
             self._repo = DirectoryRepo(repo_path)
         else:
-            logger.debug("Using default repo path")
+            #logger.debug("Using default repo path")
             self._repo = DirectoryRepo(CACHE)
 
     def install(self) -> Result:
@@ -102,9 +102,7 @@ class FOTA:
         try:
             factory = OsFactory.get_factory(
                 self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
-
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
-
             if self._repo_type.lower() == REMOTE_SOURCE:
                 # need to perform this check here because some FOTA commands don't have a URI -- see constructor
                 # (instead they have a path)
@@ -124,11 +122,12 @@ class FOTA:
             if self._ota_element is None:
                 raise FotaError("missing ota_element")
             tool_options = parse_tool_options(self._ota_element)
-            logger.debug(f"tool_options: {tool_options}")
             guid = parse_guid(self._ota_element)
-            logger.debug(f"guid: {guid}")
+            logger.debug(self._ota_element)
             hold_reboot = parse_hold_reboot_flag(self._ota_element)
-            logger.debug(f"holdReboot: {hold_reboot}; pkg_filename: {self._pkg_filename}")
+#             logger.debug(f"holdReboot: {hold_reboot}; pkg_filename: {self._pkg_filename}")
+#             logger.debug(f"guid: {guid}; tool_options: {tool_options}; signature: {self.__signature}")
+#             logger.debug(f"hash_algorithm: {self._hash_algorithm}; bios_vendor: {bios_vendor}; platform_product: {platform_product}")
             factory.create_installer(self._repo, FOTA_CONF_PATH, FOTA_CONF_SCHEMA_LOC).\
                 install(guid=guid,
                         tool_options=tool_options,
@@ -137,6 +136,7 @@ class FOTA:
                         hash_algorithm=self._hash_algorithm,
                         bios_vendor=bios_vendor,
                         platform_product=platform_product)
+            logger.debug("=========================================================>after install")
 
             def trigger_reboot() -> None:
                 """This method triggers a reboot."""
@@ -164,12 +164,12 @@ class FOTA:
             if hold_reboot:
                 self._repo.delete_all()
         finally:
+            logger.debug(return_message)
             if return_message == COMMAND_SUCCESS:
                 status = 'Firmware update in process...'
             else:
                 status = 'Firmware Update Aborted'
                 dispatcher_state.clear_dispatcher_state()
-            logger.debug('Firmware update status: ' + status)
             self._dispatcher_callbacks.broker_core.telemetry(status)
             return return_message
 

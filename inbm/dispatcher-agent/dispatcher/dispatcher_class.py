@@ -155,6 +155,7 @@ class Dispatcher(WindowsService):
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
+        logger.debug("=====> _make_callbacks_object")
         return DispatcherCallbacks(install_check=self.install_check,
                                    sota_repos=self.sota_repos,
                                    proceed_without_rollback=self.proceed_without_rollback,
@@ -434,6 +435,7 @@ class Dispatcher(WindowsService):
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
             elif type_of_manifest == 'ota':
+                logger.info('=============================>ota')
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
@@ -447,6 +449,7 @@ class Dispatcher(WindowsService):
                 logger.debug(f"Target type: {target_type}")
 
                 if target_type is TargetType.none.name and ota_type == OtaType.POTA.name.lower():
+                    logger.info('=====================================> TT')
                     ota_list = self._create_ota_resource_list(parsed_head, resource)
                     # Perform manifest checking first before OTA
                     self._validate_pota_manifest(
@@ -454,13 +457,18 @@ class Dispatcher(WindowsService):
 
                     for ota in sorted(ota_list.keys()):
                         kwargs['ota_type'] = ota
+                        logger.info('=====================================> for sorted')
                         result = self._do_ota_update(
                             xml, ota, repo_type, target_type, ota_list[ota], kwargs, parsed_head)
+                        logger.debug('=======> Install result: %s', str(result))
                         if result == Result(CODE_BAD_REQUEST, "FAILED TO INSTALL") or result == OTA_FAILURE:
+                            logger.info('=======> Install result: %s', str(result))
                             break
                 else:
+                    logger.info('=====================================> before do update')
                     result = self._do_ota_update(
                         xml, ota_type, repo_type, target_type, resource, kwargs, parsed_head)
+                    logger.info('=======> Install result: %s', str(result))
 
             elif type_of_manifest == 'config':
                 logger.debug('Running configuration command sent down ')
@@ -470,18 +478,23 @@ class Dispatcher(WindowsService):
                 logger.debug(f"target_type : {target_type}")
                 if target_type is TargetType.none.name:
                     result = self._do_config_operation(parsed_head, target_type)
+                    logger.info('=======> Install result: %s', str(result))
                 else:
                     config_cmd_type = parsed_head.get_element('config/cmd')
                     logger.debug(f"cmd_type : {config_cmd_type}")
                     result = self._do_config_operation_on_target(
                         config_cmd_type, parsed_head, xml, target_type, self._broker)
+                    logger.info('=======> Install result: %s', str(result))
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
+            logger.info('=======> Install result: %s', str(result))
         except XmlException as error:
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
+            logger.info('=======> Install result: %s', str(result))
         except (AotaError, FotaError, SotaError) as e:
             result = Result(CODE_BAD_REQUEST, str(e))
+            logger.info('=======> Install result: %s', str(result))
         finally:
             logger.info('Install result: %s', str(result))
             self._send_result(str(result))
@@ -530,13 +543,18 @@ class Dispatcher(WindowsService):
         p = factory.create_parser()
         # NOTE: p.parse can raise one of the *otaError exceptions
         parsed_manifest = p.parse(resource, kwargs, parsed_head)
+        logger.debug("==============> value of parsed_manifest")
+        logger.debug(parsed_manifest)
+#         logger.debug(parsed_manifest)
         self.check_username_password(parsed_manifest)
 
         # target_type is only used for Accelerator Manageability Framework
         if target_type is TargetType.none.name:
+            logger.info('=====================================> if TT none')
             t = factory.create_thread(parsed_manifest)
             return t.start()
         else:
+            logger.info('=====================================> else of TT none')
             return self._do_install_on_target(
                 ota_type.upper(), xml, repo_type, parsed_manifest)
 
@@ -794,7 +812,11 @@ class Dispatcher(WindowsService):
                 if cleaned_payload is None:
                     logger.error("No dbsRemoveImageOnFailedContainer selected!")
                 else:
+                    logger.debug("========>")
+                    logger.debug(cleaned_payload)
                     self.remediation_instance.dbs_remove_image_on_failed_container = cleaned_payload
+                    logger.debug("========> after remediation_instance")
+                    logger.debug(cleaned_payload)
                     self.dbs_remove_image_on_failed_container = cleaned_payload
 
             if config_name == "proceedWithoutRollback":

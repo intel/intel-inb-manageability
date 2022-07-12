@@ -5,7 +5,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-
+import traceback
 import logging
 
 from threading import Thread
@@ -71,6 +71,8 @@ class EventWatcher(Thread):
         thread.start()
 
     def _check_failed_containers(self, failed_containers: str) -> None:
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
         logger.debug("Passing failed containers on REMEDIATION_CONTAINER_CHANNEL")
         if failed_containers and len(failed_containers) > 0:
             self._broker.publish(REMEDIATION_CONTAINER_CHANNEL, str(failed_containers))

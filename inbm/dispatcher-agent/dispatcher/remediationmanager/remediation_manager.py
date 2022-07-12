@@ -6,7 +6,7 @@
     Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
-
+import traceback
 import logging
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
@@ -20,7 +20,7 @@ from ..packageinstaller.constants import REMEDIATION_CONTAINER_CMD_CHANNEL, \
 
 logger = logging.getLogger(__name__)
 
-
+# flag=0
 class RemediationManager:
     """Receives notification from diagnostic to perform remediation management on
     containers/images via TRTL application
@@ -29,6 +29,7 @@ class RemediationManager:
     """
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
+        logger.debug(".......................................................__init__ constructor")
         self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
@@ -36,7 +37,9 @@ class RemediationManager:
 
     def run(self) -> None:
         """Subscribes to remediation channels"""
+        logger.debug("..............................................calling run method")
         try:
+            logger.debug("...............................................checking try block")
             logger.debug('Subscribing to: %s', REMEDIATION_CONTAINER_CMD_CHANNEL)
             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
                 REMEDIATION_CONTAINER_CMD_CHANNEL, self._on_stop_container)
@@ -48,8 +51,10 @@ class RemediationManager:
             logger.exception('Subscribe failed: %s', exception)
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
+        logger.debug("......................................................._on_stop_container")
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
         try:
+            logger.debug("=======================================try block checking")
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_container(literal_eval(payload))
@@ -78,6 +83,7 @@ class RemediationManager:
     def _remove_single_image(self, image_id: str) -> None:
         logger.debug("")
         if not self.ignore_dbs_results:
+            logger.debug("========>  if not self.ignore_dbs_results")
             trtl = Trtl(PseudoShellRunner())
             (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
             if err is None:
@@ -121,15 +127,37 @@ class RemediationManager:
         return image_id, image_name
 
     def _remove_container(self, ids: Any) -> None:
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
+#         global flag
         for container_id in ids:
             if not self.ignore_dbs_results:
+                logger.debug("...........................................................................if not self.ignore_dbs_results")
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                if self.dbs_remove_image_on_failed_container:
+                logger.debug("=====> image_id")
+                logger.debug(image_id)
+#                 logger.debug(self.dbs_remove_image_on_failed_container)
+#                 image_id, image_name = self._get_image_id(trtl, container_id)
+#                 logger.debug(image_id)
+#                 logger.debug(image_name)
+#                 if image_id is None:
+#                     raise ValueError('Cannot read image ID')
+#                 self.container_image_list.append(image_name)
+#                 self.dbs_remove_image_on_failed_container = True                
+                #if self.dbs_remove_image_on_failed_container:
+                if True:
+                    logger.debug("....................................................................self.dbs_remove_image_on_failed_container")
                     image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
                     self.container_image_list.append(image_name)
+                    
+                logger.debug("=====> image_id")
+                logger.debug(image_id)
+#                 if flag == 1:
+#                     logger.debug("..............................................Containers are already removed")
+#                     raise ValueError('Containers are already removed')                    
 
                 (out, err, code) = trtl.stop_by_id(str(container_id))
                 if err is None:
@@ -139,21 +167,28 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' unable to stop container. Error: ' + err)
                 else:
+                    logger.debug(".....................................................Container has been stopped")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been stopped.')
 
-                err = trtl.remove_container(str(container_id), True)
+                err = trtl.remove_container(str(container_id), False)
                 if err:
+                    logger.debug("...........................................................unable to remove container. Error")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + 'unable to remove container. Error: ' + err)
                 else:
+#                     flag=1
+                    logger.debug("...........................................................Container has been removed")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been removed.')
+                logger.debug("=====> image_id")
+                logger.debug(image_id)
 
                 if self.dbs_remove_image_on_failed_container and image_id is not None:
+                    logger.debug("=====> if self.dbs_remove_image_on_failed_container")
                     self._remove_single_image(image_id)
             else:
                 self._dispatcher_callbacks.broker_core.telemetry(

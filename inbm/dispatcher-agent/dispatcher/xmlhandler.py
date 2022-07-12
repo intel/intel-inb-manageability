@@ -49,7 +49,8 @@ class XmlHandler:
         self._xml: str = xml
         with ThreadPoolExecutor(max_workers=1) as executor:
             tasks = {executor.submit(self._getroot, x): x for x in [xml]}
-
+            logger.debug("======================================In xml handler init=====================")
+            
             for task in as_completed(tasks, timeout=PARSE_TIME_SECS):
                 try:
                     self._root = task.result()
@@ -63,12 +64,16 @@ class XmlHandler:
         @return parsed document
         @raises XmlException
         """
+        logger.debug("====================================================>validate")
         logger.debug('validating XML file: {}'.format(mask_security_info(xml)))
+        logger.debug(mask_security_info(xml))
         try:
+            logger.debug("====================================================>validate")
             if not os.path.exists(self._schema_location):
                 raise XmlException("Schema file not found at location: " +
                                    str(self._schema_location))
 
+            logger.debug("====================================================>validate")
             parser = XMLParser(forbid_dtd=True, forbid_entities=True, forbid_external=True)
 
             if self._is_file:
@@ -89,6 +94,7 @@ class XmlHandler:
             return parsed_doc
         except (xmlschema.XMLSchemaValidationError, ParseError, DefusedXmlException, DTDForbidden,
                 EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, xmlschema.XMLSchemaParseError) as error:
+            logger.debug("====================================================>validate")
             raise XmlException(f'XML validation error: {error}')
 
     def __repr__(self) -> str:
@@ -149,9 +155,17 @@ class XmlHandler:
         """
         logger.debug("XML get attr")
         element = self._root.find(xpath)
+        logger.debug("=======>")
+        logger.debug(element)
         if element is not None:
+            logger.debug("=======>")
+            logger.debug(element.attrib[attribute_name])
+            logger.info("=======>")
+            logger.info(element.attrib[attribute_name])
             return element.attrib[attribute_name]
         else:
+            logger.debug("=======> else xml exception")
+            logger.info("=======> else xml exception")
             raise XmlException("Could not find element in get_attribute")
 
     def add_attribute(self, xpath, attribute_name, attribute_value) -> bytes:
@@ -209,6 +223,7 @@ class XmlHandler:
         @raises: XmlException when failed to update
         """
         try:
+            logger.debug("==========================================================>remove")
             logger.debug("XML remove attr")
             element = self._root.find(xpath)
             if element is not None:
@@ -243,5 +258,6 @@ class XmlHandler:
         @param xml: xml contents
         @return: root path
         """
+        logger.debug("==================================================>_getroot")
         logger.debug(f"XML : {mask_security_info(xml)}")
         return self._validate(xml).getroot()

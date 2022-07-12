@@ -378,9 +378,11 @@ class Trtl:
         @param container_id: ContainerID to be stopped
         @return: Result, error message, error code
         """
+        logger.debug("......................................................Trtl.stopByID")
         logger.debug("Trtl.stopByID(" + container_id + ")")
         out, err, code = self.runner.run(
             self._boilerplate("stopByID") + " -id=" + container_id)
+        logger.debug("......................................................................Trtl.stop_by_id results")
         logging.debug("Trtl.stop_by_id results: output={}, err={}, exitcode={}"
                       .format(out, err, code))
         return out, err, code
@@ -403,9 +405,11 @@ class Trtl:
         @param force: Force image to be removed even if it has an active container
         @return: Result, error message, error code
         """
+        logger.debug("............................................................Trtl.imageRemoveByID")
         logger.debug("Trtl.imageRemoveByID(" + image_id + ")")
         out, err, code = self.runner.run(self._boilerplate(
             "imageRemoveByID") + " -id=" + image_id + " -f=" + str(force))
+        logger.debug("..............................................................Trtl.imageremovebyid results")
         logging.debug(
             "Trtl.imageremovebyid results: output={}, err={}, exitcode={}".format(
                 out, err, code))
@@ -492,11 +496,15 @@ class Trtl:
         @param force: Whether if should do force removal or not (e.g of a running container)
         @return: error if any
         """
+        
+        logger.debug("...................................................................Trtl.containerRemove")
         logger.debug("Trtl.containerRemove(" + container_id + ")")
         if force:
+            logger.debug("........................................................force self.runner.run")
             (out, err, code) = self.runner.run(self._boilerplate(
                 "containerRemoveByID" + " -f") + " -id=" + container_id)
         else:
+            logger.debug("..................................................................entering else part if not force")
             (out, err, code) = self.runner.run(self._boilerplate(
                 "containerRemoveByID") + " -id=" + container_id)
 
