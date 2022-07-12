@@ -51,8 +51,6 @@ class RemediationManager:
             logger.exception('Subscribe failed: %s', exception)
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
-        for line in traceback.format_stack():
-            logger.debug(line.strip())
         logger.debug("......................................................._on_stop_container")
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
         try:
@@ -104,8 +102,6 @@ class RemediationManager:
                                                              'DBS WARN mode.')
 
     def _get_image_id(self, trtl: Trtl, container_id: str) -> Tuple[Optional[str], Optional[str]]:
-        for line in traceback.format_stack():
-            logger.debug(line.strip())
         """Get the image id associated with the container id via TRTL
 
         @param trtl: TRTL object
@@ -138,13 +134,13 @@ class RemediationManager:
                 logger.debug("...........................................................................if not self.ignore_dbs_results")
                 trtl = Trtl(PseudoShellRunner())
 #                 image_id = None
-                logger.debug(self.dbs_remove_image_on_failed_container)
-                image_id, image_name = self._get_image_id(trtl, container_id)
-                logger.debug(image_id)
-                logger.debug(image_name)
-                if image_id is None:
-                    raise ValueError('Cannot read image ID')
-                self.container_image_list.append(image_name)
+#                 logger.debug(self.dbs_remove_image_on_failed_container)
+#                 image_id, image_name = self._get_image_id(trtl, container_id)
+#                 logger.debug(image_id)
+#                 logger.debug(image_name)
+#                 if image_id is None:
+#                     raise ValueError('Cannot read image ID')
+#                 self.container_image_list.append(image_name)
 #                 self.dbs_remove_image_on_failed_container = True                
                 if self.dbs_remove_image_on_failed_container:
                     logger.debug("....................................................................self.dbs_remove_image_on_failed_container")
