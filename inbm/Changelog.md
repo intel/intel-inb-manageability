@@ -6,11 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Fixed
+ - RTC 509640      - Shortened the SWBOM publish timer and added logic to cancel and update the timer
  - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
  - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
  - HSD 15011258925 - Kernel modules missing after AOTA update HDDL driver
  - HSD 15011243931 - Fix cloudadapter-agent disconnection issue
  - HSD 16016950467 - Add missing AppArmor entries for MTL-P Ubuntu
+ - HSD 15011480329 - Fix INBC POTA fail while executing SOTA in ubuntu
 
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
