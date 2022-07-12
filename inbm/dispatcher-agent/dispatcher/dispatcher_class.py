@@ -155,6 +155,7 @@ class Dispatcher(WindowsService):
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
+        logger.debug("=====> _make_callbacks_object")
         return DispatcherCallbacks(install_check=self.install_check,
                                    sota_repos=self.sota_repos,
                                    proceed_without_rollback=self.proceed_without_rollback,
