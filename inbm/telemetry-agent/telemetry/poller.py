@@ -45,7 +45,7 @@ class Poller(IPoller):
         self._lower_bound_max_cache_size = 50
         self._upper_bound_max_cache_size = 200
         self._upper_bound_swbom_interval_hours = 168
-        self._lower_bound_swbom_interval_hours = 24
+        self._lower_bound_swbom_interval_hours = 1
         self._swbom_interval_seconds = self._swbom_timer_seconds = 86400
         self._enable_swbom = False
         self._IAHost = False
@@ -112,7 +112,8 @@ class Poller(IPoller):
             if Poller.is_between_bounds(SOFTWARE_BOM_INTERVAL_HOURS, val,
                                         self._lower_bound_swbom_interval_hours,
                                         self._upper_bound_swbom_interval_hours):
-                self._swbom_interval_seconds = val * 60 * 60
+                self._swbom_interval_seconds = int(val) * 60 * 60
+                self._swbom_timer_seconds = self._swbom_interval_seconds
         else:
             logger.error('Received path that is not configured: ' + path)
 
