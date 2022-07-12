@@ -84,12 +84,7 @@ class FotaThread(OtaThread):
         @return (dict): result of the OTA
         """
         logger.debug(" ")
-        try:
-            super().start()
-        except DispatcherException as e:
-            self._dispatcher_callbacks.broker_core.telemetry(
-                "Error executing FOTA: " + str(e))
-            return OTA_FAILURE
+        super().start()
 
         global ota_lock
         if ota_lock.acquire(False):
@@ -140,12 +135,7 @@ class SotaThread(OtaThread):
         @return (dict): result of the OTA
         """
         logger.debug(" ")
-        try:
-            super().start()
-        except DispatcherException as e:
-            self._dispatcher_callbacks.broker_core.telemetry(
-                "Error executing SOTA: " + str(e))
-            return OTA_FAILURE
+        super().start()
 
         global ota_lock
         if ota_lock.acquire(False):

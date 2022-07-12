@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
+ - RTC 496923 - Changed return status during preinstall check fail from 302 to 400 and updated the error message 
 
 ### Security
  - Updated trtl dependencies
