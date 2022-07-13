@@ -132,7 +132,6 @@ class RemediationManager:
 #         for line in traceback.format_stack():
 #             logger.debug(line.strip())
 #         global flag
-        self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
         for container_id in ids:
             if not self.ignore_dbs_results:
