@@ -132,10 +132,8 @@ class RemediationManager:
 #         for line in traceback.format_stack():
 #             logger.debug(line.strip())
 #         global flag
-        self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
-        self.container_image_list: List = []
         for container_id in ids:
             if not self.ignore_dbs_results:
                 logger.debug("...........................................................................if not self.ignore_dbs_results")
