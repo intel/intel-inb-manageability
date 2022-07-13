@@ -19,7 +19,7 @@ from .constants import DOCKER, COMPOSE, TRTL_PATH
 from subprocess import Popen, PIPE
 import shlex
 import time
-
+import traceback
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 logger = logging.getLogger(__name__)
@@ -374,6 +374,8 @@ class Trtl:
         return out, err, code
 
     def stop_by_id(self, container_id: str) -> Tuple[str, Optional[str], int]:
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
         """Do TRTL stopByID
         @param container_id: ContainerID to be stopped
         @return: Result, error message, error code
