@@ -399,6 +399,101 @@
         "col": 0,
         "id": "21555927-43b5-f9d6-0174-bcd15bd1d96a"
       },
+      "2ab4204c-fa2d-80be-f436-162754ca228e": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability6",
+        "typeAlias": "tb_ota_form1_show_hide",
+        "type": "rpc",
+        "title": "New widget",
+        "image": null,
+        "description": null,
+        "sizeX": 4.5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [],
+            "otaSelectFields": [
+              {
+                "label": "Query Options",
+                "key": "option",
+                "options": [
+                  {
+                    "label": "All",
+                    "key": "all"
+                  },
+                  {
+                    "label": "Hardware",
+                    "key": "hw"
+                  },
+                  {
+                    "label": "Firmware",
+                    "key": "fw"
+                  },
+                  {
+                    "label": "GUID",
+                    "key": "guid"
+                  },
+                  {
+                    "label": "Operating System",
+                    "key": "os"
+                  },
+                  {
+                    "label": "Security",
+                    "key": "security"
+                  },
+                  {
+                    "label": "Status",
+                    "key": "status"
+                  },
+                  {
+                    "label": "Software BOM",
+                    "key": "swbom"
+                  },
+                  {
+                    "label": "Version",
+                    "key": "version"
+                  }
+                ],
+                "data": {
+                  "label": "Hardware",
+                  "key": "hw"
+                }
+              }
+            ],
+            "otaMethod": "triggerquery",
+            "otaMethodLabel": "Trigger Query"
+          },
+          "title": "Trigger Query",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "952f30db-33c1-ebcc-8329-495da7291fd4"
+          ],
+          "showTitleIcon": false,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": ""
+        },
+        "row": 0,
+        "col": 0,
+        "id": "2ab4204c-fa2d-80be-f436-162754ca228e"
+      },
       "2ab4204c-fa2d-80be-f436-162754ca228d": {
         "isSystemType": false,
         "bundleAlias": "intel_manageability6",
@@ -783,7 +878,7 @@
                 "col": 11
               },
               "21555927-43b5-f9d6-0174-bcd15bd1d96a": {
-                "sizeX": 4,
+                "sizeX": 5,
                 "sizeY": 2,
                 "row": 0,
                 "col": 19
@@ -793,6 +888,12 @@
                 "sizeY": 2,
                 "row": 2,
                 "col": 15
+              },
+              "2ab4204c-fa2d-80be-f436-162754ca228e": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 2,
+                "col": 19
               },
               "064e4cf7-cee6-401a-2c72-2f6a35d9ecaa": {
                 "sizeX": 4,
