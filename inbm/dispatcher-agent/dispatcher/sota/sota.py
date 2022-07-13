@@ -97,10 +97,12 @@ class SOTA:
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
 
+        logger.debug(self._ota_element)    
         if self._repo_type == LOCAL_SOURCE:
             if self._ota_element is None:
                 raise SotaError("ota_element is missing for SOTA")
             self._local_file_path = self._ota_element['path']
+            logger.debug(self._local_file_path)    
 
         for k, v in kwargs.items():
             if k == 'snapshot':
@@ -110,7 +112,9 @@ class SOTA:
         logger.debug(f"SOTA Tool launched in {self.sota_state} mode")
 
     def _clean_local_repo_file(self):
+        logger.debug("===================_clean_local_repo_file=======================")
         local_cache_repo = DirectoryRepo(self._local_file_path.rsplit('/', 1)[0])
+        logger.debug(local_cache_repo)
         local_cache_repo.delete_all()
         logger.debug("Deleting files in {}.".format(
             self._local_file_path.rsplit('/', 1)[0]))
