@@ -63,6 +63,8 @@ class RemediationManager:
                          'is in the correct format "abc,def,123". {}'.format(error))
 
     def _on_remove_image(self, topic: str, payload: str, qos: int) -> None:
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
         try:
             if payload is not None:
@@ -127,8 +129,8 @@ class RemediationManager:
         return image_id, image_name
 
     def _remove_container(self, ids: Any) -> None:
-        for line in traceback.format_stack():
-            logger.debug(line.strip())
+#         for line in traceback.format_stack():
+#             logger.debug(line.strip())
 #         global flag
         self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
