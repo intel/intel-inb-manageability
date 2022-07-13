@@ -138,7 +138,9 @@ class SOTA:
                     cmd_list = self.installer.update_remote_source(
                         canonicalize_uri(self._uri), repo)
             else:
-                cmd_list = self.installer.update_local_source(self._local_file_path)
+                logger.debug("=================================Local Reo============================")
+                cmd_list = self.installer.update_remote_source(None, repo)
+                #cmd_list = self.installer.update_local_source(self._local_file_path)
         elif self.sota_cmd == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)

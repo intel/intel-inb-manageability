@@ -118,6 +118,7 @@ class DebianBasedUpdater(OsUpdater):
         @return: Command list to execute to perform update.
         """
         logger.error('Local install of Debian packages is not supported.')
+        self.update_remote_source(
         return CommandList([]).cmd_list
 
     @staticmethod
