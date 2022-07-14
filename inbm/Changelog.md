@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## 3.0.12 - 2022-07-14
+
 ### Fixed
  - RTC 509640      - Shortened the SWBOM publish timer and added logic to cancel and update the timer
  - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
