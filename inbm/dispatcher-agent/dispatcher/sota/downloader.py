@@ -89,7 +89,7 @@ class DebianBasedDownloader(Downloader):
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         """
-        @return True alwyas as ubuntu doesn't need to check release date
+        @return True always as ubuntu doesn't need to check release date
         """
         return True
 

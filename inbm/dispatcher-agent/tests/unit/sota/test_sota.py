@@ -177,7 +177,7 @@ class TestSota(testtools.TestCase):
         return mem_repo
 
     @patch("inbm_lib.detect_os.detect_os")
-    def test_check_raise_exception(self, mock_detect_os):
+    def test_check_do_not_raise_exception(self, mock_detect_os):
         parsed_manifest = {'release_date': "1970-01-01"}
         mock_detect_os.return_value = 'Ubuntu'
         TestSota.sota_instance._parsed_manifest = parsed_manifest
@@ -185,4 +185,3 @@ class TestSota(testtools.TestCase):
             TestSota.sota_instance.check()
         except SotaError:
             self.fail("Sota check() method raised exception unexpectedly")
-
