@@ -233,7 +233,7 @@ class Broker:  # pragma: no cover
 
     def _publish_agent_values(self, agent) -> None:
         children = self.key_value_store.get_children(agent)
-        logger.debug('#######################################_publish_agent_values$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+        logger.debug('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&_publish_agent_values@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
         for line in traceback.format_stack():
              logger.debug(line.strip())
         for child in children:
