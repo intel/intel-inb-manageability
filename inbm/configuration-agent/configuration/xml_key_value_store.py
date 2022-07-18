@@ -152,6 +152,7 @@ class XmlKeyValueStore(IKeyValueStore):
         @param value_string: multiple variable value string separated by ;
         @param is_attribute: determines if attribute value needs to be set
         """
+        logger.debug("===================================In set_element========================")
         if value_string is None:
             self._set_element_value(xpath, value)
             return value
@@ -303,6 +304,7 @@ class XmlKeyValueStore(IKeyValueStore):
             raise ConfigurationException(err)
 
     def _set_element_value(self, xpath: str, value: str) -> None:
+        logger.debug("=================_set_element_value===================")
         elements = self._root.findall(xpath)
         if len(elements) > 0:
             if self._is_file:
