@@ -7,6 +7,7 @@
 import json
 import logging
 from typing import Optional
+import traceback
 
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
@@ -232,6 +233,9 @@ class Broker:  # pragma: no cover
 
     def _publish_agent_values(self, agent) -> None:
         children = self.key_value_store.get_children(agent)
+        logger.debug('#######################################_publish_agent_values$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+        for line in traceback.format_stack():
+             logger.debug(line.strip())
         for child in children:
             value = children[child]
             path = agent + '/' + str(child)
@@ -240,6 +244,9 @@ class Broker:  # pragma: no cover
 
     def _publish_new_values(self, paths: str) -> None:
         path_list = paths.split(';')
+        logger.debug('#######################################_publish_new_values$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
         for i in range(0, len(path_list) - 1):
             list_obj = path_list[i].split(':', 1)
             value = list_obj[1]
