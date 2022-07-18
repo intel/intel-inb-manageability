@@ -252,7 +252,7 @@ class Broker:  # pragma: no cover
             value = list_obj[1]
             path = list_obj[0]
             self.mqttc.publish(
-                UPDATE_CHANNEL + str(path), json.dumps(value))
+                UPDATE_CHANNEL + str(path), json.dumps(value), retain=True)
 
     def publish_initial_values(self) -> None:
         """Publish initial values to all the agents"""
