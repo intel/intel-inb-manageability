@@ -555,6 +555,7 @@ class Trtl:
         @return: output from DBS script
         """
         cmd = self._boilerplate("dockerbenchsecurity")
+        logger.debug(cmd)
         out, err, code = self.runner.run(cmd)
 
         if code == 0:
