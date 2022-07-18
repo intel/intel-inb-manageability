@@ -7,6 +7,8 @@
 import io
 import logging
 import os.path
+import traceback 
+
 
 # This import is necessary for type checking to work but we do not use it
 # independently of defusedxml
@@ -262,6 +264,10 @@ class XmlKeyValueStore(IKeyValueStore):
 
         @param file_path: path to XML file
         """
+        logger.debug("=============================call stack begin===================")    
+        for line in traceback.format_stack():
+            print(line.strip())
+        logger.debug("=============================call stack end===================")    
         try:
             xml_str: str = defusedxml.ElementTree.tostring(self._root, 'unicode')
             with open(file_path, "w") as file:

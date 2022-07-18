@@ -171,12 +171,9 @@ class Poller(IPoller):
                     self._container_health_temp -= 1
 
             if self._enable_swbom:
-                logger.info("_swbom_timer_seconds -------------------------------------------------------------->")
-                logger.info(self._swbom_timer_seconds)
                 if self._swbom_timer_seconds <= 0:
                     publish_software_bom(client, False)
                     self._swbom_timer_seconds = self._swbom_interval_seconds
-                    logger.info("am there -------------------------------------------------------------->")
                     #Remove later : self._swbom_timer_seconds = 200
                 else:
                     self._swbom_timer_seconds -= 1
