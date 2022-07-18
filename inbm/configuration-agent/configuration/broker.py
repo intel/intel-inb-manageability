@@ -233,9 +233,7 @@ class Broker:  # pragma: no cover
 
     def _publish_agent_values(self, agent) -> None:
         children = self.key_value_store.get_children(agent)
-        logger.debug('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&_publish_agent_values@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        for line in traceback.format_stack():
-             logger.debug(line.strip())
+        logger.debug('publish agent values')
         for child in children:
             value = children[child]
             path = agent + '/' + str(child)
@@ -244,9 +242,7 @@ class Broker:  # pragma: no cover
 
     def _publish_new_values(self, paths: str) -> None:
         path_list = paths.split(';')
-        logger.debug('#######################################_publish_new_values$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
-        for line in traceback.format_stack():
-            logger.debug(line.strip())
+        logger.debug('publish new values')
         for i in range(0, len(path_list) - 1):
             list_obj = path_list[i].split(':', 1)
             value = list_obj[1]
