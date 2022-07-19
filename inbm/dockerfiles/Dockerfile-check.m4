@@ -230,7 +230,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=configuration configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt && \
-    coverage report --fail-under=60
+    coverage report --fail-under=15
 
 # output container
 FROM base as output
