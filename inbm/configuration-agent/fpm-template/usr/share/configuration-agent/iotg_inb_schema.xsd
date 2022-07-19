@@ -46,7 +46,7 @@
                         <xs:all>
                             <xs:element name="collectionIntervalSeconds" type="MaxInteger"/>
                             <xs:element name="publishIntervalSeconds" type="MaxInteger"/>
-			    <xs:element name="maxCacheSize" type="MaxInteger">
+			    <xs:element name="maxCacheSize">
 			        <xs:simpleType>
                                     <xs:restriction base="xs:integer">
                                         <xs:minInclusive value="50"/>
