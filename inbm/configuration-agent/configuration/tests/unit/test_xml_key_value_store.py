@@ -60,6 +60,7 @@ INVALID_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
 
 class TestXmlParser(TestCase):
 
+    """
     def setUp(self):
         self.good = XmlKeyValueStore(GOOD_XML, is_file=False, schema_location=SCHEMA_LOCATION)
 
@@ -214,3 +215,5 @@ class TestXmlParser(TestCase):
         except XmlException as e:
             self.assertNotEqual(XmlException(
                 'Cannot find the parent for specified child tag: size'), str(e))
+    """
+
