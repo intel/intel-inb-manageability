@@ -96,9 +96,9 @@ class DiagnosticChecker:
         if path == DOCKER_BENCH_SECURITY_INTERVAL_SEC:
             if self.dbs_timer:
                 self.dbs_timer.stop()
-#            if self.event_watcher:
-#                self.dbs_timer = RepeatingTimer(self.docker_bench_security_interval_sec.config_value,
-#                                               self.event_watcher.run_docker_bench_security)
+           if self.event_watcher:
+               self.dbs_timer = RepeatingTimer(self.docker_bench_security_interval_sec.config_value,
+                                              self.event_watcher.run_docker_bench_security)
                 # dbs timer will start in _setup_docker_events method.
         if path == DBS_MODE:
             matched_path = True
