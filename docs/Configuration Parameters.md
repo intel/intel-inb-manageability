@@ -16,14 +16,14 @@ The below tables represent the different sections of the configuration file.
 | dbs |     WARN      | How the system should be respond if there is a Docker Bench Security alert. [ON, OFF, or WARN] |
 
 ### Telemetry
-| Key                            | Default Value | Description                                                                                                                              |
+| Key                            | Default Value | Lower Limit | Upper Limit | Description                                                                                                                              |
 |:-------------------------------|:-------------:|:-----------------------------------------------------------------------------------------------------------------------------------------|
-| collectionIntervalSeconds      |      60       | Time interval after which telemetry is collected from the system.                                                                        |
-| publishIntervalSeconds         |      300      | Time interval after which collected telemetry is published to dispatcher and the cloud                                                   |
-| maxCacheSize                   |      100      | Maximum cache set to store the telemetry data. This is the count of messages that telemetry agent caches before sending out to the cloud |
-| containerHealthIntervalSeconds |      600      | Interval after which container health check is run and results are returned.                                                             |
-| enableSwBom                    |     true      | Specifies if Software BOM needs to be published in the initial telemetry.                                                                |
-| swBomIntervalHours             |      24       | Number of hours between swBom publish.                                                                                                   |
+| collectionIntervalSeconds      |      60       |      30       |      120       | Time interval after which telemetry is collected from the system.                                                                        |
+| publishIntervalSeconds         |      300      |      120      |      480       | Time interval after which collected telemetry is published to dispatcher and the cloud                                                   |
+| maxCacheSize                   |      100      |      50       |      200       | Maximum cache set to store the telemetry data. This is the count of messages that telemetry agent caches before sending out to the cloud |
+| containerHealthIntervalSeconds |      600      |      300      |      1800      | Interval after which container health check is run and results are returned.                                                             |
+| enableSwBom                    |     true      |     N/A       |      N/A       | Specifies if Software BOM needs to be published in the initial telemetry.                                                                |
+| swBomIntervalHours             |      24       |      1        |      168       | Number of hours between swBom publish.                                                                                                   |
 
 ### Diagnostic
 | Key                                |        Default Value         | Description                                                                     |
