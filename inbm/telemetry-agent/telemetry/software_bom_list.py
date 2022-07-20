@@ -80,11 +80,15 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
         for query otherwise 'softwareBOM' for regular telemetry.
     """
     try:
+        logger.debug("=========================in publish_software_bom line 83====================")
         sw_bom_list = get_sw_bom_list()
     except SoftwareBomError as e:
+        logger.debug("=========================in publish_software_bom line 86====================")
         sw_bom_list = ["Error gathering software BOM information. " + str(e)]
     if len(sw_bom_list) != 0:
+        logger.debug("=========================in publish_software_bom line 89====================")
         if sys.getsizeof(sw_bom_list) > SWBOM_BYTES_SIZE:
+            logger.debug("=========================in publish_software_bom line 91====================")
             number_of_swbom_lists = math.ceil(
                 SWBOM_BYTES_SIZE/math.ceil(sys.getsizeof(sw_bom_list)/len(sw_bom_list)))
         else:
@@ -103,6 +107,7 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
             swbom = {'values': {key: sw_dict}, 'type': "dynamic_telemetry"}
             telemetry_handling.publish_dynamic_telemetry(client, EVENTS_CHANNEL, swbom)
     else:
+        logger.debug("=========================in publish_software_bom line 110====================")
         key = 'queryEndResult' if query_request else 'softwareBOM'
         swbom = {'values': {key: 'No Software BOM packages available on platform'},
                  'type': "dynamic_telemetry"}
