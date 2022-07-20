@@ -77,14 +77,7 @@
                                 </xs:simpleType>
 			    </xs:element>
                             <xs:element name="enableSwBom" type="xs:boolean" minOccurs="0"/>
-                            <xs:element name="swBomIntervalHours" minOccurs="0">
-			        <xs:simpleType>
-                                    <xs:restriction base="xs:integer">
-                                        <xs:minInclusive value="24"/>
-                                        <xs:maxInclusive value="168"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
-			    </xs:element>
+                            <xs:element name="swBomIntervalHours" type="MaxInteger" minOccurs="0">
                         </xs:all>
                     </xs:complexType>
                 </xs:element>

@@ -80,8 +80,8 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
         for query otherwise 'softwareBOM' for regular telemetry.
     """
     try:
-        logger.debug("=========================in publish_software_bom line 83====================")
         sw_bom_list = get_sw_bom_list()
+        logger.debug(sw_bom_list)
     except SoftwareBomError as e:
         logger.debug("=========================in publish_software_bom line 86====================")
         sw_bom_list = ["Error gathering software BOM information. " + str(e)]
