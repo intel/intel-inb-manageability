@@ -113,11 +113,6 @@ class Poller(IPoller):
                                         self._lower_bound_swbom_interval_hours,
                                         self._upper_bound_swbom_interval_hours):
                 self._swbom_interval_seconds = int(val) * 60 * 60
-                """
-                Remove later : self._swbom_interval_seconds = 100
-                """
-                logger.info('am here -------------------------------------------------------------->')
-                logger.info(val)
                 self._swbom_timer_seconds = self._swbom_interval_seconds
         else:
             logger.error('Received path that is not configured: ' + path)
@@ -174,6 +169,5 @@ class Poller(IPoller):
                 if self._swbom_timer_seconds <= 0:
                     publish_software_bom(client, False)
                     self._swbom_timer_seconds = self._swbom_interval_seconds
-                    #Remove later : self._swbom_timer_seconds = 200
                 else:
                     self._swbom_timer_seconds -= 1
