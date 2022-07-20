@@ -84,7 +84,6 @@ class TestXmlParser(TestCase):
     def test_validate_intel_manageability_conf(self):
         XmlKeyValueStore(IOTG_INB_CONF, True, schema_location=SCHEMA_LOCATION)
 
-    """
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._validate')
     @patch('builtins.open', new_callable=mock_open())
     @patch('os.remove')
@@ -105,6 +104,7 @@ class TestXmlParser(TestCase):
             XmlKeyValueStore(IOTG_INB_CONF, is_file=False, schema_location=SCHEMA_LOCATION) \
                 .load('/opt/intel_manageability.conf')
 
+    """
     def test_get_element(self):
         self.assertEquals('telemetry/maxCacheSize:100',
                           self.good.get_element('telemetry/maxCacheSize'))
