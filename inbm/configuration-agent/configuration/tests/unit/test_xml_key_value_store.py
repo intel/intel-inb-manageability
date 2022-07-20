@@ -60,7 +60,6 @@ INVALID_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
 
 class TestXmlParser(TestCase):
 
-    """
     def setUp(self):
         self.good = XmlKeyValueStore(GOOD_XML, is_file=False, schema_location=SCHEMA_LOCATION)
 
@@ -85,6 +84,7 @@ class TestXmlParser(TestCase):
     def test_validate_intel_manageability_conf(self):
         XmlKeyValueStore(IOTG_INB_CONF, True, schema_location=SCHEMA_LOCATION)
 
+    """
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._validate')
     @patch('builtins.open', new_callable=mock_open())
     @patch('os.remove')
