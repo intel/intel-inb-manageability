@@ -97,12 +97,10 @@ class SOTA:
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
 
-        logger.debug(self._ota_element)    
         if self._repo_type == LOCAL_SOURCE:
             if self._ota_element is None:
                 raise SotaError("ota_element is missing for SOTA")
             self._local_file_path = self._ota_element['path']
-            logger.debug(self._local_file_path)    
 
         for k, v in kwargs.items():
             if k == 'snapshot':
@@ -112,9 +110,7 @@ class SOTA:
         logger.debug(f"SOTA Tool launched in {self.sota_state} mode")
 
     def _clean_local_repo_file(self):
-        logger.debug("===================_clean_local_repo_file=======================")
         local_cache_repo = DirectoryRepo(self._local_file_path.rsplit('/', 1)[0])
-        logger.debug(local_cache_repo)
         local_cache_repo.delete_all()
         logger.debug("Deleting files in {}.".format(
             self._local_file_path.rsplit('/', 1)[0]))
@@ -142,9 +138,7 @@ class SOTA:
                     cmd_list = self.installer.update_remote_source(
                         canonicalize_uri(self._uri), repo)
             else:
-                logger.debug("=================================Local Reo============================")
-                cmd_list = self.installer.update_remote_source(None, repo)
-                #cmd_list = self.installer.update_local_source(self._local_file_path)
+                cmd_list = self.installer.update_local_source(self._local_file_path)
         elif self.sota_cmd == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
@@ -310,5 +304,4 @@ class SOTA:
         self.factory = os_factory.get_os(os_type)
         downloader: Downloader = self.factory.create_downloader()
         if not downloader.check_release_date(self._parsed_manifest['release_date']):
-            logger.debug("==================Test print====================")
             raise SotaError("SOTA release date older than the system's release date")
