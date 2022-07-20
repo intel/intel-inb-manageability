@@ -417,7 +417,6 @@ def pota(args) -> str:
     target_type = '<targetType>node</targetType>' if not args.nohddl else ''
     os_type = detect_os()
 
-    """
     if args.fotapath:
         if args.nohddl and os_type == LinuxDistType.Ubuntu.name:
             logger.info("===========================In INBC POTA===================")
@@ -432,8 +431,6 @@ def pota(args) -> str:
             raise InbcException(
                 "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags.")
         repo = 'remote'
-    """
-    repo = 'local'
      
     arguments = {
         'releasedate': args.releasedate,
