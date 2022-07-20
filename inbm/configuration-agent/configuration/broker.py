@@ -246,7 +246,7 @@ class Broker:  # pragma: no cover
             value = list_obj[1]
             path = list_obj[0]
             logger.debug(f'@@@@@@@@@@@@@@@@@@@: {UPDATE_CHANNEL}')
-            logger.debug(f'%%%%%%%%%%%%%%%%%%%: {str(path)')
+            logger.debug(f'%%%%%%%%%%%%%%%%%%%: {str(path)}')
             
             logger.debug(f'Publishing new value on: {UPDATE_CHANNEL}{str(path)}:{json.dumps(value)}')
             self.mqttc.publish(
