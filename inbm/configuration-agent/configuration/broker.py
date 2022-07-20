@@ -235,7 +235,7 @@ class Broker:  # pragma: no cover
         for child in children:
             value = children[child]
             path = agent + '/' + str(child)
-            logger.debug('Publishing new value on: %s/%s:%d ', UPDATE_CHANNEL,str(path),json.dumps(value))
+            logger.debug('Publishing new value on: %d/%s:%d ', UPDATE_CHANNEL,str(path),json.dumps(value))
             self.mqttc.publish(UPDATE_CHANNEL + str(path),
                                json.dumps(value), retain=True)
 
@@ -245,7 +245,7 @@ class Broker:  # pragma: no cover
             list_obj = path_list[i].split(':', 1)
             value = list_obj[1]
             path = list_obj[0]
-            logger.debug('Publishing new value on: %s/%s:%d ', UPDATE_CHANNEL,str(path),json.dumps(value))
+            logger.debug('Publishing new value on: %d/%s:%d ', UPDATE_CHANNEL,str(path),json.dumps(value))
             self.mqttc.publish(
                 UPDATE_CHANNEL + str(path), json.dumps(value), retain=True)
 
