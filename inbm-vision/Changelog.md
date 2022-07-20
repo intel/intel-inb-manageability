@@ -3,10 +3,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## NEXT - ?
+
+## 3.0.12 - 2022-07-14
+
+### Fixed
+ - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
+
+### Added
+ - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
+
 ## 3.0.11 - 2022-05-17
 
 ### Fixed
  - HSD 15010982715 - inbm-vision failed to receive query request from cloud
+ - HSD 15011248619 - Support Signature argument in INBC Load command
 
 ## 3.0.10 - 2022-03-28
 

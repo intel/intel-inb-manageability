@@ -116,6 +116,13 @@ class CentOsApplication(Application):
         for file in os.listdir(CENTOS_DRIVER_PATH):
             remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
+    def _is_rpm_file_type(self, file_path:str) -> bool:
+        """Check the driver file is rpm type or not
+
+        @return: return False if file is not rpm type
+        """
+        return True if file_path.endswith('.rpm') else False
+
     def update(self) -> None:
         """ Update CentOS driver"""
         super().update()
@@ -124,8 +131,12 @@ class CentOsApplication(Application):
         # Check if it's CentOS and inside container. In CentOS inb container, chroot is used to switch to CentOS
         # rootfs and install the driver.
         driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
+        
         logger.debug(f"driver path = {driver_path}")
         try:
+            if not self._is_rpm_file_type(driver_path):
+                raise AotaError('Invalid file type')
+
             # Remove all files in inb_driver
             for file in os.listdir(CENTOS_DRIVER_PATH):
                 remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
@@ -135,9 +146,21 @@ class CentOsApplication(Application):
             # Move driver to CentOS filesystem
             move_file(driver_path, driver_centos_path)
 
+            old_driver_name = self.identify_package(driver_path.split('/')[-1])
+            if not old_driver_name:
+                raise AotaError(
+                    f'AOTA Command Failed: Unsupported driver {driver_path.split("/")[-1]}')
+            uninstall_driver_cmd = CHROOT_PREFIX + \
+                f'/usr/bin/rpm -e --nodeps {old_driver_name}'
+            out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
+           
+            # If old packages wasn't install on system, it will return error too.
+            if code != 0 and "is not installed" not in str(err):
+                raise AotaError(err)
+
             chroot_driver_path = driver_centos_path.replace("/host", "")
             install_driver_cmd = CHROOT_PREFIX + \
-                f'/usr/bin/rpm -Uvh --oldpackage {chroot_driver_path}'
+                f'/usr/bin/rpm -ivh {chroot_driver_path}'
             logger.debug(f" Updating Driver {driver_path.split('/')[-1]} ...")
             out, err, code = PseudoShellRunner().run(install_driver_cmd)
             logger.debug(out)

@@ -3,6 +3,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## NEXT - ?
+
+## 3.0.12 - 2022-07-14
+
+### Fixed
+ - RTC 509640      - Shortened the SWBOM publish timer and added logic to cancel and update the timer
+ - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
+ - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
+ - HSD 15011258925 - Kernel modules missing after AOTA update HDDL driver
+ - HSD 15011243931 - Fix cloudadapter-agent disconnection issue
+ - HSD 16016950467 - Add missing AppArmor entries for MTL-P Ubuntu
+ - HSD 15011480329 - Fix INBC POTA fail while executing SOTA in ubuntu
+
+### Added
+ - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
+ - RTC 516194 Add Query OTA cmd to ThingsBoard Batch dashboard
+ - RTC 496923 - Changed return status during preinstall check fail from 302 to 400 and updated the error message 
+
+### Security
+ - Updated trtl dependencies
+
 ## 3.0.11 - 2022-05-17
 
 ### Fixed
@@ -13,6 +34,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15011207622 - Fixed SOTA update failed due to mender command changed
  - RTC 513178 - apt-get failed to update from a different location for the main Ubuntu sources
  - RTC 497932 - Incorrect error message when OTA fetching fail
+ - HSD 15011248619 - Support Signature argument in INBC Load command
 
 ### Added
 - RTC 508495 Support INBC Config Append command
@@ -20,6 +42,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - RTC 497530 Add fields in Thingsboard and Azure to support Query command via button click.
 - RTC 500237 - Remove DBS messages from appearing in INBC
 - RTC 514101 - Remove support of remove and append command for apt source in configuration file
+- RTC 515264 - [INBM] [SOTA] Execute 'apt-get -f install -y' after update and prior to upgrade commands
 
 ## 3.0.10 - 2022-03-28
 

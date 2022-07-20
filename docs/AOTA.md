@@ -21,7 +21,6 @@
 | Down                     | Stops a service stack on the device.                                          |
 | Pull                     | Pulls an image or a repository from a registry and starting the service stack |
 | List                     | Lists containers.                                                             |
-| Remove                   | Removes docker images from the system.                                        |
 
 ### Supported ***Application*** commands
 

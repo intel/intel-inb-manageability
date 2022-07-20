@@ -173,6 +173,8 @@ class ArgsParser(object):
 
         parser_load.add_argument('--targettype', '-tt', default='node', required=False,
                                  help='Type of target [vision | node | node-client]')
+        parser_load.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
+                                 type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         parser_load.set_defaults(func=load)
 
     def parse_get_args(self) -> None:
@@ -495,6 +497,7 @@ def load(args) -> str:
         'targetType': None if args.nohddl else args.targettype,
         'fetch': args.uri,
         'path': args.path,
+        'signature': args.signature,
         'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args)
@@ -511,6 +514,7 @@ def load(args) -> str:
                 '<load>' +
                 '{2}' +
                 '{3}' +
+                '{4}' +
                 '</load>' +
                 '</configtype>' +
                 '</config>' +
@@ -518,7 +522,8 @@ def load(args) -> str:
         create_xml_tag(arguments, "targetType"),
         create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path"),
-        create_xml_tag(arguments, "fetch")
+        create_xml_tag(arguments, "fetch"),
+        create_xml_tag(arguments, "signature")
     )
     print("manifest {0}".format(manifest))
     return manifest
