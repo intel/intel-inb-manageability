@@ -22,7 +22,7 @@ The below tables represent the different sections of the configuration file.
 | publishIntervalSeconds         |      300      |      120      |      480       | Time interval after which collected telemetry is published to dispatcher and the cloud                                                   |
 | maxCacheSize                   |      100      |      50       |      200       | Maximum cache set to store the telemetry data. This is the count of messages that telemetry agent caches before sending out to the cloud |
 | containerHealthIntervalSeconds |      600      |      300      |      1800      | Interval after which container health check is run and results are returned.                                                             |
-| enableSwBom                    |     true      |     N/A       |      N/A       | Specifies if Software BOM needs to be published in the initial telemetry.                                                                |
+| enableSwBom                    |     true      |      N/A      |      N/A       | Specifies if Software BOM needs to be published in the initial telemetry.                                                                |
 | swBomIntervalHours             |      24       |      1        |      168       | Number of hours between swBom publish.                                                                                                   |
 
 ### Diagnostic
