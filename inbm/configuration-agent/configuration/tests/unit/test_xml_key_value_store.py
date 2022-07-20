@@ -159,7 +159,6 @@ class TestXmlParser(TestCase):
         children_list = self.good.get_children('diagnostic')
         self.assertEquals(children_list, empty)
 
-    """
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._validate_file')
     def test_set_element_in_file_fail_validate(self, mock_validate, mock_write):
@@ -215,5 +214,4 @@ class TestXmlParser(TestCase):
         except XmlException as e:
             self.assertNotEqual(XmlException(
                 'Cannot find the parent for specified child tag: size'), str(e))
-    """
 
