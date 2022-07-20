@@ -81,20 +81,16 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
     """
     try:
         sw_bom_list = get_sw_bom_list()
-        logger.debug(sw_bom_list)
     except SoftwareBomError as e:
-        logger.debug("=========================in publish_software_bom line 86====================")
         sw_bom_list = ["Error gathering software BOM information. " + str(e)]
     if len(sw_bom_list) != 0:
         if sys.getsizeof(sw_bom_list) > SWBOM_BYTES_SIZE:
             number_of_swbom_lists = math.ceil(
                 SWBOM_BYTES_SIZE/math.ceil(sys.getsizeof(sw_bom_list)/len(sw_bom_list)))
-            logger.debug(number_of_swbom_lists)
         else:
             number_of_swbom_lists = len(sw_bom_list)
         list_num = 0
         for i in range(0, len(sw_bom_list), number_of_swbom_lists):
-            logger.debug("=========================in publish_software_bom line 97====================")
             sw_dict = {}
             list_num += 1
             sw_dict[f"swbom_package_list_{list_num}"] = sw_bom_list[i:i+number_of_swbom_lists]
@@ -103,7 +99,6 @@ def publish_software_bom(client: MQTT, query_request: bool) -> None:
             if (i == 0 and len(sw_bom_list) == number_of_swbom_lists) or \
                     i == math.floor(len(sw_bom_list)/number_of_swbom_lists) * number_of_swbom_lists:
                 # Inbc query to exit successfully when it has the keyword "QueryEndResult".
-                logger.debug("=========================in publish_software_bom line 106====================")
                 key = 'queryEndResult'
             swbom = {'values': {key: sw_dict}, 'type': "dynamic_telemetry"}
             telemetry_handling.publish_dynamic_telemetry(client, EVENTS_CHANNEL, swbom)

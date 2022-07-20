@@ -100,7 +100,6 @@ class Broker:  # pragma: no cover
             if command == Commands.get_element.name:
                 resp = self._get_element_name(headers, path, value_string)
             elif command == Commands.set_element.name:
-                logger.debug("========================================In execute method ===========================")
                 self._set_element_name(
                     headers, path, value, value_string)
             elif command == Commands.load.name:
@@ -194,17 +193,14 @@ class Broker:  # pragma: no cover
          @value: value to be set
          @value_string: xml element tag whose value needs to be returned
          """
-        logger.debug("===================In _set_element_name========================")
         if value is None and value_string is None:
             raise ConfigurationException('Value was not set')
 
         if path and value:
-            logger.debug("===================In _set_element_name path and value========================")
             self.key_value_store.set_element(path, value)
             self.mqttc.publish(
                 UPDATE_CHANNEL + str(path), json.dumps(value))
         elif headers and value_string:
-            logger.debug("===================In _set_element_name headers and value string========================")
             if value_string.split(':')[0] == ORCHESTRATOR:
                 paths = self.key_value_store.set_element(
                     headers, value_string=value_string, is_attribute=True)

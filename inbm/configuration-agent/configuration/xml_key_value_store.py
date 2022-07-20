@@ -7,8 +7,6 @@
 import io
 import logging
 import os.path
-import traceback 
-
 
 # This import is necessary for type checking to work but we do not use it
 # independently of defusedxml
@@ -154,7 +152,6 @@ class XmlKeyValueStore(IKeyValueStore):
         @param value_string: multiple variable value string separated by ;
         @param is_attribute: determines if attribute value needs to be set
         """
-        logger.debug("===================================In set_element========================")
         if value_string is None:
             self._set_element_value(xpath, value)
             return value
@@ -264,10 +261,6 @@ class XmlKeyValueStore(IKeyValueStore):
 
         @param file_path: path to XML file
         """
-        logger.debug("=============================call stack begin===================")    
-        for line in traceback.format_stack():
-            print(line.strip())
-        logger.debug("=============================call stack end===================")    
         try:
             xml_str: str = defusedxml.ElementTree.tostring(self._root, 'unicode')
             with open(file_path, "w") as file:
@@ -310,7 +303,6 @@ class XmlKeyValueStore(IKeyValueStore):
             raise ConfigurationException(err)
 
     def _set_element_value(self, xpath: str, value: str) -> None:
-        logger.debug("=================_set_element_value===================")
         elements = self._root.findall(xpath)
         if len(elements) > 0:
             if self._is_file:

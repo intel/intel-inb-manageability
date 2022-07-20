@@ -393,5 +393,4 @@ def send_initial_telemetry(client, with_docker) -> None:
                               get_dynamic_telemetry(with_docker))
 
     # SWBOM
-    logger.debug("====================in send_initial_telemetry=============================")
     software_bom_list.publish_software_bom(client, False)
