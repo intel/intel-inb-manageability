@@ -173,6 +173,8 @@ class ArgsParser(object):
 
         parser_load.add_argument('--targettype', '-tt', default='node', required=False,
                                  help='Type of target [vision | node | node-client]')
+        parser_load.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
+                                 type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         parser_load.set_defaults(func=load)
 
     def parse_get_args(self) -> None:
@@ -419,7 +421,6 @@ def pota(args) -> str:
 
     if args.fotapath:
         if args.nohddl and os_type == LinuxDistType.Ubuntu.name:
-            logger.info("===========================In INBC POTA===================")
             raise InbcException(
                 "POTA is not supported with local 'path' tags on non HDDL Ubuntu device.")
         if not args.sotapath:
@@ -431,7 +432,7 @@ def pota(args) -> str:
             raise InbcException(
                 "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags.")
         repo = 'remote'
-     
+
     arguments = {
         'releasedate': args.releasedate,
         'vendor': args.vendor,
@@ -444,15 +445,12 @@ def pota(args) -> str:
         'nohddl': args.nohddl
     }
 
-    logger.info("===========================In INBC POTA Bypassing Arguments check===================")
     if repo == "local":
         fota_tag = f'<path>{args.fotapath}</path>'
         sota_tag = f'<path>{args.sotapath}</path>'
     else:
         fota_tag = f'<fetch>{args.fotauri}</fetch>'
         sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
-        
-    #sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
@@ -499,6 +497,7 @@ def load(args) -> str:
         'targetType': None if args.nohddl else args.targettype,
         'fetch': args.uri,
         'path': args.path,
+        'signature': args.signature,
         'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args)
@@ -515,6 +514,7 @@ def load(args) -> str:
                 '<load>' +
                 '{2}' +
                 '{3}' +
+                '{4}' +
                 '</load>' +
                 '</configtype>' +
                 '</config>' +
@@ -522,7 +522,8 @@ def load(args) -> str:
         create_xml_tag(arguments, "targetType"),
         create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path"),
-        create_xml_tag(arguments, "fetch")
+        create_xml_tag(arguments, "fetch"),
+        create_xml_tag(arguments, "signature")
     )
     print("manifest {0}".format(manifest))
     return manifest

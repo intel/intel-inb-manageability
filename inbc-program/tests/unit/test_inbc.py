@@ -275,7 +275,6 @@ class TestINBC(TestCase):
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
-    """       
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -345,9 +344,7 @@ class TestINBC(TestCase):
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
         assert t_start.call_count == 2
-    """
 
-    """       
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -378,7 +375,6 @@ class TestINBC(TestCase):
         self.assertEqual(p.func(p), expected)
         self.assertEqual(copy_file.call_count, 2)
         assert t_start.call_count == 2
-    """
 
     @patch('inbc.command.command.Command.terminate_operation')
     @patch('sys.stderr', new_callable=StringIO)
@@ -411,8 +407,7 @@ class TestINBC(TestCase):
             self.arg_parser.parse_args(
                 ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '-r', '12-25-2021'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
-    
-    """
+
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -455,6 +450,7 @@ class TestINBC(TestCase):
                    '<cmd logtofile="y">update</cmd><release_date>2024-12-31</release_date>' \
                    '<path>/var/cache/temp/test.mender</path></sota></pota></type></ota></manifest>'
         self.assertEqual(pota.func(pota), expected)
+
     @patch('inbc.parser.detect_os', return_value='Ubuntu')
     def test_ubuntu_supported_no_hddl_pota_manifest(self, mock_os):
         pota = self.arg_parser.parse_args(
@@ -462,8 +458,7 @@ class TestINBC(TestCase):
         with self.assertRaisesRegex(InbcException,
                                     "POTA is not supported with local 'path' tags on non HDDL Ubuntu device."):
             pota.func(pota)
-    """
-    """
+
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_hddl_no_path(self, mock_stderr):
         s = self.arg_parser.parse_args(['sota', '-t', '123ABC', '456DEF'])
@@ -566,8 +561,6 @@ class TestINBC(TestCase):
                    '</path></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
-    """
-    """
     @patch('inbc.command.command.is_vision_agent_installed', return_value=True)
     def test_create_hddl_pota_uri_manifest_nohddl_ubuntu(self, mock_agent):
         s = self.arg_parser.parse_args(
@@ -617,8 +610,6 @@ class TestINBC(TestCase):
                                     "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags."):
             pota.func(pota)
 
-    """
-    """
     def test_load_manifest(self):
         load = self.arg_parser.parse_args(
             ['load', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-tt', 'node'])
@@ -765,5 +756,3 @@ class TestINBC(TestCase):
             c = FotaCommand(Mock())
             c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         t_stop.assert_called_once()
-
-    """
