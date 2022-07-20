@@ -14,9 +14,9 @@ if [ "$EUID" -ne 0 ]; then
   exit 1
 fi
 
+# Ensure we're running a supported OS
 verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10")
 
-# Ensure we're running a supported OS
 if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
   echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
 else

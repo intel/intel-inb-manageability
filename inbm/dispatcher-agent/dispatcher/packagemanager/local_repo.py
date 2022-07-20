@@ -29,7 +29,6 @@ class DirectoryRepo(IRepo):  # pragma: no cover
     """
 
     def __init__(self, directory: str) -> None:
-        logger.debug("In Directory init")
         self.__directory = get_canonical_representation_of_path(directory)
 
     def get_repo_path(self) -> str:

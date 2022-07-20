@@ -30,7 +30,6 @@ class Timer(object):
     def __init__(self, count_down_time: int, callback_method: Optional[Callable] = None,
                  node_id: Optional[str] = None, is_daemon: Optional[bool] = None) -> None:
         """If user doesn't pass callback method, user can check timeout value"""
-        logger.debug("=================================In Timer Init =======================")
         self._running = True
         self.count_down_time = count_down_time
         self.callback = callback_method

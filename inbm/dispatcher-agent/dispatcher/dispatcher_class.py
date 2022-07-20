@@ -34,7 +34,7 @@ from .aota.aota_error import AotaError
 from .command import Command
 from .common import dispatcher_state
 from .common.result_constants import CODE_OK, CODE_BAD_REQUEST, CODE_MULTIPLE, \
-    CONFIG_LOAD_FAIL_WRONG_PATH
+    CONFIG_LOAD_FAIL_WRONG_PATH, CODE_FOUND
 from .common.uri_utilities import is_valid_uri
 from .config.config_command import ConfigCommand
 from .config.constants import CONFIGURATION_APPEND_REMOVE_PATHS_LIST
@@ -434,7 +434,6 @@ class Dispatcher(WindowsService):
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
             elif type_of_manifest == 'ota':
-                logger.debug("===============================do install============================")
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
@@ -455,13 +454,11 @@ class Dispatcher(WindowsService):
 
                     for ota in sorted(ota_list.keys()):
                         kwargs['ota_type'] = ota
-                        logger.debug("===============================DO install============================")
                         result = self._do_ota_update(
                             xml, ota, repo_type, target_type, ota_list[ota], kwargs, parsed_head)
                         if result == Result(CODE_BAD_REQUEST, "FAILED TO INSTALL") or result == OTA_FAILURE:
                             break
                 else:
-                    logger.debug("===============================do INSTALL============================")
                     result = self._do_ota_update(
                         xml, ota_type, repo_type, target_type, resource, kwargs, parsed_head)
 
@@ -725,7 +722,7 @@ class Dispatcher(WindowsService):
             self.update_queue.put((request_type, manifest))
         else:
             self._send_result(
-                str(Result(CODE_BAD_REQUEST, "Update Queue Full, Please try again later")))
+                str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
 
     def _on_message(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from _telemetry-agent

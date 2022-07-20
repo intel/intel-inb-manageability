@@ -185,4 +185,3 @@ class TestSota(testtools.TestCase):
             TestSota.sota_instance.check()
         except SotaError:
             self.fail("Sota check() method raised exception unexpectedly")
-

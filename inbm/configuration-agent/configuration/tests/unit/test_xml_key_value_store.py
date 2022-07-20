@@ -214,4 +214,3 @@ class TestXmlParser(TestCase):
         except XmlException as e:
             self.assertNotEqual(XmlException(
                 'Cannot find the parent for specified child tag: size'), str(e))
-
