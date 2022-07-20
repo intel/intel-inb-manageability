@@ -16,7 +16,7 @@ The below tables represent the different sections of the configuration file.
 | dbs |     WARN      | How the system should be respond if there is a Docker Bench Security alert. [ON, OFF, or WARN] |
 
 ### Telemetry
-| Key                            | Default Value | Lower Limit | Upper Limit | Description                                                                                                                              |
+| Key                            | Default Value |  Lower Limit  |  Upper Limit   | Description                                                                                                                              |
 |:-------------------------------|:-------------:|:------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | collectionIntervalSeconds      |      60       |      30       |      120       | Time interval after which telemetry is collected from the system.                                                                        |
 | publishIntervalSeconds         |      300      |      120      |      480       | Time interval after which collected telemetry is published to dispatcher and the cloud                                                   |
