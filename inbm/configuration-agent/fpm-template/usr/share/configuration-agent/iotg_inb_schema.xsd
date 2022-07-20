@@ -80,7 +80,7 @@
                             <xs:element name="swBomIntervalHours" minOccurs="0">
 			        <xs:simpleType>
                                     <xs:restriction base="xs:integer">
-                                        <xs:minInclusive value="1"/>
+                                        <xs:minInclusive value="24"/>
                                         <xs:maxInclusive value="168"/>
                                     </xs:restriction>
                                 </xs:simpleType>
