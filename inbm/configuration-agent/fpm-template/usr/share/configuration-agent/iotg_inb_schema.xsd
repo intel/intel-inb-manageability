@@ -44,8 +44,22 @@
                 <xs:element name="telemetry">
                     <xs:complexType>
                         <xs:all>
-                            <xs:element name="collectionIntervalSeconds" type="MaxInteger"/>
-                            <xs:element name="publishIntervalSeconds" type="MaxInteger"/>
+                            <xs:element name="collectionIntervalSeconds">
+			        <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="30"/>
+                                        <xs:maxInclusive value="120"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+			    </xs:element>
+                            <xs:element name="publishIntervalSeconds">
+			        <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="120"/>
+                                        <xs:maxInclusive value="480"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+			    </xs:element>
 			    <xs:element name="maxCacheSize">
 			        <xs:simpleType>
                                     <xs:restriction base="xs:integer">
@@ -54,9 +68,23 @@
                                     </xs:restriction>
                                 </xs:simpleType>
 			    </xs:element>
-                            <xs:element name="containerHealthIntervalSeconds" type="MaxInteger"/>
+                            <xs:element name="containerHealthIntervalSeconds">
+			        <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="300"/>
+                                        <xs:maxInclusive value="1800"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+			    </xs:element>
                             <xs:element name="enableSwBom" type="xs:boolean" minOccurs="0"/>
-                            <xs:element name="swBomIntervalHours" type="MaxInteger" minOccurs="0"/>
+                            <xs:element name="swBomIntervalHours" minOccurs="0"/>
+			        <xs:simpleType>
+                                    <xs:restriction base="xs:integer">
+                                        <xs:minInclusive value="1"/>
+                                        <xs:maxInclusive value="168"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+			    </xs:element>
                         </xs:all>
                     </xs:complexType>
                 </xs:element>
