@@ -17,7 +17,7 @@ The below tables represent the different sections of the configuration file.
 
 ### Telemetry
 | Key                            | Default Value | Lower Limit | Upper Limit | Description                                                                                                                              |
-|:-------------------------------|:-------------:|:-----------------------------------------------------------------------------------------------------------------------------------------|
+|:-------------------------------|:-------------:|:------------|-------------|-----------------------------------------------------------------------------------------------------------------------------------------|
 | collectionIntervalSeconds      |      60       |      30       |      120       | Time interval after which telemetry is collected from the system.                                                                        |
 | publishIntervalSeconds         |      300      |      120      |      480       | Time interval after which collected telemetry is published to dispatcher and the cloud                                                   |
 | maxCacheSize                   |      100      |      50       |      200       | Maximum cache set to store the telemetry data. This is the count of messages that telemetry agent caches before sending out to the cloud |
