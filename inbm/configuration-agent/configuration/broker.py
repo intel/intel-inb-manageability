@@ -232,20 +232,20 @@ class Broker:  # pragma: no cover
 
     def _publish_agent_values(self, agent) -> None:
         children = self.key_value_store.get_children(agent)
-        logger.debug('publish agent values')
         for child in children:
             value = children[child]
             path = agent + '/' + str(child)
+            logger.debug(f'Publishing inital agent value on: {UPDATE_CHANNEL}{str(path)}:{json.dumps(value)}')
             self.mqttc.publish(UPDATE_CHANNEL + str(path),
                                json.dumps(value), retain=True)
 
     def _publish_new_values(self, paths: str) -> None:
         path_list = paths.split(';')
-        logger.debug('publish new values')
         for i in range(0, len(path_list) - 1):
             list_obj = path_list[i].split(':', 1)
             value = list_obj[1]
             path = list_obj[0]
+            logger.debug(f'Publishing new value on: {UPDATE_CHANNEL}{str(path)}:{json.dumps(value)}')
             self.mqttc.publish(
                 UPDATE_CHANNEL + str(path), json.dumps(value), retain=True)
 
