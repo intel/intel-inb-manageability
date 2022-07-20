@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15011243931 - Fix cloudadapter-agent disconnection issue
  - HSD 16016950467 - Add missing AppArmor entries for MTL-P Ubuntu
  - HSD 15011480329 - Fix INBC POTA fail while executing SOTA in ubuntu
+ - RTC 517028 - Fix No error message return when config set fail due to the value is not in the boundary
 
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
