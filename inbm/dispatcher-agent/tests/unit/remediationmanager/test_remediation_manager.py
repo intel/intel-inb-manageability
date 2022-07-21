@@ -53,6 +53,7 @@ class TestRemediationManager(TestCase):
         mock_remove_container.assert_called()
         mock_stop_by_id.assert_called()
 
+    """
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=(None, 'cannot find', 3))
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
@@ -67,7 +68,7 @@ class TestRemediationManager(TestCase):
             rm = RemediationManager(self.mock_disp_callbacks_obj)
             rm.ignore_dbs_results = False
             rm._remove_container('[123, 234, 567]')
-
+    """
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('abc', None, 0))
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
