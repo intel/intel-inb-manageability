@@ -128,7 +128,7 @@ class RemediationManager:
                 image_id = None
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
-                    if image_name is None:
+                    if image_name and image_id is None:
                         raise ValueError('Cannot read image ID')
                     self.container_image_list.append(image_name)
 
