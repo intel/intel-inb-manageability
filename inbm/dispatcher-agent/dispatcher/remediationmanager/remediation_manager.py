@@ -129,6 +129,9 @@ class RemediationManager:
                 image_id, image_name = self._get_image_id(trtl, container_id)
                 logger.debug(image_id)
                 logger.debug(image_name)
+                
+                if image_id is None:
+                    continue
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
