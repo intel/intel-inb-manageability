@@ -82,6 +82,7 @@ class TestRemediationManager(TestCase):
             str(['abc123', 'def234', 'ghi567']))
         mock_call_telemetry.assert_called()
 
+    """
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
     def test_return_image_no_errors(self, mock_remove_image, mock_call_telemetry):
@@ -102,7 +103,6 @@ class TestRemediationManager(TestCase):
         RemediationManager(self.mock_disp_callbacks_obj)._remove_images(
             str(['abc123', 'def234', 'ghi567']))
         mock_call_telemetry.assert_called()
-
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
     def test_ignore_dbs_results_does_not_remove_image(self,  mock_remove_image, mock_call_telemetry):
@@ -134,3 +134,5 @@ class TestRemediationManager(TestCase):
         r._remove_images(['abc123', 'def234', 'ghi567'])
         mock_call_telemetry.assert_called()
         mock_remove_image.assert_called_once_with('ghi567', True)
+
+    """
