@@ -133,7 +133,6 @@ class RemediationManager:
                
                 logger.debug(self.container_image_list)
                 if image_id is None:
-                    self.container_image_list.append(image_name)
                     continue
 
                 if self.dbs_remove_image_on_failed_container:
@@ -165,6 +164,7 @@ class RemediationManager:
                         str(container_id) + '.  Container has been removed.')
 
                 if self.dbs_remove_image_on_failed_container and image_id is not None:
+                    self.container_image_list.append(image_name)
                     self._remove_single_image(image_id)
             else:
                 self._dispatcher_callbacks.broker_core.telemetry(
