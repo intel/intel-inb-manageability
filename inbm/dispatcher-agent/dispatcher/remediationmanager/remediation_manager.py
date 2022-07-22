@@ -70,6 +70,7 @@ class RemediationManager:
 
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
+        logger.debug(ids)
         for image_id in ids:
             if image_id not in self.container_image_list:
                 self._remove_single_image(image_id)
@@ -129,8 +130,10 @@ class RemediationManager:
                 image_id, image_name = self._get_image_id(trtl, container_id)
                 logger.debug(image_id)
                 logger.debug(image_name)
-                
+               
+                logger.debug(self.container_image_list)
                 if image_id is None:
+                    self.container_image_list.append(image_name)
                     continue
 
                 if self.dbs_remove_image_on_failed_container:
