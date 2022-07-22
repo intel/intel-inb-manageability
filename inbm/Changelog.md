@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## 3.0.12 - 2022-07-14
+
 ### Fixed
  - RTC 517230      - Added fix for telemetry agent to receive latest values after performing config set OTA and restart of telemetry agent
  - RTC 509640      - Shortened the SWBOM publish timer and added logic to cancel and update the timer
@@ -14,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15011243931 - Fix cloudadapter-agent disconnection issue
  - HSD 16016950467 - Add missing AppArmor entries for MTL-P Ubuntu
  - HSD 15011480329 - Fix INBC POTA fail while executing SOTA in ubuntu
+ - RTC 517028 - Set schema boundary limits for telemetry configuration values
 
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
