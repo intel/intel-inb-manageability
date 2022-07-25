@@ -73,7 +73,7 @@ class RemediationManager:
         for image_id in ids:
             if image_id not in self.container_image_list:
                 self._remove_single_image(image_id)
-        self.container_image_list[:] = []
+                self.container_image_list.append(image_id)
 
     def _remove_single_image(self, image_id: str) -> None:
         logger.debug("")
@@ -125,6 +125,14 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
+                if "DBS" in container_id:
+                    continue
+              
+                image_id, image_name = self._get_image_id(trtl, container_id)
+               
+                if image_id is None:
+                    continue
+
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
