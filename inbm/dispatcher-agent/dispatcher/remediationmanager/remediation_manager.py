@@ -7,7 +7,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import logging
+import logging, traceback
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -49,6 +49,10 @@ class RemediationManager:
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
+        logger.debug("=======================Call stack begin=========================")
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
+        logger.debug("=======================Call stack end=========================")
         try:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
@@ -59,6 +63,10 @@ class RemediationManager:
 
     def _on_remove_image(self, topic: str, payload: str, qos: int) -> None:
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
+        logger.debug("=======================Call stack begin=========================")
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
+        logger.debug("=======================Call stack end=========================")
         try:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
