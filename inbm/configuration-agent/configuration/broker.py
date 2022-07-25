@@ -7,6 +7,7 @@
 import json
 import logging
 from typing import Optional
+import traceback
 
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
@@ -232,6 +233,7 @@ class Broker:  # pragma: no cover
 
     def _publish_agent_values(self, agent) -> None:
         children = self.key_value_store.get_children(agent)
+        logger.debug('publish agent values')
         for child in children:
             value = children[child]
             path = agent + '/' + str(child)
@@ -240,12 +242,13 @@ class Broker:  # pragma: no cover
 
     def _publish_new_values(self, paths: str) -> None:
         path_list = paths.split(';')
+        logger.debug('publish new values')
         for i in range(0, len(path_list) - 1):
             list_obj = path_list[i].split(':', 1)
             value = list_obj[1]
             path = list_obj[0]
             self.mqttc.publish(
-                UPDATE_CHANNEL + str(path), json.dumps(value))
+                UPDATE_CHANNEL + str(path), json.dumps(value), retain=True)
 
     def publish_initial_values(self) -> None:
         """Publish initial values to all the agents"""
