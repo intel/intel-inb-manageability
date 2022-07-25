@@ -49,10 +49,10 @@ class EventWatcher(Thread):
 
     def run_docker_bench_security(self):  # pragma: no cover
         """Launch Docker Bench Security in separate thread."""
-        logger.debug("=======================Call stack begin=========================")
-        for line in traceback.format_stack():
-            logger.debug(line.strip())
-        logger.debug("=======================Call stack end=========================")
+        #logger.debug("=======================Call stack begin=========================")
+        #for line in traceback.format_stack():
+        #    logger.debug(line.strip())
+        #logger.debug("=======================Call stack end=========================")
         def run():
             if current_dbs_mode != ConfigDbs.OFF:
                 dbs = DockerBenchRunner()
