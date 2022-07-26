@@ -274,6 +274,7 @@ class LinuxToolFirmware(BiosFactory):
                 e = "Firmware Update Aborted:  Firmware tool does not exist at {}".format(
                     self._fw_tool)
                 raise FotaError(e)
+        logger.debug("============================ outside if block")
 
         if self._fw_tool_check_args:
             logger.debug("============================ 2nd if block")
@@ -282,7 +283,7 @@ class LinuxToolFirmware(BiosFactory):
             (out, err, code) = runner.run(cmd)
             if code != 0:
                 raise FotaError(f"Firmware Update Aborted: Firmware tool: {err}")
-
+        logger.debug("============================ 1st if block")
         try:
             logger.debug("============================ try if block")
             repo_name = get_canonical_representation_of_path(repo_name)
