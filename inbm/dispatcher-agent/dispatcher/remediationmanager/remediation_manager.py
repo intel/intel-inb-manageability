@@ -133,14 +133,15 @@ class RemediationManager:
         return image_id, image_name
 
     def _find_current_container(self) -> Optional[str]:
-        err, out = self._trtl.list()
+        trtl = Trtl(PseudoShellRunner())
+        err, out = self.trtl.list()
         if err:
             logger.error("Error encountered while getting container ID")
             return None
         for line in out.splitlines():
-            if self._name + ":" + str(self._last_version) in line:
-                container_id = line.split()[0]
-                return container_id
+            #if self._name + ":" + str(self._last_version) in line:
+            container_id = line.split()[0]
+            return container_id
         return None
 
     def _remove_container(self, ids: Any) -> None:
