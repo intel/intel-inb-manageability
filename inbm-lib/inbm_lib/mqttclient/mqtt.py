@@ -149,6 +149,7 @@ class MQTT:
 
         def _message_callback(client, userdata, message):
             """Add callback to callback list"""
+            logger.info('Message received: %s     %s     %s    %s', str(message), message.topic, message.payload.decoded(encoding='utf-8', errors='strict'), message.qos)
             callback(message.topic, message.payload.decode(encoding='utf-8', errors='strict'),
                      message.qos)
 
