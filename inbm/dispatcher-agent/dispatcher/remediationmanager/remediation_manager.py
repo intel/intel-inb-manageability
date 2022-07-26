@@ -29,6 +29,7 @@ class RemediationManager:
     """
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
+        logger.debug("==============> __init__ calling")
         self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True

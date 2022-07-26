@@ -270,18 +270,22 @@ class LinuxToolFirmware(BiosFactory):
         logger.debug(f"pkg_filename: {pkg_filename}, repo_name: {repo_name}")
         if '/' in self._fw_tool:
             if not os.path.isfile(self._fw_tool):
+                logger.debug("============================ 1st if block")
                 e = "Firmware Update Aborted:  Firmware tool does not exist at {}".format(
                     self._fw_tool)
                 raise FotaError(e)
+        logger.debug("============================ outside if block")
 
         if self._fw_tool_check_args:
+            logger.debug("============================ 2nd if block")
             runner = PseudoShellRunner()
             cmd = self._fw_tool + " " + self._fw_tool_check_args
             (out, err, code) = runner.run(cmd)
             if code != 0:
                 raise FotaError(f"Firmware Update Aborted: Firmware tool: {err}")
-
+        logger.debug("============================ 1st if block")
         try:
+            logger.debug("============================ try if block")
             repo_name = get_canonical_representation_of_path(repo_name)
             self._fw_file, self._cert_filename = extract_file_info(pkg_filename, repo_name)
             self._apply_firmware(repo_name, self._fw_file, guid, tool_options, self._runner)
