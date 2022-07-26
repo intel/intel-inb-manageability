@@ -138,7 +138,9 @@ class RemediationManager:
         if err:
             logger.error("Error encountered while getting container ID")
             return None
-        logger.debug(out)
+
+        logger.debug("Container list: ", out)
+        
         for line in out.splitlines():
             #if self._name + ":" + str(self._last_version) in line:
             container_id = line.split()[0]
