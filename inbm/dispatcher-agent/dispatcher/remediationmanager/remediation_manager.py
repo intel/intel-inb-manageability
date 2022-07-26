@@ -132,12 +132,13 @@ class RemediationManager:
             return None, None
         return image_id, image_name
 
-    def _find_current_container(self) -> Optional[str]:
+    def _find_current_container(self, cont_id: Optional[str] = None) -> Optional[str]:
         trtl = Trtl(PseudoShellRunner())
-        err, out = trtl.list()
+        err, out = trtl.list(cont_id)
         if err:
             logger.error("Error encountered while getting container ID")
             return None
+        logger.debug(out)
         for line in out.splitlines():
             #if self._name + ":" + str(self._last_version) in line:
             container_id = line.split()[0]
@@ -149,7 +150,7 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                container_id_test = self._find_current_container()
+                container_id_test = self._find_current_container(container_id)
                 logger.debug(container_id)
                 logger.debug(container_id_test)
                 if "DBS" in container_id:
