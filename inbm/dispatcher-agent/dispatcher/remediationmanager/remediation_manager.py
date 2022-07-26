@@ -134,7 +134,7 @@ class RemediationManager:
 
     def _find_current_container(self) -> Optional[str]:
         trtl = Trtl(PseudoShellRunner())
-        err, out = self.trtl.list()
+        err, out = trtl.list()
         if err:
             logger.error("Error encountered while getting container ID")
             return None
