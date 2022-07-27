@@ -131,7 +131,7 @@ class RemediationManager:
                 'Unable to get imageId and imageName for containerID: ' + str(container_id))
             return None, None
         return image_id, image_name
-
+    """
     def _find_current_container(self) -> Optional[str]:
         trtl = Trtl(PseudoShellRunner())
         err, out = trtl.list()
@@ -146,24 +146,33 @@ class RemediationManager:
             container_id = line.split()[0]
             return container_id
         return None
-
+    """
     def _remove_container(self, ids: Any) -> None:
         for container_id in ids:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                container_id_test = self._find_current_container()
+                container_id_test = container_id.split("_")[1]
                 logger.debug(container_id)
                 logger.debug(container_id_test)
                 if "DBS" in container_id:
                     continue
-                image_id, image_name = self._get_image_id(trtl, container_id)
-                logger.debug(image_id)
-                logger.debug(image_name)
-               
-                logger.debug(self.container_image_list)
-                if image_id is None:
+                err, out = trtl.list()
+                if err:
+                    logger.error("Error encountered while getting container ID")
+
+                if not container_id_test in str(out):
+                    logger.debug(f"{container_id_test} is not present in list")
                     continue
+
+                    #return None
+                #image_id, image_name = self._get_image_id(trtl, container_id)
+                #logger.debug(image_id)
+                #logger.debug(image_name)
+               
+                #logger.debug(self.container_image_list)
+                #if image_id is None:
+                #    continue
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
