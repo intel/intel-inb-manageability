@@ -152,7 +152,7 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                container_id_test = container_id.split("_")[1]
+                container_id_test = container_id.split("-")[1]
                 logger.debug(container_id)
                 logger.debug(container_id_test)
                 if "DBS" in container_id:
