@@ -7,7 +7,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import logging, traceback
+import logging, traceback, re
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -152,16 +152,16 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                container_id_test = container_id.split("-")[1]
+                container_id_substring = re.split(r"and|[-,_]",container_id)[1]
                 logger.debug(container_id)
                 logger.debug(container_id_test)
-                if "DBS" in container_id:
-                    continue
+                #if "DBS" in container_id:
+                #    continue
                 err, out = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
 
-                if not container_id_test in str(out):
+                if not container_id_test in str(out) or "DBS" in container_id:
                     logger.debug(f"{container_id_test} is not present in list")
                     continue
 
