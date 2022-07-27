@@ -7,8 +7,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import logging, traceback
-import re
+import logging
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -50,10 +49,6 @@ class RemediationManager:
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
-        #logger.debug("=======================Call stack begin=========================")
-        #for line in traceback.format_stack():
-        #    logger.debug(line.strip())
-        #logger.debug("=======================Call stack end=========================")
         try:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
@@ -64,10 +59,6 @@ class RemediationManager:
 
     def _on_remove_image(self, topic: str, payload: str, qos: int) -> None:
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
-        #logger.debug("=======================Call stack begin=========================")
-        #for line in traceback.format_stack():
-        #    logger.debug(line.strip())
-        #logger.debug("=======================Call stack end=========================")
         try:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
@@ -79,14 +70,10 @@ class RemediationManager:
 
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
-        logger.debug(self.container_image_list)
-        #for image_id in ids:
-        #    self.container_image_list.append(image_id)
         for image_id in ids:
             if image_id not in self.container_image_list:
                 self._remove_single_image(image_id)
                 self.container_image_list.append(image_id)
-        #self.container_image_list[:] = []
 
     def _remove_single_image(self, image_id: str) -> None:
         logger.debug("")
@@ -132,48 +119,19 @@ class RemediationManager:
                 'Unable to get imageId and imageName for containerID: ' + str(container_id))
             return None, None
         return image_id, image_name
-    """
-    def _find_current_container(self) -> Optional[str]:
-        trtl = Trtl(PseudoShellRunner())
-        err, out = trtl.list()
-        if err:
-            logger.error("Error encountered while getting container ID")
-            return None
 
-        logger.debug(f"Container list: {out}")
-        
-        for line in out.splitlines():
-            #if self._name + ":" + str(self._last_version) in line:
-            container_id = line.split()[0]
-            return container_id
-        return None
-    """
     def _remove_container(self, ids: Any) -> None:
         for container_id in ids:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                #container_id_substring = re.split(r"and|[-,_]",container_id)[1]
-                logger.debug(container_id)
-                #logger.debug(container_id_substring)
-                #if "DBS" in container_id:
-                #    continue
-                err, out = trtl.list()
-                if err:
-                    logger.error("Error encountered while getting container ID")
-
-                #if not container_id_substring in str(out) or "DBS" in container_id:
-                #    logger.debug(f"{container_id_substring} is not present in list")
-                #    continue
-
-                    #return None
-                #image_id, image_name = self._get_image_id(trtl, container_id)
-                #logger.debug(image_id)
-                #logger.debug(image_name)
+                if "DBS" in container_id:
+                    continue
+              
+                image_id, image_name = self._get_image_id(trtl, container_id)
                
-                #logger.debug(self.container_image_list)
-                #if image_id is None:
-                #    continue
+                if image_id is None:
+                    continue
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
