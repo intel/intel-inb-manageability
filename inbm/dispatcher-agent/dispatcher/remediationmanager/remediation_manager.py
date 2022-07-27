@@ -154,15 +154,15 @@ class RemediationManager:
                 image_id = None
                 container_id_substring = re.split(r"and|[-,_]",container_id)[1]
                 logger.debug(container_id)
-                logger.debug(container_id_test)
+                logger.debug(container_id_substring)
                 #if "DBS" in container_id:
                 #    continue
                 err, out = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
 
-                if not container_id_test in str(out) or "DBS" in container_id:
-                    logger.debug(f"{container_id_test} is not present in list")
+                if not container_id_substring in str(out) or "DBS" in container_id:
+                    logger.debug(f"{container_id_substring} is not present in list")
                     continue
 
                     #return None
