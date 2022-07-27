@@ -152,18 +152,18 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                container_id_substring = re.split(r"and|[-,_]",container_id)[1]
+                #container_id_substring = re.split(r"and|[-,_]",container_id)[1]
                 logger.debug(container_id)
-                logger.debug(container_id_substring)
+                #logger.debug(container_id_substring)
                 #if "DBS" in container_id:
                 #    continue
                 err, out = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
 
-                if not container_id_substring in str(out) or "DBS" in container_id:
-                    logger.debug(f"{container_id_substring} is not present in list")
-                    continue
+                #if not container_id_substring in str(out) or "DBS" in container_id:
+                #    logger.debug(f"{container_id_substring} is not present in list")
+                #    continue
 
                     #return None
                 #image_id, image_name = self._get_image_id(trtl, container_id)
