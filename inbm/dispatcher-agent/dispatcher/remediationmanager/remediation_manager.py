@@ -7,7 +7,8 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import logging, traceback, re
+import logging, traceback
+import re
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
