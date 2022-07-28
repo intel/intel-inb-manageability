@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Added
+ - Allow installation on Debian bullseye
+
 ## 3.0.12 - 2022-07-14
 
 ### Fixed

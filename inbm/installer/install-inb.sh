@@ -167,7 +167,7 @@ function install_vision_requirements {
     no_proxy="$NO_PROXY"
   fi
   apt-get purge -y mosquitto || true
-  apt-get install -y lxc-common dkms
+  apt-get install -y lxc dkms
   apt-get update >&/dev/null
   apt-mark unhold mosquitto
   apt-get install -y mosquitto
