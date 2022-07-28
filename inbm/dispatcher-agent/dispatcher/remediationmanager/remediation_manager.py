@@ -7,7 +7,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import logging
+import logging, re
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -125,12 +125,18 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                if "DBS" in container_id:
-                    continue
-              
-                image_id, image_name = self._get_image_id(trtl, container_id)
-               
-                if image_id is None:
+
+                container_id_substring = re.split(r"and|[-,_]",container_id)[0]
+                logger.debug(container_id)
+                err, out = trtl.list()
+                if err:
+                    logger.error("Error encountered while getting container ID")
+
+                if not container_id_substring in str(out) or "DBS" in container_id:
+                    logger.debug(f"{container_id_substring} is not present in list")
+                    self._dispatcher_callbacks.broker_core.telemetry(
+                        'DBS Security issue raised on containerID: ' +
+                        str(container_id) + ' container is not present in list')
                     continue
 
                 if self.dbs_remove_image_on_failed_container:
