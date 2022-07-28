@@ -136,7 +136,11 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                container_id_substring = re.split(r"and|[-,_]",container_id)[1]
+
+                if '_' not in container_id and '-' not in container_id:
+                    container_id_substring = container_id
+                else:
+                    container_id_substring = re.split(r"and|[-,_]",container_id)[1]
                 logger.debug(container_id)
                 err, out = trtl.list()
                 if err:
