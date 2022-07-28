@@ -137,10 +137,7 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
 
-                if '_' not in container_id and '-' not in container_id:
-                    container_id_substring = container_id
-                else:
-                    container_id_substring = re.split(r"and|[-,_]",container_id)[1]
+                container_id_substring = re.split(r"and|[-,_]",container_id)[0]
                 logger.debug(container_id)
                 err, out = trtl.list()
                 if err:
