@@ -148,6 +148,9 @@ class RemediationManager:
 
                 if not container_id_substring in str(out) or "DBS" in container_id:
                     logger.debug(f"{container_id_substring} is not present in list")
+                    self._dispatcher_callbacks.broker_core.telemetry(
+                        'DBS Security issue raised on containerID: ' +
+                        str(container_id) + ' container is not present in list')
                     continue
 
                 if self.dbs_remove_image_on_failed_container:
