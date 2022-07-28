@@ -5,8 +5,11 @@ set -euxo pipefail
 cd /vagrant/input
 cp /scripts/succeed_rpm_cert.pem .
 
+# Update apt database
+apt-get update
+
 # Remove/uninstall prereqs to ensure installer deals with them
-apt-get purge -y --allow-change-held-packages lxc-common mosquitto cryptsetup less docker-compose 
+apt-get purge -y --allow-change-held-packages lxc mosquitto cryptsetup less docker-compose
 
 # Simulate user calling the installer
 mkdir "install TC" # test install dir with spaces

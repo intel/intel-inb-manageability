@@ -49,9 +49,9 @@ verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10" "Ubuntu 22.04")
 if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
   OS_TYPE="Ubuntu-$(lsb_release -rs)"
   echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
-elif [ "$(lsb_release -sc)" == "buster" ]; then
+elif [ "$(lsb_release -sc)" == "buster" ] | [ "$(lsb_release -sc)" == "bullseye" ] ; then
   OS_TYPE="Debian"
-  echo "Confirmed Supported Platform (Debian 10)"
+  echo "Confirmed Supported Platform (Debian $(lsb_release -sc))"
 else
   echo "WARNING: Unverified OS version detected. Recommend use of verified OS versions: ${verified_os_list[@]}"
 fi
@@ -136,15 +136,15 @@ for i in inbm-configuration inbm-dispatcher inbm-dispatcher inbm-telemetry inbm-
 done
 dpkg --remove --force-all no-tpm-provision tpm-provision inbm-configuration-agent configuration-agent inbm-dispatcher-agent dispatcher-agent inbm-diagnostic-agent diagnostic-agent inbm-cloudadapter-agent cloudadapter-agent inbm-telemetry-agent telemetry-agent mqtt-agent trtl mqtt >&/dev/null || true
 
-echo "Ensuring packages are installed: lxc-common/lxc mosquitto cryptsetup less docker-compose"
+echo "Ensuring packages are installed: lxc mosquitto cryptsetup less docker-compose"
+apt-get update >&/dev/null
 if [ "$OS_TYPE" == "Debian" ]; then
   apt-get install -y lxc
 else
-  apt-get install -y lxc-common
+  apt-get install -y lxc
   apt-get -y purge mosquitto || true
 fi
 
-apt-get update >&/dev/null
 apt-mark unhold mosquitto
 apt-get install -y mosquitto
 systemctl disable mosquitto
