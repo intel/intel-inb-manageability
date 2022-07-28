@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## 3.0.12 - 2022-07-14
 
 ### Fixed
+ - RTC 517230      - Added fix for telemetry agent to receive latest values after performing config set OTA and restart of telemetry agent
  - RTC 509640      - Shortened the SWBOM publish timer and added logic to cancel and update the timer
  - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
  - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
