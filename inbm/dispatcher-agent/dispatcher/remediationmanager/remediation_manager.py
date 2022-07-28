@@ -80,8 +80,6 @@ class RemediationManager:
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
         logger.debug(self.container_image_list)
-        #for image_id in ids:
-        #    self.container_image_list.append(image_id)
         for image_id in ids:
             if image_id not in self.container_image_list:
                 self._remove_single_image(image_id)
@@ -132,22 +130,7 @@ class RemediationManager:
                 'Unable to get imageId and imageName for containerID: ' + str(container_id))
             return None, None
         return image_id, image_name
-    """
-    def _find_current_container(self) -> Optional[str]:
-        trtl = Trtl(PseudoShellRunner())
-        err, out = trtl.list()
-        if err:
-            logger.error("Error encountered while getting container ID")
-            return None
-
-        logger.debug(f"Container list: {out}")
-        
-        for line in out.splitlines():
-            #if self._name + ":" + str(self._last_version) in line:
-            container_id = line.split()[0]
-            return container_id
-        return None
-    """
+    
     def _remove_container(self, ids: Any) -> None:
         for container_id in ids:
             if not self.ignore_dbs_results:
@@ -155,9 +138,6 @@ class RemediationManager:
                 image_id = None
                 container_id_substring = re.split(r"and|[-,_]",container_id)[1]
                 logger.debug(container_id)
-                #logger.debug(container_id_substring)
-                #if "DBS" in container_id:
-                #    continue
                 err, out = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
@@ -165,15 +145,6 @@ class RemediationManager:
                 if not container_id_substring in str(out) or "DBS" in container_id:
                     logger.debug(f"{container_id_substring} is not present in list")
                     continue
-
-                    #return None
-                #image_id, image_name = self._get_image_id(trtl, container_id)
-                #logger.debug(image_id)
-                #logger.debug(image_name)
-               
-                #logger.debug(self.container_image_list)
-                #if image_id is None:
-                #    continue
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
