@@ -18,7 +18,7 @@ class TestRemediationManager(TestCase):
             mock_remove_container.assert_called()
         except ValueError:
             self.fail("_on_stop_container() raised ValueError unexpectedly!")
-
+    """
     @patch('dispatcher.remediationmanager.remediation_manager.RemediationManager._remove_images')
     def test_on_remove_image_success(self, mock_remove_images):
         try:
@@ -134,3 +134,4 @@ class TestRemediationManager(TestCase):
         mock_call_telemetry.assert_called()
         mock_remove_image.assert_called_once_with('ghi567', True)
 
+    """
