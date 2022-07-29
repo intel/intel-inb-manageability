@@ -83,7 +83,6 @@ class RemediationManager:
         for image_id in ids:
             if image_id not in self.container_image_list:
                 self._remove_single_image(image_id)
-                self.container_image_list.append(image_id)
         self.container_image_list[:] = []
 
     def _remove_single_image(self, image_id: str) -> None:
@@ -144,10 +143,11 @@ class RemediationManager:
                     logger.error("Error encountered while getting container ID")
 
                 if not container_id_substring in str(out) or "DBS" in container_id:
-                    logger.debug(f"{container_id_substring} is not present in list")
-                    self._dispatcher_callbacks.broker_core.telemetry(
-                        'DBS Security issue raised on containerID: ' +
-                        str(container_id) + ' Container is not present in list. ')
+                    image_id, image_name = self._get_image_id(trtl, container_id)
+                    self.container_image_list.append(image_name)
+                    #self._dispatcher_callbacks.broker_core.telemetry(
+                     #   'DBS Security issue raised on containerID: ' +
+                     #   str(container_id) + ' Container is not present in list. ')
                     continue
 
                 if self.dbs_remove_image_on_failed_container:
