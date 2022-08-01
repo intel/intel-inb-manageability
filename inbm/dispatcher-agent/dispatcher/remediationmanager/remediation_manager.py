@@ -80,12 +80,10 @@ class RemediationManager:
 
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
-        logger.debug(self.container_image_list)
         for image_id in ids:
-            #if image_id not in self.container_image_list:
-            if image_id in self.container_image_list:
+            if image_id not in self.container_image_list:
                 self._remove_single_image(image_id)
-        self.container_image_list[:] = []
+                self.container_image_list.append(image_id)
 
     def _remove_single_image(self, image_id: str) -> None:
         logger.debug("")
@@ -144,19 +142,12 @@ class RemediationManager:
                 if err:
                     logger.error("Error encountered while getting container ID")
 
-                image_id, image_name = self._get_image_id(trtl, container_id)
-                logger.debug(image_name)
-                logger.debug(image_id)
-
-                #if not container_id_substring in str(out) or "DBS" in container_id:
-                if image_id is None or "DBS" in container_id:
-                    #self._dispatcher_callbacks.broker_core.telemetry(
-                     #   'DBS Security issue raised on containerID: ' +
-                     #   str(container_id) + ' Container is not present in list. ')
+                if not container_id_substring in str(out) or "DBS" in container_id:
+                    logger.debug(f"{container_id_substring} is not present in list")
+                    self._dispatcher_callbacks.broker_core.telemetry(
+                        'DBS Security issue raised on containerID: ' +
+                        str(container_id) + ' container is not present in list')
                     continue
-                else:
-                    self.container_image_list.append(image_name)
-                    logger.debug(self.container_image_list)
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
