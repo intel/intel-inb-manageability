@@ -28,11 +28,3 @@ else
         test_fail "cslm reboot test"
 fi
 
-sleep 10
-"$DIR"/vagrant-wait-for-up.sh
-echo .. cslm reboot test fail running. .
-if vagrant ssh -c "sudo /test/reboot/REBOOT_CSLM_TEST_FAIL.sh"; then
-    test_pass " cslm fail reboot test"
-else
-    test_fail "cslm fail reboot test"
-fi

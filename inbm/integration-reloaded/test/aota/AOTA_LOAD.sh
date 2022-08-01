@@ -18,9 +18,6 @@ GOOD_XML='<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><
 
 test_echo AOTA LOAD
 
-test_echo Making sure docker is good.
-systemctl restart docker
-
 test_echo Making sure image is unloaded.
 if docker images | grep sample-container ; then
     docker rmi sample-container

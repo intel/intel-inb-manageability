@@ -13,7 +13,7 @@ cp ../*-tc.sh .
 
 ACCEPT_INTEL_LICENSE=true bash -x ./uninstall-tc.sh
 
-INSTALL_TPM2_SIMULATOR=true ACCEPT_INTEL_LICENSE=true bash -x ./install-tc.sh
+INSTALL_TPM2_SIMULATOR=false ACCEPT_INTEL_LICENSE=true bash -x ./install-tc.sh
 
 cp /scripts/iotg_inb_developer.conf /etc/intel_manageability.conf
 cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
@@ -21,7 +21,7 @@ cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 touch /etc/intel-manageability/public/cloudadapter-agent/iot-dispatcher.cfg
 
 # don't connect to Telit in Integration Reloaded
-NO_CLOUD=1 PROVISION_TPM=auto NO_OTA_CERT=1 TELIT_HOST="localhost" bash -x /usr/bin/provision-tc
+NO_CLOUD=1 PROVISION_TPM=disable NO_OTA_CERT=1 TELIT_HOST="localhost" bash -x /usr/bin/provision-tc
 
 # we don't connect to Telit in Integration Reloaded so we don't expect
 # cloudadapter-agent to function (it primarily connects to Telit)
