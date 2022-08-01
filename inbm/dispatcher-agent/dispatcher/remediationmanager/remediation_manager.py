@@ -138,7 +138,9 @@ class RemediationManager:
 
                 container_id_substring = re.split(r"and|[-,_]",container_id)[0]
                 logger.debug(container_id)
+                logger.debug(container_id_substring)
                 err, out = trtl.list()
+                logger.debug(out)
                 if err:
                     logger.error("Error encountered while getting container ID")
 
