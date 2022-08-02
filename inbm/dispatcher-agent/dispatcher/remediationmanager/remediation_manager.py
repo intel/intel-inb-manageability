@@ -147,7 +147,7 @@ class RemediationManager:
                 if not image_name in str(out) or "DBS" in container_id:
                     continue
 
-                if container_id_substring in str(out) and not self.dbs_remove_image_on_failed_container:
+                if image_name in str(out) and not self.dbs_remove_image_on_failed_container:
                     self.container_image_list.append(image_name)
 
 
