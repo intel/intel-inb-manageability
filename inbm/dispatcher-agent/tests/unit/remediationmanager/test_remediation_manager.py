@@ -81,7 +81,6 @@ class TestRemediationManager(TestCase):
             str(['abc123', 'def234', 'ghi567']))
         mock_call_telemetry.assert_called()
 
-    """
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
     def test_return_image_no_errors(self, mock_remove_image, mock_call_telemetry):
@@ -134,4 +133,3 @@ class TestRemediationManager(TestCase):
         mock_call_telemetry.assert_called()
         mock_remove_image.assert_called_once_with('ghi567', True)
 
-    """
