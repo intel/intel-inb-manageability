@@ -7,7 +7,8 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import logging, re
+import logging
+import re
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -139,7 +140,6 @@ class RemediationManager:
 
                 if image_name in str(out) and not self.dbs_remove_image_on_failed_container:
                     self.container_image_list.append(image_name)
-
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
