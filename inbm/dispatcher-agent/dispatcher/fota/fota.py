@@ -98,6 +98,8 @@ class FOTA:
         logger.debug("")
         return_message: Result = Result()
 
+        logger.debug('=========>')
+        logger.debug(return_message)
         hold_reboot = False
         try:
             factory = OsFactory.get_factory(
@@ -148,6 +150,8 @@ class FOTA:
                 time_to_trigger_reboot = Timer(0.1, trigger_reboot)
                 time_to_trigger_reboot.start()
                 return_message = COMMAND_SUCCESS
+                logger.debug('=========>')
+                logger.debug(return_message)
             else:
                 status = 'Reboot on hold after Firmware update...'
                 state = {'restart_reason': "pota"}
@@ -159,6 +163,8 @@ class FOTA:
             logger.error(error)
             self._dispatcher_callbacks.broker_core.telemetry(error)
             return_message = INSTALL_FAILURE
+            logger.debug('=========>')
+            logger.debug(return_message)
             self._repo.delete(self._pkg_filename)
             # In POTA, mender file needs to be deleted also.
             if hold_reboot:
@@ -169,6 +175,8 @@ class FOTA:
             else:
                 status = 'Firmware Update Aborted'
                 dispatcher_state.clear_dispatcher_state()
+            logger.debug('=========>')
+            logger.debug(return_message)
             logger.debug('Firmware update status: ' + status)
             self._dispatcher_callbacks.broker_core.telemetry(status)
             return return_message
