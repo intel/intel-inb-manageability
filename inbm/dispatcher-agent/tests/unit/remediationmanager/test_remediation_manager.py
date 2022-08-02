@@ -81,6 +81,7 @@ class TestRemediationManager(TestCase):
             str(['abc123', 'def234', 'ghi567']))
         mock_call_telemetry.assert_called()
 
+    """
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
     def test_return_image_no_errors(self, mock_remove_image, mock_call_telemetry):
@@ -94,7 +95,6 @@ class TestRemediationManager(TestCase):
         mock_call_telemetry.assert_called()
         mock_remove_image.assert_called()
 
-    """
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
     def test_telemetry_call_when_remove_image_errors(self, mock_remove_image, mock_call_telemetry):
@@ -121,6 +121,7 @@ class TestRemediationManager(TestCase):
 
         r = RemediationManager(self.mock_disp_callbacks_obj)
         r.ignore_dbs_results = True
+        r.container_image_list = ['abc123', 'def234', 'ghi567']
         r._remove_images(str(['abc123', 'def234', 'ghi567']))
         mock_call_telemetry.assert_called()
         mock_remove_container.assert_not_called()
