@@ -136,20 +136,20 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
 
-                container_id_substring = re.split(r"and|[-,_]",container_id)[0]
+                image_name = re.sub(r"and|[-,_]", ":", container_id)
                 logger.debug(container_id)
-                logger.debug(container_id_substring)
+                logger.debug(image_name)
                 err, out = trtl.list()
                 logger.debug(out)
                 if err:
                     logger.error("Error encountered while getting container ID")
 
+                if not image_name in str(out) or "DBS" in container_id:
+                    continue
+
                 if container_id_substring in str(out) and not self.dbs_remove_image_on_failed_container:
-                    image_id, image_name = self._get_image_id(trtl, container_id)
                     self.container_image_list.append(image_name)
 
-                if not container_id_substring in str(out) or "DBS" in container_id:
-                    continue
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
