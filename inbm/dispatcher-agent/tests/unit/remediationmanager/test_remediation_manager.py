@@ -59,7 +59,6 @@ class TestRemediationManager(TestCase):
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.stop_by_id')
     @patch('inbm_lib.trtl.Trtl.remove_container')
-    """
     def test_return_container_raises_error_on_bad_format(self, mock_remove_container, mock_stop_by_id,
                                                          mock_call_telemetry, mock_image, mock_remove, mock_list):
         mock_stop_by_id.return_value = (None, None, 0)
@@ -82,6 +81,7 @@ class TestRemediationManager(TestCase):
             str(['abc123', 'def234', 'ghi567']))
         mock_call_telemetry.assert_called()
 
+    """
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
     def test_return_image_no_errors(self, mock_remove_image, mock_call_telemetry):
