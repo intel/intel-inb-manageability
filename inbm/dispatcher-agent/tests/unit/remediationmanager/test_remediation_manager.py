@@ -122,7 +122,7 @@ class TestRemediationManager(TestCase):
         r = RemediationManager(self.mock_disp_callbacks_obj)
         r.ignore_dbs_results = True
         r.container_image_list = ['abc123', 'def234', 'ghi567']
-        r._remove_images(str(['abc123', 'def234', 'ghi567']))
+        r._remove_images(['abc123', 'def234', 'ghi567'])
         mock_call_telemetry.assert_called()
         mock_remove_container.assert_not_called()
         mock_stop_by_id.assert_not_called()
