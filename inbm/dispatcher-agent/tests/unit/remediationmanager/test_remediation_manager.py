@@ -18,7 +18,6 @@ class TestRemediationManager(TestCase):
             mock_remove_container.assert_called()
         except ValueError:
             self.fail("_on_stop_container() raised ValueError unexpectedly!")
-    """
     @patch('dispatcher.remediationmanager.remediation_manager.RemediationManager._remove_images')
     def test_on_remove_image_success(self, mock_remove_images):
         try:
@@ -60,6 +59,7 @@ class TestRemediationManager(TestCase):
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.stop_by_id')
     @patch('inbm_lib.trtl.Trtl.remove_container')
+    """
     def test_return_container_raises_error_on_bad_format(self, mock_remove_container, mock_stop_by_id,
                                                          mock_call_telemetry, mock_image, mock_remove, mock_list):
         mock_stop_by_id.return_value = (None, None, 0)
