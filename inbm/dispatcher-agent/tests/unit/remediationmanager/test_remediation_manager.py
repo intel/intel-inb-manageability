@@ -88,7 +88,8 @@ class TestRemediationManager(TestCase):
             mock_remove_image.return_value = (None, None, 0)
             rm = RemediationManager(self.mock_disp_callbacks_obj)
             rm.ignore_dbs_results = False
-            rm._remove_images(str(['abc123', 'def234', 'ghi567']))
+            r.container_image_list = ['abc123', 'def234', 'ghi567']
+            rm._remove_images(['abc123', 'def234', 'ghi567'])
         except ValueError:
             self.fail("RemediationManager raised ValueError exception unexpectedly!")
         mock_call_telemetry.assert_called()
