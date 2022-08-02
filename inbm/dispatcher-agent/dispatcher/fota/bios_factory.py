@@ -39,8 +39,10 @@ def extract_file_info(pkg_filename: str, repo_name: str) -> Tuple[Optional[str],
     @param repo_name: name of repository
     """
     if extract_ext(pkg_filename) in ["package", "bios"]:
+        logger.debug("===============================================extract_ext")
         return pkg_filename, None
     else:
+        logger.debug("=======================================================else_block")
         return BiosFactory.unpack(repo_name, pkg_filename)
 
 
