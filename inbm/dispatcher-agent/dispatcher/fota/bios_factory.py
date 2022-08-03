@@ -155,7 +155,10 @@ class BiosFactory(ABC):
         cmd = "tar -xvf " + str(Path(repo_name) / pkg_filename) + \
             " --no-same-owner -C " + repo_name
         (out, err, code) = PseudoShellRunner.run(cmd)
+        logger.debug(out)
         fw_file, cert_file = BiosFactory.get_files(out)
+        logger.debug(fw_file)
+        logger.debug(cert_file)
         if code == 0 and not err:
             return fw_file, cert_file
         else:
@@ -207,6 +210,7 @@ class LinuxToolFirmware(BiosFactory):
         @param runner: To run shell commands
         @return: None or guid
         """
+        logger.debug("============================================_extract_guid")
         cmd = self._fw_tool + " -l"
         (out, err, code) = runner.run(cmd)
         if code != 0:
@@ -227,6 +231,7 @@ class LinuxToolFirmware(BiosFactory):
         @param runner: To run shell commands
         @raises FotaError: on failed firmware attempt
         """
+        logger.debug("============================================_apply_firmware block")
         if self._guid_required:
             if not guid:
                 guid = self._extract_guid(runner)
