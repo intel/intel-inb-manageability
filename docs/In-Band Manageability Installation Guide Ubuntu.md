@@ -43,11 +43,13 @@ Intel In-band Manageability framework, a.k.a. INBM, is designed to provide certa
 
 -   Ubuntu 20.04 (Desktop and Server)
 
--   Ubuntu 18.04 (Desktop and Server)
+-   Ubuntu 22.04 (Desktop and Server)
 
 -   Yocto OS
 
 -   Debian 10
+
+-   Debian 11
 
 ### Setting up checklist
 
