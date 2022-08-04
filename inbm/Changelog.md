@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 16016950467 - Add missing AppArmor entries for MTL-P Ubuntu
  - HSD 15011480329 - Fix INBC POTA fail while executing SOTA in ubuntu
  - RTC 517028 - Set schema boundary limits for telemetry configuration values
+ - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
 
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
