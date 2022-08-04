@@ -57,7 +57,12 @@ EOF
     echo "no_proxy=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
     echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
     echo 'Dpkg::options { "--force-confdef"; "--force-confold"; }' >>/etc/apt/apt.conf.d/local # FIXME: WORKAROUND FOR SOTA BUG
-    ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+    echo 'APT::Periodic::Update-Package-Lists "0";'  >/etc/apt/apt.conf.d/20auto-upgrades
+    echo 'APT::Periodic::Update-Package-Lists "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
+    echo 'APT::Periodic::Download-Upgradeable-Packages "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
+    echo 'APT::Periodic::AutocleanInterval "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
+    echo 'APT::Periodic::Unattended-Upgrade "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
+    ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list || ex -s -c '%s/mirrors.edge.kernel.org\\/ubuntu/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
     cat /etc/apt/sources.list
 
     rm -rf /var/lib/apt/lists/*
@@ -67,11 +72,6 @@ EOF
     systemd-tmpfiles --create --prefix /var/log/journal
     time systemctl restart systemd-journald
 
-    # Upgrade mosquitto to fix acl.file bug
-    sudo add-apt-repository -y ppa:mosquitto-dev/mosquitto-ppa
-    sudo apt-get update
-    sudo apt-mark unhold mosquitto
-    sudo apt-get -y install mosquitto
     time sudo python3 -m pip install cryptography==3.2 # For create_signature.py
     time sudo python3 -m pip install requests[security]
     # disable slow time sync
@@ -103,7 +103,7 @@ EOF
   config.vm.synced_folder './scripts', '/scripts', id: 'scripts', type: 'rsync'
 
   config.vm.provision "shell", inline: <<-SHELL
-    /test/intel-cert-setup-debian.sh
+    apt-get update && /test/intel-cert-setup-debian.sh
   SHELL
 
   # following line is a workaround for a Vagrant bug (run never not working)

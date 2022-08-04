@@ -144,7 +144,7 @@ EOF
 
 function install_vision_requirements {
   # Ensure we're running a supported OS
-  verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10")
+  verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10" "Ubuntu 22.04")
 
   if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
     OS_TYPE="Ubuntu-$(lsb_release -rs)"
@@ -219,14 +219,19 @@ function install_vision_requirements {
 
   pushd "$INST_DIR" > /dev/null
 
+
   # install tpm tools
   if [ "$(lsb_release -rs)" == "20.04" ]; then
-    # install tpm tools
     apt-get install -y tpm2-tools tpm2-abrmd libtss2-tcti-tabrmd0
     systemctl enable --now tpm2-abrmd
     ln -sf libtss2-tcti-tabrmd.so.0 /lib/x86_64-linux-gnu/libtss2-tcti-default.so
+  elif [ "$(lsb_release -rs)" == "21.10" ]; then
+    apt-get install -y tpm2-tools tpm2-abrmd
+    systemctl enable --now tpm2-abrmd
+  elif [ "$(lsb_release -rs)" == "22.04" ]; then
+    apt-get install -y tpm2-tools tpm2-abrmd
+    systemctl enable tpm2-abrmd
   else
-    # install tpm tools
     dpkg -i tpm2-tss*.deb tpm2-abrmd*.deb tpm2-tools*.deb
     ln -sf libtss2-tcti-tabrmd.so /usr/lib/libtss2-tcti-default.so
   fi
