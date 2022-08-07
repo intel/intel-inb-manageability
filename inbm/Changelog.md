@@ -9,10 +9,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 517782 - Add Ubuntu 22.04 support for INBM TC including integration test
  - RTC 517781 - Allow installation on Debian bullseye
 
+### Fixed
+ - RTC 517230 - Added fix for telemetry agent to receive latest values after performing config set OTA and restart of telemetry agent
+ - RTC 517028 - Set schema boundary limits for telemetry configuration values
+ - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
+
+
 ## 3.0.12 - 2022-07-14
 
 ### Fixed
- - RTC 517230      - Added fix for telemetry agent to receive latest values after performing config set OTA and restart of telemetry agent
  - RTC 509640      - Shortened the SWBOM publish timer and added logic to cancel and update the timer
  - HSD 16016950467 - Missing AppArmor profile entries under /sys for diagnostic agent
  - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
@@ -20,8 +25,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - HSD 15011243931 - Fix cloudadapter-agent disconnection issue
  - HSD 16016950467 - Add missing AppArmor entries for MTL-P Ubuntu
  - HSD 15011480329 - Fix INBC POTA fail while executing SOTA in ubuntu
- - RTC 517028 - Set schema boundary limits for telemetry configuration values
- - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
 
 ### Added
  - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
