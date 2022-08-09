@@ -44,14 +44,14 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Ensure we're running a supported OS
-verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10")
+verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10" "Ubuntu 22.04")
 
 if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
   OS_TYPE="Ubuntu-$(lsb_release -rs)"
   echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
-elif [ "$(lsb_release -sc)" == "buster" ]; then
+elif [ "$(lsb_release -sc)" == "buster" ] | [ "$(lsb_release -sc)" == "bullseye" ] ; then
   OS_TYPE="Debian"
-  echo "Confirmed Supported Platform (Debian 10)"
+  echo "Confirmed Supported Platform (Debian $(lsb_release -sc))"
 else
   echo "WARNING: Unverified OS version detected. Recommend use of verified OS versions: ${verified_os_list[@]}"
 fi
@@ -136,15 +136,15 @@ for i in inbm-configuration inbm-dispatcher inbm-dispatcher inbm-telemetry inbm-
 done
 dpkg --remove --force-all no-tpm-provision tpm-provision inbm-configuration-agent configuration-agent inbm-dispatcher-agent dispatcher-agent inbm-diagnostic-agent diagnostic-agent inbm-cloudadapter-agent cloudadapter-agent inbm-telemetry-agent telemetry-agent mqtt-agent trtl mqtt >&/dev/null || true
 
-echo "Ensuring packages are installed: lxc-common/lxc mosquitto cryptsetup less docker-compose"
+echo "Ensuring packages are installed: lxc mosquitto cryptsetup less docker-compose"
+apt-get update >&/dev/null
 if [ "$OS_TYPE" == "Debian" ]; then
   apt-get install -y lxc
 else
-  apt-get install -y lxc-common
+  apt-get install -y lxc
   apt-get -y purge mosquitto || true
 fi
 
-apt-get update >&/dev/null
 apt-mark unhold mosquitto
 apt-get install -y mosquitto
 systemctl disable mosquitto
@@ -217,6 +217,9 @@ if [ "$(lsb_release -rs)" == "20.04" ]; then
 elif [ "$(lsb_release -rs)" == "21.10" ]; then
   apt-get install -y tpm2-tools tpm2-abrmd
   systemctl enable --now tpm2-abrmd
+elif [ "$(lsb_release -rs)" == "22.04" ]; then
+  apt-get install -y tpm2-tools tpm2-abrmd
+  systemctl enable tpm2-abrmd
 else
   dpkg -i tpm2-tss*.deb tpm2-abrmd*.deb tpm2-tools*.deb
   ln -sf libtss2-tcti-tabrmd.so /usr/lib/libtss2-tcti-default.so

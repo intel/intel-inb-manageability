@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-# $1 is expected to be 18.04 or 20.04 for Ubuntu version
+# $1 is expected to be 18.04 or 20.04 or 22.04 for Ubuntu version
 ./setup.sh "$1"
 
 . ../integration-common/util/tc-messages.sh

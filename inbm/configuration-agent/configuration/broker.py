@@ -235,6 +235,7 @@ class Broker:  # pragma: no cover
         for child in children:
             value = children[child]
             path = agent + '/' + str(child)
+            logger.debug(f'Publishing inital agent value on: {UPDATE_CHANNEL}{str(path)}:{json.dumps(value)}')
             self.mqttc.publish(UPDATE_CHANNEL + str(path),
                                json.dumps(value), retain=True)
 
@@ -244,8 +245,9 @@ class Broker:  # pragma: no cover
             list_obj = path_list[i].split(':', 1)
             value = list_obj[1]
             path = list_obj[0]
+            logger.debug(f'Publishing new value on: {UPDATE_CHANNEL}{str(path)}:{json.dumps(value)}')
             self.mqttc.publish(
-                UPDATE_CHANNEL + str(path), json.dumps(value))
+                UPDATE_CHANNEL + str(path), json.dumps(value), retain=True)
 
     def publish_initial_values(self) -> None:
         """Publish initial values to all the agents"""
