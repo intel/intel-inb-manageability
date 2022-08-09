@@ -1,6 +1,6 @@
 # Introduction
 
-integration-reloaded is sub-project within 'inb' which helps create a Ubuntu 18.04 or 20.04 server environment 
+integration-reloaded is sub-project within 'inb' which helps create a Ubuntu 20.04 or 22.04 server environment 
 with a BTRFS file system (mounted as / )
 
 # Uses

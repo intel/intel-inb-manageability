@@ -103,7 +103,7 @@ RUN mkdir -p /output && \
     wget https://aka.ms/vs/16/release/vc_redist.x64.exe
 
 # output container
-FROM registry.hub.docker.com/library/ubuntu:18.04 as output-windows
+FROM registry.hub.docker.com/library/ubuntu:20.04 as output-windows
 COPY --from=windows-cloudadapter-py3 /output/ /windows-cloudadapter-py3
 COPY --from=windows-telemetry-py3 /output/ /windows-telemetry-py3
 COPY --from=windows-dispatcher-py3 /output/ /windows-dispatcher-py3

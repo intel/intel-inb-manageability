@@ -1,4 +1,4 @@
-FROM registry.hub.docker.com/arm64v8/ubuntu:18.04 as base-arm64v8
+FROM registry.hub.docker.com/arm64v8/ubuntu:20.04 as base-arm64v8
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 include(`commands.base-setup.m4')
 COPY inbm-lib /src/inbm-lib-editable
@@ -9,7 +9,7 @@ RUN python3.8 -m venv /venv-py3 && \
 RUN . /venv-py3/bin/activate && rm -rf /output && \
     pip3.8 install -e /src/inbm-lib-editable
 
-FROM registry.hub.docker.com/library/ubuntu:18.04 as base-x86_64
+FROM registry.hub.docker.com/library/ubuntu:20.04 as base-x86_64
 include(`commands.base-setup.m4')
 
 # ------Build Agents for arm64------
@@ -53,7 +53,7 @@ RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /outpu
 FROM base-x86_64 as misc-rpms
 WORKDIR /
 RUN wget https://github.com/certifi/python-certifi/archive/refs/tags/2020.12.05.zip -O python-certifi-src-2020.12.05.zip
-RUN gem install --no-ri --no-rdoc fpm -v 1.11.0
+RUN gem install --no-document fpm -v 1.14.0
 COPY inbm/fpm /src/fpm
 WORKDIR /src/fpm
 COPY --from=build-inb-provision-certs /output/inb-provision-certs /src/fpm/mqtt/template/usr/bin/inb-provision-certs

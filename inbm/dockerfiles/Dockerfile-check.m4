@@ -1,5 +1,5 @@
 # base image with all dependencies for running unit tests/lints
-FROM registry.hub.docker.com/library/ubuntu:18.04 as base
+FROM registry.hub.docker.com/library/ubuntu:20.04 as base
 include(`commands.base-setup.m4')
 
 

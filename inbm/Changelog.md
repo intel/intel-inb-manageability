@@ -5,8 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
-## Added
-## Fixed
+### Added
+### Fixed
+### Removed
+ - RTC 517780 - Remove Ubuntu 18.04 support
 
 ## 3.0.13 - 2022-08-07
 
@@ -18,7 +20,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 517230 - Added fix for telemetry agent to receive latest values after performing config set OTA and restart of telemetry agent
  - RTC 517028 - Set schema boundary limits for telemetry configuration values
  - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
-
 
 ## 3.0.12 - 2022-07-14
 

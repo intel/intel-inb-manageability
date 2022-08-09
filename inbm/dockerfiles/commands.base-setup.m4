@@ -9,17 +9,13 @@ RUN apt-get update && \
     curl \
     ruby-dev \
     rubygems \
-    python \
-    python-dev \
-    python-pip \
-    python-virtualenv \
     pkg-config \
     rpm \
     wget \
     unzip \
     git && \
     apt-get clean
-RUN gem install --no-ri --no-rdoc fpm -v 1.11.0
+RUN gem install --no-document fpm -v 1.14.0
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
     software-properties-common && \
