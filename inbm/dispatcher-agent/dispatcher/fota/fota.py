@@ -141,7 +141,7 @@ class FOTA:
             def trigger_reboot() -> None:
                 """This method triggers a reboot."""
                 factory.create_rebooter().reboot()
-            hold_reboot = True    
+#             hold_reboot = True    
             if not hold_reboot:
                 logger.debug("===================================================>if not hold_reboot")
                 logger.debug("")
