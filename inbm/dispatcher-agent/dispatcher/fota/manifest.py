@@ -47,6 +47,7 @@ def parse_guid(ota_element: Dict) -> Optional[str]:
 
 
 def parse_hold_reboot_flag(ota_element: Dict) -> bool:
+    logger.debug("======================================================>parse_hold_reboot_flag")
     """Helper function for installer to check holdReboot flag from the manifest file
 
     @return: holdReboot value if holdReboot key present else None

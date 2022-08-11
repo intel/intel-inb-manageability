@@ -141,7 +141,9 @@ class FOTA:
             def trigger_reboot() -> None:
                 """This method triggers a reboot."""
                 factory.create_rebooter().reboot()
+                
             if not hold_reboot:
+                logger.debug("===================================================>if not hold_reboot")
                 logger.debug("")
                 state = {'restart_reason': "fota"}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
@@ -149,6 +151,7 @@ class FOTA:
                 time_to_trigger_reboot.start()
                 return_message = COMMAND_SUCCESS
             else:
+                logger.debug("======================================================>else block")
                 status = 'Reboot on hold after Firmware update...'
                 state = {'restart_reason': "pota"}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
@@ -164,9 +167,12 @@ class FOTA:
             if hold_reboot:
                 self._repo.delete_all()
         finally:
+            logger.debug("===================================================================>finally")
             if return_message == COMMAND_SUCCESS:
+                logger.debug("================================================================>finally return_message == COMMAND_SUCCESS")
                 status = 'Firmware update in process...'
             else:
+                logger.debug("================================================================>finally else block")
                 status = 'Firmware Update Aborted'
                 dispatcher_state.clear_dispatcher_state()
             logger.debug('Firmware update status: ' + status)
