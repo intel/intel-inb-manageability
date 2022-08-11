@@ -501,7 +501,6 @@ class Dispatcher(WindowsService):
         for key in resource.keys():
             ota_resource = parsed_head.get_children(f'ota/type/pota/{key}')
             if key == 'fota':
-                logger.debug("============================================================>if key == 'fota'")
                 ota_resource['holdReboot'] = True
             ota_resource_dict[key] = ota_resource
         logger.debug("DICT: {} parsed_head :{}, resource:{}".format(
