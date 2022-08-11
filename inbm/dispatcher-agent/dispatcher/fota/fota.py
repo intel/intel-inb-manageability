@@ -142,7 +142,8 @@ class FOTA:
                 """This method triggers a reboot."""
                 factory.create_rebooter().reboot()
                 
-            if not hold_reboot:
+  #          if not hold_reboot:
+            if hold_reboot:
                 logger.debug("===================================================>if not hold_reboot")
                 logger.debug("")
                 state = {'restart_reason': "fota"}
