@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 ### Fixed
+ - HSD 15011727901 - Fix POTA/INBC POTA print "Firmware Update Aborted" message after firmware update is success
 ### Removed
  - RTC 517780 - Remove Ubuntu 18.04 support
 
