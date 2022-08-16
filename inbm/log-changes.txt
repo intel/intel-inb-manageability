@@ -1,2 +1,5 @@
 Changes in logging for inbm in next version
 -------------------------------------------
+### Fixed
+ - HSD 15011727901 - Fix POTA/INBC POTA print "Firmware Update Aborted" message after firmware update is success
+
