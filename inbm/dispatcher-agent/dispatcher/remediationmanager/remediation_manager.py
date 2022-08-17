@@ -146,6 +146,7 @@ class RemediationManager:
                 """
                 logger.debug("===========================Test message3===========================")
                 if self.dbs_remove_image_on_failed_container:
+                    image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
 
