@@ -131,6 +131,7 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
 
+                """
                 image_id, image_name = self._get_image_id(trtl, container_id)
 
                 if image_id is None or "DBS" in container_id:
@@ -142,7 +143,7 @@ class RemediationManager:
                 else:
                     logger.debug("===========================Test message2============================")
                     self.container_image_list.append(image_name)
-
+                """
                 logger.debug("===========================Test message3===========================")
                 if self.dbs_remove_image_on_failed_container:
                     if image_id is None:
@@ -162,6 +163,7 @@ class RemediationManager:
                         str(container_id) + '.  Container has been stopped.')
 
                 err = trtl.remove_container(str(container_id), True)
+                logger.debug("===========================Test message5============================")
                 if err:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
