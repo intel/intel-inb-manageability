@@ -33,14 +33,13 @@ class TestRemediationManager(TestCase):
             RemediationManager(self.mock_disp_callbacks_obj).run()
         except Exception:
             self.fail("run() raised Exception unexpectedly!")
-    """
-    @patch('inbm_lib.trtl.Trtl.list', return_value=(None, ['abc123', 'def234', 'ghi567']))
+    
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('ImageID= sha256:fbf60236a8e3dd08a08966064a8ac9f3943ecbffa6ae2ad9bc455974b956412c ,ImageName= ubuntu:bionic', None, 0))
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.stop_by_id')
     @patch('inbm_lib.trtl.Trtl.remove_container')
-    def test_return_container_no_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry, mock_image, mock_remove, mock_list):
+    def test_return_container_no_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry, mock_image, mock_remove):
         try:
             mock_stop_by_id.return_value = (None, None, 0)
             mock_remove_container.return_value = None
@@ -54,14 +53,13 @@ class TestRemediationManager(TestCase):
         mock_remove_container.assert_called()
         mock_stop_by_id.assert_called()
 
-    @patch('inbm_lib.trtl.Trtl.list', return_value=(None, [123, 234, 567]))
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=(None, 'cannot find', 3))
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.stop_by_id')
     @patch('inbm_lib.trtl.Trtl.remove_container')
     def test_return_container_raises_error_on_bad_format(self, mock_remove_container, mock_stop_by_id,
-                                                         mock_call_telemetry, mock_image, mock_remove, mock_list):
+                                                         mock_call_telemetry, mock_image, mock_remove):
         mock_stop_by_id.return_value = (None, None, 0)
         mock_remove_container.return_value = None
         mock_call_telemetry.assert_not_called()
@@ -70,6 +68,7 @@ class TestRemediationManager(TestCase):
             rm.ignore_dbs_results = False
             rm._remove_container('[123, 234, 567]')
 
+    """
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('abc', None, 0))
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
