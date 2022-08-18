@@ -64,6 +64,7 @@ class DiagnosticChecker:
 
     def stop_timer(self):
         """Stops the DBS timer when the diagnostic-agent is stopped."""
+        logger.debug("========================================stop_timer=====================================")
         if self.dbs_timer:
             self.dbs_timer.stop()
 
@@ -118,6 +119,8 @@ class DiagnosticChecker:
         if self._check_sw_mandatory_list('docker') and self.dbs_mode != ConfigDbs.OFF:
             logger.debug("Docker is required  Listening for Docker events.")
             if self.event_watcher:
+                logger.debug(self.event_watcher)
+                logger.debug("=======================================In _setup_docker_events===========================")
                 self.event_watcher.stop()
             self.event_watcher = EventWatcher(self._broker)
             self.event_watcher.set_dbs_mode(self.dbs_mode)

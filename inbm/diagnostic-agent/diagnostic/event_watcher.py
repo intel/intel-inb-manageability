@@ -49,6 +49,7 @@ class EventWatcher(Thread):
 
     def run_docker_bench_security(self):  # pragma: no cover
         """Launch Docker Bench Security in separate thread."""
+        logger.debug("========================run_docker_bench_security================================")
         def run():
             if current_dbs_mode != ConfigDbs.OFF:
                 dbs = DockerBenchRunner()
@@ -68,6 +69,7 @@ class EventWatcher(Thread):
                     .format(current_dbs_mode))
         thread = Thread(target=run)
         thread.daemon = True
+        logger.debug("========================run_docker_bench_security= thread start===============================")
         thread.start()
 
     def _check_failed_containers(self, failed_containers: str) -> None:
@@ -130,4 +132,5 @@ class EventWatcher(Thread):
 
     def stop(self):
         """Stop event watcher"""
+        logger.debug("==========================stop==============================")
         self._running = False

@@ -100,7 +100,10 @@ class Broker(IBroker):  # pragma: no cover
 
     def stop(self) -> None:
         """Shutdown broker, publishing 'dead' event first."""
+        logger.debug("=================================diagnostic broker stop ===========================")
         if self.diagnostic_checker:
+            logger.debug(self.diagnostic_checker)
+            logger.debug("=================================diagnostic broker stopped ===========================")
             self.diagnostic_checker.stop_timer()
         self._mqttc.publish(f'{AGENT}/state', 'dead', retain=True)
         self._mqttc.stop()
