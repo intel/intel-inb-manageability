@@ -124,6 +124,7 @@ class Dispatcher(WindowsService):
     _svc_description_ = 'Intel Manageability coordinating agent'
 
     def __init__(self, args: Optional[List] = None, broker_core: Optional[DispatcherBroker] = None) -> None:
+        logger.debug("=========================In init=============================")
         if args is None:
             args = []
 
@@ -786,8 +787,10 @@ class Dispatcher(WindowsService):
                     return
 
                 if self.config_dbs == ConfigDbs.ON:
+                    logger.debug("=================================dbs ON===============================")
                     self.remediation_instance.ignore_dbs_results = False
                 elif self.config_dbs == ConfigDbs.WARN:
+                    logger.debug("=================================dbs OFF===============================")
                     self.remediation_instance.ignore_dbs_results = True
 
             if config_name == "dbsRemoveImageOnFailedContainer":

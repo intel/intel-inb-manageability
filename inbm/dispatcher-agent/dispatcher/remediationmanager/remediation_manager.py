@@ -30,6 +30,7 @@ class RemediationManager:
     """
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
+        logger.debug("========================In init==============================")
         self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
@@ -37,6 +38,7 @@ class RemediationManager:
 
     def run(self) -> None:
         """Subscribes to remediation channels"""
+        logger.debug("========================In run==============================")
         try:
             logger.debug('Subscribing to: %s', REMEDIATION_CONTAINER_CMD_CHANNEL)
             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
