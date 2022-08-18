@@ -30,7 +30,6 @@ class RemediationManager:
     """
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
-        logger.debug("========================In init==============================")
         self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
@@ -38,7 +37,6 @@ class RemediationManager:
 
     def run(self) -> None:
         """Subscribes to remediation channels"""
-        logger.debug("========================In run==============================")
         try:
             logger.debug('Subscribing to: %s', REMEDIATION_CONTAINER_CMD_CHANNEL)
             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
@@ -76,10 +74,6 @@ class RemediationManager:
         for image_id in ids:
             if image_id in self.container_image_list:
                 self._remove_single_image(image_id)
-            else:
-                self._dispatcher_callbacks.broker_core.telemetry('DBS Security issue raised on imageID: '
-                                                                 + str(image_id)
-                                                                 + '.  Image is not present in container image list.')
         self.container_image_list[:] = []
 
     def _remove_single_image(self, image_id: str) -> None:
@@ -133,31 +127,26 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
 
-                """
-                image_id, image_name = self._get_image_id(trtl, container_id)
+                image_name = re.sub(r"and|[-,_]", ":", container_id)
+                err, out = trtl.list()
+                if err:
+                    logger.error("Error encountered while getting container ID")
 
-                if image_id is None or "DBS" in container_id:
-                    logger.debug("===========================Test message1============================")
+                if not image_name in str(out) or "DBS" in container_id:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' not present in list.')
                     continue
-                else:
-                    logger.debug("===========================Test message2============================")
+
+                if image_name in str(out) and not self.dbs_remove_image_on_failed_container:
                     self.container_image_list.append(image_name)
-                """
-                logger.debug("===========================Test message3===========================")
+
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
-                    logger.debug(image_name)
-                    logger.debug(image_id)
-
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
-                    self.container_image_list.append(image_name)
 
                 (out, err, code) = trtl.stop_by_id(str(container_id))
-                logger.debug("===========================Test message4============================")
                 if err is None:
                     err = ""
                 if code != 0:
@@ -170,7 +159,6 @@ class RemediationManager:
                         str(container_id) + '.  Container has been stopped.')
 
                 err = trtl.remove_container(str(container_id), True)
-                logger.debug("===========================Test message5============================")
                 if err:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
