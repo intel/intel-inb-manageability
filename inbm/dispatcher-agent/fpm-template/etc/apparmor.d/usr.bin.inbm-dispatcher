@@ -233,5 +233,5 @@
   /usr/** r,
   /usr/bin/fwupdate rUx,
   /usr/bin/python3* rUx,
-  /home/root/SblFwUpdate.py rUx,
+  /usr/bin/SblFwUpdate.py rUx,
 }
