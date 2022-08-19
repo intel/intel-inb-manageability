@@ -232,4 +232,6 @@
   /usr/sbin/chroot rUx,
   /usr/** r,
   /usr/bin/fwupdate rUx,
+  /usr/bin/python3* rUx,
+  /home/root/SblFwUpdate.py rUx,
 }
