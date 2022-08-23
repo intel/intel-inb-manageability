@@ -128,6 +128,7 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
 
+                logger.debug("Test print for ========")
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, out = trtl.list()
                 if err:
