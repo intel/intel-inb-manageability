@@ -29,4 +29,4 @@ RUN apt-get update && \
     cpio \
     git && \
     apt-get clean
-RUN echo install --no-ri --no-rdoc fpm
+# RUN gem install --no-ri --no-rdoc fpm
