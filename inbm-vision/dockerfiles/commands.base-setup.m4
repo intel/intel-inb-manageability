@@ -7,6 +7,7 @@ RUN apt-get update && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get clean
 RUN gem install --no-document fpm -v 1.14.0
+RUN gem install public_suffix -v 4.0.7
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
     m4 \
