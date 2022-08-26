@@ -3,9 +3,13 @@
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
-    m4  \
-    gcc \
-    make \
+    software-properties-common && \
+    add-apt-repository ppa:deadsnakes/ppa && \
+    apt-get clean
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
+    m4 \
+    build-essential \
     curl \
     ruby-dev \
     rubygems \
@@ -13,16 +17,6 @@ RUN apt-get update && \
     rpm \
     wget \
     unzip \
-    git && \
-    apt-get clean
-RUN gem install --no-document fpm -v 1.14.0
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
-    software-properties-common && \
-    add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get clean
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
     python3.8 \
     python3.8-dev \
     python3-pip \
@@ -33,6 +27,6 @@ RUN apt-get update && \
     libssl-dev \
     libffi-dev \
     cpio \
-    rsync \
-    && \
+    git && \
     apt-get clean
+RUN gem install --no-ri --no-rdoc fpm
