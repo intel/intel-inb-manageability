@@ -3,7 +3,7 @@
 SHELL ["/bin/bash", "-c"]
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
-    software-properties-common && \
+#    software-properties-common && \
     add-apt-repository ppa:deadsnakes/ppa && \
     apt-get clean
 RUN apt-get update && \
