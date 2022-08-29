@@ -31,4 +31,4 @@ RUN apt-get update && \
     apt-get clean
 RUN gem install public_suffix
 #RUN gem install --no-document fpm -v 1.14.0
-RUN gem install --no-ri --no-rdoc fpm
+RUN gem install --no-ri --no-rdoc fpm -v 1.14.0
