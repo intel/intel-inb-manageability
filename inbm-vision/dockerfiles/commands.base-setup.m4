@@ -29,6 +29,6 @@ RUN apt-get update && \
     cpio \
     git && \
     apt-get clean
-RUN gem install public_suffix -v 4.0.7
+#RUN gem install public_suffix -v 4.0.7
 #RUN gem install --no-document fpm -v 1.14.0
-RUN gem install --no-ri --no-rdoc fpm -v 1.14.0
+RUN gem install --no-ri --no-rdoc git:1.7.0 fpm 
