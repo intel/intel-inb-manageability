@@ -716,6 +716,8 @@ class Dispatcher(WindowsService):
         """
         logger.info('Cloud request received: %s on topic: %s',
                     mask_security_info(payload), topic)
+        logger.debug('Test Cloud request received: %s on topic: %s',
+                    mask_security_info(payload), topic)
         request_type = topic.split('/')[-1]
         manifest = payload
         if not self.update_queue.full():
