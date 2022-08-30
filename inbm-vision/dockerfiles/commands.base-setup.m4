@@ -29,7 +29,7 @@ RUN apt-get update && \
     cpio \
     git && \
     apt-get clean
-RUN gem update --system
-#RUN gem install public_suffix --platform=ruby
-#RUN gem install --no-document fpm -v 1.14.0
-RUN gem install --no-document fpm 
+#RUN gem update --system
+RUN gem install public_suffix -v 4.0.7
+RUN gem install --no-document fpm -v 1.14.2
+#RUN gem install --no-document fpm 
