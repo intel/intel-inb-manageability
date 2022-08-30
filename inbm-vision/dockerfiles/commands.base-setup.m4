@@ -30,7 +30,7 @@ RUN apt-get update && \
     git && \
     apt-get clean
 #RUN gem update --system
-RUN gem install public_suffix -v 4.0.7
+#RUN gem install public_suffix -v 4.0.7
 RUN gem install --no-ri --no-rdoc fpm -v 1.14.2
 #RUN gem install --no-document fpm -v 1.14.2
 #RUN gem install --no-document fpm 
