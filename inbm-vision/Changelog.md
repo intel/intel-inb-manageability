@@ -3,6 +3,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## NEXT - ?
+
+### Added
+### Fixed
+ - RTC 519030 - Added a fix for Bit Creek (Vision) build failure
+
+## 3.0.13 - 2022-08-07
+
+No changes.
+
+## 3.0.12 - 2022-07-14
+
+### Fixed
+ - HSD 15011298374 - Missing lxc-common dependencies for .debs/AppArmor
+
+### Added
+ - HSD 15011298299, RTC 515263 - Support non-LTS versions of Ubuntu
+
 ## 3.0.11 - 2022-05-17
 
 ### Fixed
