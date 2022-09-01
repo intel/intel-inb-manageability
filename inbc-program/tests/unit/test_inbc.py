@@ -216,8 +216,8 @@ class TestINBC(TestCase):
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type>' \
                    '<repo>remote</repo></header><type><fota name="sample">' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor><manufacturer>intel</manufacturer>' \
-                   '<product>kmb</product><releasedate>2024-12-31</releasedate><guid>None</guid><tooloptions>/b /p</tooloptions>' \
-                   '<username>frank</username><password>123abc</password>' \
+                   '<product>kmb</product><releasedate>2024-12-31</releasedate><tooloptions>/b /p</tooloptions>' \
+                   '<username>frank</username><password>123abc</password><guid>None</guid>' \
                    '<fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         assert mock_start.call_count == 2
