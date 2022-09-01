@@ -8,10 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
-### Fixed
  - RTC 519030 - Added a fix for Bit Creek (Vision) build failure
 
->>>>>>> a7c3cc3 ((RTC-519030) Fix Bit Creek (Vision) build failure (#183))
 ## 3.0.13 - 2022-08-07
 
 No changes.
