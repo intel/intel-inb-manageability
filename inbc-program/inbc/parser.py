@@ -97,6 +97,8 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         parser_fota.add_argument('--tooloptions', '-to', required=False, help='Firmware tool options',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Tool Options', 10))
+        parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid',
+                                 type=lambda x: validate_string_less_than_n_characters(x, 'guid', 50))
         parser_fota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         parser_fota.add_argument('--target', '-t', nargs='*',
