@@ -271,7 +271,7 @@ class TestINBC(TestCase):
                    '<targets><target>&amp;123ABC</target></targets>' \
                    '<biosversion>5.14</biosversion><vendor>vendor</vendor' \
                    '><manufacturer>Intel</manufacturer><product>kmb-hddl2</product><releasedate>2024-12-31' \
-                   '</releasedate><path>/var/&#x27;cache/&lt;manageability/repository-tool/BIOS.img</path>' \
+                   '</releasedate><guid>None</guid><path>/var/&#x27;cache/&lt;manageability/repository-tool/BIOS.img</path>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
