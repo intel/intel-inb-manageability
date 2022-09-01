@@ -1,6 +1,7 @@
 ## NEXT - ?
 
 ### Added
+### Fixed
  - RTC 519030 - Added a fix for Bit Creek (Vision) build failure
 
 ## 3.0.13 - 2022-08-07
