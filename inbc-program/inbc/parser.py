@@ -379,8 +379,8 @@ def fota(args) -> str:
         source_tag: source_location,
         'nohddl': args.nohddl,
         'username': args.username,
-        'password': _get_password(args)
-        'guid': args.guid,
+        'password': _get_password(args),
+        'guid': args.guid
     }
 
     target_type = '<targetType>node</targetType>' if not args.nohddl else ''
