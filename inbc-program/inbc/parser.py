@@ -380,6 +380,7 @@ def fota(args) -> str:
         'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args)
+        'guid': args.guid,
     }
 
     target_type = '<targetType>node</targetType>' if not args.nohddl else ''
@@ -406,6 +407,7 @@ def fota(args) -> str:
                        "tooloptions",
                        "username",
                        "password",
+                       "guid",
                        source_tag)
     )
     print("manifest {0}".format(manifest))
