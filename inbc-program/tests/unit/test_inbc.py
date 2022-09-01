@@ -241,7 +241,7 @@ class TestINBC(TestCase):
                    '<repo>local</repo></header><type><fota name="sample"><targetType>node</targetType>' \
                    '<targets><target>123ABC</target><target>456DEF</target></targets>' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor><manufacturer>intel</manufacturer>' \
-                   '<product>kmb-hddl2</product><releasedate>2024-12-31</releasedate><path>/var/cache/manageability' \
+                   '<product>kmb-hddl2</product><releasedate>2024-12-31</releasedate><guid>None</guid><path>/var/cache/manageability' \
                    '/repository-tool/BIOS.img</path></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         mock_copy.assert_called_once()
