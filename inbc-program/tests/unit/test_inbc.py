@@ -217,7 +217,7 @@ class TestINBC(TestCase):
                    '<repo>remote</repo></header><type><fota name="sample">' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor><manufacturer>intel</manufacturer>' \
                    '<product>kmb</product><releasedate>2024-12-31</releasedate><tooloptions>/b /p</tooloptions>' \
-                   '<username>frank</username><password>123abc</password><guid>None</guid>' \
+                   '<username>frank</username><password>123abc</password><uuid>None</uuid>' \
                    '<fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         assert mock_start.call_count == 2
@@ -520,7 +520,7 @@ class TestINBC(TestCase):
                    '><repo>remote</repo></header><type><fota name="sample">' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor' \
                    '><manufacturer>intel</manufacturer><product>kmb</product><releasedate>2024-12-31' \
-                   '</releasedate><guid>None</guid><fetch>https://abc.com/BIOS.img</fetch>' \
+                   '</releasedate><uuid>None</uuid><fetch>https://abc.com/BIOS.img</fetch>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
