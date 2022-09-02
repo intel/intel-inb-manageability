@@ -241,7 +241,7 @@ class TestINBC(TestCase):
                    '<repo>local</repo></header><type><fota name="sample"><targetType>node</targetType>' \
                    '<targets><target>123ABC</target><target>456DEF</target></targets>' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor><manufacturer>intel</manufacturer>' \
-                   '<product>kmb-hddl2</product><releasedate>2024-12-31</releasedate><guid>None</guid><path>/var/cache/manageability' \
+                   '<product>kmb-hddl2</product><releasedate>2024-12-31</releasedate><uuid>None</uuid><path>/var/cache/manageability' \
                    '/repository-tool/BIOS.img</path></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         mock_copy.assert_called_once()
@@ -257,7 +257,7 @@ class TestINBC(TestCase):
                    '<targets><target>None</target></targets>' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor' \
                    '><manufacturer>intel</manufacturer><product>kmb-hddl2</product><releasedate>2024-12-31' \
-                   '</releasedate><guid>None</guid><path>/var/cache/manageability/repository-tool/BIOS.img</path>' \
+                   '</releasedate><uuid>None</uuid><path>/var/cache/manageability/repository-tool/BIOS.img</path>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
@@ -271,7 +271,7 @@ class TestINBC(TestCase):
                    '<targets><target>&amp;123ABC</target></targets>' \
                    '<biosversion>5.14</biosversion><vendor>vendor</vendor' \
                    '><manufacturer>Intel</manufacturer><product>kmb-hddl2</product><releasedate>2024-12-31' \
-                   '</releasedate><guid>None</guid><path>/var/&#x27;cache/&lt;manageability/repository-tool/BIOS.img</path>' \
+                   '</releasedate><uuid>None</uuid><path>/var/&#x27;cache/&lt;manageability/repository-tool/BIOS.img</path>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
