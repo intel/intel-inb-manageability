@@ -27,7 +27,8 @@ def parse_fota(resource: dict) -> Dict[str, Any]:
              'manufacturer': resource.get('manufacturer', None),
              'product': resource.get('product', None),
              'releasedate': resource.get('releasedate', None),
-             'signature': resource.get('signature', None)})
+             'signature': resource.get('signature', None),
+             'guid': resource.get('guid', None)})
 
 
 def parse_sota(resource: dict) -> Dict[str, Any]:
