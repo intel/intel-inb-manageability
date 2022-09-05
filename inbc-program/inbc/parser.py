@@ -6,6 +6,7 @@
 import logging
 import argparse
 import getpass
+import inbm_lib
 
 from datetime import datetime
 from typing import Any, Optional, Sequence, Tuple
