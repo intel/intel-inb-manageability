@@ -217,7 +217,7 @@ class TestINBC(TestCase):
                    '<repo>remote</repo></header><type><fota name="sample">' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor><manufacturer>intel</manufacturer>' \
                    '<product>kmb</product><releasedate>2024-12-31</releasedate><tooloptions>/b /p</tooloptions>' \
-                   '<username>frank</username><password>123abc</password><uuid>None</uuid>' \
+                   '<username>frank</username><password>123abc</password>' \
                    '<fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         assert mock_start.call_count == 2
@@ -241,7 +241,7 @@ class TestINBC(TestCase):
                    '<repo>local</repo></header><type><fota name="sample"><targetType>node</targetType>' \
                    '<targets><target>123ABC</target><target>456DEF</target></targets>' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor><manufacturer>intel</manufacturer>' \
-                   '<product>kmb-hddl2</product><releasedate>2024-12-31</releasedate><guid>None</guid><path>/var/cache/manageability' \
+                   '<product>kmb-hddl2</product><releasedate>2024-12-31</releasedate><path>/var/cache/manageability' \
                    '/repository-tool/BIOS.img</path></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         mock_copy.assert_called_once()
@@ -257,7 +257,7 @@ class TestINBC(TestCase):
                    '<targets><target>None</target></targets>' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor' \
                    '><manufacturer>intel</manufacturer><product>kmb-hddl2</product><releasedate>2024-12-31' \
-                   '</releasedate><guid>None</guid><path>/var/cache/manageability/repository-tool/BIOS.img</path>' \
+                   '</releasedate><path>/var/cache/manageability/repository-tool/BIOS.img</path>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
@@ -271,7 +271,7 @@ class TestINBC(TestCase):
                    '<targets><target>&amp;123ABC</target></targets>' \
                    '<biosversion>5.14</biosversion><vendor>vendor</vendor' \
                    '><manufacturer>Intel</manufacturer><product>kmb-hddl2</product><releasedate>2024-12-31' \
-                   '</releasedate><guid>None</guid><path>/var/&#x27;cache/&lt;manageability/repository-tool/BIOS.img</path>' \
+                   '</releasedate><path>/var/&#x27;cache/&lt;manageability/repository-tool/BIOS.img</path>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
@@ -520,7 +520,7 @@ class TestINBC(TestCase):
                    '><repo>remote</repo></header><type><fota name="sample">' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor' \
                    '><manufacturer>intel</manufacturer><product>kmb</product><releasedate>2024-12-31' \
-                   '</releasedate><guid>None</guid><fetch>https://abc.com/BIOS.img</fetch>' \
+                   '</releasedate><fetch>https://abc.com/BIOS.img</fetch>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
