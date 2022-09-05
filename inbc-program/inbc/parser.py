@@ -122,7 +122,7 @@ class ArgsParser(object):
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
-        """Method to parse POTA arguments."""
+        """ Method to parse POTA arguments. """
         parser_pota = self._create_subparser('pota')
         ArgsParser._add_pota_source_options(parser_pota)
 
