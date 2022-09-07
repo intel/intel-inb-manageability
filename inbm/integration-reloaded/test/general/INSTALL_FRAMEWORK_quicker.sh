@@ -5,6 +5,7 @@ set -euxo pipefail
 cd /vagrant/input
 
 apt-get update
+apt-get install -yq lxc
 
 # Simulate user calling the installer
 mkdir "install TC" # test install dir with spaces

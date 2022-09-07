@@ -7,6 +7,7 @@ cd /vagrant/input
 cp /scripts/succeed_rpm_cert.pem .
 
 apt-get update
+apt-get install -yq lxc
 
 mkdir "install_TC"
 cd "install_TC"
