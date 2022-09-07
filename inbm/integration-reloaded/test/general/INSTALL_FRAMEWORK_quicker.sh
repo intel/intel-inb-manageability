@@ -32,7 +32,7 @@ tar -zxvf *.preview.tar.gz
 
 # No DBS for quicker
 
-dpkg -i tpm-provision*.deb tpm2-*.deb
+dpkg -i tpm-provision*.deb
 dpkg -i mqtt-*.deb
 dpkg -i trtl-*.deb
 dpkg -i inbc-*.deb
