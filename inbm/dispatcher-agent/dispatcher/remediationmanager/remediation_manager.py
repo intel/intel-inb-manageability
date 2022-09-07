@@ -135,6 +135,8 @@ class RemediationManager:
 
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, active_containers_list = trtl.list()
+                logger.info("============================>")
+                logger.info("active_containers_list %s",active_containers_list)
                 if err:
                     logger.error("Error encountered while getting container ID")
 
