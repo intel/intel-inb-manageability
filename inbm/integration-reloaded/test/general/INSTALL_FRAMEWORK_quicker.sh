@@ -5,7 +5,7 @@ set -euxo pipefail
 cd /vagrant/input
 
 apt-get update
-apt-get install -yq lxc
+apt-get install -yq lxc tpm2-tools tpm2-abrmd
 
 # Simulate user calling the installer
 mkdir "install TC" # test install dir with spaces

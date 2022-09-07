@@ -7,7 +7,7 @@ cd /vagrant/input
 cp /scripts/succeed_rpm_cert.pem .
 
 apt-get update
-apt-get install -yq lxc
+apt-get install -yq lxc tpm2-tools tpm2-abrmd
 
 mkdir "install_TC"
 cd "install_TC"
