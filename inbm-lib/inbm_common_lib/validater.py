@@ -7,6 +7,7 @@ import logging
 import datetime
 import argparse
 from dataclasses import dataclass
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -44,8 +45,8 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
         @return: entered string if it passes the length check
         @raise argparse.ArgumentTypeError: Invalid date format
         """
-    valid=bool(re.match("^[A-Za-z0-9-]*$", str((value)))
-    if valid == False:
+    Valid=bool(re.match("^[A-Za-z0-9-]*$", str((value)))
+    if Valid == False:
         raise argparse.ArgumentTypeError(f"Not a valid guid ")
     if len(value) > max_size:
         raise argparse.ArgumentTypeError(
