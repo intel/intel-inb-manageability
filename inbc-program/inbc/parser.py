@@ -101,6 +101,8 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         parser_fota.add_argument('--target', '-t', nargs='*',
                                  default=['None'], required=False, help=TARGETS_HELP)
+        parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
+                                 type=lambda x: validate_guid(x, 'guid', 50))
         parser_fota.set_defaults(func=fota)
 
     def parse_sota_args(self) -> None:
@@ -377,7 +379,8 @@ def fota(args) -> str:
         source_tag: source_location,
         'nohddl': args.nohddl,
         'username': args.username,
-        'password': _get_password(args)
+        'password': _get_password(args),
+        'guid':args.guid
     }
 
     target_type = '<targetType>node</targetType>' if not args.nohddl else ''
@@ -404,6 +407,7 @@ def fota(args) -> str:
                        "tooloptions",
                        "username",
                        "password",
+                       "guid",
                        source_tag)
     )
     print("manifest {0}".format(manifest))
