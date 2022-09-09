@@ -160,6 +160,8 @@ class ArgsParser(object):
                                  help='FOTA Signature string')
         parser_pota.add_argument('--target', '-t', nargs='*',
                                  default=['None'], required=False, help=TARGETS_HELP)
+        parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
+                                 type=lambda x: validate_guid(x, 'guid', 50))
         parser_pota.set_defaults(func=pota)
 
     def parse_load_args(self) -> None:
