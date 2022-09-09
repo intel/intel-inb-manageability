@@ -48,14 +48,14 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
 #    if not bool(re.match("^[A-Za-z0-9-]*$", str(value))):
 #    if Valid == False:
 #    if not bool(re.match(r'^\w+$', str(value))):
-    if str(value).replace('-', '').isalnum() and len(value) < max_size:
+    if str(value).replace('-', '').isalnum():
         return value
-    raise argparse.ArgumentTypeError(f"Not a valid guid or {} is greater than allowed string size: {}".format(param_type, str(value))))
+    raise argparse.ArgumentTypeError(f"Not a valid guid" )
     
-#    if len(value) > max_size:
-#        raise argparse.ArgumentTypeError(
- #           "{} is greater than allowed string size: {}".format(param_type, str(value)))
- #   return value
+    if len(value) > max_size:
+        raise argparse.ArgumentTypeError(
+           "{} is greater than allowed string size: {}".format(param_type, str(value)))
+   return value
 
 
 @dataclass
