@@ -13,7 +13,7 @@ from inbc.xml_tag import create_xml_tag
 from inbm_common_lib.dmi import get_dmi_system_info, is_dmi_path_exists
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters
+from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters, validate_guid
 from inbm_common_lib.constants import LOCAL_SOURCE, REMOTE_SOURCE
 from inbm_lib.detect_os import detect_os, LinuxDistType
 from inbm_vision_lib.constants import TARGET, TARGET_TYPE
