@@ -36,6 +36,22 @@ def validate_date(date: str) -> str:
     except ValueError:
         raise argparse.ArgumentTypeError(f"Not a valid date - format YYYY-MM-DD: '{date}")
 
+def validate_guid(value: str, param_type: str, max_size: int) -> str:
+    """Validates that the user inputted string does not exceed the maximum allowed
+        @param value: string entered by user
+        @param param_type: parameter type
+        @param max_size: maximum size allowed for the string
+        @return: entered string if it passes the length check
+        @raise argparse.ArgumentTypeError: Invalid guid format
+        """
+    if str(value).replace('-', '').isalnum():
+        return value
+    raise argparse.ArgumentTypeError(f"guid does not support characters other than alphanumeric and dash")
+
+    if len(value) > max_size:
+        raise argparse.ArgumentTypeError(
+            "{} is greater than allowed string size: {}".format(param_type, str(value)))
+    return value
 
 @dataclass
 class ConfigurationItem:
