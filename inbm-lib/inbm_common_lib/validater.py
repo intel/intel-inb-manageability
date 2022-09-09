@@ -45,8 +45,9 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
         @return: entered string if it passes the length check
         @raise argparse.ArgumentTypeError: Invalid date format
         """
-    if not bool(re.match("^[A-Za-z0-9-]*$", str(value))):
+#    if not bool(re.match("^[A-Za-z0-9-]*$", str(value))):
 #    if Valid == False:
+    if not bool(re.match(r'^\w+$', str(value))):
         raise argparse.ArgumentTypeError(f"Not a valid guid ")
     if len(value) > max_size:
         raise argparse.ArgumentTypeError(
