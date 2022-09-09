@@ -7,7 +7,7 @@ import logging
 import datetime
 import argparse
 from dataclasses import dataclass
-import re
+#import re
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
 #    if not bool(re.match(r'^\w+$', str(value))):
     if str(value).replace('-', '').isalnum():
         return value
-    raise argparse.ArgumentTypeError(f"Not a valid guid" )
+    raise argparse.ArgumentTypeError(f"guid does not support characters other than alphanumeric and dash")
     
     if len(value) > max_size:
         raise argparse.ArgumentTypeError(
