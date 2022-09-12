@@ -48,7 +48,7 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
 #    if not bool(re.match("^[A-Fa-f0-9-]*$", str(value))):
 #    if Valid == False:
 #    if not bool(re.match(r'^\w+$', str(value))):
-    if str(value).replace('-', '').hexdigits():
+    if str(value).replace('-', '').str(hexdigits()):
         return value
     raise argparse.ArgumentTypeError(f"guid does not support characters other than alphanumeric and dash")
     
