@@ -121,8 +121,6 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         parser_sota.add_argument('--target', '-t', nargs='*',
                                  default=['None'], required=False, help=TARGETS_HELP)
-        parser_sota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
-                                 type=lambda x: validate_guid(x, 'guid', 50))
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
@@ -162,7 +160,7 @@ class ArgsParser(object):
                                  help='FOTA Signature string')
         parser_pota.add_argument('--target', '-t', nargs='*',
                                  default=['None'], required=False, help=TARGETS_HELP)
-        parser_pota.add_argument('--fotaguid', '-fgu', required=False, help='Firmware guid update',
+        parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
                                  type=lambda x: validate_guid(x, 'guid', 50))
         parser_pota.set_defaults(func=pota)
 
