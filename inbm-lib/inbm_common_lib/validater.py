@@ -50,7 +50,7 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
 #    if not bool(re.match(r'^\w+$', str(value))):
 #    if str(value).replace('-', '').(isalnum()):
 #        return value
-    raise argparse.ArgumentTypeError(f"guid does not support characters other than alphanumeric and dash")
+        raise argparse.ArgumentTypeError(f"guid does not support characters other than alphanumeric and dash")
     
     if len(value) > max_size:
         raise argparse.ArgumentTypeError(
