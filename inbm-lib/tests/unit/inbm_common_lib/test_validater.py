@@ -1,5 +1,5 @@
 from unittest import TestCase
-from inbm_common_lib.validater import ConfigurationItem, configuration_bounds_check
+from inbm_common_lib.validater import ConfigurationItem, configuration_bounds_check, validate_guid
 
 
 class TestValidater(TestCase):
