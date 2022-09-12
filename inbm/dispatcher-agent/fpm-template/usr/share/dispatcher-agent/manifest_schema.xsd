@@ -451,6 +451,7 @@
                     </xs:complexType>
                 </xs:element>
                 <xs:element ref="fota"/>
+                <xs:element name="guid" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element ref="sota"/>
             </xs:sequence>
         </xs:complexType>
