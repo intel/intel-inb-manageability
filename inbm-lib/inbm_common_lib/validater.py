@@ -8,7 +8,7 @@ import datetime
 import argparse
 from dataclasses import dataclass
 import re
-
+import string
 logger = logging.getLogger(__name__)
 
 
@@ -45,12 +45,12 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
         @return: entered string if it passes the length check
         @raise argparse.ArgumentTypeError: Invalid date format
         """
-    if not bool(re.match("^[A-Fa-f0-9-]*$", str(value))):
+#    if not bool(re.match("^[A-Fa-f0-9-]*$", str(value))):
 #    if Valid == False:
 #    if not bool(re.match(r'^\w+$', str(value))):
-#    if str(value).replace('-', '').(isalnum()):
-#        return value
-        raise argparse.ArgumentTypeError(f"guid does not support characters other than alphanumeric and dash")
+    if str(value).replace('-', '').hexdigits():
+        return value
+    raise argparse.ArgumentTypeError(f"guid does not support characters other than alphanumeric and dash")
     
     if len(value) > max_size:
         raise argparse.ArgumentTypeError(
