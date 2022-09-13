@@ -448,7 +448,8 @@ def pota(args) -> str:
         'release_date': args.release_date,
         'Target': args.target,
         FOTA_SIGNATURE: args.fotasignature,
-        'nohddl': args.nohddl
+        'nohddl': args.nohddl,
+        'guid': args.guid
     }
 
     if repo == "local":
@@ -478,7 +479,8 @@ def pota(args) -> str:
                        "manufacturer",
                        "product",
                        "vendor",
-                       "releasedate"
+                       "releasedate",
+                       "guid"
                        ),
         fota_tag,
         create_xml_tag(arguments,
