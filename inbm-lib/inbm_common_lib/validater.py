@@ -54,7 +54,7 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
     if len(value) > max_size:
         raise argparse.ArgumentTypeError(
            "{} is greater than allowed string size: {}".format(param_type, str(value)))
-    return value
+    return True
 
 
 @dataclass
