@@ -36,7 +36,7 @@ def validate_date(date: str) -> str:
     except ValueError:
         raise argparse.ArgumentTypeError(f"Not a valid date - format YYYY-MM-DD: '{date}")
 
-def validate_guid(value: str, param_type: str, max_size: int) -> str:
+def validate_guid(value: str, param_type: str, max_size: int) -> bool:
     """Validates that the user inputted string does not exceed the maximum allowed
         @param value: string entered by user
         @param param_type: parameter type
@@ -54,7 +54,7 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
     if len(value) > max_size:
         raise argparse.ArgumentTypeError(
            "{} is greater than allowed string size: {}".format(param_type, str(value)))
-    return value
+    return True
 
 
 @dataclass
