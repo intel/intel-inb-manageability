@@ -102,7 +102,7 @@ class ArgsParser(object):
         parser_fota.add_argument('--target', '-t', nargs='*',
                                  default=['None'], required=False, help=TARGETS_HELP)
         parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
-                                 type=lambda x: validate_guid(x, 'guid', 50))
+                                 type=validate_guid)
         parser_fota.set_defaults(func=fota)
 
     def parse_sota_args(self) -> None:
@@ -161,7 +161,7 @@ class ArgsParser(object):
         parser_pota.add_argument('--target', '-t', nargs='*',
                                  default=['None'], required=False, help=TARGETS_HELP)
         parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
-                                 type=lambda x: validate_guid(x, 'guid', 50))
+                                 type=validate_guid)
         parser_pota.set_defaults(func=pota)
 
     def parse_load_args(self) -> None:
