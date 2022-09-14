@@ -36,7 +36,7 @@ def validate_date(date: str) -> str:
     except ValueError:
         raise argparse.ArgumentTypeError(f"Not a valid date - format YYYY-MM-DD: '{date}")
 
-def validate_guid(value: str, param_type: str, max_size: int) -> str:
+def validate_guid(value: str) -> str:
     """Validates that the user inputted string does not exceed the maximum allowed
         @param value: string entered by user
         @param param_type: parameter type
@@ -44,13 +44,14 @@ def validate_guid(value: str, param_type: str, max_size: int) -> str:
         @return: entered string if it passes the length check
         @raise argparse.ArgumentTypeError: Invalid date format
         """
-    if not bool(re.match("^[A-Fa-f0-9-]*$", str(value))):
+    if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
+#    if regex("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$"):
         raise argparse.ArgumentTypeError(f"guid does not support characters other than alphanumeric and dash")
     
-    if len(value) > max_size:
-        raise argparse.ArgumentTypeError(
+#    if len(value) > max_size:
+#        raise argparse.ArgumentTypeError(
            "{} is greater than allowed string size: {}".format(param_type, str(value)))
-    return value
+#    return value
 
 
 @dataclass
