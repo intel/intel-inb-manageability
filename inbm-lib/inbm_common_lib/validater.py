@@ -44,19 +44,19 @@ def validate_guid(value: str) -> str:
         @return: entered string if it passes the length check
         @raise argparse.ArgumentTypeError: Invalid date format
         """
-    try:
-        if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
-            return value
-    except ValueError:
-        raise argparse.ArgumentTypeError(f"GUID should be 36 characters displayed in five groups separated by a dash in the format [XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX]. Hexdigits are not allowed")
-#    if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
-#    if regex("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$"):
+#    try:
+#        if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
+#            return value
+#    except ValueError:
 #        raise argparse.ArgumentTypeError(f"GUID should be 36 characters displayed in five groups separated by a dash in the format [XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX]. Hexdigits are not allowed")
+    if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
+#    if regex("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$"):
+        raise argparse.ArgumentTypeError(f"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX")
     
 #    if len(value) > max_size:
 #        raise argparse.ArgumentTypeError(
 #           "{} is greater than allowed string size: {}".format(param_type, str(value)))
-#    return value
+    return value
 
 
 @dataclass
