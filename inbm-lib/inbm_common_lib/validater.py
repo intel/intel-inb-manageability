@@ -46,7 +46,7 @@ def validate_guid(value: str) -> str:
         """
     if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
 #    if regex("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$"):
-        raise argparse.ArgumentTypeError(f"'GUID should be 36 characters displayed in five groups separated by a dash in the format [XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX]. Hexdigits are not allowed")
+        raise argparse.ArgumentTypeError(f"GUID should be 36 characters displayed in five groups separated by a dash in the format [XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX]. Hexdigits are not allowed")
     
 #    if len(value) > max_size:
 #        raise argparse.ArgumentTypeError(
