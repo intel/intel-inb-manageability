@@ -26,7 +26,7 @@ class TestValidater(TestCase):
         self.assertEquals('6c8e136f-d3e6-4131-ac32-4687cb4abd27', validate_guid('6c8e136f-d3e6-4131-ac32-4687cb4abd27'))
     def test_check_validate_guid_fail(self):
         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
-            validate_guid('6c8e136f-d3e6-4131-ac32-4687cb4abd27')
+            validate_guid('6c8e136f-d3e6-4131-ac32-4687cb4abd2@')
     def test_check_validate_guid_format(self):
         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"):
             validate_guid('d3e6-4131-ac32-4687cb4abd27-6c8e136f')
