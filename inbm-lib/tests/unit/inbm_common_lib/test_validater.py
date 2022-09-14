@@ -27,23 +27,23 @@ class TestValidater(TestCase):
     def test_check_validate_guid_format(self):
         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
             validate_guid('6c8e136f-d3e6-4131-ac32-4687cb4abd2@')
-    def test_check_validate_guid_position_substringone(self):
-        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
-            validate_guid('d3e6-4131-ac32-4687cb4abd27-6c8e136f')
-    def test_check_validate_guid_position_substringtwo(self):
-        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
-            validate_guid('4131-ac32-4687cb4abd27-6c8e136f-d3e6')
-    def test_check_validate_guid_position_substringthree(self):
-        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
-            validate_guid('ac32-4687cb4abd27-6c8e136f-d3e6-4131')
-    def test_check_validate_guid_position_substringfour(self):
-        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
-            validate_guid('4687cb4abd27-6c8e136f-d3e6-4131-ac32')
+#     def test_check_validate_guid_position_substringone(self):
+#         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+#             validate_guid('d3e6-4131-ac32-4687cb4abd27-6c8e136f')
+#     def test_check_validate_guid_position_substringtwo(self):
+#         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+#             validate_guid('4131-ac32-4687cb4abd27-6c8e136f-d3e6')
+#     def test_check_validate_guid_position_substringthree(self):
+#         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+#             validate_guid('ac32-4687cb4abd27-6c8e136f-d3e6-4131')
+#     def test_check_validate_guid_position_substringfour(self):
+#         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+#             validate_guid('4687cb4abd27-6c8e136f-d3e6-4131-ac32')
             
 #     def test_check_validate_guid_pass(self):
 #         self.assertEquals('6c8e136f-d3e6-4131-ac32-4687cb4abd27', validate_guid('6c8e136f-d3e6-4131-ac32-4687cb4abd27')
 
-#     def test_check_validate_guid_position_substringone(self):
+#     def test_check_validate_guid_first_8charactersposition_when_at_lessthan_8characters(self):
 #         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
 #             validate_guid('d3e6-4131-ac32-4687cb4abd27-6c8e136f')
 
@@ -58,3 +58,34 @@ class TestValidater(TestCase):
 #     def test_check_validate_guid_position_position_substringfour(self):
 #         with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
 #             validate_guid('4687cb4abd27-6c8e136f-d3e6-4131-ac32')
+
+    def test_check_validate_guid_first_8charactersposition_when_at_lessthan_8characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e13-d3e6-4131-ac32-4687cb4abd27')
+    def test_check_validate_guid_first_8charactersposition_when_at_greaterthan_8characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f2b-d3e6-4131-ac32-4687cb4abd27')
+    def test_check_validate_guid_second_4charactersposition_when_at_lessthan_4characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f-d3e-4131-ac32-4687cb4abd27')
+    def test_check_validate_guid_second_4charactersposition_when_at_greaterthan_4characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f-d3e6aa-4131-ac32-4687cb4abd27')
+    def test_check_validate_guid_third_4charactersposition_when_at_lessthan_4characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f-d3e6-41-ac32-4687cb4abd27')
+    def test_check_validate_guid_third_4charactersposition_when_at_greaterthan_4characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f-d3e6-413156-ac32-4687cb4abd27')
+    def test_check_validate_guid_fourth_4charactersposition_when_at_lessthan_4characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f-d3e6-4131-a-4687cb4abd27')
+     def test_check_validate_guid_fourth_4charactersposition_when_at_greaterthan_4characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f-d3e6-4131-ac32def-4687cb4abd27')
+     def test_check_validate_guid_fifth_12charactersposition_when_at_lessthan_12characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f-d3e6-4131-ac32-4687cb4ab')
+     def test_check_validate_guid_fifth_12charactersposition_when_at_greaterthan_12characters(self):
+        with self.assertRaisesRegex(argparse.ArgumentTypeError,"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
+            validate_guid('6c8e136f-d3e6-4131-ac32-4687cb4abd27ef89')            
