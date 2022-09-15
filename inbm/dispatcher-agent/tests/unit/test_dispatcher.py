@@ -293,7 +293,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
-    """
+    
     def test_dispatcher_state_file_info_fota(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
                                              mock_dmi_exists, mock_send_result, mock_logging):
         d = TestDispatcher._build_dispatcher()
@@ -307,7 +307,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
-    """
+    
     
     def test_dispatcher_state_file_info_fota1(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
                                               mock_dmi_exists, mock_send_result, mock_logging):
