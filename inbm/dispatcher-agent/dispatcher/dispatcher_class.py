@@ -926,10 +926,10 @@ class Dispatcher(WindowsService):
             logger.debug(ds_rel_date)
             logger.debug(platform_info.bios_version)
             logger.debug(ds_bios_version)
-            if platform_info.bios_release_date != ds_rel_date:
-                self._send_result("FIRST Condition")
-            if platform_info.bios_version != ds_bios_version:
-                self._send_result("SECOND Condition")
+            #if platform_info.bios_release_date != ds_rel_date:
+            #    self._send_result("FIRST Condition")
+            #if platform_info.bios_version != ds_bios_version:
+            #    self._send_result("SECOND Condition")
             if platform_info.bios_release_date != ds_rel_date and platform_info.bios_version != ds_bios_version:
                 self._send_result(
                     "SUCCESSFUL INSTALL: Overall FOTA update successful. "
