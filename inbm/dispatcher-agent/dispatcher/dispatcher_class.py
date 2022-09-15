@@ -898,6 +898,7 @@ class Dispatcher(WindowsService):
             os_type = platform.system()
             platform_info = PlatformInformation()
             try:
+                logger.debug("Entering to Local.........")
                 ds_bios_version = str(fota_state['bios_version'])
                 ds_rel_date = str(fota_state['release_date'])
                 if os_type == OsType.Linux.name:
