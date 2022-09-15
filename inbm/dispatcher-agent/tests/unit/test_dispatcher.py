@@ -293,21 +293,21 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
-    """
-    def test_dispatcher_state_file_info_fota(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
-                                             mock_dmi_exists, mock_send_result, mock_logging):
-        d = TestDispatcher._build_dispatcher()
-        d.check_dispatcher_state_info()
-        mock_send_result.assert_called_once_with(
-            "FAILED INSTALL: Overall FOTA update failed. Firmware not updated.")
+    
+#     def test_dispatcher_state_file_info_fota(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
+#                                              mock_dmi_exists, mock_send_result, mock_logging):
+#         d = TestDispatcher._build_dispatcher()
+#         d.check_dispatcher_state_info()
+#         mock_send_result.assert_called_once_with(
+#             "FAILED INSTALL: Overall FOTA update failed. Firmware not updated.")
 
-    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.dispatcher_class.is_dmi_path_exists', return_value=True)
-    @patch('dispatcher.dispatcher_class.get_dmi_system_info', return_value=dmi_unknown)
-    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-           return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
-    """
+#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+#     @patch('dispatcher.dispatcher_class.is_dmi_path_exists', return_value=True)
+#     @patch('dispatcher.dispatcher_class.get_dmi_system_info', return_value=dmi_unknown)
+#     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+#     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+#            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
+    
     
     def test_dispatcher_state_file_info_fota1(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
                                               mock_dmi_exists, mock_send_result, mock_logging):
