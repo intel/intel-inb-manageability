@@ -99,8 +99,7 @@ class PseudoShellRunner:
             str(shlex_split_cmd) +
             " with cwd " + str(cwd))
 
-        #if platform.system() == 'Windows':  # Running as a Windows service
-        if platform.system() == 'Linux':  # Running as a Windows service
+        if platform.system() == 'Windows':  # Running as a Windows service
             proc = subprocess.Popen(
                 shlex_split_cmd,
                 cwd=cwd,

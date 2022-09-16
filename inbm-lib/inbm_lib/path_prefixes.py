@@ -17,8 +17,17 @@ if platform.system() == 'Windows':
     INTEL_MANAGEABILITY_VAR_PATH_PREFIX = INBM_PATH / 'var'
     INTEL_MANAGEABILITY_SHARE_PATH_PREFIX = INBM_PATH / 'usr' / 'share'
     INTEL_MANAGEABILITY_CACHE_PATH_PREFIX = INBM_PATH / 'cache'
+elif platform.system() == 'Linux':
+    C_COLON = Path("c:\\")
+    INBM_PATH = C_COLON / 'intel-manageability' / 'inbm'
+    BROKER_ETC_PATH = C_COLON / 'intel-manageability' / 'broker' / 'etc'
+    INTEL_MANAGEABILITY_RAW_ETC = INBM_PATH / 'etc'
+    INTEL_MANAGEABILITY_ETC_PATH_PREFIX = INBM_PATH / 'etc'
+    INTEL_MANAGEABILITY_VAR_PATH_PREFIX = INBM_PATH / 'var'
+    INTEL_MANAGEABILITY_SHARE_PATH_PREFIX = INBM_PATH / 'usr' / 'share'
+    INTEL_MANAGEABILITY_CACHE_PATH_PREFIX = INBM_PATH / 'cache'
     INTEL_MANAGEABILITY_BINARY_SEARCH_PATHS = [
-        C_COLON / 'Windows' / 'System32' / 'wbem']  # wmic tool
+        C_COLON / 'Linux' / 'System32' / 'wbem']  # wmic tool
 else:
     ROOT = Path('/')
     INTEL_MANAGEABILITY_RAW_ETC = ROOT / 'etc'
