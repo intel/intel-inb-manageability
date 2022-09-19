@@ -134,8 +134,8 @@ class RemediationManager:
                 image_id = None
 
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
-                print(temp_image_name)
 
+                logger.info(temp_image_name)
                 logger.info("is the temp image name ============================>")
                 err, active_containers_list = trtl.list()
                 logger.info("============================>")
