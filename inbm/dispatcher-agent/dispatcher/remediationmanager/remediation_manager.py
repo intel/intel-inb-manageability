@@ -145,7 +145,6 @@ class RemediationManager:
                   
                 
                 if not temp_image_name in str(active_containers_list) or "DBS" or "hello-world" in container_id:
-                    self._remove_single_image(image_id)
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' not present in list.')
