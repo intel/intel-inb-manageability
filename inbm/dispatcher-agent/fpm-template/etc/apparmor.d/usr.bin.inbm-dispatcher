@@ -234,4 +234,5 @@
   /usr/bin/fwupdate rUx,
   /usr/bin/python3* rUx,
   /usr/bin/SblFwUpdate.py rUx,
+  /bin/UpdateBIOS.sh rix,
 }
