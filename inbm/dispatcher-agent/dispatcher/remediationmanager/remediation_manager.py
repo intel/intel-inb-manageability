@@ -152,7 +152,7 @@ class RemediationManager:
 
                 
                 if temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
-                    logger.info("container_image_list_to_be_removed %s ",container_image_list_to_be_removed )
+                    logger.info("+++> getting appended %s ",temp_image_name )
                     self.container_image_list_to_be_removed.append(temp_image_name)
 
                 if self.dbs_remove_image_on_failed_container:
