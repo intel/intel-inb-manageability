@@ -71,8 +71,10 @@ class RemediationManager:
                          'the correct format "abc,def,123". {}'.format(error))
 
     def _remove_images(self, ids: Any) -> None:
+        logger.debug(ids)
         logger.debug("Removing Images...")
         for image_id in ids:
+            logger.debug(ids)
             if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(image_id)
             else:
