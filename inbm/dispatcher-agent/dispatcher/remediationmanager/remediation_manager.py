@@ -55,6 +55,7 @@ class RemediationManager:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_container(literal_eval(payload))
+                self._remove_images(literal_eval(payload))
         except ValueError as error:
             logger.error('Unable to parse container message . Verify container remove request '
                          'is in the correct format "abc,def,123". {}'.format(error))
