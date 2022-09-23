@@ -40,80 +40,80 @@ class TestRemediationManager(TestCase):
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.stop_by_id')
     @patch('inbm_lib.trtl.Trtl.remove_container')
-#     """ def test_return_container_no_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry, mock_image, mock_remove, mock_list):
-#         try:
-#             mock_stop_by_id.return_value = (None, None, 0)
-#             mock_remove_container.return_value = None
+    def test_return_container_no_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry, mock_image, mock_remove, mock_list):
+        try:
+            mock_stop_by_id.return_value = (None, None, 0)
+            mock_remove_container.return_value = None
 
-#             rm = RemediationManager(self.mock_disp_callbacks_obj)
-#             rm.ignore_dbs_results = False
-#             rm._remove_container(literal_eval(str(['abc123', 'def234', 'ghi567'])))
-#         except ValueError:
-#             self.fail("RemediationManager raised ValueError exception unexpectedly!")
-#         mock_call_telemetry.assert_called()
-#         mock_remove_container.assert_called()
-#         mock_stop_by_id.assert_called()
+            rm = RemediationManager(self.mock_disp_callbacks_obj)
+            rm.ignore_dbs_results = False
+            rm._remove_container(literal_eval(str(['abc123', 'def234', 'ghi567'])))
+        except ValueError:
+            self.fail("RemediationManager raised ValueError exception unexpectedly!")
+        mock_call_telemetry.assert_called()
+        mock_remove_container.assert_called()
+        mock_stop_by_id.assert_called()
 
-#     @patch('inbm_lib.trtl.Trtl.list', return_value=(None, [123, 234, 567]))
-#     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
-#     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=(None, 'cannot find', 3))
-#     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-#     @patch('inbm_lib.trtl.Trtl.stop_by_id')
-#     @patch('inbm_lib.trtl.Trtl.remove_container')
-#     def test_return_container_raises_error_on_bad_format(self, mock_remove_container, mock_stop_by_id,
-#                                                          mock_call_telemetry, mock_image, mock_remove, mock_list):
-#         mock_stop_by_id.return_value = (None, None, 0)
-#         mock_remove_container.return_value = None
-#         mock_call_telemetry.assert_not_called()
-#         with self.assertRaises(ValueError):
-#             rm = RemediationManager(self.mock_disp_callbacks_obj)
-#             rm.ignore_dbs_results = False
-#             rm._remove_container('[123, 234, 567]')
+    @patch('inbm_lib.trtl.Trtl.list', return_value=(None, [123, 234, 567]))
+    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+    @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=(None, 'cannot find', 3))
+    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
+    @patch('inbm_lib.trtl.Trtl.stop_by_id')
+    @patch('inbm_lib.trtl.Trtl.remove_container')
+    def test_return_container_raises_error_on_bad_format(self, mock_remove_container, mock_stop_by_id,
+                                                         mock_call_telemetry, mock_image, mock_remove, mock_list):
+        mock_stop_by_id.return_value = (None, None, 0)
+        mock_remove_container.return_value = None
+        mock_call_telemetry.assert_not_called()
+        with self.assertRaises(ValueError):
+            rm = RemediationManager(self.mock_disp_callbacks_obj)
+            rm.ignore_dbs_results = False
+            rm._remove_container('[123, 234, 567]')
 
-#     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
-#     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('abc', None, 0))
-#     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-#     @patch('inbm_lib.trtl.Trtl.stop_by_id')
-#     @patch('inbm_lib.trtl.Trtl.remove_container') """
-#     def test_telemetry_call_when_stop_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry,
-#                                              mock_image, mock_remove):
-#         mock_stop_by_id.return_value = (None, 'error', 1)
-#         mock_remove_container.return_value = None
-#         RemediationManager(self.mock_disp_callbacks_obj)._remove_container(
-#             str(['abc123', 'def234', 'ghi567']))
-#         mock_call_telemetry.assert_called()
+    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+    @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('abc', None, 0))
+    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
+    @patch('inbm_lib.trtl.Trtl.stop_by_id')
+    @patch('inbm_lib.trtl.Trtl.remove_container') 
+    def test_telemetry_call_when_stop_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry,
+                                             mock_image, mock_remove):
+        mock_stop_by_id.return_value = (None, 'error', 1)
+        mock_remove_container.return_value = None
+        RemediationManager(self.mock_disp_callbacks_obj)._remove_container(
+            str(['abc123', 'def234', 'ghi567']))
+        mock_call_telemetry.assert_called()
 
-#     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-#     @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
+    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
+    @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
 
-#     def test_ignore_dbs_results_does_not_remove_image(self,  mock_remove_image, mock_call_telemetry):
-#         r = RemediationManager(self.mock_disp_callbacks_obj)
-#         r.ignore_dbs_results = True
-#         r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
-#         r._remove_images(['abc123', 'def234', 'ghi567'])
-#         mock_call_telemetry.assert_called()
-#         mock_remove_image.assert_not_called()
+    def test_ignore_dbs_results_does_not_remove_image(self,  mock_remove_image, mock_call_telemetry):
+        r = RemediationManager(self.mock_disp_callbacks_obj)
+        r.ignore_dbs_results = True
+        r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
+        r._remove_images(['abc123', 'def234', 'ghi567'])
+        mock_call_telemetry.assert_called()
+        mock_remove_image.assert_not_called()
 
-#     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-#     @patch('inbm_lib.trtl.Trtl.stop_by_id')
-#     @patch('inbm_lib.trtl.Trtl.remove_container')
-#     def test_telemetry_call_when_remove_container_errors(self, mock_remove_container, mock_stop_by_id,
-#                                                          mock_call_telemetry):
+    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
+    @patch('inbm_lib.trtl.Trtl.stop_by_id')
+    @patch('inbm_lib.trtl.Trtl.remove_container')
+    def test_telemetry_call_when_remove_container_errors(self, mock_remove_container, mock_stop_by_id,
+                                                         mock_call_telemetry):
 
-#         r = RemediationManager(self.mock_disp_callbacks_obj)
-#         r.ignore_dbs_results = True
-#         r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
-#         r._remove_images(['abc123', 'def234', 'ghi567'])
-#         mock_call_telemetry.assert_called()
-#         mock_remove_container.assert_not_called()
-#         mock_stop_by_id.assert_not_called()
+        r = RemediationManager(self.mock_disp_callbacks_obj)
+        r.ignore_dbs_results = True
+        r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
+        r._remove_images(['abc123', 'def234', 'ghi567'])
+        mock_call_telemetry.assert_called()
+        mock_remove_container.assert_not_called()
+        mock_stop_by_id.assert_not_called()
 
-#     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-#     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
-#     def test_dbs_not_deleted_twice_with_remove_image_on_failed_container(self,  mock_remove_image, mock_call_telemetry):
-#         r = RemediationManager(self.mock_disp_callbacks_obj)
-#         r.ignore_dbs_results = False
-#         r.container_image_list_to_be_removed = ['ghi567']
-#         r._remove_images(['abc123', 'def234', 'ghi567'])
-#         mock_call_telemetry.assert_called()
-#         mock_remove_image.assert_called_once_with('ghi567', True)
+    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
+    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+    def test_dbs_not_deleted_twice_with_remove_image_on_failed_container(self,  mock_remove_image, mock_call_telemetry):
+        r = RemediationManager(self.mock_disp_callbacks_obj)
+        r.ignore_dbs_results = False
+        r.container_image_list_to_be_removed = ['ghi567']
+        r._remove_images(['abc123', 'def234', 'ghi567'])
+        mock_call_telemetry.assert_called()
+        mock_remove_image.assert_called_once_with('ghi567', True)
