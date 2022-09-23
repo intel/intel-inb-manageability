@@ -133,7 +133,7 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
 
-                temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
+                temp_image_name = re.match(r"and|[-,_]", container_id)
                 err, active_containers_list = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
@@ -142,12 +142,6 @@ class RemediationManager:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' not present in list.')
-                    continue
-                
-                if temp_image_name in str(active_containers_list) or "DBS" in container_id:
-                    self._dispatcher_callbacks.broker_core.telemetry(
-                        'DBS Security issue raised on containerID: ' +
-                        str(active_containers_list) + ' not present in list.')
                     continue
                 
 
