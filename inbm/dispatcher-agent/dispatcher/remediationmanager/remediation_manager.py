@@ -71,10 +71,8 @@ class RemediationManager:
                          'the correct format "abc,def,123". {}'.format(error))
 
     def _remove_images(self, ids: Any) -> None:
-        logger.debug(ids)
         logger.debug("Removing Images...")
         for image_id in ids:
-            logger.debug(ids)
             if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(image_id)
             else:
@@ -141,6 +139,12 @@ class RemediationManager:
                     logger.error("Error encountered while getting container ID")
 
                 if not temp_image_name in str(active_containers_list) or "DBS" in container_id:
+                    self._dispatcher_callbacks.broker_core.telemetry(
+                        'DBS Security issue raised on containerID: ' +
+                        str(container_id) + ' not present in list.')
+                    continue
+                
+                if temp_image_name in str(active_containers_list):
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' not present in list.')
