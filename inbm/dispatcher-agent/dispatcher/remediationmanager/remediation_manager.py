@@ -148,6 +148,8 @@ class RemediationManager:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' not present in list.')
+                    continue
+                
 
                 if temp_image_name in str(active_containers_list) or not self.dbs_remove_image_on_failed_container:
                     self.container_image_list_to_be_removed.append(temp_image_name)
