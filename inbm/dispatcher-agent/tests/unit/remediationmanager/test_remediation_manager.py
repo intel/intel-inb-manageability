@@ -85,29 +85,7 @@ class TestRemediationManager(TestCase):
 
 #     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
 #     @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
-    def test_return_image_no_errors(self, mock_remove_image, mock_call_telemetry):
-        try:
-            mock_remove_image.return_value = (None, None, 0)
-            rm = RemediationManager(self.mock_disp_callbacks_obj)
-            rm.ignore_dbs_results = False
-            rm.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
-            rm._remove_images(['abc123', 'def234', 'ghi567'])
-        except ValueError:
-            self.fail("RemediationManager raised ValueError exception unexpectedly!")
-        mock_call_telemetry.assert_called()
-        mock_remove_image.assert_called()
 
-    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
-    def test_telemetry_call_when_remove_image_errors(self, mock_remove_image, mock_call_telemetry):
-        mock_remove_image.return_value = (None, 'error', 1)
-        r = RemediationManager(self.mock_disp_callbacks_obj)
-        r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
-        r._remove_images(['abc123', 'def234', 'ghi567'])
-        mock_call_telemetry.assert_called()
-
-    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
     def test_ignore_dbs_results_does_not_remove_image(self,  mock_remove_image, mock_call_telemetry):
         r = RemediationManager(self.mock_disp_callbacks_obj)
         r.ignore_dbs_results = True
