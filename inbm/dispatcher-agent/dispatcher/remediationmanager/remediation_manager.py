@@ -55,7 +55,6 @@ class RemediationManager:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_container(literal_eval(payload))
-                self._remove_images(literal_eval(payload))
         except ValueError as error:
             logger.error('Unable to parse container message . Verify container remove request '
                          'is in the correct format "abc,def,123". {}'.format(error))
@@ -66,7 +65,6 @@ class RemediationManager:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_images(literal_eval(payload))
-                self._remove_container(literal_eval(payload))
 
         except ValueError as error:
             logger.error('Unable to parse image message . Verify image remove request is in '
@@ -138,6 +136,7 @@ class RemediationManager:
                 image_id = None
 
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
+                temp_image_name = re.sub(r"and|[-,/,.,_]", ":", image_id)
                 err, active_containers_list = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
