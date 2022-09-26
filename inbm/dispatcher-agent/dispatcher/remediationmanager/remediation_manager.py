@@ -73,7 +73,7 @@ class RemediationManager:
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
         for image_id in ids:
-            if image_id not in self.container_image_list_to_be_removed:
+            if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(image_id)
                 logger.info("====> if ====>")
                 logger.info("image id %s", image_id)
@@ -139,8 +139,8 @@ class RemediationManager:
                 
                 logger.info(container_id)
                 logger.info("is container_id name ============================>")
-                #temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
-                temp_image_name = container_id
+                temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
+                #temp_image_name = container_id
                 logger.info(temp_image_name)
                 logger.info("is the temp image name ============================>")
                 err, active_containers_list = trtl.list()
@@ -149,24 +149,22 @@ class RemediationManager:
                 if err:
                     logger.error("Error encountered while getting container ID")
                 
-                if self.dbs_remove_image_on_failed_container:
-                    image_id, image_name = self._get_image_id(trtl, container_id)
-                    if image_id is None:
-                        raise ValueError('Cannot read image ID')
-                    self.container_image_list_to_be_removed.append(image_name)
-                
-                if temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
-                    logger.info("+++> getting appended %s ",temp_image_name )
-                    self.container_image_list_to_be_removed.append(temp_image_name)
-                  
                  
-                if not temp_image_name in str(active_containers_list) or "DBS" in container_id:
+                if not any (temp_image_name in str(active_containers_list)) or "DBS" in container_id:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' not present in list.')
                     continue
                 
+                if any (temp_image_name in str(active_containers_list)) and not self.dbs_remove_image_on_failed_container:
+                    logger.info("+++> getting appended %s ",temp_image_name )
+                    self.container_image_list_to_be_removed.append(temp_image_name)
                 
+                if self.dbs_remove_image_on_failed_container:
+                    image_id, image_name = self._get_image_id(trtl, container_id)
+                    if image_id is None:
+                        raise ValueError('Cannot read image ID')
+                    self.container_image_list_to_be_removed.append(image_name)
 
                 (out, err, code) = trtl.stop_by_id(str(container_id))
                 if err is None:
