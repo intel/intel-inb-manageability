@@ -129,7 +129,7 @@ class RemediationManager:
 
     def _remove_container(self, ids: Any) -> None:
         logger.debug(ids)
-        logger.debug(container_id)
+#       logger.debug(container_id)
         for container_id in ids:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
