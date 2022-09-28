@@ -137,7 +137,7 @@ class RemediationManager:
 
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
 #               logger.debug(temp_image_name)
-                logger.debug(active_containers_list)
+#               logger.debug(active_containers_list)
 #               logger.debug(container_image_list_to_be_removed)
 #               logger.debug(dbs_remove_image_on_failed_container)
                 err, active_containers_list = trtl.list()
