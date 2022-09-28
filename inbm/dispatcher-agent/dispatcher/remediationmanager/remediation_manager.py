@@ -73,6 +73,8 @@ class RemediationManager:
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
         for image_id in ids:
+            logger.debug("Entering _remove_images function inside for loop.....")
+            logger.info("container_image_list_to_be_removed %s",container_image_list_to_be_removed)
             if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(image_id)
             else:
@@ -128,20 +130,13 @@ class RemediationManager:
         return image_id, image_name
 
     def _remove_container(self, ids: Any) -> None:
-        logger.debug(ids)
-#       logger.debug(container_id)
-        logger.debug(container_id)
         for container_id in ids:
+            logger.debug("Entering _remove_container function........")
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
 
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
-#               logger.debug(temp_image_name)
-#               logger.debug(active_containers_list)
-#               logger.debug(container_image_list_to_be_removed)
-#               logger.debug(dbs_remove_image_on_failed_container)
-                logger.debug(active_containers_list)
                 err, active_containers_list = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
