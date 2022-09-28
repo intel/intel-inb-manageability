@@ -130,6 +130,7 @@ class RemediationManager:
     def _remove_container(self, ids: Any) -> None:
         logger.debug(ids)
 #       logger.debug(container_id)
+        logger.debug(container_id)
         for container_id in ids:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
@@ -140,6 +141,7 @@ class RemediationManager:
 #               logger.debug(active_containers_list)
 #               logger.debug(container_image_list_to_be_removed)
 #               logger.debug(dbs_remove_image_on_failed_container)
+                logger.debug(active_containers_list)
                 err, active_containers_list = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
