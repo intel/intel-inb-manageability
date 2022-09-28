@@ -74,7 +74,7 @@ class RemediationManager:
         logger.debug("Removing Images...")
         for image_id in ids:
             logger.debug("Entering _remove_images function inside for loop.....")
-#           logger.info("container_image_list_to_be_removed %s",container_image_list_to_be_removed)
+            logger.info(f"container_image_list_to_be_removed {self.container_image_list_to_be_removed}")
             if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(image_id)
             else:
