@@ -153,6 +153,7 @@ class RemediationManager:
                 if temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
                     logger.debug("Entering _remove_container if cond 2...........")
                     self.container_image_list_to_be_removed.append(temp_image_name)
+                    logger.info(f"container_image_list_to_be_removed after append {self.container_image_list_to_be_removed}")
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
