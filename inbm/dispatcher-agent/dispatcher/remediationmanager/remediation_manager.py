@@ -85,7 +85,7 @@ class RemediationManager:
         self.container_image_list_to_be_removed[:] = []
 
     def _remove_single_image(self, image_id: str) -> None:
-        logger.debug("")
+        logger.debug("inside _remove_single_image function.........")
         if not self.ignore_dbs_results:
             trtl = Trtl(PseudoShellRunner())
             (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
