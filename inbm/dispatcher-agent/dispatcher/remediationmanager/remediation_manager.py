@@ -139,18 +139,19 @@ class RemediationManager:
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, active_containers_list = trtl.list()
                 logger.info("active_containers_list %s",active_containers_list)
+                logger.info("temp_image_name %s",temp_image_name)
                 logger.info(f"dbs remove image on failed conatiner {self.dbs_remove_image_on_failed_container}")
                 if err:
                     logger.error("Error encountered while getting container ID")
 
-                if temp_image_name in str(active_containers_list) or "DBS" in container_id:
+                if not temp_image_name in str(active_containers_list) or "DBS" in container_id:
                     logger.debug("Entering _remove_container if cond 1..........")
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' not present in list.')
                     continue
 
-                if not temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
+                if temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
                     logger.debug("Entering _remove_container if cond 2...........")
                     self.container_image_list_to_be_removed.append(temp_image_name)
                     logger.info(f"container_image_list_to_be_removed after append {self.container_image_list_to_be_removed}")
