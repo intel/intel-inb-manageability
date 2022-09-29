@@ -136,6 +136,10 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
                 temp_image_name = container_id
+                temp_image_name = re.sub('_', '/', temp_image_name, count=2 )
+                temp_image_name = re.sub('_', ':', temp_image_name, count=1 )
+                separator = '_'
+                temp_image_name = temp_image_name.split('_', 1 )[0]
                 err, active_containers_list = trtl.list()
                 logger.info("active_containers_list %s",active_containers_list)
                 logger.info("temp_image_name %s",temp_image_name)
