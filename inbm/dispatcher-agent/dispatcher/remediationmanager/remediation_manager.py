@@ -138,7 +138,7 @@ class RemediationManager:
 
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, active_containers_list = trtl.list()
-                logger.info(f"active containers list {active_containers_list}")
+                logger.info("active_containers_list %s",active_containers_list)
                 logger.info(f"dbs remove image on failed conatiner {self.dbs_remove_image_on_failed_container}")
                 if err:
                     logger.error("Error encountered while getting container ID")
