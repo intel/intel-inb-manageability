@@ -135,8 +135,7 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                logger.info("temp_image_name %s",temp_image_name)
-                temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
+                temp_image_name = container_id
                 err, active_containers_list = trtl.list()
                 logger.info("active_containers_list %s",active_containers_list)
                 logger.info("temp_image_name %s",temp_image_name)
