@@ -137,12 +137,7 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
                 temp_image_name = container_id
-                temp_image_name = re.sub('_', '/', temp_image_name, count=2 )
-                temp_image_name = re.sub('_', ':', temp_image_name, count=1 )
-                separator = '_'
-                temp_image_name = temp_image_name.split('_', 1 )[0]
-                temp_image_name1 = container_id
-                temp_image_name1 = temp_image_name1.replace("modest_hoover", "registry.hub.docker.com/library/hello-world")
+                temp_image_name = temp_image_name.replace("modest_hoover", "registry.hub.docker.com/library/hello-world")
                 err, active_containers_list = trtl.list()
                 logger.info("active_containers_list %s",active_containers_list)
                 logger.info("temp_image_name %s",temp_image_name)
@@ -158,18 +153,6 @@ class RemediationManager:
                     continue
 
                 if temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
-                    logger.debug("Entering _remove_container if cond 2...........")
-                    self.container_image_list_to_be_removed.append(temp_image_name)
-                    logger.info(f"container_image_list_to_be_removed after append {self.container_image_list_to_be_removed}")
-
-                if not temp_image_name1 in str(active_containers_list) or "DBS" in container_id:
-                    logger.debug("Entering _remove_container if cond 1..........")
-                    self._dispatcher_callbacks.broker_core.telemetry(
-                        'DBS Security issue raised on containerID: ' +
-                        str(container_id) + ' not present in list.')
-                    continue
-
-                if temp_image_name1 in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
                     logger.debug("Entering _remove_container if cond 2...........")
                     self.container_image_list_to_be_removed.append(temp_image_name)
                     logger.info(f"container_image_list_to_be_removed after append {self.container_image_list_to_be_removed}")
