@@ -44,6 +44,8 @@ class CloudPublisher:
 
         @param message: (str) JSON formatted telemetry message to send
         """
+
+        print("===================================================================================>")
         json_message: Dict = {}
         try:
             json_message = json.loads(message)
