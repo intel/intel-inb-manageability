@@ -149,13 +149,13 @@ class RemediationManager:
                 if err:
                     logger.error("Error encountered while getting container ID")
                 
-                ''' 
-                if any (not temp_image_name in str(active_containers_list)) or "DBS" in container_id:
+                 
+                if any (word in str(active_containers_list) for word in temp_image_name) or "DBS" in container_id:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + ' not present in list.')
                     continue
-                '''
+                
 
                 if any (word in str(active_containers_list) for word in temp_image_name) and not self.dbs_remove_image_on_failed_container:
                     logger.info("+++> getting appended %s ",temp_image_name )
