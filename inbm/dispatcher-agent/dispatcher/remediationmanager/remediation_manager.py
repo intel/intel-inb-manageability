@@ -140,6 +140,16 @@ class RemediationManager:
                 logger.info(container_id)
                 logger.info("is container_id name ============================>")
                 temp_image_name_initial = re.sub(r"and|[-,_]", ":", container_id)
+                 
+                t_image_id, t_image_name = self._get_image_id(trtl, container_id)
+                if t_image_id is None:
+                    raise ValueError('Cannot read image ID')
+                
+                logger.info(t_image_id)
+                logger.info("is t_image_id ============================>")
+                logger.info(t_image_name)
+                logger.info("is t_image_name ============================>")
+                
                 temp_image_name = temp_image_name_initial.split(':')
                 logger.info(temp_image_name)
                 logger.info("is the temp image name ============================>")
