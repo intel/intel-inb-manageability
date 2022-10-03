@@ -139,8 +139,8 @@ class RemediationManager:
                 
                 logger.info(container_id)
                 logger.info("is container_id name ============================>")
-                temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
-                #temp_image_name = container_id
+                temp_image_name_initial = re.sub(r"and|[-,_]", ":", container_id)
+                temp_image_name = temp_image_name_initial.split(:)
                 logger.info(temp_image_name)
                 logger.info("is the temp image name ============================>")
                 err, active_containers_list = trtl.list()
@@ -157,7 +157,7 @@ class RemediationManager:
                     continue
                 '''
 
-                if any (temp_image_name in str(active_containers_list)) and not self.dbs_remove_image_on_failed_container:
+                if any (word in str(active_containers_list) for word in temp_image_name) and not self.dbs_remove_image_on_failed_container:
                     logger.info("+++> getting appended %s ",temp_image_name )
                     self.container_image_list_to_be_removed.append(temp_image_name)
                 
