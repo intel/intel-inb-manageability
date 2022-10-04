@@ -110,6 +110,7 @@ class Installer(ABC):
                 verify_signature(checksum, file_path,
                                  self._dispatcher_callbacks, hash_algorithm)
                 self._dispatcher_callbacks.broker_core.telemetry('Attempting Firmware Update')
+                print("")
             else:
                 logger.error("Signature required to proceed with OTA update.")
                 raise FotaError(
@@ -150,6 +151,7 @@ class LinuxInstaller(Installer):
         super().prepare_for_install(pkg_filename=pkg_filename,
                                     checksum=signature,
                                     hash_algorithm=hash_algorithm)
+        print("install ===================================================> 1")
 
         if platform_product is None:
             raise FotaError("Platform product unspecified.")
@@ -168,6 +170,7 @@ class LinuxInstaller(Installer):
         factory = BiosFactory.get_factory(platform_product, params,
                                           self._dispatcher_callbacks, self._repo)
         factory.install(pkg_filename, self._repo.name(), tool_options, guid)
+        print("install ===================================================> 2")
 
 
 class WindowsInstaller(Installer):
@@ -187,6 +190,7 @@ class WindowsInstaller(Installer):
         super().prepare_for_install(pkg_filename=pkg_filename,
                                     checksum=signature,
                                     hash_algorithm=hash_algorithm)
+        print("install===================================================================>1")
         if platform_product is None:
             raise FotaError("Platform product unspecified.")
         params = super().get_product_params(platform_product)
@@ -195,3 +199,4 @@ class WindowsInstaller(Installer):
                                           callback=self._dispatcher_callbacks,
                                           repo=self._repo)
         factory.install(pkg_filename, self._repo.name(), tool_options, guid)
+        print("install===================================================================>2")
