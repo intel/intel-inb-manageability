@@ -177,7 +177,7 @@ class RemediationManager:
                     image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
-
+                    
                     self.container_image_list_to_be_removed.append(image_name)
 
                 (out, err, code) = trtl.stop_by_id(str(container_id))
