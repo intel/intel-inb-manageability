@@ -34,7 +34,7 @@ class RemediationManager:
         self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
-        self.container_image_list_to_be_removed: List = []
+        self.container_image_list: List = []
 
     def run(self) -> None:
         """Subscribes to remediation channels"""
@@ -73,7 +73,7 @@ class RemediationManager:
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
         for image_id in ids:
-            if image_id not in self.container_image_list_to_be_removed:
+            if image_id not in self.container_image_list:
                 self._remove_single_image(image_id)
                 logger.info("====> if ====>")
                 logger.info("image id %s", image_id)
@@ -84,7 +84,7 @@ class RemediationManager:
                                                                  + str(image_id)
                                                                  + '.  Image is not present in container image list.')
 
-        self.container_image_list_to_be_removed[:] = []
+        self.container_image_list[:] = []
 
     def _remove_single_image(self, image_id: str) -> None:
         logger.debug("")
@@ -178,7 +178,7 @@ class RemediationManager:
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
                     
-                    self.container_image_list_to_be_removed.append(image_name)
+                    self.container_image_list.append(image_name)
 
                 (out, err, code) = trtl.stop_by_id(str(container_id))
                 if err is None:
