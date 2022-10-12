@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## 3.0.14 - 2022-10-12
+
 ### Added
 ### Fixed
  - HSD 15011727901 - Fix POTA/INBC POTA print "Firmware Update Aborted" message after firmware update is success
