@@ -4,4 +4,3 @@ psutil==5.8.0
 dmidecode==0.9.0
 pyinstaller==4.2
 shortuuid==1.0.1
-inbm-lib
