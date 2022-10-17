@@ -20,8 +20,8 @@ fi
 BUILD_TYPE="$1"
 
 
-export https_proxy=http://proxy-chain.intel.com:912/ 
-export http_proxy=http://proxy-chain.intel.com:912/ 
+export https_proxy=http://proxy-dmz.intel.com:912/ 
+export http_proxy=http://proxy-dmz.intel.com:912/ 
 export no_proxy=127.0.0.1,localhost,*.intel.com
 
 sudo -E -H -u yocto -g yocto /yocto/work_dir_"$BUILD_TYPE"/build-img.sh

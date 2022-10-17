@@ -30,8 +30,8 @@ Vagrant.configure("2") do |config|
 
   # inject Intel proxy settings
   if Vagrant.has_plugin?("vagrant-proxyconf")
-    config.proxy.http     = "http://proxy-chain.intel.com:911/"
-    config.proxy.https    = "http://proxy-chain.intel.com:912/"
+    config.proxy.http     = "http://proxy-dmz.intel.com:911/"
+    config.proxy.https    = "http://proxy-dmz.intel.com:912/"
     config.proxy.no_proxy = "intel.com,10.0.0.0/8,192.168.0.0/16,localhost,.local,127.0.0.0/8,134.134.0.0/16,ci_nginx"
   end
 
@@ -48,12 +48,12 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     set -e
     set -x    
-    export http_proxy=http://proxy-chain.intel.com:911/
-    export https_proxy=http://proxy-chain.intel.com:912/
-    echo "http_proxy=http://proxy-chain.intel.com:911/" >>/etc/environment
-    echo "HTTP_PROXY=http://proxy-chain.intel.com:911/" >>/etc/environment
-    echo "https_proxy=http://proxy-chain.intel.com:912/" >>/etc/environment
-    echo "HTTPS_proxy=http://proxy-chain.intel.com:912/" >>/etc/environment
+    export http_proxy=http://proxy-dmz.intel.com:911/
+    export https_proxy=http://proxy-dmz.intel.com:912/
+    echo "http_proxy=http://proxy-dmz.intel.com:911/" >>/etc/environment
+    echo "HTTP_PROXY=http://proxy-dmz.intel.com:911/" >>/etc/environment
+    echo "https_proxy=http://proxy-dmz.intel.com:912/" >>/etc/environment
+    echo "HTTPS_proxy=http://proxy-dmz.intel.com:912/" >>/etc/environment
     echo "no_proxy=intel.com,ci_nginx,127.0.0.1,localhost" >>/etc/environment
     echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,localhost" >>/etc/environment
 
