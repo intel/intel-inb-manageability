@@ -129,13 +129,15 @@ class RemediationManager:
 
     def _remove_container(self, ids: Any) -> None:
         for container_id in ids:
+            logger.info("ids %s",ids)
+            logger.info("container_id %s",container_id)
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
                 logger.debug("====Entering the _remove_conatiner function=====")
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, active_containers_list = trtl.list()
-                logger.info("active_containers_list %s, active_containers_list")
+                logger.info("active_containers_list %s",active_containers_list)
                 logger.info(f"container_image_list_to_be_removed {self.container_image_list_to_be_removed}")
                 if err:
                     logger.error("Error encountered while getting container ID")
