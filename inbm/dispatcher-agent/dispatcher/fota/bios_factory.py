@@ -252,7 +252,6 @@ class LinuxToolFirmware(BiosFactory):
             (out, err, code) = runner.run(DOCKER_CHROOT_PREFIX + cmd)
         else:
             logger.debug("================================================runner.run")
-            logger.debug(out)
             logger.debug(err)
             logger.debug(code)
             (out, err, code) = runner.run(cmd)
