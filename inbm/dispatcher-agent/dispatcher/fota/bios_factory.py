@@ -252,8 +252,6 @@ class LinuxToolFirmware(BiosFactory):
             (out, err, code) = runner.run(DOCKER_CHROOT_PREFIX + cmd)
         else:
             logger.debug("================================================runner.run")
-            logger.debug(err)
-            logger.debug(code)
             (out, err, code) = runner.run(cmd)
         if code == 0:
             logger.debug("====================================Apply firmware command successful")
