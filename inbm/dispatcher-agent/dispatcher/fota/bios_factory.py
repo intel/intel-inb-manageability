@@ -250,14 +250,14 @@ class LinuxToolFirmware(BiosFactory):
             (out, err, code) = runner.run(DOCKER_CHROOT_PREFIX + cmd)
         else:
             (out, err, code) = runner.run(cmd)
-        if code == 0:
-            self._dispatcher_callbacks.broker_core.telemetry("Apply firmware command successful.")
-        else:
-            logger.debug(out)
-            logger.debug(err)
-            if err == '':
-                err = "Firmware command failed"
-            raise FotaError(f"Error: {err}")
+#        if code == 0:
+        self._dispatcher_callbacks.broker_core.telemetry("Apply firmware command successful.")
+#        else:
+        logger.debug(out)
+        logger.debug(err)
+        if err == '':
+            err = "Firmware command failed"
+        raise FotaError(f"Error: {err}")
 
     def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
