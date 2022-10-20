@@ -242,13 +242,19 @@ class LinuxToolFirmware(BiosFactory):
         logger.debug(f"Using fw tool: {self._fw_tool}")
         logger.debug("Applying Firmware...")
         if self._fw_tool == AFULNX_64:
+            logger.debug("===============================================self._fw_tool")
             self._dispatcher_callbacks.broker_core.telemetry(
                 "Device will be rebooting upon successful firmware install.")
         is_docker_app = os.environ.get("container", False)
         if is_docker_app:
+            logger.debug("========================================is_docker_app")
             logger.debug("APP ENV : {}".format(is_docker_app))
             (out, err, code) = runner.run(DOCKER_CHROOT_PREFIX + cmd)
         else:
+            logger.debug("================================================runner.run")
+            logger.debug(out)
+            logger.debug(err)
+            logger.debug(code)
             (out, err, code) = runner.run(cmd)
         if code == 0:
             logger.debug("====================================Apply firmware command successful")
