@@ -258,7 +258,9 @@ class LinuxToolFirmware(BiosFactory):
             logger.debug(out)
             logger.debug(err)
             if err == '':
+                logger.debug("===============================Firmware command failed")
                 err = "Firmware command failed"
+                logger.debug("=================================================if block")
             raise FotaError(f"Error: {err}")
 
     def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
