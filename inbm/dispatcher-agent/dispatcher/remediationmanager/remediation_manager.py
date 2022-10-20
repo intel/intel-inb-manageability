@@ -73,6 +73,9 @@ class RemediationManager:
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
         for image_id in ids:
+            logger.info("image id %s",image_id)
+            logger.info("ids %s",ids)
+            logger.info(f"container_image_list_to_be_removed {self.container_image_list_to_be_removed}")
             if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(image_id)
             else:
@@ -84,6 +87,7 @@ class RemediationManager:
 
     def _remove_single_image(self, image_id: str) -> None:
         logger.debug("")
+        logger.debug("=== Entering the _remove_single_image ====")
         if not self.ignore_dbs_results:
             trtl = Trtl(PseudoShellRunner())
             (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
@@ -135,7 +139,11 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
                 logger.debug("====Entering the _remove_conatiner function=====")
-                temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
+                temp_image_name = container_id
+                temp_image_name = re.sub('_', '/', temp_image_name, count=2)
+                temp_image_name = re.sub('_', ':', temp_image_name, count=1)
+                separator = '_'
+                temp_image_name = temp_image_name.split('_', 1 )[0]
                 err, active_containers_list = trtl.list()
                 logger.info("active_containers_list %s",active_containers_list)
                 logger.info(f"container_image_list_to_be_removed {self.container_image_list_to_be_removed}")
@@ -150,6 +158,7 @@ class RemediationManager:
 
                 if temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
                     self.container_image_list_to_be_removed.append(temp_image_name)
+                    logger.info(f"container_image_list_to_be_removed after append {self.container_image_list_to_be_removed}")
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
