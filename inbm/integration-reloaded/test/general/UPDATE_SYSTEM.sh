@@ -11,4 +11,6 @@ apt-mark hold linux-generic linux-image-generic linux-headers-generic
 # Update the system here to standardize/simplify further test results.
 apt-get update
 apt-get -y upgrade || ( apt-get -y -f install && apt-get -y upgrade )
+apt-get update && apt-get install -yq docker-compose
+pip3 install --upgrade docker-compose
 apt-get clean
