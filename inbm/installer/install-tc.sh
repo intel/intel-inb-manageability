@@ -149,7 +149,6 @@ apt-mark unhold mosquitto
 apt-get install -y mosquitto
 systemctl disable mosquitto
 systemctl stop mosquitto
-apt-get remove docker-compose || true  # ensure docker-compose is latest
 apt-get install -y -f cryptsetup less docker-compose python3-pip
 
 if [ "$(findmnt -lo source,target,fstype,label,options,used -t btrfs)" ]; then
