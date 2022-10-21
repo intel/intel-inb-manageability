@@ -120,9 +120,6 @@ EOF
     config.vm.provision "TC16_SUCCESS_PULL_IMAGE", type: "shell", run: "never",
       path: "./test/aota/TC16_SUCCESS_PULL_IMAGE.sh"
 
-    config.vm.provision "TC17_AOTA_DOCKER_STATS", type: "shell", run: "never",
-      path: "./test/aota/TC17_AOTA_DOCKER_STATS.sh"
-
     config.vm.provision "fota_good_ami_test_preboot", type: "shell", run: "never",
       path: "./test/fota/FOTA_GOOD_AMI_TEST_preboot.sh"
 
@@ -146,6 +143,9 @@ EOF
 
     config.vm.provision "dbs_confirm_off", type: "shell", run: "never",
       path: "./test/dbs/dbs_confirm_off.sh"
-
+	
+    config.vm.provision "TC17_AOTA_DOCKER_STATS", type: "shell", run: "never",
+      path: "./test/aota/TC17_AOTA_DOCKER_STATS.sh"	
+	  
   end
 end
