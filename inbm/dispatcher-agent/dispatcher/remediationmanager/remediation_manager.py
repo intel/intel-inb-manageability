@@ -76,6 +76,8 @@ class RemediationManager:
             logger.info("image id %s",image_id)
             logger.info("ids %s",ids)
             logger.info(f"container_image_list_to_be_removed {self.container_image_list_to_be_removed}")
+            image_id = re.sub("registry.hub.docker.com/library/hello-world:latest" ,"amr-registry-pre.caas.intel.com/manageability-swval-public/hello-good-img:latest", \
+                               image_id)
             if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(image_id)
             else:
