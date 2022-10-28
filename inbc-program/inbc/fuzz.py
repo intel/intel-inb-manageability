@@ -5,7 +5,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "../"))
 #import sample1
 with atheris.instrument_imports():
- #import test_utility
+ 
  from unittest import TestCase
  from inbc.inbc import Inbc
 
