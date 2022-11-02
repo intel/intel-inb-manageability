@@ -4,7 +4,7 @@ Constants and other config variables used throughout the cloudadapter module
 Copyright (C) 2017-2022 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
---add-data "inbm_common_lib:."
+--add-data inbm_common_lib:.
 
 from inbm_common_lib.constants import TELEMETRY_CHANNEL, RESPONSE_CHANNEL, EVENT_CHANNEL
 from inbm_lib.constants import DOCKER_STATS
