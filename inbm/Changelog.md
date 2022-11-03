@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## 3.0.14 - 2022-11-03
+
 ### Added
 ### Fixed
  - RTC 520951      - Remove references to 'inbm-lib' from requirements.txt in intel-inb-manageability repository

@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## 3.0.14 - 2022-11-03
+
 ### Added
 ### Fixed
  - RTC 519030 - Added a fix for Bit Creek (Vision) build failure
