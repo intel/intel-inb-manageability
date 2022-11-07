@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+##3.0.14 - 2022-11-07
+
 ### Added
 ### Fixed
  - RTC 521500      - Fixed build error by updating PyInstaller to 5.6.2
