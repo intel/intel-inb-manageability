@@ -254,7 +254,7 @@ class LinuxToolFirmware(BiosFactory):
             logger.debug("=====================================================else runner.run")
             (out, err, code) = runner.run(cmd)
             logger.debug(code)
-        if code == 0:
+        if code == 0 or code == 2:
             logger.debug("================================code == 0 ")
             self._dispatcher_callbacks.broker_core.telemetry("Apply firmware command successful.")
         else:
