@@ -138,6 +138,7 @@ class PseudoShellRunner:
         else:
             decoded_err = err.decode('utf-8', errors='replace')
 
+        logger.debug(proc.returncode)
         return decoded_out, decoded_err, proc.returncode, abs_log_path
 
     @classmethod
@@ -152,6 +153,7 @@ class PseudoShellRunner:
         @return: Result of subprocess along with output, error (possibly None) & exit status
         """
         (out, err, code, _) = PseudoShellRunner.run_with_log_path(cmd, log_path=None, cwd=cwd)
+        logger.debug(code)
         return out, err, code
 
     @classmethod
