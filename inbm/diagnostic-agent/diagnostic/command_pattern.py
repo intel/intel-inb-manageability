@@ -107,9 +107,9 @@ class NetworkChecker(Command):
         else:
             gateways = netifaces.gateways()
             if 'default' in gateways and len(gateways['default']) > 0:
-                logger.debug("**********************")
+                logger.debug("*****************OS_Rolling*******************")
+                logger.debug(len)
                 logger.debug(gateways)
-                print("If there was a length of gateway, there would be: ", len, "len")
                 self._result['message'] = 'At least one network interface is healthy (has a default route).'
                 logger.debug(self._result)
                 return self._result
