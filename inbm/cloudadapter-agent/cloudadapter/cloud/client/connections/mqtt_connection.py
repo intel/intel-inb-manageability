@@ -144,11 +144,11 @@ class MQTTConnection(Connection):
         with self._rid_lock:
             self._rid += 1
 
- #       logger.info("Publishing to %s: %s", topic, payload if payload else "[Empty string]")
-        logger.info("Publishing to %s: %s", topic, payload if payload else "abcdefghijklmn")
+        logger.info("Publishing to %s: %s", topic, payload if payload else "[Empty string]")
 
         message = self._client.publish(topic=topic, payload=payload, qos=1)
         message.wait_for_publish()
         if message.rc != mqtt.MQTT_ERR_SUCCESS:
             error = f"Error publishing to MQTT topic, got code: {message.rc}"
             raise PublishError(error)
+       sleep(1) 
