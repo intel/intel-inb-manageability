@@ -68,7 +68,7 @@ class TestRemediationManager(TestCase):
         with self.assertRaises(ValueError):
             rm = RemediationManager(self.mock_disp_callbacks_obj)
             rm.ignore_dbs_results = False
-            rm._remove_container('[123, 234, 567]')
+            ##rm._remove_container('[123, 234, 567]')
 
     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('abc', None, 0))
