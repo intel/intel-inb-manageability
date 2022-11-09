@@ -18,6 +18,7 @@ from threading import RLock
 import socket
 import socks
 import logging
+import time
 logger = logging.getLogger(__name__)
 
 
@@ -151,4 +152,4 @@ class MQTTConnection(Connection):
         if message.rc != mqtt.MQTT_ERR_SUCCESS:
             error = f"Error publishing to MQTT topic, got code: {message.rc}"
             raise PublishError(error)
-        sleep(1) 
+        time.sleep(1) 
