@@ -76,7 +76,7 @@ class TestRemediationManager(TestCase):
     @patch('inbm_lib.trtl.Trtl.stop_by_id')
     @patch('inbm_lib.trtl.Trtl.remove_container')
     def test_telemetry_call_when_stop_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry,
-                                             mock_image, mock_remove):
+                                             mock_image, mock_remove, mock_list):
         mock_stop_by_id.return_value = (None, 'error', 1)
         mock_remove_container.return_value = None
         RemediationManager(self.mock_disp_callbacks_obj)._remove_container(
@@ -90,7 +90,7 @@ class TestRemediationManager(TestCase):
             mock_remove_image.return_value = (None, None, 0)
             rm = RemediationManager(self.mock_disp_callbacks_obj)
             rm.ignore_dbs_results = False
-            ##rm.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
+            rm.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
             rm._remove_images(['abc123', 'def234', 'ghi567'])
         except ValueError:
             self.fail("RemediationManager raised ValueError exception unexpectedly!")
@@ -102,7 +102,7 @@ class TestRemediationManager(TestCase):
     def test_telemetry_call_when_remove_image_errors(self, mock_remove_image, mock_call_telemetry):
         mock_remove_image.return_value = (None, 'error', 1)
         r = RemediationManager(self.mock_disp_callbacks_obj)
-        ##r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
+        r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
         r._remove_images(['abc123', 'def234', 'ghi567'])
         mock_call_telemetry.assert_called()
 
@@ -111,7 +111,7 @@ class TestRemediationManager(TestCase):
     def test_ignore_dbs_results_does_not_remove_image(self,  mock_remove_image, mock_call_telemetry):
         r = RemediationManager(self.mock_disp_callbacks_obj)
         r.ignore_dbs_results = True
-        ##r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
+        r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
         r._remove_images(['abc123', 'def234', 'ghi567'])
         mock_call_telemetry.assert_called()
         mock_remove_image.assert_not_called()
@@ -124,7 +124,7 @@ class TestRemediationManager(TestCase):
 
         r = RemediationManager(self.mock_disp_callbacks_obj)
         r.ignore_dbs_results = True
-        ##r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
+        r.container_image_list_to_be_removed = ['abc123', 'def234', 'ghi567']
         r._remove_images(['abc123', 'def234', 'ghi567'])
         mock_call_telemetry.assert_called()
         mock_remove_container.assert_not_called()
@@ -135,7 +135,7 @@ class TestRemediationManager(TestCase):
     def test_dbs_not_deleted_twice_with_remove_image_on_failed_container(self,  mock_remove_image, mock_call_telemetry):
         r = RemediationManager(self.mock_disp_callbacks_obj)
         r.ignore_dbs_results = False
-        ##r.container_image_list_to_be_removed = ['ghi567']
+        r.container_image_list_to_be_removed = ['ghi567']
         r._remove_images(['abc123', 'def234', 'ghi567'])
         mock_call_telemetry.assert_called()
         mock_remove_image.assert_called_once_with('ghi567', True)
