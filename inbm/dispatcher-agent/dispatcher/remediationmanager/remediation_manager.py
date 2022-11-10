@@ -82,7 +82,7 @@ class RemediationManager:
                                                                  + '.  Image is not present in container image list.')
                 logger.debug(image_id)
         self.container_image_list_to_be_removed[:] = []
-
+        logger.debug(container_image_list_to_be_removed)
     def _remove_single_image(self, image_id: str) -> None:
         logger.debug("")
         if not self.ignore_dbs_results:
