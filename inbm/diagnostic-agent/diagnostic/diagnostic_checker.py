@@ -154,6 +154,7 @@ class DiagnosticChecker:
         if self.sw_list is None:
             self.sw_list = ""
             logger.error("Invalid software list.")
+        logger.debug("*** OS_Rolling_Diag_Checker_Execute ***")
         resp = dispatch_command(command=command,
                                 size=size,
                                 size_path=self._size_path,
