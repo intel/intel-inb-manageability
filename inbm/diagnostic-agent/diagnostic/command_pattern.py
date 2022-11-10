@@ -38,8 +38,11 @@ class Command(ABC):
         self._result: Dict[str, Any] = {}
 
     def execute(self) -> Dict[str, Union[str, int]]:
+        logger.debug("OS_rolling")
         logger.info(f'Running command: {self._name}')
+        logger.debug(self._name)
         self._result = {'cmd': self._name, 'rc': 0}
+        logger.debug(self._result)
         return self._result
 
 
