@@ -40,6 +40,7 @@ def dispatch_command(command: str,
     """
     check = HealthChecker()
     if command == Commands.install_check.name:
+        logger.debug("*** OS_Rolling_self._network_install_check ***")
         check.add(NetworkChecker(network_check))
         s = min_storage_mb if size is None else size
         check.add(StorageChecker(s, size_path))
@@ -47,19 +48,26 @@ def dispatch_command(command: str,
         check.add(DeviceBatteryHealthChecker(min_power_percent))
         check.add(SoftwareChecker(sw_list))
     elif command == Commands.health_device_battery.name:
+        logger.debug("*** OS_Rolling_Battery check ***")
         check.add(DeviceBatteryHealthChecker(min_power_percent))
     elif command == Commands.check_storage.name:
+        logger.debug("*** OS_Rolling_Storage check ***")
         s = min_storage_mb if size is None else size
         check.add(StorageChecker(s, size_path))
     elif command == Commands.check_memory.name:
+        logger.debug("*** OS_Rolling_Memory check ***")
         check.add(MemoryChecker(min_memory_mb))
     elif command == Commands.check_network.name:
+        logger.debug("*** OS_Rolling_N/W check ***")
         check.add(NetworkChecker(network_check))
     elif command == Commands.container_health_check.name:
+        logger.debug("*** OS_Rolling_Health check ***")
         check.add(ContainerHealthChecker())
     elif command == Commands.swCheck.name:
+        logger.debug("*** OS_Rolling_SW check ***")
         check.add(SoftwareChecker(sw_list))
     else:
+        logger.debug("*** OS_Rolling_else part ***")
         logger.error('Unknown command: %s invoked', command)
         return UNKNOWN
 
