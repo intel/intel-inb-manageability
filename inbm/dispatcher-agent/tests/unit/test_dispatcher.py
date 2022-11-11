@@ -306,19 +306,19 @@ class TestDispatcher(TestCase):
 #     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
 #     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
 #            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
-    def test_dispatcher_state_file_info_fota1(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
-                                              mock_dmi_exists, mock_send_result, mock_logging):
-        d = TestDispatcher._build_dispatcher()
-        d.check_dispatcher_state_info()
-        mock_send_result.assert_called_once_with(
-            "FOTA INSTALL UNKNOWN: Error gathering BIOS information.")
+#     def test_dispatcher_state_file_info_fota1(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
+#                                               mock_dmi_exists, mock_send_result, mock_logging):
+#         d = TestDispatcher._build_dispatcher()
+#         d.check_dispatcher_state_info()
+#         mock_send_result.assert_called_once_with(
+#             "FOTA INSTALL UNKNOWN: Error gathering BIOS information.")
 
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_fota_for_target_pass(self,
                                   mock_workload_orchestration_func: Any,
                                   mock_send_result: Any,
