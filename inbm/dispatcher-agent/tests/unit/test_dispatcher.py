@@ -319,34 +319,34 @@ class TestDispatcher(TestCase):
 #     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
 #     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
 #     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    def test_fota_for_target_pass(self,
-                                  mock_workload_orchestration_func: Any,
-                                  mock_send_result: Any,
-                                  m_pre: Any,
-                                  m_sub: Any,
-                                  m_connect: Any,
-                                  mock_install_target: Any,
-                                  mock_logging: Any) -> None:
-        m_pre.return_value = True
+#     def test_fota_for_target_pass(self,
+#                                   mock_workload_orchestration_func: Any,
+#                                   mock_send_result: Any,
+#                                   m_pre: Any,
+#                                   m_sub: Any,
+#                                   m_connect: Any,
+#                                   mock_install_target: Any,
+#                                   mock_logging: Any) -> None:
+#         m_pre.return_value = True
 
-        xml = '<?xml version="1.0" encoding="utf-8"?>' \
-              '<manifest><type>ota</type><ota><header><id>sampleID</id><name>Sample FOTA</name><description>' \
-              'Sample</description><type>fota</type><repo>remote</repo></header><type><fota name="sample">' \
-              '<targetType>host</targetType><fetch>https://abc.tar</fetch><biosversion>2018.03</biosversion>' \
-              '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
-              '2020-11-16</releasedate></fota></type></ota></manifest> '
-        d = TestDispatcher._build_dispatcher()
-        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-        mock_install_target.assert_called_once()
-        mock_install_target.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+#         xml = '<?xml version="1.0" encoding="utf-8"?>' \
+#               '<manifest><type>ota</type><ota><header><id>sampleID</id><name>Sample FOTA</name><description>' \
+#               'Sample</description><type>fota</type><repo>remote</repo></header><type><fota name="sample">' \
+#               '<targetType>host</targetType><fetch>https://abc.tar</fetch><biosversion>2018.03</biosversion>' \
+#               '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
+#               '2020-11-16</releasedate></fota></type></ota></manifest> '
+#         d = TestDispatcher._build_dispatcher()
+#         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+#         mock_install_target.assert_called_once()
+#         mock_install_target.return_value = PUBLISH_SUCCESS
+#         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('inbm_common_lib.dmi.is_dmi_path_exists', return_value=False)
-    @patch('inbm_common_lib.device_tree.get_device_tree_system_info', return_value=devicetree_parsed_1)
-    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-           return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
+#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+#     @patch('inbm_common_lib.dmi.is_dmi_path_exists', return_value=False)
+#     @patch('inbm_common_lib.device_tree.get_device_tree_system_info', return_value=devicetree_parsed_1)
+#     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+#     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+#            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
     def test_dispatcher_device_tree_called_on_disp_state(self, mock_consume_disp_file, mock_disp_state_file_exist,
                                                          mock_devicetree, mock_dmi_path, mock_send_result,
                                                          mock_logging):
