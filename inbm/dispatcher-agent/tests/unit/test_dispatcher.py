@@ -513,70 +513,70 @@ class TestDispatcher(TestCase):
 
 #     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
 #     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>restart</cmd></manifest>'
-        d = TestDispatcher._build_dispatcher()
-        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-        mock_workload_orchestration.assert_called()
-        mock_perform_cmd_type_operation.assert_called_once()
+#     def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
+#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>restart</cmd></manifest>'
+#         d = TestDispatcher._build_dispatcher()
+#         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+#         mock_workload_orchestration.assert_called()
+#         mock_perform_cmd_type_operation.assert_called_once()
 
-    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>query</cmd><query><option>status</option><targetType>node</targetType></query></manifest>'
-        d = TestDispatcher._build_dispatcher()
-        status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-        mock_workload_orchestration.assert_called()
-        mock_perform_cmd_type_operation.assert_called_once()
+#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
+#     def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
+#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>query</cmd><query><option>status</option><targetType>node</targetType></query></manifest>'
+#         d = TestDispatcher._build_dispatcher()
+#         status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+#         mock_workload_orchestration.assert_called()
+#         mock_perform_cmd_type_operation.assert_called_once()
 
-    def test_parse_error_invalid_command(self, mock_logging):
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange><targetType>node</targetType></orange></manifest>'
-        d = TestDispatcher._build_dispatcher()
-        status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-        self.assertEquals(300, status)
+#     def test_parse_error_invalid_command(self, mock_logging):
+#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange><targetType>node</targetType></orange></manifest>'
+#         d = TestDispatcher._build_dispatcher()
+#         status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+#         self.assertEquals(300, status)
 
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
-    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    def test_config_get_element_fail(self,
-                                     mock_workload_orchestration: Any,
-                                     mock_request_config_agent: Any,
-                                     mock_send_result: Any,
-                                     mock_install: Any,
-                                     m_sub: Any,
-                                     m_connect: Any,
-                                     mock_logging: Any) -> None:
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
+#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+#     def test_config_get_element_fail(self,
+#                                      mock_workload_orchestration: Any,
+#                                      mock_request_config_agent: Any,
+#                                      mock_send_result: Any,
+#                                      mock_install: Any,
+#                                      m_sub: Any,
+#                                      m_connect: Any,
+#                                      mock_logging: Any) -> None:
 
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercen</path></get></configtype></config></manifest>'
-        d = TestDispatcher._build_dispatcher()
-        mock_request_config_agent.side_effect = DispatcherException
-        self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercen</path></get></configtype></config></manifest>'
+#         d = TestDispatcher._build_dispatcher()
+#         mock_request_config_agent.side_effect = DispatcherException
+#         self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
-    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    def test_config_get_element_pass(self,
-                                     mock_workload_orchestration: Any,
-                                     mock_request_config_agent: Any,
-                                     mock_send_result: Any,
-                                     mock_install: Any,
-                                     m_sub: Any,
-                                     m_connect: Any,
-                                     mock_logging: Any) -> None:
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
+#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+#     def test_config_get_element_pass(self,
+#                                      mock_workload_orchestration: Any,
+#                                      mock_request_config_agent: Any,
+#                                      mock_send_result: Any,
+#                                      mock_install: Any,
+#                                      m_sub: Any,
+#                                      m_connect: Any,
+#                                      mock_logging: Any) -> None:
 
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercent</path></get></configtype></config></manifest>'
-        d = TestDispatcher._build_dispatcher()
-        mock_request_config_agent.return_value = True
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercent</path></get></configtype></config></manifest>'
+#         d = TestDispatcher._build_dispatcher()
+#         mock_request_config_agent.return_value = True
+#         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     def test_service_name_prefixed_inbm(self,
                                         m_sub: Any,
                                         m_connect: Any,
