@@ -257,32 +257,28 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'sota_upgrade'})
-    """
-    def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
-                                             mock_install_check, mock_logging):
-        d = TestDispatcher._build_dispatcher()
-        d.check_dispatcher_state_info()
-        mock_install_check.assert_called_once()
-        mock_invoke_sota.assert_called_once()
-
-    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})
-    
-    """
-    def test_dispatcher_state_file_info_no_restart_reason(self, mock_disp_state_file_exist, mock_consume_disp_file,
-                                                          mock_logging):
-        d = TestDispatcher._build_dispatcher()
-        try:
-            d.check_dispatcher_state_info()
-        except DispatcherException as e:
-            self.assertTrue("state file doesn't contain 'restart_reason'" in str(e))
-
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
-    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-           return_value={'mender-version': 'abcvdk'})
-    """
+#    def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
+#                                             mock_install_check, mock_logging):
+#        d = TestDispatcher._build_dispatcher()
+#        d.check_dispatcher_state_info()
+#        mock_install_check.assert_called_once()
+#        mock_invoke_sota.assert_called_once()
+#
+#    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+#    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})
+#    def test_dispatcher_state_file_info_no_restart_reason(self, mock_disp_state_file_exist, mock_consume_disp_file,
+#                                                          mock_logging):
+#       d = TestDispatcher._build_dispatcher()
+#        try:
+#           d.check_dispatcher_state_info()
+#        except DispatcherException as e:
+#            self.assertTrue("state file doesn't contain 'restart_reason'" in str(e))
+#
+#    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+#    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
+#    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+#    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+#           return_value={'mender-version': 'abcvdk'})
     def test_dispatcher_state_file_info_sota_without_restart_reason(self, mock_disp_state_file_exist,
                                                                     mock_consume_disp_file, mock_invoke_sota,
                                                                     mock_install_check, mock_logging):
@@ -297,7 +293,6 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
-    """
     def test_dispatcher_state_file_info_fota(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
                                              mock_dmi_exists, mock_send_result, mock_logging):
         d = TestDispatcher._build_dispatcher()
