@@ -8,6 +8,7 @@
 
 import logging
 import json
+import traceback
 
 from typing import Optional
 
@@ -134,6 +135,8 @@ class DiagnosticChecker:
             logger.debug("Docker is not required.  Not listening for Docker events.")
 
     def execute(self, request: str) -> None:
+        for line in traceback.format_stack():
+            print(line.strip())
         """Execute MQTT command received on command channel
 
         @param request: Incoming JSON request
