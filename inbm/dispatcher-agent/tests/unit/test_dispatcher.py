@@ -133,19 +133,19 @@ class TestDispatcher(TestCase):
 #     @patch('dispatcher.ota_thread.OtaThread.pre_install_check', return_value=True)
 #     @patch('dispatcher.ota_thread.OtaThread')
 #     @patch('os.path.isfile', return_value=False)
-    def test_aota_fails_on_no_trtl_framework(self,
-                                             mock_trtl_path: Any,
-                                             mock_ota_thread: Any,
-                                             mock_pre_install_check: Any,
-                                             mock_logging: Any) -> None:
-        mock_parsed_manifest = Mock()
-        mock_dbs = Mock()
-        mock_callback = Mock()
-        aota = AotaThread('remote', mock_callback, mock_parsed_manifest, mock_dbs)
-        with self.assertRaisesRegex(AotaError, 'Cannot proceed with the AOTA '):
-            aota.start()
+#     def test_aota_fails_on_no_trtl_framework(self,
+#                                              mock_trtl_path: Any,
+#                                              mock_ota_thread: Any,
+#                                              mock_pre_install_check: Any,
+#                                              mock_logging: Any) -> None:
+#         mock_parsed_manifest = Mock()
+#         mock_dbs = Mock()
+#         mock_callback = Mock()
+#         aota = AotaThread('remote', mock_callback, mock_parsed_manifest, mock_dbs)
+#         with self.assertRaisesRegex(AotaError, 'Cannot proceed with the AOTA '):
+#             aota.start()
 
-    @patch.object(Dispatcher, '_send_result', autospec=True)
+#     @patch.object(Dispatcher, '_send_result', autospec=True)
 #     def test_on_cloud_response_with_unicode_succeeds(self, mock_logging, mock_send_result):
 #         d = TestDispatcher._build_dispatcher()
 #         d.update_queue = Mock()
