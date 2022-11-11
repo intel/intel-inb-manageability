@@ -12,8 +12,7 @@ from .. utilities import Formatter
 from ..connections.mqtt_connection import MQTTConnection
 from datetime import datetime
 from typing import Optional
-import time
-
+import time as t
 class OneWayMessenger(Messenger):
 
     def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, connection: MQTTConnection) -> None:
@@ -30,5 +29,5 @@ class OneWayMessenger(Messenger):
     def publish(self, key: str, value: str, time: Optional[datetime] = None) -> None:
         topic = self._topic_formatter.format(request_id=self._connection.request_id)
         payload = self._payload_formatter.format(time, key=key, value=value)
-        time.sleep(1)
+        t.sleep(1)
         self._connection.publish(topic, payload)
