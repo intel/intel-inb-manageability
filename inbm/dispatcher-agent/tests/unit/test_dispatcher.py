@@ -267,6 +267,7 @@ class TestDispatcher(TestCase):
 
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})
+    
     """
     def test_dispatcher_state_file_info_no_restart_reason(self, mock_disp_state_file_exist, mock_consume_disp_file,
                                                           mock_logging):
