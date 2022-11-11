@@ -361,35 +361,35 @@ class TestDispatcher(TestCase):
 #     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
 #     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
 #     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    def test_config_operation_called(self,
-                                     mock_workload_orchestration_func: Any,
-                                     mock_send_result: Any,
-                                     m_pre: Any,
-                                     m_sub: Any,
-                                     m_connect: Any,
-                                     mock_config_func: Any,
-                                     mock_target_config_func: Any,
-                                     mock_logging: Any) -> None:
-        m_pre.return_value = True
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
-              '<cmd>get_element</cmd><configtype><get><path>maxCacheSize</path></get></configtype> ' \
-              '</config></manifest> '
+#     def test_config_operation_called(self,
+#                                      mock_workload_orchestration_func: Any,
+#                                      mock_send_result: Any,
+#                                      m_pre: Any,
+#                                      m_sub: Any,
+#                                      m_connect: Any,
+#                                      mock_config_func: Any,
+#                                      mock_target_config_func: Any,
+#                                      mock_logging: Any) -> None:
+#         m_pre.return_value = True
+#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
+#               '<cmd>get_element</cmd><configtype><get><path>maxCacheSize</path></get></configtype> ' \
+#               '</config></manifest> '
 
-        d = TestDispatcher._build_dispatcher()
-        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-        mock_workload_orchestration_func.assert_called()
-        mock_config_func.assert_called_once()
-        mock_target_config_func.assert_not_called()
-        mock_config_func.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+#         d = TestDispatcher._build_dispatcher()
+#         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+#         mock_workload_orchestration_func.assert_called()
+#         mock_config_func.assert_called_once()
+#         mock_target_config_func.assert_not_called()
+#         mock_config_func.return_value = PUBLISH_SUCCESS
+#         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation_on_target')
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation_on_target')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation')
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_config_operation_target_called(self,
                                             mock_workload_orchestration_func: Any,
                                             mock_send_result: Any,
