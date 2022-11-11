@@ -155,4 +155,4 @@ class MQTTConnection(Connection):
         if message.rc != mqtt.MQTT_ERR_SUCCESS:
             error = f"Error publishing to MQTT topic, got code: {message.rc}"
             raise PublishError(error)
-        t.sleep(1) 
+        t.sleep(10)
