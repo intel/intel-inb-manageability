@@ -143,8 +143,8 @@ class MQTTConnection(Connection):
             self._subscriptions[topic] = callback
 
     def publish(self, topic: str, payload: str) -> None:
-        for line in traceback.format_stack():
-            print(line.strip())
+#        for line in traceback.format_stack():
+#            print(line.strip())
         with self._rid_lock:
             self._rid += 1
 
