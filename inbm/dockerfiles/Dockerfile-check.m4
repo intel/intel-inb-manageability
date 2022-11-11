@@ -146,7 +146,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dispatcher tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt && \
-    coverage report --fail-under=80
+    coverage report --fail-under=70
 
 # ---cloudadapter agent---
 
