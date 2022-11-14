@@ -135,7 +135,7 @@ class DiagnosticChecker:
             logger.debug("Docker is not required.  Not listening for Docker events.")
 
     def execute(self, request: str) -> None:
-        #for line in traceback.format_stack():
+        for line in traceback.format_stack():
             logger.debug(line.strip())
         """Execute MQTT command received on command channel
 
