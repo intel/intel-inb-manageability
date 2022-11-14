@@ -123,7 +123,8 @@ class NetworkChecker(Command):
             #         'message'] = 'Network interfaces down.  Cannot find network interface with a default route.'
             #     logger.debug(self._result)
             #     return self._result
-            else 'default' in gateways or len(gateways['default']) = 0:
+            else:
+                'default' in gateways or len(gateways['default']) = 0:
                 logger.debug("*****************OS_Rolling_else******************")
                 self._result['rc'] = 0
                 self._result['message'] = 'Network interfaces down.  Cannot find network interface with a default route.'
