@@ -63,7 +63,7 @@ class RemediationManager:
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
         try:
             if payload is not None:
-				logger.debug(remove_image)
+                logger.debug(remove_image)
 				logger.debug(payload)
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_images(literal_eval(payload))
@@ -77,9 +77,8 @@ class RemediationManager:
         logger.debug(len(ids))
         for image_id in ids:
             logger.debug(image_id)
-			logger.debug(len(image_id))
             logger.debug(self.container_image_list_to_be_removed)
-			logger.debug(len(self.container_image_list_to_be_removed))
+            logger.debug(len(self.container_image_list_to_be_removed))
             if image_id in self.container_image_list_to_be_removed:
                 logger.debug(image_id)
                 logger.debug(self.container_image_list_to_be_removed)
