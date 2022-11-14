@@ -64,7 +64,7 @@ class RemediationManager:
         try:
             if payload is not None:
                 logger.debug(remove_image)
-				logger.debug(payload)
+                logger.debug(payload)
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_images(literal_eval(payload))
 
