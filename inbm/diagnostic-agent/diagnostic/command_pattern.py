@@ -116,17 +116,16 @@ class NetworkChecker(Command):
                 self._result['message'] = 'At least one network interface is healthy (has a default route).'
                 logger.debug(self._result)
                 return self._result
-            # elif 'default' in gateways and len(gateways['default']) > 0:
-            #     logger.debug("*****************OS_Rolling_else******************")
+            # elif:
+            #     logger.debug("*****************OS_Rolling_elif******************")
             #     self._result['rc'] = 0
             #     self._result[
             #         'message'] = 'Network interfaces down.  Cannot find network interface with a default route.'
             #     logger.debug(self._result)
             #     return self._result
             else:
-                len(gateways['default']) = 0
                 logger.debug("*****************OS_Rolling_else******************")
-                self._result['rc'] = 0
+                self._result['rc'] = 1
                 self._result['message'] = 'Network interfaces down.  Cannot find network interface with a default route.'
                 logger.debug(self._result)
                 return self._result
