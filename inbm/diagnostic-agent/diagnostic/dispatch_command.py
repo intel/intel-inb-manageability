@@ -13,7 +13,7 @@ from .commands import Commands
 from .health_checker import HealthChecker
 from .command_pattern import DeviceBatteryHealthChecker, NetworkChecker, \
     StorageChecker, MemoryChecker, ContainerHealthChecker, SoftwareChecker
-import traceback
+#import traceback
 logger = logging.getLogger(__name__)
 
 UNKNOWN = {'rc': 1, 'message': 'Unknown command invoked'}
@@ -27,8 +27,8 @@ def dispatch_command(command: str,
                      min_storage_mb: int,
                      sw_list: str,
                      network_check: str) -> Optional[Dict[str, object]]:
-    for line in traceback.format_stack():
-        print(line.strip())
+    #for line in traceback.format_stack():
+        #print(line.strip())
     """Dispatches the correct command(s) based on the request
 
     @param command: command sent via MQTT from another agent.
