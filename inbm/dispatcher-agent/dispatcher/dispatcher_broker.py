@@ -14,7 +14,7 @@ from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQT
 from inbm_lib.mqttclient.mqtt import MQTT
 
 from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL
-import traceback
+#import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -40,8 +40,8 @@ class DispatcherBroker:
 
         @param message: message to be published to cloud
         """
-        for line in traceback.format_stack():
-            print(line.strip())
+        #for line in traceback.format_stack():
+            #print(line.strip())
         logger.debug('Received result message: %s', message)
         if not self.is_started():
             logger.error('Cannot send result: dispatcher core not initialized')

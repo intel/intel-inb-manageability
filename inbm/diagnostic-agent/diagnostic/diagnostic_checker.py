@@ -136,7 +136,7 @@ class DiagnosticChecker:
 
     def execute(self, request: str) -> None:
         for line in traceback.format_stack():
-            print(line.strip())
+            logger.debug(line.strip())
         """Execute MQTT command received on command channel
 
         @param request: Incoming JSON request
