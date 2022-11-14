@@ -63,7 +63,7 @@ class RemediationManager:
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
         try:
             if payload is not None:
-                logger.debug(remove_image)
+                logger.debug(_on_remove_image)
                 logger.debug(payload)
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_images(literal_eval(payload))
