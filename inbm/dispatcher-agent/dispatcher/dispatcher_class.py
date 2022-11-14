@@ -56,7 +56,7 @@ from .workload_orchestration import WorkloadOrchestration
 from inbm_lib.xmlhandler import *
 from inbm_lib.version import get_friendly_inbm_version_commit
 from inbm_lib.security_masker import mask_security_info
-
+import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -876,6 +876,8 @@ class Dispatcher(WindowsService):
         If the restart reason is POTA, both SOTA and FOTA info is checked.
         """
         def _check_sota_state() -> None:
+            for line in traceback.format_stack():
+                print(line.strip())
             """If the restart reason is SOTA then it waits for diag agent to respond with health report. If the wait
             times-outs or in case of bad health report, it performs a SOTA rollback
             In case of a good health report, it just deletes the snapshot."""
