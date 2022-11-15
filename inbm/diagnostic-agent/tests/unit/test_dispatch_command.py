@@ -210,6 +210,7 @@ class TestDispatchCommand(TestCase):
         self.assertDictEqual(result, {'cmd': 'swCheck',
                                       'message': 'Trtl not present ',
                                       'rc': 1})
+    """
     def test_check_network_pass(self, mock_run):
         result = dispatch_command('check_network', 30,
                                   UNIT_TEST_DISK_PATH, 20, 20, 20, 'docker', 'true')
@@ -223,4 +224,5 @@ class TestDispatchCommand(TestCase):
         self.assertDictEqual(result, {'cmd': 'check_network',
                                       'message': 'Trtl not present ',
                                       'rc': 1})
+    """
 
