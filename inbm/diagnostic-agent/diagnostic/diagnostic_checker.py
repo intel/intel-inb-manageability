@@ -51,6 +51,7 @@ class DiagnosticChecker:
             MIN_POWER_PERCENT, LOWER_BOUND_POWER_PERCENT, UPPER_BOUND_POWER_PERCENT, DEFAULT_MIN_POWER_PERCENT)
         self._min_storage_MB = ConfigKey(
             MIN_STORAGE_MB, LOWER_BOUND_STORAGE_MB, UPPER_BOUND_STORAGE_MB, DEFAULT_MIN_STORAGE_MB)
+        logger.debug("*** OS_Rolling_Diag_ Init_Checker_Execute_Newly_added for testing ***")
         self._network_check = DEFAULT_NETWORK_CHECK
         self._size_path = constants.DEFAULT_MANAGEABILITY_CACHE_PATH
         self.docker_bench_security_interval_sec = ConfigKey(

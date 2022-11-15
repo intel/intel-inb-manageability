@@ -210,3 +210,19 @@ class TestDispatchCommand(TestCase):
         self.assertDictEqual(result, {'cmd': 'swCheck',
                                       'message': 'Trtl not present ',
                                       'rc': 1})
+    def test_check_network_pass(self, mock_path_exists, mock_detect_os):
+        result = dispatch_command('check_network', 30,
+                                  UNIT_TEST_DISK_PATH, 20, 20, 20, 'trtl', 'true')
+        self.assertDictEqual(result, {'cmd': 'check_network',
+                                      'message': 'All required network present ',
+                                      'rc': 0})
+
+    @patch('inbm_lib.detect_os.detect_os', return_value='Ubuntu')
+    @patch('os.path.exists', return_value=False)
+    def test_check_network_fail(self, mock_path_exists, mock_detect_os):
+        result = dispatch_command('check_network', 30,
+                                  UNIT_TEST_DISK_PATH, 20, 20, 20, 'trtl', 'true')
+        self.assertDictEqual(result, {'cmd': 'check_network',
+                                      'message': 'Trtl not present ',
+                                      'rc': 1})
+
