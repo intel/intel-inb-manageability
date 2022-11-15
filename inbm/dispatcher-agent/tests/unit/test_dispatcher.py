@@ -575,16 +575,16 @@ class TestDispatcher(TestCase):
 #         mock_request_config_agent.return_value = True
 #         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-#     def test_service_name_prefixed_inbm(self,
-#                                         m_sub: Any,
-#                                         m_connect: Any,
-#                                         mock_logging: Any) -> None:
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    def test_service_name_prefixed_inbm(self,
+                                        m_sub: Any,
+                                        m_connect: Any,
+                                        mock_logging: Any) -> None:
 
-#         d = TestDispatcher._build_dispatcher()
-#         self.assertFalse(' ' in d._svc_name_)
-#         self.assertEquals(d._svc_name_.split('-')[0], 'inbm')
+        d = TestDispatcher._build_dispatcher()
+        self.assertFalse(' ' in d._svc_name_)
+        self.assertEquals(d._svc_name_.split('-')[0], 'inbm')
 
     @staticmethod
     def _build_dispatcher() -> Dispatcher:
