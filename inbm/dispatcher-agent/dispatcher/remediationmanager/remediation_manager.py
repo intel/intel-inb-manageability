@@ -76,15 +76,12 @@ class RemediationManager:
         logger.debug(len(ids))
         for image_id in ids:
             test_image_id = image_id+":latest"
-            logger.debug(test_image_id)
             logger.debug(self.container_image_list_to_be_removed)
             logger.debug(len(self.container_image_list_to_be_removed))
             if test_image_id in self.container_image_list_to_be_removed:
-                logger.debug(test_image_id)
                 logger.debug(self.container_image_list_to_be_removed)
                 self._remove_single_image(test_image_id)
             else:
-                logger.debug(test_image_id)
                 self._dispatcher_callbacks.broker_core.telemetry('DBS Security issue raised on imageID: '
                                                                  + str(image_id)
                                                                  + '.  Image is not present in container image list.')
