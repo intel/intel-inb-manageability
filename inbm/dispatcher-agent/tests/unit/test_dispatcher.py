@@ -252,17 +252,17 @@ class TestDispatcher(TestCase):
         mock_request_config_agent.return_value = True
         self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
-#     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-#     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-#            return_value={'restart_reason': 'sota_upgrade'})
-#    def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
-#                                             mock_install_check, mock_logging):
-#        d = TestDispatcher._build_dispatcher()
-#        d.check_dispatcher_state_info()
-#        mock_install_check.assert_called_once()
-#        mock_invoke_sota.assert_called_once()
+    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
+    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+           return_value={'restart_reason': 'sota_upgrade'})
+    def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
+                                            mock_install_check, mock_logging):
+       d = TestDispatcher._build_dispatcher()
+       d.check_dispatcher_state_info()
+       mock_install_check.assert_called_once()
+       mock_invoke_sota.assert_called_once()
 
 #    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
 #    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})
