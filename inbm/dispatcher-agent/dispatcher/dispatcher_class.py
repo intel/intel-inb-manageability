@@ -884,7 +884,7 @@ class Dispatcher(WindowsService):
             try:
                 self.install_check(check_type='swCheck')
                 logger.debug("*** OS_Rolling_Disaptcher N/W check ***")
-                self.install_check(check_type='4')
+                #self.install_check(check_type='check_network')
                 self._telemetry('On Boot, Diagnostics reports healthy system')
                 self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
             except DispatcherException:
