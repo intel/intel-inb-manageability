@@ -145,35 +145,35 @@ class TestDispatcher(TestCase):
         with self.assertRaisesRegex(AotaError, 'Cannot proceed with the AOTA '):
             aota.start()
 
-#     @patch.object(Dispatcher, '_send_result', autospec=True)
-#     def test_on_cloud_response_with_unicode_succeeds(self, mock_logging, mock_send_result):
-#         d = TestDispatcher._build_dispatcher()
-#         d.update_queue = Mock()
-#         d.update_queue.full = Mock(return_value=False)  # type: ignore
-#         d.update_queue.full.return_value = False  # type: ignore
-#         d.update_queue.put = Mock()  # type: ignore
-#         d._on_cloud_request('topic', '\xe2\x82\xac', 1)
-#         assert d.update_queue.put.call_count == 1  # type: ignore
+    @patch.object(Dispatcher, '_send_result', autospec=True)
+    def test_on_cloud_response_with_unicode_succeeds(self, mock_logging, mock_send_result):
+        d = TestDispatcher._build_dispatcher()
+        d.update_queue = Mock()
+        d.update_queue.full = Mock(return_value=False)  # type: ignore
+        d.update_queue.full.return_value = False  # type: ignore
+        d.update_queue.put = Mock()  # type: ignore
+        d._on_cloud_request('topic', '\xe2\x82\xac', 1)
+        assert d.update_queue.put.call_count == 1  # type: ignore
 
-#     @patch('dispatcher.dispatcher_class.OtaFactory', autospec=True)
-#     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
-#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-#     def test_do_install_ota_error_result_succeeds(self, mock_workload_orchestration_func, MockXmlHandler,
-#                                                   MockOtaFactory, mock_logging):
-#         parsed_head = MockXmlHandler.return_value
-#         mock_ota_factory = Mock()
-#         MockOtaFactory.get_factory.return_value = mock_ota_factory
-#         mock_parser = mock_ota_factory.create_parser.return_value
-#         mock_parser.parse.side_effect = AotaError("Error!")
+    @patch('dispatcher.dispatcher_class.OtaFactory', autospec=True)
+    @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
+    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+    def test_do_install_ota_error_result_succeeds(self, mock_workload_orchestration_func, MockXmlHandler,
+                                                  MockOtaFactory, mock_logging):
+        parsed_head = MockXmlHandler.return_value
+        mock_ota_factory = Mock()
+        MockOtaFactory.get_factory.return_value = mock_ota_factory
+        mock_parser = mock_ota_factory.create_parser.return_value
+        mock_parser.parse.side_effect = AotaError("Error!")
 
-#         d = TestDispatcher._build_dispatcher()
-#         with patch('dispatcher.dispatcher_class._check_type_validate_manifest', return_value=("ota", parsed_head)):
-#             d._send_result = Mock()  # type: ignore
-#             d.do_install("<xml></xml>")
-#             args, _ = d._send_result.call_args  # type: ignore
-#             result, = args
+        d = TestDispatcher._build_dispatcher()
+        with patch('dispatcher.dispatcher_class._check_type_validate_manifest', return_value=("ota", parsed_head)):
+            d._send_result = Mock()  # type: ignore
+            d.do_install("<xml></xml>")
+            args, _ = d._send_result.call_args  # type: ignore
+            result, = args
 
-#             assert "400" in result
+            assert "400" in result
 
 #     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
 #     @patch('dispatcher.dispatcher_class.Dispatcher._create_ota_resource_list')
