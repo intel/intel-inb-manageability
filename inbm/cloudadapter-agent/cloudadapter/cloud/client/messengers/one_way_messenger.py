@@ -29,5 +29,9 @@ class OneWayMessenger(Messenger):
     def publish(self, key: str, value: str, time: Optional[datetime] = None) -> None:
         topic = self._topic_formatter.format(request_id=self._connection.request_id)
         payload = self._payload_formatter.format(time, key=key, value=value)
+<<<<<<< HEAD
 #        t.sleep(1)
+=======
+        t.sleep(2)
+>>>>>>> b5c384f597c340a978e280d6901b48a085aa0567
         self._connection.publish(topic, payload)
