@@ -28,9 +28,8 @@ class OneWayMessenger(Messenger):
         self._connection = connection
 
     def publish(self, key: str, value: str, time: Optional[datetime] = None) -> None:
-        for line in traceback.format_stack():
-            print(line.strip())
         topic = self._topic_formatter.format(request_id=self._connection.request_id)
         payload = self._payload_formatter.format(time, key=key, value=value)
-        t.sleep(2)
+#        t.sleep(2)
         self._connection.publish(topic, payload)
+        t.sleep(2)
