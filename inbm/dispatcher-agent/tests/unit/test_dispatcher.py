@@ -232,86 +232,86 @@ class TestDispatcher(TestCase):
         mock_request_config_agent.return_value = True
         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-#     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
-#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-#     def test_config_set_check_fail(self,
-#                                    mock_workload_orchestration_func: Any,
-#                                    mock_request_config_agent: Any,
-#                                    mock_send_result: Any,
-#                                    mock_install: Any,
-#                                    m_sub: Any,
-#                                    m_connect: Any,
-#                                    mock_logging: Any) -> None:
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+    @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
+    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+    def test_config_set_check_fail(self,
+                                   mock_workload_orchestration_func: Any,
+                                   mock_request_config_agent: Any,
+                                   mock_send_result: Any,
+                                   mock_install: Any,
+                                   m_sub: Any,
+                                   m_connect: Any,
+                                   mock_logging: Any) -> None:
 
-#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>"maxCacheSize":"149"</path></set></configtype></config></manifest>'
-#         d = TestDispatcher._build_dispatcher()
-#         mock_request_config_agent.return_value = True
-#         self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>"maxCacheSize":"149"</path></set></configtype></config></manifest>'
+        d = TestDispatcher._build_dispatcher()
+        mock_request_config_agent.return_value = True
+        self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
-#     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-#     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-#            return_value={'restart_reason': 'sota_upgrade'})
-#    def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
-#                                             mock_install_check, mock_logging):
-#        d = TestDispatcher._build_dispatcher()
-#        d.check_dispatcher_state_info()
-#        mock_install_check.assert_called_once()
-#        mock_invoke_sota.assert_called_once()
-#
-#    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-#    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})
-#    def test_dispatcher_state_file_info_no_restart_reason(self, mock_disp_state_file_exist, mock_consume_disp_file,
-#                                                          mock_logging):
-#       d = TestDispatcher._build_dispatcher()
-#        try:
-#           d.check_dispatcher_state_info()
-#        except DispatcherException as e:
-#            self.assertTrue("state file doesn't contain 'restart_reason'" in str(e))
-#
-#    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-#    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
-#    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-#    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-#           return_value={'mender-version': 'abcvdk'})
-#    def test_dispatcher_state_file_info_sota_without_restart_reason(self, mock_disp_state_file_exist,
-#                                                                    mock_consume_disp_file, mock_invoke_sota,
-#                                                                    mock_install_check, mock_logging):
-#        d = TestDispatcher._build_dispatcher()
-#        d.check_dispatcher_state_info()
-#        mock_install_check.assert_called_once()
-#        mock_invoke_sota.assert_called_once()
-#
-#    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-#    @patch('dispatcher.dispatcher_class.is_dmi_path_exists', return_value=True)
-#    @patch('dispatcher.dispatcher_class.get_dmi_system_info', return_value=dmi_parsed_1)
-#    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-#    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-#           return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
-#     def test_dispatcher_state_file_info_fota(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
-#                                              mock_dmi_exists, mock_send_result, mock_logging):
-#         d = TestDispatcher._build_dispatcher()
-#         d.check_dispatcher_state_info()
-#         mock_send_result.assert_called_once_with(
-#             "FAILED INSTALL: Overall FOTA update failed. Firmware not updated.")
+    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
+    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+           return_value={'restart_reason': 'sota_upgrade'})
+   def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
+                                            mock_install_check, mock_logging):
+       d = TestDispatcher._build_dispatcher()
+       d.check_dispatcher_state_info()
+       mock_install_check.assert_called_once()
+       mock_invoke_sota.assert_called_once()
 
-#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-#     @patch('dispatcher.dispatcher_class.is_dmi_path_exists', return_value=True)
-#     @patch('dispatcher.dispatcher_class.get_dmi_system_info', return_value=dmi_unknown)
-#     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
-#     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-#            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
-#     def test_dispatcher_state_file_info_fota1(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
-#                                               mock_dmi_exists, mock_send_result, mock_logging):
-#         d = TestDispatcher._build_dispatcher()
-#         d.check_dispatcher_state_info()
-#         mock_send_result.assert_called_once_with(
-#             "FOTA INSTALL UNKNOWN: Error gathering BIOS information.")
+   @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+   @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})
+   def test_dispatcher_state_file_info_no_restart_reason(self, mock_disp_state_file_exist, mock_consume_disp_file,
+                                                         mock_logging):
+      d = TestDispatcher._build_dispatcher()
+       try:
+          d.check_dispatcher_state_info()
+       except DispatcherException as e:
+           self.assertTrue("state file doesn't contain 'restart_reason'" in str(e))
+
+   @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+   @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
+   @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+   @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+          return_value={'mender-version': 'abcvdk'})
+   def test_dispatcher_state_file_info_sota_without_restart_reason(self, mock_disp_state_file_exist,
+                                                                   mock_consume_disp_file, mock_invoke_sota,
+                                                                   mock_install_check, mock_logging):
+       d = TestDispatcher._build_dispatcher()
+       d.check_dispatcher_state_info()
+       mock_install_check.assert_called_once()
+       mock_invoke_sota.assert_called_once()
+
+   @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+   @patch('dispatcher.dispatcher_class.is_dmi_path_exists', return_value=True)
+   @patch('dispatcher.dispatcher_class.get_dmi_system_info', return_value=dmi_parsed_1)
+   @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+   @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+          return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
+    def test_dispatcher_state_file_info_fota(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
+                                             mock_dmi_exists, mock_send_result, mock_logging):
+        d = TestDispatcher._build_dispatcher()
+        d.check_dispatcher_state_info()
+        mock_send_result.assert_called_once_with(
+            "FAILED INSTALL: Overall FOTA update failed. Firmware not updated.")
+
+    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+    @patch('dispatcher.dispatcher_class.is_dmi_path_exists', return_value=True)
+    @patch('dispatcher.dispatcher_class.get_dmi_system_info', return_value=dmi_unknown)
+    @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
+    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+           return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
+    def test_dispatcher_state_file_info_fota1(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
+                                              mock_dmi_exists, mock_send_result, mock_logging):
+        d = TestDispatcher._build_dispatcher()
+        d.check_dispatcher_state_info()
+        mock_send_result.assert_called_once_with(
+            "FOTA INSTALL UNKNOWN: Error gathering BIOS information.")
 
 #     @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
 #     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
