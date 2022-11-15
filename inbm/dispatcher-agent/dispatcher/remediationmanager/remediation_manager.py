@@ -75,6 +75,7 @@ class RemediationManager:
         logger.debug("Removing Images...")
         logger.debug(len(ids))
         for image_id in ids:
+			test_image_id = image_id+":latest"
             logger.debug(image_id)
             logger.debug(self.container_image_list_to_be_removed)
             logger.debug(len(self.container_image_list_to_be_removed))
@@ -135,7 +136,6 @@ class RemediationManager:
 
     def _remove_container(self, ids: Any) -> None:
         for container_id in ids:
-            logger.debug(len(ids))
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
