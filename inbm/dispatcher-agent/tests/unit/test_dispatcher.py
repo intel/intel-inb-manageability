@@ -48,30 +48,30 @@ dmi_unknown = PlatformInformation()
                                  '../../fpm-template/etc/intel-manageability/public/dispatcher-agent/logging.ini'))
 class TestDispatcher(TestCase):
 
-#     @patch('dispatcher.ota_thread.AotaThread.start')
-#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-#     def test_invalid_command(self,
-#                              mock_send_result: Any,
-#                              m_pre: Any,
-#                              m_sub: Any,
-#                              m_connect: Any,
-#                              m_thread_start: Any,
-#                              mock_logging: Any) -> None:
-#         m_pre.return_value = False
+    @patch('dispatcher.ota_thread.AotaThread.start')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+    def test_invalid_command(self,
+                             mock_send_result: Any,
+                             m_pre: Any,
+                             m_sub: Any,
+                             m_connect: Any,
+                             m_thread_start: Any,
+                             mock_logging: Any) -> None:
+        m_pre.return_value = False
 
-#         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
-#               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \
-#               'Sample FOTA manifest file</description><type>aota</type><repository>remote</repository>' \
-#               '<bundle>0</bundle></header><type><aota name="sample.rpm"><fetch>http://www.example.com/</fetch>' \
-#               '<version>1.0</version><signature>abcd</signature><containerTag>defg</containerTag>' \
-#               '</aota></type></ota></manifest>'
-#         d = TestDispatcher._build_dispatcher()
-#         result_code = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-#         self.assertEquals(result_code, 300)
-#         assert not m_thread_start.called
+        xml = '<?xml version="1.0" encoding="UTF-8"?>' \
+              '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \
+              'Sample FOTA manifest file</description><type>aota</type><repository>remote</repository>' \
+              '<bundle>0</bundle></header><type><aota name="sample.rpm"><fetch>http://www.example.com/</fetch>' \
+              '<version>1.0</version><signature>abcd</signature><containerTag>defg</containerTag>' \
+              '</aota></type></ota></manifest>'
+        d = TestDispatcher._build_dispatcher()
+        result_code = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        self.assertEquals(result_code, 300)
+        assert not m_thread_start.called
 
     @patch('dispatcher.ota_thread.AotaThread.start')
     @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
