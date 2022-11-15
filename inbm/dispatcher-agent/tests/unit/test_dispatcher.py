@@ -438,57 +438,57 @@ class TestDispatcher(TestCase):
 #         mock_install_func.return_value = PUBLISH_SUCCESS
 #         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
-#     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
-#     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
-#     @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
-#     @patch('dispatcher.configuration_helper.ConfigurationHelper.download_config')
-#     @patch('inbm_lib.xmlhandler.XmlHandler.__init__')
-#     @patch('inbm_lib.xmlhandler.XmlHandler.add_attribute')
-#     @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
-#     @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
-#     def test_config_load_operation_on_target_vision_called(self,
-#                                                            mock_rmv: Any,
-#                                                            mock_set: Any,
-#                                                            mock_add: Any,
-#                                                            mock_xml_init: Any,
-#                                                            mock_download: Any,
-#                                                            mock_url: Any,
-#                                                            mock_xml: Any,
-#                                                            mock_req_conf_func: Any,
-#                                                            mock_logging: Any) -> None:
+    @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
+    @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
+    @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
+    @patch('dispatcher.configuration_helper.ConfigurationHelper.download_config')
+    @patch('inbm_lib.xmlhandler.XmlHandler.__init__')
+    @patch('inbm_lib.xmlhandler.XmlHandler.add_attribute')
+    @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
+    @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
+    def test_config_load_operation_on_target_vision_called(self,
+                                                           mock_rmv: Any,
+                                                           mock_set: Any,
+                                                           mock_add: Any,
+                                                           mock_xml_init: Any,
+                                                           mock_download: Any,
+                                                           mock_url: Any,
+                                                           mock_xml: Any,
+                                                           mock_req_conf_func: Any,
+                                                           mock_logging: Any) -> None:
 
-#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
-#               '<cmd>load</cmd><targetType>node</targetType><configtype><load><fetch>maxCacheSize</fetch></load></configtype> ' \
-#               '</config></manifest> '
+        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
+              '<cmd>load</cmd><targetType>node</targetType><configtype><load><fetch>maxCacheSize</fetch></load></configtype> ' \
+              '</config></manifest> '
 
-#         d = TestDispatcher._build_dispatcher()
-#         mock_xml_init.return_value = None
-#         mock_url.return_value = "http://example.tar"
-#         mock_download.return_value = "conf_file"
-#         mock_req_conf_func.assert_not_called()
-#         self.assertEquals(PUBLISH_SUCCESS, d._do_config_install_load(
-#             parsed_head=mock_xml.return_value, target_type=TargetType.vision.name, xml=xml))
+        d = TestDispatcher._build_dispatcher()
+        mock_xml_init.return_value = None
+        mock_url.return_value = "http://example.tar"
+        mock_download.return_value = "conf_file"
+        mock_req_conf_func.assert_not_called()
+        self.assertEquals(PUBLISH_SUCCESS, d._do_config_install_load(
+            parsed_head=mock_xml.return_value, target_type=TargetType.vision.name, xml=xml))
 
-#     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
-#     @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
-#     @patch('dispatcher.configuration_helper.ConfigurationHelper.download_config')
-#     def test_config_load_operation_on_local_path_pass(self,
-#                                                       mock_download: Any,
-#                                                       mock_url: Any,
-#                                                       mock_req_conf_func: Any,
-#                                                       mock_logging: Any) -> None:
+    @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
+    @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
+    @patch('dispatcher.configuration_helper.ConfigurationHelper.download_config')
+    def test_config_load_operation_on_local_path_pass(self,
+                                                      mock_download: Any,
+                                                      mock_url: Any,
+                                                      mock_req_conf_func: Any,
+                                                      mock_logging: Any) -> None:
 
-#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
-#               '<cmd>load</cmd><configtype><load><path>/var/cache/manageability/intel.conf</path></load></configtype> ' \
-#               '</config></manifest> '
-#         parsed_head = XmlHandler(xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
-#         d = TestDispatcher._build_dispatcher()
-#         # mock_xml_init.return_value = None
-#         mock_url.return_value = None
-#         mock_download.return_value = False, None
-#         mock_req_conf_func.assert_not_called()
-#         self.assertEquals(CONFIG_LOAD_SUCCESS, d._do_config_install_load(
-#             parsed_head=parsed_head, target_type=TargetType.none.name, xml=xml))
+        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
+              '<cmd>load</cmd><configtype><load><path>/var/cache/manageability/intel.conf</path></load></configtype> ' \
+              '</config></manifest> '
+        parsed_head = XmlHandler(xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        d = TestDispatcher._build_dispatcher()
+        # mock_xml_init.return_value = None
+        mock_url.return_value = None
+        mock_download.return_value = False, None
+        mock_req_conf_func.assert_not_called()
+        self.assertEquals(CONFIG_LOAD_SUCCESS, d._do_config_install_load(
+            parsed_head=parsed_head, target_type=TargetType.none.name, xml=xml))
 
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
