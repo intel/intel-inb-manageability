@@ -13,6 +13,7 @@ from ..connections.mqtt_connection import MQTTConnection
 from datetime import datetime
 from typing import Optional
 import time as t
+import traceback
 class OneWayMessenger(Messenger):
 
     def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, connection: MQTTConnection) -> None:
@@ -27,11 +28,9 @@ class OneWayMessenger(Messenger):
         self._connection = connection
 
     def publish(self, key: str, value: str, time: Optional[datetime] = None) -> None:
+        for line in traceback.format_stack():
+            print(line.strip())
         topic = self._topic_formatter.format(request_id=self._connection.request_id)
         payload = self._payload_formatter.format(time, key=key, value=value)
-<<<<<<< HEAD
-#        t.sleep(1)
-=======
         t.sleep(2)
->>>>>>> b5c384f597c340a978e280d6901b48a085aa0567
         self._connection.publish(topic, payload)
