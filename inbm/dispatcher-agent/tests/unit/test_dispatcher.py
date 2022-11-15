@@ -175,62 +175,62 @@ class TestDispatcher(TestCase):
 
             assert "400" in result
 
-#     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
-#     @patch('dispatcher.dispatcher_class.Dispatcher._create_ota_resource_list')
-#     @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
-#     def test_do_install_pota_resource_func_called(self, mock_ota_update, mock_ota_resource_func, MockXmlHandler,
-#                                                   mock_logging):
-#         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
-#               '<manifest><type>ota</type><ota><header><type>pota</type><repo>remote</repo>' \
-#               '</header><type><pota><targetType>node</targetType>' \
-#               '<targets><target>node-id1</target><target>node-id2</target></targets>' \
-#               '<fota name="sample"><fetch>http://nat-ubuntu.jf.intel.com:8000/A1170000F60XE01.rar</fetch>' \
-#               '<biosversion>5.12</biosversion><sigversion>384</sigversion><signature>signature</signature>' \
-#               '<manufacturer>Default string</manufacturer><product>Default string</product>' \
-#               '<productversion>1</productversion><vendor>American Megatrends Inc.</vendor><releasedate>2018-02-08</releasedate>' \
-#               '<boot>boot</boot><guid>guid</guid><size>size</size><tooloptions>/p /b</tooloptions>' \
-#               '<username>user1</username><password>pwd</password></fota>' \
-#               ' <sota><cmd logtofile="y">update</cmd><fetch>http://nat-ubuntu.jf.intel.com:8000/file.mender</fetch>' \
-#               '<signature>signature</signature><username>user</username><password>pwd</password>' \
-#               '<release_date>2020-10-10</release_date></sota>  ' \
-#               '</pota></type></ota></manifest>'
-#         d = TestDispatcher._build_dispatcher()
-#         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-#         mock_ota_resource_func.assert_not_called()
-#         mock_ota_resource_func.return_value = {'fota': 'FOTA', 'sota': 'SOTA'}
-#         mock_ota_update.assert_called()
+    @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
+    @patch('dispatcher.dispatcher_class.Dispatcher._create_ota_resource_list')
+    @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
+    def test_do_install_pota_resource_func_called(self, mock_ota_update, mock_ota_resource_func, MockXmlHandler,
+                                                  mock_logging):
+        xml = '<?xml version="1.0" encoding="UTF-8"?>' \
+              '<manifest><type>ota</type><ota><header><type>pota</type><repo>remote</repo>' \
+              '</header><type><pota><targetType>node</targetType>' \
+              '<targets><target>node-id1</target><target>node-id2</target></targets>' \
+              '<fota name="sample"><fetch>http://nat-ubuntu.jf.intel.com:8000/A1170000F60XE01.rar</fetch>' \
+              '<biosversion>5.12</biosversion><sigversion>384</sigversion><signature>signature</signature>' \
+              '<manufacturer>Default string</manufacturer><product>Default string</product>' \
+              '<productversion>1</productversion><vendor>American Megatrends Inc.</vendor><releasedate>2018-02-08</releasedate>' \
+              '<boot>boot</boot><guid>guid</guid><size>size</size><tooloptions>/p /b</tooloptions>' \
+              '<username>user1</username><password>pwd</password></fota>' \
+              ' <sota><cmd logtofile="y">update</cmd><fetch>http://nat-ubuntu.jf.intel.com:8000/file.mender</fetch>' \
+              '<signature>signature</signature><username>user</username><password>pwd</password>' \
+              '<release_date>2020-10-10</release_date></sota>  ' \
+              '</pota></type></ota></manifest>'
+        d = TestDispatcher._build_dispatcher()
+        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        mock_ota_resource_func.assert_not_called()
+        mock_ota_resource_func.return_value = {'fota': 'FOTA', 'sota': 'SOTA'}
+        mock_ota_update.assert_called()
 
-#     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
-#     @patch('inbm_lib.xmlhandler.XmlHandler.get_children')
-#     def test_do_install_pota_do_ota_func_called(self, mock_get_children, MockXmlHandler, mock_logging):
-#         parsed_head = MockXmlHandler.return_value
-#         resource = {'fota': ' ', 'sota': ' '}
-#         d = TestDispatcher._build_dispatcher()
-#         with patch('dispatcher.dispatcher_class._check_type_validate_manifest', return_value=("ota", parsed_head)):
-#             d.send_result = Mock()  # type: ignore
-#             d.do_install("<xml></xml>")
-#             res = d._create_ota_resource_list(parsed_head, resource)
-#             self.assertEquals(list(res.keys()), ['fota', 'sota'])
+    @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
+    @patch('inbm_lib.xmlhandler.XmlHandler.get_children')
+    def test_do_install_pota_do_ota_func_called(self, mock_get_children, MockXmlHandler, mock_logging):
+        parsed_head = MockXmlHandler.return_value
+        resource = {'fota': ' ', 'sota': ' '}
+        d = TestDispatcher._build_dispatcher()
+        with patch('dispatcher.dispatcher_class._check_type_validate_manifest', return_value=("ota", parsed_head)):
+            d.send_result = Mock()  # type: ignore
+            d.do_install("<xml></xml>")
+            res = d._create_ota_resource_list(parsed_head, resource)
+            self.assertEquals(list(res.keys()), ['fota', 'sota'])
 
-#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-#     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-#     @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-#     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-#     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
-#     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-#     def test_config_set_check_pass(self,
-#                                    mock_workload_orchestration_func: Any,
-#                                    mock_request_config_agent: Any,
-#                                    mock_send_result: Any,
-#                                    mock_install: Any,
-#                                    m_sub: Any,
-#                                    m_connect: Any,
-#                                    mock_logging: Any) -> None:
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
+    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+    @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
+    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+    def test_config_set_check_pass(self,
+                                   mock_workload_orchestration_func: Any,
+                                   mock_request_config_agent: Any,
+                                   mock_send_result: Any,
+                                   mock_install: Any,
+                                   m_sub: Any,
+                                   m_connect: Any,
+                                   mock_logging: Any) -> None:
 
-#         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>maxCacheSize:149</path></set></configtype></config></manifest>'
-#         d = TestDispatcher._build_dispatcher()
-#         mock_request_config_agent.return_value = True
-#         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>maxCacheSize:149</path></set></configtype></config></manifest>'
+        d = TestDispatcher._build_dispatcher()
+        mock_request_config_agent.return_value = True
+        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
 
 #     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
 #     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
