@@ -14,6 +14,8 @@ from datetime import datetime
 from typing import Optional
 import time as t
 import traceback
+from threading import Thread, Lock
+
 class OneWayMessenger(Messenger):
 
     def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, connection: MQTTConnection) -> None:
@@ -26,11 +28,14 @@ class OneWayMessenger(Messenger):
         self._topic_formatter = topic_formatter
         self._payload_formatter = payload_formatter
         self._connection = connection
+        self.lock = Lock()
 
     def publish(self, key: str, value: str, time: Optional[datetime] = None) -> None:
+        self.lock.acquire()
         topic = self._topic_formatter.format(request_id=self._connection.request_id)
         payload = self._payload_formatter.format(time, key=key, value=value)
-        t.sleep(0.05)
+        t.sleep(0.1)
         logger.debug(topic)
         logger.debug(payload)
         self._connection.publish(topic, payload)
+        self.lock.release()
