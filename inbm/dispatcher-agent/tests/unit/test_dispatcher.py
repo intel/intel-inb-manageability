@@ -269,7 +269,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'sota_upgrade'})
-    def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
+    def test_dispatcher_state_file_info_sota_reason(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
                                              mock_install_check, mock_logging):
         d = TestDispatcher._build_dispatcher()
         d.check_dispatcher_state_info()
@@ -291,7 +291,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'mender-version': 'abcvdk'})
-    def test_dispatcher_state_file_info_sota_without_restart_reason(self, mock_disp_state_file_exist,
+    def test_dispatcher_state_file_info_sota_without_restart_reason_check(self, mock_disp_state_file_exist,
                                                                     mock_consume_disp_file, mock_invoke_sota,
                                                                     mock_install_check, mock_logging):
         d = TestDispatcher._build_dispatcher()
