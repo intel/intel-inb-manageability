@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
+ - HSD 15012036803 - Added fix for few telemetry data of the OTA update is not published to Thingsboard cloud
 ### Fixed
  - RTC 519030 - Added a fix for Bit Creek (Vision) build failure
 
