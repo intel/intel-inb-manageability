@@ -881,7 +881,7 @@ class Dispatcher(WindowsService):
             In case of a good health report, it just deletes the snapshot."""
             try:
                 self.install_check(check_type='swCheck')
-                #self.install_check(check_type='check_network')
+                self.install_check(check_type='check_network')
                 self._telemetry('On Boot, Diagnostics reports healthy system')
                 self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
             except DispatcherException:
