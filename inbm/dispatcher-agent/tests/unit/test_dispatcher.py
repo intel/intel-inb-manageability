@@ -261,7 +261,7 @@ class TestDispatcher(TestCase):
                                             mock_install_check, mock_logging):
        d = TestDispatcher._build_dispatcher()
        d.check_dispatcher_state_info()
-       mock_install_check.assert_called_once()
+       mock_install_check.assert_called()
        mock_invoke_sota.assert_called_once()
 
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
@@ -284,7 +284,7 @@ class TestDispatcher(TestCase):
                                                                    mock_install_check, mock_logging):
        d = TestDispatcher._build_dispatcher()
        d.check_dispatcher_state_info()
-       mock_install_check.assert_called_once()
+       mock_install_check.assert_called()
        mock_invoke_sota.assert_called_once()
 
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
