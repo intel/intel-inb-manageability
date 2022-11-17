@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
- - RTC 517426 - Fixed for No post install check for network connectivity after post an OS update
+ - RTC 517426 - Network check added after reboot for SOTA No post install check for network connectivity after post an OS update
 ### Fixed
  - RTC 521500      - Fixed build error by updating PyInstaller to 5.6.2
  - RTC 520951      - Remove references to 'inbm-lib' from requirements.txt in intel-inb-manageability repository
