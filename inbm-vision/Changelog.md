@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
+ - RTC 517426 - Fixed for No post install check for network connectivity after post an OS update
 ### Fixed
  - RTC 519030 - Added a fix for Bit Creek (Vision) build failure
 
