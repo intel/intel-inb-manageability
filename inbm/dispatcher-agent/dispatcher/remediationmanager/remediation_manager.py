@@ -74,10 +74,11 @@ class RemediationManager:
         logger.debug("Removing Images...")
         logger.debug("*** dbs_test ***")
         logger.debug(len(self.container_image_list_to_be_removed))
-        logger.debug(image_id)
+        #logger.debug(image_id)
         for image_id in ids:
             if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(image_id)
+                logger.debug(image_id)
                 logger.debug(self._remove_single_image)
             else:
                 self._dispatcher_callbacks.broker_core.telemetry('DBS Security issue raised on imageID: '
