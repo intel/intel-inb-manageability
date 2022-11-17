@@ -8,7 +8,7 @@
 """
 
 import logging
-import re
+#import re
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -76,7 +76,7 @@ class RemediationManager:
         logger.debug(len(self.container_image_list_to_be_removed))
         #logger.debug(image_id)
         for image_id in ids:
-            if image_id in self.container_image_list_to_be_removed:
+            if image_id not in self.container_image_list_to_be_removed:
                 logger.debug("*** dbs_test image_id : if condition ***")
                 self._remove_single_image(image_id)
                 logger.debug(image_id)
@@ -139,7 +139,7 @@ class RemediationManager:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-
+                """
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, active_containers_list = trtl.list()
                 if err:
@@ -153,11 +153,12 @@ class RemediationManager:
 
                 if temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
                     self.container_image_list_to_be_removed.append(temp_image_name)
-
+                """
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
+                    self.container_image_list.append(image_name)
 
                 (out, err, code) = trtl.stop_by_id(str(container_id))
                 if err is None:
