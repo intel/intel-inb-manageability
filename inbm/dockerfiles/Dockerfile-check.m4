@@ -85,7 +85,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=inbc tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt && \
-    coverage report --fail-under=84
+    coverage report --fail-under=50
 
 # ---diagnostic agent---
 
