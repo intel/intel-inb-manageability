@@ -397,18 +397,26 @@ class Trtl:
                       .format(out, err, code))
         return out, err, code
 
-    def image_remove_by_id(self, image_id: str, force: bool = False) -> Tuple[str, Optional[str], int]:
-        """Do TRTL imageRemoveByID
-        @param image_id: ImageID to be removed
+    # def image_remove_by_id(self, image_id: str, force: bool = False) -> Tuple[str, Optional[str], int]:
+    #     """Do TRTL imageRemoveByID
+    #     @param image_id: ImageID to be removed
+    #     @param force: Force image to be removed even if it has an active container
+    #     @return: Result, error message, error code
+    #     """
+    #     logger.debug("Trtl.imageRemoveByID(" + image_id + ")")
+    #     out, err, code = self.runner.run(self._boilerplate(
+    #         "imageRemoveByID") + " -id=" + image_id + " -f=" + str(force))
+    #     logging.debug(
+    #         "Trtl.imageremovebyid results: output={}, err={}, exitcode={}".format(
+    #             out, err, code))
+    #     return out, err, code
+    #New fun addeed for removing image
+    def image_remove_by_name(self, image_name: str, force: bool = False) -> Tuple[str, Optional[str], int]:
+        """Do TRTL imageRemoveByName
+        @param image_name: Imagename to be removed
         @param force: Force image to be removed even if it has an active container
         @return: Result, error message, error code
         """
-        logger.debug("Trtl.imageRemoveByID(" + image_id + ")")
-        out, err, code = self.runner.run(self._boilerplate(
-            "imageRemoveByID") + " -id=" + image_id + " -f=" + str(force))
-        logging.debug(
-            "Trtl.imageremovebyid results: output={}, err={}, exitcode={}".format(
-                out, err, code))
         logger.debug("Trtl.imageRemoveByname(" + image_name + ")")
         out, err, code = self.runner.run(self._boilerplate(
             "imageRemoveByname") + " -in=" + image_name + " -f=" + str(force))
@@ -416,20 +424,6 @@ class Trtl:
             "Trtl.imageremovebyname results: output={}, err={}, exitcode={}".format(
                 out, err, code))
         return out, err, code
-    # New fun addeed for removing image
-    # def image_remove_by_name(self, image_name: str, force: bool = False) -> Tuple[str, Optional[str], int]:
-    #     """Do TRTL imageRemoveByName
-    #     @param image_name: Imagename to be removed
-    #     @param force: Force image to be removed even if it has an active container
-    #     @return: Result, error message, error code
-    #     """
-    #     logger.debug("Trtl.imageRemoveByname(" + image_name + ")")
-    #     out, err, code = self.runner.run(self._boilerplate(
-    #         "imageRemoveByname") + " -in=" + image_name + " -f=" + str(force))
-    #     logging.debug(
-    #         "Trtl.imageremovebyname results: output={}, err={}, exitcode={}".format(
-    #             out, err, code))
-    #     return out, err, code
 
     def get_latest_tag(self, image: str) -> Tuple[str, int]:
         """Get Latest Tag used for an image.
