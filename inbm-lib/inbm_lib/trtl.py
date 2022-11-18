@@ -566,3 +566,17 @@ class Trtl:
             logger.debug("Could not run docker security bench : " + err)
 
         return None
+    # New fun addeed for removing image
+    def image_remove_by_name(self, image_name: str, force: bool = False) -> Tuple[str, Optional[str], int]:
+        """Do TRTL imageRemoveByName
+        @param image_name: Imagename to be removed
+        @param force: Force image to be removed even if it has an active container
+        @return: Result, error message, error code
+        """
+        logger.debug("Trtl.imageRemoveByname(" + image_name + ")")
+        out, err, code = self.runner.run(self._boilerplate(
+            "imageRemoveByname") + " -in=" + image_name + " -f=" + str(force))
+        logging.debug(
+            "Trtl.imageremovebyname results: output={}, err={}, exitcode={}".format(
+                out, err, code))
+        return out, err, code
