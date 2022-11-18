@@ -580,4 +580,3 @@ class Trtl:
             "Trtl.imageremovebyName results: output={}, err={}, exitcode={}".format(
                 out, err, code))
         return out, err, code
-    
