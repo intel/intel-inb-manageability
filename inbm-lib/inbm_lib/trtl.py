@@ -405,7 +405,7 @@ class Trtl:
         """
         logger.debug("Trtl.imageRemoveByID(" + image_id + ")")
         out, err, code = self.runner.run(self._boilerplate(
-            "imageRemoveByname") + " -id=" + image_id + " -f=" + str(force))
+            "ImageRemoveById") + " -id=" + image_id + " -f=" + str(force))
         logging.debug(
             "Trtl.imageremovebyid results: output={}, err={}, exitcode={}".format(
                 out, err, code))
