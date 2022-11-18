@@ -6,8 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
- - HSD 15012036803 - Added fix for few telemetry data of the OTA update is not published to Thingsboard cloud
 ### Fixed
+ - HSD 15012036803 - Fix for few telemetry data of the OTA update is not published to Thingsboard cloud
  - RTC 521500      - Fixed build error by updating PyInstaller to 5.6.2
  - RTC 520951      - Remove references to 'inbm-lib' from requirements.txt in intel-inb-manageability repository
  - HSD 15011727901 - Fix POTA/INBC POTA print "Firmware Update Aborted" message after firmware update is success
