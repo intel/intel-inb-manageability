@@ -176,8 +176,8 @@ class RemediationManager:
                         str(container_id) + '.  Container has been removed.')
 
                 if self.dbs_remove_image_on_failed_container and image_id is not None:
-                    self._remove_single_image(image_id)
-                    #self._remove_single_image(image_name)
+                    #self._remove_single_image(image_id)
+                    self._remove_single_image(image_name)
             else:
                 self._dispatcher_callbacks.broker_core.telemetry(
                     'DBS Security issue raised on containerID: ' + str(container_id) +
