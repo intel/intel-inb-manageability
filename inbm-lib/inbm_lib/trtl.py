@@ -573,12 +573,12 @@ class Trtl:
         @param force: Force image to be removed even if it has an active container
         @return: Result, error message, error code
         """
-        logger.debug("Trtl.imageRemoveByName(" + image_name + ")")
-        out, err, code = self.runner.run(self._boilerplate(
-           "imageRemoveByName") + " -in=" + image_name + " -f=" + str(force))
-        logging.debug(
-            "Trtl.imageremovebyName results: output={}, err={}, exitcode={}".format(
-                out, err, code))
+        # logger.debug("Trtl.imageRemoveByName(" + image_name + ")")
+        # out, err, code = self.runner.run(self._boilerplate(
+        #    "imageRemoveByName") + " -in=" + image_name + " -f=" + str(force))
+        # logging.debug(
+        #     "Trtl.imageremovebyName results: output={}, err={}, exitcode={}".format(
+        #         out, err, code))
         return None
 
     # def image_remove_by_name(self, image_name: str, force: bool = False) -> Tuple[str, Optional[str], int]:
