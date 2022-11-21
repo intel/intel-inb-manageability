@@ -21,7 +21,7 @@ import shlex
 import time
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
-
+import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -457,13 +457,14 @@ class Trtl:
         """
         if container_id is None:
             container_id = ''
-
-        logger.debug(f"Trtl.list: container_id->{container_id}")
-        out, err, code = self.runner.run(
-            self._boilerplate("list") + " -in=" + container_id)
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
+            logger.debug(f"Trtl.list: container_id->{container_id}")
+            out, err, code = self.runner.run(
+                self._boilerplate("list") + " -in=" + container_id)
         logging.debug(
-            "Trtl.list results: output={}, err={}, exitcode={}".format(
-                out, err, code))
+                "Trtl.list results: output={}, err={}, exitcode={}".format(
+                   out, err, code))
         if code != 0 and err != '':
             return err, ''
         else:
