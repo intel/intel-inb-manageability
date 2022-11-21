@@ -67,7 +67,9 @@ class RemediationManager:
                 for line in traceback.format_stack():
                     logger.debug(line.strip())
                     logger.info('Received message: %s on topic: %s', payload, topic)
-                    self._remove_images(literal_eval(payload))
+                    for line in traceback.format_stack():
+                        logger.debug(line.strip())
+                        self._remove_images(literal_eval(payload))
 
         except ValueError as error:
             logger.error('Unable to parse image message . Verify image remove request is in '
