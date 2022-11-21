@@ -146,7 +146,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dispatcher tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt && \
-    coverage report --fail-under=80
+    coverage report --fail-under=70
 
 # ---cloudadapter agent---
 
@@ -202,7 +202,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=telemetry telemetry/tests/unit 2>&1 | tee /output/coverage/telemetry-coverage.txt && \
-    coverage report --fail-under=84
+    coverage report --fail-under=70
 
 # ---configuration agent---
 
@@ -230,7 +230,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=configuration configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt && \
-    coverage report --fail-under=88
+    coverage report --fail-under=70
 
 # output container
 FROM base as output
