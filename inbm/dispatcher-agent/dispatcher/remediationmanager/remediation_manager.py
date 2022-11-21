@@ -9,6 +9,7 @@
 
 import logging
 import re
+import traceback
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -63,8 +64,10 @@ class RemediationManager:
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
         try:
             if payload is not None:
-                logger.info('Received message: %s on topic: %s', payload, topic)
-                self._remove_images(literal_eval(payload))
+                for line in traceback.format_stack():
+                    logger.debug(line.strip())
+                    logger.info('Received message: %s on topic: %s', payload, topic)
+                    self._remove_images(literal_eval(payload))
 
         except ValueError as error:
             logger.error('Unable to parse image message . Verify image remove request is in '
