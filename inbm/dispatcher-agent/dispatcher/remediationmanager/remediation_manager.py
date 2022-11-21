@@ -89,7 +89,7 @@ class RemediationManager:
             trtl = Trtl(PseudoShellRunner())
             (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
             #(out, err, code) = trtl.image_remove_all(str(image), True)
-            (out, err, code) = trtl.image_remove_by_name(str(image_id), True)
+            #(out, err, code) = trtl.image_remove_by_name(str(image_id), True)
             if err is None:
                 err = ""
             if code != 0:
@@ -178,7 +178,7 @@ class RemediationManager:
                         str(container_id) + '.  Container has been removed.')
 
                 if self.dbs_remove_image_on_failed_container and image_id is not None:
-                    self._remove_single_image(image_id)
+                    #self._remove_single_image(image_id)
                     #self._remove_single_image(image)
                     self._remove_single_image(image_name)
             else:
