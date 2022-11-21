@@ -121,9 +121,9 @@ class Trtl:
         logger.debug("Trtl.getimagebycontainerid(" + str(container_id) + ")")
         out, err, code = self.runner.run(self._boilerplate(
             "getimagebycontainerid") + " -id=" + str(container_id))
-        logger.debug("Trtl.getimagebycontainerid(" + str(image_name) + ")")
-        out, err, code = self.runner.run(self._boilerplate(
-            "getimagebycontainerid") + " -in=" + str(image_name))
+        # logger.debug("Trtl.getimagebycontainerid(" + str(image_name) + ")")
+        # out, err, code = self.runner.run(self._boilerplate(
+        #     "getimagebycontainerid") + " -in=" + str(image_name))
         logging.debug(
             "Trtl.getimagebycontainerid results: output={}, err={}, exitcode={}"
             .format(out, err, code))
