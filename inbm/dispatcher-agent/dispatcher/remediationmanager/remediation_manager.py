@@ -88,7 +88,7 @@ class RemediationManager:
             trtl = Trtl(PseudoShellRunner())
             #(out, err, code) = trtl.image_remove_by_id(str(image_id), True)
             #(out, err, code) = trtl.image_remove_all(str(image_id), True)
-            (out, err, code) = trtl.image_remove_by_id(str(image_name), True)
+            (out, err, code) = trtl.image_remove_by_name(str(image_name), True)
             if err is None:
                 err = ""
             if code != 0:

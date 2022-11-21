@@ -128,7 +128,19 @@ class Trtl:
             "Trtl.getimagebycontainerid results: output={}, err={}, exitcode={}"
             .format(out, err, code))
         return out, err, code
-
+    #New fun added to remove image by name
+    def image_remove_by_name(self, image_name: str) -> Tuple[str, Optional[str], int]:
+        """Do TRTL GetImageByName
+        @param Image_Name: ImageName
+        @return: image name associated with container image
+        """
+        logger.debug("Trtl.imageremovebyname(" + str(image_name) + ")")
+        out, err, code = self.runner.run(self._boilerplate(
+            "imageremovebyname") + " -in=" + str(image_name))
+        logging.debug(
+            "Trtl.imageremovebyname results: output={}, err={}, exitcode={}"
+            .format(out, err, code))
+        return out, err, code
     def execute(self, image: str, version: int, opt: bool = False) -> Tuple[str, Optional[str], int]:
         """Do TRTL execute
 
