@@ -458,7 +458,7 @@ class Trtl:
         if container_id is None:
             container_id = ''
 
-        logger.debug("Trtl.list: container_id->{container_id}")
+        logger.debug(f"Trtl.list: container_id->{container_id}")
         out, err, code = self.runner.run(
             self._boilerplate("list") + " -in=" + container_id)
         logging.debug(
