@@ -404,10 +404,15 @@ class Trtl:
         @return: Result, error message, error code
         """
         logger.debug("Trtl.imageRemoveByID(" + image_id + ")")
+        # out, err, code = self.runner.run(self._boilerplate(
+        #     "imageRemoveByName") + " -in=" + image_id + " -f=" + str(force))
+        # logging.debug(
+        #     "Trtl.imageremovebyName results: output={}, err={}, exitcode={}".format(
+        #         out, err, code))
         out, err, code = self.runner.run(self._boilerplate(
-            "imageRemoveByName") + " -in=" + image_id + " -f=" + str(force))
+            "ImageRemoveAll") + " -in=" + image_id + " -f=" + str(force))
         logging.debug(
-            "Trtl.imageremovebyName results: output={}, err={}, exitcode={}".format(
+            "Trtl.imageRemoveAll results: output={}, err={}, exitcode={}".format(
                 out, err, code))
         return out, err, code
 
