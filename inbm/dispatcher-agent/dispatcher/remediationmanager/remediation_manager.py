@@ -111,7 +111,7 @@ class RemediationManager:
                                                              + '.  Image will not be removed due to system in '
                                                              'DBS WARN mode.')
 
-    def _get_image_id(self, trtl: Trtl, container_id: str) -> Tuple[Optional[str], Optional[str]]:
+    def _get_image_id(self, trtl: Trtl, container_id: str, image_id: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
         """Get the image id associated with the container id via TRTL
 
         @param trtl: TRTL object
