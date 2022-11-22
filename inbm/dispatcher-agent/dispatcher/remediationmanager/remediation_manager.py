@@ -78,7 +78,7 @@ class RemediationManager:
         for image_id in ids:
             logeer.debug(len(ids))
             new_image_id = image_id + ":latest"
-            if image_id in self.container_image_list_to_be_removed:
+            if new_image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(new_image_id)
                 #self._remove_single_image(image_name)
             else:
