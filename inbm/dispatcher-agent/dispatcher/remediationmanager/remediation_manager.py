@@ -9,7 +9,6 @@
 
 import logging
 import re
-import traceback
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -67,9 +66,7 @@ class RemediationManager:
                 for line in traceback.format_stack():
                     logger.debug(line.strip())
                     logger.info('Received message: %s on topic: %s', payload, topic)
-                    for line in traceback.format_stack():
-                        logger.debug(line.strip())
-                        self._remove_images(literal_eval(payload))
+                    self._remove_images(literal_eval(payload))
 
         except ValueError as error:
             logger.error('Unable to parse image message . Verify image remove request is in '
@@ -78,9 +75,7 @@ class RemediationManager:
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
         for image_id in ids:
-            logger.debug(len(ids))
             if image_id in self.container_image_list_to_be_removed:
-                logger.debug (self.container_image_list_to_be_removed)
                 self._remove_single_image(image_id)
                 #self._remove_single_image(image_name)
             else:
@@ -95,7 +90,7 @@ class RemediationManager:
         if not self.ignore_dbs_results:
             trtl = Trtl(PseudoShellRunner())
             (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
-            #(out, err, code) = trtl.image_remove_all(str(image_id), True)
+            #(out, err, code) = trtl.image_remove_all(str(image), True)
             #(out, err, code) = trtl.image_remove_by_name(str(image_id), True)
             if err is None:
                 err = ""
@@ -113,7 +108,7 @@ class RemediationManager:
                                                              + '.  Image will not be removed due to system in '
                                                              'DBS WARN mode.')
 
-    def _get_image_id(self, trtl: Trtl, container_id: str, image_id: str) -> Tuple[Optional[str], Optional[str], Optional[str]]:
+    def _get_image_id(self, trtl: Trtl, container_id: str) -> Tuple[Optional[str], Optional[str]]:
         """Get the image id associated with the container id via TRTL
 
         @param trtl: TRTL object
@@ -128,23 +123,20 @@ class RemediationManager:
                     image_id = value.replace("ImageID=", "").strip()
                 if "ImageName" in value:
                     image_name = value.replace("ImageName=", "").strip()
-                if "Image" in value:
-                    image = value.replace("Image=", "").strip()
 
         logger.debug(
-            f"ImageId {image_id} with name {image_name} with image {image} is associated with containerId {container_id}")
+            f"ImageId {image_id} with name {image_name} is associated with containerId {container_id}")
         if code != 0:
             self._dispatcher_callbacks.broker_core.telemetry(
-                'Unable to get imageId and imageName and image for containerID: ' + str(container_id))
-            return None, None, None
-        return image_id, image_name, image
+                'Unable to get imageId and imageName for containerID: ' + str(container_id))
+            return None, None
+        return image_id, image_name
 
     def _remove_container(self, ids: Any) -> None:
         for container_id in ids:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
-                image = None
 
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, active_containers_list = trtl.list()
@@ -161,7 +153,7 @@ class RemediationManager:
                     self.container_image_list_to_be_removed.append(temp_image_name)
 
                 if self.dbs_remove_image_on_failed_container:
-                    image_id, image, image_name = self._get_image_id(trtl, container_id, container_id)
+                    image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
 
