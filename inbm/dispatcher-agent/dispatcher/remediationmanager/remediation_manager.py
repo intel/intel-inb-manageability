@@ -92,8 +92,8 @@ class RemediationManager:
         logger.debug("")
         if not self.ignore_dbs_results:
             trtl = Trtl(PseudoShellRunner())
-            #(out, err, code) = trtl.image_remove_by_id(str(image_id), True)
-            (out, err, code) = trtl.image_remove_all(str(image_id), True)
+            (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
+            #(out, err, code) = trtl.image_remove_all(str(image_id), True)
             #(out, err, code) = trtl.image_remove_by_name(str(image_id), True)
             if err is None:
                 err = ""
@@ -185,10 +185,10 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been removed.')
 
-                if self.dbs_remove_image_on_failed_container and image is not None:
+                if self.dbs_remove_image_on_failed_container and image_name is not None:
                     #self._remove_single_image(image_id)
-                    self._remove_single_image(image)
-                    #self._remove_single_image(image_name)
+                    #self._remove_single_image(image)
+                    self._remove_single_image(image_name)
             else:
                 self._dispatcher_callbacks.broker_core.telemetry(
                     'DBS Security issue raised on containerID: ' + str(container_id) +
