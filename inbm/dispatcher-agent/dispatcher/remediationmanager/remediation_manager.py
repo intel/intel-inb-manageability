@@ -118,7 +118,7 @@ class RemediationManager:
         @param container_id: container ID
         """
         (output, err, code) = trtl.get_image_by_container_id(str(container_id))
-        image_id = image_name = image = None
+        image_id = image_name = None
         if output:
             output_split = output.split(",")
             for value in output_split:
