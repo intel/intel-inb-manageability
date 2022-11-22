@@ -133,7 +133,7 @@ class RemediationManager:
             f"ImageId {image_id} with name {image_name} with image {image} is associated with containerId {container_id}")
         if code != 0:
             self._dispatcher_callbacks.broker_core.telemetry(
-                'Unable to get imageId and imageName for containerID: ' + str(container_id))
+                'Unable to get imageId and imageName and image for containerID: ' + str(container_id))
             return None, None, None
         return image_id, image_name, image
 
@@ -159,7 +159,7 @@ class RemediationManager:
                     self.container_image_list_to_be_removed.append(temp_image_name)
 
                 if self.dbs_remove_image_on_failed_container:
-                    image_id, image, image_name = self._get_image_id(trtl, container_id)
+                    image_id, image, image_name = self._get_image_id(trtl, container_id, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
 
