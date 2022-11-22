@@ -118,7 +118,7 @@ class RemediationManager:
         @param container_id: container ID
         """
         (output, err, code) = trtl.get_image_by_container_id(str(container_id))
-        image_id = image_name = None
+        image_id = image_name =image = None
         if output:
             output_split = output.split(",")
             for value in output_split:
@@ -126,20 +126,23 @@ class RemediationManager:
                     image_id = value.replace("ImageID=", "").strip()
                 if "ImageName" in value:
                     image_name = value.replace("ImageName=", "").strip()
+                if "Image" in value:
+                    image = value.replace("Image=", "").strip()
 
         logger.debug(
-            f"ImageId {image_id} with name {image_name} is associated with containerId {container_id}")
+            f"ImageId {image_id} with name {image_name} with image {image} is associated with containerId {container_id}")
         if code != 0:
             self._dispatcher_callbacks.broker_core.telemetry(
                 'Unable to get imageId and imageName for containerID: ' + str(container_id))
             return None, None
-        return image_id, image_name
+        return image_id, image_name, image
 
     def _remove_container(self, ids: Any) -> None:
         for container_id in ids:
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
+                image = None
 
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, active_containers_list = trtl.list()
@@ -156,7 +159,7 @@ class RemediationManager:
                     self.container_image_list_to_be_removed.append(temp_image_name)
 
                 if self.dbs_remove_image_on_failed_container:
-                    image_id, image_name = self._get_image_id(trtl, container_id)
+                    image_id, image, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
 
