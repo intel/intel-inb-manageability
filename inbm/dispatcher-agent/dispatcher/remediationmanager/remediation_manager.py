@@ -118,7 +118,7 @@ class RemediationManager:
         @param container_id: container ID
         """
         (output, err, code) = trtl.get_image_by_container_id(str(container_id))
-        image_id = image_name =image = None
+        image_id = image_name = image = None
         if output:
             output_split = output.split(",")
             for value in output_split:
@@ -134,7 +134,7 @@ class RemediationManager:
         if code != 0:
             self._dispatcher_callbacks.broker_core.telemetry(
                 'Unable to get imageId and imageName for containerID: ' + str(container_id))
-            return None, None
+            return None, None, None
         return image_id, image_name, image
 
     def _remove_container(self, ids: Any) -> None:
