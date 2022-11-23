@@ -73,9 +73,9 @@ class RemediationManager:
         for image_id in ids:
             logger.debug(len(ids))
             new_image_id = image_id.split(':')
-            print(image_id)
-            print(new_image_id)
-            print(self.container_image_list_to_be_removed)
+            logger.debug(image_id)
+            logger.debug(new_image_id)
+            logger.debug(self.container_image_list_to_be_removed)
             if image_id in self.container_image_list_to_be_removed:
                 self._remove_single_image(new_image_id[0])
                 #self._remove_single_image(image_id)
