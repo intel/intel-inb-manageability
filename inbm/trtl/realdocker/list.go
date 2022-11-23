@@ -21,9 +21,12 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummar
 	args := filters.NewArgs()
 	if len(imageName) > 0 {
 		args.Add("reference", imageName)
+		fmt.Printf("***** GetAllImagesByName *****")
+		fmt.Print("%s\n", imageName)
 	}
 
 	images, err := dw.ImageList(types.ImageListOptions{All: true, Filters: args})
+	fmt.Printf("***** ImageList *****")
 	if err != nil {
 		return nil, err
 	}
@@ -35,6 +38,8 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummar
 // It returns the list of containers and any error encountered.
 func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Container, error) {
 	args := filters.NewArgs()
+	fmt.Printf("***** GetAllContainers *****")
+	fmt.Print(imageName, "\n")
 	if len(imageName) > 0 {
 		args.Add("ancestor", imageName)
 	}
@@ -65,8 +70,12 @@ func GetAllRunningContainers(dw DockerWrapper) ([]ContainerInfo, error) {
 	var runningContainers []ContainerInfo
 	for _, container := range containers {
         if container.State == "running" {
+            fmt.Printf("***** GetAllRunningContainers *****")
+            fmt.Print(container, "\n")
+            fmt.Printf("%s %s %s\n", container.ID[:10], container.Image, container.State)
             runningContainers = append(runningContainers,
 							ContainerInfo{ImageName: container.Image, ID: container.ID[:12], State: container.State})
+							fmt.Printf("After: %s %s %s\n", container.ID[:10], container.Image, container.State)
         }
     }
 	return runningContainers, nil
