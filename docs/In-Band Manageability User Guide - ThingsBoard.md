@@ -365,7 +365,7 @@ Turtle Creek Provisioning Complete
     or updated, run the provisioning steps again.
 
 **Note:** 
-> If provisioning is unsuccessful, refer to **[Provisioning Unsuccessful](#provisioning-unsuccessful-or-device-not-connected-to-cloud)** for Troubleshooting.
+> If provisioning is unsuccessful, refer to **[Provisioning Unsuccessful](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Issues%20and%20Troubleshooting.md#issue-provisioning-unsuccessful-or-device-not-connected-to-cloud)** for Troubleshooting.
 
 #### Provisioning Command Parameters
 
