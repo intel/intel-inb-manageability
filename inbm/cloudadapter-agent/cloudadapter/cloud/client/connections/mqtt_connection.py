@@ -114,7 +114,7 @@ class MQTTConnection(Connection):
             logger.debug("........................................try block")
             self._client.connect()
         except Exception as e:
-            logger.debug("........................................Exception.......................")
+            logger.debug("........................................Exception block......................")
             logger.debug(str(e))
             raise ConnectError(str(e))
 
