@@ -104,7 +104,7 @@ func ListContainers(dw DockerWrapper, imageName string) error {
 				s := strings.Split(image.RepoTags[0], ":")
 				_, err = strconv.ParseInt(s[len(s)-1], 10, 64)
 				if s[len(s)-1] != "<none>" || err == nil {
-					imageContainers, err := appendImageInformation(dw, image)
+					//imageContainers, err := appendImageInformation(dw, image)
 					if err == nil {
 						containers = append(containers, imageContainers...)
 					}
