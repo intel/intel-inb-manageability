@@ -142,9 +142,9 @@ var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([
 		}
 	}*/
 
-	if len(allContainers) == 0 || !found {
+	/*if len(allContainers) == 0 || !found {
 		imageContainers = append(imageContainers, ContainerInfo{ImageName: imageTag, ID: "NONE", State: "NONE"})
-	}
+	}*/
 
 	return imageContainers, nil
 }
