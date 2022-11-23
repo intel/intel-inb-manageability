@@ -20,6 +20,8 @@ import socks
 import logging
 logger = logging.getLogger(__name__)
 
+import traceback
+
 
 class MQTTConnection(Connection):
 
@@ -90,6 +92,8 @@ class MQTTConnection(Connection):
                 self.subscribe(topic, callback)
 
     def _on_connect(self, client: Any, userdata: Any, flags: Any, rc: int) -> None:
+        for line in traceback.format_stack():
+            print(line.strip())
         """MQTT connect event callback"""
         logger.info("Connected with code: %s", rc)
         if rc == mqtt.MQTT_ERR_SUCCESS:
