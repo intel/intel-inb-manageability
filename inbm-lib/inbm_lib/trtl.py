@@ -114,15 +114,10 @@ class Trtl:
         """
         logger.debug("Trtl.getimagebycontainerid(" + str(container_id) + ")")
         out, err, code = self.runner.run(self._boilerplate(
-            "imageRemoveByName") + " -in=" + image_id + " -f=" + str(force))
+            "getimagebycontainerid") + " -id=" + str(container_id))
         logging.debug(
-            "Trtl.imageremovebyName results: output={}, err={}, exitcode={}".format(
-                out, err, code))
-        # out, err, code = self.runner.run(self._boilerplate(
-        #     "getimagebycontainerid") + " -id=" + str(container_id))
-        # logging.debug(
-        #     "Trtl.getimagebycontainerid results: output={}, err={}, exitcode={}"
-        #     .format(out, err, code))
+            "Trtl.getimagebycontainerid results: output={}, err={}, exitcode={}"
+            .format(out, err, code))
         return out, err, code
 
     def execute(self, image: str, version: int, opt: bool = False) -> Tuple[str, Optional[str], int]:
@@ -393,10 +388,15 @@ class Trtl:
         """
         logger.debug("Trtl.imageRemoveByID(" + image_id + ")")
         out, err, code = self.runner.run(self._boilerplate(
-            "imageRemoveByID") + " -id=" + image_id + " -f=" + str(force))
+            "imageRemoveByName") + " -in=" + image_id + " -f=" + str(force))
         logging.debug(
-            "Trtl.imageremovebyid results: output={}, err={}, exitcode={}".format(
+            "Trtl.imageremovebyName results: output={}, err={}, exitcode={}".format(
                 out, err, code))
+        # out, err, code = self.runner.run(self._boilerplate(
+        #     "imageRemoveByID") + " -id=" + image_id + " -f=" + str(force))
+        # logging.debug(
+        #     "Trtl.imageremovebyid results: output={}, err={}, exitcode={}".format(
+        #         out, err, code))
         return out, err, code
 
     def get_latest_tag(self, image: str) -> Tuple[str, int]:
