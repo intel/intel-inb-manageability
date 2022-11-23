@@ -39,7 +39,7 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummar
 func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Container, error) {
 	args := filters.NewArgs()
 	fmt.Printf("***** GetAllContainers *****")
-	fmt.Println("imageName=", output)
+	//fmt.Println("imageName=", output)
 	//fmt.Print(imageName, "\n")
 	if len(imageName) > 0 {
 		args.Add("ancestor", imageName)
