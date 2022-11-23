@@ -22,7 +22,7 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummar
 	if len(imageName) > 0 {
 		args.Add("reference", imageName)
 		fmt.Printf("***** GetAllImagesByName *****")
-		fmt.Print("%s\n", imageName)
+		//fmt.Print("%s\n", imageName)
 	}
 
 	images, err := dw.ImageList(types.ImageListOptions{All: true, Filters: args})
@@ -39,7 +39,8 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummar
 func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Container, error) {
 	args := filters.NewArgs()
 	fmt.Printf("***** GetAllContainers *****")
-	fmt.Print(imageName, "\n")
+	fmt.Println("imageName=", output)
+	//fmt.Print(imageName, "\n")
 	if len(imageName) > 0 {
 		args.Add("ancestor", imageName)
 	}
@@ -71,7 +72,7 @@ func GetAllRunningContainers(dw DockerWrapper) ([]ContainerInfo, error) {
 	for _, container := range containers {
         if container.State == "running" {
             fmt.Printf("***** GetAllRunningContainers *****")
-            fmt.Print(container, "\n")
+            //fmt.Print(container, "\n")
             fmt.Printf("%s %s %s\n", container.ID[:10], container.Image, container.State)
             runningContainers = append(runningContainers,
 							ContainerInfo{ImageName: container.Image, ID: container.ID[:12], State: container.State})
