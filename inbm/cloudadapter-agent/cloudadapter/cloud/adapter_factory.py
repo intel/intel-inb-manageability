@@ -14,7 +14,8 @@ from ..exceptions import BadConfigError
 from typing import Dict, List
 from .adapters.adapter import Adapter
 import json
-
+import logging
+logger = logging.getLogger(__name__)
 
 def load_adapter_config() -> Dict:
     """Loads and parses the adapter configuration file

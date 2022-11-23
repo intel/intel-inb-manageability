@@ -8,6 +8,8 @@ from .messengers.one_way_messenger import OneWayMessenger
 from .handlers.recieve_respond_handler import RecieveRespondHandler
 from typing import Callable
 from datetime import datetime
+import logging
+logger = logging.getLogger(__name__)
 
 
 class CloudClient:

@@ -11,7 +11,8 @@ import abc
 from datetime import datetime
 from typing import Callable
 from ..client.cloud_client import CloudClient
-
+import logging
+logger = logging.getLogger(__name__)
 
 class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
     def __init__(self, config: dict):

@@ -12,6 +12,8 @@ from ..cloud_builders import build_client_with_config
 from typing import Callable
 from ..client.cloud_client import CloudClient
 from .adapter import Adapter
+import logging
+logger = logging.getLogger(__name__)
 
 
 class GenericAdapter(Adapter):
