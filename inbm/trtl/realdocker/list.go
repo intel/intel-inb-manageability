@@ -124,7 +124,7 @@ func ListContainers(dw DockerWrapper, imageName string) error {
 	return nil
 }
 
-var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([]ContainerInfo, error) {
+/*var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([]ContainerInfo, error) {
 	var imageContainers []ContainerInfo
 
 	allContainers, err := GetAllContainers(dw, true, image.ID)
@@ -148,7 +148,7 @@ var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([
 	}
 
 	return imageContainers, nil
-}
+}*/
 
 func createContainerListJSON(containers []ContainerInfo) (string, error) {
     if len(containers) == 0 {
