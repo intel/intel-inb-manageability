@@ -78,7 +78,8 @@ class MQTTConnection(Connection):
         logger.debug(hostname)
         logger.debug(port)
         logger.debug(client_id)
-        client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
+        #client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
+        client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv5)
         client.username_pw_set(username, password)
         client.connect = partial(client.connect, host=hostname, port=port)
         client.on_connect = self._on_connect
