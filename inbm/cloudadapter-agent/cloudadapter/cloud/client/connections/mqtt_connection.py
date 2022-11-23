@@ -105,8 +105,11 @@ class MQTTConnection(Connection):
         self._connect_waiter.reset()
 
         try:  # A lot of different socket errors can happen here
+            logger.debug("........................................try block")
             self._client.connect()
         except Exception as e:
+            logger.debug("........................................Exception.......................")
+            logger.debug(str(e))
             raise ConnectError(str(e))
 
         # Set up the MQTT connection thread

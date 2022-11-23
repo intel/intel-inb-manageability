@@ -69,6 +69,7 @@ class CloudClient:
 
     def connect(self) -> None:
         """Establish a connection to the cloud service"""
+        logger.debug("...................................................Establish a connection to the cloud service....................")
         return self._connection.start()
 
     def disconnect(self) -> None:

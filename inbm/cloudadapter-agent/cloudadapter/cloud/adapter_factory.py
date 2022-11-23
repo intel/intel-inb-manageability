@@ -41,6 +41,7 @@ def get_adapter_config_filepaths() -> List[str]:
 
 
 def get_adapter() -> Adapter:
+    logger.debug(".........................................get_adapter................................")
     """Retrieve a preconfigured cloud adapter with the Adapter interface
 
     @return: (Adapter) A concrete adapter
@@ -55,10 +56,14 @@ def get_adapter() -> Adapter:
     cloud = adapter_config.get("cloud", None)
 
     if cloud == "azure":
+        logger.debug(".....................................azure................................")
         return AzureAdapter(config)
     elif cloud == "telit":
+        logger.debug(".....................................telit.................................")
         return TelitAdapter(config)
     elif cloud is not None:
+        logger.debug("....................................GenericAdapter.........................")
         return GenericAdapter(config)
     else:
+        logger.debug(".................................BadConfigError.............................")
         raise BadConfigError("No cloud indicated!")

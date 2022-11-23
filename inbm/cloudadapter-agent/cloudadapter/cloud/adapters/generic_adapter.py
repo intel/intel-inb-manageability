@@ -19,17 +19,21 @@ class GenericAdapter(Adapter):
         super().__init__(config)
 
     def configure(self, config: dict) -> CloudClient:
+        logger.debug("...............................configure....................")
         """Configure the adapter to connect to the server
 
         @param config: schema conforming JSON config data
         @exception AdapterConfigureError: If configuration fails
         """
         try:
+            logger.debug("......................................build_client_with_config...................")
             return build_client_with_config(config)
         except ClientBuildError as e:
+            logger.debug(".....................................ClientBuildError.............................")
             raise AdapterConfigureError(str(e))
 
     def bind_callback(self, name: str, callback: Callable) -> None:
+        logger.debug("..............................................bind_callback.............................")
         """Bind a callback to be triggered by a method called on the cloud
         The callback has the signature: (**kwargs) -> (str)
             (**kwargs): Keys/types are documented per action function

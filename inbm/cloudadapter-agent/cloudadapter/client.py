@@ -101,11 +101,14 @@ class Client:
         connected = False
         while not connected:
             try:
+                logger.debug("...............................self._adapter.connect.................................")
                 self._adapter.connect()
                 connected = True
             except AuthenticationError as e:
+                logger.debug(".................................................AuthenticationError....................")
                 raise BadConfigError(str(e))
             except ConnectError as e:
+                logger.debug("..................................................ConnectError...........................")
                 logger.error(str(e))
                 sleep(SLEEP_DELAY)
 

@@ -67,6 +67,7 @@ class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
         self._client.publish_telemetry(key, value, timestamp)
 
     def connect(self) -> None:
+        logger.debug(".................................................connect................................")
         """Establish a connection to the cloud service
 
         @exception ConnectError: If connect fails
