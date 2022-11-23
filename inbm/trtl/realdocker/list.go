@@ -132,15 +132,15 @@ var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([
 		return imageContainers, err
 	}
 
-	//imageTag := strings.TrimSuffix(image.RepoTags[0], ":latest")
+	/*imageTag := strings.TrimSuffix(image.RepoTags[0], ":latest")
 	found := false
 	for _, container := range allContainers {
-		/*containerTag := strings.TrimSuffix(container.Image, ":latest")
+		containerTag := strings.TrimSuffix(container.Image, ":latest")
 		if containerTag == imageTag && container.State != "exited" {
 			found = true
 			imageContainers = append(imageContainers, ContainerInfo{ImageName: container.Image, ID: container.ID[:12], State: container.State})
-		}*/
-	}
+		}
+	}*/
 
 	if len(allContainers) == 0 || !found {
 		imageContainers = append(imageContainers, ContainerInfo{ImageName: imageTag, ID: "NONE", State: "NONE"})
