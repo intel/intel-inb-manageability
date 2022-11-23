@@ -114,12 +114,12 @@ func ListContainers(dw DockerWrapper, imageName string) error {
 				s := strings.Split(image.RepoTags[0], ":")
 				_, err = strconv.ParseInt(s[len(s)-1], 10, 64)
 				fmt.Print("***** Commented append fun call *****")
-				if s[len(s)-1] != "<none>" || err == nil {
+				/*if s[len(s)-1] != "<none>" || err == nil {
 					imageContainers, err := appendImageInformation(dw, image)
 					if err == nil {
 						containers = append(containers, imageContainers...)
 					}
-				}
+				}*/
 
 				if s[len(s) - 1] == "<none>" {
 					err = nil
@@ -135,7 +135,7 @@ func ListContainers(dw DockerWrapper, imageName string) error {
 	return nil
 }
 
-var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([]ContainerInfo, error) {
+/*var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([]ContainerInfo, error) {
 	var imageContainers []ContainerInfo
 
 	allContainers, err := GetAllContainers(dw, true, image.ID)
@@ -159,7 +159,7 @@ var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([
 	}
 
 	return imageContainers, nil
-}
+}*/
 
 func createContainerListJSON(containers []ContainerInfo) (string, error) {
     if len(containers) == 0 {
