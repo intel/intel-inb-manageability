@@ -72,7 +72,7 @@ func GetAllRunningContainers(dw DockerWrapper) ([]ContainerInfo, error) {
 	for _, container := range containers {
         if container.State == "running" {
             fmt.Print("***** GetAllRunningContainers *****")
-            fmt.Print(container: "\n")
+            //fmt.Print("container: "\n")
             fmt.Printf("%s %s %s\n", container.ID[:10], container.Image, container.State)
             runningContainers = append(runningContainers,
 							ContainerInfo{ImageName: container.Image, ID: container.ID[:12], State: container.State})
