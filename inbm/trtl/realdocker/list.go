@@ -21,12 +21,12 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummar
 	args := filters.NewArgs()
 	if len(imageName) > 0 {
 		args.Add("reference", imageName)
-		fmt.Printf("***** GetAllImagesByName *****")
-		//fmt.Print("%s\n", imageName)
+		fmt.Print("***** GetAllImagesByName *****")
+		fmt.Printf("%s\n", imageName)
 	}
 
 	images, err := dw.ImageList(types.ImageListOptions{All: true, Filters: args})
-	fmt.Printf("***** ImageList *****")
+	fmt.Print("***** ImageList *****")
 	if err != nil {
 		return nil, err
 	}
@@ -38,9 +38,9 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummar
 // It returns the list of containers and any error encountered.
 func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Container, error) {
 	args := filters.NewArgs()
-	fmt.Printf("***** GetAllContainers *****")
+	fmt.Print("***** GetAllContainers *****")
 	//fmt.Println("imageName=", output)
-	//fmt.Print(imageName, "\n")
+	fmt.Print(imageName, "\n")
 	if len(imageName) > 0 {
 		args.Add("ancestor", imageName)
 	}
@@ -71,8 +71,8 @@ func GetAllRunningContainers(dw DockerWrapper) ([]ContainerInfo, error) {
 	var runningContainers []ContainerInfo
 	for _, container := range containers {
         if container.State == "running" {
-            fmt.Printf("***** GetAllRunningContainers *****")
-            //fmt.Print(container, "\n")
+            fmt.Print("***** GetAllRunningContainers *****")
+            fmt.Print(container: "\n")
             fmt.Printf("%s %s %s\n", container.ID[:10], container.Image, container.State)
             runningContainers = append(runningContainers,
 							ContainerInfo{ImageName: container.Image, ID: container.ID[:12], State: container.State})
@@ -113,7 +113,7 @@ func ListContainers(dw DockerWrapper, imageName string) error {
 			if len(image.RepoTags) > 0 {
 				s := strings.Split(image.RepoTags[0], ":")
 				_, err = strconv.ParseInt(s[len(s)-1], 10, 64)
-				fmt.Printf("***** Commented append fun call *****")
+				fmt.Print("***** Commented append fun call *****")
 				/*if s[len(s)-1] != "<none>" || err == nil {
 					imageContainers, err := appendImageInformation(dw, image)
 					if err == nil {
