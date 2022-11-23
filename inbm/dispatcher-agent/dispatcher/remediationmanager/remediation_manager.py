@@ -2,14 +2,12 @@
     Module which fetches and stores external update packages. It fetches a
     package from the specified URL and stores into a configured local cache
     on the device
-
     Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
 import re
-import traceback
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
 
@@ -26,7 +24,6 @@ logger = logging.getLogger(__name__)
 class RemediationManager:
     """Receives notification from diagnostic to perform remediation management on
     containers/images via TRTL application
-
     @param dispatcher_callbacks: DispatcherCallbacks instance
     @param container_image_list_to_be_removed: Container image list to be removed. Default it will be empty list. When containers are active, respective images will be added to this list.
     """
@@ -64,10 +61,8 @@ class RemediationManager:
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
         try:
             if payload is not None:
-                for line in traceback.format_stack():
-                    logger.debug(line.strip())
-                    logger.info('Received message: %s on topic: %s', payload, topic)
-                    self._remove_images(literal_eval(payload))
+                logger.info('Received message: %s on topic: %s', payload, topic)
+                self._remove_images(literal_eval(payload))
 
         except ValueError as error:
             logger.error('Unable to parse image message . Verify image remove request is in '
@@ -76,14 +71,11 @@ class RemediationManager:
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
         for image_id in ids:
-            #logger.debug(len(ids))
-            new_image_id = image_id + ":latest"
-            if new_image_id in self.container_image_list_to_be_removed:
-                self._remove_single_image(new_image_id)
-                #self._remove_single_image(image_name)
+            if image_id in self.container_image_list_to_be_removed:
+                self._remove_single_image(image_id)
             else:
                 self._dispatcher_callbacks.broker_core.telemetry('DBS Security issue raised on imageID: '
-                                                                 + str(new_image_id)
+                                                                 + str(image_id)
                                                                  + '.  Image is not present in container image list.')
 
         self.container_image_list_to_be_removed[:] = []
@@ -93,8 +85,6 @@ class RemediationManager:
         if not self.ignore_dbs_results:
             trtl = Trtl(PseudoShellRunner())
             (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
-            #(out, err, code) = trtl.image_remove_all(str(image), True)
-            #(out, err, code) = trtl.image_remove_by_name(str(image_id), True)
             if err is None:
                 err = ""
             if code != 0:
@@ -113,7 +103,6 @@ class RemediationManager:
 
     def _get_image_id(self, trtl: Trtl, container_id: str) -> Tuple[Optional[str], Optional[str]]:
         """Get the image id associated with the container id via TRTL
-
         @param trtl: TRTL object
         @param container_id: container ID
         """
@@ -182,10 +171,8 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been removed.')
 
-                if self.dbs_remove_image_on_failed_container and image_name is not None:
-                    #self._remove_single_image(image_id)
-                    #self._remove_single_image(image)
-                    self._remove_single_image(image_name)
+                if self.dbs_remove_image_on_failed_container and image_id is not None:
+                    self._remove_single_image(image_id)
             else:
                 self._dispatcher_callbacks.broker_core.telemetry(
                     'DBS Security issue raised on containerID: ' + str(container_id) +
