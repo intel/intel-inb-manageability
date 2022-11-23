@@ -70,6 +70,11 @@ class MQTTConnection(Connection):
 
     def _create_mqtt_client(self, username: str, password: Optional[str], hostname: str, port: str, client_id: Optional[str] = "") -> Client:
         """Create an MQTT client"""
+        logger.debug(username)
+        logger.debug(password)
+        logger.debug(hostname)
+        logger.debug(port)
+        logger.debug(client_id)
         client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
         client.username_pw_set(username, password)
         client.connect = partial(client.connect, host=hostname, port=port)
