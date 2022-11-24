@@ -170,7 +170,7 @@ This step is necessary only if the user requires the X509 authentication
 on the devices, else this step can be ignored.
 
 -   To create an Enrollment Group, click **Permission** \[**A**\], **Device
-Connection groups** \[**B**\], **NEW** \[**C**\] as seen in the image below.
+Connection groups** \[**B**\], **New** \[**C**\] as seen in the image below.
 
 <img src="media/In-Band Manageability User Guide - Azure/media/image5.png" style="width:5.99167in;height:2.43194in" />
 
