@@ -127,6 +127,17 @@ In order to setup an Azure&reg; account, follow the steps below:
     link below:  
     <https://azure.microsoft.com/en-us/free/>
 
+-    Steps explained through **Images** as below.	
+
+-   Click **Start Free** as seen in the image below.	
+    <img src="media/In-Band Manageability User Guide - Azure/media/image88.png" style="width:4.84028in;height:4.77014in" />
+	
+-   Fill out the necessary details as seen in the image below and click **sign up**.  
+    <img src="media/In-Band Manageability User Guide - Azure/media/image89.png" style="width:4.84028in;height:4.77014in" />
+
+-   At last Click **Go to the Azure Portal** as seen in the image below.
+    <img src="media/In-Band Manageability User Guide - Azure/media/image90.png" style="width:4.84028in;height:4.77014in" />	
+
 #### Setting up an Azure&reg; IoT Central Application 
 
 -   To use the reference Intel® In-Band Manageability Framework IoT Central application, use the link mentioned within the following path.
