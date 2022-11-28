@@ -477,22 +477,11 @@ class Trtl:
         """
         logger.debug("Trtl.containerRemove(" + container_id + ")")
         if force:
-            out, err, code = self.runner.run(self._boilerplate(
-                "containerRemoveAll") + " -in=" + container_id + " -f=" + str(force))
-            # (out, err, code) = self.runner.run(self._boilerplate(
-            #     "containerRemoveAll" + " -f") + " -in=" + container_id)
-            logger.debug("*** if ***")
+            (out, err, code) = self.runner.run(self._boilerplate(
+                "containerRemoveByID" + " -f") + " -id=" + container_id)
         else:
             (out, err, code) = self.runner.run(self._boilerplate(
-                "containerRemoveAll") + " -in=" + container_id)
-            logger.debug("*** else ** *")
-        # if force:
-        #     (out, err, code) = self.runner.run(self._boilerplate(
-        #         "containerRemoveByID" + " -f") + " -id=" + container_id)
-        # else:
-        #     (out, err, code) = self.runner.run(self._boilerplate(
-        #         "containerRemoveByID") + " -id=" + container_id)
-
+                "containerRemoveByID") + " -id=" + container_id)
         logging.debug(
             "Trtl.containerRemove results: output={}, err={}, exitcode={}".format(
                 out, err, code))

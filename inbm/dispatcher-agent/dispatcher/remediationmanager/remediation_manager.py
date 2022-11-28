@@ -132,6 +132,8 @@ class RemediationManager:
         return image_id, image_name
 
     def _remove_container(self, ids: Any) -> None:
+        logger.debug(len(ids))
+        logger.debug(ids)
         for container_id in ids:
             logger.debug(len(ids))
             logger.debug(ids)
