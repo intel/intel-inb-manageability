@@ -215,16 +215,16 @@ class TestTrtl(TestCase):
                                  "-cmd=commit -in=image -iv=1",
                                  runner.last_cmd(), return_code, result)
 
-    def test_trtl_remove_container(self):
-        return_code, runner = self.__setup_trtl_test()
-        err = Trtl(
-            runner,
-            "docker").remove_container(
-            container_id="123e4",
-            force=True)
-        self.__check_trtl_output("/usr/bin/trtl -type=docker "
-                                 "-cmd=containerRemoveByID -f -id=123e4",
-                                 runner.last_cmd(), None, err)
+    # def test_trtl_remove_container(self):
+    #     return_code, runner = self.__setup_trtl_test()
+    #     err = Trtl(
+    #         runner,
+    #         "docker").remove_container(
+    #         container_id="123e4",
+    #         force=True)
+    #     self.__check_trtl_output("/usr/bin/trtl -type=docker "
+    #                              "-cmd=containerRemoveByID -f -id=123e4",
+    #                              runner.last_cmd(), None, err)
 
     def test_trtl_single_snapshot(self):
         return_code, runner = self.__setup_trtl_test()
