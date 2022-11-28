@@ -133,6 +133,7 @@ class RemediationManager:
 
     def _remove_container(self, ids: Any) -> None:
         for container_id in ids:
+            logger.debug(id)
             if not self.ignore_dbs_results:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
