@@ -137,6 +137,7 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
                 logger.debug("Remove Container")
+                logger.debug(container_id)
                 temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
                 err, active_containers_list = trtl.list()
                 if err:
