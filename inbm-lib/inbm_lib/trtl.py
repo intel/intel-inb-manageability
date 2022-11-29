@@ -479,13 +479,18 @@ class Trtl:
         if force:
             (out, err, code) = self.runner.run(self._boilerplate(
                 "containerRemoveByID" + " -f") + " -id=" + container_id)
+            logger.debug(out)
+            logger.debug(err)
         else:
             (out, err, code) = self.runner.run(self._boilerplate(
                 "containerRemoveByID") + " -id=" + container_id)
         logging.debug(
             "Trtl.containerRemove results: output={}, err={}, exitcode={}".format(
                 out, err, code))
+        logger.debug(out)
+        logger.debug(err)
         if code != 0 and err != '':
+            logger.debug(err)
             return err
         else:
             return None

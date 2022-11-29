@@ -178,15 +178,19 @@ class RemediationManager:
                         str(container_id) + '.  Container has been stopped.')
 
                 err = trtl.remove_container(container_id, True)
+                logger.debug(err)
+
                 if err:
+                    logger.debug(err)
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + 'unable to remove container. Error: ' + err)
                 else:
+                    logger.debug(err)
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been removed.')
-
+                logger.debug(err)
                 if self.dbs_remove_image_on_failed_container and image_id is not None:
                     self._remove_single_image(image_id)
                 # if self.dbs_remove_image_on_failed_container and image_name is not None:
