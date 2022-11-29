@@ -60,13 +60,12 @@ func getContainersAndRemove(dw DockerWrapper, image string, includeRunning bool)
 
 // RemoveContainer removes the container of the specified containerID.  It can optionally force the removal of a running container.
 // It returns any error encountered.
-fmt.Print("***** DBS_Containers0 *****")
 func RemoveContainer(dw DockerWrapper, containerID string, force bool) error {
 	if !force {
-	    fmt.Print("***** DBS_Containers1 *****")
+	    fmt.Print("***** DBS_Containers0 *****")
 		err := warnIfRunningContainer(dw, containerID)
 		if err != nil {
-		    fmt.Print("***** DBS_Containers1.1 *****")
+		    fmt.Print("***** DBS_Containers1 *****")
 			return err
 		}
 	}
