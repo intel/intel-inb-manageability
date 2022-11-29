@@ -8,7 +8,7 @@
     2. [Audience](#audience)
 2. [Architecture](#architecture)
    1. [INB](#inb)
-         1. [CloudAdapter Agent](#cloudadapter-agent)
+         1. [CloudAdapter Agent](##cloudadapter-agent)
          2. [Configuration Agent](#configuration-agent)
          3. [Diagnostic Agent](#diagnostic-agent)
          4. [Dispatcher Agent](#dispatcher-agent-dms)
