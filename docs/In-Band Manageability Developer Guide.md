@@ -8,7 +8,7 @@
     2. [Audience](#audience)
 2. [Architecture](#architecture)
    1. [INB](#inb)
-         1. [CloudAdapter Agent](#https://github.com/intel/intel-inb-manageability/blob/Broken_link_522523/docs/In-Band%20Manageability%20Developer%20Guide.md#%EF%B8%8Fcloudadapter-agent)
+         1. [CloudAdapter Agent](https://github.com/intel/intel-inb-manageability/blob/RTC_Broken_Links_522522/docs/In-Band%20Manageability%20Developer%20Guide.md#%EF%B8%8Fcloudadapter-agent)
          2. [Configuration Agent](#configuration-agent)
          3. [Diagnostic Agent](#diagnostic-agent)
          4. [Dispatcher Agent](#dispatcher-agent-dms)
