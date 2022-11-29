@@ -47,6 +47,8 @@ func getContainersAndRemove(dw DockerWrapper, image string, includeRunning bool)
 	}
 
 	for _, container := range containers {
+	    fmt.Print("***** DBS_Containers *****")
+	    fmt.Fprintf(os.Stderr, "DBS_Error removing container '%s': %s", container.ID, err)
 		if err = RemoveContainer(dw, container.ID, includeRunning); err != nil {
 			fmt.Fprintf(os.Stderr, "Error removing container '%s': %s", container.ID, err)
 			return err
@@ -58,20 +60,24 @@ func getContainersAndRemove(dw DockerWrapper, image string, includeRunning bool)
 
 // RemoveContainer removes the container of the specified containerID.  It can optionally force the removal of a running container.
 // It returns any error encountered.
+fmt.Print("***** DBS_Containers0 *****")
 func RemoveContainer(dw DockerWrapper, containerID string, force bool) error {
 	if !force {
+	    fmt.Print("***** DBS_Containers1 *****")
 		err := warnIfRunningContainer(dw, containerID)
 		if err != nil {
+		    fmt.Print("***** DBS_Containers1.1 *****")
 			return err
 		}
 	}
-
+    fmt.Print("***** DBS_Containers2 *****")
 	fmt.Println("Removing container", containerID, "...")
 	if err := dw.ContainerRemove(containerID,
 		types.ContainerRemoveOptions{RemoveVolumes: true, Force: force}); err != nil {
+		fmt.Print("***** DBS_Containers3 *****")
 		return err
 	}
-
+    fmt.Print("***** DBS_Containers4 *****")
 	fmt.Fprintf(os.Stdout, "Removed containerID=%s", containerID)
 	return nil
 }
@@ -101,11 +107,11 @@ func RemoveLatestContainerFromImage(f Finder, dw DockerWrapper, image string, fo
 	if !containerFound {
 		return fmt.Errorf("unable to find container with image '%s'", image)
 	}
-
+    fmt.Print("***** DBS_Containers5 *****")
 	if err = RemoveContainer(dw, container.ID, force); err != nil {
 		return err
 	}
-
+    fmt.Print("***** DBS_Containers6 *****")
 	fmt.Fprintf(os.Stdout, "Removed image=%s", image)
 	return nil
 }
