@@ -6,14 +6,14 @@
 1. [Introduction](#introduction)
     1. [Purpose](#purpose)
     2. [Audience](#audience)
-2. [ThingsBoard&reg; Overview](#thingsboardreg-overview)
-    1. [Getting Started with ThingsBoard&reg;](#getting-started-with-thingsboardreg)
+2. [ThingsBoard&reg; Overview](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md#thingsboard-overview)
+    1. [Getting Started with ThingsBoard&reg;](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md#getting-started-with-thingsboard)
     2. [Adding a Device](#adding-a-device)
     3. [Obtaining Device Credentials](#obtaining-device-credentials)
     4. [Creating a Device to Use X.509 Auth](#creating-a-device-to-use-x509-auth)
     5. [Provisioning a Device](#provisioning-a-device)
     6. [Setting up the Dashboards](#setting-up-the-dashboards)
-    7. [Getting Familiar with ThingsBoard&reg;](#getting-familiar-with-thingsboardreg)
+    7. [Getting Familiar with ThingsBoard&reg;](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md#getting-familiar-with-thingsboard)
     8. [Interacting with Individual Devices](#interacting-with-individual-devices)
     9. [Interacting with Multiple Devices](#interacting-with-multiple-devices)
     10. [Modifying and Working with Intel Manageability Widgets](#modifying-and-working-with-intel-manageability-widgets)
@@ -365,7 +365,7 @@ Turtle Creek Provisioning Complete
     or updated, run the provisioning steps again.
 
 **Note:** 
-> If provisioning is unsuccessful, refer to **[Provisioning Unsuccessful](#provisioning-unsuccessful-or-device-not-connected-to-cloud)** for Troubleshooting.
+> If provisioning is unsuccessful, refer to **[Provisioning Unsuccessful](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/Issues%20and%20Troubleshooting.md#issues-and-troubleshooting)** for Troubleshooting.
 
 #### Provisioning Command Parameters
 
@@ -721,7 +721,7 @@ AOTA Field Details
 | Application and supported command                              | `docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `list`, `load`, `import`, `pull`, `remove` and `stats`<br>Application: update                                                                                                                           |
 | Container Tag                                                  | Name tag for image/container.<br>Note: Container Tag can have both the Name and Version in this format Image:Version                                                                                                                                                                                |
 | Docker&reg; Compose File                                       | Name of custom YAML file for docker-compose command. Example: `custom.yml`                                                                                                                                                                                                                          |
-| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)                                                    |
+| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md#creating-aota-package)                                                    |
 | Server Username/<br>Server Password                            | Credentials to download remote package when required.                                                                                                                                                                                                                                               |
 | Docker&reg; Registry<br>Docker&reg; Registry Username/Password | Docker&reg; Registry if accessing any registry other than the default `index.docker.io`.<br>Example: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands. |
 
