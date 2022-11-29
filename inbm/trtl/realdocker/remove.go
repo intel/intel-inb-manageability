@@ -76,7 +76,8 @@ func RemoveContainer(dw DockerWrapper, containerID string, force bool) error {
 		fmt.Print("***** DBS_Containers3 *****")
 		return err
 	}
-    fmt.Print("***** DBS_Containers4 *****")
+    fmt.Printf("***** DBS_Containers4 *****")
+	//fmt.Print("***** DBS_Containers4 *****")
 	fmt.Fprintf(os.Stdout, "Removed containerID=%s", containerID)
 	return nil
 }
