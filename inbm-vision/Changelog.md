@@ -3,13 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - ?
-
 ##3.0.14 - 2022-11-07
 
-### Added
 ### Fixed
+ - HSD 15012036803 - Fix for few telemetry data of the OTA update is not published to Thingsboard cloud
  - RTC 519030 - Added a fix for Bit Creek (Vision) build failure
+ - RTC 517426 - Network check added after reboot for SOTA.
 
 ## 3.0.13 - 2022-08-07
 

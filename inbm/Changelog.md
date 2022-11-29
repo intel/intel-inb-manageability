@@ -3,16 +3,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - ?
-
 ##3.0.14 - 2022-11-07
 
-### Added
 ### Fixed
+ - HSD 15012036803 - Fix for few telemetry data of the OTA update is not published to Thingsboard cloud
  - RTC 521500      - Fixed build error by updating PyInstaller to 5.6.2
  - RTC 520951      - Remove references to 'inbm-lib' from requirements.txt in intel-inb-manageability repository
  - HSD 15011727901 - Fix POTA/INBC POTA print "Firmware Update Aborted" message after firmware update is success
  - HSD 15011730318 - Fix INBC FOTA/POTA not supporting "guid" arguments
+ - RTC 517426 - Network check added after reboot for SOTA.
+
 ### Removed
  - RTC 517780 - Remove Ubuntu 18.04 support
 
