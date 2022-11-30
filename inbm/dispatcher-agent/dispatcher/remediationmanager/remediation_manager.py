@@ -76,7 +76,18 @@ class RemediationManager:
             logger.debug(image_id)
             logger.debug(new_image_id)
             logger.debug(new_image_id[0])
-            self._remove_single_image(new_image_id[0])
+            if new_image_id[1] != "latest"
+                logger.debug("image name:new_image_id[1]")
+                logger.debug(new_image_id[1])
+                self._remove_single_image(image_id)
+                logger.debug("image name:new_image_id")
+                logger.debug(new_image_id)
+
+            else:
+                 self._remove_single_image(new_image_id[0])
+                 logger.debug("image name new_image_id[0]:")
+                 logger.debug(new_image_id[0])
+
             logger.debug(self.container_image_list_to_be_removed)
             #if image_id in self.container_image_list_to_be_removed:
             #self._remove_single_image(new_image_id[0])
