@@ -3,7 +3,7 @@
 <details>
 <summary>Table of Contents</summary>
 
-1. [Introduction](#introduction)
+1. [Introduction](##introduction)
     1. [Purpose](#purpose)
     2. [Audience](#audience)
 2. [Architecture](#architecture)

@@ -3,7 +3,7 @@
 <details>
 <summary>Table of Contents</summary>
 
-1. [Introduction](#introduction)
+1. [Introduction](##introduction)
     1. [Audience](#audience)
 3. [Azure&reg; Overview](https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#azure-overview)
     1. [Getting Started with Azure&reg;](https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#getting-started-with-azure)

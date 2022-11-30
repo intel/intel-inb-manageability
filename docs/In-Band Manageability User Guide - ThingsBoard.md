@@ -8,7 +8,7 @@
     2. [Audience](#audience)
 2. [ThingsBoard&reg; Overview](https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md#thingsboard-overview)
     1. [Getting Started with ThingsBoard&reg;](https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md#getting-started-with-thingsboard)
-    2. [Adding a Device](#adding-a-device)
+    2. [Adding a Device](##adding-a-device)
     3. [Obtaining Device Credentials](#obtaining-device-credentials)
     4. [Creating a Device to Use X.509 Auth](#creating-a-device-to-use-x509-auth)
     5. [Provisioning a Device](#provisioning-a-device)
