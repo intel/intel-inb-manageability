@@ -73,7 +73,8 @@ class RemediationManager:
         Test = ['ubuntu:xenial', 'ubuntu:cosmic']
         if Test in ids:
             logger.debug(Test)
-            self._remove_single_image(Test)
+            logger.debug(ids)
+            self._remove_single_image(ids)
         for image_id in ids:
             logger.debug(len(ids))
             new_image_id = image_id.split(':')
