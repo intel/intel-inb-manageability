@@ -7,7 +7,6 @@ from mock import patch
 
 from dispatcher.dispatcher_broker import DispatcherBroker
 
-
 class TestCommand(TestCase):
 
     def setUp(self):
