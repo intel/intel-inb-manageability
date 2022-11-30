@@ -70,14 +70,17 @@ class RemediationManager:
 
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
+        if Test in ids:
+            logger.debug(Test)
+            self._remove_single_image(Test)
         for image_id in ids:
             logger.debug(len(ids))
             new_image_id = image_id.split(':')
             logger.debug(image_id)
             logger.debug(new_image_id)
             logger.debug(new_image_id[0])
-            if Test in new_image_id:
-                self._remove_single_image(Test)
+            # if Test in new_image_id:
+            #     self._remove_single_image(Test)
             if new_image_id[1] != "latest":
                 logger.debug("image name:new_image_id[1]")
                 logger.debug(new_image_id[1])
