@@ -70,6 +70,7 @@ class RemediationManager:
 
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
+        Test = ['ubuntu:xenial', 'ubuntu:cosmic']
         if Test in ids:
             logger.debug(Test)
             self._remove_single_image(Test)
