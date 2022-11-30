@@ -70,35 +70,35 @@ class RemediationManager:
 
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
-        Test = ['ubuntu:xenial', 'ubuntu:cosmic']
-        if Test in ids:
-            logger.debug(Test)
-            logger.debug(ids)
-            self._remove_single_image(ids)
+        # Test = ['ubuntu:xenial', 'ubuntu:cosmic']
+        # if Test in ids:
+        #     logger.debug(Test)
+        #     logger.debug(ids)
+        #     self._remove_single_image(ids)
         for image_id in ids:
             logger.debug(len(ids))
-            new_image_id = image_id.split(':')
+            #new_image_id = image_id.split(':')
             logger.debug(image_id)
-            logger.debug(new_image_id)
-            logger.debug(new_image_id[0])
+            #logger.debug(new_image_id)
+            #logger.debug(new_image_id[0])
             # if Test in new_image_id:
             #     self._remove_single_image(Test)
-            if new_image_id[1] != "latest":
-                logger.debug("image name:new_image_id[1]")
-                logger.debug(new_image_id[1])
-                self._remove_single_image(image_id)
-                logger.debug("image name:new_image_id")
-                logger.debug(new_image_id)
-
-            else:
-                 self._remove_single_image(new_image_id[0])
-                 logger.debug("image name new_image_id[0]:")
-                 logger.debug(new_image_id[0])
+            # if new_image_id[1] != "latest":
+            #     logger.debug("image name:new_image_id[1]")
+            #     logger.debug(new_image_id[1])
+            #     self._remove_single_image(image_id)
+            #     logger.debug("image name:new_image_id")
+            #     logger.debug(new_image_id)
+            #
+            # else:
+            #      self._remove_single_image(new_image_id[0])
+            #      logger.debug("image name new_image_id[0]:")
+            #      logger.debug(new_image_id[0])
 
             logger.debug(self.container_image_list_to_be_removed)
             #if image_id in self.container_image_list_to_be_removed:
             #self._remove_single_image(new_image_id[0])
-            #self._remove_single_image(image_id)
+            self._remove_single_image(image_id)
             #else:
             #    self._dispatcher_callbacks.broker_core.telemetry('DBS Security issue raised on imageID: '
             #                                                     + str(new_image_id)
