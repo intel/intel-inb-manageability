@@ -80,12 +80,16 @@ class EventWatcher(Thread):
             print(line.strip())
         logger.debug("diag event_check_failed_containers called")
         logger.debug("Passing failed containers on REMEDIATION_CONTAINER_CHANNEL")
+        logger.debug("******************************************* failed_containers **********************")
+        logger.debug(failed_containers)
         if failed_containers and len(failed_containers) > 0:
             self._broker.publish(REMEDIATION_CONTAINER_CHANNEL, str(failed_containers))
 
     def _check_failed_images(self, failed_images: str) -> None:
         logger.debug("diag event_check_failed_image called")
         logger.debug("Passing failed images on REMEDIATION_IMAGE_CHANNEL")
+        logger.debug("******************************************* failed_images **********************")
+        logger.debug(failed_images)
         if failed_images and len(failed_images) > 0:
             self._broker.publish(REMEDIATION_IMAGE_CHANNEL,
                                  str(failed_images))
