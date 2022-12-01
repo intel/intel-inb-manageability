@@ -113,7 +113,6 @@ class EventWatcher(Thread):
 
     def _process_output(self, events, next_line):
         if len(events) < 3:
-            logger.debug(len(events))
             logger.debug(
                 " ".join(TRTL_EVENTS) +
                 " command unexpected line (not enough fields): [" +
