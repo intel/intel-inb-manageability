@@ -10,6 +10,7 @@ import logging
 import re
 from ast import literal_eval
 from typing import Any, List, Optional, Tuple
+from threading import Thread, Lock
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.trtl import Trtl
@@ -33,13 +34,16 @@ class RemediationManager:
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
         self.container_image_list_to_be_removed: List = []
+        self.lock = Lock()
 
     def run(self) -> None:
         """Subscribes to remediation channels"""
         try:
+            self.lock.acquire()
             logger.debug('Subscribing to: %s', REMEDIATION_CONTAINER_CMD_CHANNEL)
             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
                 REMEDIATION_CONTAINER_CMD_CHANNEL, self._on_stop_container)
+            self.lock.release()
 
             logger.debug('Subscribing to: %s', REMEDIATION_IMAGE_CMD_CHANNEL)
             self._dispatcher_callbacks.broker_core.mqtt_subscribe(
