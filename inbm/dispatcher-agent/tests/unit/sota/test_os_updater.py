@@ -53,7 +53,7 @@ class TestOsUpdater(unittest.TestCase):
 
         cmd_list = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
-                    "dpkg --configure -a '${binary:Package}\\n' -W",
+                    "dpkg --configure -a ",
                     "apt-get -yq -f install",
                     "apt-get -yq upgrade"]
         x_cmd_list = installer.update_remote_source(  # type: ignore
