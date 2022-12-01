@@ -45,6 +45,7 @@ class EventWatcher(Thread):
     def set_dbs_mode(self, mode_value):
         global current_dbs_mode
         current_dbs_mode = mode_value
+        logger.debug(mode_value)
         logger.debug(f"Current DBS mode is set to - {current_dbs_mode}")
 
     def run_docker_bench_security(self):  # pragma: no cover
@@ -57,8 +58,11 @@ class EventWatcher(Thread):
                 dbs.start()
                 dbs.join()
                 if current_dbs_mode == ConfigDbs.ON:
+                    logger.debug(current_dbs_mode)
                     logger.debug("Parsing DBS result after DBS check. . .")
                     self._parse_dbs_result(dbs.result, dbs)
+                    logger.debug(dbs.result)
+                    logger.debug(dbs.result)
                 else:
                     logger.debug(
                         "Failed Images and Containers are not terminated since \
@@ -87,10 +91,15 @@ class EventWatcher(Thread):
     def _parse_dbs_result(self, result, dbs):
         if result is not None:
             failed_containers = dbs.failed_container_list
+            logger.debug(failed_containers)
             failed_images = dbs.failed_image_list
+            logger.debug(failed_images)
             result_string = dbs.result_string
+            logger.debug(result_string)
             self._check_failed_containers(failed_containers)
+            logger.debug(self._check_failed_containers)
             self._check_failed_images(failed_images)
+            logger.debug(self._check_failed_images)
             self._broker.publish(
                 EVENTS_CHANNEL, "Docker Bench Security results: " + result_string)
         else:
