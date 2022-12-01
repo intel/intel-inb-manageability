@@ -113,8 +113,6 @@ class EventWatcher(Thread):
 
     def _process_output(self, events, next_line):
         if len(events) < 3:
-            logger.debug(len(events))
-            logger.debug(events)
             logger.debug(
                 " ".join(TRTL_EVENTS) +
                 " command unexpected line (not enough fields): [" +
@@ -133,8 +131,9 @@ class EventWatcher(Thread):
             logger.debug(" ".join(TRTL_EVENTS) + " command done processing.")
 
     def _parse_process_output(self, process):
+        logger.debug(" ".join(TRTL_EVENTS) + " command output log start.")
         while self._running:
-            logger.debug(" ".join(TRTL_EVENTS) + " command output log start.")
+            #logger.debug(" ".join(TRTL_EVENTS) + " command output log start.")
             # we filter out bad characters but still accept the rest of the string
             # here based on experience running the underlying command
             next_line = process.stdout.readline().decode('utf-8', errors='replace')
