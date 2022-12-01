@@ -52,6 +52,7 @@ class EventWatcher(Thread):
         def run():
             if current_dbs_mode != ConfigDbs.OFF:
                 dbs = DockerBenchRunner()
+                logger.debug(dbs)
                 logger.debug(f"DBS mode : {current_dbs_mode} , Launching DBS checks...")
                 dbs.start()
                 dbs.join()
@@ -71,11 +72,13 @@ class EventWatcher(Thread):
         thread.start()
 
     def _check_failed_containers(self, failed_containers: str) -> None:
+        logger.debug("diag event_check_failed_containers called")
         logger.debug("Passing failed containers on REMEDIATION_CONTAINER_CHANNEL")
         if failed_containers and len(failed_containers) > 0:
             self._broker.publish(REMEDIATION_CONTAINER_CHANNEL, str(failed_containers))
 
     def _check_failed_images(self, failed_images: str) -> None:
+        logger.debug("diag event_check_failed_image called")
         logger.debug("Passing failed images on REMEDIATION_IMAGE_CHANNEL")
         if failed_images and len(failed_images) > 0:
             self._broker.publish(REMEDIATION_IMAGE_CHANNEL,
