@@ -90,7 +90,7 @@ class EventWatcher(Thread):
             self._broker.publish(REMEDIATION_IMAGE_CHANNEL,
                                  str(failed_images))
 
-    def _parse_dbs_result(self, result, dbs):_parse_dbs_result
+    def _parse_dbs_result(self, result, dbs):
         if result is not None:
             failed_containers = dbs.failed_container_list
             logger.debug(failed_containers)
@@ -113,6 +113,8 @@ class EventWatcher(Thread):
 
     def _process_output(self, events, next_line):
         if len(events) < 3:
+            logger.debug(len(events))
+            logger.debug(events)
             logger.debug(
                 " ".join(TRTL_EVENTS) +
                 " command unexpected line (not enough fields): [" +
