@@ -5,11 +5,11 @@
 
 1. [Introduction](#introduction)
     1. [Audience](#audience)
-3. [Azure&reg; Overview](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#azure-overview)
-    1. [Getting Started with Azure&reg;](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#getting-started-with-azure)
-        1. [Creating Azure&reg; portal account](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#creating-azure-portal-account)
-        2. [Setting up an Azure&reg; IoT Central Application ](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#setting-up-an-azure-iot-central-application)
-        3. [Accessing Azure&reg;](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#accessing-azure)
+3. [Azure&reg; Overview](#azure-overview)
+    1. [Getting Started with Azure&reg;](#getting-started-with-azure)
+        1. [Creating Azure&reg; portal account](#creating-azure-portal-account)
+        2. [Setting up an Azure&reg; IoT Central Application ](#setting-up-an-azure-iot-central-application)
+        3. [Accessing Azure&reg;](#accessing-azure)
         4. [Setting up the application for X509 based device enrollment](#setting-up-the-application-for-x509-based-device-enrollment)
     2. [Creating a Device and Obtaining Device Credentials](#creating-a-device-and-obtaining-device-credentials)
         1. [Shared Access Signature (SAS) authentication:](#shared-access-signature-sas-authentication)
@@ -318,7 +318,7 @@ Please choose provision type.
 ```
 
 -   When the user selects 1: SAS key authentication, a prompt to enter SAS key is seen, the SAS key information can be obtained by
-    following the steps in [Shared Access Signature (SAS) authentication](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#shared-access-signature-sas-authentication):
+    following the steps in [Shared Access Signature (SAS) authentication](#shared-access-signature-sas-authentication):
 
 ```
 Please enter the device SAS primary key (Hint: https://docs.microsoft.com/en-us/azure/iot-central/howto-generate-connection-string)
@@ -659,7 +659,7 @@ AOTA Field Details
 | App and its command                                            | `docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `list', load`, `import`, `pull`, `remove` and `stats`<br>Application: update                                                                                                                                                        |
 | Container Tag                                                  | Name tag for image/container.<br>Note: Conatiner Tag can have both the Name and Version in this format Image:Version                                                                                                                                                                                                            |
 | Docker&reg; Compose File                                       | Field to specify the name of custom yaml file for docker-compose command. Example: `custom.yml`                                                                                                                                                                                                                                 |
-| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](https://github.com/intel/intel-inb-manageability/blob/RTC_BROKEN_LINK_522522/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md#creating-aota-package)                                                                                |
+| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package)                                                                                 |
 | Server Username/<br>Server Password                            | If server where we host the package to download AOTA file needs credentials, we need to specify the username and password                                                                                                                                                                                                       |
 | Docker&reg; Registry<br>Docker&reg; Registry Username/Password | Specify Docker&reg; Registry if accessing any registry other than the default ‘index.docker.io’.<br>Example for docker Registry: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands. |
 
