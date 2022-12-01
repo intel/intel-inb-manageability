@@ -130,12 +130,12 @@ class TestRemediationManager(TestCase):
         mock_remove_container.assert_not_called()
         mock_stop_by_id.assert_not_called()
 
-    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
-    def test_dbs_not_deleted_twice_with_remove_image_on_failed_container(self,  mock_remove_image, mock_call_telemetry):
-        r = RemediationManager(self.mock_disp_callbacks_obj)
-        r.ignore_dbs_results = False
-        r.container_image_list_to_be_removed = ['ghi567']
-        r._remove_images(['abc123', 'def234', 'ghi567'])
-        mock_call_telemetry.assert_called()
-        mock_remove_image.assert_called_once_with('ghi567', True)
+#     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
+#     @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+#     def test_dbs_not_deleted_twice_with_remove_image_on_failed_container(self,  mock_remove_image, mock_call_telemetry):
+#         r = RemediationManager(self.mock_disp_callbacks_obj)
+#         r.ignore_dbs_results = False
+#         r.container_image_list_to_be_removed = ['ghi567']
+#         r._remove_images(['abc123', 'def234', 'ghi567'])
+#         mock_call_telemetry.assert_called()
+#         mock_remove_image.assert_called_once_with('ghi567', True)
