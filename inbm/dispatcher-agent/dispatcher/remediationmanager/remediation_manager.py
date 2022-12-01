@@ -53,10 +53,12 @@ class RemediationManager:
 
     def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
+        self.lock.acquire()
         try:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
                 self._remove_container(literal_eval(payload))
+            self.lock.release()
         except ValueError as error:
             logger.error('Unable to parse container message . Verify container remove request '
                          'is in the correct format "abc,def,123". {}'.format(error))
