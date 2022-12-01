@@ -19,7 +19,7 @@ from .config_dbs import ConfigDbs
 
 from .docker_bench_security_runner import DockerBenchRunner
 from inbm_common_lib.shell_runner import PseudoShellRunner
-
+import traceback
 logger = logging.getLogger(__name__)
 
 current_dbs_mode = DEFAULT_DBS_MODE
@@ -76,6 +76,8 @@ class EventWatcher(Thread):
         thread.start()
 
     def _check_failed_containers(self, failed_containers: str) -> None:
+        for line in traceback.format_stack():
+            print(line.strip())
         logger.debug("diag event_check_failed_containers called")
         logger.debug("Passing failed containers on REMEDIATION_CONTAINER_CHANNEL")
         if failed_containers and len(failed_containers) > 0:
