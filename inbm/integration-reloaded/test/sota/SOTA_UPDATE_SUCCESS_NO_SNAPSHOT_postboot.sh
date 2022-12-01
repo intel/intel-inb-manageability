@@ -30,7 +30,7 @@ echo "Done waiting for dispatcher." | systemd-cat
 #After reboot
 echo After reboot, we are looking for exactly 4 files in /var/lib/dispatcher/upload.
 ls /var/lib/dispatcher/upload/
-ls /var/lib/dispatcher/upload/ | wc -l | grep 4
+ls /var/lib/dispatcher/upload/ | wc -l | grep 5
 
 echo Also looking for /etc/dispatcher_state to be gone
 if [ -f /etc/dispatcher_state ] ; then
