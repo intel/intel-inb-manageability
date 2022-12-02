@@ -77,6 +77,9 @@ class DbsChecker:
 
     def _handle_docker_security_test_results(self, output: str) -> str:
         parse_result = parse_docker_bench_security_results(output)
+        logger.debug("**************************************** parse_docker_bench_security_results ***************")
+        logger.debug(parse_docker_bench_security_results)
+        logger.debug("**************************************** parse_docker_bench_security_results ***************")
         if not isinstance(parse_result['result'], str):
             raise DispatcherException("Internal error: DBS parser returned invalid result type")
         return self._return_build_result(success_flag=parse_result['success_flag'],
