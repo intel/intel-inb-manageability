@@ -13,7 +13,7 @@ from typing import List, Tuple
 from inbm_lib.dbs_parser import parse_docker_bench_security_results
 from inbm_lib.trtl import Trtl
 from inbm_common_lib.shell_runner import PseudoShellRunner
-
+import traceback
 logger = logging.getLogger(__name__)
 
 
@@ -29,12 +29,28 @@ class DockerBenchRunner(Thread):
 
     def run(self):
         """Runs the DockerBenchRunner thread"""
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
         out = Trtl(PseudoShellRunner()).run_docker_bench_security_test()
-
+        logger.debug("############################    out       ############################")
         logger.debug(out)
+        logger.debug("############################    out run   ############################")
         if out:
+            logger.debug("############################    if out run self.failed_container_list  ############################")
+            logger.debug(self.failed_container_list)
+            logger.debug(self.failed_image_list)
+            logger.debug(self.result_string)
+            logger.debug(self.result)
+            logger.debug("############################    out run   ############################")
             self.result, self.result_string, self.failed_container_list, self.failed_image_list = \
                 DockerBenchRunner._handle_docker_security_test_results(out)
+            logger.debug(
+                "############################     After if out run self.failed_container_list  ############################")
+            logger.debug(self.failed_container_list)
+            logger.debug(self.failed_image_list)
+            logger.debug(self.result_string)
+            logger.debug(self.result)
+            logger.debug("############################    out run   ############################")
 
     @staticmethod
     def _return_build_result(success_flag,

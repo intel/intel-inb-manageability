@@ -77,7 +77,7 @@ class EventWatcher(Thread):
 
     def _check_failed_containers(self, failed_containers: str) -> None:
         for line in traceback.format_stack():
-            print(line.strip())
+            logger.debug(line.strip())
         logger.debug("diag event_check_failed_containers called")
         logger.debug("Passing failed containers on REMEDIATION_CONTAINER_CHANNEL")
         logger.debug("******************************************* failed_containers **********************")
