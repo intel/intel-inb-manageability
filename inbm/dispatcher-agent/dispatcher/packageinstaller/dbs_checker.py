@@ -72,7 +72,9 @@ class DbsChecker:
         output = self._trtl.run_docker_bench_security_test()
         logger.debug(output)
         if not output:
+            logger.debug("**************************************** if_ run_docker_security_test ***************")
             raise DispatcherException("Cannot run docker bench security.")
+        logger.debug("**************************************** run_docker_security_test ***************")
         return self._handle_docker_security_test_results(output)
 
     def _handle_docker_security_test_results(self, output: str) -> str:
