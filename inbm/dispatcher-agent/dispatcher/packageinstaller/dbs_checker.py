@@ -51,7 +51,9 @@ class DbsChecker:
         @return: status
         """
         try:
+            logger.debug("*********************** check_run_docker_security_test above call ****************************")
             self.run_docker_security_test()
+            logger.debug("*********************** check_run_docker_security_test below call ****************************")
             if self._trtl.stop(self._name, self._last_version - 1):
                 container_id = self._find_current_container()
                 self._trtl.commit(self._name, self._last_version)
@@ -69,8 +71,10 @@ class DbsChecker:
         """Calls TRTL API to run DBS
 
         @return: Result of DBS.  False if unable to run DBS."""
+        logger.debug("**************************************** run_docker_security***************")
         output = self._trtl.run_docker_bench_security_test()
         logger.debug(output)
+        logger.debug("**************************************** run_docker_security_o/p ***************")
         if not output:
             logger.debug("**************************************** if_ run_docker_security_test ***************")
             raise DispatcherException("Cannot run docker bench security.")
