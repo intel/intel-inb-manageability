@@ -57,7 +57,7 @@ class DbsChecker:
             if self._trtl.stop(self._name, self._last_version - 1):
                 logger.debug("************** _find_current_container above call ************************")
                 container_id = self._find_current_container()
-                logger.debu(container_id)
+                logger.debug(container_id)
                 logger.debug(self._find_current_container)
                 logger.debug("************** _find_current_container below call ************************")
                 self._trtl.commit(self._name, self._last_version)
@@ -135,6 +135,7 @@ class DbsChecker:
         err, out = self._trtl.list()
         logger.debug(out)
         logger.debug(err)
+        logger.debug(self._trtl.list)
         if err:
             logger.error("Error encountered while getting container ID")
             return None
