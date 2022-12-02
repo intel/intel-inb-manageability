@@ -8,6 +8,7 @@ import logging
 import re
 
 from typing import List, Dict, Union
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +34,12 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
     failed_images: List = []
     failed_containers: List = []
     for line in dbs_output.splitlines():
+        logger.debug("############################# dbs_parser3 #################################")
         if _is_name_in_line(line, prev_warn):
+            logger.debug("############################# dbs_parser4 #################################")
             _fetch_names_for_warn_test(line, failed_containers, failed_images)
         if _is_test_warn(line):
+            logger.debug("############################# dbs_parser5 #################################")
             fails = _add_test_in_fails(line, fails)
             success_flag = False
             prev_warn = True
