@@ -65,13 +65,23 @@ def _is_test_warn(line: str) -> bool:
 
 
 def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_images: List[str]) -> None:
+    logger.debug("############################# _fetch_names_for_warn_test #################################")
     if ": [" in line:
+        logger.debug("############################# _fetch_names_for_warn_test if #################################")
+        logger.debug(failed_images)
+        logger.debug(line)
         _append_image_name(line, failed_images)
+        logger.debug(failed_images)
     elif ": " in line:
+        logger.debug("############################# _fetch_names_for_warn_test elif #################################")
+        logger.debug(failed_images)
         _append_container_name(line, failed_containers)
+        logger.debug(failed_images)
 
 
 def _add_test_in_fails(line: str, fails: str) -> str:
+    logger.debug("############################# _add_test_in_fails #################################")
+    logger.debug(fails)
     fails += line.split(" ")[1] + ","
     return fails
 
@@ -80,6 +90,8 @@ DBS_CONTAINER_REGEX = "^.*\\[WARN\\].*: ([^[]*)$"
 
 
 def _append_container_name(line, failed_containers):
+    for line in traceback.format_stack():
+        logger.debug(line.strip())
     matches = re.findall(DBS_CONTAINER_REGEX, line)
     if len(matches) == 1:
         name = matches[len(matches) - 1]
@@ -91,6 +103,8 @@ DBS_IMAGE_REGEX = "^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$"
 
 
 def _append_image_name(line, failed_images):
+    for line in traceback.format_stack():
+        logger.debug(line.strip())
     matches = re.findall(DBS_IMAGE_REGEX, line)
     if len(matches) == 1:
         name = matches[len(matches) - 1]
