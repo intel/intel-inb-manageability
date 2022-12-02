@@ -50,6 +50,7 @@ class DockerBenchRunner(Thread):
             logger.debug(self.failed_image_list)
             logger.debug(self.result_string)
             logger.debug(self.result)
+            logger.debug(out)
             logger.debug("############################    out run   ############################")
 
     @staticmethod
