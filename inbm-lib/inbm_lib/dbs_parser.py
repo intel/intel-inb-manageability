@@ -19,9 +19,15 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
     failed_containers (lists of container/image names that failed); result (text summary of DBS result);
     and fails (text summary of DBS failures)
     """
-
+    for line in traceback.format_stack():
+        logger.debug(line.strip())
+    logger.debug("############################# dbs_parser #################################")
     result = "Test results: "
     fails = "Failures in: "
+    logger.debug("############################# dbs_parser 1 #################################")
+    logger.debug(result)
+    logger.debug(fails)
+    logger.debug("############################# dbs_parser 2 #################################")
     success_flag = True
     prev_warn = False
     failed_images: List = []
