@@ -35,7 +35,7 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
     prev_warn = False
     logger.debug("############################# dbs_parser3 #################################")
     logger.debug(success_flag)
-    logger.debug(prev_warn)
+    #logger.debug(prev_warn)
     logger.debug("############################# dbs_parser4 #################################")
     failed_images: List = []
     failed_containers: List = []
@@ -94,7 +94,7 @@ def _is_test_warn(line: str) -> bool:
 def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_images: List[str]) -> None:
     logger.debug("############################# dbs_parser__fetch_names_for_warn_test #################################")
     #logger.debug(line)
-    logger.debug(failed_images)
+    #logger.debug(failed_images)
     if ": [" in line:
         #logger.debug(line)
         logger.debug(failed_images)
