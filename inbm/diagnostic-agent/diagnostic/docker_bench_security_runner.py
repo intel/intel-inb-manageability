@@ -54,7 +54,9 @@ class DockerBenchRunner(Thread):
     @staticmethod
     def _handle_docker_security_test_results(output: str)\
             -> Tuple[bool, str, List[str], List[str]]:
+        logger.debug(output)
         parse_result = parse_docker_bench_security_results(output)
+        logger.debug(parse_result)
         return DockerBenchRunner.\
             _return_build_result(success_flag=parse_result['success_flag'],
                                  result=parse_result['result'],
