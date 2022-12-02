@@ -134,51 +134,19 @@ DBS_CONTAINER_REGEX = "^.*\\[WARN\\].*: ([^[]*)$"
 
 
 def _append_container_name(line, failed_containers):
-    logger.debug("############################# dbs_parser_def _append_container_name #################################")
-    logger.debug(DBS_CONTAINER_REGEX)
-    logger.debug(line)
-    logger.debug(matches)
     matches = re.findall(DBS_CONTAINER_REGEX, line)
-    logger.debug(DBS_CONTAINER_REGEX)
-    logger.debug(line)
-    logger.debug(matches)
     if len(matches) == 1:
-        logger.debug(name)
-        logger.debug(matches)
         name = matches[len(matches) - 1]
-        logger.debug(name)
-        logger.debug(matches)
         if name not in failed_containers:
-            logger.debug("############################# dbs_parser_def _append_container_name - 1 #################################")
-            logger.debug(failed_containers)
-            logger.debug(name)
             failed_containers.append(name)
-            logger.debug(failed_containers)
-            logger.debug(name)
 
 
 DBS_IMAGE_REGEX = "^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$"
 
 
 def _append_image_name(line, failed_images):
-    logger.debug("############################# dbs_parser_def _append_image_name #################################")
-    logger.debug(DBS_CONTAINER_REGEX)
-    logger.debug(line)
-    logger.debug(matches)
     matches = re.findall(DBS_IMAGE_REGEX, line)
-    logger.debug("############################# dbs_parser_def _append_image_name 1 #################################")
-    logger.debug(DBS_CONTAINER_REGEX)
-    logger.debug(line)
-    logger.debug(matches)
     if len(matches) == 1:
-        logger.debug("############################# dbs_parser_def _append_image_name 2 #################################")
-        logger.debug(name)
-        logger.debug(matches)
         name = matches[len(matches) - 1]
-        logger.debug(name)
-        logger.debug(matches)
         if name not in failed_images:
-            logger.debug("############################# dbs_parser_def _append_image_name 2 #################################")
-            logger.debug(name)
-            logger.debug(failed_images)
             failed_images.append(name)
