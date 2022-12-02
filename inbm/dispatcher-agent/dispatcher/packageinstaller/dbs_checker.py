@@ -55,7 +55,11 @@ class DbsChecker:
             self.run_docker_security_test()
             logger.debug("*********************** check_run_docker_security_test below call ****************************")
             if self._trtl.stop(self._name, self._last_version - 1):
+                logger.debug("************** _find_current_container above call ************************")
                 container_id = self._find_current_container()
+                logger.debu(container_id)
+                logger.debug(self._find_current_container)
+                logger.debug("************** _find_current_container below call ************************")
                 self._trtl.commit(self._name, self._last_version)
                 logger.debug("rpm_install: based on smart install, detected success")
                 return self._container_callback.check_config_params_start_container(self._name,
@@ -127,12 +131,17 @@ class DbsChecker:
             logger.debug("******************* publish_remediation_request FAILED Image ************************")
 
     def _find_current_container(self) -> Optional[str]:
+        logger.debug("******************* In find_current_container call *******************")
         err, out = self._trtl.list()
+        logger.debug(out)
+        logger.debug(err)
         if err:
             logger.error("Error encountered while getting container ID")
             return None
         for line in out.splitlines():
             if self._name + ":" + str(self._last_version) in line:
                 container_id = line.split()[0]
+                logger.debug("****************** line.split result og container_id ********************")
+                logger.debug(container_id)
                 return container_id
         return None
