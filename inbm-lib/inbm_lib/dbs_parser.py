@@ -61,6 +61,8 @@ def _is_name_in_line(line: str, prev_warn: bool) -> bool:
 
 
 def _is_test_warn(line: str) -> bool:
+    logger.debug("############################# _fetch_names_for_warn_test ##############")
+    logger.debug(line)
     return True if "WARN" in line else False
 
 
