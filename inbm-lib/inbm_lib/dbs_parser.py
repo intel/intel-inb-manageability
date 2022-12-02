@@ -99,8 +99,8 @@ def _is_name_in_line(line: str, prev_warn: bool) -> bool:
 
 
 def _is_test_warn(line: str) -> bool:
-    logger.debug("############################# dbs_parser__is_test_warn #################################")
-    logger.debug(line)
+     logger.debug("############################# dbs_parser__is_test_warn #################################")
+     logger.debug(line)
      return True if "WARN" in line else False
 
 
