@@ -106,16 +106,16 @@ def _is_test_warn(line: str) -> bool:
 
 def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_images: List[str]) -> None:
     logger.debug("############################# dbs_parser__fetch_names_for_warn_test #################################")
-    logger.debug(line)
+    #logger.debug(line)
     logger.debug(failed_images)
     if ": [" in line:
-        logger.debug(line)
+        #logger.debug(line)
         logger.debug(failed_images)
         _append_image_name(line, failed_images)
         logger.debug(line)
         logger.debug(failed_images)
     elif ": " in line:
-        logger.debug(line)
+        #logger.debug(line)
         logger.debug(failed_images)
         _append_container_name(line, failed_containers)
         logger.debug(line)
