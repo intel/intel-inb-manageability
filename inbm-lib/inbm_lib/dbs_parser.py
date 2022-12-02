@@ -38,9 +38,13 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
         if _is_name_in_line(line, prev_warn):
             logger.debug("############################# dbs_parser4 #################################")
             _fetch_names_for_warn_test(line, failed_containers, failed_images)
+            logger.debug(line)
+            logger.debug(failed_containers)
+            logger.debug(failed_images)
         if _is_test_warn(line):
             logger.debug("############################# dbs_parser5 #################################")
             fails = _add_test_in_fails(line, fails)
+            logger.debug(fails)
             success_flag = False
             prev_warn = True
             continue
