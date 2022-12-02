@@ -25,16 +25,16 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
     for line in traceback.format_stack():
         logger.debug(line.strip())
     logger.debug("############################# dbs_parser #################################")
-    logger.debug(result)
-    logger.debug(fails)
+    #logger.debug(result)
+    #logger.debug(fails)
     result = "Test results: "
     fails = "Failures in: "
     logger.debug("############################# dbs_parser1 #################################")
-    logger.debug(result)
-    logger.debug(fails)
+    #logger.debug(result)
+    #logger.debug(fails)
     logger.debug("############################# dbs_parser2 #################################")
-    logger.debug(success_flag)
-    logger.debug(prev_warn)
+    #logger.debug(success_flag)
+    #logger.debug(prev_warn)
     success_flag = True
     prev_warn = False
     logger.debug("############################# dbs_parser3 #################################")
