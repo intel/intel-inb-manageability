@@ -8,69 +8,33 @@ import logging
 import re
 
 from typing import List, Dict, Union
-import traceback
 
 logger = logging.getLogger(__name__)
 
 
 def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool, str, List[str]]]:
     """Parse failed images and containers from DBS output.
-
     @param dbs_output: Output from DBS.
-
     @return: Dictionary with DBS results. Keys are success_flag (true/false--did DBS pass?); failed_images,
     failed_containers (lists of container/image names that failed); result (text summary of DBS result);
     and fails (text summary of DBS failures)
     """
-    for line in traceback.format_stack():
-        logger.debug(line.strip())
-    print("############################# dbs_parser #################################")
+
     result = "Test results: "
     fails = "Failures in: "
-    print("############################# dbs_parser1 #################################")
-    print(result)
-    print(fails)
-    print("############################# dbs_parser2 #################################")
     success_flag = True
     prev_warn = False
-    logger.debug("############################# dbs_parser3 #################################")
-    print(success_flag)
-    #logger.debug(prev_warn)
-    logger.debug("############################# dbs_parser4 #################################")
     failed_images: List = []
     failed_containers: List = []
-    logger.debug("############################# dbs_parser5 #################################")
     for line in dbs_output.splitlines():
-        logger.debug("############################# dbs_parser6 #################################")
-        print(line)
-        print(prev_warn)
         if _is_name_in_line(line, prev_warn):
-            logger.debug("############################# dbs_parser7 #################################")
-            print(failed_containers)
-            print(failed_images)
             _fetch_names_for_warn_test(line, failed_containers, failed_images)
-            logger.debug("############################# dbs_parser8 #################################")
-            print(failed_containers)
-            print(failed_images)
         if _is_test_warn(line):
-            logger.debug("############################# dbs_parser9 #################################")
-            logger.debug(fails)
             fails = _add_test_in_fails(line, fails)
-            logger.debug("############################# dbs_parser10 #################################")
-            logger.debug(fails)
             success_flag = False
             prev_warn = True
-            logger.debug(success_flag)
-            logger.debug(prev_warn)
             continue
-        logger.debug("############################# dbs_parser11 #################################")
-        logger.debug(prev_warn)
         prev_warn = False
-        logger.debug(prev_warn)
-        logger.debug("############################# dbs_parser12 #################################")
-        logger.debug(success_flag)
-        logger.debug(result)
-        logger.debug(fails)
     return {'success_flag': success_flag,
             'failed_images': failed_images,
             'failed_containers': failed_containers,
@@ -79,41 +43,22 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
 
 
 def _is_name_in_line(line: str, prev_warn: bool) -> bool:
-    logger.debug("############################# dbs_parser__is_name_in_line #################################")
-    logger.debug(line)
-    logger.debug(prev_warn)
     return True if "*" in line and prev_warn else False
 
 
 def _is_test_warn(line: str) -> bool:
-     logger.debug("############################# dbs_parser__is_test_warn #################################")
-     logger.debug(line)
-     return True if "WARN" in line else False
+    return True if "WARN" in line else False
 
 
 def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_images: List[str]) -> None:
-    logger.debug("############################# dbs_parser__fetch_names_for_warn_test #################################")
-    #logger.debug(line)
-    #logger.debug(failed_images)
     if ": [" in line:
-        #logger.debug(line)
-        logger.debug(failed_images)
         _append_image_name(line, failed_images)
-        logger.debug(line)
-        logger.debug(failed_images)
     elif ": " in line:
-        #logger.debug(line)
-        logger.debug(failed_images)
         _append_container_name(line, failed_containers)
-        logger.debug(line)
-        logger.debug(failed_images)
 
 
 def _add_test_in_fails(line: str, fails: str) -> str:
-    logger.debug("############################# dbs_parser__add_test_in_fails #################################")
-    #logger.debug(fails)
     fails += line.split(" ")[1] + ","
-    #logger.debug(fails)
     return fails
 
 
