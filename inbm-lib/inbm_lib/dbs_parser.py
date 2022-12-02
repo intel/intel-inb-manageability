@@ -124,9 +124,9 @@ def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_i
 
 def _add_test_in_fails(line: str, fails: str) -> str:
     logger.debug("############################# dbs_parser__add_test_in_fails #################################")
-    logger.debug(fails)
+    #logger.debug(fails)
     fails += line.split(" ")[1] + ","
-    logger.debug(fails)
+    #logger.debug(fails)
     return fails
 
 
