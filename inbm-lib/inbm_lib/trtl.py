@@ -540,6 +540,12 @@ class Trtl:
         """
         cmd = self._boilerplate("dockerbenchsecurity")
         out, err, code = self.runner.run(cmd)
+        logger.debug("************************************ dockerbenchsecurity_out prints ************************************")
+        logger.debug(out)
+        logger.debug(code)
+        logger.debug(err)
+        logger.debug("************************************ dockerbenchsecurity_out prints ************************************")
+
 
         if code == 0:
             logger.debug("Docker security bench executed")
