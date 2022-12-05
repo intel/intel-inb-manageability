@@ -98,7 +98,6 @@ def _append_container_name(line, failed_containers):
         name = matches[len(matches) - 1]
         if name not in failed_containers:
             failed_containers.append(name)
-            logger.debug(name)
 
 
 DBS_IMAGE_REGEX = "^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$"
@@ -110,4 +109,3 @@ def _append_image_name(line, failed_images):
         name = matches[len(matches) - 1]
         if name not in failed_images:
             failed_images.append(name)
-            logger.debug(name)
