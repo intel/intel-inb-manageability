@@ -67,16 +67,33 @@ def _is_test_warn(line: str) -> bool:
 def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_images: List[str]) -> None:
     logger.debug("############################# _fetch_names_for_warn_test #################################")
     logger.debug(line)
-    if ": [" in line and "No Healthcheck found:" not in line:
+    if ": [" in line:
+    #if ": [" in line and "No Healthcheck found:" not in line:
         logger.debug("############################# _fetch_names_for_warn_test if #################################")
         logger.debug(failed_images)
         _append_image_name(line, failed_images)
         logger.debug(failed_images)
-    elif ": " in line and "No SecurityOptions Found:" not in line:
+    elif ": " in line:
+    #elif ": " in line and "No SecurityOptions Found:" not in line:
         logger.debug("############################# _fetch_names_for_warn_test elif #################################")
         logger.debug(failed_images)
         _append_container_name(line, failed_containers)
         logger.debug(failed_containers)
+    if "No Healthcheck found:" in line:
+        matches = re.findall("^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$", line)
+        if len(matches) == 1:
+            name = matches[len(matches) - 1]
+            if name in failed_images:
+               failed_images.remove(name)
+    if "No SecurityOptions Found:" in line:
+        matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
+        if len(matches) == 1:
+            name = matches[len(matches) - 1]
+            if name in failed_containers:
+                failed_containers.remove(name)
+
+
+
 
 
 def _add_test_in_fails(line: str, fails: str) -> str:
