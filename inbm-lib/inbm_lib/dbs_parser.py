@@ -97,7 +97,6 @@ def _append_container_name(line, failed_containers):
     if len(matches) == 1:
         name = matches[len(matches) - 1]
         if name not in failed_containers:
-            logger.debug(name)
             failed_containers.append(name)
             logger.debug(name)
 
@@ -110,6 +109,5 @@ def _append_image_name(line, failed_images):
     if len(matches) == 1:
         name = matches[len(matches) - 1]
         if name not in failed_images:
-            logger.debug(name)
             failed_images.append(name)
             logger.debug(name)
