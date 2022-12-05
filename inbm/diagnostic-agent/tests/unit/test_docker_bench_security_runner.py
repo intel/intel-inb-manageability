@@ -40,17 +40,17 @@ class TestDockerBenchSecurityRunner(TestCase):
         self.assertEqual([], dbs.failed_container_list)
         self.assertEqual([], dbs.failed_image_list)
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
-    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
-    def test_fail_dbs_container_run(self, mocked_trtl, mock_shellrunner):
-        mocked_trtl.return_value = docker_bench_fail_container_output
-        dbs = DockerBenchRunner()
-        dbs.start()
-        dbs.join()
-        self.assertEquals(dbs.result, False)
-        self.assertEquals(dbs.result_string, "Test results: Failures in: 5.25,,5.26,,5.28")
-        self.assertEquals(dbs.failed_container_list, ['abc'])
-        self.assertEquals(dbs.failed_image_list, [])
+#     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
+#     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
+#     def test_fail_dbs_container_run(self, mocked_trtl, mock_shellrunner):
+#         mocked_trtl.return_value = docker_bench_fail_container_output
+#         dbs = DockerBenchRunner()
+#         dbs.start()
+#         dbs.join()
+#         self.assertEquals(dbs.result, False)
+#         self.assertEquals(dbs.result_string, "Test results: Failures in: 5.25,,5.26,,5.28")
+#         self.assertEquals(dbs.failed_container_list, ['abc'])
+#         self.assertEquals(dbs.failed_image_list, [])
 
 #     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
 #     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
