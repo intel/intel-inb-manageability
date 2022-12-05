@@ -66,13 +66,15 @@ def _is_test_warn(line: str) -> bool:
 
 def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_images: List[str]) -> None:
     logger.debug("############################# _fetch_names_for_warn_test #################################")
-    if ": [" in line and "No Healthcheck found:" not in line:
+    #if ": [" in line and "No Healthcheck found:" not in line:
+    if " 'No Healthcheck found:' : [" in line:
         logger.debug("############################# _fetch_names_for_warn_test if #################################")
         logger.debug(failed_images)
         logger.debug(line)
         _append_image_name(line, failed_images)
         logger.debug(failed_images)
-    elif ": " in line and "No SecurityOptions Found:" not in line:
+    #elif ": " in line and "No SecurityOptions Found:" not in line:
+    elif " 'No SecurityOptions Found:' : " in line:
         logger.debug("############################# _fetch_names_for_warn_test elif #################################")
         logger.debug(failed_images)
         _append_container_name(line, failed_containers)
@@ -83,6 +85,7 @@ def _add_test_in_fails(line: str, fails: str) -> str:
     logger.debug("############################# _add_test_in_fails #################################")
     logger.debug(fails)
     fails += line.split(" ")[1] + ","
+    logger.debug(fails)
     return fails
 
 
@@ -94,7 +97,9 @@ def _append_container_name(line, failed_containers):
     if len(matches) == 1:
         name = matches[len(matches) - 1]
         if name not in failed_containers:
+            logger.debug(name)
             failed_containers.append(name)
+            logger.debug(name)
 
 
 DBS_IMAGE_REGEX = "^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$"
@@ -105,4 +110,6 @@ def _append_image_name(line, failed_images):
     if len(matches) == 1:
         name = matches[len(matches) - 1]
         if name not in failed_images:
+            logger.debug(name)
             failed_images.append(name)
+            logger.debug(name)
