@@ -33,17 +33,17 @@ class TestDbsParser(TestCase):
 #         self.assertEqual([], parse_result['failed_images'])
 #         self.assertEqual(['container_name'], parse_result['failed_containers'])
 
-    def test_dbs_output_parser_image_fail_4_6(self):
-        parse_input = """
-[WARN] 4.6  - Ensure that HEALTHCHECK instructions have been added to container images
-[WARN]      * No Healthcheck found: [foo:1]
-[WARN]      * No Healthcheck found: [bar]"""
-        parse_result = parse_docker_bench_security_results(parse_input)
-        self.assertEqual(False, parse_result['success_flag'])
-        self.assertEqual('Test results: ', parse_result['result'])
-        self.assertEqual('Failures in: 4.6,,,', parse_result['fails'])
-        self.assertEqual(['foo:1', 'bar'], parse_result['failed_images'])
-        self.assertEqual([], parse_result['failed_containers'])
+#     def test_dbs_output_parser_image_fail_4_6(self):
+#         parse_input = """
+# [WARN] 4.6  - Ensure that HEALTHCHECK instructions have been added to container images
+# [WARN]      * No Healthcheck found: [foo:1]
+# [WARN]      * No Healthcheck found: [bar]"""
+#         parse_result = parse_docker_bench_security_results(parse_input)
+#         self.assertEqual(False, parse_result['success_flag'])
+#         self.assertEqual('Test results: ', parse_result['result'])
+#         self.assertEqual('Failures in: 4.6,,,', parse_result['fails'])
+#         self.assertEqual(['foo:1', 'bar'], parse_result['failed_images'])
+#         self.assertEqual([], parse_result['failed_containers'])
 
 #     def test_dbs_output_parser_container_and_image_fails(self):
 #         parse_input = """
