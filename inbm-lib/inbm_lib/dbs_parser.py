@@ -61,8 +61,6 @@ def _is_name_in_line(line: str, prev_warn: bool) -> bool:
 
 
 def _is_test_warn(line: str) -> bool:
-    logger.debug("############################# _fetch_names_for_warn_test ##############")
-    logger.debug(line)
     return True if "WARN" in line else False
 
 
@@ -92,8 +90,6 @@ DBS_CONTAINER_REGEX = "^.*\\[WARN\\].*: ([^[]*)$"
 
 
 def _append_container_name(line, failed_containers):
-    for line in traceback.format_stack():
-        logger.debug(line.strip())
     matches = re.findall(DBS_CONTAINER_REGEX, line)
     if len(matches) == 1:
         name = matches[len(matches) - 1]
@@ -105,8 +101,6 @@ DBS_IMAGE_REGEX = "^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$"
 
 
 def _append_image_name(line, failed_images):
-    for line in traceback.format_stack():
-        logger.debug(line.strip())
     matches = re.findall(DBS_IMAGE_REGEX, line)
     if len(matches) == 1:
         name = matches[len(matches) - 1]
