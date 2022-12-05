@@ -409,12 +409,6 @@ class Trtl:
         logging.debug(
             "Trtl.ImageRemoveAll results: output={}, err={}, exitcode={}".format(
                 out, err, code))
-        #logger.debug("Trtl.imageRemoveByID(" + image_id + ")")
-        #out, err, code = self.runner.run(self._boilerplate(
-        #    "imageRemoveByID") + " -id=" + image_id + " -f=" + str(force))
-        #logging.debug(
-        #   "Trtl.imageremovebyid results: output={}, err={}, exitcode={}".format(
-        #        out, err, code))
         return out, err, code
 
     def get_latest_tag(self, image: str) -> Tuple[str, int]:
