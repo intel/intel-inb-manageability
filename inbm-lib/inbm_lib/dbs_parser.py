@@ -66,10 +66,10 @@ def _is_test_warn(line: str) -> bool:
 
 def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_images: List[str]) -> None:
     logger.debug("############################# _fetch_names_for_warn_test #################################")
+    logger.debug(line)
     if ": [" in line and "No Healthcheck found:" not in line:
         logger.debug("############################# _fetch_names_for_warn_test if #################################")
         logger.debug(failed_images)
-        logger.debug(line)
         _append_image_name(line, failed_images)
         logger.debug(failed_images)
     elif ": " in line and "No SecurityOptions Found:" not in line:
