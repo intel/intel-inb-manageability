@@ -14,6 +14,7 @@ from typing import Optional, Tuple
 
 import logging
 import pipes
+import traceback
 
 from .constants import DOCKER, COMPOSE, TRTL_PATH
 from subprocess import Popen, PIPE
@@ -554,6 +555,8 @@ class Trtl:
         """Runs DBS script via TRTL
         @return: output from DBS script
         """
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
         cmd = self._boilerplate("dockerbenchsecurity")
         out, err, code = self.runner.run(cmd)
 
