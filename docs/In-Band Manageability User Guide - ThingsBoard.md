@@ -90,6 +90,8 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
 
 - In order to run a ThingsBoard&reg; server instance on the same device as
     Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboard-server-port)
+	
+#### NOTE: Thingsboard is currently compatible with 3.3.1
 
 #### Setting up ThingsBoard TLS
 

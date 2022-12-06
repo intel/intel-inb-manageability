@@ -150,7 +150,15 @@ In order to setup an Azure&reg; account, follow the steps below:
 
 -   The following form will appear
 
+-	Click **Build** -> Click **Create app**
+
     <img src="media/In-Band Manageability User Guide - Azure/media/image4.png" style="width:4.84028in;height:4.77014in" />
+
+-	Then after creating the app following form will appear
+
+-	In New application select the drop down **Free Trail** in Azure Subscription 
+	
+	<img src="media/In-Band Manageability User Guide - Azure/media/image91.png" style="width:4.84028in;height:4.77014in" />
 
 -   Fill out the form accordingly, then click **Create.**
 
@@ -158,6 +166,8 @@ In order to setup an Azure&reg; account, follow the steps below:
 
 -   After provisioning, the IoT Central application with premade device templates and dashboards will appear. As noted before, this can be accessed at 
     <https://apps.azureiotcentral.com/> under *My Apps* tab or through the Azure&reg; portal.
+	
+#### Note: Azure Subscription  may change depends on **end users** and their **Azure Accounts**
 
 #### Accessing Azure&reg;
 
