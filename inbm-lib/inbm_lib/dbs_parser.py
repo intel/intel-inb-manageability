@@ -65,8 +65,8 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
             continue
         prev_warn = False
 
-    for line in dbs_output.splitlines():
-        _test_function(line, failed_containers, failed_images)
+    # for line in dbs_output.splitlines():
+    #     _test_function(line, failed_containers, failed_images)
 
 
         # if "No SecurityOptions Found:" in line:
