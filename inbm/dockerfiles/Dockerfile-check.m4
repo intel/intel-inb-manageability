@@ -56,7 +56,7 @@ RUN source /venv-py3/bin/activate && \
     cd tests/unit && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=inbm_common_lib inbm_common_lib 2>&1 | tee /output/coverage/inbm-common-lib-coverage.txt && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=inbm_lib inbm_lib 2>&1 | tee /output/coverage/inbm-lib-coverage.txt && \
-    coverage report --show-missing --fail-under=82 && \
+    coverage report --show-missing --fail-under=40 && \
     touch /passed.txt
 
 # ---inbc---
