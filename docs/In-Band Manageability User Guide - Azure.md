@@ -150,7 +150,7 @@ In order to setup an Azure&reg; account, follow the steps below:
 
 -   The following form will appear
 
-1. Click **Build** -> Click **Create app**
+-	Click **Build** -> Click **Create app**
 
     <img src="media/In-Band Manageability User Guide - Azure/media/image4.png" style="width:4.84028in;height:4.77014in" />
 
