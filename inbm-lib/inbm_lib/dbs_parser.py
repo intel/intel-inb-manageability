@@ -49,6 +49,25 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
             prev_warn = True
             continue
         prev_warn = False
+
+    for line in dbs_output.splitlines():
+        if "No Healthcheck found:" in line:
+            matches = re.findall("^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$", line)
+            if len(matches) == 1:
+                name = matches[len(matches) - 1]
+                if name in failed_images:
+                    logger.debug("******************************* removing failed_image removed name ***********************************")
+                    failed_images.remove(name)
+
+        if "No SecurityOptions Found:" in line:
+            matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
+            if len(matches) == 1:
+                name = matches[len(matches) - 1]
+                if name in failed_containers:
+                    logger.debug("******************************* removing failed_container removed name ***********************************")
+                    failed_containers.remove(name)
+
+
     return {'success_flag': success_flag,
             'failed_images': failed_images,
             'failed_containers': failed_containers,
@@ -79,19 +98,19 @@ def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_i
         logger.debug(failed_images)
         _append_container_name(line, failed_containers)
         logger.debug(failed_containers)
-    if "No Healthcheck found:" in line:
-        matches = re.findall("^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$", line)
-        if len(matches) == 1:
-            name = matches[len(matches) - 1]
-            if name in failed_images:
-               logger.debug("******************************* removing failed_images name ***********************************")
-               failed_images.remove(name)
-    if "No SecurityOptions Found:" in line:
-        matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
-        if len(matches) == 1:
-            name = matches[len(matches) - 1]
-            if name in failed_containers:
-                failed_containers.remove(name)
+    # if "No Healthcheck found:" in line:
+    #     matches = re.findall("^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$", line)
+    #     if len(matches) == 1:
+    #         name = matches[len(matches) - 1]
+    #         if name in failed_images:
+    #            logger.debug("******************************* removing failed_images name ***********************************")
+    #            failed_images.remove(name)
+    # if "No SecurityOptions Found:" in line:
+    #     matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
+    #     if len(matches) == 1:
+    #         name = matches[len(matches) - 1]
+    #         if name in failed_containers:
+    #             failed_containers.remove(name)
 
 
 
