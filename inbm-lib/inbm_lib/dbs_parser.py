@@ -84,6 +84,7 @@ def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_i
         if len(matches) == 1:
             name = matches[len(matches) - 1]
             if name in failed_images:
+                logger.debug("******************************* removing failed_images name ***********************************")
                failed_images.remove(name)
     if "No SecurityOptions Found:" in line:
         matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
