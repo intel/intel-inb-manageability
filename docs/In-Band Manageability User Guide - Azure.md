@@ -150,7 +150,20 @@ In order to setup an Azure&reg; account, follow the steps below:
 
 -   The following form will appear
 
+1. **Click** Build 
+
+2. **Click** Create app
+
     <img src="media/In-Band Manageability User Guide - Azure/media/image4.png" style="width:4.84028in;height:4.77014in" />
+
+-	Then after creating the app following form will appear
+
+-	In New application select the drop down **Free Trail** in Azure Subscription 
+	
+	<img src="media/In-Band Manageability User Guide - Azure/media/image91.png" style="width:4.84028in;height:4.77014in" />
+
+#### Note: It may change depends on **end users**
+	
 
 -   Fill out the form accordingly, then click **Create.**
 
