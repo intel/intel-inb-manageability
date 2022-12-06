@@ -79,18 +79,18 @@ def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_i
         logger.debug(failed_images)
         _append_container_name(line, failed_containers)
         logger.debug(failed_containers)
-    # if "No Healthcheck found:" in line:
-    #     matches = re.findall("^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$", line)
-    #     if len(matches) == 1:
-    #         name = matches[len(matches) - 1]
-    #         if name in failed_images:
-    #            failed_images.remove(name)
-    # if "No SecurityOptions Found:" in line:
-    #     matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
-    #     if len(matches) == 1:
-    #         name = matches[len(matches) - 1]
-    #         if name in failed_containers:
-    #             failed_containers.remove(name)
+    if "No Healthcheck found:" in line:
+        matches = re.findall("^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$", line)
+        if len(matches) == 1:
+            name = matches[len(matches) - 1]
+            if name in failed_images:
+               failed_images.remove(name)
+    if "No SecurityOptions Found:" in line:
+        matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
+        if len(matches) == 1:
+            name = matches[len(matches) - 1]
+            if name in failed_containers:
+                failed_containers.remove(name)
 
 
 
