@@ -19,7 +19,8 @@ logger = logging.getLogger(__name__)
 
 class DockerBenchRunner(Thread):
     """Runs the DBS script on all containers and images.  Parses results"""
-
+    for line in traceback.format_stack():
+        logger.debug(line.strip())
     def __init__(self):
         Thread.__init__(self, name="dockerBenchRunner")
         self.result = None
