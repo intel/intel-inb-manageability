@@ -74,7 +74,6 @@ class RemediationManager:
         logger.debug("Removing Images...")
         for image_id in ids:
             self._remove_single_image(image_id)
-                                                                 + '.  Image is not present in container image list.')
 
         self.container_image_list_to_be_removed[:] = []
 
