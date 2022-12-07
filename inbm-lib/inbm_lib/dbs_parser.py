@@ -69,13 +69,20 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
     #     _test_function(line, failed_containers, failed_images)
 
 
-        # if "No SecurityOptions Found:" in line:
-        #     matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
-        #     if len(matches) == 1:
-        #         name = matches[len(matches) - 1]
-        #         if name in failed_containers:
-        #             logger.debug("******************************* removing failed_container removed name ***********************************")
-        #             failed_containers.remove(name)
+        if "No SecurityOptions Found:" in line:
+            matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
+            if len(matches) == 1:
+                name = matches[len(matches) - 1]
+                if name in failed_containers:
+                    logger.debug("******************************* removing failed_container removed name ***********************************")
+                    failed_containers.remove(name)
+        if "No Healthcheck found:" in line:
+            matches = re.findall("^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$", line)
+            if len(matches) == 1:
+                name = matches[len(matches) - 1]
+                if name in failed_images:
+                   logger.debug("******************************* removing failed_images name ***********************************")
+                   failed_images.remove(name)
 
 
     return {'success_flag': success_flag,
@@ -121,10 +128,6 @@ def _fetch_names_for_warn_test(line: str, failed_containers: List[str], failed_i
     #         name = matches[len(matches) - 1]
     #         if name in failed_containers:
     #             failed_containers.remove(name)
-
-
-
-
 
 def _add_test_in_fails(line: str, fails: str) -> str:
     logger.debug("############################# _add_test_in_fails #################################")
