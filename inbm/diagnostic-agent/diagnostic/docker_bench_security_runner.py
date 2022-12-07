@@ -34,7 +34,7 @@ class DockerBenchRunner(Thread):
         """Runs the DockerBenchRunner thread"""
         for line in traceback.format_stack():
             logger.debug(line.strip())
-        self.lock = Lock()
+        #self.lock = Lock()
         out = Trtl(PseudoShellRunner()).run_docker_bench_security_test()
         self.lock.acquire()
         logger.debug("############################    out       ############################")
