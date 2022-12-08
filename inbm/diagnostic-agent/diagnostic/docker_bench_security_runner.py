@@ -9,7 +9,9 @@
 import logging
 #from threading import Thread
 from threading import Thread, Lock
+from time import sleep
 from typing import List, Tuple
+
 
 
 from inbm_lib.dbs_parser import parse_docker_bench_security_results
@@ -37,6 +39,7 @@ class DockerBenchRunner(Thread):
             logger.debug(line.strip())
         self.lock.acquire()
         out = Trtl(PseudoShellRunner()).run_docker_bench_security_test()
+        time.sleep(0.1)
         self.lock.release()
         logger.debug("############################    out       ############################")
         logger.debug(out)

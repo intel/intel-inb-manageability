@@ -544,6 +544,7 @@ class Trtl:
             print(line.strip())
             logger.debug(line.strip())
         self.lock.acquire()
+        #time.sleep(0.2)
         cmd = self._boilerplate("dockerbenchsecurity")
         self.lock.release()
         out, err, code = self.runner.run(cmd)
