@@ -7,9 +7,9 @@
 
 
 import logging
-#from threading import Thread
-from threading import Thread, Lock
-from time import sleep
+from threading import Thread
+#from threading import Thread, Lock
+#from time import sleep
 from typing import List, Tuple
 
 
@@ -27,7 +27,7 @@ class DockerBenchRunner(Thread):
         logger.debug(line.strip())
     def __init__(self):
         Thread.__init__(self, name="dockerBenchRunner")
-        self.lock = Lock()
+        #self.lock = Lock()
         self.result = None
         self.result_string = None
         self.failed_image_list = None
@@ -37,10 +37,10 @@ class DockerBenchRunner(Thread):
         """Runs the DockerBenchRunner thread"""
         for line in traceback.format_stack():
             logger.debug(line.strip())
-        self.lock.acquire()
+        #self.lock.acquire()
         out = Trtl(PseudoShellRunner()).run_docker_bench_security_test()
-        sleep(0.1)
-        self.lock.release()
+        #sleep(0.1)
+        #self.lock.release()
         logger.debug("############################    out       ############################")
         logger.debug(out)
         logger.debug("############################    out run   ############################")
