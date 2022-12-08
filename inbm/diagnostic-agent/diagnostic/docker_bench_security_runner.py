@@ -39,7 +39,7 @@ class DockerBenchRunner(Thread):
             logger.debug(line.strip())
         self.lock.acquire()
         out = Trtl(PseudoShellRunner()).run_docker_bench_security_test()
-        time.sleep(0.1)
+        sleep(0.1)
         self.lock.release()
         logger.debug("############################    out       ############################")
         logger.debug(out)
