@@ -20,7 +20,6 @@ def _test_function (line: str, failed_containers: List[str], failed_images: List
             if name in failed_images:
                 logger.debug("******************************* removing failed_image removed name ***********************************")
                 failed_images.remove(name)
-                logger.debug(name)
     if "No SecurityOptions Found:" in line:
         matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
         if len(matches) == 1:
@@ -28,7 +27,6 @@ def _test_function (line: str, failed_containers: List[str], failed_images: List
             if name in failed_containers:
                 logger.debug("******************************* removing failed_container removed name ***********************************")
                 failed_containers.remove(name)
-                logger.debug(name)
 
 def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool, str, List[str]]]:
     """Parse failed images and containers from DBS output.
@@ -67,8 +65,8 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
             continue
         prev_warn = False
 
-    for line in dbs_output.splitlines():
-        _test_function(line, failed_containers, failed_images)
+    # for line in dbs_output.splitlines():
+    #     _test_function(line, failed_containers, failed_images)
 
 
         # if "No SecurityOptions Found:" in line:
