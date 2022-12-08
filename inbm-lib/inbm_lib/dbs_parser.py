@@ -13,14 +13,14 @@ import traceback
 logger = logging.getLogger(__name__)
 
 def _test_function (line: str, failed_containers: List[str], failed_images: List[str]) -> None:
-    if "No Healthcheck found:" in line:
+    if "No Healthcheck found:" not in line:
         matches = re.findall("^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$", line)
         if len(matches) == 1:
             name = matches[len(matches) - 1]
             if name in failed_images:
                 logger.debug("******************************* removing failed_image removed name ***********************************")
                 failed_images.remove(name)
-    if "No SecurityOptions Found:" in line:
+    if "No SecurityOptions Found:" not in line:
         matches = re.findall("^.*\\[WARN\\].*: ([^[]*)$", line)
         if len(matches) == 1:
             name = matches[len(matches) - 1]
@@ -67,6 +67,13 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
 
     # for line in dbs_output.splitlines():
     #     _test_function(line, failed_containers, failed_images)
+        substring ='DBS-'
+        for item in failed_containers.copy():
+            if substring in item:
+                failed_containers.remove(item)
+        for item in failed_images.copy():
+            if substring in item:
+                failed_images.remove(item)
 
 
         # if "No SecurityOptions Found:" in line:
