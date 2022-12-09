@@ -70,18 +70,18 @@ class TestRemediationManager(TestCase):
             rm.ignore_dbs_results = False
             rm._remove_container('[123, 234, 567]')
 
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
-    @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('abc', None, 0))
-    @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-    @patch('inbm_lib.trtl.Trtl.stop_by_id')
-    @patch('inbm_lib.trtl.Trtl.remove_container')
-    def test_telemetry_call_when_stop_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry,
-                                             mock_image, mock_remove):
-        mock_stop_by_id.return_value = (None, 'error', 1)
-        mock_remove_container.return_value = None
-        RemediationManager(self.mock_disp_callbacks_obj)._remove_container(
-            str(['abc123', 'def234', 'ghi567']))
-        mock_call_telemetry.assert_called()
+    # @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+    # @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('abc', None, 0))
+    # @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
+    # @patch('inbm_lib.trtl.Trtl.stop_by_id')
+    # @patch('inbm_lib.trtl.Trtl.remove_container')
+    # def test_telemetry_call_when_stop_errors(self, mock_remove_container, mock_stop_by_id, mock_call_telemetry,
+    #                                          mock_image, mock_remove):
+    #     mock_stop_by_id.return_value = (None, 'error', 1)
+    #     mock_remove_container.return_value = None
+    #     RemediationManager(self.mock_disp_callbacks_obj)._remove_container(
+    #         str(['abc123', 'def234', 'ghi567']))
+    #     mock_call_telemetry.assert_called()
 
     # @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     # @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
