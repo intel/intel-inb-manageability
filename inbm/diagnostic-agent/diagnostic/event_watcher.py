@@ -74,7 +74,7 @@ class EventWatcher(Thread):
         thread = Thread(target=run)
         thread.daemon = True
         #thread.daemon = False
-        #thread.start()
+        thread.start()
 
     def _check_failed_containers(self, failed_containers: str) -> None:
         for line in traceback.format_stack():
