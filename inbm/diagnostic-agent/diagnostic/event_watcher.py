@@ -72,8 +72,8 @@ class EventWatcher(Thread):
                     "DBS check will not run, since DBS is turned OFF. Mode : {}"
                     .format(current_dbs_mode))
         thread = Thread(target=run)
-        #thread.daemon = True
-        thread.daemon = False
+        thread.daemon = True
+        #thread.daemon = False
         thread.start()
 
     def _check_failed_containers(self, failed_containers: str) -> None:

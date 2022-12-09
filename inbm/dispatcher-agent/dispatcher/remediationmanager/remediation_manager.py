@@ -63,9 +63,11 @@ class RemediationManager:
         except ValueError as error:
             logger.error('Unable to parse container message . Verify container remove request '
                          'is in the correct format "abc,def,123". {}'.format(error))
+        #self.lock.release()
 
     def _on_remove_image(self, topic: str, payload: str, qos: int) -> None:
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
+        #self.lock.acquire()
         try:
             if payload is not None:
                 logger.info('Received message: %s on topic: %s', payload, topic)
@@ -74,6 +76,7 @@ class RemediationManager:
         except ValueError as error:
             logger.error('Unable to parse image message . Verify image remove request is in '
                          'the correct format "abc,def,123". {}'.format(error))
+        #self.lock.release()
 
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
