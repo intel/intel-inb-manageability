@@ -123,10 +123,10 @@ class DiagnosticChecker:
             self.event_watcher.set_dbs_mode(self.dbs_mode)
             logger.debug('DBS check triggered via system boot.')
             self.event_watcher.run_docker_bench_security()
-            self.event_watcher.start()
-            #self.dbs_timer = RepeatingTimer(self.docker_bench_security_interval_sec.config_value,
-            #                                self.event_watcher.run_docker_bench_security)
-            #self.dbs_timer.start()
+            #self.event_watcher.start()
+            self.dbs_timer = RepeatingTimer(self.docker_bench_security_interval_sec.config_value,
+                                            self.event_watcher.run_docker_bench_security)
+            self.dbs_timer.start()
         else:
             if self.event_watcher:
                 self.event_watcher.set_dbs_mode(self.dbs_mode)
