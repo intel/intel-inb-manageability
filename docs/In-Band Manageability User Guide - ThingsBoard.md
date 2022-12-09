@@ -451,12 +451,12 @@ A. Change the dashboard (i.e. to the Intel Manageability Batch; see
 
 B. Change the device being viewed
 
-	NOTE: If the device being viewed as like entities will appear below
+### NOTE: If the device being viewed as like entities will appear below
 	
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image66.png" style="width:5.525in;height:3.0in" />	
 
 
-	### NOTE: To view the device list, new device should mapped with the existing device profile json file while creating new device.
+### NOTE: To view the device list, new device should mapped with the existing device profile json file while creating new device.
 
 C. Change the time interval of the dashboard, affecting the dynamic
     telemetry displayed
