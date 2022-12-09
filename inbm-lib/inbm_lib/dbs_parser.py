@@ -27,13 +27,6 @@ def _test_function (line: str, failed_containers: List[str], failed_images: List
             if name in failed_containers:
                 logger.debug("******************************* removing failed_container removed name ***********************************")
                 failed_containers.remove(name)
-    substring = 'DBS-'
-    for item in failed_containers.copy():
-        if substring in item:
-            failed_containers.remove(item)
-    for item in failed_images.copy():
-        if substring in item:
-            failed_images.remove(item)
 
 def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool, str, List[str]]]:
     """Parse failed images and containers from DBS output.
@@ -72,15 +65,15 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
             continue
         prev_warn = False
 
-    for line in dbs_output.splitlines():
-        _test_function(line, failed_containers, failed_images)
-    #     substring ='DBS-'
-    #     for item in failed_containers.copy():
-    #         if substring in item:
-    #             failed_containers.remove(item)
-    #     for item in failed_images.copy():
-    #         if substring in item:
-    #             failed_images.remove(item)
+    # for line in dbs_output.splitlines():
+    #     _test_function(line, failed_containers, failed_images)
+        substring ='DBS-'
+        for item in failed_containers.copy():
+            if substring in item:
+                failed_containers.remove(item)
+        for item in failed_images.copy():
+            if substring in item:
+                failed_images.remove(item)
 
 
         # if "No SecurityOptions Found:" in line:
