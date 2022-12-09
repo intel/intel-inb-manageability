@@ -187,7 +187,7 @@ devices and set up the dashboard, an account with the privileges of a
 2. The following window should appear; fill it out accordingly, then
     click `Add`.
 	
-### NOTE: While creating device, new device should mapped with the device json file.
+### NOTE: While creating device, new device should mapped with the existing device profile json file.
 
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image7.png" style="width:5.73333in;height:4.09653in" />
 
