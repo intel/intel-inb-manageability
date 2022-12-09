@@ -17,7 +17,7 @@ const script = "./docker-bench-security.sh"
 
 func DockerBenchSecurity(dw DockerWrapper) error {
 	rand.Seed(time.Now().UnixNano())
-	fmt.Print("***** DBS_DockerBenchSecurity *****")
+	//fmt.Print("***** DBS_DockerBenchSecurity *****")
 	containerName := "DBS-" + strconv.Itoa(rand.Intn(10000000))
 	containerId, err := createPrivilegedContainer(dw, containerName)
 	//fmt.Fprintf(os.Stdout, "createPrivilegedContainer containerId=%s", containerId)
