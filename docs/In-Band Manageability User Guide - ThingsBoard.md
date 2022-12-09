@@ -90,6 +90,8 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
 
 - In order to run a ThingsBoard&reg; server instance on the same device as
     Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboard-server-port)
+	
+#### NOTE: Thingsboard is currently compatible with 3.3.1
 
 #### Setting up ThingsBoard TLS
 
@@ -184,6 +186,8 @@ devices and set up the dashboard, an account with the privileges of a
 
 2. The following window should appear; fill it out accordingly, then
     click `Add`.
+	
+### NOTE: While creating device, new device should mapped with the existing device profile json file.
 
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image7.png" style="width:5.73333in;height:4.09653in" />
 
@@ -446,6 +450,12 @@ A. Change the dashboard (i.e. to the Intel Manageability Batch; see
 [**Interacting with Multiple Devices**](#interacting-with-multiple-devices)
 
 B. Change the device being viewed
+
+### NOTE: If the device being viewed as like entities will appear below
+	
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image66.png" style="width:5.525in;height:3.0in" />	
+
+### NOTE: To view the device list, new device should mapped with the existing device profile json file while creating new device.
 
 C. Change the time interval of the dashboard, affecting the dynamic
     telemetry displayed
