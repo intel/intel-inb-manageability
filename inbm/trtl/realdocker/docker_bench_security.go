@@ -20,7 +20,7 @@ func DockerBenchSecurity(dw DockerWrapper) error {
 	fmt.Print("***** DBS_DockerBenchSecurity *****")
 	containerName := "DBS-" + strconv.Itoa(rand.Intn(10000000))
 	containerId, err := createPrivilegedContainer(dw, containerName)
-	fmt.Fprintf(os.Stdout, "createPrivilegedContainer containerId=%s", containerId)
+	#fmt.Fprintf(os.Stdout, "createPrivilegedContainer containerId=%s", containerId)
 	if err != nil {
 		return err
 	}
