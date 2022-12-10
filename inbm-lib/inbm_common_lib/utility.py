@@ -190,7 +190,26 @@ def validate_file_type(path: List[str]) -> None:
     for tarball in tarball_list:
         with tarfile.open(tarball) as tar:
             logger.debug("Extract {0}.".format(tarball))
-            tar.extractall(path=TEMP_EXT_FOLDER)
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(tar, path=TEMP_EXT_FOLDER)
             extracted_file = tar.getmembers()
             for index in range(len(extracted_file)):
                 extracted_file_list.append(os.path.join(TEMP_EXT_FOLDER, extracted_file[index].name))

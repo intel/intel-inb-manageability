@@ -68,7 +68,26 @@ def move_flashless_files(path: str, destination: str) -> None:
     if tar_path.is_file():
         with tarfile.open(tar_path) as tar:
             logger.debug(f"Extract {tar_path}.")
-            tar.extractall(path=destination)
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(tar, path=destination)
             tar_path.unlink()
 
         try:
