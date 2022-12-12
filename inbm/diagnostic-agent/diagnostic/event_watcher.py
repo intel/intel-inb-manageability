@@ -74,11 +74,13 @@ class EventWatcher(Thread):
                 logger.debug(
                     "DBS check will not run, since DBS is turned OFF. Mode : {}"
                     .format(current_dbs_mode))
+
+            self.lock.release()
         thread = Thread(target=run)
         thread.daemon = True
         #thread.daemon = False
         thread.start()
-        self.lock.release()
+        #self.lock.release()
 
     def _check_failed_containers(self, failed_containers: str) -> None:
         for line in traceback.format_stack():
