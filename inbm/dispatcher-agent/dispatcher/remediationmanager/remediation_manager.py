@@ -32,8 +32,7 @@ class RemediationManager:
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
-        #self.ignore_dbs_results = True  # default to WARN until we receive config
-        self.ignore_dbs_results = False
+        self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
         self.container_image_list_to_be_removed: List = []
 
@@ -142,7 +141,6 @@ class RemediationManager:
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
                 logger.debug(container_id)
-                #(out, err, code) = trtl.stop_by_id(str(container_id))
                 (out, err, code) = trtl.stop_all(str(container_id))
                 if err is None:
                     err = ""
@@ -156,7 +154,6 @@ class RemediationManager:
                         str(container_id) + '.  Container has been stopped.')
 
                 err = trtl.remove_container(container_id, True)
-
 
                 if err:
                     self._dispatcher_callbacks.broker_core.telemetry(
