@@ -8,7 +8,7 @@
 
 import logging
 
-from threading import Thread
+from threading import Thread, Lock
 
 from .constants import EVENTS_CHANNEL
 from .constants import REMEDIATION_CONTAINER_CHANNEL
@@ -29,6 +29,7 @@ class EventWatcher(Thread):
     """Starts up a thread to watch for events coming from Docker"""
 
     def __init__(self, broker):
+        self.lock = Lock()
         Thread.__init__(self, name="dockerEventWatcher")
         self._broker = broker
         self.daemon = True
@@ -51,6 +52,7 @@ class EventWatcher(Thread):
         """Launch Docker Bench Security in separate thread."""
         def run():
             if current_dbs_mode != ConfigDbs.OFF:
+                self.lock.acquire()
                 dbs = DockerBenchRunner()
                 logger.debug(f"DBS mode : {current_dbs_mode} , Launching DBS checks...")
                 dbs.start()
@@ -66,6 +68,7 @@ class EventWatcher(Thread):
                 logger.debug(
                     "DBS check will not run, since DBS is turned OFF. Mode : {}"
                     .format(current_dbs_mode))
+            self.lock.release()
         thread = Thread(target=run)
         thread.daemon = True
         thread.start()
