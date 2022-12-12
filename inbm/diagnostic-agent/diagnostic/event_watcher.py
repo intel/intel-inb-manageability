@@ -62,7 +62,7 @@ class EventWatcher(Thread):
                     logger.debug("Parsing DBS result after DBS check. . .")
                     self._parse_dbs_result(dbs.result, dbs)
                     logger.debug(dbs.result)
-                    logger.debug(dbs.result)
+                    logger.debug(dbs)
                 else:
                     logger.debug(
                         "Failed Images and Containers are not terminated since \

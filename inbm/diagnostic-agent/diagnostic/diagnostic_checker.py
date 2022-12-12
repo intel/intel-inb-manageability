@@ -27,7 +27,7 @@ from diagnostic.constants import UPPER_BOUND_STORAGE_MB, LOWER_BOUND_STORAGE_MB
 from diagnostic.constants import UPPER_BOUND_DBS_INTERVAL_SEC, LOWER_BOUND_DBS_INTERVAL_SEC
 from diagnostic.constants import MIN_MEMORY_MB, MIN_POWER_PERCENT, MIN_STORAGE_MB
 from diagnostic.constants import NETWORK_CHECK, DEFAULT_NETWORK_CHECK, DOCKER_BENCH_SECURITY_INTERVAL_SEC
-from threading import Thread, Lock
+#from threading import Thread, Lock
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +42,7 @@ class DiagnosticChecker:
 
         @param broker: Broker instance
         """
-        self.lock = Lock()
+        #self.lock = Lock()
         # Default values
         self._broker = broker
         self._min_memory_MB = ConfigKey(
@@ -124,9 +124,9 @@ class DiagnosticChecker:
             self.event_watcher.set_dbs_mode(self.dbs_mode)
             logger.debug('DBS check triggered via system boot.')
             self.event_watcher.run_docker_bench_security()
-            self.lock.acquire()
+            #self.lock.acquire()
             self.event_watcher.start()
-            self.lock.release()
+            #self.lock.release()
             self.dbs_timer = RepeatingTimer(self.docker_bench_security_interval_sec.config_value,
                                             self.event_watcher.run_docker_bench_security)
             #self.lock.release()
