@@ -12,5 +12,5 @@ from typing import Dict, Union, Any
 ##from inbm_lib.constants import TRTL_PATH
 ##from inbm_lib.trtl import Trtl
 ##from inbm_common_lib.shell_runner import PseudoShellRunner
-from command_pattern import DeviceBatteryHealthChecker
+from .command_pattern import DeviceBatteryHealthChecker
 
