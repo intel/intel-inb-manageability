@@ -158,7 +158,7 @@ class TestTrtl(TestCase):
             runner, "docker").image_remove_by_id(
             "abc123", True)
         self.__check_trtl_output("/usr/bin/trtl -type=docker "
-                                 "-cmd=imageRemoveByID -id=abc123 -f=True",
+                                 "-cmd=ImageRemoveAll -in=abc123 -f=True",
                                  runner.last_cmd(), return_code, result)
 
     def test_trtl_exec(self):
