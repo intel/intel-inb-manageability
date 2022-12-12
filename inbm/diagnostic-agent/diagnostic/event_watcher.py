@@ -8,7 +8,8 @@
 
 import logging
 
-from threading import Thread
+#from threading import Thread
+from threading import Thread, Lock
 
 from .constants import EVENTS_CHANNEL
 from .constants import REMEDIATION_CONTAINER_CHANNEL
@@ -29,6 +30,7 @@ class EventWatcher(Thread):
     """Starts up a thread to watch for events coming from Docker"""
 
     def __init__(self, broker):
+        self.lock = Lock()
         Thread.__init__(self, name="dockerEventWatcher")
         self._broker = broker
         self.daemon = True
@@ -55,6 +57,7 @@ class EventWatcher(Thread):
                 dbs = DockerBenchRunner()
                 logger.debug(dbs)
                 logger.debug(f"DBS mode : {current_dbs_mode} , Launching DBS checks...")
+                self.lock.acquire()
                 dbs.start()
                 dbs.join()
                 if current_dbs_mode == ConfigDbs.ON:
@@ -75,6 +78,7 @@ class EventWatcher(Thread):
         thread.daemon = True
         #thread.daemon = False
         thread.start()
+        self.lock.release()
 
     def _check_failed_containers(self, failed_containers: str) -> None:
         for line in traceback.format_stack():
