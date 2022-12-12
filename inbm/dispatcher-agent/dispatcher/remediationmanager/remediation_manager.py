@@ -32,7 +32,8 @@ class RemediationManager:
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
-        self.ignore_dbs_results = True  # default to WARN until we receive config
+        #self.ignore_dbs_results = True  # default to WARN until we receive config
+        self.ignore_dbs_results = False
         self.dbs_remove_image_on_failed_container = True
         self.container_image_list_to_be_removed: List = []
 
@@ -140,9 +141,9 @@ class RemediationManager:
                     image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
-
-                (out, err, code) = trtl.stop_by_id(str(container_id))
-
+                logger.debug(container_id)
+                #(out, err, code) = trtl.stop_by_id(str(container_id))
+                (out, err, code) = trtl.stop_all(str(container_id))
                 if err is None:
                     err = ""
                 if code != 0:
@@ -154,7 +155,9 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been stopped.')
 
-                err = trtl.remove_container(str(container_id), True)
+                err = trtl.remove_container(container_id, True)
+
+
                 if err:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +
