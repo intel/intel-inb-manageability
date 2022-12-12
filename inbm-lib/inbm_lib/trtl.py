@@ -559,6 +559,7 @@ class Trtl:
         self.lock.acquire()
         cmd = self._boilerplate("dockerbenchsecurity")
         out, err, code = self.runner.run(cmd)
+        time.sleep(0.1)
         self.lock.release()
 
         if code == 0:
