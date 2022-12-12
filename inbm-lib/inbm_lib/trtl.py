@@ -19,6 +19,7 @@ from .constants import DOCKER, COMPOSE, TRTL_PATH
 from subprocess import Popen, PIPE
 import shlex
 import time
+from threading import Thread, Lock
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
@@ -35,6 +36,7 @@ class Trtl:
 
     def __init__(self, runner: PseudoShellRunner, app_type: Optional[str] = None, config_params: Optional[str] = None) -> None:
         self.runner = runner
+        self.lock = Lock()
         if app_type is not None:
             self.__app_type = app_type
         else:
@@ -554,8 +556,10 @@ class Trtl:
         """Runs DBS script via TRTL
         @return: output from DBS script
         """
+        self.lock.acquire()
         cmd = self._boilerplate("dockerbenchsecurity")
         out, err, code = self.runner.run(cmd)
+        self.lock.release()
 
         if code == 0:
             logger.debug("Docker security bench executed")
