@@ -54,10 +54,11 @@ class EventWatcher(Thread):
         """Launch Docker Bench Security in separate thread."""
         def run():
             if current_dbs_mode != ConfigDbs.OFF:
+                self.lock.acquire()
                 dbs = DockerBenchRunner()
                 logger.debug(dbs)
                 logger.debug(f"DBS mode : {current_dbs_mode} , Launching DBS checks...")
-                self.lock.acquire()
+                #self.lock.acquire()
                 dbs.start()
                 dbs.join()
                 if current_dbs_mode == ConfigDbs.ON:
