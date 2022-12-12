@@ -69,7 +69,7 @@ class EventWatcher(Thread):
                 logger.debug(
                     "DBS check will not run, since DBS is turned OFF. Mode : {}"
                     .format(current_dbs_mode))
-            time.sleep(0.1)
+            time.sleep(1)
             self.lock.release()
         thread = Thread(target=run)
         thread.daemon = True
