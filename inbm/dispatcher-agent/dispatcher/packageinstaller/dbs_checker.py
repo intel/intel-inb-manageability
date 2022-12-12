@@ -112,8 +112,8 @@ class DbsChecker:
             #self._dispatcher_callbacks.broker_core.mqtt_publish(
             #    REMEDIATION_CONTAINER_CMD_CHANNEL, str(failed_containers))
         if failed_images and len(failed_images) > 0:
-            #self._dispatcher_callbacks.broker_core.mqtt_publish(
-            #    REMEDIATION_IMAGE_CMD_CHANNEL, str(failed_images))
+            # self._dispatcher_callbacks.broker_core.mqtt_publish(
+            #     REMEDIATION_IMAGE_CMD_CHANNEL, str(failed_images))
 
     def _find_current_container(self) -> Optional[str]:
         err, out = self._trtl.list()
