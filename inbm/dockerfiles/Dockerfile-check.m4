@@ -56,7 +56,7 @@ RUN source /venv-py3/bin/activate && \
     cd tests/unit && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=inbm_common_lib inbm_common_lib 2>&1 | tee /output/coverage/inbm-common-lib-coverage.txt && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=inbm_lib inbm_lib 2>&1 | tee /output/coverage/inbm-lib-coverage.txt && \
-    coverage report --show-missing --fail-under=40 && \
+    coverage report --show-missing --fail-under=82 && \
     touch /passed.txt
 
 # ---inbc---
@@ -85,7 +85,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=inbc tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt && \
-    coverage report --fail-under=50
+    coverage report --fail-under=84
 
 # ---diagnostic agent---
 
@@ -146,7 +146,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=dispatcher tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt && \
-    coverage report --fail-under=40
+    coverage report --fail-under=80
 
 # ---cloudadapter agent---
 
