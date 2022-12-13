@@ -139,4 +139,3 @@ class TestRemediationManager(TestCase):
         r._remove_images(['abc123', 'def234', 'ghi567'])
         mock_call_telemetry.assert_called()
         mock_remove_image.assert_called()
-        #mock_remove_image.assert_called('ghi567', True)
