@@ -4,7 +4,6 @@
     Mainly manages container exec, snapshot, rollback.
     This module constructs the necessary shell commands using the
     appropriate boilerplate to call the TRTL executable
-
     @copyright: Copyright 2017-2022 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
@@ -19,7 +18,6 @@ from .constants import DOCKER, COMPOSE, TRTL_PATH
 from subprocess import Popen, PIPE
 import shlex
 import time
-from threading import Thread, Lock
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
@@ -36,7 +34,6 @@ class Trtl:
 
     def __init__(self, runner: PseudoShellRunner, app_type: Optional[str] = None, config_params: Optional[str] = None) -> None:
         self.runner = runner
-        #self.lock = Lock()
         if app_type is not None:
             self.__app_type = app_type
         else:
@@ -60,7 +57,6 @@ class Trtl:
 
     def stats(self) -> Optional[str]:
         """Do stats
-
         @return: code and container usage statistics
         """
         logger.debug("Trtl.stats()")
@@ -73,7 +69,6 @@ class Trtl:
 
     def image_import(self, url: str, image_name: str) -> Tuple[str, Optional[str], int]:
         """Do import
-
         @param url: URL location of the image TAR file
         @param image_name: Name and tag to use for image.  'sample-container:2'
         @return: exec_code, is_error, output of trtl command
@@ -88,7 +83,6 @@ class Trtl:
 
     def image_load(self, path: str, image_name: str) -> Tuple[str, Optional[str], int]:
         """Do load
-
         @param path: Location of the image tar file
         @param image_name: Name to use for image.
         @return: code, err and version number of image just loaded
@@ -103,7 +97,6 @@ class Trtl:
 
     def snapshot(self, image: str) -> Tuple[str, Optional[str], int]:
         """Do snapshot
-
         @param image: Image whose snapshot is to be taken
         @return: output, optional std error, return code
         """
@@ -116,7 +109,6 @@ class Trtl:
 
     def get_image_by_container_id(self, container_id: str) -> Tuple[str, Optional[str], int]:
         """Do TRTL GetImageByContainerID
-
         @param container_id: Container ID
         @return: image id associated with container id
         """
@@ -130,7 +122,6 @@ class Trtl:
 
     def execute(self, image: str, version: int, opt: bool = False) -> Tuple[str, Optional[str], int]:
         """Do TRTL execute
-
         @param image: Image whose snapshot is to be taken
         @param version: Container tag version
         @param opt: flag which specifies if config params need to be passed or not
@@ -162,7 +153,6 @@ class Trtl:
     def image_pull_public(self, image: str, reference: Optional[str], file_name: str = None) \
             -> Tuple[str, Optional[str], int]:
         """Do image pull to public registry
-
         @param image: image name
         @param reference: remote registry from which to pull image
         @param file_name: file name
@@ -211,7 +201,6 @@ class Trtl:
 
     def image_pull_private(self, image: str, reference: str, username: str, password: str) -> Tuple[str, Optional[str], int]:
         """Do image pull to private registry
-
         @param image: image tag
         @param reference: remote registry from which to pull image
         @param username: username to login to private registry
@@ -242,7 +231,6 @@ class Trtl:
 
     def login(self, private_registry: str, username: str, password: str) -> Tuple[str, Optional[str], int]:
         """Do TRTL login
-
         @param private_registry: The private docker registry
         @param username: username to login to the docker private registry
         @param password: password to login to docker private registry
@@ -263,7 +251,6 @@ class Trtl:
 
     def up(self, image: str, file_name: Optional[str] = None) -> Tuple[str, Optional[str], int]:
         """Do TRTL up (docker-compose)
-
         @param image: Image to be created/started/attached
         @param file_name: Custom YML file to load on compose
         @return: Result, error message, error code
@@ -280,7 +267,6 @@ class Trtl:
 
     def down(self, image: str, file_name: Optional[str] = None) -> Tuple[str, Optional[str], int]:
         """Do TRTL down (docker-compose)
-
         @param image: Image to be stopped
         @param file_name: File name
         @return: Result, error message, error code
@@ -298,7 +284,6 @@ class Trtl:
 
     def start(self, image: str, version: int, opt: bool = False) -> Tuple[str, Optional[str], int]:
         """Do TRTL start
-
         @param image: Image to be started
         @param version: Image version
         @param opt: flag which specifies if config params need to be passed or not
@@ -328,12 +313,10 @@ class Trtl:
 
     def rollback(self, in_image: str, in_version: int, out_image: str, out_version: int) -> Tuple[str, Optional[str], int]:
         """Do TRTL rollback
-
          @param in_image: Rollback from image
          @param in_version: Rollback from image version
          @param out_image: Rollback to image
          @param out_version: Rollback to image version
-
          @return: Result, error message, error code
          """
         logger.debug("Trtl.rollback(" + in_image + ", " + str(in_version) +
@@ -348,7 +331,6 @@ class Trtl:
 
     def commit(self, image: str, version: int) -> Tuple[str, Optional[str], int]:
         """Do TRTL commit
-
         @param image: Image to be committed
         @param version: Image version
         @return: Result, error message, error code
@@ -362,7 +344,6 @@ class Trtl:
 
     def stop(self, image: str, version: int = -1) -> Tuple[str, Optional[str], int]:
         """Do TRTL stop
-
         @param image: Image to be stopped
         @param version: Image version; -1 means no version, 0 means latest
         @return: Result, error message, error code
@@ -415,7 +396,6 @@ class Trtl:
 
     def get_latest_tag(self, image: str) -> Tuple[str, int]:
         """Get Latest Tag used for an image.
-
         @param image: Image of which the latest tag should be found
         @return: Latest tag number being used
         """
@@ -431,7 +411,6 @@ class Trtl:
         """Remove old images of the image name specified.
         This would look into config file for how many old images to keep
         for the image name specified and would remove any images older than the number specified.
-
         @param image: Image name of which the older versions should be deleted
         @return: error if any
         """
@@ -453,7 +432,6 @@ class Trtl:
 
     def list(self, container_id: Optional[str] = None) -> Tuple[Optional[str], str]:
         """Lists all the running containers
-
         @param container_id: Image name
         @return: error if any and the list
         """
@@ -474,7 +452,6 @@ class Trtl:
     def image_remove_all(self, image: str, force: bool = False) -> Tuple[str, Optional[str], int]:
         """
         Do TRTL Remove All images (e.g. compose images)
-
         @param image: Image to be stopped
         @param force: Force image to be removed even if it has an active container
         @return: Result, error message, error code
@@ -489,7 +466,6 @@ class Trtl:
 
     def remove_container(self, container_id: str, force: bool) -> Optional[str]:
         """Removes container with the container_id specified
-
         @param container_id: Image name of which the older versions should be deleted
         @param force: Whether if should do force removal or not (e.g of a running container)
         @return: error if any
@@ -513,7 +489,6 @@ class Trtl:
     def single_snapshot(self, desc: str) -> Tuple[str, Optional[str]]:
         """Creates a snapper snapshot of type single on BTRFS fs with given description.
         @param desc: Description to use for snapshot
-
         @return: stdout and error if any
         """
         logger.debug("Trtl.singlesnapshot()")
@@ -529,7 +504,6 @@ class Trtl:
 
     def delete_snapshot(self, snapshot: str) -> Tuple[int, Optional[str]]:
         """Trtl wrapper to delete a particular snapshot.
-
         @return: code and error if any
         """
         logger.debug("Trtl.delete_snapshot()")
@@ -542,7 +516,6 @@ class Trtl:
 
     def sota_rollback(self, snapshot: str) -> Tuple[int, Optional[str]]:
         """Trtl wrapper to perform rollback to a given snapshot.
-
         @return: error if any
         """
         logger.debug("Trtl.rollback()")
@@ -556,11 +529,8 @@ class Trtl:
         """Runs DBS script via TRTL
         @return: output from DBS script
         """
-        #self.lock.acquire()
         cmd = self._boilerplate("dockerbenchsecurity")
         out, err, code = self.runner.run(cmd)
-        #time.sleep(0.01)
-        #self.lock.release()
 
         if code == 0:
             logger.debug("Docker security bench executed")
