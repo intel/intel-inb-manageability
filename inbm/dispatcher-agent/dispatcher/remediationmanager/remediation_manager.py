@@ -2,7 +2,6 @@
     Module which fetches and stores external update packages. It fetches a
     package from the specified URL and stores into a configured local cache
     on the device
-
     Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
@@ -25,7 +24,6 @@ logger = logging.getLogger(__name__)
 class RemediationManager:
     """Receives notification from diagnostic to perform remediation management on
     containers/images via TRTL application
-
     @param dispatcher_callbacks: DispatcherCallbacks instance
     @param container_image_list_to_be_removed: Container image list to be removed. Default it will be empty list. When containers are active, respective images will be added to this list.
     """
@@ -100,7 +98,6 @@ class RemediationManager:
 
     def _get_image_id(self, trtl: Trtl, container_id: str) -> Tuple[Optional[str], Optional[str]]:
         """Get the image id associated with the container id via TRTL
-
         @param trtl: TRTL object
         @param container_id: container ID
         """

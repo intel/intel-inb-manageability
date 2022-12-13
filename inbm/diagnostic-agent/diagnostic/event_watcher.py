@@ -1,6 +1,5 @@
 """
     Agent which monitors and reports the state of critical components of the framework
-
     Copyright (C) 2017-2022 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
@@ -9,7 +8,6 @@
 import logging
 
 from threading import Thread, Lock
-import time
 
 from .constants import EVENTS_CHANNEL
 from .constants import REMEDIATION_CONTAINER_CHANNEL
@@ -24,7 +22,6 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 logger = logging.getLogger(__name__)
 
 current_dbs_mode = DEFAULT_DBS_MODE
-
 
 class EventWatcher(Thread):
     """Starts up a thread to watch for events coming from Docker"""
@@ -69,7 +66,6 @@ class EventWatcher(Thread):
                 logger.debug(
                     "DBS check will not run, since DBS is turned OFF. Mode : {}"
                     .format(current_dbs_mode))
-            time.sleep(1)
             self.lock.release()
         thread = Thread(target=run)
         thread.daemon = True
