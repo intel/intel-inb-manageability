@@ -58,9 +58,9 @@ class EventWatcher(Thread):
                     dbs.join()
                     if current_dbs_mode == ConfigDbs.ON:
                         logger.debug("Parsing DBS result after DBS check. . .")
-                #except:
-                except Exception as exception:  # TODO (Nat): Should catch specific exception
-                        logger.exception('Subscribe failed: %s', exception)
+                except:
+                # except Exception as exception:
+                #         logger.exception('parse dbs result failed: %s', exception)
                         self._parse_dbs_result(dbs.result, dbs)
                 else:
                     logger.debug(
@@ -88,6 +88,7 @@ class EventWatcher(Thread):
                                  str(failed_images))
 
     def _parse_dbs_result(self, result, dbs):
+    #try:
         if result is not None:
             failed_containers = dbs.failed_container_list
             failed_images = dbs.failed_image_list
@@ -98,6 +99,8 @@ class EventWatcher(Thread):
                 EVENTS_CHANNEL, "Docker Bench Security results: " + result_string)
         else:
             self._broker.publish(EVENTS_CHANNEL, "Unable to run Docker Bench Security")
+    #except Exception as exception:  # TODO (Nat): Should catch specific exception
+    #            logger.exception('parse dbs result failed: %s', exception)
 
     @staticmethod
     def _output_ended(next_line, process):
