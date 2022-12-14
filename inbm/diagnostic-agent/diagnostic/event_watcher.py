@@ -59,19 +59,19 @@ class EventWatcher(Thread):
                     if current_dbs_mode == ConfigDbs.ON:
                         logger.debug("Parsing DBS result after DBS check. . .")
                         self._parse_dbs_result(dbs.result, dbs)
-                # except:
                 except Exception as exception:
                     logger.exception('parse dbs result failed:Unable to run Docker Bench Security %s', exception)
                 else:
                     logger.debug(
                         "Failed Images and Containers are not terminated since \
                         DBS is set to - {}".format(current_dbs_mode))
+                finally:
+                    self.lock.release()
             else:
                 logger.debug(
                     "DBS check will not run, since DBS is turned OFF. Mode : {}"
                     .format(current_dbs_mode))
-                finally:
-                self.lock.release()
+
         thread = Thread(target=run)
         thread.daemon = True
         thread.start()
