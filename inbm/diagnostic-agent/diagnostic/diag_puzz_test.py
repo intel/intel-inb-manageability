@@ -15,5 +15,5 @@ with atheris.instrument_imports():
  
 
 @atheris.instrument_func
-from .command_pattern import DeviceBatteryHealthChecker
+from command_pattern import DeviceBatteryHealthChecker
 
