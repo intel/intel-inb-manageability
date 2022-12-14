@@ -58,7 +58,9 @@ class EventWatcher(Thread):
                     dbs.join()
                     if current_dbs_mode == ConfigDbs.ON:
                         logger.debug("Parsing DBS result after DBS check. . .")
-                except:
+                #except:
+                except Exception as exception:  # TODO (Nat): Should catch specific exception
+                        logger.exception('Subscribe failed: %s', exception)
                         self._parse_dbs_result(dbs.result, dbs)
                 else:
                     logger.debug(
@@ -68,8 +70,8 @@ class EventWatcher(Thread):
                 logger.debug(
                     "DBS check will not run, since DBS is turned OFF. Mode : {}"
                     .format(current_dbs_mode))
-                #finally:
-            self.lock.release()
+            #finally:
+                     self.lock.release()
         thread = Thread(target=run)
         thread.daemon = True
         thread.start()
