@@ -9,7 +9,7 @@ from abc import ABC
 import os
 from typing import Dict, Union, Any
 
-#with atheris.instrument_imports():
+with atheris.instrument_imports():
  #from unittest import TestCase
-#@atheris.instrument_func
+@atheris.instrument_func
 #from command_pattern import DeviceBatteryHealthChecker
