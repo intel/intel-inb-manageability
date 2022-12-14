@@ -12,4 +12,4 @@ from typing import Dict, Union, Any
 with atheris.instrument_imports():
  from unittest import TestCase
 @atheris.instrument_func
-from command_pattern import DeviceBatteryHealthChecker
+from .command_pattern import DeviceBatteryHealthChecker
