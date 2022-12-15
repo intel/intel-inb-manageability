@@ -13,5 +13,5 @@ with atheris.instrument_imports():
  from unittest import TestCase
 @atheris.instrument_func
 def TestOneInput(input_bytes):
-	print("hello')
+	print('hello')
 #from .command_pattern import DeviceBatteryHealthChecker
