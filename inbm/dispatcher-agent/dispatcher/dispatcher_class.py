@@ -296,9 +296,11 @@ class Dispatcher(WindowsService):
             try:
                 self._request_config_agent(CONFIG_LOAD, file_path=new_file_loc)
                 if new_file_loc:
+                    logger.debug("**************************CODE_OK*****************************")
                     remove_file(new_file_loc)
                 return Result(CODE_OK, 'Configuration load: SUCCESSFUL')
             except DispatcherException as error:
+                logger.debug("********************************************CODE_BAD_REQUEST*************************************")
                 logger.error(error)
                 return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED')
         else:
