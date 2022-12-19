@@ -57,8 +57,8 @@ from inbm_lib.xmlhandler import *
 from inbm_lib.version import get_friendly_inbm_version_commit
 from inbm_lib.security_masker import mask_security_info
 
-logger = logging.getLogger(__name__)
 import traceback
+logger = logging.getLogger(__name__)
 
 def get_log_config_path() -> str:
     """Return the config path for this agent, taken by default from LOGGERCONFIG environment
