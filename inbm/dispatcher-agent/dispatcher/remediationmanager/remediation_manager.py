@@ -79,7 +79,8 @@ class RemediationManager:
         logger.debug("")
         if not self.ignore_dbs_results:
             trtl = Trtl(PseudoShellRunner())
-            (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
+            #(out, err, code) = trtl.image_remove_by_id(str(image_id), True)
+            (out, err, code) = trtl.image_remove_by_name(str(image_id), True)
             if err is None:
                 err = ""
             if code != 0:
