@@ -253,6 +253,9 @@ class Dispatcher(WindowsService):
 
     def _do_config_install_load(self, parsed_head: XmlHandler, target_type: str,
                                 xml: str = None) -> Result:
+        for line in traceback.format_stack():
+            logger.debug(line.strip())
+
         """Invoked by do_config_operation to perform config file load. It replaces the existing
         TC conf file with a new file.
 
@@ -637,8 +640,6 @@ class Dispatcher(WindowsService):
         logger.debug(" ")
 
         def on_command(topic: str, payload: str, qos: int) -> None:
-            for line in traceback.format_stack():
-                logger.debug(line.strip())
             logger.info('Message received: %s on topic: %s', payload, topic)
 
             try:
