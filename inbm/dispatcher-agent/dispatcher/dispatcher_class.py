@@ -58,7 +58,7 @@ from inbm_lib.version import get_friendly_inbm_version_commit
 from inbm_lib.security_masker import mask_security_info
 
 logger = logging.getLogger(__name__)
-
+import traceback
 
 def get_log_config_path() -> str:
     """Return the config path for this agent, taken by default from LOGGERCONFIG environment
@@ -637,6 +637,8 @@ class Dispatcher(WindowsService):
         logger.debug(" ")
 
         def on_command(topic: str, payload: str, qos: int) -> None:
+            for line in traceback.format_stack():
+                logger.debug(line.strip())
             logger.info('Message received: %s on topic: %s', payload, topic)
 
             try:
