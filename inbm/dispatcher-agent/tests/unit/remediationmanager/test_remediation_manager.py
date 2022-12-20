@@ -35,7 +35,7 @@ class TestRemediationManager(TestCase):
             self.fail("run() raised Exception unexpectedly!")
 
     @patch('inbm_lib.trtl.Trtl.list', return_value=(None, ['abc123', 'def234', 'ghi567']))
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+    @patch('inbm_lib.trtl.Trtl.image_remove_all', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('ImageID= sha256:fbf60236a8e3dd08a08966064a8ac9f3943ecbffa6ae2ad9bc455974b956412c ,ImageName= ubuntu:bionic', None, 0))
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.stop_all')
@@ -55,7 +55,7 @@ class TestRemediationManager(TestCase):
         mock_stop_all.assert_called()
 
     @patch('inbm_lib.trtl.Trtl.list', return_value=(None, [123, 234, 567]))
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+    @patch('inbm_lib.trtl.Trtl.image_remove_all', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=(None, 'cannot find', 3))
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.stop_by_id')
@@ -70,7 +70,7 @@ class TestRemediationManager(TestCase):
             rm.ignore_dbs_results = False
             rm._remove_container('[123, 234, 567]')
 
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+    @patch('inbm_lib.trtl.Trtl.image_remove_all', return_value=(None, None, 0))
     @patch('inbm_lib.trtl.Trtl.get_image_by_container_id', return_value=('abc', None, 0))
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     @patch('inbm_lib.trtl.Trtl.stop_by_id')
@@ -84,7 +84,7 @@ class TestRemediationManager(TestCase):
         mock_call_telemetry.assert_called()
 
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
+    @patch('inbm_lib.trtl.Trtl.image_remove_all')
     def test_return_image_no_errors(self, mock_remove_image, mock_call_telemetry):
         try:
             mock_remove_image.return_value = (None, None, 0)
@@ -98,7 +98,7 @@ class TestRemediationManager(TestCase):
         mock_remove_image.assert_called()
 
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
+    @patch('inbm_lib.trtl.Trtl.image_remove_all')
     def test_telemetry_call_when_remove_image_errors(self, mock_remove_image, mock_call_telemetry):
         mock_remove_image.return_value = (None, 'error', 1)
         r = RemediationManager(self.mock_disp_callbacks_obj)
@@ -107,7 +107,7 @@ class TestRemediationManager(TestCase):
         mock_call_telemetry.assert_called()
 
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id')
+    @patch('inbm_lib.trtl.Trtl.image_remove_all')
     def test_ignore_dbs_results_does_not_remove_image(self,  mock_remove_image, mock_call_telemetry):
         r = RemediationManager(self.mock_disp_callbacks_obj)
         r.ignore_dbs_results = True
@@ -131,7 +131,7 @@ class TestRemediationManager(TestCase):
         mock_stop_by_id.assert_not_called()
 
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
-    @patch('inbm_lib.trtl.Trtl.image_remove_by_id', return_value=(None, None, 0))
+    @patch('inbm_lib.trtl.Trtl.image_remove_all', return_value=(None, None, 0))
     def test_dbs_not_deleted_twice_with_remove_image_on_failed_container(self,  mock_remove_image, mock_call_telemetry):
         r = RemediationManager(self.mock_disp_callbacks_obj)
         r.ignore_dbs_results = False
