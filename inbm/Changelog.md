@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
  - RTC 518125 - Fix Missing DBS log when docker image is removed
  - RTC 518127 - Fix DBS not removing failed container and failed image
+ - RTC 517481 - Fix DBS image is removed when there is DBS container doesn't pass DBS check
  - HSD 15012036803 - Fix for few telemetry data of the OTA update is not published to Thingsboard cloud
  - RTC 517426 - Network check added after reboot for SOTA.
  - RTC 522583 - Added a command to fix for SOTA update fail due to apt-get -yq upgrade failed
