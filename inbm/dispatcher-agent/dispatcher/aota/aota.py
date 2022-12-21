@@ -17,7 +17,7 @@ from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from .factory import get_app_instance
 from .aota_error import AotaError
 from .cleaner import cleanup_repo
-
+import time
 logger = logging.getLogger(__name__)
 
 
@@ -59,6 +59,7 @@ class AOTA:
 
             app_method = getattr(self._app_instance, self._cmd)
             app_method()
+            time.sleep(5)
             self._dispatcher_callbacks.broker_core.telemetry(
                 f'AOTA {self._app_type} {self._cmd} {COMMAND_SUCCESS}')
             self._app_instance.cleanup()
