@@ -59,7 +59,7 @@ class AOTA:
 
             app_method = getattr(self._app_instance, self._cmd)
             app_method()
-            time.sleep(5)
+            time.sleep(0.1)
             self._dispatcher_callbacks.broker_core.telemetry(
                 f'AOTA {self._app_type} {self._cmd} {COMMAND_SUCCESS}')
             self._app_instance.cleanup()

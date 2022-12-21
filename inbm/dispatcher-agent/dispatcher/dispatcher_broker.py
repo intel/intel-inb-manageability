@@ -14,7 +14,6 @@ from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQT
 from inbm_lib.mqttclient.mqtt import MQTT
 
 from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL
-import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -71,8 +70,6 @@ class DispatcherBroker:
         self.mqttc.subscribe(topic, callback, qos)
 
     def telemetry(self, message: str) -> None:
-        for line in traceback.format_stack():
-            logger.debug(line.strip())
         logger.debug('Received event message: %s', message)
         if not self.is_started():
             logger.error('Cannot log event message: dispatcher core not initialized')
