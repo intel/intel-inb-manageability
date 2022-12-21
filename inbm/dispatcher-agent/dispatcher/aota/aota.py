@@ -18,7 +18,7 @@ from .factory import get_app_instance
 from .aota_error import AotaError
 from .cleaner import cleanup_repo
 #import time
-import Lock
+from threading import Thread, Lock
 logger = logging.getLogger(__name__)
 
 
