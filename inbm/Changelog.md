@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Added
+ - RTC 523847 - Support for Thingsboard 3.4.2
+
 ### Fixed
  - HSD 15012036803 - Fix for few telemetry data of the OTA update is not published to Thingsboard cloud
  - RTC 517426 - Network check added after reboot for SOTA.
