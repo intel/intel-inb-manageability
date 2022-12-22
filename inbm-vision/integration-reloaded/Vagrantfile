@@ -68,7 +68,7 @@ EOF
     sudo apt-get -y install mosquitto
 
     cd /vagrant/input
-    time pip3 install cryptography==2.7 # For create_signature.py
+    time pip3 install cryptography==3.8 # For create_signature.py
 
   SHELL
 

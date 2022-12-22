@@ -72,7 +72,7 @@ EOF
     systemd-tmpfiles --create --prefix /var/log/journal
     time systemctl restart systemd-journald
 
-	time sudo python3 -m pip install cryptography==38.0.1 # For create_signature.py
+	time sudo python3 -m pip install cryptography==38.0.4 # For create_signature.py
 	time sudo python3 -m pip install requests[security]==2.28.1
 
     # disable slow time sync
