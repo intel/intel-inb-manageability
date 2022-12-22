@@ -299,6 +299,7 @@ class Dispatcher(WindowsService):
                     remove_file(new_file_loc)
                 return Result(CODE_OK, 'Configuration load: SUCCESSFUL')
             except DispatcherException as error:
+                remove_file(new_file_loc)
                 logger.error(error)
                 return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED')
         else:
