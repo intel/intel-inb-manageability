@@ -1,4 +1,4 @@
 #Production
 
-pyinstaller==4.2
+pyinstaller==5.7.0
 psutil==5.8.0
