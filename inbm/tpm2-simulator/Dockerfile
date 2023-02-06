@@ -1,3 +1,6 @@
+# Copyright (c) 2021-2023 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 FROM registry.hub.docker.com/curlimages/curl:7.74.0  as ibmtpm1332
 RUN curl -L https://downloads.sourceforge.net/project/ibmswtpm2/ibmtpm1332.tar.gz >/tmp/ibmtpm1332.tar.gz && \
     sha256sum /tmp/ibmtpm1332.tar.gz | grep -q 8e8193af3d11d9ff6a951dda8cd1f4693cb01934a8ad7876b84e92c6148ab0fd

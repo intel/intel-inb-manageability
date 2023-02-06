@@ -1,3 +1,6 @@
+# Copyright (c) 2021-2023 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 FROM snyk/snyk:python-3.9
 RUN apt-get update && apt-get install -y npm
 RUN npm install snyk-to-html@2.3.6 -g
