@@ -106,11 +106,13 @@ class DebianBasedUpdater(OsUpdater):
                     CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only -f install",  # needs network
                     DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f install",  # local
                     CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",
+                    CHROOT_PREFIX + "/usr/bin/dpkg --configure -a",
                     CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only upgrade",  # needs network
                     DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq upgrade"]  # local
         else:
             cmds = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
+                    "dpkg --configure -a",
                     "apt-get -yq -f install",
                     "apt-get -yq upgrade"]
         return CommandList(cmds).cmd_list

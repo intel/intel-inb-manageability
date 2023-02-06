@@ -1,2 +1,2 @@
-pyinstaller==4.2
-inbm-lib
+pyinstaller==5.7.0
+setuptools==65.5.1

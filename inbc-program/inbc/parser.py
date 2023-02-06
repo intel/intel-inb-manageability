@@ -13,7 +13,7 @@ from inbc.xml_tag import create_xml_tag
 from inbm_common_lib.dmi import get_dmi_system_info, is_dmi_path_exists
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters
+from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters, validate_guid
 from inbm_common_lib.constants import LOCAL_SOURCE, REMOTE_SOURCE
 from inbm_lib.detect_os import detect_os, LinuxDistType
 from inbm_vision_lib.constants import TARGET, TARGET_TYPE
@@ -101,6 +101,8 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         parser_fota.add_argument('--target', '-t', nargs='*',
                                  default=['None'], required=False, help=TARGETS_HELP)
+        parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
+                                 type=validate_guid)
         parser_fota.set_defaults(func=fota)
 
     def parse_sota_args(self) -> None:
@@ -158,6 +160,8 @@ class ArgsParser(object):
                                  help='FOTA Signature string')
         parser_pota.add_argument('--target', '-t', nargs='*',
                                  default=['None'], required=False, help=TARGETS_HELP)
+        parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
+                                 type=validate_guid)
         parser_pota.set_defaults(func=pota)
 
     def parse_load_args(self) -> None:
@@ -377,7 +381,8 @@ def fota(args) -> str:
         source_tag: source_location,
         'nohddl': args.nohddl,
         'username': args.username,
-        'password': _get_password(args)
+        'password': _get_password(args),
+        'guid': args.guid
     }
 
     target_type = '<targetType>node</targetType>' if not args.nohddl else ''
@@ -404,6 +409,7 @@ def fota(args) -> str:
                        "tooloptions",
                        "username",
                        "password",
+                       "guid",
                        source_tag)
     )
     print("manifest {0}".format(manifest))
@@ -442,7 +448,8 @@ def pota(args) -> str:
         'release_date': args.release_date,
         'Target': args.target,
         FOTA_SIGNATURE: args.fotasignature,
-        'nohddl': args.nohddl
+        'nohddl': args.nohddl,
+        'guid': args.guid
     }
 
     if repo == "local":
@@ -472,7 +479,8 @@ def pota(args) -> str:
                        "manufacturer",
                        "product",
                        "vendor",
-                       "releasedate"
+                       "releasedate",
+                       "guid"
                        ),
         fota_tag,
         create_xml_tag(arguments,

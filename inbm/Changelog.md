@@ -6,8 +6,26 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
+ - RTC 523847 - Support for Thingsboard 3.4.2
+
 ### Fixed
+ - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
+ - RTC 518125 - Fix Missing DBS log when docker image is removed
+ - RTC 518127 - Fix DBS not removing failed container and failed image
+ - RTC 517481 - Fix DBS image is removed when there is DBS container doesn't pass DBS check
+ - HSD 15012036803 - Fix for few telemetry data of the OTA update is not published to Thingsboard cloud
+ - RTC 517426 - Network check added after reboot for SOTA.
+ - RTC 522583 - Added a command to fix for SOTA update fail due to apt-get -yq upgrade failed
+ - JIRA NEXMGMT-16 - Added fix for configuration file not removed if config Load fail
+
+## 3.0.14 - 2022-11-07
+
+### Fixed
+ - RTC 521500      - Fixed build error by updating PyInstaller to 5.6.2
+ - RTC 520951      - Remove references to 'inbm-lib' from requirements.txt in intel-inb-manageability repository
  - HSD 15011727901 - Fix POTA/INBC POTA print "Firmware Update Aborted" message after firmware update is success
+ - HSD 15011730318 - Fix INBC FOTA/POTA not supporting "guid" arguments
+
 ### Removed
  - RTC 517780 - Remove Ubuntu 18.04 support
 

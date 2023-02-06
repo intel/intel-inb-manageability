@@ -1,4 +1,6 @@
-FROM snyk/snyk-cli:python-3.9
+FROM snyk/snyk:python-3.9
+RUN apt-get update && apt-get install -y npm
+RUN npm install snyk-to-html@2.3.6 -g
 COPY inbm-lib /inbm-lib
 RUN python3 -m venv /venv3-snyk && . /venv3-snyk/bin/activate && python -m pip install -U pip && python -m pip install -e /inbm-lib
 RUN curl https://dl.google.com/go/go1.18.linux-amd64.tar.gz >/go.tar.gz && cd / && tar zxvf ./go.tar.gz
