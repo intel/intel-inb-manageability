@@ -31,8 +31,6 @@ Vagrant.configure("2") do |config|
       libvirt.driver = 'kvm'
   end
 
-  config.vagrant.sensitive = [ENV["DOCKER_PASSWORD"]]
-  config.vm.provision "shell", inline: "sudo apt-get update && sudo apt-get -y install gnupg2 pass && echo " + ENV["DOCKER_PASSWORD"] + " | sudo docker login -u " + ENV["DOCKER_USERNAME"] + " --password-stdin"
   config.vm.provision "file", source: "./snapperfilter.txt", 
     destination: "/tmp/snapperfilter.txt"
   config.vm.provision "shell", inline: "sudo mkdir -p /etc/snapper/filters && sudo cp /tmp/snapperfilter.txt /etc/snapper/filters" 
@@ -62,7 +60,7 @@ EOF
     echo 'APT::Periodic::Download-Upgradeable-Packages "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::AutocleanInterval "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::Unattended-Upgrade "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
-    ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list || ex -s -c '%s/mirrors.edge.kernel.org\\/ubuntu/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+    ex -s -c '%s/linux-ftp.jf.intel.com\\/pub\\/mirrors\\/ubuntu/mirror.enzu.com\\/ubuntu/g' /etc/apt/sources.list
     cat /etc/apt/sources.list
 
     rm -rf /var/lib/apt/lists/*
@@ -78,6 +76,8 @@ EOF
     # disable slow time sync
     sudo timedatectl set-ntp no
   SHELL
+  config.vagrant.sensitive = [ENV["DOCKER_PASSWORD"]]
+  config.vm.provision "shell", inline: "sudo apt-get update && sudo apt-get -y install gnupg2 pass && echo " + ENV["DOCKER_PASSWORD"] + " | sudo docker login -u " + ENV["DOCKER_USERNAME"] + " --password-stdin"
   config.vm.provision "shell", inline: "sudo python3 -c 'import cryptography'"
   config.vm.provision "file", source: "./scripts/afulnx_64",
     destination: "/tmp/afulnx_64"

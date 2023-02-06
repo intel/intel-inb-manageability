@@ -18,6 +18,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 522583 - Added a command to fix for SOTA update fail due to apt-get -yq upgrade failed
  - JIRA NEXMGMT-16 - Added fix for configuration file not removed if config Load fail
 
+### Changed
+ - Use public mirror for Ubuntu sources by default
+
 ## 3.0.14 - 2022-11-07
 
 ### Fixed
