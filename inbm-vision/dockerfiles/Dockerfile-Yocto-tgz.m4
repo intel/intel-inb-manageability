@@ -1,3 +1,6 @@
+# Copyright (c) 2021-2023 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 include(`image.kmb.m4')
 
 FROM registry.hub.docker.com/library/ubuntu:18.04 as output-yocto

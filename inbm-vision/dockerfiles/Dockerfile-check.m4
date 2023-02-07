@@ -1,3 +1,6 @@
+# Copyright (c) 2021-2023 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 # base image with all dependencies for running unit tests/lints
 FROM registry.hub.docker.com/library/ubuntu:18.04 as base
 
