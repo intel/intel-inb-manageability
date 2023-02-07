@@ -12,9 +12,8 @@ from typing import Any
 
 from inbc import shared
 from .command.command_factory import create_command_factory
-from .constants import MQTT_HOST, CA_CERTS, CLIENT_CERTS, CLIENT_KEYS, DRIVER_NOT_FOUND
-from .utility import search_keyword, is_vision_agent_installed
-from .xlink_checker import XlinkChecker
+from .constants import MQTT_HOST, CA_CERTS, CLIENT_CERTS, CLIENT_KEYS
+from .utility import search_keyword
 from .ibroker import IBroker
 
 from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL
@@ -22,8 +21,6 @@ from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL
 from inbm_vision_lib.constants import DEVICE_STATUS_CHANNEL, QUERY
 from inbm_vision_lib.mqttclient.mqtt import MQTT
 from inbm_vision_lib.mqttclient.config import DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
-
-from inbm_vision_lib.request_message_constants import NUM_TARGET, NO_DEVICE_FOUND
 
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_ETC_PATH_PREFIX
 
@@ -37,13 +34,10 @@ class Broker(IBroker):
 
     @param cmd_type: command issued
     @param parsed_args: arguments from user
-    @param xlink_checker: XlinkChecker object
     @param tls: use of Transport Layer Security. Default = True
     """
 
-    def __init__(self, cmd_type: str, parsed_args: Any, xlink_checker: XlinkChecker, tls: bool = True) -> None:
-        self._xlink_checker = xlink_checker
-        self._is_vision_agent_installed = is_vision_agent_installed()
+    def __init__(self, cmd_type: str, parsed_args: Any, tls: bool = True) -> None:
         try:
             with open(INTEL_MANAGEABILITY_ETC_PATH_PREFIX / 'local-mqtt-port.txt') as port:
                 mqtt_port = int(port.readlines()[0])
@@ -64,8 +58,6 @@ class Broker(IBroker):
         self.mqttc.start()
         self._subscribe()
         self._command = create_command_factory(cmd_type, self)
-        if cmd_type == QUERY:
-            self._command.set_target_type(parsed_args.targettype)
         # Topics are coded in the methods.  Abstract method is requiring param 2, but it's not used.
         self._command.trigger_manifest(parsed_args, "topic")
 
@@ -90,10 +82,6 @@ class Broker(IBroker):
             print('Subscribe to: {0}'.format(EVENT_CHANNEL))
             self.mqttc.subscribe(EVENT_CHANNEL, self._on_vision_event)
 
-            if self._is_vision_agent_installed:
-                print('Subscribe to: {0}'.format(DEVICE_STATUS_CHANNEL))
-                self.mqttc.subscribe(DEVICE_STATUS_CHANNEL, self._on_status)
-
             logger.debug('Setting up broker success.')
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
@@ -107,18 +95,7 @@ class Broker(IBroker):
         @param qos: quality of service level
         """
         logger.info('Message received: %s on topic: %s', payload, topic)
-        if search_keyword(payload, [NUM_TARGET]):
-            # Vision-agent will send the number of target to be updated.
-            try:
-                num_dict = json.loads(payload)
-                num_targets = int(num_dict["message"][-1])
-                self._command.set_num_vision_targets(num_targets)
-            except ValueError:
-                print('Use default target number.')
-            print("\n Number of targets to be updated: {0} ".format(
-                self._command.get_num_vision_targets()))
-        else:
-            self._command.search_response(payload)
+        self._command.search_response(payload)
 
     def _on_vision_event(self, topic: str, payload: str, qos: int) -> None:
         """Callback for EVENT_CHANNEL
@@ -129,23 +106,8 @@ class Broker(IBroker):
         """
         self._command.search_event(payload, topic)
 
-    def _on_status(self, topic: str, payload: str, qos: int) -> None:
-        """Callback for DEVICE_STATUS_CHANNEL
-
-        @param topic: topic on which message was published
-        @param payload: message payload
-        @param qos: quality of service level
-        """
-        if search_keyword(payload, [NO_DEVICE_FOUND]):
-            logger.info('Message received: %s on topic: %s', payload, topic)
-            self._xlink_checker.return_error(DRIVER_NOT_FOUND)
-            self.stop_broker()
-        else:
-            self._xlink_checker.update_device_status(payload)
-
     def stop_broker(self) -> None:
         """Shutdown broker, publishing 'dead' event first."""
         shared.running = False
-        self._xlink_checker.stop()
         self.mqttc.stop()
         self._command.stop_timer()

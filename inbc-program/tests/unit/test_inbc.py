@@ -717,14 +717,14 @@ class TestINBC(TestCase):
 
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>cmd</type><cmd>restart</cmd>' \
                    '<restart><targetType>node</targetType><targets><target>123ABC</target><target>456DEF' \
-                   '</target></targets></restart></manifest>'
+                   '</restart></manifest>'
         self.assertEqual(s.func(s), expected)
 
     def test_query_manifest(self):
         s = self.arg_parser.parse_args(['query', '-o', 'all', '-tt', 'node'])
 
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>cmd</type><cmd>query</cmd><query>' \
-                   '<option>all</option><targetType>node</targetType></query></manifest>'
+                   '<option>all</option></query></manifest>'
 
         self.assertEqual(s.func(s), expected)
 

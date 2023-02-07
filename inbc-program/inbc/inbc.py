@@ -14,7 +14,6 @@ from inbc import shared
 from inbc.broker import Broker
 from inbc.parser import ArgsParser
 from inbc.inbc_exception import InbcException, InbcCode
-from inbc.xlink_checker import XlinkChecker
 
 from inbm_vision_lib.request_message_constants import *
 
@@ -31,8 +30,7 @@ class Inbc(object):
     def __init__(self, parsed_args: Any, cmd_type: str, tls: bool = True) -> None:
         logging.basicConfig(format='%(levelname)s:%(message)s', level=logging.INFO)
 
-        self._broker = Broker(cmd_type, parsed_args, XlinkChecker(self.stop), tls)
-        self.is_vision_agent_running = False
+        self._broker = Broker(cmd_type, parsed_args, tls)
         print("INBC command-line utility tool")
 
     def stop(self):

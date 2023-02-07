@@ -21,9 +21,7 @@ SOTA_TIME_LIMIT = 900
 POTA_TIME_LIMIT = FOTA_TIME_LIMIT + SOTA_TIME_LIMIT
 
 # Xlink constants
-XLINK_STATUS_CHECKING_INTERVAL = 5
 MAX_STATUS_NUM = 100
-DRIVER_NOT_FOUND = 5
 
 # Command Constant
 COMMAND_SUCCESS = "SUCCESS"
@@ -36,11 +34,6 @@ INBM_INSTALL_CHANNEL = 'manageability/request/install'
 FOTA_SIGNATURE = "fota_signature"
 SIGNATURE = "signature"
 
-TARGETS_HELP = 'List of targets to be updated.  Use only if specific targets are to be updated.'
-TARGETS_NODE_AND_CLIENT_ONLY_HELP = 'List of targets to be updated if target type is [node or node-client].  ' \
-                                    'Use only if specific targets are to be updated and not all nodes or node-clients.'
-TARGETS_NODE_ONLY_HELP = 'List of targets to restart if target type is [node].  Use this only if needing to restart ' \
-                         'on specific targets and not all nodes.'
 PATH_STRING = "Path"
 VISION_SERVICE_PATH = "/lib/systemd/system/inbm-vision.service"
 VISION_BINARY_PATH = "/usr/bin/vision"
