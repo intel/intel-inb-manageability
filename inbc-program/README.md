@@ -21,7 +21,7 @@
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
 8. [FAQ](#-faq)
-   1. [How do I find what values to use for a specific HDDL plug-in card FOTA update?](#-how-do-i-find-what-values-to-use-for-a-specific-hddl-plug-in-card-fota-update)
+   1. [How do I find what values to use for a specific  plug-in card FOTA update?](#-how-do-i-find-what-values-to-use-for-a-specific-hddl-plug-in-card-fota-update)
       
 
 </details>
@@ -65,7 +65,7 @@ Performs a Firmware Over The Air (FOTA) update.
 
 ### Usage
 ```
-inbc fota {--path,  -p=PATH | --uri, -u=URI}  
+inbc fota {--uri, -u=URI}  
    [--releasedate, -r RELEASE_DATE; default="2024-12-31"] 
    [--vendor, -v VENDOR; default="Intel"] 
    [--biosversion, -b BIOS_VERSION; default="5.12"] 
@@ -110,7 +110,7 @@ System update flow can be broken into two parts:
 ### Usage
 ```
 inbc sota
-   {--path,  -p=PATH | --uri, -u=URI} 
+   {--uri, -u=URI} 
    [--releasedata, -r RELEASE_DATE; default="2024-12-31"] 
    [--username, -un USERNAME] 
    [--target, -t TARGETS...; default=None]
@@ -137,9 +137,9 @@ A platform update is the equivalent of performing both a SOTA and FOTA with the 
 ❗ See [Note #4](#-notes) if placing files local on the system.
 ### Usage
 ```
-inbc pota [--nohddl] 
-   {--fotapath, -fp=FOTA_PATH | --fotauri, -fu=FOTA_URI}
-   [--sotapath, -sp FILE_PATH | --sotauri, -su=SOTA_URI] - N/A for Ubuntu based 
+inbc pota
+   {--fotauri, -fu=FOTA_URI}
+   [--sotauri, -su=SOTA_URI] - N/A for Ubuntu based 
    [--releasedate, -r FOTA_RELEASE_DATE; default="2024-12-31"] 
    [--vendor, -v VENDOR; default="Intel"] 
    [--biosversion, -b BIOS_VERSION; default="5.12"] 

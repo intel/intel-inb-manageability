@@ -79,9 +79,6 @@ class Broker(IBroker):
             print('Subscribe to: {0}'.format(RESPONSE_CHANNEL))
             self.mqttc.subscribe(RESPONSE_CHANNEL, self._on_response)
 
-            print('Subscribe to: {0}'.format(EVENT_CHANNEL))
-            self.mqttc.subscribe(EVENT_CHANNEL, self._on_vision_event)
-
             logger.debug('Setting up broker success.')
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
@@ -96,15 +93,6 @@ class Broker(IBroker):
         """
         logger.info('Message received: %s on topic: %s', payload, topic)
         self._command.search_response(payload)
-
-    def _on_vision_event(self, topic: str, payload: str, qos: int) -> None:
-        """Callback for EVENT_CHANNEL
-
-        @param topic: topic on which message was published
-        @param payload: message payload
-        @param qos: quality of service level
-        """
-        self._command.search_event(payload, topic)
 
     def stop_broker(self) -> None:
         """Shutdown broker, publishing 'dead' event first."""

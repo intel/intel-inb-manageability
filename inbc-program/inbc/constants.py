@@ -1,6 +1,6 @@
-""" Constants and other config variables used throughout the inbc module.
+""" Constants and other config variables used throughout the INBC module.
 
-    Copyright (C) 2020-2022 Intel Corporation
+    Copyright (C) 2020-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -35,11 +35,3 @@ FOTA_SIGNATURE = "fota_signature"
 SIGNATURE = "signature"
 
 PATH_STRING = "Path"
-VISION_SERVICE_PATH = "/lib/systemd/system/inbm-vision.service"
-VISION_BINARY_PATH = "/usr/bin/vision"
-HDDL = "hddl"
-
-# Target type
-NODE = "node"
-
-VISION = "vision"
