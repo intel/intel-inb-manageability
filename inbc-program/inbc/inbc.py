@@ -60,7 +60,6 @@ if __name__ == "__main__":
         args = args_parse.parse_args(sys.argv[1:])
         if not len(vars(args)):
             args = args_parse.parse_args(["None"])
-        inbc = None
         inbc = Inbc(args, sys.argv[1])
         spinning = itertools.cycle(['|', '/', '-', '\\'])
         while shared.running:

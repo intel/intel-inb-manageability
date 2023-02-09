@@ -28,6 +28,34 @@ class TestINBC(TestCase):
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.SotaCommand.trigger_manifest')
+    @patch('inbc.command.command.Command.terminate_operation')
+    def test_on_event_sota_failure(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
+        b = Broker('sota', self._sota_args, Mock(), False)
+        b._on_event('manageability/event', SOTA_COMMAND_FAILURE, 1)
+        mock_terminate.assert_called_once()
+
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.command.Command.terminate_operation')
+    def test_on_event(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
+        b = Broker('fota', self._fota_args, Mock(), False)
+        b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
+
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.command.Command.terminate_operation')
+    def test_on_message_response(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
+        b = Broker('fota', self._fota_args, Mock(), False)
+        b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
+
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_fota_success(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):

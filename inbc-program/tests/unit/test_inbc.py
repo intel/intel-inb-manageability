@@ -5,9 +5,11 @@ from inbc.parser import ArgsParser, fota, sota, load, get, set, append, remove
 from inbc.constants import COMMAND_FAIL, COMMAND_SUCCESS
 from inbc.inbc_exception import InbcCode, InbcException
 from inbc.command.ota_command import FotaCommand
+from inbc.command.command import QueryCommand
 
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_vision_lib.request_message_constants import *
+from inbm_common_lib.request_message_constants import QUERY_SUCCESS, QUERY_FAILURE, QUERY_HOST_SUCCESS
 from mock import patch, mock_open, Mock
 from io import StringIO
 
@@ -136,7 +138,6 @@ class TestINBC(TestCase):
                    '<option>all</option></query></manifest>'
         self.assertEqual(p.func(p), expected)
 
-
     def test_create_fota_manifest(self, mock_start, m_sub, m_pub,
                                   m_connect, m_pass, m_dmi, mock_reconnect, mock_thread):
         p = self.arg_parser.parse_args(
@@ -227,7 +228,7 @@ class TestINBC(TestCase):
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
 
     @patch('inbc.parser.detect_os', return_value='NonUbuntu')
-    def test_create_hddl_pota_uri_manifest_nohddl_non_ubuntu(self, mock_os):
+    def test_create_pota_uri_manifest_nohddl_non_ubuntu(self, mock_os):
         s = self.arg_parser.parse_args(
             ['pota', '-fu', '/var/cache/manageability/repository-tool/fip.bin', '-su',
              '/var/cache/manageability/repository-tool/file.mender'])
@@ -299,20 +300,29 @@ class TestINBC(TestCase):
                 ['query', '-o', 'everything'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"invalid choice: 'everything'")
 
+    # @patch('threading.Thread._bootstrap_inner')
+    # @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    # @patch('inbm_vision_lib.timer.Timer.stop')
+    # def test_query_terminate_operation_success(self, t_stop, mock_reconnect, mock_thread):
+    #     c = QueryCommand(Mock())
+    #     c.search_host_response(QUERY_HOST_SUCCESS)
+    #     c._success_code = Inbc.SUCCESS.value
+    #     # c.terminate_operation(QUERY_SUCCESS, Inbc.SUCCESS.value)
+    #     # print(t_stop.call_count)
+    #     assert t_stop.call_count == 2
+
     @patch('threading.Thread._bootstrap_inner')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.timer.Timer.stop')
-    def test_terminate_operation_success(self, t_stop, mock_reconnect, mock_thread):
-        with patch("builtins.open", mock_open(read_data="XLINK_SIMULATOR=False")) as mock_file:
-            c = FotaCommand(Mock())
-            c.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
+    def test_fota_terminate_operation_success(self, t_stop, mock_reconnect, mock_thread):
+        c = FotaCommand(Mock())
+        c.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         print(t_stop.call_count)
         assert t_stop.call_count == 1
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_vision_lib.timer.Timer.stop')
-    def test_terminate_operation_failed(self, t_stop, mock_reconnect):
-        with patch("builtins.open", mock_open(read_data="XLINK_SIMULATOR=False")) as mock_file:
-            c = FotaCommand(Mock())
-            c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
+    def test_fota_terminate_operation_failed(self, t_stop, mock_reconnect):
+        c = FotaCommand(Mock())
+        c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         t_stop.assert_called_once()
