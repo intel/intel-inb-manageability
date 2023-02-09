@@ -75,14 +75,9 @@ The location of the installation scripts will be different depending on whether 
 
 | Description                                               | From GitHub Clone File Location                  | From Distribution File Location           |
 |:----------------------------------------------------------|:-------------------------------------------------|:------------------------------------------|
-| Installs both inbm and inbm-vision for Ubuntu or Debian   | `inbm/output/install-inb.sh`                     | `inbm/install-inb.sh`                     |
 | Installs inbm for Ubuntu or Debian                        | `inbm/output/install-tc.sh`                      | `inbm/install-tc.sh`                      |
-| Uninstalls both inbm and inbm-vision for Ubuntu or Debian | `inbm/output/uninstall-inb.sh`                   | `inbm/uninstall-inb.sh`                   |
 | Uninstalls inbm for Ubuntu or Debian                      | `inbm/output/uninstall-tc.sh`                    | `inbm/uninstall-tc.sh`                    |
 | Binary files for inbm                                     | `inbm/output/Intel-Manageability.preview.tar.gz` | `inbm/Intel-Manageability.preview.tar.gz` |
-| Installs vision or node agent from inbm-vision            | `inbm-vision/output/install-bc.sh`               | `inbm-vision/installer/install-bc.sh`     |
-| Uninstalls vision or node agent from inbm-vision          | `inbm-vision/output/uninstall-bc.sh`             | `inbm-vision/installer/uninstall-bc.sh`   |
-| Binary files for inbm-vision                              | `inbm-vision/outp/*.deb`                         | `inbm-vision/*.deb`                       | 
 
 
 Before running any of the above scripts, execute the below command:
