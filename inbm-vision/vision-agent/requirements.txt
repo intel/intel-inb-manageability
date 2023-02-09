@@ -1,7 +1,0 @@
-#Production
-
-psutil==5.8.0
-dmidecode==0.9.0
-pyinstaller==5.7.0
-setuptools==65.5.1
-shortuuid==1.0.1
