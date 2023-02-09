@@ -39,7 +39,6 @@ class Command(ABC):
         self._update_timer = Timer(timer_limit, self._timer_expired, is_daemon=True)
         self._broker = broker
         self._cmd_type = cmd_type
-        self.count = 0
 
     def stop_timer(self):
         """Stops the timer which is waiting for the command to execute."""

@@ -38,7 +38,6 @@ class Broker(IBroker):
     """
 
     def __init__(self, cmd_type: str, parsed_args: Any, tls: bool = True) -> None:
-        logger.info("here1")
         try:
             with open(INTEL_MANAGEABILITY_ETC_PATH_PREFIX / 'local-mqtt-port.txt') as port:
                 mqtt_port = int(port.readlines()[0])
@@ -46,7 +45,7 @@ class Broker(IBroker):
             mqtt_port = DEFAULT_MQTT_PORT
         except ValueError:
             mqtt_port = DEFAULT_MQTT_PORT
-        logger.info("here2")
+
         self.mqttc = MQTT(PROG,
                           MQTT_HOST,
                           mqtt_port,

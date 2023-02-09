@@ -20,9 +20,7 @@
    8. [Query](#query)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
-8. [FAQ](#-faq)
-   1. [How do I find what values to use for a specific  plug-in card FOTA update?](#-how-do-i-find-what-values-to-use-for-a-specific-hddl-plug-in-card-fota-update)
-      
+   
 
 </details>
 
@@ -99,8 +97,7 @@ System update flow can be broken into two parts:
 
 ### Usage
 ```
-inbc sota
-   {--uri, -u=URI} 
+inbc sota {--uri, -u=URI} 
    [--releasedata, -r RELEASE_DATE; default="2024-12-31"] 
    [--username, -un USERNAME] 
 ```
@@ -125,8 +122,7 @@ A platform update is the equivalent of performing both a SOTA and FOTA with the 
 
 ### Usage
 ```
-inbc pota
-   {--fotauri, -fu=FOTA_URI}
+inbc pota {--fotauri, -fu=FOTA_URI}
    [--sotauri, -su=SOTA_URI] - N/A for Ubuntu based 
    [--releasedate, -r FOTA_RELEASE_DATE; default="2024-12-31"] 
    [--vendor, -v VENDOR; default="Intel"] 

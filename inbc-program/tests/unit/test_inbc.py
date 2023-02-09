@@ -244,14 +244,6 @@ class TestINBC(TestCase):
                    '</sota></pota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
-    # def test_raise_invalid_pota_path_manifest(self):
-    #     pota = self.arg_parser.parse_args(
-    #         ['pota', '-fp', '/var/cache/manageability/intel_manageability.conf',
-    #          '-su', '/var/cache/manageability/repository-tool/file.mender'])
-    #     with self.assertRaisesRegex(InbcException,
-    #                                 "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags."):
-    #         pota.func(pota)
-
     def test_load_manifest(self):
         load = self.arg_parser.parse_args(
             ['load', '-u', 'https://abc.com/intel_manageability.conf'])
