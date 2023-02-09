@@ -1,7 +1,7 @@
 # Query Command
 
 ## Description
-The Query command can be called by either the cloud or INBC.  It will provide attribute information on either the Host, Edge Device, or Nodes.
+The Query command can be called by either the cloud or INBC.  It will provide attribute information on the Host.
 
 ### How to Call
 
@@ -15,7 +15,6 @@ The Query command can be called by either the cloud or INBC.  It will provide at
 
 | Attribute     | Description                                         | 
 |:--------------|:----------------------------------------------------|
-| is_flashless  | True if plug-in card is flashless; otherwise, False |
 | manufacturer  | Hardware manufacturer                               |
 | platform_type | Type of plug-in card.  TBH or KMB                   |
 | product       | Product type                                        |
@@ -32,13 +31,6 @@ The Query command can be called by either the cloud or INBC.  It will provide at
 | boot_fw_vendor  | Firmware vendor  |
 | boot_fw_version | Firmware version |
 
-#### 'guid' - GUID
-
-| Attribute      | Description                                                | 
-|:---------------|:-----------------------------------------------------------|
-| guid           | GUID of HDDL plug-in card                                  |
-| is_provisioned | True if HDDL plug-in card is provisioned; otherwise, False |
-
 #### 'os' - Operating System
 
 | Attribute       | Description                   | 
@@ -47,29 +39,12 @@ The Query command can be called by either the cloud or INBC.  It will provide at
 | os_version      | Operating System version      |
 | os_release_date | Operating System release date |
 
-#### 'security' - Security
-
-| Attribute             | Description                                                | 
-|:----------------------|:-----------------------------------------------------------|
-| dm_verity_enabled     | True if DM verity is enabled; otherwise, False             |
-| measured_boot_enabled | True if Measured Boot is enabled; otherwise, False         |
-| is_provisioned        | True if HDDL plug-in card is provisioned; otherwise, False |
-| is_xlink_secured      | True if using Secured Xlink; otherwise, False              |
-| guid                  | GUID of HDDL plug-in card                                  |
-
-#### 'status' - Status
-
-| Attribute         | Description                                                     | 
-|:------------------|:----------------------------------------------------------------|
-| heartbeat_status  | Heartbeat status of HDDL plug-in card (Active, Idle)            |
-| heartbeat_retries | Number of heartbeat retries attempted for the HDDL plug-in card |
-
  #### 'swbom' - Software BOM
 
 SWBOM dynamic telemetry data
  
 #### 'version' - Version
 
-| Attribute | Description                         | 
-|:----------|:------------------------------------|
-| version   | Version of the vision-agent service |
+| Attribute | Description    | 
+|:----------|:---------------|
+| version   | Version number |

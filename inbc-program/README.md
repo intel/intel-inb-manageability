@@ -35,9 +35,7 @@ Intel® In-Band Manageability needs to be installed and running.
 
 # 📝 Notes
 1. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. This requires downloading from a remote source.
-3. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
-4. If placing files local on the system for update, they need to be placed in a folder with read/write access in the apparmor profile.  The recommended path would be ```/var/cache/manageability```.  If another directory is used, the apparmor profile would need to
-be modified to allow read/write access to that directory.
+2. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
 
 # MQTT Communication 
 
@@ -46,9 +44,6 @@ Uses MQTT for communication with INBM agents
 ### Publish Channels
 The agent publishes to the following topics:
 - INBM command request: `manageability/request/install`
-- Vision-agent command requests: `ma/request/{command}`  command=status, restart, query
-- Vision-agent configuration requests: `ma/configuration/update/{command}`  command=get_element, set-element, load
-
 
 ### Subscribe Channels
 The agent subscribes to the following topics:
@@ -61,8 +56,6 @@ The agent subscribes to the following topics:
 ### Description
 Performs a Firmware Over The Air (FOTA) update.
 
-❗ See [Note #4](#-notes) if placing files local on the system.
-
 ### Usage
 ```
 inbc fota {--uri, -u=URI}  
@@ -74,7 +67,6 @@ inbc fota {--uri, -u=URI}
    [--signature, -s SIGNATURE_STRING; default=None] 
    [--tooloptions, -to TOOL_OPTIONS]
    [--username, -un USERNAME] 
-   [--target, -t TARGETS...; default=None]
 ```
 
 ### Examples
@@ -96,9 +88,7 @@ inbc fota
 
 ## SOTA
 ### Description
-Performs a Software Over The Air (SOTA) update on either an Edge Device or HDDL Plug-in Card.
-
-❗ See [Note #4](#-notes) if placing files local on the system.
+Performs a Software Over The Air (SOTA) update.
 
 #### Edge Device
 There are two possible software updates on an edge device depending on the Operating System on the device. If the OS is Yocto, then a Mender file will be required. If the OS is Ubuntu, then the update will be performed using the Ubuntu update mechanism.
@@ -113,7 +103,6 @@ inbc sota
    {--uri, -u=URI} 
    [--releasedata, -r RELEASE_DATE; default="2024-12-31"] 
    [--username, -un USERNAME] 
-   [--target, -t TARGETS...; default=None]
 ```
 ### Examples
 #### Edge Device on Yocto OS requiring username/password
@@ -134,7 +123,6 @@ Performs a Platform Over The Air update (POTA)
 
 A platform update is the equivalent of performing both a SOTA and FOTA with the same command. This is useful when there is a hard dependency between the software and firmware updates. Please review the information above regarding SOTA and FOTA for determining the correct values to supply.
 
-❗ See [Note #4](#-notes) if placing files local on the system.
 ### Usage
 ```
 inbc pota
@@ -169,7 +157,6 @@ inbc pota
 ### Description
 Load a new configuration file.   This will replace the existing configuration file with the new file.
 
-❗ See [Note #4](#-notes) if placing files local on the system.
 ### Usage
 ``` 
 inbc load
@@ -177,11 +164,7 @@ inbc load
    [--uri, -u URI]
 ```
 ### Examples
-#### Edge Device on Yocto OS
-```
-inbc load --uri  <URI to config file>/config.file
-```
-#### Edge Device on Ubuntu
+#### Load new Configuration File
 ```
 inbc load --uri  <URI to config file>/config.file
 ```
@@ -195,15 +178,9 @@ Get key/value pairs from configuration file
 ```
 inbc get
    {--path, -p KEY_PATH;...} 
-   [--targettype, -tt NODE | VISION | NODE_CLIENT; default="node"]
-   [--target, -t TARGETS...; default=None]
 ```   
 ### Examples
-#### Edge Device on Yocto OS
-```
-inbc get --path  publishIntervalSeconds
-```
-#### Edge Device on Ubuntu
+#### Get Configuration Value
 ```
 inbc get --path  publishIntervalSeconds
 ```
@@ -219,11 +196,7 @@ inbc set
    {--path, -p KEY_PATH;...} 
 ```
 ### Examples
-#### Edge Device on Yocto OS
-```
-inbc set --path  maxCacheSize:100
-```
-#### Edge Device on Ubuntu
+#### Set Configuration Value
 ```
 inbc set --path  maxCacheSize:100
 ```
@@ -239,7 +212,7 @@ inbc append
    {--path, -p KEY_PATH;...} 
 ```
 ### Examples
-#### Edge Device
+#### Append a key/value pair
 ```
 inbc append --path  trustedRepositories:https://abc.com/
 ```
@@ -257,7 +230,7 @@ inbc remove
 
 
 ### Examples
-#### Edge Device
+#### Remove a key/value pair
 ```
 inbc remove --path  trustedRepositories:https://abc.com/
 ```
@@ -266,7 +239,6 @@ inbc remove --path  trustedRepositories:https://abc.com/
 ### Description
 Restart nodes
 
-❗  This command is only supported on HDDL Plug-in cards 
 ### Usage
 ```
 inbc restart
@@ -284,24 +256,24 @@ Query device(s) for attributes
 ### Usage
 ```
 inbc query 
-   [--option, -o=[all | hw | fw | guid (HDDL only) | os | security (HDDL only) | status (HDDL only) | swbom (Edge only) | version ]; default='all']  
+   [--option, -o=[all | hw | fw |  os | swbom | version ]; default='all']  
 ```
 
 ### Option Results
 [Allowed Options and Results](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)
 
 ### Examples
-#### HDDL Plug-in cards - return all attributes
+#### Return all attributes
 ```
 inbc query
 ```
-#### HDDL Plug-in cards - return only 'hw' attributes for all nodes
+#### Return only 'hw' attributes
 ```
 inbc query --option hw
 ```
-#### HDDL Plug-in cards - return only 'sw' attributes for  specific nodes
+#### Return only 'sw' attributes
 ```
-inbc query --option sw --target 000732767ffb-16781312 000732767ffb-16780544
+inbc query --option sw
 ```
 
 # Status Codes
@@ -320,18 +292,5 @@ inbc query --option sw --target 000732767ffb-16781312 000732767ffb-16780544
 |     -1      |     1     | FAIL                         |
 |     -2      |     2     | COMMAND TIMED OUT            |
 |     -3      |     3     | HOST UNAVAILABLE             |
-|     -4      |     4     | NODE NOT FOUND               |
-|     -5      |     5     | NODE UNRESPONSIVE            |
 |     -6      |     6     | HOST BUSY                    |
 
-
-# ❔ FAQ
-
-<details><summary>[See answers to frequently asked questions]</summary>
-
-### ❓ How do I find what values to use for a specific HDDL plug-in card FOTA update?
-
-> Use the query command with the '--option hw' flag.  This will return the attributes for the card(s) that can be used for the update.
-
-
-</details>

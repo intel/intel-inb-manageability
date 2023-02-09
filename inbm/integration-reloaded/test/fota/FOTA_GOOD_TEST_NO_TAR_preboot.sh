@@ -19,7 +19,7 @@ cp /scripts/afulnx_64 /opt/afulnx/afulnx_64
 
 test_echo Triggering FOTA GOOD No Tar Test
 
-inbc fota --nohddl --uri http://127.0.0.1:80/U1170000F60X043.bin -to abc
+inbc fota --uri http://127.0.0.1:80/U1170000F60X043.bin -to abc
 
 RESULT=$?
 if [ $RESULT -eq 0 ]; then
