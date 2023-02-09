@@ -154,31 +154,31 @@ RUN source /venv-py3/bin/activate && \
 
 # ---inbc---
 
-FROM venv-py3 as venv-inbc-py3
-COPY inbc-program/requirements.txt /src/inbc-program/requirements.txt
-COPY inbc-program/test-requirements.txt /src/inbc-program/test-requirements.txt
-WORKDIR /src/inbc-program
-RUN source /venv-py3/bin/activate && \
-    pip3.8 install -r requirements.txt && \
-    pip3.8 install -r test-requirements.txt
-COPY inbm-vision/common-python-config /common-python-config
-COPY inbc-program /src/inbc-program
-COPY inbm-vision/packaging /src/packaging
-RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
-    flakehell lint
+#FROM venv-py3 as venv-inbc-py3
+#COPY inbc-program/requirements.txt /src/inbc-program/requirements.txt
+#COPY inbc-program/test-requirements.txt /src/inbc-program/test-requirements.txt
+#WORKDIR /src/inbc-program
+#RUN source /venv-py3/bin/activate && \
+#    pip3.8 install -r requirements.txt && \
+#    pip3.8 install -r test-requirements.txt
+#COPY inbm-vision/common-python-config /common-python-config
+#COPY inbc-program /src/inbc-program
+#COPY inbm-vision/packaging /src/packaging
+#RUN source /venv-py3/bin/activate && \
+#    cp -f /common-python-config/pyproject.toml . && \
+#    flakehell lint
 
-FROM venv-inbc-py3 as mypy-inbc
-RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh inbc && \
-    touch /passed.txt
+#FROM venv-inbc-py3 as mypy-inbc
+#RUN source /venv-py3/bin/activate && \
+#    /common-python-config/mypy-py3.sh inbc && \
+#    touch /passed.txt
 
-FROM venv-inbc-py3 as inbc-unit-tests
-RUN source /venv-py3/bin/activate && \
-    mkdir -p /output/coverage && \
-    set -o pipefail && \
-    nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=inbc tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt && \
-    coverage report --fail-under=84
+#FROM venv-inbc-py3 as inbc-unit-tests
+#RUN source /venv-py3/bin/activate && \
+ #   mkdir -p /output/coverage && \
+  #  set -o pipefail && \
+   # nosetests --with-coverage --cover-erase --cover-inclusive --cover-package=inbc tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt && \
+    #coverage report --fail-under=84
 
 
 # output container

@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import patch
+from mock import patch, Mock
 from inbc.broker import Broker
 from inbc.parser import ArgsParser
 from inbm_common_lib.request_message_constants import *
@@ -31,7 +31,7 @@ class TestINBC(TestCase):
     @patch('inbc.command.ota_command.SotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_event_sota_failure(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
-        b = Broker('sota', self._sota_args, Mock(), False)
+        b = Broker('sota', self._sota_args, False)
         b._on_event('manageability/event', SOTA_COMMAND_FAILURE, 1)
         mock_terminate.assert_called_once()
 
@@ -41,7 +41,7 @@ class TestINBC(TestCase):
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_event(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
-        b = Broker('fota', self._fota_args, Mock(), False)
+        b = Broker('fota', self._fota_args, False)
         b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -50,7 +50,7 @@ class TestINBC(TestCase):
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
-        b = Broker('fota', self._fota_args, Mock(), False)
+        b = Broker('fota', self._fota_args, False)
         b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
