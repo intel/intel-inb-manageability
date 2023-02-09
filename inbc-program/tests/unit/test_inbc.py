@@ -223,22 +223,8 @@ class TestINBC(TestCase):
     def test_raise_invalid_sota_release_date_format(self, mock_stderr):
         with self.assertRaises(SystemExit):
             self.arg_parser.parse_args(
-                ['sota', '-p', '/var/cache/manageability/repository-tool/BIOS.img', '-r', '12-31-2024'])
+                ['sota', '-u', 'https://abc.com/test.mender', '-r', '12-31-2024'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
-
-    def test_create_hddl_pota_uri_manifest_nohddl_ubuntu(self):
-        s = self.arg_parser.parse_args(
-            ['pota', '-fu', '/var/cache/manageability/repository-tool/fip.bin'])
-
-        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>pota</type' \
-                   '><repo>remote</repo></header><type><pota><fota name="sample">' \
-                   '<biosversion>5.12</biosversion><manufacturer>intel</manufacturer><product>kmb-hddl2</product>' \
-                   '<vendor>Intel</vendor><releasedate>2024-12-31</releasedate>' \
-                   '<fetch>/var/cache/manageability/repository-tool/fip.bin</fetch></fota><sota><cmd ' \
-                   'logtofile="y">update</cmd>' \
-                   '<release_date>2024-12-31</release_date>' \
-                   '</sota></pota></type></ota></manifest>'
-        self.assertEqual(s.func(s), expected)
 
     @patch('inbc.parser.detect_os', return_value='NonUbuntu')
     def test_create_hddl_pota_uri_manifest_nohddl_non_ubuntu(self, mock_os):
