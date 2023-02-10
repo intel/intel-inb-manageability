@@ -16,7 +16,6 @@ The Query command can be called by either the cloud or INBC.  It will provide at
 | Attribute     | Description                                         | 
 |:--------------|:----------------------------------------------------|
 | manufacturer  | Hardware manufacturer                               |
-| platform_type | Type of plug-in card.  TBH or KMB                   |
 | product       | Product type                                        |
 | stepping      | Stepping                                            |
 | sku           | SKU                                                 |
