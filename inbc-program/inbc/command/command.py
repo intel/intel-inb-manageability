@@ -153,7 +153,7 @@ class QueryCommand(Command):
 
     def trigger_manifest(self, args: Any, topic: str = QUERY_CHANNEL) -> None:
         """Trigger the command-line utility tool to invoke query request.
-        If target type is None, it publishes the request to the channel subscribed by INBM's agent.
+
         @param args: arguments passed to command-line tool.
         @param topic: MQTT topic to publish the manifest.
         """
@@ -164,6 +164,7 @@ class QueryCommand(Command):
 
         @param payload: payload received in which to search
         """
+        self.search_host_response(payload)
         if search_keyword(payload, [QUERY_SUCCESS]):
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, [QUERY_FAILURE]):
