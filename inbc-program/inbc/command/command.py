@@ -6,6 +6,7 @@
 """
 
 import logging
+import time
 from typing import Any, Optional
 from abc import ABC, abstractmethod
 from inbc import shared
@@ -191,5 +192,6 @@ class QueryCommand(Command):
         @param topic: topic from which message was received
         """
         print("\n" + payload)
+        time.sleep(1)
         if search_keyword(payload, [QUERY_HOST_KEYWORD]):
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
