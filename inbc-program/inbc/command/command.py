@@ -63,10 +63,8 @@ class Command(ABC):
         """
         if self._cmd_type != "query":
             if search_keyword(payload, ["SUCCESSFUL"]):
-                print("terminate after successful\n")
                 self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
             else:
-                print("terminate after failure\n")
                 self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
 
     @abstractmethod
@@ -170,10 +168,8 @@ class QueryCommand(Command):
         """
         self.search_host_response(payload)
         if search_keyword(payload, [QUERY_SUCCESS]):
-            print("terminate after query success")
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, [QUERY_FAILURE]):
-            print("terminate after query failure")
             self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         else:
             super().search_response(payload)
@@ -189,7 +185,6 @@ class QueryCommand(Command):
             print("\n Waiting for last query result...")
         elif search_keyword(payload, [QUERY_HOST_FAILURE]):
             self._success_code = InbcCode.FAIL.value
-            print("terminate after host response")
             self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
 
     def search_event(self, payload: str, topic: str) -> None:
