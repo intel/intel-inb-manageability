@@ -1,19 +1,18 @@
 """Parser class to parse the system argument
 
-   Copyright (C) 2020-2022 Intel Corporation
+   Copyright (C) 2020-2023 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 """
 import logging
 import argparse
 import getpass
 
-from typing import Any, Optional, Sequence, Tuple
+from typing import Any, Optional, Sequence
 from inbc.xml_tag import create_xml_tag
 from inbm_common_lib.dmi import get_dmi_system_info, is_dmi_path_exists
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters, validate_guid
-from inbm_common_lib.constants import LOCAL_SOURCE, REMOTE_SOURCE
 from inbm_lib.detect_os import detect_os, LinuxDistType
 
 from .inbc_exception import InbcException
@@ -66,9 +65,10 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Vendor', 50))
         parser_fota.add_argument('--biosversion', '-b', default='5.12', required=False, help='Platform BIOS version',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'BIOS Version', 50))
-        parser_fota.add_argument('--manufacturer', '-m', default='intel', required=False, help='Platform manufacturer',
+        parser_fota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False, help='Platform manufacturer',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Manufacturer', 50))
-        parser_fota.add_argument('--product', '-pr', default='kmb-hddl2', required=False, help='Platform product name',
+        parser_fota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
+                                 help='Platform product name',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Product', 50))
         parser_fota.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
@@ -110,11 +110,11 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'BIOS Version', 50),
                                  help='Platform BIOS version')
-        parser_pota.add_argument('--manufacturer', '-m', default='intel', required=False,
+        parser_pota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'Manufacturer', 50),
                                  help='Platform manufacturer')
-        parser_pota.add_argument('--product', '-pr', default='kmb-hddl2', required=False,
+        parser_pota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'Product', 50),
                                  help='Platform product name')
@@ -128,7 +128,7 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'FOTA Signature', 1000),
                                  help='FOTA Signature string')
-        parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
+        parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware GUID update',
                                  type=validate_guid)
         parser_pota.set_defaults(func=pota)
 

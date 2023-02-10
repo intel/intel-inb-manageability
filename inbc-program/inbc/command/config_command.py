@@ -1,7 +1,7 @@
 """
     Config Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2022 Intel Corporation
+    # Copyright (C) 2020-2023 Intel Corporation
     # SPDX-License-Identifier: Apache-2.0
 """
 
@@ -13,7 +13,6 @@ from ..inbc_exception import InbcCode
 from ..ibroker import IBroker
 
 from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD, CONFIG_APPEND, CONFIG_REMOVE
-from inbm_common_lib.request_message_constants import NO_NODES_FAILURE
 from inbm_vision_lib.request_message_constants import CONFIGURATION_SUCCESSFUL_MESSAGE_LIST, \
     CONFIGURATION_FAILURE_MESSAGE_LIST
 

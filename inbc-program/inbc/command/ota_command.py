@@ -1,7 +1,7 @@
 """
     OTA Command classes to represent command entered by user.
 
-    Copyright (C) 2020-2022 Intel Corporation
+    Copyright (C) 2020-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from typing import Any
@@ -16,7 +16,7 @@ from ..ibroker import IBroker
 from inbm_vision_lib.constants import CACHE, INSTALL_CHANNEL, FOTA, SOTA, POTA
 from inbm_common_lib.request_message_constants import FOTA_SOTA_SUCCESS_MESSAGE_LIST, SOTA_FAILURE, \
     FOTA_SOTA_FAILURE_MESSAGE_LIST, COMMAND_SUCCESSFUL, SOTA_COMMAND_STATUS_SUCCESSFUL, SOTA_COMMAND_FAILURE, \
-    SOTA_OVERALL_FAILURE, FLASHLESS_OTA_SUCCESS_MSG, NO_NODES_FAILURE, FOTA_INPROGRESS_FAILURE
+    SOTA_OVERALL_FAILURE, FOTA_INPROGRESS_FAILURE
 
 
 class PotaCommand(Command):

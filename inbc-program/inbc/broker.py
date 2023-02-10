@@ -1,24 +1,21 @@
 """
     Broker service for INBC tool
 
-    Copyright (C) 2020-2022 Intel Corporation
+    Copyright (C) 2020-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
 
 import logging
-import json
 from typing import Any
 
 from inbc import shared
 from .command.command_factory import create_command_factory
 from .constants import MQTT_HOST, CA_CERTS, CLIENT_CERTS, CLIENT_KEYS
-from .utility import search_keyword
 from .ibroker import IBroker
 
 from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL
 
-from inbm_vision_lib.constants import DEVICE_STATUS_CHANNEL, QUERY
 from inbm_vision_lib.mqttclient.mqtt import MQTT
 from inbm_vision_lib.mqttclient.config import DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 

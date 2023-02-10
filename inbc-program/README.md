@@ -61,7 +61,7 @@ inbc fota {--uri, -u=URI}
    [--vendor, -v VENDOR; default="Intel"] 
    [--biosversion, -b BIOS_VERSION; default="5.12"] 
    [--manufacturer, -m MANUFACTURER; default="intel"] 
-   [--product, -pr PRODUCT; default="kmb-hddl2"] 
+   [--product, -pr PRODUCT; default="Alder Lake Client Platform"] 
    [--signature, -s SIGNATURE_STRING; default=None] 
    [--tooloptions, -to TOOL_OPTIONS]
    [--username, -un USERNAME] 
