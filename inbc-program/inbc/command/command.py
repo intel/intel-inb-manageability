@@ -62,8 +62,10 @@ class Command(ABC):
         @param payload: payload received in which to search
         """
         if search_keyword(payload, ["SUCCESSFUL"]):
+            print("terminate after successful\n")
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         else:
+            print("terminate after failure\n")
             self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
 
     @abstractmethod
