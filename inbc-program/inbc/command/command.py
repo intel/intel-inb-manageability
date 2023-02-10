@@ -190,14 +190,6 @@ class QueryCommand(Command):
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """
-        self.search_host_event(payload)
-
-    def search_host_event(self, payload: str) -> None:
-        """Search for keywords message like queryEndResult.
-        If it didn't receive the keyword, INBC will exit with timeout.
-
-        @param payload: payload received in which to search
-        """
         print("\n" + payload)
         if search_keyword(payload, [QUERY_HOST_KEYWORD]):
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)

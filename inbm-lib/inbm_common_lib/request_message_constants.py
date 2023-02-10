@@ -44,9 +44,6 @@ QUERY_FAILURE = "Registry query FAILED"
 QUERY_HOST_FAILURE = "Error"
 QUERY_HOST_KEYWORD = "queryEndResult"
 OTA_IN_PROGRESS = "Please try again after"
-# ACTIVE_NODE_NOT_FOUND for older version of vision-agent (1.7.1 and older)
-ACTIVE_NODE_NOT_FOUND = "No active nodes found"
-ELIGIBLE_NODE_NOT_FOUND = "No eligible nodes found"
 
 # Other message
 DYNAMIC_TELEMETRY = "dynamic_telemetry"
