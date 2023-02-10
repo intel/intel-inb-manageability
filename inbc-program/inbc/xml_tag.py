@@ -1,6 +1,6 @@
 """ Creates XML formatted tags.
 
-    Copyright (C) 2020-2022 Intel Corporation
+    Copyright (C) 2020-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -17,21 +17,12 @@ def create_xml_tag(tags: Dict[str, str], *names: str) -> str:
     @return:      The accompanying message
     """
     xml = ''
-    targets = ''
-    no_hddl = tags.get('nohddl')
     for name in names:
         val = tags.get(name)
         name = name[0].lower() + name[1:]
         if val is not None:
-            if isinstance(val, list):
-                if not no_hddl:
-                    for target in val:
-                        target = clean_input(target)
-                        targets += "<{0}>{1}</{0}>".format(name, target)
-                    xml = "<targets>{0}</targets>".format(targets)
-            else:
-                val = clean_input(val)
-                xml += create_signature_tag(val, name)
+            val = clean_input(val)
+            xml += create_signature_tag(val, name)
     return xml
 
 

@@ -1,7 +1,7 @@
 """
     Factory to create the correct Command object
 
-    # Copyright (C) 2020-2022 Intel Corporation
+    # Copyright (C) 2020-2023 Intel Corporation
     # SPDX-License-Identifier: Apache-2.0
 """
 from ..ibroker import IBroker
@@ -41,6 +41,5 @@ def create_command_factory(cmd: str, broker: IBroker) -> Command:
         return AppendConfigCommand(broker)
     if cmd == CONFIG_REMOVE:
         return RemoveConfigCommand(broker)
-
 
     raise InbcException(f"Unsupported command {cmd}")

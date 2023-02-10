@@ -1,26 +1,22 @@
 """Parser class to parse the system argument
 
-   Copyright (C) 2020-2022 Intel Corporation
+   Copyright (C) 2020-2023 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 """
 import logging
 import argparse
 import getpass
 
-from datetime import datetime
-from typing import Any, Optional, Sequence, Tuple
+from typing import Any, Optional, Sequence
 from inbc.xml_tag import create_xml_tag
 from inbm_common_lib.dmi import get_dmi_system_info, is_dmi_path_exists
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters, validate_guid
-from inbm_common_lib.constants import LOCAL_SOURCE, REMOTE_SOURCE
 from inbm_lib.detect_os import detect_os, LinuxDistType
-from inbm_vision_lib.constants import TARGET, TARGET_TYPE
 
 from .inbc_exception import InbcException
-from .constants import FOTA_SIGNATURE, TARGETS_HELP, TARGETS_NODE_AND_CLIENT_ONLY_HELP, \
-    TARGETS_NODE_ONLY_HELP, PATH_STRING
+from .constants import FOTA_SIGNATURE, PATH_STRING
 
 logger = logging.getLogger(__name__)
 
@@ -53,45 +49,28 @@ class ArgsParser(object):
         return self.parser.parse_args(args)
 
     def _create_subparser(self, subparser_name: str) -> argparse.ArgumentParser:
-        parser = self.subparsers.add_parser(subparser_name)
-        parser.add_argument('--nohddl', action='store_true')
-        return parser
-
-    @staticmethod
-    def _add_source_options(parser: argparse.ArgumentParser):
-        source_group = parser.add_mutually_exclusive_group(required=True)
-        source_group.add_argument('--uri', '-u',
-                                  type=lambda x: validate_string_less_than_n_characters(
-                                      x, 'URL', 1000),
-                                  help='Remote URI from where to retrieve package')
-        source_group.add_argument('--path', '-p', help='Full path to the update package',
-                                  type=lambda x: validate_string_less_than_n_characters(x, PATH_STRING, 500))
-
-    @staticmethod
-    def _add_pota_source_options(parser: argparse.ArgumentParser):
-        source_fota_group = parser.add_mutually_exclusive_group(required=True)
-        source_fota_group.add_argument('--fotauri', '-fu',
-                                       type=lambda x: validate_string_less_than_n_characters(
-                                           x, 'FOTA url', 1000),
-                                       help='Remote URI from where to retrieve FOTA package')
-        source_fota_group.add_argument('--fotapath', '-fp', help='Full path to the FOTA update package(fip)',
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'FOTA path', 500))
+        return self.subparsers.add_parser(subparser_name)
 
     def parse_fota_args(self) -> None:
         """Method to parse FOTA arguments"""
         # Create the parser for the "fota" command
         parser_fota = self._create_subparser('fota')
-        ArgsParser._add_source_options(parser_fota)
 
-        parser_fota.add_argument('--releasedate', '-r', default='2024-12-31', required=False, type=validate_date,
+        parser_fota.add_argument('--uri', '-u', required=True,
+                                 type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                                 help='Remote URI from where to retrieve package')
+        parser_fota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        parser_fota.add_argument('--vendor', '-v', default='Intel', required=False, help='Platform vendor',
+        parser_fota.add_argument('--vendor', '-v', default='Intel Corporation', required=False, help='Platform vendor',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Vendor', 50))
-        parser_fota.add_argument('--biosversion', '-b', default='5.12', required=False, help='Platform BIOS version',
+        parser_fota.add_argument('--biosversion', '-b', default='ADLSFWI1.R00', required=False,
+                                 help='Platform BIOS version',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'BIOS Version', 50))
-        parser_fota.add_argument('--manufacturer', '-m', default='intel', required=False, help='Platform manufacturer',
+        parser_fota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False,
+                                 help='Platform manufacturer',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Manufacturer', 50))
-        parser_fota.add_argument('--product', '-pr', default='kmb-hddl2', required=False, help='Platform product name',
+        parser_fota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
+                                 help='Platform product name',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Product', 50))
         parser_fota.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
@@ -99,8 +78,6 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Tool Options', 10))
         parser_fota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
-        parser_fota.add_argument('--target', '-t', nargs='*',
-                                 default=['None'], required=False, help=TARGETS_HELP)
         parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
                                  type=validate_guid)
         parser_fota.set_defaults(func=fota)
@@ -113,70 +90,60 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
-        parser_sota.add_argument('--path', '-p', help='Full path to the update package', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(x, PATH_STRING, 500))
-        parser_sota.add_argument('--releasedate', '-r', default='2024-12-31', required=False, type=validate_date,
+        parser_sota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
         parser_sota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
-        parser_sota.add_argument('--target', '-t', nargs='*',
-                                 default=['None'], required=False, help=TARGETS_HELP)
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
         """Method to parse POTA arguments."""
         parser_pota = self._create_subparser('pota')
-        ArgsParser._add_pota_source_options(parser_pota)
 
-        parser_pota.add_argument('--releasedate', '-r', default='2024-12-31', required=False, type=validate_date,
+        parser_pota.add_argument('--fotauri', '-fu', required=True,
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'FOTA url', 1000),
+                                 help='Remote URI from where to retrieve FOTA package')
+        parser_pota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        parser_pota.add_argument('--vendor', '-v', default='Intel', required=False,
+        parser_pota.add_argument('--vendor', '-v', default='Intel Corporation', required=False,
                                  help='Platform vendor')
-        parser_pota.add_argument('--biosversion', '-b', default='5.12', required=False,
+        parser_pota.add_argument('--biosversion', '-b', default='ADLSFWI1.R00', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'BIOS Version', 50),
                                  help='Platform BIOS version')
-        parser_pota.add_argument('--manufacturer', '-m', default='intel', required=False,
+        parser_pota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'Manufacturer', 50),
                                  help='Platform manufacturer')
-        parser_pota.add_argument('--product', '-pr', default='kmb-hddl2', required=False,
+        parser_pota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'Product', 50),
                                  help='Platform product name')
-        parser_pota.add_argument('--sotapath', '-sp', default=None, required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'SOTA path', 500),
-                                 help='Full path to the update package (mender file)')
-        parser_pota.add_argument('--sotauri', '-su', default=None, required=False,
+        parser_pota.add_argument('--sotauri', '-su', default=None, required=True,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'SOTA path', 500),
                                  help='Full path to the update package')
-        parser_pota.add_argument('--release_date', '-sr', default='2024-12-31', required=False, type=validate_date,
+        parser_pota.add_argument('--release_date', '-sr', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying mender package - format YYYY-MM-DD')
         parser_pota.add_argument('--fotasignature', '-fs', default='None', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'FOTA Signature', 1000),
                                  help='FOTA Signature string')
-        parser_pota.add_argument('--target', '-t', nargs='*',
-                                 default=['None'], required=False, help=TARGETS_HELP)
-        parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
+        parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware GUID update',
                                  type=validate_guid)
         parser_pota.set_defaults(func=pota)
 
     def parse_load_args(self) -> None:
         """Parse load arguments"""
         parser_load = self._create_subparser('load')
-        ArgsParser._add_source_options(parser_load)
 
+        parser_load.add_argument('--uri', '-u', required=True,
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'URL', 1000),
+                                 help='Remote URI from where to retrieve package')
         parser_load.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
-        parser_load.add_argument('--target', '-t', nargs='*',
-                                 default=None, required=False,
-                                 help=TARGETS_NODE_AND_CLIENT_ONLY_HELP)
-
-        parser_load.add_argument('--targettype', '-tt', default='node', required=False,
-                                 help='Type of target [vision | node | node-client]')
         parser_load.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         parser_load.set_defaults(func=load)
@@ -189,11 +156,6 @@ class ArgsParser(object):
                                 type=lambda x: validate_string_less_than_n_characters(
                                     x, 'Path', 500),
                                 help='Full path to key(s)')
-        parser_get.add_argument('--target', '-t', nargs='*',
-                                default=None, required=False,
-                                help=TARGETS_NODE_AND_CLIENT_ONLY_HELP)
-        parser_get.add_argument('--targettype', '-tt', default='node', required=False,
-                                help='Type of target [vision | node | node-client]')
         parser_get.set_defaults(func=get)
 
     def parse_set_args(self) -> None:
@@ -204,13 +166,7 @@ class ArgsParser(object):
                                 type=lambda x: validate_string_less_than_n_characters(
                                     x, PATH_STRING, 500),
                                 help='Full path to key(s)')
-        parser_set.add_argument('--target', '-t', nargs='*',
-                                default=None, required=False,
-                                help=TARGETS_NODE_AND_CLIENT_ONLY_HELP)
-        parser_set.add_argument('--targettype', '-tt', default='node', required=False,
-                                help='Type of target [vision | node | node-client]')
         parser_set.set_defaults(func=set)
-
 
     def parse_remove_args(self) -> None:
         """Parse remove arguments"""
@@ -235,44 +191,20 @@ class ArgsParser(object):
     def parse_restart_args(self) -> None:
         """Parse restart arguments"""
         parser_restart = self._create_subparser('restart')
-
-        parser_restart.add_argument('--target', '-t', nargs='*', default=None, required=False,
-                                    help=TARGETS_NODE_ONLY_HELP)
-        parser_restart.add_argument('--targettype', '-tt', default='node', required=False,
-                                    help='Type of target [vision | node ]')
         parser_restart.set_defaults(func=restart)
 
     def parse_query_args(self) -> None:
         """Parse set arguments"""
         parser_query = self._create_subparser('query')
-
-        parser_query.add_argument('--target', '-t', nargs='*', default=None, required=False,
-                                  help=TARGETS_NODE_ONLY_HELP)
-        parser_query.add_argument('--targettype', '-tt', default=None, required=False,
-                                  help='Type of target [vision | node ]')
         parser_query.add_argument('--option', '-o', default='all', required=False,
-                                  choices=['all', 'hw', 'fw', 'os',
-                                           'status', 'version', 'security', 'guid', 'swbom'],
-                                  help='Type of information [all | hw | fw | os | status (for vision-agent only) | security | guid (for vision-agent only) '
-                                       'version | swbom(for inbm only) ]')
+                                  choices=['all', 'hw', 'fw', 'os', 'version', 'swbom'],
+                                  help='Type of information [all | hw | fw | os | version | swbom ]')
         parser_query.set_defaults(func=query)
-
-
-def _create_source(args) -> Tuple[str, str, str]:
-    repo = LOCAL_SOURCE if not args.nohddl else REMOTE_SOURCE
-    if repo == LOCAL_SOURCE and args.path is None:
-        raise InbcException('local path (-p) is required with HDDL command.')
-    if repo == REMOTE_SOURCE and args.uri is None:
-        raise InbcException('URI (-u) is required with non-HDDL command')
-
-    source_tag = PATH_STRING if repo == LOCAL_SOURCE else 'fetch'
-    source_location = args.path if repo == LOCAL_SOURCE else args.uri
-    return repo, source_tag, source_location
 
 
 def _get_password(args) -> Optional[str]:
     password = None
-    if args.nohddl and args.username:
+    if args.username:
         password = getpass.getpass("Please provide the password: ")
     return password
 
@@ -281,22 +213,18 @@ def sota(args) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest string
     """
-    print(f'nohddl={args.nohddl}, path={args.path}')
-    if not args.nohddl and not args.path:
-        raise InbcException('argument --path/-p: required with HDDL command.')
-
-    if args.nohddl and not args.uri:
+    if not args.uri:
         # Update on local Ubuntu system.  Does update through ubuntu without fetching a package.
-        repo, source_tag, source_location = REMOTE_SOURCE, PATH_STRING, None
+        source_tag, source_location = PATH_STRING, None
     else:
-        repo, source_tag, source_location = _create_source(args)
+        source_tag, source_location = 'fetch', args.uri
 
     # if source_location is None, then update is local Ubuntu and does not need a release date.
     release_date = args.releasedate if source_location else None
 
-    # This if clause is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd sxhema.
+    # This if clause is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd schema.
     if source_tag == PATH_STRING:
         path_location = source_location
         fetch_location = None
@@ -305,34 +233,28 @@ def sota(args) -> str:
         path_location = None
 
     arguments = {
-        'Target': args.target,
+        'release_date': release_date,
         'fetch': fetch_location,
-        'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args),
-        'release_date': release_date,
         'path': path_location
     }
 
-    target_type = '<targetType>node</targetType>' if not args.nohddl else ''
-    repo_tag = '<repo>' + repo + '</repo>' if repo else ''
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>ota</type>' +
                 '<ota>' +
                 '<header>' +
                 '<type>sota</type>' +
-                repo_tag +
+                '<repo>remote</repo>' +
                 '</header>' +
                 '<type><sota>' +
                 '<cmd logtofile="y">update</cmd>' +
-                target_type +
                 '{0}' +
                 '</sota></type>' +
                 '</ota>' +
                 '</manifest>').format(
         create_xml_tag(arguments,
-                       "Target",
                        "fetch",
                        "username",
                        "password",
@@ -345,7 +267,7 @@ def sota(args) -> str:
 
 
 def _gather_system_details() -> PlatformInformation:
-    print("Biosversion, Vendor, Manufacturer and Product information not provided via command-line."
+    print("BIOS version, Vendor, Manufacturer and Product information not provided via command-line."
           " So gathering the firmware info using dmi path/deviceTree")
 
     if is_dmi_path_exists():
@@ -363,43 +285,34 @@ def fota(args) -> str:
     @param args: Arguments provided by the user from command line
     @return: Generated XML manifest string
     """
-    repo, source_tag, source_location = _create_source(args)
-
-    if args.nohddl:
-        p = _gather_system_details()
+    p = _gather_system_details()
 
     arguments = {
         'releasedate': args.releasedate,
-        'vendor': p.bios_vendor if args.nohddl else args.vendor,
-        'biosversion': p.bios_version if args.nohddl else args.biosversion,
-        'manufacturer': p.platform_mfg if args.nohddl else args.manufacturer,
-        'product': p.platform_product if args.nohddl else args.product,
-        'Target': args.target,
+        'vendor': p.bios_vendor,
+        'biosversion': p.bios_version,
+        'manufacturer': p.platform_mfg,
+        'product': p.platform_product,
         'signature': args.signature,
-        'repo': repo,
         'tooloptions': args.tooloptions,
-        source_tag: source_location,
-        'nohddl': args.nohddl,
+        'fetch': args.uri,
         'username': args.username,
         'password': _get_password(args),
         'guid': args.guid
     }
 
-    target_type = '<targetType>node</targetType>' if not args.nohddl else ''
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>ota</type>' +
                 '<ota>' +
                 '<header>' +
                 '<type>fota</type>' +
-                '<repo>' + repo + '</repo>' +
+                '<repo>remote</repo>' +
                 '</header>' +
                 '<type><fota name="sample">' +
-                target_type +
                 '{0}</fota></type></ota>' +
                 '</manifest>').format(
         create_xml_tag(arguments,
-                       "Target",
                        "signature",
                        "biosversion",
                        "vendor",
@@ -410,7 +323,7 @@ def fota(args) -> str:
                        "username",
                        "password",
                        "guid",
-                       source_tag)
+                       'fetch')
     )
     print("manifest {0}".format(manifest))
     return manifest
@@ -422,22 +335,12 @@ def pota(args) -> str:
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
     """
-    target_type = '<targetType>node</targetType>' if not args.nohddl else ''
     os_type = detect_os()
 
-    if args.fotapath:
-        if args.nohddl and os_type == LinuxDistType.Ubuntu.name:
-            raise InbcException(
-                "POTA is not supported with local 'path' tags on non HDDL Ubuntu device.")
-        if not args.sotapath:
-            raise InbcException(
-                "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags.")
-        repo = 'local'
-    elif args.fotauri:
+    if args.fotauri:
         if os_type != LinuxDistType.Ubuntu.name and not args.sotauri:
             raise InbcException(
-                "POTA requires 'fotauri, sotauri' args while using remote URIs and  'fotapath, sotapath' args while using path tags.")
-        repo = 'remote'
+                "POTA requires 'fotauri, sotauri' args while using remote URIs.")
 
     arguments = {
         'releasedate': args.releasedate,
@@ -446,33 +349,24 @@ def pota(args) -> str:
         'manufacturer': args.manufacturer,
         'product': args.product,
         'release_date': args.release_date,
-        'Target': args.target,
         FOTA_SIGNATURE: args.fotasignature,
-        'nohddl': args.nohddl,
         'guid': args.guid
     }
 
-    if repo == "local":
-        fota_tag = f'<path>{args.fotapath}</path>'
-        sota_tag = f'<path>{args.sotapath}</path>'
-    else:
-        fota_tag = f'<fetch>{args.fotauri}</fetch>'
-        sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
+    fota_tag = f'<fetch>{args.fotauri}</fetch>'
+    sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>ota</type>' +
                 '<ota>' +
-                '<header><type>pota</type><repo>' + repo + '</repo></header>' +
+                '<header><type>pota</type><repo>remote</repo></header>' +
                 '<type>' +
-                '<pota>' + target_type +
-                '{0}' +
-                '<fota name="sample">{1}{2}</fota>' +
-                '<sota><cmd logtofile="y">update</cmd>{3}{4}</sota>' +
+                '<pota>' +
+                '<fota name="sample">{0}{1}</fota>' +
+                '<sota><cmd logtofile="y">update</cmd>{2}{3}</sota>' +
                 '</pota></type></ota>' +
                 '</manifest>').format(
-        create_xml_tag(arguments,
-                       "Target"),
         create_xml_tag(arguments,
                        FOTA_SIGNATURE,
                        "biosversion",
@@ -501,12 +395,8 @@ def load(args) -> str:
     """
 
     arguments = {
-        'target': args.target,
-        'targetType': None if args.nohddl else args.targettype,
         'fetch': args.uri,
-        'path': args.path,
         'signature': args.signature,
-        'nohddl': args.nohddl,
         'username': args.username,
         'password': _get_password(args)
     }
@@ -516,19 +406,15 @@ def load(args) -> str:
                 '<type>config</type>' +
                 '<config>' +
                 '<cmd>load</cmd>' +
-                '{0}' +
                 '<configtype>' +
-                '{1}' +
                 '<load>' +
+                '{0}' +
+                '{1}' +
                 '{2}' +
-                '{3}' +
-                '{4}' +
                 '</load>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
-        create_xml_tag(arguments, "targetType"),
-        create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path"),
         create_xml_tag(arguments, "fetch"),
         create_xml_tag(arguments, "signature")
@@ -545,10 +431,7 @@ def get(args) -> str:
     """
 
     arguments = {
-        'target': args.target,
-        'targetType': None if args.nohddl else args.targettype,
-        'path': args.path,
-        'nohddl': args.nohddl
+        'path': args.path
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -556,17 +439,13 @@ def get(args) -> str:
                 '<type>config</type>' +
                 '<config>' +
                 '<cmd>get_element</cmd>' +
-                '{0}' +
                 '<configtype>' +
-                '{1}' +
                 '<get>' +
-                '{2}' +
+                '{0}' +
                 '</get>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
-        create_xml_tag(arguments, "targetType"),
-        create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path")
     )
     print("manifest {0}".format(manifest))
@@ -581,10 +460,7 @@ def set(args) -> str:
     """
 
     arguments = {
-        'target': args.target,
-        'targetType': None if args.nohddl else args.targettype,
-        'path': args.path,
-        'nohddl': args.nohddl
+        'path': args.path
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -592,17 +468,13 @@ def set(args) -> str:
                 '<type>config</type>' +
                 '<config>' +
                 '<cmd>set_element</cmd>' +
-                '{0}' +
                 '<configtype>' +
-                '{1}' +
                 '<set>' +
-                '{2}' +
+                '{0}' +
                 '</set>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
-        create_xml_tag(arguments, "targetType"),
-        create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path")
     )
     print("manifest {0}".format(manifest))
@@ -614,16 +486,11 @@ def append(args) -> str:
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
     """
-    if not args.nohddl:
-        raise InbcException(
-            "Config Append is not supported on HDDL Platforms.")
-
-    if args.nohddl and not args.path:
-        raise InbcException('argument --path/-p: required with Non-HDDL command.')
+    if not args.path:
+        raise InbcException('argument --path/-p: required.')
 
     arguments = {
-        'path': args.path,
-        'nohddl': args.nohddl
+        'path': args.path
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -631,17 +498,13 @@ def append(args) -> str:
                 '<type>config</type>' +
                 '<config>' +
                 '<cmd>append</cmd>' +
-                '{0}' +
                 '<configtype>' +
-                '{1}' +
                 '<append>' +
-                '{2}'
+                '{0}'
                 '</append>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
-        create_xml_tag(arguments, "targetType"),
-        create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path")
     )
     print("manifest {0}".format(manifest))
@@ -653,16 +516,11 @@ def remove(args) -> str:
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
     """
-    if not args.nohddl:
-        raise InbcException(
-                "Config Remove is not supported on HDDL Platforms.")
-
-    if args.nohddl and not args.path:
-            raise InbcException('argument --path/-p: required with Non-HDDL command.')
+    if not args.path:
+        raise InbcException('argument --path/-p: required .')
 
     arguments = {
-        'path': args.path,
-        'nohddl': args.nohddl
+        'path': args.path
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -670,17 +528,13 @@ def remove(args) -> str:
                 '<type>config</type>' +
                 '<config>' +
                 '<cmd>remove</cmd>' +
-                '{0}' +
                 '<configtype>' +
-                '{1}' +
                 '<remove>' +
-                '{2}'
+                '{0}'
                 '</remove>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
-        create_xml_tag(arguments, "targetType"),
-        create_xml_tag(arguments, "target"),
         create_xml_tag(arguments, "path")
     )
     print("manifest {0}".format(manifest))
@@ -693,27 +547,15 @@ def restart(args) -> str:
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
     """
-    if args.nohddl:
-        raise InbcException('Restart command is only supported for HDDL.')
-
-    arguments = {
-        'target': args.target,
-        'targetType': args.targettype,
-        'nohddl': args.nohddl
-    }
+    raise InbcException('Restart command is not supported.')
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>cmd</type>' +
                 '<cmd>restart</cmd>' +
                 '<restart>' +
-                '{0}' +
-                '{1}' +
                 '</restart>' +
-                '</manifest>').format(
-        create_xml_tag(arguments, TARGET_TYPE),
-        create_xml_tag(arguments, TARGET)
-    )
+                '</manifest>')
     print("manifest {0}".format(manifest))
     return manifest
 
@@ -725,10 +567,7 @@ def query(args) -> str:
     @return: Generated xml manifest string
     """
     arguments = {
-        'option': args.option,
-        'target': args.target,
-        'targetType': args.targettype if args.option != "version" else None,
-        'nohddl': args.nohddl
+        'option': args.option
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -737,13 +576,9 @@ def query(args) -> str:
                 '<cmd>query</cmd>' +
                 '<query>' +
                 '{0}' +
-                '{1}' +
-                '{2}' +
                 '</query>' +
                 '</manifest>').format(
-        create_xml_tag(arguments, "option"),
-        create_xml_tag(arguments, TARGET_TYPE),
-        create_xml_tag(arguments, TARGET)
+        create_xml_tag(arguments, "option")
     )
     print("manifest {0}".format(manifest))
     return manifest

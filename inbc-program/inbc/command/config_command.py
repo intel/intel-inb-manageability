@@ -1,22 +1,18 @@
 """
     Config Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2022 Intel Corporation
+    # Copyright (C) 2020-2023 Intel Corporation
     # SPDX-License-Identifier: Apache-2.0
 """
 
 from typing import Any
-from pathlib import Path
 from .command import Command
-from ..utility import copy_file_to_target_location, search_keyword
+from ..utility import search_keyword
 from ..constants import COMMAND_SUCCESS, COMMAND_FAIL, MAX_TIME_LIMIT, INBM_INSTALL_CHANNEL
 from ..inbc_exception import InbcCode
 from ..ibroker import IBroker
 
 from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD, CONFIG_APPEND, CONFIG_REMOVE
-from inbm_common_lib.utility import get_canonical_representation_of_path
-from inbm_vision_lib.constants import CACHE_MANAGEABILITY, CONFIG_GET, CONFIG_SET
-from inbm_common_lib.request_message_constants import NO_NODES_FAILURE
 from inbm_vision_lib.request_message_constants import CONFIGURATION_SUCCESSFUL_MESSAGE_LIST, \
     CONFIGURATION_FAILURE_MESSAGE_LIST
 
@@ -47,10 +43,7 @@ class ConfigCommand(Command):
         if search_keyword(payload, CONFIGURATION_SUCCESSFUL_MESSAGE_LIST):
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         elif search_keyword(payload, CONFIGURATION_FAILURE_MESSAGE_LIST):
-            if search_keyword(payload, [NO_NODES_FAILURE]):
-                self.terminate_operation(COMMAND_FAIL, InbcCode.XLINK_DEVICE_NOT_FOUND_OFF.value)
-            else:
-                self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
+            self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         else:
             super().search_response(payload)
 
@@ -77,8 +70,7 @@ class GetConfigCommand(ConfigCommand):
         @param args: arguments from user
         @param topic: MQTT topic
         """
-        channel = INBM_INSTALL_CHANNEL if args.nohddl else CONFIG_CHANNEL + CONFIG_GET
-        super().trigger_manifest(args, channel)
+        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
     def search_response(self, payload: str) -> None:
         """Search for keywords in response message
@@ -110,8 +102,7 @@ class SetConfigCommand(ConfigCommand):
         @param args: arguments from user
         @param topic: MQTT topic
         """
-        channel = INBM_INSTALL_CHANNEL if args.nohddl else CONFIG_CHANNEL + CONFIG_SET
-        super().trigger_manifest(args, channel)
+        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
     def search_response(self, payload: str) -> None:
         """Search for keywords in response message
@@ -137,27 +128,13 @@ class LoadConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_LOAD)
 
-    def set_num_vision_targets(self, num_targets: int) -> None:
-        """Sets the number of vision targets that are received from vision-agent.
-
-        @param num_targets: Number of targets
-        """
-        super().set_num_vision_targets(num_targets)
-
     def trigger_manifest(self, args: Any, topic: str = CONFIG_CHANNEL + CONFIG_LOAD):
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments from user
         @param topic: MQTT topic
         """
-        if args.nohddl:
-            channel = INBM_INSTALL_CHANNEL
-        else:
-            channel = CONFIG_CHANNEL + CONFIG_LOAD
-            canonical_path = get_canonical_representation_of_path(args.path)
-            args.path = copy_file_to_target_location(Path(canonical_path), CACHE_MANAGEABILITY)
-
-        super().trigger_manifest(args, channel)
+        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
     def search_response(self, payload: str) -> None:
         """Search for keywords in response message
@@ -216,8 +193,7 @@ class RemoveConfigCommand(ConfigCommand):
         @param args: arguments from user
         @param topic: MQTT topic
         """
-        channel = INBM_INSTALL_CHANNEL
-        super().trigger_manifest(args, channel)
+        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
     def search_response(self, payload: str) -> None:
         """Search for keywords in response message

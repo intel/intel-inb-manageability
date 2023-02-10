@@ -10,7 +10,7 @@ echo "Triggering SOTA integration INB test: SOTA UPDATE SUCCESS NO SNAPSHOT"
 mv /usr/bin/snapper /usr/bin/snapper.bak
 echo "<START> SOTA UPDATE SUCCESS NO SNAPSHOT" | systemd-cat
 
-inbc sota --nohddl
+inbc sota
 
 RESULT=$?
 if [ $RESULT -eq 0 ]; then

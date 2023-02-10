@@ -1,7 +1,5 @@
 from unittest import TestCase
-from inbc.utility import search_keyword, is_vision_agent_installed
-from mock import Mock, patch
-from os import path
+from inbc.utility import search_keyword
 
 
 class TestUtility(TestCase):
@@ -15,14 +13,3 @@ class TestUtility(TestCase):
         payload = 'Status message SUCCESSFUL'
         output = search_keyword(payload, ["Commands"])
         self.assertEquals(output, False)
-
-    @patch('os.path.exists', return_value = True)
-    def test_vision_agent_installed_true(self, mock):
-        output = is_vision_agent_installed()
-        assert output is True
-
-    @patch('os.path.exists', return_value = False)
-    def test_vision_agent_installed_false(self, mock):
-        output = is_vision_agent_installed()
-        assert output is False
-        
