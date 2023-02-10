@@ -191,7 +191,6 @@ class QueryCommand(Command):
         @param topic: topic from which message was received
         """
         self.search_host_event(payload)
-        super().search_event(payload, topic)
 
     def search_host_event(self, payload: str) -> None:
         """Search for keywords message like queryEndResult.
