@@ -195,5 +195,4 @@ class QueryCommand(Command):
         """
         print("\n" + payload)
         if search_keyword(payload, [QUERY_HOST_KEYWORD]):
-            print("terminate after search event\n")
             self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
