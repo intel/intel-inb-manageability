@@ -59,13 +59,15 @@ class ArgsParser(object):
         parser_fota.add_argument('--uri', '-u', required=True,
                                  type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
-        parser_fota.add_argument('--releasedate', '-r', default='2024-12-31', required=False, type=validate_date,
+        parser_fota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        parser_fota.add_argument('--vendor', '-v', default='Intel', required=False, help='Platform vendor',
+        parser_fota.add_argument('--vendor', '-v', default='Intel Corporation', required=False, help='Platform vendor',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Vendor', 50))
-        parser_fota.add_argument('--biosversion', '-b', default='5.12', required=False, help='Platform BIOS version',
+        parser_fota.add_argument('--biosversion', '-b', default='ADLSFWI1.R00', required=False,
+                                 help='Platform BIOS version',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'BIOS Version', 50))
-        parser_fota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False, help='Platform manufacturer',
+        parser_fota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False,
+                                 help='Platform manufacturer',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Manufacturer', 50))
         parser_fota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
                                  help='Platform product name',
@@ -88,7 +90,7 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
-        parser_sota.add_argument('--releasedate', '-r', default='2024-12-31', required=False, type=validate_date,
+        parser_sota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
         parser_sota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
@@ -102,11 +104,11 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'FOTA url', 1000),
                                  help='Remote URI from where to retrieve FOTA package')
-        parser_pota.add_argument('--releasedate', '-r', default='2024-12-31', required=False, type=validate_date,
+        parser_pota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        parser_pota.add_argument('--vendor', '-v', default='Intel', required=False,
+        parser_pota.add_argument('--vendor', '-v', default='Intel Corporation', required=False,
                                  help='Platform vendor')
-        parser_pota.add_argument('--biosversion', '-b', default='5.12', required=False,
+        parser_pota.add_argument('--biosversion', '-b', default='ADLSFWI1.R00', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'BIOS Version', 50),
                                  help='Platform BIOS version')
@@ -122,7 +124,7 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'SOTA path', 500),
                                  help='Full path to the update package')
-        parser_pota.add_argument('--release_date', '-sr', default='2024-12-31', required=False, type=validate_date,
+        parser_pota.add_argument('--release_date', '-sr', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying mender package - format YYYY-MM-DD')
         parser_pota.add_argument('--fotasignature', '-fs', default='None', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
@@ -195,9 +197,8 @@ class ArgsParser(object):
         """Parse set arguments"""
         parser_query = self._create_subparser('query')
         parser_query.add_argument('--option', '-o', default='all', required=False,
-                                  choices=['all', 'hw', 'fw', 'os', 'version', 'security', 'swbom'],
-                                  help='Type of information [all | hw | fw | os | security | '
-                                       'version | swbom ]')
+                                  choices=['all', 'hw', 'fw', 'os', 'version', 'swbom'],
+                                  help='Type of information [all | hw | fw | os | version | swbom ]')
         parser_query.set_defaults(func=query)
 
 

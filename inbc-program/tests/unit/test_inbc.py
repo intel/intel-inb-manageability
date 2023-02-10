@@ -47,13 +47,13 @@ class TestINBC(TestCase):
     def test_fota_manifest_pass(self):
         f = self.arg_parser.parse_args(
             ['fota', '-un', 'username', '-to', '/b /p', '-u', 'https://abc.com/test.tar'])
-        self.assertEqual(f.biosversion, '5.12')
-        self.assertEqual(f.manufacturer, 'intel')
+        self.assertEqual(f.biosversion, 'ADLSFWI1.R00')
+        self.assertEqual(f.manufacturer, 'Intel Corporation')
         self.assertEqual(f.uri, 'https://abc.com/test.tar')
-        self.assertEqual(f.product, 'kmb-hddl2')
-        self.assertEqual(f.releasedate, '2024-12-31')
+        self.assertEqual(f.product, 'Alder Lake Client Platform')
+        self.assertEqual(f.releasedate, '2026-12-31')
         self.assertEqual(f.tooloptions, '/b /p')
-        self.assertEqual(f.vendor, 'Intel')
+        self.assertEqual(f.vendor, 'Intel Corporation')
         self.assertEqual(f.username, 'username')
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
@@ -145,8 +145,10 @@ class TestINBC(TestCase):
         Inbc(p, 'fota', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type>' \
                    '<repo>remote</repo></header><type><fota name="sample">' \
-                   '<biosversion>5.12</biosversion><vendor>Intel</vendor><manufacturer>intel</manufacturer>' \
-                   '<product>kmb</product><releasedate>2024-12-31</releasedate><tooloptions>/b /p</tooloptions>' \
+                   '<biosversion>ADLSFWI1.R00</biosversion><vendor>Intel Corporation</vendor>' \
+                   '<manufacturer>Intel Corporation</manufacturer>' \
+                   '<product>Alder Lake Client Platform</product><releasedate>2024-12-31</releasedate>' \
+                   '<tooloptions>/b /p</tooloptions>' \
                    '<username>frank</username><password>123abc</password>' \
                    '<fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
@@ -155,7 +157,8 @@ class TestINBC(TestCase):
     @patch('threading.Thread.start')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.parser.get_dmi_system_info',
-           return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel', '5.14', 'intel', 'kmb'))
+           return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',
+                                            'Intel Corporation', 'Alder Lake Client Platform'))
     @patch('inbc.parser.getpass.getpass', return_value='123abc')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -169,8 +172,9 @@ class TestINBC(TestCase):
         Inbc(f, 'fota', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type' \
                    '><repo>remote</repo></header><type><fota name="sample">' \
-                   '<biosversion>5.14</biosversion><vendor>Intel</vendor' \
-                   '><manufacturer>intel</manufacturer><product>kmb</product><releasedate>2024-12-31' \
+                   '<biosversion>ADLSFWI1.R00</biosversion><vendor>Intel Corporation</vendor' \
+                   '><manufacturer>Intel Corporation</manufacturer><product>Alder Lake Client Platform</product>' \
+                   '<releasedate>2024-12-31' \
                    '</releasedate><fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
@@ -192,7 +196,8 @@ class TestINBC(TestCase):
     def test_create_ubuntu_update_manifest(self):
         s = self.arg_parser.parse_args(['sota'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
-                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd></sota></type></ota></manifest>'
+                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd></sota></type>' \
+                   '</ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
@@ -204,18 +209,19 @@ class TestINBC(TestCase):
                    '><repo>remote</repo></header><type><sota><cmd ' \
                    'logtofile="y">update</cmd>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
-                   '<release_date>2024-12-31</release_date></sota></type></ota></manifest>'
+                   '<release_date>2026-12-31</release_date></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
     @patch('inbc.parser.get_dmi_system_info',
-           return_value=PlatformInformation('2024-12-31', 'Intel', '5.12', 'intel', 'kmb'))
+           return_value=PlatformInformation('2024-12-31', 'Intel', '5.12', 'Intel', 'kmb'))
     def test_create_fota_manifest(self, mock_dmi):
         f = self.arg_parser.parse_args(
             ['fota', '-u', 'https://abc.com/BIOS.img', '-r', '2024-12-31'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type' \
                    '><repo>remote</repo></header><type><fota name="sample">' \
                    '<biosversion>5.12</biosversion><vendor>Intel</vendor' \
-                   '><manufacturer>intel</manufacturer><product>kmb</product><releasedate>2024-12-31' \
+                   '><manufacturer>Intel</manufacturer><product>kmb</product>' \
+                   '<releasedate>2024-12-31' \
                    '</releasedate><fetch>https://abc.com/BIOS.img</fetch>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
@@ -235,11 +241,12 @@ class TestINBC(TestCase):
 
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>pota</type' \
                    '><repo>remote</repo></header><type><pota><fota name="sample">' \
-                   '<biosversion>5.12</biosversion><manufacturer>intel</manufacturer><product>kmb-hddl2</product>' \
-                   '<vendor>Intel</vendor><releasedate>2024-12-31</releasedate>' \
+                   '<biosversion>ADLSFWI1.R00</biosversion><manufacturer>Intel Corporation</manufacturer>' \
+                   '<product>Alder Lake Client Platform</product>' \
+                   '<vendor>Intel Corporation</vendor><releasedate>2026-12-31</releasedate>' \
                    '<fetch>/var/cache/manageability/repository-tool/fip.bin</fetch></fota><sota><cmd ' \
                    'logtofile="y">update</cmd>' \
-                   '<release_date>2024-12-31</release_date>' \
+                   '<release_date>2026-12-31</release_date>' \
                    '<fetch>/var/cache/manageability/repository-tool/file.mender</fetch>' \
                    '</sota></pota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
@@ -272,7 +279,7 @@ class TestINBC(TestCase):
                    '</configtype></config></manifest>'
         self.assertEqual(remove.func(remove), expected)
 
-    def test_raise_not_supported_no_hddl_restart_manifest(self):
+    def test_raise_not_supported_restart_manifest(self):
         restart = self.arg_parser.parse_args(['restart'])
         with self.assertRaisesRegex(InbcException, 'Restart command is not supported.'):
             restart.func(restart)
@@ -291,17 +298,6 @@ class TestINBC(TestCase):
             self.arg_parser.parse_args(
                 ['query', '-o', 'everything'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"invalid choice: 'everything'")
-
-    # @patch('threading.Thread._bootstrap_inner')
-    # @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    # @patch('inbm_vision_lib.timer.Timer.stop')
-    # def test_query_terminate_operation_success(self, t_stop, mock_reconnect, mock_thread):
-    #     c = QueryCommand(Mock())
-    #     c.search_host_response(QUERY_HOST_SUCCESS)
-    #     c._success_code = Inbc.SUCCESS.value
-    #     # c.terminate_operation(QUERY_SUCCESS, Inbc.SUCCESS.value)
-    #     # print(t_stop.call_count)
-    #     assert t_stop.call_count == 2
 
     @patch('threading.Thread._bootstrap_inner')
     @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')

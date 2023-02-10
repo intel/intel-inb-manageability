@@ -57,10 +57,10 @@ Performs a Firmware Over The Air (FOTA) update.
 ### Usage
 ```
 inbc fota {--uri, -u=URI}  
-   [--releasedate, -r RELEASE_DATE; default="2024-12-31"] 
-   [--vendor, -v VENDOR; default="Intel"] 
-   [--biosversion, -b BIOS_VERSION; default="5.12"] 
-   [--manufacturer, -m MANUFACTURER; default="intel"] 
+   [--releasedate, -r RELEASE_DATE; default="2026-12-31"] 
+   [--vendor, -v VENDOR; default="Intel Corporation"] 
+   [--biosversion, -b BIOS_VERSION; default="ADLSFWI1.R00"] 
+   [--manufacturer, -m MANUFACTURER; default="Intel Corporation"] 
    [--product, -pr PRODUCT; default="Alder Lake Client Platform"] 
    [--signature, -s SIGNATURE_STRING; default=None] 
    [--tooloptions, -to TOOL_OPTIONS]
@@ -98,7 +98,7 @@ System update flow can be broken into two parts:
 ### Usage
 ```
 inbc sota {--uri, -u=URI} 
-   [--releasedata, -r RELEASE_DATE; default="2024-12-31"] 
+   [--releasedata, -r RELEASE_DATE; default="2026-12-31"] 
    [--username, -un USERNAME] 
 ```
 ### Examples
@@ -124,12 +124,12 @@ A platform update is the equivalent of performing both a SOTA and FOTA with the 
 ```
 inbc pota {--fotauri, -fu=FOTA_URI}
    [--sotauri, -su=SOTA_URI] - N/A for Ubuntu based 
-   [--releasedate, -r FOTA_RELEASE_DATE; default="2024-12-31"] 
-   [--vendor, -v VENDOR; default="Intel"] 
-   [--biosversion, -b BIOS_VERSION; default="5.12"] 
-   [--manufacturer, -m MANUFACTURER; default="intel"] 
-   [--product, -pr PRODUCT; default="kmb-hddl2"] 
-   [--release_date, -sr SOTA_RELEASE_DATE; default="2024-12-31"] 
+   [--releasedate, -r FOTA_RELEASE_DATE; default="2026-12-31"] 
+   [--vendor, -v VENDOR; default="Intel Corporation"] 
+   [--biosversion, -b BIOS_VERSION; default="ADLSFWI1.R00"] 
+   [--manufacturer, -m MANUFACTURER; default="Intel Corporation"] 
+   [--product, -pr PRODUCT; default="Alder Lake Client Platform"] 
+   [--release_date, -sr SOTA_RELEASE_DATE; default="2026-12-31"] 
    [--fotasignature, -fs SIGNATURE_STRING] 
    [--username, -u USERNAME] 
 ```
