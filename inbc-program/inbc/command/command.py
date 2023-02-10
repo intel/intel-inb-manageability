@@ -190,6 +190,7 @@ class QueryCommand(Command):
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """
+        self.search_host_event(payload)
         super().search_event(payload, topic)
 
     def search_host_event(self, payload: str) -> None:
