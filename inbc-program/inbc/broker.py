@@ -79,7 +79,7 @@ class Broker(IBroker):
 
             print('Subscribe to: {0}'.format(EVENT_CHANNEL))
             self.mqttc.subscribe(EVENT_CHANNEL, self._on_event)
-            time.sleep(1) #time for teh channel to subscribe
+            time.sleep(3)  # time for the channel to subscribe
             logger.debug('Setting up broker success.')
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
