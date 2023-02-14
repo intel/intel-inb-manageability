@@ -11,7 +11,7 @@ from .ota_command import FotaCommand, SotaCommand, PotaCommand
 from .config_command import GetConfigCommand, SetConfigCommand, LoadConfigCommand, AppendConfigCommand, RemoveConfigCommand
 
 from inbm_common_lib.constants import CONFIG_LOAD, CONFIG_APPEND, CONFIG_REMOVE
-from inbm_vision_lib.constants import FOTA, SOTA, POTA, RESTART, QUERY
+from inbm_lib.constants import FOTA, SOTA, POTA, RESTART, QUERY
 
 
 def create_command_factory(cmd: str, broker: IBroker) -> Command:

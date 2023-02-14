@@ -4,7 +4,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-from inbm_vision_lib.path_prefixes import BROKER_ETC_PATH
+from inbm_lib.path_prefixes import BROKER_ETC_PATH
 
 # certs
 CLIENT_CERTS = str(BROKER_ETC_PATH / 'public' / 'inbc-program' / 'inbc-program.crt')

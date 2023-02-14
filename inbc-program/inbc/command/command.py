@@ -16,8 +16,8 @@ from ..ibroker import IBroker
 from ..inbc_exception import InbcCode
 from ..utility import search_keyword
 
-from inbm_vision_lib.timer import Timer
-from inbm_vision_lib.constants import RESTART, QUERY, QUERY_CHANNEL, RESTART_CHANNEL
+from inbm_lib.timer import Timer
+from inbm_lib.constants import RESTART, QUERY, QUERY_CHANNEL, RESTART_CHANNEL
 from inbm_common_lib.request_message_constants import COMMAND_SUCCESSFUL, DYNAMIC_TELEMETRY, \
     RESTART_SUCCESS, RESTART_FAILURE, QUERY_SUCCESS, QUERY_FAILURE, OTA_IN_PROGRESS, ACTIVE_NODE_NOT_FOUND, \
     ELIGIBLE_NODE_NOT_FOUND, QUERY_HOST_SUCCESS, QUERY_HOST_FAILURE, QUERY_HOST_KEYWORD

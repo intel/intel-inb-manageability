@@ -13,7 +13,7 @@ from ..inbc_exception import InbcCode
 from ..utility import search_keyword
 from ..ibroker import IBroker
 
-from inbm_vision_lib.constants import CACHE, INSTALL_CHANNEL, FOTA, SOTA, POTA
+from inbm_lib.constants import CACHE, INSTALL_CHANNEL, FOTA, SOTA, POTA
 from inbm_common_lib.request_message_constants import FOTA_SOTA_SUCCESS_MESSAGE_LIST, SOTA_FAILURE, \
     FOTA_SOTA_FAILURE_MESSAGE_LIST, COMMAND_SUCCESSFUL, SOTA_COMMAND_STATUS_SUCCESSFUL, SOTA_COMMAND_FAILURE, \
     SOTA_OVERALL_FAILURE, FOTA_INPROGRESS_FAILURE
