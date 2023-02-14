@@ -8,7 +8,7 @@ from inbc.command.ota_command import FotaCommand
 from inbc.command.command import QueryCommand
 
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_vision_lib.request_message_constants import *
+from inbm_lib.request_message_constants import *
 from inbm_common_lib.request_message_constants import QUERY_SUCCESS, QUERY_FAILURE, QUERY_HOST_SUCCESS
 from mock import patch, mock_open, Mock
 from io import StringIO
@@ -56,7 +56,7 @@ class TestINBC(TestCase):
         self.assertEqual(f.vendor, 'Intel Corporation')
         self.assertEqual(f.username, 'username')
 
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     def test_sota_manifest_pass(self, mock_reconnect):
         f = self.arg_parser.parse_args(
             ['sota', '-un', 'username', '-u', 'https://abc.com/test.tar'])
@@ -83,7 +83,7 @@ class TestINBC(TestCase):
                  '-m', 'Intel', '--target', '123ABC', '456DEF'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
 
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_too_long_fota_signature(self, mock_stderr, mock_reconnect):
         with self.assertRaises(SystemExit):
@@ -103,7 +103,7 @@ class TestINBC(TestCase):
         self.assertRegexpMatches(mock_stderr.getvalue(
         ), r"Manufacturer is greater than allowed string size")
 
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_too_long_fota_vendor(self, mock_stderr, mock_reconnect):
         with self.assertRaises(SystemExit):
@@ -126,11 +126,11 @@ class TestINBC(TestCase):
         self.assertRegexpMatches(mock_stderr.getvalue(
         ), r"BIOS Version is greater than allowed string size")
 
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbm_lib.timer.Timer.start')
     def test_create_query_manifest(self, t_start, m_sub, m_pub, m_connect, mock_reconnect):
         p = self.arg_parser.parse_args(['query', '-o', 'all'])
         Inbc(p, 'query', False)
@@ -155,15 +155,15 @@ class TestINBC(TestCase):
         assert mock_start.call_count == 1
 
     @patch('threading.Thread.start')
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.parser.get_dmi_system_info',
            return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',
                                             'Intel Corporation', 'Alder Lake Client Platform'))
     @patch('inbc.parser.getpass.getpass', return_value='123abc')
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.publish')
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('inbm_vision_lib.timer.Timer.start')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbm_lib.timer.Timer.start')
     def test_create_fota_manifest_clean_input(self, mock_start, m_sub, m_pub,
                                   m_connect, m_pass, m_dmi, mock_reconnect, mock_thread):
         f = self.arg_parser.parse_args(
@@ -185,7 +185,7 @@ class TestINBC(TestCase):
                 ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '-r', '2024-12-31', '-sr', '12-31-2024'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
 
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_invalid_pota_fota_release_date_format(self, mock_stderr, mock_reconnect):
         with self.assertRaises(SystemExit):
@@ -200,7 +200,7 @@ class TestINBC(TestCase):
                    '</ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.parser.getpass.getpass', return_value='123abc')
     def test_create_sota_manifest(self, mock_pass, mock_reconnect):
         s = self.arg_parser.parse_args(
@@ -300,16 +300,16 @@ class TestINBC(TestCase):
         self.assertRegexpMatches(mock_stderr.getvalue(), r"invalid choice: 'everything'")
 
     @patch('threading.Thread._bootstrap_inner')
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('inbm_vision_lib.timer.Timer.stop')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.timer.Timer.stop')
     def test_fota_terminate_operation_success(self, t_stop, mock_reconnect, mock_thread):
         c = FotaCommand(Mock())
         c.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
         print(t_stop.call_count)
         assert t_stop.call_count == 1
 
-    @patch('inbm_vision_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('inbm_vision_lib.timer.Timer.stop')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.timer.Timer.stop')
     def test_fota_terminate_operation_failed(self, t_stop, mock_reconnect):
         c = FotaCommand(Mock())
         c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)

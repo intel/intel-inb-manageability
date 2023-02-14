@@ -15,7 +15,7 @@ from inbc.broker import Broker
 from inbc.parser import ArgsParser
 from inbc.inbc_exception import InbcException, InbcCode
 
-from inbm_vision_lib.request_message_constants import *
+from inbm_lib.request_message_constants import *
 
 logger = logging.getLogger(__name__)
 

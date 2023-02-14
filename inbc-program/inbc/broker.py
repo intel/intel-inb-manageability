@@ -16,8 +16,8 @@ from .ibroker import IBroker
 
 from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL
 
-from inbm_vision_lib.mqttclient.mqtt import MQTT
-from inbm_vision_lib.mqttclient.config import DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
+from inbm_lib.mqttclient.mqtt import MQTT
+from inbm_lib.mqttclient.config import DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_ETC_PATH_PREFIX
 

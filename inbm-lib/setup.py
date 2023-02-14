@@ -13,11 +13,11 @@ setup(
     description='IoT manageability library',
     long_description=readme,
     license='Intel Proprietary',
-    packages=['inbm_lib', 'inbm_vision_lib', 'inbm_common_lib'],
+    packages=['inbm_lib', 'inbm_common_lib'],
     include_package_data=True,
     install_requires=['paho-mqtt==1.5.1', 'dmidecode==0.9.0', 'xmlschema==1.5.3', 'defusedxml==0.7.1', 'future==0.18.2', 'url-normalize==1.4.3'],
     test_suite='nose.collector',
     tests_require=test_deps,
     extras_require=extras,
-    package_data = { 'inbm_lib': ['py.typed'], 'inbm_vision_lib': ['py.typed'], 'inbm_common_lib': ['py.typed']}
+    package_data = { 'inbm_lib': ['py.typed'], 'inbm_common_lib': ['py.typed']}
 )

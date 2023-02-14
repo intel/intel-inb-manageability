@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from inbm_vision_lib.timer import Timer
+from inbm_lib.timer import Timer
 from mock import patch
 import time
 
@@ -31,7 +31,7 @@ class TestTimer(TestCase):
     def dummy_callback(self):
         pass
 
-    @patch('unit.inbm_vision_lib.test_timer.TestTimer.dummy_callback')
+    @patch('unit.inbm_lib.test_timer.TestTimer.dummy_callback')
     def test_internal_timer(self, timer_callback):
         new_timer = Timer(1, self.dummy_callback)
         new_timer._start_internal_timer()

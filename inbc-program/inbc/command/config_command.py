@@ -13,7 +13,7 @@ from ..inbc_exception import InbcCode
 from ..ibroker import IBroker
 
 from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD, CONFIG_APPEND, CONFIG_REMOVE
-from inbm_vision_lib.request_message_constants import CONFIGURATION_SUCCESSFUL_MESSAGE_LIST, \
+from inbm_lib.request_message_constants import CONFIGURATION_SUCCESSFUL_MESSAGE_LIST, \
     CONFIGURATION_FAILURE_MESSAGE_LIST
 
 
