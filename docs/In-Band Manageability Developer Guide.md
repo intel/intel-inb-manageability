@@ -650,7 +650,6 @@ triggering query commands via manifest returns query results through dynamic tel
 | [fw]                    | Publish firmware details             |
 | [hw]                    | Publish hardware details             |
 | [os]                    | Publish operating system details     |
-| [security]              | Publish security details             |
 | [swbom]                 | Publish software BOM package details |
 | [version]               | Publish INBM version details         |
 
