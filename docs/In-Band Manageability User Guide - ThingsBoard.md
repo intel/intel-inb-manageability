@@ -1193,7 +1193,7 @@ titled **`Decommission Device`**.
 
 ### Query Command
 
-The Intel® In-Band Manageability provides a way to query attribute information on either the Host, Edge Device, or Nodes.
+The Intel® In-Band Manageability provides a way to query attribute information
 
 To trigger a query request, click the **Trigger Query** button as seen below.
 

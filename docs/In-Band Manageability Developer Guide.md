@@ -15,13 +15,6 @@
             1. [OTA Update Class Diagram](#ota-update-class-diagram)
          5. [Telemetry Agent](#%EF%B8%8Ftelemetry-agent)
          6. [TRTL](#%EF%B8%8Ftrtl)
-   2. [INBM Vision](#inbm-vision)
-         1. [Vision Agent](#%EF%B8%8Fvision-agent)
-            1. [Vision Agent Overall Class Diagram](#vision-agent-overall-class-diagram)
-            2. [Vision Agent Registry Class Diagram](#vision-agent-registry-class-diagram)
-            3. [Vision Agent Xlink Connectivity Class Diagram](#vision-agent-xlink-connectivity-class-diagram)
-         2. [Node Agent](#%EF%B8%8Fnode-agent)
-            1. [Node Agent Class Diagram](#node-agent-class-diagram)
    3. [INBC](#inbc)
 3. [Run Agents via Source Code](#run-agents-via-source-code)
 6. [Add New Configuration Parameter](#add-new-configuration-parameter)
@@ -88,17 +81,11 @@ This guide is intended for:
 The diagram below depicts the entire Intel Manageability Framework.  There are three projects to the Framework.  They can
 either be used together or separately.  The following are the 3 projects:
 1. INBM
-2. INBM Vision (Only used on Intel Vision based HDDL solutions)
-3. INBC (Optional command-line tool)
+2. INBC (Optional command-line tool)
 
 <img src="media/In-Band Manageability Developer Guide/media/image1.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
 ### INBM
-INBM can be used in any of the three scenarios.
-   1. Edge Device
-   2. Host system of a Vision based HDDL solution
-   3. SOC of a Flash-based Vision HDDL solution
-
 The diagram below depicts the overall architecture of INBM.  INBM is one of the three projects within the INBM Framework.  
 It's responsibilities include:
   - Communication with the Cloud
@@ -107,7 +94,7 @@ It's responsibilities include:
   - Telemetry (Static and Dynamic)
 
 There are 5 Agents and 1 Binary associated with INBM which all reside on the same system and communicate with one another via MQTT.
-- Cloudadapter-agent (would not be used on SOC of a Vision based HDDL solution)
+- Cloudadapter-agent
 - Configuration-agent
 - Diagnostic-agent
 - Dispatcher-agent
@@ -185,74 +172,6 @@ TRTL is a binary executable developed in Golang.  It is a command-line tool whic
    #### TRTL High Level Class Diagram
    TRTL parses the incoming command and then creates the concrete class based on the type of command (docker, compose, btrfs).  It will then activate the designated command.  
    <img src="media/In-Band Manageability Developer Guide/media/image8.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
-
-### INBM Vision
-
-The INBM Vision solution is only used in a Vision based HDDL solution.  There are 2 Agents/Services associated with INBM Vision.  Unlike INBM these agents reside separately on different systems.
-- Vision-agent (resides on the Host system only)
-- Node-agent (resides on the SOC system only)
-
-Both agents use the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as their overall design.
-
-The Vision and Node agents communicate with each other via Xlink.
-
-#### ⚙️Vision Agent
-The Vision-agent resides on the Host side of a system utilizing Intel Vision cards.  It manages all communication with the individual vision cards.  It is responsible for the following:
-- Keep a registry of all individual Vision card.  (hardware, operating system, firmware, and security information)
-- Manage the communication status of each Vision card.  Try and reconnect if communication is lost.
-- Determine what Vision cards should receive the update if no targets are requested in the manifest.
-- Verify that a requested target is eligible for the requested OTA update.
-- Push OTA files to targeted nodes.
-- Push OTA manifest to targeted nodes.
-- Parse Xlink messages from nodes
-- Create Xlink messages for nodes
-- Push configuration values to nodes via xlink
-- Publish Telemetry events and results received from Vision cards
-
-##### Vision Agent Overall Class Diagram
-The Vision Agent uses the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as the overall design with the following Participants: 
-- Command = Command class
-- ConcreteCommand = Everything inheriting from the Command class
-- Client = DataHandler classes
-- Invoker = Invoker class
-- Receiver = NodeConnector, Broker, RegistryManager, Updater
-
-<img src="media/In-Band Manageability Developer Guide/media/image5.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
-
-##### Vision-agent Registry Class Diagram 
-The Registry class used by the RegistryManager:
-
-<img src="media/In-Band Manageability Developer Guide/media/image7.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
-
-##### Vision-agent Xlink Connectivity Class Diagram
-
-The Vision Agent communicates with the Node Agent over PCIe using Xlink.  The Xlink code uses several classes and two 
-Abstract Factory design patterns.  The class diagram of how these classes interact is below:
-
-<img src="media/In-Band Manageability Developer Guide/media/image16.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
-    
-#### ⚙️Node Agent
-The Node-agent resides on each of the individual Intel Vision cards.  It manages the communication of each vision card via Xlink.  It is responsible for the following:
-- Registering with the Vision-agent on startup with its hardware, firmware, operating system, and security information 
-- Sending a heartbeat to the Vision-agent at the set interval (received as a registration response message from the Vision-agent)
-- Reconnect with Vision-agent if communication is lost.
-- Download OTA update file via Xlink from Vision-agent
-- Download Configuration load file via Xlink from Vision-agent
-- Receive updated manifest from Vision-agent via Xlink and publish it to the Dispatcher-agent via MQTT for OTA updates and configuration requests.
-- Relay Telemetry events and results to the Vision-agent via Xlink 
-
-The Node Agent communicates with the Vision Agent over PCIe using Xlink.  The Xlink code uses several classes and two Abstract Factory design patterns.  The class diagram of how these classes interact
-can be found in the [Vision-agent Xlink Connectivity Class Diagram](#vision-agent-xlink-connectivity-class-diagram).
-
-##### Node Agent Class Diagram
-The Vision Agent uses the [Command Design Pattern](https://en.wikipedia.org/wiki/Command_pattern) as the overall design with the following Participants: 
-- Command = Command class
-- ConcreteCommand = Everything inheriting from the Command class
-- Client = DataHandler classes
-- Invoker = Invoker class
-- Receiver = XLinkManager, Broker 
-
-<img src="media/In-Band Manageability Developer Guide/media/image6.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />
 
 ### INBC
 
@@ -729,7 +648,6 @@ triggering query commands via manifest returns query results through dynamic tel
 |:------------------------|:-------------------------------------|
 | [all]                   | Publish all the  details together    |
 | [fw]                    | Publish firmware details             |
-| [guid]                  | Publish GUID of Vision card          |
 | [hw]                    | Publish hardware details             |
 | [os]                    | Publish operating system details     |
 | [security]              | Publish security details             |
