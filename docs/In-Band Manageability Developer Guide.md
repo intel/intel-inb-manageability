@@ -15,7 +15,7 @@
             1. [OTA Update Class Diagram](#ota-update-class-diagram)
          5. [Telemetry Agent](#%EF%B8%8Ftelemetry-agent)
          6. [TRTL](#%EF%B8%8Ftrtl)
-   3. [INBC](#inbc)
+   2. [INBC](#inbc)
 3. [Run Agents via Source Code](#run-agents-via-source-code)
 6. [Add New Configuration Parameter](#add-new-configuration-parameter)
 7. [Security](#security)
