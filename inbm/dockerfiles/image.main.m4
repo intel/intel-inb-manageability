@@ -248,8 +248,4 @@ COPY inbm/installer/install-tc.sh /output
 RUN chmod +x /output/install-tc.sh
 COPY inbm/installer/uninstall-tc.sh /output
 RUN chmod +x /output/uninstall-tc.sh
-COPY inbm/installer/install-inb.sh /output
-RUN chmod +x /output/install-inb.sh
-COPY inbm/installer/uninstall-inb.sh /output
-RUN chmod +x /output/uninstall-inb.sh
 COPY inbm/packaging/misc-files/* /output/

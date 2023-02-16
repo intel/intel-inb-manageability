@@ -14,7 +14,7 @@ init_tests:
 	pip3 install -r test-requirements.txt --user
 
 run:
-	sudo PYTHONPATH=$(LOCAL_PIP_PATH) python3 -m $(PROGRAM).$(PROGRAM) $(COMMAND_TO_TRIGGER) --nohddl
+	sudo PYTHONPATH=$(LOCAL_PIP_PATH) python3 -m $(PROGRAM).$(PROGRAM) $(COMMAND_TO_TRIGGER)
 
 tests:
 	PYTHONDONTWRITEBYTECODE=x nosetests --with-coverage --cover-erase --cover-inclusive --cover-html --cover-package=$(PROGRAM)

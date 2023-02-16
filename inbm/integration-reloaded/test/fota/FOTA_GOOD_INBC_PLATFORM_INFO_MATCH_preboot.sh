@@ -19,7 +19,7 @@ cp /scripts/afulnx_64 /opt/afulnx/afulnx_64
 
 test_echo Triggering FOTA GOOD INBC PLATFORM INFO MATCH TEST
 
-inbc fota --nohddl --uri http://127.0.0.1:80/U1170000F60X043.bin --tooloptions abc --product "Aptio CRB" --manufacturer "AMI Corporation" --biosversion 5.12 --vendor "American Megatrends Inc."
+inbc fota --uri http://127.0.0.1:80/U1170000F60X043.bin --tooloptions abc --product "Aptio CRB" --manufacturer "AMI Corporation" --biosversion 5.12 --vendor "American Megatrends Inc."
 
 RESULT=$?
 if [ $RESULT -eq 0 ]; then

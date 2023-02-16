@@ -17,7 +17,6 @@ if [ $AGENT == "inbm-telemetry" ] ; then AGENTDIR="telemetry-$TYPE" ; fi
 if [ $AGENT == "inbm-configuration" ] ; then AGENTDIR="configuration-$TYPE" ; fi
 if [ $AGENT == "inbm-cloudadapter" ] ; then AGENTDIR="cloudadapter-$TYPE" ; fi
 
-
 rm -rf dist build fpm-files
 mkdir -p dist
 cp -r fpm-template fpm-files

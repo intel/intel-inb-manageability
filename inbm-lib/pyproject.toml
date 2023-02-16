@@ -9,7 +9,6 @@ enable_extensions = "G"
 exclude = ["tests",
     "vision/tests",
     "inbm_lib/tests",
-    "inbm_vision_lib/tests",
     "inbm_common_lib/tests",
     "node/tests",
     "mqttclient/tests"]

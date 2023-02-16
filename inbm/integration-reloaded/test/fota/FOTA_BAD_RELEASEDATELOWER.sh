@@ -12,7 +12,7 @@ SIGNATURE=$(python3 /scripts/create_signature.py ${VAGRANT_INPUT_PATH}/succeed_r
 
 test_echo TC19 Triggering FOTA integration test 3- releasedate lower
 
-inbc fota --nohddl --uri http://127.0.0.1:80/BIOSUPDATE.tar --tooloptions abc --signature "$SIGNATURE" --releasedate 2010-06-23
+inbc fota --uri http://127.0.0.1:80/BIOSUPDATE.tar --tooloptions abc --signature "$SIGNATURE" --releasedate 2010-06-23
 
 RESULT=$?
 if [ $RESULT -ne 0 ]; then
