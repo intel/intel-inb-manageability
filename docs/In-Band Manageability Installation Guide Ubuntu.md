@@ -92,12 +92,6 @@ To install INBM:
 sudo ./install-tc.sh
 
 ```
-
-To install INBM-VISION:
-```shell
-sudo ./install-bc.sh
-```
-
 ❗ During Installation you will be prompted to accept the License. You can accept by typing ‘Y’, this will result in installation of the INBM Framework.
 
 Any of the scripts can be run accordingly. Once the framework has been installed users would then need to provision INBM with Device Management Cloud related credentials, a phase referred to as “Provisioning”.

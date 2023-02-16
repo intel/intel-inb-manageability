@@ -1124,7 +1124,7 @@ In order to trigger Decommission:
     <img src="media/In-Band Manageability User Guide - Azure/media/image65.png" style="width:3.02153in;height:1.91736in" />
 
 ### Query Command
-The Intel® In-Band Manageability provides a way to query attribute information on either the Host, Edge Device, or Nodes.
+The Intel® In-Band Manageability provides a way to query attribute information
 
 -   To query attributes, provide the desire option type in the text box.  Then click the **Trigger Query** button.
 
