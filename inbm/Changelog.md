@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Security
  - Harden tarfile extraction against path traversal attacks
+ - Bump cryptography from 3.4.8 to 30.9.1 in /inbm/dispatcher-agent
 
 ## 3.0.14 - 2022-11-07
 
