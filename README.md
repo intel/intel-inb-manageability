@@ -5,11 +5,7 @@ The Intel®  In-Band Manageability Framework is software which enables an admini
 Key advantages of the Intel® In-Band Manageability solution are:
 1.  Out-of-box cloud support: Azure* IoT Central and ThingsBoard.io.   
 2.  Single interface to handle OS, FW and Application (Docker container) updates.    
-3.  Scalable across Intel x86 (Intel® Atom® and Intel® Core®) architectures SoCs and on Vision platforms from Intel.
-
-Intel In-Band Manageability is capable of supporting both Edge devices and Intel Vision Cards.
-
-<img src="docs/media/INBM Readme/media/image1.PNG" />
+3.  Scalable across Intel x86 (Intel® Atom® and Intel® Core®) architectures SoCs
 
 ## Features
 
@@ -30,7 +26,7 @@ Intel In-Band Manageability is capable of supporting both Edge devices and Intel
 
 ## Device Management OTA Flow
 
-The below diagram depicts the INBM OTA uses cases and flow on both an Edge device and Intel Vision Cards.  
+The below diagram depicts the INBM OTA uses cases and flow
 
 The flow is as follows:
 1. An Administrator sends a request via the cloud.
@@ -45,12 +41,7 @@ The flow is as follows:
 
 INBM Device Management can be performed either via the cloud or the INBC command-line tool.
 
-INBC on the diagram (right side) is a command line tool that can be used instead of the cloud to perform the updates. 
-
-The below diagram also depicts where the Vision and Node agents reside and how they communicate with each other to perform the OTA update and Telemetry services.
-
-<img src="docs/media/INBM Readme/media/image3.PNG" />
-
+INBC is a command line tool that can be used instead of the cloud to perform the updates. 
 
 ## BUILD INSTRUCTIONS
 
