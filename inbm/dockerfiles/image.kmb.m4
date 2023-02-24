@@ -8,6 +8,7 @@ RUN python3.8 -m venv /venv-py3 && \
     pip3.8 install -U wheel teamcity-messages virtualenv setuptools-rust
 RUN . /venv-py3/bin/activate && rm -rf /output && \
     pip3.8 install -e /src/inbm-lib-editable
+RUN rm /usr/lib/*/libreadline* # extra protection against libreadline in pyinstaller binaries
 
 FROM registry.hub.docker.com/library/ubuntu:20.04 as base-x86_64
 include(`commands.base-setup.m4')
