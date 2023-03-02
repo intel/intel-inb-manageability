@@ -75,7 +75,7 @@ class LinuxDeviceManager(DeviceManager):
         return SUCCESS_DECOMMISSION
 
     def swupdate(self) -> str:
-        self.runner.run("echo hello world")
+        self.runner.run("ls")
         return "Secure Config Update complete."
 
 
