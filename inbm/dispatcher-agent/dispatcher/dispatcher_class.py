@@ -400,6 +400,8 @@ class Dispatcher(WindowsService):
             return PUBLISH_SUCCESS
         elif cmd == "decommission":
             message = self.device_manager.decommission()
+        elif cmd == "swupdate":
+            message = self.device_manager.swupdate()
         else:
             error = "Unsupported command: " + cmd
             raise DispatcherException(error)

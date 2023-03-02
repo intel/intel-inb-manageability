@@ -52,6 +52,7 @@
                             <xs:enumeration value="restart"/>
                             <xs:enumeration value="decommission"/>
                             <xs:enumeration value="provisionNode"/>
+                            <xs:enumeration value="swupdate"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>

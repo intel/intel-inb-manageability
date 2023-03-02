@@ -313,3 +313,21 @@ class Publisher:
 
         self._send_manifest(manifest)
         return MESSAGE.QUERY
+
+    def publish_swupdate(self, **arguments: str) -> str:
+        """Publishes a secure config update
+
+        @param arguments: (**kwargs: str) The config arguments
+        @return:          The accompanying message
+        @exception ValueError: If an argument is an invalid value
+        """
+        logger.debug("Secure Config Update Method Triggered")
+
+        manifest = ('<?xml version="1.0" encoding="UTF-8"?>'
+                    '<manifest>'
+                    '<type>cmd</type>'
+                    '<cmd>swupdate</cmd>'
+                    '</manifest>')
+
+        self._send_manifest(manifest)
+        return MESSAGE.SWUPDATE

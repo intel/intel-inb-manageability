@@ -59,7 +59,8 @@ class Client:
             METHOD.CONFIG: self._publisher.publish_config,
             METHOD.SHUTDOWN: self._device_manager.shutdown_device,
             METHOD.REBOOT: self._device_manager.reboot_device,
-            METHOD.DECOMMISSION: self._device_manager.decommission_device
+            METHOD.DECOMMISSION: self._device_manager.decommission_device,
+            METHOD.SWUPDATE: self._publisher.publish_swupdate
         }
 
         loggers = [self._cloud_publisher.publish_event, logger.info]

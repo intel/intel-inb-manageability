@@ -64,6 +64,7 @@ class MESSAGE:
     SOTA = "SOTA Triggered"
     CONFIG = "Configuration Method Triggered"
     QUERY = "Query Method Triggered"
+    SWUPDATE = "Secure Config Update Triggered"
 
 # ========== Cloud method bindings
 
@@ -79,6 +80,7 @@ class METHOD:
     DECOMMISSION = "decommission_device"
     UPLOAD = "file_upload"
     QUERY = "triggerquery"
+    SWUPDATE = "swupdate"
 
 # ========== Cloud configuration constants
 

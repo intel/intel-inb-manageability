@@ -43,6 +43,12 @@ class DeviceManager(abc.ABC):
         @return: (str) Message on success
         """
 
+    @abc.abstractmethod
+    def swupdate(self):
+        """Perform secure config update on the device
+
+        @return: (str) Message on success
+        """
 
 class LinuxDeviceManager(DeviceManager):
 
@@ -68,6 +74,10 @@ class LinuxDeviceManager(DeviceManager):
         self.shutdown()
         return SUCCESS_DECOMMISSION
 
+    def swupdate(self) -> str:
+        self.runner.run("echo hello world")
+        return "Secure Config Update complete."
+
 
 class WindowsDeviceManager(DeviceManager):
 
@@ -84,6 +94,9 @@ class WindowsDeviceManager(DeviceManager):
 
     def decommission(self):
         raise NotImplementedError("Decommissioning not supported")
+
+    def swupdate(self) -> str:
+        raise NotImplementedError("Secure Config Update not supported")
 
 
 def get_device_manager() -> DeviceManager:
