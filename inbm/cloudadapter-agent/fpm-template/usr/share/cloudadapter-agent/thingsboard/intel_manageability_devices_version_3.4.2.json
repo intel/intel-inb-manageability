@@ -1321,6 +1321,58 @@
         "row": 0,
         "col": 0,
         "id": "f7fe7f25-63c8-3a31-6c36-8ea4ca19b21f"
+      },
+      "05200766-86a2-63ee-0dd9-663cec580015": {
+        "isSystemType": false,
+        "bundleAlias": "intel_manageability6",
+        "typeAlias": "tb_ota_form1_show_hide",
+        "type": "rpc",
+        "title": "New widget",
+        "image": null,
+        "description": null,
+        "sizeX": 4.5,
+        "sizeY": 2,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#fff",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "requestTimeout": 500,
+            "otaTextFields": [],
+            "otaSelectFields": [],
+            "otaMethodLabel": "Secure Config Update",
+            "otaMethod": "swupdate",
+            "batch": false,
+            "oneWayElseTwoWay": false
+          },
+          "title": "Secure Config Update",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "useDashboardTimewindow": true,
+          "displayTimewindow": true,
+          "showLegend": false,
+          "actions": {},
+          "datasources": [],
+          "targetDeviceAliasIds": [
+            "caf05463-8b42-af29-6827-c55ee72793c6"
+          ],
+          "showTitleIcon": false,
+          "iconColor": "rgba(0, 0, 0, 0.87)",
+          "iconSize": "24px",
+          "titleTooltip": "",
+          "widgetCss": "",
+          "noDataDisplayMessage": ""
+        },
+        "row": 0,
+        "col": 0,
+        "id": "05200766-86a2-63ee-0dd9-663cec580015"
       }
     },
     "states": {
@@ -1331,7 +1383,7 @@
           "main": {
             "widgets": {
               "429c8462-337c-9835-abf0-63a6228f548b": {
-                "sizeX": 25,
+                "sizeX": 30,
                 "sizeY": 1,
                 "row": 0,
                 "col": 0
@@ -1343,13 +1395,13 @@
                 "col": 15
               },
               "1947f161-1d7a-3001-b276-d69e1119949f": {
-                "sizeX": 25,
+                "sizeX": 30,
                 "sizeY": 5,
                 "row": 13,
                 "col": 0
               },
               "1f5e9a7b-52df-8a2b-83cb-19d0a5f44fcf": {
-                "sizeX": 15,
+                "sizeX": 20,
                 "sizeY": 6,
                 "row": 1,
                 "col": 10
@@ -1413,6 +1465,12 @@
                 "sizeY": 2,
                 "row": 11,
                 "col": 15
+              },
+              "05200766-86a2-63ee-0dd9-663cec580015": {
+                "sizeX": 5,
+                "sizeY": 2,
+                "row": 7,
+                "col": 25
               }
             },
             "gridSettings": {
