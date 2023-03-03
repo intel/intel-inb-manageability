@@ -2,7 +2,7 @@
     Central communication agent in the manageability framework responsible
     for issuing commands and signals to other tools/agents
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -987,6 +987,4 @@ def handle_updates(dispatcher: Any) -> None:
             return
     except (NotImplementedError, DispatcherException) as e:
         dispatcher._send_result(str(Result(CODE_BAD_REQUEST, str(e))))
-        dispatcher.invoke_workload_orchestration_check(True)
-    else:
-        dispatcher._send_result(str(Result(CODE_OK, result)))
+        dispatcher.invoke_wo

@@ -1,6 +1,6 @@
 """
     Agent which monitors and reports the state of critical components of the framework
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -127,8 +127,4 @@ class EventWatcher(Thread):
                 break
             logger.debug(" ".join(TRTL_EVENTS) + " command output log: [" + next_line + "]")
             events = next_line.split('\t')
-            self._process_output(events, next_line)
-
-    def stop(self):
-        """Stop event watcher"""
-        self._running = False
+            self._process_output(events, 

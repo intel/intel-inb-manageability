@@ -6,7 +6,7 @@
 # The purpose of this script is to allow quick cloud configuration
 # without having to run the actual provision installer script
 
-# Copyright (C) 2017-2022 Intel Corporation
+# Copyright (C) 2017-2023 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 # Usage:

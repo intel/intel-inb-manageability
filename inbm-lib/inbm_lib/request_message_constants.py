@@ -2,7 +2,7 @@
     Constants for OTA related message.
     Used by INBC to detect OTA message.
 
-    Copyright (C) 2019-2022 Intel Corporation
+    Copyright (C) 2019-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 # CONFIGURATION_SUCCESSFUL_OLD for older INB release (before ER47)

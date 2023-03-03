@@ -1,7 +1,7 @@
 """
     Masks passwords and user names in log files, etc.
 
-    @copyright: Copyright 2017-2022 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2017-2023 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
 

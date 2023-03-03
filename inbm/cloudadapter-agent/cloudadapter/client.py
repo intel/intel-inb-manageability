@@ -1,7 +1,7 @@
 """
 Bridges the connection between the cloud adapter and the Intel(R) In-Band Manageability broker
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 

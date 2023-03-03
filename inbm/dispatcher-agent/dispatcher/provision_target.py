@@ -1,7 +1,7 @@
 """
     Gets package from remote repo, verifies, and rebuilds manifest to publish to vision-agent.
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
