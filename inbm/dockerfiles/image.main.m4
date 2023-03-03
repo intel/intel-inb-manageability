@@ -16,6 +16,7 @@ RUN perl -pi -e 'chomp if eof' /src/version.txt
 COPY inbm-lib /src/inbm-lib-editable
 RUN source /venv-py3/bin/activate && \
     pip3.8 install -e /src/inbm-lib-editable
+RUN rm /usr/lib/x86_64-linux-gnu/libreadline* # extra protection against libreadline in pyinstaller binaries
 
 # ---inbc-program---
 
