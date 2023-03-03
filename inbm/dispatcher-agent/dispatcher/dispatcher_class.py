@@ -987,4 +987,6 @@ def handle_updates(dispatcher: Any) -> None:
             return
     except (NotImplementedError, DispatcherException) as e:
         dispatcher._send_result(str(Result(CODE_BAD_REQUEST, str(e))))
-        dispatcher.invoke_wo
+        dispatcher.invoke_workload_orchestration_check(True)
+    else:
+        dispatcher._send_result(str(Result(CODE_OK, result)))

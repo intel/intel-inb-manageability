@@ -275,4 +275,7 @@ class WindowsUpdater(OsUpdater):
 
     @staticmethod
     def get_estimated_size() -> int:
-        """Gets the size of the update.  Stub
+        """Gets the size of the update.  Stub.
+        @return: Returns 0 if size is freed. Returns in bytes of size consumed
+        """
+        return 0

@@ -127,4 +127,8 @@ class EventWatcher(Thread):
                 break
             logger.debug(" ".join(TRTL_EVENTS) + " command output log: [" + next_line + "]")
             events = next_line.split('\t')
-            self._process_output(events, 
+            self._process_output(events, next_line)
+
+    def stop(self):
+        """Stop event watcher"""
+        self._running = False

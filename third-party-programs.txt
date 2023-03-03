@@ -118,7 +118,7 @@ cffi
 © Copyright 2012-2018, Armin Rigo, Maciej Fijalkowski Revision 7da695c5de85.
 
 elementpath
-Copyright (c), 2018-2023, SISSA (Scuola Internazionale Superiore di Studi Avanzati)
+Copyright (c), 2018-2022, SISSA (Scuola Internazionale Superiore di Studi Avanzati)
 
 future
 Copyright 2013-2019 Python Charmers Pty Ltd, Australia.
@@ -145,7 +145,7 @@ jsonschema
 Copyright (c) 2013 Julian Berman
 
 libffi
-libffi - Copyright (c) 1996-2023  Anthony Green, Red Hat, Inc and others.
+libffi - Copyright (c) 1996-2022  Anthony Green, Red Hat, Inc and others.
 
 libxslt
 Copyright (C) 2001-2002 Daniel Veillard.  All Rights Reserved.
