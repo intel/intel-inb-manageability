@@ -4,7 +4,7 @@ creation of the cloud connection, termination, creating commands etc.
 
 Uses Wind River HDC Python bindings within the adapter APIs.
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 

@@ -1,7 +1,7 @@
 """
     SOTA to perform download during an update and is called from the dispatcher
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 

@@ -4,7 +4,7 @@ creation of the cloud connection, termination, creating commands etc.
 
 Connects to Azure IoT Central via the General Cloud MQTT client
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 

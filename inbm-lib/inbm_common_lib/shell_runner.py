@@ -1,7 +1,7 @@
 """
     Runs shell commands used by the common manageability library
     
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import platform

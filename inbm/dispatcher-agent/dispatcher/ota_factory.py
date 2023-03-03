@@ -1,7 +1,7 @@
 """
     OTA abstract factory which is used to execute OTA calls from the cloud.
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import abc

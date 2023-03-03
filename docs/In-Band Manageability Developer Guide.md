@@ -718,7 +718,7 @@ inbm/dispatcher-agent/fpm-template/lib/systemd/system/inbm-dispatcher.service
 is shown below.
 
 ```
- # Copyright 2021-2022 Intel Corporation All Rights Reserved.
+ # Copyright 2021-2023 Intel Corporation All Rights Reserved.
  # SPDX-License-Identifier: Apache-2.0
 
 [Unit]

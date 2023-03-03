@@ -3,7 +3,7 @@
     package from the specified URL and stores into a configured local cache
     on the device
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 

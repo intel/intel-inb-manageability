@@ -1,7 +1,7 @@
 """
     Used to detect the platform Operating system to trigger updates.
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from enum import Enum

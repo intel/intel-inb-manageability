@@ -1,7 +1,7 @@
 """
 Provides concrete adapters with the Abstract Adapter interface
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
