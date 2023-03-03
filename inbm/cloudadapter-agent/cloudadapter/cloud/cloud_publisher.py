@@ -2,7 +2,7 @@
 Responsible for publishing messages to the cloud, doing some preparsing
 before calling appropriate Adapter methods
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 

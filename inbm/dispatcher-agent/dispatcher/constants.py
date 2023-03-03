@@ -1,7 +1,7 @@
 """
     Constants and other config variables used throughout the dispatcher module
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from enum import Enum

@@ -1,7 +1,7 @@
 """
     Functions for calling and parsing wmic tool output on Windows
 
-    @copyright: Copyright 2020-2022 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2020-2023 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
 import logging

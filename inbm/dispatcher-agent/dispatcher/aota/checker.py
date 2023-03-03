@@ -1,7 +1,7 @@
 """
     Performs checks during the application over the air update (AOTA)
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
