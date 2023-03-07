@@ -75,8 +75,13 @@ class LinuxDeviceManager(DeviceManager):
         return SUCCESS_DECOMMISSION
 
     def swupdate(self) -> str:
-        self.runner.run("touch SWUpdate.success")
-        return "Secure Config Update complete."
+        file = open("/usr/share/dispatcher-agent/config_file", "w")
+        file.write("mput tep_user_config_data1.bin")
+        file.close()
+        (out, err, code) = self.runner.run("""sftp -v -o "IdentityFile=update_user_key_for_dev.pem" -b /usr/share/dispatcher-agent/config_file update@10.34.242.10:upload/mnt/""")
+        if err:
+            raise DispatcherException(err)
+        return f"Secure Config Update complete. Output: {out}"
 
 
 class WindowsDeviceManager(DeviceManager):
