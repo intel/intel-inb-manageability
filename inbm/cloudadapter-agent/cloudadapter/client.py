@@ -38,15 +38,25 @@ class Client:
         self._cloud_publisher = CloudPublisher(self._adapter)
 
     def _bind_agent_to_cloud(self) -> None:
-        """Bind Intel(R) In-Band Manageability messages to the cloud"""
-        self._broker.bind_callback(
-            TC_TOPIC.TELEMETRY,
-            lambda _, payload: self._cloud_publisher.publish_telemetry(payload)
-        )
-        self._broker.bind_callback(
-            TC_TOPIC.EVENT,
-            lambda _, payload: self._cloud_publisher.publish_event(payload)
-        )
+        ucc_flag = True     # Temporary-Remove once state file in place
+        if ucc_flag:
+            # Using the TC Telemetry topic, but publishing using event as this will just pass
+            # the message through as is already done with event.  Telemetry publishes each key/value
+            # pair individually.
+            self._broker.bind_callback(
+                TC_TOPIC.TELEMETRY,
+                lambda _, payload: self._cloud_publisher.publish_event(payload)
+            )
+        else:
+            """Bind Intel(R) In-Band Manageability messages to the cloud"""
+            self._broker.bind_callback(
+                TC_TOPIC.TELEMETRY,
+                lambda _, payload: self._cloud_publisher.publish_telemetry(payload)
+            )
+            self._broker.bind_callback(
+                TC_TOPIC.EVENT,
+                lambda _, payload: self._cloud_publisher.publish_event(payload)
+            )
 
     def _bind_cloud_to_agent(self) -> None:
         """Bind cloud methods to Intel(R) In-Band Manageability calls"""

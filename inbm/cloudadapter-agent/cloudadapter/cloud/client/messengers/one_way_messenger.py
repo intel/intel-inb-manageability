@@ -12,7 +12,8 @@ from .. utilities import Formatter
 from ..connections.mqtt_connection import MQTTConnection
 from datetime import datetime
 from typing import Optional
-from threading import Thread, Lock
+from threading import Lock
+
 
 class OneWayMessenger(Messenger):
 

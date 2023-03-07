@@ -111,17 +111,17 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
         telemetry = build_messenger_with_config(telemetry)
     else:
         raise ClientBuildError(
-            "Missing 'attribute' information in the config to while setting up cloud connection.")
+            "Missing 'telemetry' information in the config to while setting up cloud connection.")
     if attribute:
         attribute = build_messenger_with_config(attribute)
     else:
         raise ClientBuildError(
-            "Missing MQTT config information while setting up cloud connection.")
+            "Missing 'attribute' MQTT config information while setting up cloud connection.")
     if event:
         event = build_messenger_with_config(event)
     else:
         raise ClientBuildError(
-            "Missing MQTT config information while setting up cloud connection.")
+            "Missing 'event' MQTT config information while setting up cloud connection.")
 
     # Build handler
     handler_config = config.get("method")

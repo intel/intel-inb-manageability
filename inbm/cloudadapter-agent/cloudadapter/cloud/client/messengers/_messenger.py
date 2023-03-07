@@ -21,7 +21,7 @@ class Messenger(metaclass=abc.ABCMeta):  # pragma: no cover
 
         @param key:       (str) Data key to publish
         @param value:     (str) Data value to publish
-        @param time: (datetime) Time of the publish to use
+        @param time: (datetime) Time of the publishing to use
         @exception PublishError: If publishing fails
         """
         pass

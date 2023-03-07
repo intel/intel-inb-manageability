@@ -1,0 +1,18 @@
+{
+    "mqtt": {
+        "username": "{TOKEN}",
+        "hostname": "{HOSTNAME}",
+        "port": {PORT}
+    },
+    "tls": {
+        "version": "TLSv1.2",
+        "certificates": "{CA_PATH}"
+    },
+    "x509": {
+        "device_cert": "{CLIENT_CERT_PATH}"
+    },
+    "event": {
+        "pub": "TopicTelemetryInfo",
+        "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+    }
+}
