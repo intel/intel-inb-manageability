@@ -20,7 +20,7 @@ docker build \
     --build-arg https_proxy=${https_proxy:-} \
     --build-arg NO_PROXY=${NO_PROXY:-} \
     --build-arg no_proxy=${no_proxy:-} \
-    --disable-content-trust \
+      \
     -t ${DOCKER_NAME} \
     -f "$DIR"/Dockerfile "$DIR"
 
