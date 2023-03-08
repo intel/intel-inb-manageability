@@ -29,6 +29,12 @@ topic write manageability/telemetry
 topic write manageability/event
 topic read dispatcher/query
 
+user ucc-agent
+topic telemetry/#
+topic write manageability/telemetry
+topic write manageability/event
+topic read dispatcher/query
+
 user diagnostic-agent
 topic diagnostic/#
 topic configuration/#
