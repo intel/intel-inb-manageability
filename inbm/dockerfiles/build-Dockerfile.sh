@@ -30,12 +30,12 @@ echo Version: $VERSION
 echo Commit: $COMMIT
 
 docker build \
-    --build-arg HTTP_PROXY=http://proxy-dmz.intel.com:911 \
-    --build-arg http_proxy=http://proxy-dmz.intel.com:911 \
-    --build-arg HTTPS_PROXY=http://proxy-dmz.intel.com:912 \
-    --build-arg https_proxy=http://proxy-dmz.intel.com:912 \
-    --build-arg NO_PROXY=127.0.0.1,localhost,intel.com \
-    --build-arg no_proxy=127.0.0.1,localhost,intel.com \
+    --build-arg HTTP_PROXY=${HTTP_PROXY:-} \
+    --build-arg http_proxy=${http_proxy:-} \
+    --build-arg HTTPS_PROXY=${HTTPS_PROXY:-} \
+    --build-arg https_proxy=${https_proxy:-} \
+    --build-arg NO_PROXY=${NO_PROXY:-} \
+    --build-arg no_proxy=${no_proxy:-} \
     --build-arg VERSION="$VERSION" \
     --build-arg COMMIT="$COMMIT" \
     -t ${NAME} \
