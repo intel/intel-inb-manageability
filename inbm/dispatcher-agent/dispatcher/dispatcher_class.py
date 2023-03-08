@@ -401,7 +401,9 @@ class Dispatcher(WindowsService):
         elif cmd == "decommission":
             message = self.device_manager.decommission()
         elif cmd == "swupdate":
-            message = self.device_manager.swupdate()
+            message = self.device_manager.swupdate(parsed_head.find_element('*/endpoint'),
+                                                   parsed_head.find_element('*/path_of_config_data'),
+                                                   parsed_head.find_element('*/path_of_pem'))
         else:
             error = "Unsupported command: " + cmd
             raise DispatcherException(error)

@@ -327,7 +327,16 @@ class Publisher:
                     '<manifest>'
                     '<type>cmd</type>'
                     '<cmd>swupdate</cmd>'
-                    '</manifest>')
+                    '<swupdate>'
+                    '<endpoint>{0}</endpoint>'
+                    '<path_of_config_data>{1}</path_of_config_data>'
+                    '<path_of_pem>{2}</path_of_pem>'
+                    '</swupdate>'
+                    '</manifest>').format(
+            arguments.get("endpoint"),
+            arguments.get("path_of_config_data"),
+            arguments.get("path_of_pem")
+        )
 
         self._send_manifest(manifest)
         return MESSAGE.SWUPDATE

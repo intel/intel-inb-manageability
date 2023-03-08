@@ -57,6 +57,16 @@
                     </xs:simpleType>
                 </xs:element>
 
+                <xs:element name="swupdate" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="endpoint" type="PathMax1500Chars" minOccurs="1" maxOccurs="1"/>
+                            <xs:element name="path_of_config_data" type="PathMax1500Chars" minOccurs="1" maxOccurs="1"/>
+                            <xs:element name="path_of_pem" type="PathMax1500Chars" minOccurs="1" maxOccurs="1"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
                 <xs:element name="config" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>

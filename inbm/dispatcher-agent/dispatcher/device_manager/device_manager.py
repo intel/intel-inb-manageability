@@ -44,7 +44,7 @@ class DeviceManager(abc.ABC):
         """
 
     @abc.abstractmethod
-    def swupdate(self):
+    def swupdate(self, endpoint, config_path, pem_path):
         """Perform secure config update on the device
 
         @return: (str) Message on success
@@ -74,12 +74,15 @@ class LinuxDeviceManager(DeviceManager):
         self.shutdown()
         return SUCCESS_DECOMMISSION
 
-    def swupdate(self) -> str:
+    def swupdate(self, endpoint, config_path, pem_path) -> str:
         file = open("/usr/share/dispatcher-agent/config_file", "w")
-        file.write("mput tep_user_config_data1.bin")
+        file.write(f"mput {config_path}")
         file.close()
-        (out, err, code) = self.runner.run("""sftp -v -o "IdentityFile=update_user_key_for_dev.pem" -b /usr/share/dispatcher-agent/config_file update@10.34.242.10:upload/mnt/""")
-        if err:
+        (out, err, code) = self.runner.run(f"""sftp -v -o "IdentityFile={pem_path}" -o StrictHostKeyChecking=accept-new -b /usr/share/dispatcher-agent/config_file {endpoint}:upload/mnt/""")
+        """Somehow the TEP return error even though the result is success. The success message contains Exit status 0."""
+        if err and "Exit status 0" in err:
+            return f"Secure Config Update complete. Output: {err}"
+        else:
             raise DispatcherException(err)
         return f"Secure Config Update complete. Output: {out}"
 
@@ -100,7 +103,7 @@ class WindowsDeviceManager(DeviceManager):
     def decommission(self):
         raise NotImplementedError("Decommissioning not supported")
 
-    def swupdate(self) -> str:
+    def swupdate(self, endpoint, config_path, pem_path) -> str:
         raise NotImplementedError("Secure Config Update not supported")
 
 
