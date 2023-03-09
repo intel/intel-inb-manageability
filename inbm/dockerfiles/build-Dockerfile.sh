@@ -38,7 +38,7 @@ docker build \
     --build-arg no_proxy=${no_proxy:-} \
     --build-arg VERSION="$VERSION" \
     --build-arg COMMIT="$COMMIT" \
-    --disable-content-trust \
+      \
     -t ${NAME} \
     -f "$TMPFILE" \
     "$DIR"/../..
