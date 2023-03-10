@@ -18,19 +18,16 @@ CLIENT_CERTS = BROKER_ETC_PATH / \
 CLIENT_KEYS = BROKER_ETC_PATH / \
     'secret' / 'cloudadapter-agent' / 'cloudadapter-agent.key'
 
+
 # Delay to sleep in seconds
 SLEEP_DELAY = 1
 
 
 # ========== Subscription channels
 
-# UCC Channels
-UCC_REMOTE_COMMAND_CHANNEL = 'TopicRemoteCommands/+'
 
 STATE_CHANNEL = '+/state'
 
-class UCC_TOPIC:
-    REMOTE_COMMAND = tuple([UCC_REMOTE_COMMAND_CHANNEL])
 
 class TC_TOPIC:
     STATE = tuple([STATE_CHANNEL])
@@ -40,8 +37,6 @@ class TC_TOPIC:
 
 # ========== Publishing channels
 
-# UCC Channels
-UCC_NATIVE_COMMAND_CHANNEL = 'TopicNativeCommands'
 
 TC_REQUEST_CHANNEL = 'manageability/request/'
 
