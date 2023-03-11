@@ -1,7 +1,7 @@
 """
     Module that manages communication with TRTL for OTA package installation
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from dispatcher.common.result_constants import *

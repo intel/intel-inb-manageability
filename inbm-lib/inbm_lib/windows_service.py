@@ -5,7 +5,7 @@
     to run as a Windows service.  On other OSes, these methods will be ignored and the base class
     will be a stub.
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0 
 """
 import abc

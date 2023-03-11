@@ -2,7 +2,7 @@
 Responsible for publishing messages to Intel(R) In-Band Manageability, doing some pre-parsing
 before calling appropriate Broker methods.
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 

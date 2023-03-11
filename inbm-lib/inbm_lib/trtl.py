@@ -5,7 +5,7 @@
     This module constructs the necessary shell commands using the
     appropriate boilerplate to call the TRTL executable
 
-    @copyright: Copyright 2017-2022 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2017-2023 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
 

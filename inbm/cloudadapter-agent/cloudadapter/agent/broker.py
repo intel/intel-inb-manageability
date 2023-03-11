@@ -4,7 +4,7 @@
     An instance of this class will be created to start the agent and listen
     for incoming commands on the command channel
     
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
