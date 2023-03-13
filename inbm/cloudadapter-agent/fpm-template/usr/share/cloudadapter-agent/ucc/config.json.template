@@ -1,5 +1,6 @@
 {
     "mqtt": {
+        "username": "{TOKEN}",
         "hostname": "{HOSTNAME}",
         "port": {PORT}
     },
