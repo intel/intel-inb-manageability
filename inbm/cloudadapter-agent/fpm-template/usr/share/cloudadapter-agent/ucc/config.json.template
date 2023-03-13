@@ -1,0 +1,10 @@
+{
+    "mqtt": {
+        "hostname": "{HOSTNAME}",
+        "port": {PORT}
+    },
+    "event": {
+        "pub": "TopicTelemetryInfo",
+        "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+    }
+}
