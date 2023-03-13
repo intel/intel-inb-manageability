@@ -27,13 +27,7 @@ UCC_ENABLED_FLAG = "TRUE"
 
 # ========== Subscription channels
 
-UCC_REMOTE_COMMAND_CHANNEL = 'TopicRemoteCommands/+'
-
 STATE_CHANNEL = '+/state'
-
-
-class UCC_TOPIC:
-    REMOTE_COMMAND = tuple([UCC_REMOTE_COMMAND_CHANNEL])
 
 
 class TC_TOPIC:
