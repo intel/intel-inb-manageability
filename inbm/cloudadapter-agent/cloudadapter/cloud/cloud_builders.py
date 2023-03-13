@@ -8,7 +8,7 @@ import logging
 
 from .client.connections.mqtt_connection import MQTTConnection
 from .client.messengers.one_way_messenger import OneWayMessenger
-from .client.handlers.recieve_respond_handler import RecieveRespondHandler
+from .client.handlers.recieve_respond_handler import ReceiveResponseHandler
 from .client.handlers.echo_handler import EchoHandler
 from .client.cloud_client import CloudClient
 from .client.utilities import ProxyConfig, TLSConfig, Formatter, MethodParser
@@ -127,7 +127,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     handler_config = config.get("method")
     if handler_config:
         parser_config = handler_config.get("parse")
-        handler = RecieveRespondHandler(
+        handler = ReceiveResponseHandler(
             topic_formatter=Formatter(
                 formatting=handler_config.get("pub"),
                 defaults=defaults),
