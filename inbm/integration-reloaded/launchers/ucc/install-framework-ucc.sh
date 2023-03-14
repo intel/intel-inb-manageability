@@ -13,6 +13,6 @@ cleanup() {
 trap cleanup 0
 
 test_with_command "INSTALL_FRAMEWORK_UCC" \
-    vagrant ssh -c \"sudo /test/ucc/INSTALL_FRAMEWORK_slow.sh\"
+    vagrant ssh -c \"sudo /test/ucc/INSTALL_FRAMEWORK_ucc.sh\"
 
 "$DIR"/../vagrant-reboot.sh
