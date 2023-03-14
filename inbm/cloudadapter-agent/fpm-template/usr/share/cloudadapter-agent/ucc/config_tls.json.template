@@ -14,5 +14,32 @@
     "event": {
         "pub": "TopicTelemetryInfo",
         "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+    },
+    "telemetry": {
+        "pub": "",
+        "format": ""
+    },
+    "attribute": {
+        "pub": "",
+        "format": ""
+    },
+    "method": {
+        "pub": "",
+        "format": "",
+        "sub": "",
+        "parse": {
+            "single": {
+                "request_id": {
+                    "regex": "v1\\/devices\\/me\\/rpc\\/request\\/([0-9]+)",
+                    "group": 1
+                },
+                "method": {
+                    "path": "method"
+                },
+                "args": {
+                    "path": "params"
+                }
+            }
+        }
     }
 }

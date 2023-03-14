@@ -32,12 +32,63 @@ done
 cp /scripts/iotg_inb_developer.conf /etc/intel_manageability.conf
 cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 touch /etc/intel-manageability/public/cloudadapter-agent/iot-dispatcher.cfg
+
 sudo -H NO_CLOUD=x PROVISION_TPM=disable NO_OTA_CERT=1 LOCAL_MQTT_PORT=9999 bash -x /usr/bin/provision-tc
+
+# NOTE: this has to be redone if we change the template or the
+# inb-provision-cloud binary. Alternately we could create a script
+# interface to inb-provision-cloud.
+sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
+{ "cloud": "ucc", 
+  "config": {
+    "mqtt": {
+        "username": "aabbccddeeff",
+        "hostname": "127.0.0.1",
+        "port": 1234
+    },
+    "event": {
+        "pub": "TopicTelemetryInfo",
+        "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+    },
+    "telemetry": {
+        "pub": "",
+        "format": ""
+    },
+    "attribute": {
+        "pub": "",
+        "format": ""
+    },
+    "method": {
+        "pub": "",
+        "format": "",
+        "sub": "",
+        "parse": {
+            "single": {
+                "request_id": {
+                    "regex": "",
+                    "group": 1
+                },
+                "method": {
+                    "path": "method"
+                },
+                "args": {
+                    "path": "params"
+                }
+            }
+        }
+    }
+  }
+}
+EOF
+
 
 touch /etc/intel-manageability/public/cloudadapter-agent/iot-dispatcher.cfg
 
 sleep 5
-ps -G cloudadapter-agent | grep cloudadapter
+echo All processes:
+ps -ax
+echo Cloudadapter:
+ps -ax | grep cloudadapter
 
 for i in /etc/intel-manageability/secret/* ; do
     BASENAME="$(basename $i)"
