@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 517426 - Network check added after reboot for SOTA.
  - RTC 522583 - Added a command to fix for SOTA update fail due to apt-get -yq upgrade failed
  - JIRA NEXMGMT-16 - Added fix for configuration file not removed if config Load fail
+ - RTC 527018 - Fixed miscellaneous build issues when building from repo root
 
 ### Removed
  - RTC 525534 - Remove Bit Creek from INBC code and documentation
