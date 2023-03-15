@@ -22,6 +22,9 @@ CLIENT_KEYS = BROKER_ETC_PATH / \
 # Delay to sleep in seconds
 SLEEP_DELAY = 1
 
+# Flag for UCC mode to determine which channels to subscribe to
+UCC_FILE = "/etc/intel-manageability/public/ucc_flag"
+UCC_ENABLED_FLAG = "TRUE"
 
 # ========== Subscription channels
 
@@ -31,7 +34,7 @@ STATE_CHANNEL = '+/state'
 
 class TC_TOPIC:
     STATE = tuple([STATE_CHANNEL])
-    TELEMETRY = tuple([TELEMETRY_CHANNEL])
+    TELEMETRY = tuple([TELEMETRY_CHANNEL]) # Shared by TC and UCC
     EVENT = tuple([EVENT_CHANNEL, RESPONSE_CHANNEL])  # TODO: What's up with response?
 
 

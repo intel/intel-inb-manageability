@@ -14,8 +14,8 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	schema "github.com/lestrrat-go/jsschema"
@@ -24,7 +24,7 @@ import (
 
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, "usage: inb-provision-cloud [cloud credential directory]"+
-		"[thingsboard template directory] [generic json schema file]\n")
+		"[thingsboard template directory] [ucc template directory] [generic json schema file]\n")
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -35,8 +35,8 @@ func main() {
 
 	args := flag.Args()
 	if len(args) < 3 {
-		log.Fatalln("Please specify cloud credential directory, ThingsBoard template directory, " +
-			"and path to generic JSON schema")
+		log.Fatalln("Please specify cloud credential directory, ThingsBoard template directory, UCC " +
+			"template directory, and path to generic JSON schema")
 	}
 
 	cloudCredentialDir, err := filepath.Abs(args[0])
@@ -45,7 +45,10 @@ func main() {
 	thingsBoardTemplateDir, err := filepath.Abs(args[1])
 	must(err, "Getting ThingsBoard template directory")
 
-	jsonSchemaFile, err := filepath.Abs(args[2])
+	uccTemplateDir, err := filepath.Abs(args[2])
+	must(err, "Getting UCC template directory")
+
+	jsonSchemaFile, err := filepath.Abs(args[3])
 	must(err, "Getting generic JSON schema file")
 
 	cloudCredentialDirExists, _ := isDir(cloudCredentialDir)
@@ -58,16 +61,24 @@ func main() {
 		log.Fatalf("ThingsBoard template directory does not exist: %s\n", thingsBoardTemplateDir)
 	}
 
+	uccTemplateDirExists, _ := isDir(uccTemplateDir)
+	if !uccTemplateDirExists {
+		log.Fatalf("UCC template directory does not exist: %s\n", uccTemplateDir)
+	}
+
 	jsonSchemaFileExists := fileExists(jsonSchemaFile)
 	if !jsonSchemaFileExists {
 		log.Fatalf("JSON schema file does not exist: %s\n", jsonSchemaFile)
 	}
 
-	setUpCloudCredentialDirectory(cloudCredentialDir, thingsBoardTemplateDir, jsonSchemaFile)
+	setUpCloudCredentialDirectory(cloudCredentialDir, thingsBoardTemplateDir, uccTemplateDir, jsonSchemaFile)
 }
 
 // setUpCloudCredentialDirectory prompts the user for information to connect to a cloud and sets up the cloud
-func setUpCloudCredentialDirectory(cloudCredentialDir string, thingsBoardTemplateDir string, jsonSchemaFile string) {
+func setUpCloudCredentialDirectory(cloudCredentialDir string,
+	thingsBoardTemplateDir string,
+	uccTemplateDir string,
+	jsonSchemaFile string) {
 	cloudFile := "adapter.cfg" // The main config file
 	cloudFilePath := filepath.Join(cloudCredentialDir, filepath.Clean(cloudFile))
 	if fileExists(cloudFilePath) {
@@ -82,7 +93,7 @@ func setUpCloudCredentialDirectory(cloudCredentialDir string, thingsBoardTemplat
 
 	println()
 	selection := promptSelect("Please choose a cloud service to use.",
-		[]string{"Telit Device Cloud", "Azure IoT Central", "ThingsBoard", "Custom"})
+		[]string{"Telit Device Cloud", "Azure IoT Central", "ThingsBoard", "UCC", "Custom"})
 	cloudConfig := ""
 	switch selection {
 	case "Telit Device Cloud":
@@ -91,6 +102,8 @@ func setUpCloudCredentialDirectory(cloudCredentialDir string, thingsBoardTemplat
 		cloudConfig = configureAzure()
 	case "ThingsBoard":
 		cloudConfig = configureThingsBoard(cloudCredentialDir, thingsBoardTemplateDir)
+	case "UCC":
+		cloudConfig = configureUcc(cloudCredentialDir, uccTemplateDir)
 	case "Custom":
 		cloudConfig = configureCustom(jsonSchemaFile)
 	default:
@@ -188,7 +201,7 @@ func configureAzure() string {
 	switch selection {
 	case "SAS key authentication":
 		deviceSasKey = promptString("Please enter the device SAS primary key (" +
-		"Hint: https://docs.microsoft.com/en-us/azure/iot-central/howto-generate-connection-string")
+			"Hint: https://docs.microsoft.com/en-us/azure/iot-central/howto-generate-connection-string")
 	case "X509 authentication":
 		println("\nConfiguring device to use X509 auth requires device certificate verification.\n")
 		if promptYesNo("\nAre device certs and keys generated? ") {
@@ -211,7 +224,7 @@ func configureAzure() string {
 			if certErr != nil {
 				log.Fatalf("Error writing to " + deviceCertPath)
 			}
-			
+
 			keyData := []byte{}
 			if promptYesNo("\nInput Device Key from file?") {
 				keyData = promptFile("\nInput path to Device Key file (*key.pem)")
@@ -222,14 +235,14 @@ func configureAzure() string {
 			keyErr := ioutil.WriteFile(deviceKeyPath, keyData, 0640)
 			if keyErr != nil {
 				log.Fatalf("Error writing to " + deviceKeyPath)
-			}	
+			}
 		} else {
 			log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to Azure using X509 auth.")
-		} 
+		}
 	default:
 		log.Fatalf("Internal error: selection prompt returned invalid option for authentication type.")
 	}
-	
+
 	return makeAzureJson(scopeId, deviceId, deviceCertPath, deviceKeyPath, deviceSasKey)
 }
 
@@ -251,7 +264,7 @@ func configureThingsBoard(cloudCredentialDir string, thingsBoardTemplateDir stri
 		serverPort = "1883"
 	} else {
 		portNum, err := strconv.Atoi(serverPort)
-		if ( err != nil || portNum > 65535 || portNum < 1) {
+		if err != nil || portNum > 65535 || portNum < 1 {
 			log.Fatalf("Invalid port number provided.")
 		}
 	}
@@ -281,16 +294,16 @@ func configureThingsBoard(cloudCredentialDir string, thingsBoardTemplateDir stri
 			certErr := ioutil.WriteFile(deviceCertPath, certData, 0644)
 			if certErr != nil {
 				log.Fatalf("Error writing to " + deviceCertPath)
-			}	
+			}
 			println("\nConfiguring TLS.")
 			configureTls = true
 		} else {
 			log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to Thingsboard using X509 auth.")
-		} 
+		}
 	default:
 		log.Fatalf("Internal error: selection prompt returned invalid option for authentication type.")
 	}
-	
+
 	if configureTls {
 		// Write a ThingsBoard CA file
 		caPath = filepath.Join(cloudCredentialDir, "thingsboard.pub.pem")
@@ -326,6 +339,48 @@ func configureThingsBoard(cloudCredentialDir string, thingsBoardTemplateDir stri
 	return makeThingsboardJson(thingsBoardJsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath)
 }
 
+func configureUcc(cloudCredentialDir string, uccTemplateDir string) string {
+	println("\nConfiguring to use UCC...")
+
+	serverIp := promptString("\nPlease enter the server IP:")
+	if net.ParseIP(serverIp) == nil {
+		log.Fatalf("Invalid IP address provided.")
+	}
+
+	serverPort := promptString("\nPlease enter the server port (default 1883):")
+	if serverPort == "" {
+		serverPort = "1883"
+	} else {
+		portNum, err := strconv.Atoi(serverPort)
+		if err != nil || portNum > 65535 || portNum < 1 {
+			log.Fatalf("Invalid port number provided.")
+		}
+	}
+
+	selection := promptSelect("Please choose provision type.",
+		[]string{"Token authentication"})
+	deviceToken := ""
+	deviceCertPath := ""
+	uccJsonTemplate := ""
+	caPath := ""
+	switch selection {
+	case "Token authentication":
+		deviceToken = promptString("\nPlease enter the device token (MAC of first onboard NIC, hex only):")
+	default:
+		log.Fatalf("Internal error: selection prompt returned invalid option for authentication type.")
+	}
+
+	// Use the unencrypted UCC template
+	uccJsonFile := filepath.Join(uccTemplateDir, "config.json.template")
+	uccJsonBytes, err := ioutil.ReadFile(filepath.Clean(uccJsonFile))
+	if err != nil {
+		log.Fatalf("Error reading from " + uccJsonFile)
+	}
+	uccJsonTemplate = string(uccJsonBytes)
+
+	return makeUccJson(uccJsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath)
+}
+
 func makeThingsboardJson(template string, caPath string, deviceToken string, serverIp string, serverPort string, deviceCertPath string) string {
 	thingsboardConfigJson := template
 	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{CA_PATH}", caPath, -1)
@@ -335,6 +390,17 @@ func makeThingsboardJson(template string, caPath string, deviceToken string, ser
 	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{CLIENT_CERT_PATH}", deviceCertPath, -1)
 
 	return `{ "cloud": "thingsboard", "config": ` + thingsboardConfigJson + ` }`
+}
+
+func makeUccJson(template string, caPath string, deviceToken string, serverIp string, serverPort string, deviceCertPath string) string {
+	thingsboardConfigJson := template
+	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{CA_PATH}", caPath, -1)
+	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{TOKEN}", deviceToken, -1)
+	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{HOSTNAME}", serverIp, -1)
+	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{PORT}", serverPort, -1)
+	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{CLIENT_CERT_PATH}", deviceCertPath, -1)
+
+	return `{ "cloud": "ucc", "config": ` + thingsboardConfigJson + ` }`
 }
 
 func confirmReplaceConfiguration(cloudFilePath string) bool {

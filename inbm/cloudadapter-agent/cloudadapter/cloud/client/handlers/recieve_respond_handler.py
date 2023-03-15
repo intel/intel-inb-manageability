@@ -19,7 +19,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class RecieveRespondHandler(Handler):
+class ReceiveResponseHandler(Handler):
 
     def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, subscribe_topic: str, parser: MethodParser, connection: MQTTConnection) -> None:
         """Construct a generic handler

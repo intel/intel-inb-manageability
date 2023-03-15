@@ -57,7 +57,7 @@ class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
         self._client.publish_attribute(attribute, value)
 
     def publish_telemetry(self, key: str, value: str, timestamp: datetime) -> None:
-        """Publishes telemetry to the cloud
+        """Publishes individual telemetry data point to the cloud
 
         @param key: telemetry's key to publish
         @param value: data to publish to the telemetry

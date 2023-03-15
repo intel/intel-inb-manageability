@@ -5,7 +5,7 @@ Cloud Client class that provides all cloud interactions
 """
 from .connections.mqtt_connection import MQTTConnection
 from .messengers.one_way_messenger import OneWayMessenger
-from .handlers.recieve_respond_handler import RecieveRespondHandler
+from .handlers.recieve_respond_handler import ReceiveResponseHandler
 from typing import Callable
 from datetime import datetime
 
@@ -13,7 +13,7 @@ from datetime import datetime
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 attribute: OneWayMessenger, handler: RecieveRespondHandler) -> None:
+                 attribute: OneWayMessenger, handler: ReceiveResponseHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
