@@ -158,7 +158,8 @@ class AzureAdapter(Adapter):
                 },
                 "registrationId": device_id,
             }
-
+            
+        sleep(1)  # Pause for a bit
         # Place a registration request for the device (it should already be registered)
         result = requests.put(endpoint + registration, data=json.dumps(data),
                               headers=headers, cert=device_auth_set.get('certs', None))
