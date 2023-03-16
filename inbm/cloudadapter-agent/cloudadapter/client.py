@@ -61,7 +61,7 @@ class Client:
     def _bind_ucc_to_agent(self) -> None:
         self._broker.bind_callback(
             UCC_TOPIC.REMOTE_COMMAND,
-            lambda _, payload: self._cloud_publisher.publish_event(payload)
+            lambda _, command: self._broker.publish_command(command)
         )
 
     def _bind_cloud_to_agent(self) -> None:
