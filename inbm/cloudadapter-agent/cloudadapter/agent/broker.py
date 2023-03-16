@@ -9,6 +9,7 @@
 """
 
 from ..constants import (
+    UCC_TOPIC,
     TC_TOPIC,
     TC_REQUEST_CHANNEL,
     SHUTDOWN,
@@ -52,10 +53,11 @@ class Broker:
             (str): The specific topic that triggered the callback
             (str): The callback payload
 
-        @param topic:    (TC_TOPIC) The topic to bind the callback to
+        @param topic:    The topic to bind the callback to
         @param callback: (Callable) The callback to trigger
         """
-        if topic not in TC_TOPIC.__dict__.values():  # pylint: disable=dict-values-not-iterating
+        if topic not in TC_TOPIC.__dict__.values() \
+                and topic not in UCC_TOPIC.__dict__.values():  # pylint: disable=dict-values-not-iterating
             logger.error("Attempted to subscribe to unsupported topic: %s", topic)
             return
 
