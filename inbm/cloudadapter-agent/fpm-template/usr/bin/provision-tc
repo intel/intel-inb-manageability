@@ -45,7 +45,11 @@ function provision {
 
 function enable_mqtt {
   echo "Enabling and starting mqtt (this may take some time to generate secrets)..."
-  systemctl disable --now mqtt inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  if [[ -v UCC_MODE ]]; then
+    systemctl disable --now mqtt inbm-cloudadapter
+  else
+    systemctl disable --now mqtt inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  fi
   systemctl enable mqtt
   systemctl start mqtt
   sleep 1
@@ -54,7 +58,11 @@ function enable_mqtt {
 function enable_agents {
   echo "Enabling and starting agents..."
   systemctl restart apparmor
-  systemctl enable --now inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  if [[ -v UCC_MODE ]]; then
+    systemctl enable --now inbm-cloudadapter
+  else	
+    systemctl enable --now inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  fi
 }
 
 ### Ensure the prerequisites are in place before proceeding
@@ -190,7 +198,7 @@ cloud_config="" # The main config data
 ### Choose the cloud service to configure
 function configure_cloud {
   mkdir -p "$CLOUD_DIR"
-  inb-provision-cloud "$CLOUD_DIR" /usr/share/cloudadapter-agent/thingsboard /usr/share/cloudadapter-agent/config_schema.json
+  inb-provision-cloud "$CLOUD_DIR" /usr/share/cloudadapter-agent/thingsboard /usr/share/cloudadapter-agent/ucc /usr/share/cloudadapter-agent/config_schema.json
   chgrp -R cloudadapter-agent "$CLOUD_DIR"
 }
 
@@ -267,6 +275,11 @@ function get_file_input {
     fi
   done
 }
+
+if grep -q "TRUE" /etc/intel-manageability/public/ucc_flag ; then
+    echo "UCC mode."
+    UCC_MODE=true
+fi
 
 provision
 

@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - RTC 523847 - Support for Thingsboard 3.4.2
- - Added UCC mode for INBM installer
+ - Added UCC mode for INBM installer and cloud adapter
 
 ### Fixed
  - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA

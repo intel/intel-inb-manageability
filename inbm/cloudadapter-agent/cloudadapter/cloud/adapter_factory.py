@@ -24,7 +24,7 @@ def load_adapter_config() -> Dict:
         with open(ADAPTER_CONFIG_PATH) as config_file:
             config_contents = config_file.read()
             return json.loads(config_contents)
-    except OSError as e:
+    except (OSError, ValueError) as e:
         raise BadConfigError(f"Could not load configuration: {e}")
     return {}
 

@@ -5,11 +5,14 @@ Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
+import logging
+import os
 
-from .constants import SLEEP_DELAY
+from .constants import SLEEP_DELAY, UCC_FILE, UCC_ENABLED_FLAG
 from threading import Thread, Event
 from typing import Any, Callable
 
+logger = logging.getLogger(__name__)
 # ========== Utility classes
 
 
@@ -55,3 +58,22 @@ def make_threaded(f: Callable) -> Callable:
         thread.daemon = True
         thread.start()
     return threaded
+
+
+def is_ucc_mode() -> bool:
+    """Reads a file to determine if the cloud adapter is connected to the UCC broker to help determine
+    what topics to subscribe to.  If the file is not found, UCC mode will be False."""
+    if not os.path.exists(UCC_FILE):
+        logger.debug('UCC flag file was not found.  Not using UCC broker and UCC Service Agent.')
+        return False
+
+    if os.path.islink(UCC_FILE):
+        logger.debug(f"Security error: UCC flag file is a symlink")
+        raise IOError("Security error: UCC flag file is a symlink")
+
+    try:
+        with open(UCC_FILE) as f:
+            flag = f.readline().rstrip('\n')
+            return True if flag == UCC_ENABLED_FLAG else False
+    except OSError as e:
+        raise IOError(f'Error {e} reading the file {UCC_FILE}')
