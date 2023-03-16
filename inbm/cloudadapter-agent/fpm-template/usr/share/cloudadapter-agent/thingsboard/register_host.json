@@ -1,0 +1,231 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Register Host",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null,
+    "externalId": null
+  },
+  "metadata": {
+    "firstNodeIndex": 1,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 325,
+          "layoutY": 151
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if register host request",
+        "debugMode": false,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "return msg.method == \"registerhostver\";",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 190,
+          "layoutY": 300
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if INB device",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return metadata.deviceType === \"INB\";"
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 635,
+          "layoutY": 150
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create register host body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var params = JSON.parse(msg.params);\nmetadata.hvs_endpoint = params[\"hvs_endpoint\"];\nmetadata.host_name = params[\"hostname\"];\nmetadata.flavor_group_name = metadata.cs_tep_flavor_group_name;\nmetadata.token = \"eyJhbGciOiJSUzM4NCIsImtpZCI6ImIwZTE0ZTU0MTYxODc3NDYwMTYzZGI3M2IwYmY3OWJkMDFiMjBjZWQiLCJ0eXAiOiJKV1QifQ.eyJyb2xlcyI6W3sic2VydmljZSI6IkFBUyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIn0seyJzZXJ2aWNlIjoiVEEiLCJuYW1lIjoiQWRtaW5pc3RyYXRvciJ9LHsic2VydmljZSI6IkhWUyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIn1dLCJwZXJtaXNzaW9ucyI6W3sic2VydmljZSI6IkFBUyIsInJ1bGVzIjpbIio6KjoqIl19LHsic2VydmljZSI6IkhWUyIsInJ1bGVzIjpbIio6KjoqIl19LHsic2VydmljZSI6IlRBIiwicnVsZXMiOlsiKjoqOioiXX1dLCJleHAiOjg4Nzg0MzQ5MzEsImlhdCI6MTY3ODQzNDkwMSwiaXNzIjoiQUFTIEpXVCBJc3N1ZXIiLCJzdWIiOiJnbG9iYWxBZG1pblVzZXJuYW1lIn0.M4IlE9qVn41a1PkuoLeRGERp7qRbVho28r2dmJ7Y1ZPvfGk3tzBWAHl4LAhaOMmVh0tl3zN9MWiKk26TC_Ct3oIArNSiL-m9smHoGQBVUBiQha3TnNY0acY7eUQ-KUZRYmTv6reX6MLKL923y_hTjLs0rdqan9HWv9x_9mzK7Vw8kBfEnVnZDnDj3ofhm7PEMwgeJTSkJQTlBSkosPUFCbBNfkK2YBca_g0TgLgQXR2yd5Z-WWFjdfF7eklm2SsNZpmlML77fSPAod29xyajmtxE8v0R7IqBam8snOO5GF361YNKlIpNr5eCWDOVfarU10wXoCRdccuapXmvVd1ONVejttYGg2KM2k2wLVIuj6-Y4xvkgyeCnDG_bjWk-LHXlzD9NR5n1gPa4RwHm9aVd60FkpOHdXaTgD8mFgnjlVCc8ghs8i-2EKj0KQ9hbnYtEYD1fdOPSmOEdn9ovAyMmo3thzFbvSxY-7_W8qRElvLWD9YN-0_48ddWDiqeoO_f\";\n\n\n// if the user doesn't provide host_name, use the device name.\nif (!metadata.host_name){\n    metadata.host_name = metadata.deviceName;\n}\n\nvar body = {\n    \"connection_string\": \"intel:nats://tep-adl-cbc\",\n    \"description\": \"TEP Device\",\n    \"flavorgroup_names\": [metadata.flavor_group_name],\n    \"host_name\": metadata.host_name\n};\n\nreturn {msg: body, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 755,
+          "layoutY": 301
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Register Host",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${hvs_endpoint}/hvs/v2/hosts",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "Accept": "application/json",
+            "Authorization": "Bearer ${token}",
+            "Content-Type": "application/json"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1019,
+          "layoutY": 295
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Save tep host id",
+        "debugMode": true,
+        "configuration": {
+          "scope": "CLIENT_SCOPE",
+          "notifyDevice": false,
+          "sendAttributesUpdatedNotification": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 885,
+          "layoutY": 150
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Update TEP Info Attribute",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "if (!msg.attributes) {\r\n  msg.attributes = {\r\n    tep_host_id: msg.id,\r\n    tep_hostname: metadata.host_name,\r\n    hvs_endpoint: metadata.hvs_endpoint\r\n  }\r\n};\r\nmsgType = \"POST_ATTRIBUTES_REQUEST\";\r\nreturn { msg: msg.attributes, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 479,
+          "layoutY": 299
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetAttributesNode",
+        "name": "Read flavor group name from dashboard",
+        "debugMode": true,
+        "configuration": {
+          "tellFailureIfAbsent": true,
+          "fetchToData": false,
+          "clientAttributeNames": [
+            "tep_flavor_group_name"
+          ],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [],
+          "getLatestValueWithTs": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1300,
+          "layoutY": 295
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save logs",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0,
+          "skipLatestPersistence": false,
+          "useServerTs": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1166,
+          "layoutY": 153
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Add logs body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\r\n        \"event\": {\r\n        \"logs\": \"Register host with Verifier complete. Hostname=\" + msg.tep_hostname + \", host ID=\" + msg.tep_host_id\r\n        }\r\n};\r\n\r\nmsgType = \"POST_TELEMETRY_REQUEST\";\r\nreturn { msg: body, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 6,
+        "type": "True"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 0,
+        "type": "True"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 8,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 7,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

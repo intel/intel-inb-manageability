@@ -1,0 +1,254 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Update Flavor",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null,
+    "externalId": null
+  },
+  "metadata": {
+    "firstNodeIndex": 2,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 644,
+          "layoutY": 278
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create \"Delete Flavor\" Body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var params = JSON.parse(msg.params);\nmetadata.hvs_endpoint = params[\"hvs_endpoint\"];\nmetadata.flavor_id = params[\"flavor_id\"];\nmetadata.flavor_group_name = params[\"flavor_group_name\"];\n\n// if the user doesn't provide hsv endpoint, flavor id and flavor group name, use the current values from dashboard.\nif (!metadata.hvs_endpoint){\n    metadata.hvs_endpoint = metadata.cs_hvs_endpoint;\n}\n\nif (!metadata.flavor_id){\n    metadata.flavor_id = metadata.cs_tep_flavor_id;\n}\n\nif (!metadata.flavor_group_name){\n    metadata.flavor_group_name = metadata.cs_tep_flavor_group_name;\n}\n\n// metadata.token needs to be removed after AAS return token in json\nmetadata.token = \"eyJhbGciOiJSUzM4NCIsImtpZCI6ImIwZTE0ZTU0MTYxODc3NDYwMTYzZGI3M2IwYmY3OWJkMDFiMjBjZWQiLCJ0eXAiOiJKV1QifQ.eyJyb2xlcyI6W3sic2VydmljZSI6IkFBUyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIn0seyJzZXJ2aWNlIjoiVEEiLCJuYW1lIjoiQWRtaW5pc3RyYXRvciJ9LHsic2VydmljZSI6IkhWUyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIn1dLCJwZXJtaXNzaW9ucyI6W3sic2VydmljZSI6IkFBUyIsInJ1bGVzIjpbIio6KjoqIl19LHsic2VydmljZSI6IkhWUyIsInJ1bGVzIjpbIio6KjoqIl19LHsic2VydmljZSI6IlRBIiwicnVsZXMiOlsiKjoqOioiXX1dLCJleHAiOjg4Nzg0MzQ5MzEsImlhdCI6MTY3ODQzNDkwMSwiaXNzIjoiQUFTIEpXVCBJc3N1ZXIiLCJzdWIiOiJnbG9iYWxBZG1pblVzZXJuYW1lIn0.M4IlE9qVn41a1PkuoLeRGERp7qRbVho28r2dmJ7Y1ZPvfGk3tzBWAHl4LAhaOMmVh0tl3zN9MWiKk26TC_Ct3oIArNSiL-m9smHoGQBVUBiQha3TnNY0acY7eUQ-KUZRYmTv6reX6MLKL923y_hTjLs0rdqan9HWv9x_9mzK7Vw8kBfEnVnZDnDj3ofhm7PEMwgeJTSkJQTlBSkosPUFCbBNfkK2YBca_g0TgLgQXR2yd5Z-WWFjdfF7eklm2SsNZpmlML77fSPAod29xyajmtxE8v0R7IqBam8snOO5GF361YNKlIpNr5eCWDOVfarU10wXoCRdccuapXmvVd1ONVejttYGg2KM2k2wLVIuj6-Y4xvkgyeCnDG_bjWk-LHXlzD9NR5n1gPa4RwHm9aVd60FkpOHdXaTgD8mFgnjlVCc8ghs8i-2EKj0KQ9hbnYtEYD1fdOPSmOEdn9ovAyMmo3thzFbvSxY-7_W8qRElvLWD9YN-0_48ddWDiqeoO_f\";\n\nreturn {msg: {}, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 326,
+          "layoutY": 277
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if update pcr request",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "return msg.method == \"updatepcr\";",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 330,
+          "layoutY": 149
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if INB device",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return metadata.deviceType === \"INB\";"
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 945,
+          "layoutY": 281
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "\"Create Flavor\" Body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\n    \"connection_string\": \"intel:nats://tep-adl-cbc\",\n    \"partial_flavor_types\": [\n        \"PLATFORM\",\n        \"OS\"\n    ],\n    \"flavorgroup_names\": [metadata.flavor_group_name]\n};\n\nreturn {msg: body, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1102,
+          "layoutY": 400
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Create Flavor POST",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${hvs_endpoint}/hvs/v2/flavors",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "Authorization": "Bearer ${token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1441,
+          "layoutY": 400
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Save new flavor ID",
+        "debugMode": true,
+        "configuration": {
+          "scope": "CLIENT_SCOPE",
+          "notifyDevice": false,
+          "sendAttributesUpdatedNotification": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1291,
+          "layoutY": 284
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Update Flavor ID Attribute",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var first_flavor = msg.signed_flavors;\r\nmetadata.flavor_id = first_flavor[0].flavor.meta.id;\r\n\r\nif (!msg.attributes) {\r\n  msg.attributes = {\r\n    tep_flavor_id: metadata.flavor_id\r\n  }\r\n};\r\n\r\nmsgType = \"POST_ATTRIBUTES_REQUEST\";\r\nreturn { msg: msg.attributes, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1753,
+          "layoutY": 399
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save logs",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0,
+          "skipLatestPersistence": false,
+          "useServerTs": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1585,
+          "layoutY": 282
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Add logs body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\r\n    \"event\": \"Flavor Update Complete. New flavor ID = \" + metadata.flavor_id\r\n};\r\n\r\nmsgType = \"POST_TELEMETRY_REQUEST\";\r\nreturn { msg: body, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 464,
+          "layoutY": 390
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetAttributesNode",
+        "name": "Read current flavor id and flavor group name from dashboard",
+        "debugMode": true,
+        "configuration": {
+          "tellFailureIfAbsent": true,
+          "fetchToData": false,
+          "clientAttributeNames": [
+            "tep_flavor_id",
+            "tep_flavor_group_name",
+            "hvs_endpoint"
+          ],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [],
+          "getLatestValueWithTs": false
+        },
+        "externalId": null
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 9,
+        "type": "True"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 1,
+        "type": "True"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 6,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 8,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 0,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
