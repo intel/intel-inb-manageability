@@ -102,3 +102,6 @@ Details of provisioning steps are present in the **User Guide**, depending on th
 
 -   [ThingsBoard User Guide](In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
 
+Provisioning can also be performed without selecting a cloud, no cloud provisiong can be achieved by INBC, refer to
+-   [INBC Only Mode](https://github.com/intel/intel-inb-manageability/blob/develop/inbc-program/README.md#prerequisites)
+
