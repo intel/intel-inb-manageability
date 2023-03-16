@@ -13,7 +13,7 @@ from .agent.broker import Broker
 from .agent.publisher import Publisher
 from .agent.device_manager import DeviceManager
 
-from .constants import SLEEP_DELAY, TC_TOPIC, METHOD
+from .constants import SLEEP_DELAY, TC_TOPIC, METHOD, UCC_TOPIC
 from .exceptions import (
     ConnectError, DisconnectError, AuthenticationError, BadConfigError)
 from .utilities import make_threaded, is_ucc_mode
@@ -58,6 +58,12 @@ class Client:
                 lambda _, payload: self._cloud_publisher.publish_event(payload)
             )
 
+    def _bind_ucc_to_agent(self) -> None:
+        self._broker.bind_callback(
+            UCC_TOPIC.REMOTE_COMMAND,
+            lambda _, payload: self._cloud_publisher.publish_event(payload)
+        )
+
     def _bind_cloud_to_agent(self) -> None:
         """Bind cloud methods to Intel(R) In-Band Manageability calls"""
         adapter_bindings = {
@@ -69,8 +75,7 @@ class Client:
             METHOD.CONFIG: self._publisher.publish_config,
             METHOD.SHUTDOWN: self._device_manager.shutdown_device,
             METHOD.REBOOT: self._device_manager.reboot_device,
-            METHOD.DECOMMISSION: self._device_manager.decommission_device,
-            METHOD.COMMAND: self._publisher.publish_command
+            METHOD.DECOMMISSION: self._device_manager.decommission_device
         }
 
         loggers = [self._cloud_publisher.publish_event, logger.info]
@@ -107,7 +112,10 @@ class Client:
         @exception BadConfigError: If the connection configuration is bad
         """
         self._bind_agent_to_cloud()
-        self._bind_cloud_to_agent()
+        if is_ucc_mode():
+            self._bind_ucc_to_agent()
+        else:
+            self._bind_cloud_to_agent()
 
         connected = False
         while not connected:
