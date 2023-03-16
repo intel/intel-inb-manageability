@@ -32,8 +32,9 @@ Intel® In-Band Manageability command-line utility, INBC, is a software utility 
 Intel® In-Band Manageability needs to be installed and running.
 
 # 📝 Notes
-1. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. This requires downloading from a remote source.
-2. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
+1. INBC has to be run as root or with sudo.
+2. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. This requires downloading from a remote source.
+3. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
 
 # MQTT Communication 
 
