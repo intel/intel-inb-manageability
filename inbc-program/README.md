@@ -55,6 +55,9 @@ The agent subscribes to the following topics:
 ### Description
 Performs a Firmware Over The Air (FOTA) update.
 
+# 📝 Notes
+Ensure trusted repository in intel_manageability.conf is to be configured with the URL for inbc fota to download from that specified URL.
+
 ### Usage
 ```
 inbc fota {--uri, -u=URI}  
