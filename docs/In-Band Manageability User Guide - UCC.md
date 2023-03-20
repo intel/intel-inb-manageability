@@ -7,14 +7,11 @@
     1. [Purpose](#purpose)
     2. [Audience](#audience)
 2. [Ultra Cloud Client (UCC) Overview](#ultra-cloud-client-ucc-overview)
-    1. [Getting Started with ThingsBoard&reg;](#getting-started-with-thingsboardreg)
-    2. [Adding a Device](#adding-a-device)
-    3. [Obtaining Device Credentials](#obtaining-device-credentials)
-    4. [Creating a Device to Use X.509 Auth](#creating-a-device-to-use-x509-auth)
-    5. [Provisioning a Device](#provisioning-a-device)
-3. [Issues and Troubleshooting](#issues-and-troubleshooting)
-    1. [OTA Error Status](#ota-error-status)
-    2. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
+    1. [Generating Device Keys and Certificates](#generating-device-keys-and-certificates)
+3. [Provisioning a Device](#provisioning-a-device)
+   1. [Provisioning Command Parameters](#provisioning-command-parameters)
+4. [Issues and Troubleshooting](#issues-and-troubleshooting)
+    1. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
 
 </details>
 
@@ -33,60 +30,12 @@ This guide is intended for
 
 ## Ultra Cloud Client (UCC) Overview
 
-#### Setting up ThingsBoard TLS
-
-To allow for a secure TLS connection to be established between a device
-with Intel Manageability and a self-hosted ThingsBoard&reg; server, some
-configuration must be done to the server. Information on that process
-can be found below, or at:
-[**https://thingsboard.io/docs/user-guide/mqtt-over-ssl/**](https://thingsboard.io/docs/user-guide/mqtt-over-ssl/)
-
-1. Download the *server.keygen.sh* and *keygen.properties* files from the link above
-
-2. Fill out the *keygen.properties* accordingly:
-    1. Change is the **DOMAIN\_SUFFIX** field, which should match the
-        hostname of the ThingsBoard&reg; server
-
-    2. Export both MQTT\_BIND\_PORT and MQTT\_SSL\_BIND\_PORT in the
-        thingsboard.conf file
-
-    3. Any other changes (e.g. the **SERVER\_\*\_PASSWORD** fields)
-        should be noted
-
-3. Run the *server.keygen.sh* file with root privileges
-
-4. Copy the resulting *\*.jks* file to the ThingsBoard&reg; configuration
-    directory
-
-    - This may be under: ```/etc/thingsboard/conf/```
-
-5. The *\*.pub.pem* file will be needed later to provision Intel
-    Manageability devices
-
-### Creating a Device to Use X.509 Auth
-
-#### Generating Device Keys and Certificates
+### Generating Device Keys and Certificates
 
 Prior to having the device authentication done using X509 mechanism, it
 is mandatory to have TLS set on the UCC server. 
 
-Once the TLS is set up on the server, the instructions on how to
-generate a client-side certificate can be found in the following link:
-
-<https://thingsboard.io/docs/user-guide/certificates/>
-
-- Enter and save the *keygen.properties* accordingly and download the
-    *client.keygen.sh* script.
-
-- Running the script will generate *.jks*, *.nopass.pem*, *.pub.pem*
-    files.
-
-- The *.nopass.pem* file is used during provisioning in [Provisioning a Device](#provisioning-a-device).
-
-- The *.pub.pem* file content is used during the creation of a device
-    on the ThingsBoard&reg; portal.
-
-### Provisioning a Device
+## Provisioning a Device
 
 **NOTE:**
 > Prerequisite and assumptions: The Intel® In-Band Manageability Framework is installed on the Edge IoT device.
@@ -173,7 +122,7 @@ Input path to Device key file (*.key):
 Configure TLS? [Y/N]
 ```
 
-9. Choose an input method for the *\*.pub.pem* file. The `Absolute file
+9. Choose an input method for the *\*.pem.crt* file. The `Absolute file
     path` option requires a path to the file that does not include
     wildcards like \~. The `Console input` option will ask for the file
     to be input into the console; note that all lines preceding a line
@@ -220,7 +169,7 @@ Intel(R) In-Band Manageability Provisioning Complete
 **Note:** 
 > If provisioning is unsuccessful, refer to **[Provisioning Unsuccessful](#issues-and-troubleshooting)** for Troubleshooting.
 
-#### Provisioning Command Parameters
+### Provisioning Command Parameters
 
 Provisioning can be done with or without TPM security by setting
 `PROVISION_TPM`. `PROVISION_TPM` can be set to:

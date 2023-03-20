@@ -382,7 +382,7 @@ func configureTls(templateDir string, caFileName string, cloudProviderName strin
 	if promptYesNo("\nInput " + cloudProviderName + " CA from file?") {
 		data = promptFile("\n" + cloudProviderName + " CA file (" + expectedFileType + ")")
 	} else {
-		println("\nInput contents of " + " CA file (*.pub.pem)")
+		println("\nInput contents of " + " CA file (" + expectedFileType + ")")
 		data = []byte(readMultilineString())
 	}
 	err := ioutil.WriteFile(caPath, data, 0640)
