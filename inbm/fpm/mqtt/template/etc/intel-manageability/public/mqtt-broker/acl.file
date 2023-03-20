@@ -21,6 +21,7 @@ topic write TopicTelemetryInfo
 topic read manageability/response
 topic read manageability/telemetry
 topic read manageability/event
+topic read TopicRemoteCommands/+
 
 user telemetry-agent
 topic telemetry/#
