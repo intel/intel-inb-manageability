@@ -9,7 +9,8 @@
         "certificates": "{CA_PATH}"
     },
     "x509": {
-        "device_cert": "{CLIENT_CERT_PATH}"
+        "device_cert": "{CLIENT_CERT_PATH}",
+        "device_key": "{CLIENT_KEY_PATH}"
     },
     "event": {
         "pub": "TopicTelemetryInfo",

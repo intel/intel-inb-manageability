@@ -303,7 +303,7 @@ sudo provision-tc
 -   If the device was previously provisioned, the following message appears. To override the previous cloud configuration, press **Y**.
 
 ```
-A cloud configuration already exists: "Telit"
+A cloud configuration already exists: "Azure"
 Replace configuration?
 [Y/N] Y
 ```
@@ -312,10 +312,11 @@ Replace configuration?
 
 ```
 Please choose a cloud service to use:
-
-1) Telit Device Cloud 3) ThingsBoard
-2) Azure IoT Central  4) Custom
-#? 2
+1) Azure IoT Central
+2) Thingsboard
+3) UCC
+4) Custom
+#? 1
 ```
 
 -   Next, enter the information for **Scope ID**, **Device ID**, and the
