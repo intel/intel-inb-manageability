@@ -48,6 +48,8 @@ INBC is a command line tool that can be used instead of the cloud to perform the
 ### How to build
 * Prepare a Linux machine with Docker installed.  Ensure the 'm4' and 'bash' packages are also installed (these are available in all major Linux distributions).
 * If you are behind a proxy, ensure your http_proxy, https_proxy, and no_proxy variables are set correctly and exported.  E.g., in bash, you could run: "http_proxy=http://foo.com:1234/ && export http_proxy"
+* Ensure you are in docker group.
+* Ensure Docker run hello-world command succeeds, E.g., in bash, you could run: "docker run hello-world". Alternately you can use sudo, where you have to ensure the command in bash "sudo docker run hello-world" succeeds.
 * Optional but recommended for better build speed and caching: export DOCKER_BUILDKIT=1
 * Run: ./build.sh
 

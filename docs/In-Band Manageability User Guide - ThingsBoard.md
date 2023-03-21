@@ -216,7 +216,9 @@ generate a client-side certificate can be found in the following link:
 <https://thingsboard.io/docs/user-guide/certificates/>
 
 - Enter and save the *keygen.properties* accordingly and download the
-    *client.keygen.sh* script.
+    *client.keygen.sh* script from the below link:
+
+<https://github.com/thingsboard/thingsboard/tree/master/tools/src/main/shell>
 
 - Running the script will generate *.jks*, *.nopass.pem*, *.pub.pem*
     files.
