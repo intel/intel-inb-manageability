@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
+ - RTC 527023,527027 - Add docker notes to README.md and download link to Thingsboard docs
  - RTC 527025 - Add to INBC README on how to provision-tc with no cloud--"inbc only mode"
  - RTC 527028 - Add notes to INBC fota section to mention about URL configuration
  - RTC 527026 - Add notes to INBC docs
