@@ -7,15 +7,6 @@ package main
 
 import "testing"
 
-func TestMakeTelitJson(t *testing.T) {
-	actual := makeTelitJson("api.devicewise.com", "8883", "thingkey", "token")
-	expected := `{ "cloud": "telit", "config": { "hostname": "api.devicewise.com", "port": 8883, ` +
-		`"key": "thingkey", "token": "token" } }`
-	if actual != expected {
-		t.Errorf("expected %s, got %s", expected, actual)
-	}
-}
-
 func TestMakeCustomJson(t *testing.T) {
 	actual := makeCustomJson("cloud", "json")
 	expected := `{ "cloud": "custom: cloud", "config": json }`
@@ -33,9 +24,18 @@ func TestMakeAzureJson(t *testing.T) {
 }
 
 func TestMakeThingsboardJson(t *testing.T) {
-	actual := makeThingsboardJson("{CA_PATH} {TOKEN} {HOSTNAME} {PORT} {CLIENT_CERT_PATH}", "caPath",
-		"deviceToken", "serverIp", "serverPort", "/path/to/cert")
+	actual := makeCloudJson("thingsboard", "{CA_PATH} {TOKEN} {HOSTNAME} {PORT} {CLIENT_CERT_PATH}", "caPath",
+		"deviceToken", "serverIp", "serverPort", "/path/to/cert", "")
 	expected := `{ "cloud": "thingsboard", "config": caPath deviceToken serverIp serverPort /path/to/cert }`
+	if actual != expected {
+		t.Errorf("expected %s, got %s", expected, actual)
+	}
+}
+
+func TestMakeUCCJson(t *testing.T) {
+	actual := makeCloudJson("ucc", "{CA_PATH} {TOKEN} {HOSTNAME} {PORT} {CLIENT_CERT_PATH}", "caPath",
+		"deviceToken", "serverIp", "serverPort", "/path/to/cert", "/path/to/key")
+	expected := `{ "cloud": "ucc", "config": caPath deviceToken serverIp serverPort /path/to/cert }`
 	if actual != expected {
 		t.Errorf("expected %s, got %s", expected, actual)
 	}

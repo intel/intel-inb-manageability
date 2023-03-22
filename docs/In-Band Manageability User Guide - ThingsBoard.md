@@ -216,7 +216,9 @@ generate a client-side certificate can be found in the following link:
 <https://thingsboard.io/docs/user-guide/certificates/>
 
 - Enter and save the *keygen.properties* accordingly and download the
-    *client.keygen.sh* script.
+    *client.keygen.sh* script from the below link:
+
+<https://github.com/thingsboard/thingsboard/tree/master/tools/src/main/shell>
 
 - Running the script will generate *.jks*, *.nopass.pem*, *.pub.pem*
     files.
@@ -253,7 +255,7 @@ sudo provision-tc
     appears. To override the previous cloud configuration, press **Y**:
 
 ```
-A cloud configuration already exists: "Telit"
+A cloud configuration already exists: "Thingsboard"
 Replace configuration?
 [Y/N] Y
 ```
@@ -263,9 +265,11 @@ Replace configuration?
 
 ```
 Please choose a cloud service to use:
-1) Telit Device Cloud 3) ThingsBoard
-2) Azure IoT Central  4) Custom
-#? 3
+1) Azure IoT Central
+2) Thingsboard
+3) UCC
+4) Custom
+#? 2
 ```
 
 4. A prompt appears for the **IP address** and **Port** set up in
@@ -292,7 +296,7 @@ Please choose provision type:
 ```
 
 6. Choosing option **1. Token Authentication** requires user to enter
-    the token. Refer [Obtaining Device Credentials](#obtaining-device-credentials)
+    the token. Refer to [Obtaining Device Credentials](#obtaining-device-credentials)
 
 7. Choosing option **2. X509 Authentication** requires user to have
     device certificate and key generated as mention in [Generating Device Keys and Certificates](#generating-device-keys-and-certificates).
@@ -364,7 +368,7 @@ Created symlink /etc/systemd/system/multi-user.target.wants/inbm-dispatcher.serv
 Created symlink /etc/systemd/system/multi-user.target.wants/inbm-diagnostic.service → /etc/systemd/system/inbm-diagnostic.service.
 Created symlink /etc/systemd/system/multi-user.target.wants/inbm-cloudadapter.service → /etc/systemd/system/inbm-cloudadapter.service.
 Created symlink /etc/systemd/system/multi-user.target.wants/inbm-telemetry.service → /etc/systemd/system/inbm-telemetry.service.
-Turtle Creek Provisioning Complete
+Intel(R) In-Band Manageability Provisioning Complete
 ```
 
 13. If at any time the cloud service configuration needs to be changed

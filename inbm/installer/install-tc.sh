@@ -49,7 +49,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Ensure we're running a supported OS
-verified_os_list=("Ubuntu 20.04" "Ubuntu 21.10" "Ubuntu 22.04")
+verified_os_list=("Ubuntu 20.04" "Ubuntu 22.04")
 
 if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
   OS_TYPE="Ubuntu-$(lsb_release -rs)"
@@ -224,9 +224,6 @@ if [ "$(lsb_release -rs)" == "20.04" ]; then
   apt-get install -y tpm2-tools tpm2-abrmd libtss2-tcti-tabrmd0
   systemctl enable --now tpm2-abrmd
   ln -sf libtss2-tcti-tabrmd.so.0 /lib/x86_64-linux-gnu/libtss2-tcti-default.so
-elif [ "$(lsb_release -rs)" == "21.10" ]; then
-  apt-get install -y tpm2-tools tpm2-abrmd
-  systemctl enable --now tpm2-abrmd
 elif [ "$(lsb_release -rs)" == "22.04" ]; then
   apt-get install -y tpm2-tools tpm2-abrmd
   systemctl enable tpm2-abrmd
