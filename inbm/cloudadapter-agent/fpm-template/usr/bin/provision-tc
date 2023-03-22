@@ -78,14 +78,17 @@ function check_requirements {
     echo "WARNING: Safe mode is on. Provisioned credentials will go away on next boot."
   fi
 
-  # Ensure we have Docker installed
-  if [ -x "$(command -v docker)" ]; then
-        # Docker is installed
-        echo "Confirmed Docker Engine"
-  else
-        # Docker is not installed
-        echo "No Docker Installation found"
-        SKIP_DOCKER_CONFIGURATION="true"
+  # Do not install docker for UCC configuration
+  if not [ -f /etc/intel-manageability/public/ucc_flag]; then
+    # Ensure we have Docker installed
+    if [ -x "$(command -v docker)" ]; then
+          # Docker is installed
+          echo "Confirmed Docker Engine"
+    else
+          # Docker is not installed
+          echo "No Docker Installation found"
+          SKIP_DOCKER_CONFIGURATION="true"
+    fi
   fi
 
   # Ensure we're running in a supported OS
