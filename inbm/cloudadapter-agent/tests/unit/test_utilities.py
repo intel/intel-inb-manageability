@@ -23,19 +23,19 @@ class TestWaiter(unittest.TestCase):
 
     @patch('os.path.exists', return_value=False)
     @patch('os.path.islink', return_value=False)
-    def test_false_when_ucc_file_dne(self, mock_islink, mock_exists):
+    def test_false_when_ucc_mode_file_dne(self, mock_islink, mock_exists):
         self.assertFalse(utilities.is_ucc_mode())
 
     @patch('os.path.exists', return_value=True)
     @patch('os.path.islink', return_value=True)
-    def test_raise_when_ucc_file_is_symlink(self, mock_islink, mock_exists):
+    def test_raise_when_ucc_mode_file_is_symlink(self, mock_islink, mock_exists):
         with self.assertRaises(IOError):
             utilities.is_ucc_mode()
 
     @patch("builtins.open", side_effect=IOError)
     @patch('os.path.exists', return_value=True)
-    @patch('os.path.islink', return_value=True)
-    def test_raise_when_ucc_file_is_symlink(self, mock_islink, mock_exists, mock_open):
+    @patch('os.path.islink', return_value=False)
+    def test_raise_when_ucc_file_open_unsuccessful(self, mock_islink, mock_exists, mock_open):
         with self.assertRaises(IOError):
             utilities.is_ucc_mode()
 
