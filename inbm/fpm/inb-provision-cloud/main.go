@@ -217,7 +217,7 @@ func configureThingsBoard(cloudCredentialDir string, templateDir string) string 
 	println("\nConfiguring to use ThingsBoard...")
 
 	serverIp := getServerIp()
-	serverPort := getServerPort()
+	serverPort := getServerPort("1883")
 
 	doConfigureTls, deviceToken, deviceCertPath, _ := provisionToCloud(cloudCredentialDir, thingsboard)
 	jsonTemplate := ""
@@ -230,14 +230,15 @@ func configureThingsBoard(cloudCredentialDir string, templateDir string) string 
 		jsonTemplate = createUnencryptedTemplate(templateDir)
 	}
 
-	return makeCloudJson(thingsboard, jsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath, "")
+	return makeCloudJson(thingsboard, jsonTemplate, caPath, deviceToken, serverIp,
+		serverPort, deviceCertPath, "", "", "")
 }
 
 func configureUcc(cloudCredentialDir string, templateDir string) string {
 	println("\nConfiguring to use UCC...")
 
 	serverIp := getServerIp()
-	serverPort := getServerPort()
+	serverPort := getServerPort("1883")
 	doConfigureTls, deviceToken, deviceCertPath, deviceKeyPath := provisionToCloud(cloudCredentialDir, "ucc")
 	jsonTemplate := ""
 	caPath := ""
@@ -249,7 +250,19 @@ func configureUcc(cloudCredentialDir string, templateDir string) string {
 		jsonTemplate = createUnencryptedTemplate(templateDir)
 	}
 
-	return makeCloudJson(ucc, jsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath, deviceKeyPath)
+	proxyHostName, proxyPort := configureProxy()
+	return makeCloudJson(ucc, jsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath, deviceKeyPath,
+		proxyHostName, proxyPort)
+}
+
+func configureProxy() (string, string) {
+	hostName := ""
+	port := ""
+	if promptYesNo("\nConfigure a proxy? ") {
+		hostName = promptString("\nPlease enter the hostname:")
+		port = getServerPort("911")
+	}
+	return hostName, port
 }
 
 func createUnencryptedTemplate(templateDir string) string {
@@ -269,10 +282,10 @@ func getServerIp() string {
 	return serverIp
 }
 
-func getServerPort() string {
+func getServerPort(defaultPort string) string {
 	serverPort := promptString("\nPlease enter the server port (default 1883):")
 	if serverPort == "" {
-		serverPort = "1883"
+		serverPort = defaultPort
 	} else {
 		portNum, err := strconv.Atoi(serverPort)
 		if err != nil || portNum > 65535 || portNum < 1 {
@@ -327,19 +340,19 @@ func configureUccX509(cloudCredentialDir string) (string, string) {
 			log.Fatalf("Error writing to " + deviceCertPath)
 		}
 
-        // Device Key
-        keyData := []byte{}
-        deviceKeyPath = filepath.Join(cloudCredentialDir, "client.key")
-        if promptYesNo("\nInput Device key from file?") {
-            keyData = promptFile("\nInput path to Device key file (*.key)")
-        } else {
-            println("\nInput contents of Device certificate file (*.key)")
-            keyData = []byte(readMultilineString())
-        }
-        err := ioutil.WriteFile(deviceKeyPath, keyData, 0640)
-        if err != nil {
-            log.Fatalf("Error writing to " + deviceKeyPath)
-        }
+		// Device Key
+		keyData := []byte{}
+		deviceKeyPath = filepath.Join(cloudCredentialDir, "client.key")
+		if promptYesNo("\nInput Device key from file?") {
+			keyData = promptFile("\nInput path to Device key file (*.key)")
+		} else {
+			println("\nInput contents of Device certificate file (*.key)")
+			keyData = []byte(readMultilineString())
+		}
+		err := ioutil.WriteFile(deviceKeyPath, keyData, 0640)
+		if err != nil {
+			log.Fatalf("Error writing to " + deviceKeyPath)
+		}
 	} else {
 		log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to the cloud provider using X509 auth.")
 	}
@@ -399,7 +412,7 @@ func configureTls(templateDir string, caFileName string, cloudProviderName strin
 }
 
 func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
-	serverPort string, deviceCertPath string, deviceKeyPath string) string {
+	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string, proxyPort string) string {
 	configJson := template
 	configJson = strings.Replace(configJson, "{CA_PATH}", caPath, -1)
 	configJson = strings.Replace(configJson, "{TOKEN}", deviceToken, -1)
@@ -407,6 +420,8 @@ func makeCloudJson(cloudProviderName string, template string, caPath string, dev
 	configJson = strings.Replace(configJson, "{PORT}", serverPort, -1)
 	configJson = strings.Replace(configJson, "{CLIENT_CERT_PATH}", deviceCertPath, -1)
 	configJson = strings.Replace(configJson, "{CLIENT_KEY_PATH}", deviceKeyPath, -1)
+	configJson = strings.Replace(configJson, "{PROXY_HOSTNAME}", proxyHostName, -1)
+	configJson = strings.Replace(configJson, "{PROXY_PORT}", proxyPort, -1)
 
 	return `{ "cloud": "` + cloudProviderName + `", "config": ` + configJson + ` }`
 }

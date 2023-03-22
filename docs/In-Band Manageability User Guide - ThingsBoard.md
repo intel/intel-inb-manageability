@@ -263,7 +263,7 @@ Replace configuration?
 3. A prompt appears to choose the cloud service; press **3** and
     **\[ENTER\]** for ThingsBoard:
 
-```
+```commandline
 Please choose a cloud service to use:
 1) Azure IoT Central
 2) Thingsboard
@@ -275,13 +275,13 @@ Please choose a cloud service to use:
 4. A prompt appears for the **IP address** and **Port** set up in
     section [Accessing ThingsBoard](#accessing-thingsboardreg)  
     
-```
+```commandline
 Please enter the Server IP:
 
 127.0.0.1
 ```
 > Note that the server port entry can be left empty to use the default port
-```
+```commandline
 Please enter the server port (default 1883):
 
 8883

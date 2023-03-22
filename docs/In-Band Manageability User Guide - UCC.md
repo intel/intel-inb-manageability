@@ -57,7 +57,7 @@ Replace configuration?
 3. A prompt appears to choose the cloud service; press **3** and
     **\[ENTER\]** for ThingsBoard:
 
-```
+```commandline
 Please choose a cloud service to use:
 1) Azure IoT Central
 2) Thingsboard
@@ -68,13 +68,13 @@ Please choose a cloud service to use:
 
 4. A prompt appears for the **IP address** and **Port**   
     
-```
+```commandline
 Please enter the Server IP:
 
 127.0.0.1
 ```
 > Note that the server port entry can be left empty to use the default port
-```
+```commandline
 Please enter the server port (default 1883):
 
 8883
@@ -138,20 +138,36 @@ UCC CA file (*.pem.crt):
 /home/abc/ucc.ca.pem.crt
 ```
 
-10. If the cloud provisioning is successful, the following message
+10. A Yes/No proxy prompt appears asking if a proxy will be used.  Select y if a proxy needs to be configured.
+```
+Configure a proxy?  [Y/N] y
+```
+
+11. Configure the proxy information if selected above.
+
+```commandline
+Please enter the hostname:
+proxy-dmz.intel.com
+
+
+Please enter the server port (default 1883):
+911
+
+```
+12. If the cloud provisioning is successful, the following message
     appears:
 ```
 Successfully configured cloud service!
 ```
 
-11. A Yes/No user prompt appears asking for a certificate verification
+13. A Yes/No user prompt appears asking for a certificate verification
     on an OTA package. Choose `N`.
 ```
 Signature checks on OTA packages cannot not be validated without provisioning a cert file.
 Do you wish to use a pre-provisioned cert file for signature checks for OTA packages? [Y/N] N
 ```
 
-12. In-Band Manageability Framework Services are Enabled and Started.
+14. In-Band Manageability Framework Services are Enabled and Started.
 
     The script will then start the Intel Manageability services; when
     the script finishes, the device should be able to interact with the
@@ -163,7 +179,7 @@ reated symlink /etc/systemd/system/multi-user.target.wants/inbm-cloudadapter.ser
 Intel(R) In-Band Manageability Provisioning Complete
 ```
 
-13. If at any time the cloud service configuration needs to be changed
+15. If at any time the cloud service configuration needs to be changed
     or updated, run the provisioning steps again.
 
 **Note:** 
