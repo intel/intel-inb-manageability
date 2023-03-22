@@ -79,7 +79,10 @@ function check_requirements {
   fi
 
   # Do not install docker for UCC configuration
-  if not [ -f /etc/intel-manageability/public/ucc_flag]; then
+  if [[ -v UCC_MODE ]]; then
+    echo "Not installing docker in UCC Mode"
+    SKIP_DOCKER_CONFIGURATION="true"
+  else
     # Ensure we have Docker installed
     if [ -x "$(command -v docker)" ]; then
           # Docker is installed
