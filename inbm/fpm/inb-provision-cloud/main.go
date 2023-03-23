@@ -217,7 +217,7 @@ func configureThingsBoard(cloudCredentialDir string, templateDir string) string 
 	println("\nConfiguring to use ThingsBoard...")
 
 	serverIp := getServerIp()
-	serverPort := getServerPort("1883")
+	serverPort := getServerPort("1883", "")
 
 	doConfigureTls, deviceToken, deviceCertPath, _ := provisionToCloud(cloudCredentialDir, thingsboard)
 	jsonTemplate := ""
@@ -238,7 +238,7 @@ func configureUcc(cloudCredentialDir string, templateDir string) string {
 	println("\nConfiguring to use UCC...")
 
 	serverIp := getServerIp()
-	serverPort := getServerPort("1883")
+	serverPort := getServerPort("1883", "")
 	doConfigureTls, deviceToken, deviceCertPath, deviceKeyPath := provisionToCloud(cloudCredentialDir, "ucc")
 	jsonTemplate := ""
 	caPath := ""
@@ -259,8 +259,8 @@ func configureProxy() (string, string) {
 	hostName := ""
 	port := ""
 	if promptYesNo("\nConfigure a proxy? ") {
-		hostName = promptString("\nPlease enter the hostname:")
-		port = getServerPort("911")
+		hostName = promptString("\nPlease enter the proxy server hostname or IP:")
+		port = getServerPort("911", "proxy")
 	}
 	return hostName, port
 }
@@ -282,8 +282,8 @@ func getServerIp() string {
 	return serverIp
 }
 
-func getServerPort(defaultPort string) string {
-	serverPort := promptString("\nPlease enter the server port (default 1883):")
+func getServerPort(defaultPort string, portType string) string {
+	serverPort := promptString("\nPlease enter the " + portType + " server port (default 1883):")
 	if serverPort == "" {
 		serverPort = defaultPort
 	} else {

@@ -146,11 +146,11 @@ Configure a proxy?  [Y/N] y
 11. Configure the proxy information if selected above.
 
 ```commandline
-Please enter the hostname:
-proxy-dmz.intel.com
+Please enter the proxy server hostname or IP:
+proxy.intel.com
 
 
-Please enter the server port (default 1883):
+Please enter the proxy server port (default 1883):
 911
 
 ```
