@@ -283,7 +283,7 @@ func getServerIp() string {
 }
 
 func getServerPort(defaultPort string, portType string) string {
-	serverPort := promptString("\nPlease enter the " + portType + " server port (default 1883):")
+	serverPort := promptString("\nPlease enter the " + portType + " server port (default " + defaultPort + "):")
 	if serverPort == "" {
 		serverPort = defaultPort
 	} else {
