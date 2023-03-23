@@ -160,14 +160,7 @@ Please enter the proxy server port (default 1883):
 Successfully configured cloud service!
 ```
 
-13. A Yes/No user prompt appears asking for a certificate verification
-    on an OTA package. Choose `N`.
-```
-Signature checks on OTA packages cannot not be validated without provisioning a cert file.
-Do you wish to use a pre-provisioned cert file for signature checks for OTA packages? [Y/N] N
-```
-
-14. In-Band Manageability Framework Services are Enabled and Started.
+13. In-Band Manageability Framework Services are Enabled and Started.
 
     The script will then start the Intel Manageability services; when
     the script finishes, the device should be able to interact with the
@@ -179,7 +172,7 @@ reated symlink /etc/systemd/system/multi-user.target.wants/inbm-cloudadapter.ser
 Intel(R) In-Band Manageability Provisioning Complete
 ```
 
-15. If at any time the cloud service configuration needs to be changed
+14. If at any time the cloud service configuration needs to be changed
     or updated, run the provisioning steps again.
 
 **Note:** 
