@@ -41,6 +41,12 @@ class TestAzureAdapter(unittest.TestCase):
             "device_certs": "",
             "device_key": ""
         }
+        self.CONFIG_WITHOUT_SCOPE_ID = {
+            "device_id": "DEVICE-ID",
+            "device_sas_key": "sasKey",
+            "device_certs": "",
+            "device_key": ""
+        }
         self.azure_adapter = AzureAdapter(self.CONFIG)
         self.azure_adapter.configure(self.CONFIG)
 
@@ -83,3 +89,7 @@ class TestAzureAdapter(unittest.TestCase):
 
         with self.assertRaises(AdapterConfigureError):
             self.azure_adapter.configure(self.CONFIG)
+
+    def test_configure_without_scope_id_fail(self):
+        with self.assertRaises(AdapterConfigureError):
+            self.azure_adapter.configure(self.CONFIG_WITHOUT_SCOPE_ID)
