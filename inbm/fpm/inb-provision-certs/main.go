@@ -1,6 +1,6 @@
 /*
 
-*/
+ */
 
 package main
 
@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 
 	"crypto/rand"
 	"crypto/rsa"
@@ -57,9 +58,18 @@ func main() {
 	setUpMqttCaDirectories(secretDir, publicDir, daysExpiry)
 	setUpMqttBrokerDirectories(secretDir, publicDir, daysExpiry)
 
-	for _, each := range []string{
+	agents := []string{
 		"dispatcher-agent", "telemetry-agent", "diagnostic-agent", "configuration-agent",
-		"cloudadapter-agent", "inbc-program", "vision-agent", "node-agent", "cmd-program"} {
+		"cloudadapter-agent", "inbc-program", "cmd-program"}
+
+	// set up certs also for ucc-native-service, in UCC mode
+	uccFlagPath := "/etc/intel-manageability/public/ucc_flag"
+	if content, err := ioutil.ReadFile(uccFlagPath); err == nil &&
+		strings.TrimSpace(string(content)) == "TRUE" {
+		agents = append(agents, "ucc-native-service")
+	}
+
+	for _, each := range agents {
 		setUpClientDirectories(secretDir, publicDir, daysExpiry, each)
 	}
 }
