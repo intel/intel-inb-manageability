@@ -134,6 +134,9 @@ class MQTTConnection(Connection):
             callback(topic, payload)
 
         with self._subscribe_lock:
+            if topic == "":
+                logger.info("(disabled) not subscribing")
+                return
             # Attempt to subscribe
             self._client.subscribe(topic)
             self._client.message_callback_add(topic, wrapped)
@@ -141,6 +144,9 @@ class MQTTConnection(Connection):
             self._subscriptions[topic] = callback
 
     def publish(self, topic: str, payload: str) -> None:
+        if topic == "":
+            logger.info("(disabled) not publishing: %s", payload if payload else "[Empty string]")
+            return
         with self._rid_lock:
             self._rid += 1
 

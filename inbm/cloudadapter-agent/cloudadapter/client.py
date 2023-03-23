@@ -13,10 +13,10 @@ from .agent.broker import Broker
 from .agent.publisher import Publisher
 from .agent.device_manager import DeviceManager
 
-from .constants import SLEEP_DELAY, TC_TOPIC, METHOD
+from .constants import SLEEP_DELAY, TC_TOPIC, METHOD, UCC_TOPIC
 from .exceptions import (
     ConnectError, DisconnectError, AuthenticationError, BadConfigError)
-from .utilities import make_threaded
+from .utilities import make_threaded, is_ucc_mode
 
 from time import sleep
 from typing import Callable
@@ -38,14 +38,30 @@ class Client:
         self._cloud_publisher = CloudPublisher(self._adapter)
 
     def _bind_agent_to_cloud(self) -> None:
-        """Bind Intel(R) In-Band Manageability messages to the cloud"""
+        if is_ucc_mode():
+            logger.info('UCC flag is ON.  Using UCC broker and UCC Service Agent')
+            # Using the TC Telemetry topic, but publishing using event as this will just pass
+            # the message through as is already done with event.  Telemetry publishes each key/value
+            # pair individually.
+            self._broker.bind_callback(
+                TC_TOPIC.TELEMETRY,
+                lambda _, payload: self._cloud_publisher.publish_event(payload)
+            )
+        else:
+            """Bind Intel(R) In-Band Manageability messages to the cloud"""
+            self._broker.bind_callback(
+                TC_TOPIC.TELEMETRY,
+                lambda _, payload: self._cloud_publisher.publish_telemetry(payload)
+            )
+            self._broker.bind_callback(
+                TC_TOPIC.EVENT,
+                lambda _, payload: self._cloud_publisher.publish_event(payload)
+            )
+
+    def _bind_ucc_to_agent(self) -> None:
         self._broker.bind_callback(
-            TC_TOPIC.TELEMETRY,
-            lambda _, payload: self._cloud_publisher.publish_telemetry(payload)
-        )
-        self._broker.bind_callback(
-            TC_TOPIC.EVENT,
-            lambda _, payload: self._cloud_publisher.publish_event(payload)
+            UCC_TOPIC.REMOTE_COMMAND,
+            lambda _, command: self._broker.publish_command(command)
         )
 
     def _bind_cloud_to_agent(self) -> None:
@@ -96,7 +112,10 @@ class Client:
         @exception BadConfigError: If the connection configuration is bad
         """
         self._bind_agent_to_cloud()
-        self._bind_cloud_to_agent()
+        if is_ucc_mode():
+            self._bind_ucc_to_agent()
+        else:
+            self._bind_cloud_to_agent()
 
         connected = False
         while not connected:

@@ -14,17 +14,19 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strings"
 	"strconv"
+	"strings"
 
-	"github.com/google/uuid"
 	schema "github.com/lestrrat-go/jsschema"
 	"github.com/lestrrat-go/jsschema/validator"
 )
 
+const thingsboard string = "thingsboard"
+const ucc string = "ucc"
+
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, "usage: inb-provision-cloud [cloud credential directory]"+
-		"[thingsboard template directory] [generic json schema file]\n")
+		"[thingsboard template directory] [ucc template directory] [generic json schema file]\n")
 	flag.PrintDefaults()
 	os.Exit(2)
 }
@@ -35,8 +37,8 @@ func main() {
 
 	args := flag.Args()
 	if len(args) < 3 {
-		log.Fatalln("Please specify cloud credential directory, ThingsBoard template directory, " +
-			"and path to generic JSON schema")
+		log.Fatalln("Please specify cloud credential directory, ThingsBoard template directory, UCC " +
+			"template directory, and path to generic JSON schema")
 	}
 
 	cloudCredentialDir, err := filepath.Abs(args[0])
@@ -45,7 +47,10 @@ func main() {
 	thingsBoardTemplateDir, err := filepath.Abs(args[1])
 	must(err, "Getting ThingsBoard template directory")
 
-	jsonSchemaFile, err := filepath.Abs(args[2])
+	uccTemplateDir, err := filepath.Abs(args[2])
+	must(err, "Getting UCC template directory")
+
+	jsonSchemaFile, err := filepath.Abs(args[3])
 	must(err, "Getting generic JSON schema file")
 
 	cloudCredentialDirExists, _ := isDir(cloudCredentialDir)
@@ -58,16 +63,24 @@ func main() {
 		log.Fatalf("ThingsBoard template directory does not exist: %s\n", thingsBoardTemplateDir)
 	}
 
+	uccTemplateDirExists, _ := isDir(uccTemplateDir)
+	if !uccTemplateDirExists {
+		log.Fatalf("UCC template directory does not exist: %s\n", uccTemplateDir)
+	}
+
 	jsonSchemaFileExists := fileExists(jsonSchemaFile)
 	if !jsonSchemaFileExists {
 		log.Fatalf("JSON schema file does not exist: %s\n", jsonSchemaFile)
 	}
 
-	setUpCloudCredentialDirectory(cloudCredentialDir, thingsBoardTemplateDir, jsonSchemaFile)
+	setUpCloudCredentialDirectory(cloudCredentialDir, thingsBoardTemplateDir, uccTemplateDir, jsonSchemaFile)
 }
 
 // setUpCloudCredentialDirectory prompts the user for information to connect to a cloud and sets up the cloud
-func setUpCloudCredentialDirectory(cloudCredentialDir string, thingsBoardTemplateDir string, jsonSchemaFile string) {
+func setUpCloudCredentialDirectory(cloudCredentialDir string,
+	thingsBoardTemplateDir string,
+	uccTemplateDir string,
+	jsonSchemaFile string) {
 	cloudFile := "adapter.cfg" // The main config file
 	cloudFilePath := filepath.Join(cloudCredentialDir, filepath.Clean(cloudFile))
 	if fileExists(cloudFilePath) {
@@ -82,15 +95,15 @@ func setUpCloudCredentialDirectory(cloudCredentialDir string, thingsBoardTemplat
 
 	println()
 	selection := promptSelect("Please choose a cloud service to use.",
-		[]string{"Telit Device Cloud", "Azure IoT Central", "ThingsBoard", "Custom"})
+		[]string{"Azure IoT Central", "ThingsBoard", "UCC", "Custom"})
 	cloudConfig := ""
 	switch selection {
-	case "Telit Device Cloud":
-		cloudConfig = configureTelit()
 	case "Azure IoT Central":
 		cloudConfig = configureAzure()
 	case "ThingsBoard":
 		cloudConfig = configureThingsBoard(cloudCredentialDir, thingsBoardTemplateDir)
+	case "UCC":
+		cloudConfig = configureUcc(cloudCredentialDir, uccTemplateDir)
 	case "Custom":
 		cloudConfig = configureCustom(jsonSchemaFile)
 	default:
@@ -104,44 +117,6 @@ func setUpCloudCredentialDirectory(cloudCredentialDir string, thingsBoardTemplat
 		log.Fatalf("Error writing new config to " + cloudFilePath)
 	}
 	println("Successfully configured cloud service!")
-}
-
-func configureTelit() string {
-	println("\nConfiguring to use Telit...")
-	telitHost := "x"
-	telitPort := "8883"
-	devTelit := "api-dev.devicewise.com"
-	productionTelit := "api.devicewise.com"
-
-	println()
-	prodTelitChoice := "Production (" + productionTelit + ")"
-	devTelitChoice := "Development (" + devTelit + ")"
-	env := promptSelect("Please select the Telit host to use:",
-		[]string{prodTelitChoice, devTelitChoice})
-
-	switch env {
-	case prodTelitChoice:
-		telitHost = productionTelit
-	case devTelitChoice:
-		telitHost = devTelit
-	default:
-		log.Fatalf("Internal error: selection prompt returned invalid option")
-	}
-
-	telitToken := promptString("Provide Telit token (Hint: https://wiki.ith.intel.com/display/TRTLCRK/Connecting+to+Helix+Device+Cloud):")
-	telitKey := promptString("Provide Telit Thing Key (leave blank to autogenerate):")
-	if telitKey == "" {
-		telitKey = uuid.New().String()
-	}
-
-	println("Thing key: " + telitKey)
-
-	return makeTelitJson(telitHost, telitPort, telitKey, telitToken)
-}
-
-func makeTelitJson(telitHost string, telitPort string, telitKey string, telitToken string) string {
-	return `{ "cloud": "telit", "config": { "hostname": "` + telitHost + `", "port": ` + telitPort + `, "key": "` +
-		telitKey + `", "token": "` + telitToken + `" } }`
 }
 
 func configureCustom(jsonSchemaFile string) string {
@@ -188,7 +163,7 @@ func configureAzure() string {
 	switch selection {
 	case "SAS key authentication":
 		deviceSasKey = promptString("Please enter the device SAS primary key (" +
-		"Hint: https://docs.microsoft.com/en-us/azure/iot-central/howto-generate-connection-string")
+			"Hint: https://docs.microsoft.com/en-us/azure/iot-central/howto-generate-connection-string")
 	case "X509 authentication":
 		println("\nConfiguring device to use X509 auth requires device certificate verification.\n")
 		if promptYesNo("\nAre device certs and keys generated? ") {
@@ -211,7 +186,7 @@ func configureAzure() string {
 			if certErr != nil {
 				log.Fatalf("Error writing to " + deviceCertPath)
 			}
-			
+
 			keyData := []byte{}
 			if promptYesNo("\nInput Device Key from file?") {
 				keyData = promptFile("\nInput path to Device Key file (*key.pem)")
@@ -222,14 +197,14 @@ func configureAzure() string {
 			keyErr := ioutil.WriteFile(deviceKeyPath, keyData, 0640)
 			if keyErr != nil {
 				log.Fatalf("Error writing to " + deviceKeyPath)
-			}	
+			}
 		} else {
 			log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to Azure using X509 auth.")
-		} 
+		}
 	default:
 		log.Fatalf("Internal error: selection prompt returned invalid option for authentication type.")
 	}
-	
+
 	return makeAzureJson(scopeId, deviceId, deviceCertPath, deviceKeyPath, deviceSasKey)
 }
 
@@ -238,103 +213,217 @@ func makeAzureJson(scopeId string, deviceId string, deviceCertPath string, devic
 		`", "device_id": "` + deviceId + `", "device_cert": "` + deviceCertPath + `", "device_key": "` + deviceKeyPath + `", "device_sas_key": "` + deviceSasKey + `" } }`
 }
 
-func configureThingsBoard(cloudCredentialDir string, thingsBoardTemplateDir string) string {
+func configureThingsBoard(cloudCredentialDir string, templateDir string) string {
 	println("\nConfiguring to use ThingsBoard...")
 
+	serverIp := getServerIp()
+	serverPort := getServerPort("1883", "")
+
+	doConfigureTls, deviceToken, deviceCertPath, _ := provisionToCloud(cloudCredentialDir, thingsboard)
+	jsonTemplate := ""
+	caPath := ""
+
+	if doConfigureTls {
+		jsonTemplate, caPath = configureTls(templateDir, "thingsboard.pub.pem",
+			"ThingsBoard", cloudCredentialDir)
+	} else {
+		jsonTemplate = createUnencryptedTemplate(templateDir)
+	}
+
+	return makeCloudJson(thingsboard, jsonTemplate, caPath, deviceToken, serverIp,
+		serverPort, deviceCertPath, "", "", "")
+}
+
+func configureUcc(cloudCredentialDir string, templateDir string) string {
+	println("\nConfiguring to use UCC...")
+
+	serverIp := getServerIp()
+	serverPort := getServerPort("1883", "")
+	doConfigureTls, deviceToken, deviceCertPath, deviceKeyPath := provisionToCloud(cloudCredentialDir, "ucc")
+	jsonTemplate := ""
+	caPath := ""
+
+	if doConfigureTls {
+		jsonTemplate, caPath = configureTls(templateDir, "ucc.ca.pem.crt",
+			ucc, cloudCredentialDir)
+	} else {
+		jsonTemplate = createUnencryptedTemplate(templateDir)
+	}
+
+	proxyHostName, proxyPort := configureProxy()
+	return makeCloudJson(ucc, jsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath, deviceKeyPath,
+		proxyHostName, proxyPort)
+}
+
+func configureProxy() (string, string) {
+	hostName := ""
+	port := ""
+	if promptYesNo("\nConfigure a proxy? ") {
+		hostName = promptString("\nPlease enter the proxy server hostname or IP:")
+		port = getServerPort("911", "proxy")
+	}
+	return hostName, port
+}
+
+func createUnencryptedTemplate(templateDir string) string {
+	jsonFile := filepath.Join(templateDir, "config.json.template")
+	jsonBytes, err := ioutil.ReadFile(filepath.Clean(jsonFile))
+	if err != nil {
+		log.Fatalf("Error reading from " + jsonFile)
+	}
+	return string(jsonBytes)
+}
+
+func getServerIp() string {
 	serverIp := promptString("\nPlease enter the server IP:")
 	if net.ParseIP(serverIp) == nil {
 		log.Fatalf("Invalid IP address provided.")
 	}
+	return serverIp
+}
 
-	serverPort := promptString("\nPlease enter the server port (default 1883):")
+func getServerPort(defaultPort string, portType string) string {
+	serverPort := promptString("\nPlease enter the " + portType + " server port (default " + defaultPort + "):")
 	if serverPort == "" {
-		serverPort = "1883"
+		serverPort = defaultPort
 	} else {
 		portNum, err := strconv.Atoi(serverPort)
-		if ( err != nil || portNum > 65535 || portNum < 1) {
+		if err != nil || portNum > 65535 || portNum < 1 {
 			log.Fatalf("Invalid port number provided.")
 		}
 	}
+	return serverPort
+}
 
+func provisionToCloud(cloudCredentialDir string, cloudProviderName string) (bool, string, string, string) {
+	// provision the device to the cloud
 	selection := promptSelect("Please choose provision type.",
 		[]string{"Token authentication", "X509 authentication"})
+
 	deviceToken := ""
+	doConfigureTls := false
+
 	deviceCertPath := ""
-	configureTls := false
-	thingsBoardJsonTemplate := ""
-	caPath := ""
+	deviceKeyPath := ""
 	switch selection {
 	case "Token authentication":
 		deviceToken = promptString("\nPlease enter the device token:")
-		configureTls = promptYesNo("\nConfigure TLS?")
+		doConfigureTls = promptYesNo("\nConfigure TLS?")
 	case "X509 authentication":
+		doConfigureTls = true
 		println("\nConfiguring device to use X509 auth requires device certificate verification.\n")
-		if promptYesNo("\nAre device certs and keys generated? ") {
-			certData := []byte{}
-			deviceCertPath = filepath.Join(cloudCredentialDir, "device.nopass.pem")
-			if promptYesNo("\nInput Device certificate from file?") {
-				certData = promptFile("\nInput path to Device certificate file (*nopass.pem)")
-			} else {
-				println("\nInput contents of Device certificate file (*nopass.pem)")
-				certData = []byte(readMultilineString())
-			}
-			certErr := ioutil.WriteFile(deviceCertPath, certData, 0644)
-			if certErr != nil {
-				log.Fatalf("Error writing to " + deviceCertPath)
-			}	
-			println("\nConfiguring TLS.")
-			configureTls = true
-		} else {
-			log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to Thingsboard using X509 auth.")
-		} 
+		if cloudProviderName == thingsboard {
+			deviceCertPath = configureThingsboardX509(cloudCredentialDir)
+		} else { // ucc
+			deviceCertPath, deviceKeyPath = configureUccX509(cloudCredentialDir)
+		}
 	default:
 		log.Fatalf("Internal error: selection prompt returned invalid option for authentication type.")
 	}
-	
-	if configureTls {
-		// Write a ThingsBoard CA file
-		caPath = filepath.Join(cloudCredentialDir, "thingsboard.pub.pem")
-		data := []byte{}
-		if promptYesNo("\nInput ThingsBoard CA from file?") {
-			data = promptFile("\nThingsBoard CA file (*.pub.pem)")
-		} else {
-			println("\nInput contents of ThingsBoard CA file (*.pub.pem)")
-			data = []byte(readMultilineString())
-		}
-		err := ioutil.WriteFile(caPath, data, 0640)
-		if err != nil {
-			log.Fatalf("Error writing to " + caPath)
-		}
-
-		thingsBoardJsonFile := filepath.Join(filepath.Clean(thingsBoardTemplateDir), "config_tls.json.template")
-		thingsBoardJsonBytes, err := ioutil.ReadFile(filepath.Clean(thingsBoardJsonFile))
-		if err != nil {
-			log.Fatalf("Error reading from " + thingsBoardJsonFile)
-		}
-		thingsBoardJsonTemplate = string(thingsBoardJsonBytes)
-
-	} else {
-		// Use the unencrypted ThingsBoard template
-		thingsBoardJsonFile := filepath.Join(thingsBoardTemplateDir, "config.json.template")
-		thingsBoardJsonBytes, err := ioutil.ReadFile(filepath.Clean(thingsBoardJsonFile))
-		if err != nil {
-			log.Fatalf("Error reading from " + thingsBoardJsonFile)
-		}
-		thingsBoardJsonTemplate = string(thingsBoardJsonBytes)
-	}
-
-	return makeThingsboardJson(thingsBoardJsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath)
+	return doConfigureTls, deviceToken, deviceCertPath, deviceKeyPath
 }
 
-func makeThingsboardJson(template string, caPath string, deviceToken string, serverIp string, serverPort string, deviceCertPath string) string {
-	thingsboardConfigJson := template
-	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{CA_PATH}", caPath, -1)
-	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{TOKEN}", deviceToken, -1)
-	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{HOSTNAME}", serverIp, -1)
-	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{PORT}", serverPort, -1)
-	thingsboardConfigJson = strings.Replace(thingsboardConfigJson, "{CLIENT_CERT_PATH}", deviceCertPath, -1)
+func configureUccX509(cloudCredentialDir string) (string, string) {
+	deviceCertPath := ""
+	deviceKeyPath := ""
+	if promptYesNo("\nAre device certs and keys generated? ") {
+		certData := []byte{}
+		deviceCertPath = filepath.Join(cloudCredentialDir, "client.crt")
+		if promptYesNo("\nInput Device certificate from file?") {
+			certData = promptFile("\nInput path to Device certificate file (*.crt)")
+		} else {
+			println("\nInput contents of Device certificate file (*.crt)")
+			certData = []byte(readMultilineString())
+		}
+		certErr := ioutil.WriteFile(deviceCertPath, certData, 0644)
+		if certErr != nil {
+			log.Fatalf("Error writing to " + deviceCertPath)
+		}
 
-	return `{ "cloud": "thingsboard", "config": ` + thingsboardConfigJson + ` }`
+		// Device Key
+		keyData := []byte{}
+		deviceKeyPath = filepath.Join(cloudCredentialDir, "client.key")
+		if promptYesNo("\nInput Device key from file?") {
+			keyData = promptFile("\nInput path to Device key file (*.key)")
+		} else {
+			println("\nInput contents of Device certificate file (*.key)")
+			keyData = []byte(readMultilineString())
+		}
+		err := ioutil.WriteFile(deviceKeyPath, keyData, 0640)
+		if err != nil {
+			log.Fatalf("Error writing to " + deviceKeyPath)
+		}
+	} else {
+		log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to the cloud provider using X509 auth.")
+	}
+	return deviceCertPath, deviceKeyPath
+}
+
+func configureThingsboardX509(cloudCredentialDir string) string {
+	// configure cloud provider for X509
+	deviceCertPath := ""
+	if promptYesNo("\nAre device certs and keys generated? ") {
+		certData := []byte{}
+		deviceCertPath = filepath.Join(cloudCredentialDir, "device.nopass.pem")
+		if promptYesNo("\nInput Device certificate from file?") {
+			certData = promptFile("\nInput path to Device certificate file (*nopass.pem)")
+		} else {
+			println("\nInput contents of Device certificate file (*nopass.pem)")
+			certData = []byte(readMultilineString())
+		}
+		certErr := ioutil.WriteFile(deviceCertPath, certData, 0644)
+		if certErr != nil {
+			log.Fatalf("Error writing to " + deviceCertPath)
+		}
+	} else {
+		log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to the cloud provider using X509 auth.")
+	}
+	return deviceCertPath
+}
+
+func configureTls(templateDir string, caFileName string, cloudProviderName string, cloudCredentialDir string) (string, string) {
+	// Write a CA file
+	println("\nConfiguring TLS.")
+	caPath := filepath.Join(cloudCredentialDir, caFileName)
+
+	expectedFileType := "*.pub.pem"
+	if cloudProviderName == ucc {
+		expectedFileType = "*.pem.crt"
+	}
+
+	data := []byte{}
+	if promptYesNo("\nInput " + cloudProviderName + " CA from file?") {
+		data = promptFile("\n" + cloudProviderName + " CA file (" + expectedFileType + ")")
+	} else {
+		println("\nInput contents of " + " CA file (" + expectedFileType + ")")
+		data = []byte(readMultilineString())
+	}
+	err := ioutil.WriteFile(caPath, data, 0640)
+	if err != nil {
+		log.Fatalf("Error writing to " + caPath)
+	}
+
+	jsonFile := filepath.Join(filepath.Clean(templateDir), "config_tls.json.template")
+	jsonBytes, err := ioutil.ReadFile(filepath.Clean(jsonFile))
+	if err != nil {
+		log.Fatalf("Error reading from " + jsonFile)
+	}
+	return string(jsonBytes), caPath
+}
+
+func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
+	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string, proxyPort string) string {
+	configJson := template
+	configJson = strings.Replace(configJson, "{CA_PATH}", caPath, -1)
+	configJson = strings.Replace(configJson, "{TOKEN}", deviceToken, -1)
+	configJson = strings.Replace(configJson, "{HOSTNAME}", serverIp, -1)
+	configJson = strings.Replace(configJson, "{PORT}", serverPort, -1)
+	configJson = strings.Replace(configJson, "{CLIENT_CERT_PATH}", deviceCertPath, -1)
+	configJson = strings.Replace(configJson, "{CLIENT_KEY_PATH}", deviceKeyPath, -1)
+	configJson = strings.Replace(configJson, "{PROXY_HOSTNAME}", proxyHostName, -1)
+	configJson = strings.Replace(configJson, "{PROXY_PORT}", proxyPort, -1)
+
+	return `{ "cloud": "` + cloudProviderName + `", "config": ` + configJson + ` }`
 }
 
 func confirmReplaceConfiguration(cloudFilePath string) bool {

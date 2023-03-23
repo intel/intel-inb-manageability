@@ -1,0 +1,50 @@
+{
+    "mqtt": {
+        "username": "{TOKEN}",
+        "hostname": "{HOSTNAME}",
+        "port": {PORT}
+    },
+    "tls": {
+        "version": "TLSv1.2",
+        "certificates": "{CA_PATH}"
+    },
+    "x509": {
+        "device_cert": "{CLIENT_CERT_PATH}",
+        "device_key": "{CLIENT_KEY_PATH}"
+    },
+    "proxy": {
+        "hostname": "{PROXY_HOSTNAME}",
+        "port": {PROXY_PORT}
+    },
+    "event": {
+        "pub": "TopicTelemetryInfo",
+        "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+    },
+    "telemetry": {
+        "pub": "",
+        "format": ""
+    },
+    "attribute": {
+        "pub": "",
+        "format": ""
+    },
+    "method": {
+        "pub": "",
+        "format": "",
+        "sub": "",
+        "parse": {
+            "single": {
+                "request_id": {
+                    "regex": "v1\\/devices\\/me\\/rpc\\/request\\/([0-9]+)",
+                    "group": 1
+                },
+                "method": {
+                    "path": "method"
+                },
+                "args": {
+                    "path": "params"
+                }
+            }
+        }
+    }
+}

@@ -17,9 +17,11 @@ topic write dispatcher/query
 user cloudadapter-agent
 topic cloudadapter/#
 topic write manageability/request/+
+topic write TopicTelemetryInfo
 topic read manageability/response
 topic read manageability/telemetry
 topic read manageability/event
+topic read TopicRemoteCommands/+
 
 user telemetry-agent
 topic telemetry/#
@@ -37,27 +39,6 @@ topic write remediation/+
 
 user configuration-agent
 topic configuration/#
-
-user vision-agent
-topic vision/#
-topic read ma/request/+
-topic read +/state
-topic read ma/configuration/update/+
-topic read ma/configuration/response/#
-topic write manageability/response
-topic write manageability/event
-topic write manageability/telemetry
-topic write vision/state
-topic write ma/configuration/command/+
-topic write ma/xlink/+
-
-user node-agent
-topic node/#
-topic write manageability/request/+
-topic read manageability/telemetry
-topic read manageability/event
-topic read manageability/response
-topic read +/state
 
 user inbc-program
 topic write manageability/request/+
