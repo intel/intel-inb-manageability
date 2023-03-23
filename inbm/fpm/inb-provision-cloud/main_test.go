@@ -25,7 +25,7 @@ func TestMakeAzureJson(t *testing.T) {
 
 func TestMakeThingsboardJson(t *testing.T) {
 	actual := makeCloudJson("thingsboard", "{CA_PATH} {TOKEN} {HOSTNAME} {PORT} {CLIENT_CERT_PATH}", "caPath",
-		"deviceToken", "serverIp", "serverPort", "/path/to/cert", "")
+		"deviceToken", "serverIp", "serverPort", "/path/to/cert", "", "", "")
 	expected := `{ "cloud": "thingsboard", "config": caPath deviceToken serverIp serverPort /path/to/cert }`
 	if actual != expected {
 		t.Errorf("expected %s, got %s", expected, actual)
@@ -34,7 +34,7 @@ func TestMakeThingsboardJson(t *testing.T) {
 
 func TestMakeUCCJson(t *testing.T) {
 	actual := makeCloudJson("ucc", "{CA_PATH} {TOKEN} {HOSTNAME} {PORT} {CLIENT_CERT_PATH}", "caPath",
-		"deviceToken", "serverIp", "serverPort", "/path/to/cert", "/path/to/key")
+		"deviceToken", "serverIp", "serverPort", "/path/to/cert", "/path/to/key", "proxy.co.com", "911")
 	expected := `{ "cloud": "ucc", "config": caPath deviceToken serverIp serverPort /path/to/cert }`
 	if actual != expected {
 		t.Errorf("expected %s, got %s", expected, actual)

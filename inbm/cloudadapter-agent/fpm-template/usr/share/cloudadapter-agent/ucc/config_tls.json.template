@@ -12,6 +12,10 @@
         "device_cert": "{CLIENT_CERT_PATH}",
         "device_key": "{CLIENT_KEY_PATH}"
     },
+    "proxy": {
+        "hostname": "{PROXY_HOSTNAME}",
+        "port": {PROXY_PORT}
+    },
     "event": {
         "pub": "TopicTelemetryInfo",
         "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"

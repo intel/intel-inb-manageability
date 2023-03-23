@@ -35,8 +35,10 @@ function provision {
   if [[ "x$NO_CLOUD" == "x" ]]; then
     configure_cloud
   fi
-  if [[ "x$NO_OTA_CERT" == "x" ]]; then
-    inb-provision-ota-cert
+  if ! [[ -v UCC_MODE ]]; then
+    if [[ "x$NO_OTA_CERT" == "x" ]]; then
+      inb-provision-ota-cert
+    fi
   fi
   enable_agents
   echo "Intel(R) In-Band Manageability Provisioning Complete"
