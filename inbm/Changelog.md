@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 525534 - Remove Bit Creek from INBC code and documentation
 
 ### Security
+ - RTC 527078 - Change golang-runtime 1.18 to 1.20
  - Harden tarfile extraction against path traversal attacks
  - Bump cryptography from 3.4.8 to 30.9.1 in /inbm/dispatcher-agent
 
