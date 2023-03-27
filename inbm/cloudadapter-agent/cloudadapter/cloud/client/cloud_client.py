@@ -5,15 +5,15 @@ Cloud Client class that provides all cloud interactions
 """
 from .connections.mqtt_connection import MQTTConnection
 from .messengers.one_way_messenger import OneWayMessenger
-from .handlers.recieve_respond_handler import RecieveRespondHandler
-from typing import Callable
+from .handlers.recieve_respond_handler import ReceiveResponseHandler
+from typing import Callable, Optional
 from datetime import datetime
 
 
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 attribute: OneWayMessenger, handler: RecieveRespondHandler) -> None:
+                 attribute: OneWayMessenger, handler: ReceiveResponseHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
@@ -27,6 +27,13 @@ class CloudClient:
         self._event = event
         self._attribute = attribute
         self._handler = handler
+
+    def get_client_id(self) -> Optional[str]:
+        """A readonly property
+
+        @return: Client ID
+        """
+        return self._connection.get_client_id()
 
     def publish_telemetry(self, key: str, value: str, time: datetime) -> None:
         """Publishes telemetry to the cloud

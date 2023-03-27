@@ -6,8 +6,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
+ - RTC 527023,527027 - Add docker notes to README.md and download link to Thingsboard docs
+ - RTC 527025 - Add to INBC README on how to provision-tc with no cloud--"inbc only mode"
+ - RTC 527028 - Add notes to INBC fota section to mention about URL configuration
+ - RTC 527026 - Add notes to INBC docs
  - RTC 523847 - Support for Thingsboard 3.4.2
- - Added UCC mode for INBM installer
+ - Added UCC mode for INBM installer and cloud adapter
 
 ### Fixed
  - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
@@ -18,11 +22,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 517426 - Network check added after reboot for SOTA.
  - RTC 522583 - Added a command to fix for SOTA update fail due to apt-get -yq upgrade failed
  - JIRA NEXMGMT-16 - Added fix for configuration file not removed if config Load fail
+ - RTC 527018 - Fixed miscellaneous build issues when building from repo root
+ - RTC 527058 - Cloudadapter proxy error during startup (Azure)
+ - RTC 527059 - Overall FOTA result is not publish to cloud (Azure)
+ - RTC 527158, 527530: Installation fixes for UCC
+
 
 ### Removed
  - RTC 525534 - Remove Bit Creek from INBC code and documentation
 
 ### Security
+ - RTC 527078 - Change golang-runtime 1.18 to 1.20
  - Harden tarfile extraction against path traversal attacks
  - Bump cryptography from 3.4.8 to 30.9.1 in /inbm/dispatcher-agent
 

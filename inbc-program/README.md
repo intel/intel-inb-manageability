@@ -29,11 +29,16 @@
 Intel® In-Band Manageability command-line utility, INBC, is a software utility running either on a host managing HDDL plugin cards via PCIe or an Edge IoT Device.  It allows the user to perform Device Management operations like firmware update or system update from the command-line. This may be used in lieu of using the cloud update mechanism.
 
 # Prerequisites
-Intel® In-Band Manageability needs to be installed and running.
+Intel® In-Band Manageability needs to be installed and running. INBC can be working even without provisioning to the cloud by running the following command:
+
+```
+sudo NO_CLOUD=x provision-tc
+```
 
 # 📝 Notes
-1. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. This requires downloading from a remote source.
-2. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
+1. INBC has to be run as root or with sudo.
+2. INBC supports FOTA, SOTA, POTA and Config Updates(Get, Set) on an Edge device. This requires downloading from a remote source.
+3. Use the query command to find system information needed to fill in FOTA and SOTA update parameters.
 
 # MQTT Communication 
 
@@ -53,6 +58,9 @@ The agent subscribes to the following topics:
 ## FOTA
 ### Description
 Performs a Firmware Over The Air (FOTA) update.
+
+# 📝 Notes
+Ensure trusted repository in intel_manageability.conf is to be configured with the URL for inbc fota to download from that specified URL.
 
 ### Usage
 ```

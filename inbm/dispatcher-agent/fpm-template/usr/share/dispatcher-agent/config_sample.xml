@@ -23,7 +23,7 @@
         </trustedRepositories>
         <sota>
             <updateAptSource>
-                http://linux-ftp.jf.intel.com/pub/mirrors/ubuntu
+                http://archive.ubuntu.com/ubuntu/
             </updateAptSource>
             <proceedWithoutRollback>false</proceedWithoutRollback>
         </sota>

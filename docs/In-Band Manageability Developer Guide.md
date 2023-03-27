@@ -181,7 +181,7 @@ INBC is a command-line based tool that can be used instead of the cloud to perfo
 - Query system data
 - Restart SOC
 
-INBC uses the Python 'argparse' library to parse the command-line arguments.  Based on those arguments it will use
+INBC has to be run as root or with sudo. INBC uses the Python 'argparse' library to parse the command-line arguments.  Based on those arguments it will use
 the Factory Design Pattern to create the correct concrete 'Command' class.
 
 <img src="media/In-Band Manageability Developer Guide/media/image17.png" alt="P1189#yIS1" style="width:5.39583in;height:3.97917in" />

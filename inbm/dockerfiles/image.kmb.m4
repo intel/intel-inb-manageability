@@ -38,15 +38,15 @@ pyinstaller_kmb(`inbm-telemetry', `agent', `arm64v8', `inbm/telemetry-agent')
 pyinstaller_kmb(`inbm-configuration', `agent', `arm64v8', `inbm/configuration-agent')
 pyinstaller_kmb(`inbc', `program', `arm64v8', 'inbc-program')
 
-FROM registry.hub.docker.com/arm64v8/golang:1.18-buster as build-inb-provision-certs
+FROM registry.hub.docker.com/arm64v8/golang:1.20-buster as build-inb-provision-certs
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs /output
 
-FROM registry.hub.docker.com/arm64v8/golang:1.18-buster as build-inb-provision-cloud
+FROM registry.hub.docker.com/arm64v8/golang:1.20-buster as build-inb-provision-cloud
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud /output
 
-FROM registry.hub.docker.com/arm64v8/golang:1.18-buster as build-inb-provision-ota-cert
+FROM registry.hub.docker.com/arm64v8/golang:1.20-buster as build-inb-provision-ota-cert
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert /output
 
@@ -78,7 +78,7 @@ RUN cat Makefile && \
 
 # --- trtl ---
 
-FROM registry.hub.docker.com/arm64v8/golang:1.18-buster as trtl-build-arm64
+FROM registry.hub.docker.com/arm64v8/golang:1.20-buster as trtl-build-arm64
 WORKDIR /
 ENV GOPATH /build/go
 ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin

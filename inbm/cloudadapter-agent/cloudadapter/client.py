@@ -5,7 +5,6 @@ Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
-
 from .cloud import adapter_factory as adapter_factory
 from .cloud.cloud_publisher import CloudPublisher
 
@@ -13,14 +12,15 @@ from .agent.broker import Broker
 from .agent.publisher import Publisher
 from .agent.device_manager import DeviceManager
 
-from .constants import SLEEP_DELAY, TC_TOPIC, METHOD
+from .constants import SLEEP_DELAY, TC_TOPIC, METHOD, UCC_REMOTE_COMMAND
 from .exceptions import (
     ConnectError, DisconnectError, AuthenticationError, BadConfigError)
-from .utilities import make_threaded
+from .utilities import make_threaded, is_ucc_mode
 
 from time import sleep
 from typing import Callable
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,15 +38,35 @@ class Client:
         self._cloud_publisher = CloudPublisher(self._adapter)
 
     def _bind_agent_to_cloud(self) -> None:
-        """Bind Intel(R) In-Band Manageability messages to the cloud"""
-        self._broker.bind_callback(
-            TC_TOPIC.TELEMETRY,
-            lambda _, payload: self._cloud_publisher.publish_telemetry(payload)
-        )
-        self._broker.bind_callback(
-            TC_TOPIC.EVENT,
-            lambda _, payload: self._cloud_publisher.publish_event(payload)
-        )
+        if is_ucc_mode():
+            logger.info('UCC flag is ON.  Using UCC broker and UCC Service Agent')
+            # Using the TC Telemetry topic, but publishing using event as this will just pass
+            # the message through as is already done with event.  Telemetry publishes each key/value
+            # pair individually.
+            self._broker.bind_callback(
+                TC_TOPIC.TELEMETRY,
+                lambda _, payload: self._cloud_publisher.publish_event(payload)
+            )
+        else:
+            """Bind Intel(R) In-Band Manageability messages to the cloud"""
+            self._broker.bind_callback(
+                TC_TOPIC.TELEMETRY,
+                lambda _, payload: self._cloud_publisher.publish_telemetry(payload)
+            )
+            self._broker.bind_callback(
+                TC_TOPIC.EVENT,
+                lambda _, payload: self._cloud_publisher.publish_event(payload)
+            )
+
+    def _bind_ucc_to_agent(self) -> None:
+        """Bind cloudadapter to UCC Native Agent"""
+        client_id = self._adapter.get_client_id()
+        if not client_id:
+            raise BadConfigError("Client ID is required to bind with UCC agent.")
+        topic = f"{UCC_REMOTE_COMMAND}{client_id}"
+        remote_cmd = tuple([topic])
+        self._broker.bind_callback(remote_cmd,
+                                   lambda _, command: self._broker.publish_command(command))
 
     def _bind_cloud_to_agent(self) -> None:
         """Bind cloud methods to Intel(R) In-Band Manageability calls"""
@@ -78,6 +98,7 @@ class Client:
         @param loggers: (*args: Callable) The logger(s) to log to
         @return:        (Callable) The decorated function
         """
+
         def decorated(*args, **kwargs):
             message = ""
             try:
@@ -96,7 +117,10 @@ class Client:
         @exception BadConfigError: If the connection configuration is bad
         """
         self._bind_agent_to_cloud()
-        self._bind_cloud_to_agent()
+        if is_ucc_mode():
+            self._bind_ucc_to_agent()
+        else:
+            self._bind_cloud_to_agent()
 
         connected = False
         while not connected:

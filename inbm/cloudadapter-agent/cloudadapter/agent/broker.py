@@ -9,6 +9,8 @@
 """
 
 from ..constants import (
+    UCC_REMOTE_COMMAND,
+    UCC_TOPIC,
     TC_TOPIC,
     TC_REQUEST_CHANNEL,
     SHUTDOWN,
@@ -17,7 +19,8 @@ from ..constants import (
     DECOMMISSION,
     CLIENT_CERTS,
     CLIENT_KEYS,
-    AGENT)
+    AGENT,
+    COMMAND)
 from ..utilities import make_threaded
 from inbm_lib.mqttclient.mqtt import MQTT
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL, DEFAULT_MQTT_CERTS
@@ -51,10 +54,11 @@ class Broker:
             (str): The specific topic that triggered the callback
             (str): The callback payload
 
-        @param topic:    (TC_TOPIC) The topic to bind the callback to
+        @param topic:    The topic to bind the callback to
         @param callback: (Callable) The callback to trigger
         """
-        if topic not in TC_TOPIC.__dict__.values():  # pylint: disable=dict-values-not-iterating
+        if topic not in TC_TOPIC.__dict__.values() \
+                and not topic[0].startswith(UCC_REMOTE_COMMAND):  # pylint: disable=dict-values-not-iterating
             logger.error("Attempted to subscribe to unsupported topic: %s", topic)
             return
 
@@ -83,12 +87,12 @@ class Broker:
         self.mqttc.publish(TC_REQUEST_CHANNEL + RESTART, '', retain=True)
 
     def publish_shutdown(self) -> None:
-        """Publishes a request to shutdown the device"""
+        """Publishes a request to shut down the device"""
         logger.info("Shutting down the device...")
         self.mqttc.publish(TC_REQUEST_CHANNEL + SHUTDOWN, '', retain=True)
 
     def publish_decommission(self) -> None:
-        """Publishes a request to shutdown the device"""
+        """Publishes a request to shut down the device"""
         logger.info("Shutting down the device...")
         self.mqttc.publish(TC_REQUEST_CHANNEL + DECOMMISSION, '', retain=True)
 
@@ -99,3 +103,11 @@ class Broker:
         """
         logger.info("Sending a manifest...")
         self.mqttc.publish(TC_REQUEST_CHANNEL + INSTALL, manifest, retain=False)
+
+    def publish_command(self, command: str) -> None:
+        """Publishes a received command message
+
+        @param command: (str) The command to send
+        """
+        logger.info("Sending command...")
+        self.mqttc.publish(TC_REQUEST_CHANNEL + COMMAND, command, retain=True)

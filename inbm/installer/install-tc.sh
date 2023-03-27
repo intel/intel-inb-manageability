@@ -49,7 +49,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Ensure we're running a supported OS
-verified_os_list=("Ubuntu 20.04" "Ubuntu 21.10" "Ubuntu 22.04")
+verified_os_list=("Ubuntu 20.04" "Ubuntu 22.04")
 
 if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
   OS_TYPE="Ubuntu-$(lsb_release -rs)"
@@ -143,7 +143,7 @@ for i in inbm-configuration inbm-dispatcher inbm-dispatcher inbm-telemetry inbm-
 done
 dpkg --remove --force-all no-tpm-provision tpm-provision inbm-configuration-agent configuration-agent inbm-dispatcher-agent dispatcher-agent inbm-diagnostic-agent diagnostic-agent inbm-cloudadapter-agent cloudadapter-agent inbm-telemetry-agent telemetry-agent mqtt-agent trtl mqtt >&/dev/null || true
 
-echo "Ensuring packages are installed: lxc mosquitto cryptsetup less docker-compose"
+echo "Ensuring prerequisite packages are installed."
 apt-get update >&/dev/null
 if [ "$OS_TYPE" == "Debian" ]; then
   apt-get install -y lxc
@@ -156,7 +156,11 @@ apt-mark unhold mosquitto
 apt-get install -y mosquitto
 systemctl disable mosquitto
 systemctl stop mosquitto
-apt-get install -y -f cryptsetup less docker-compose python3-pip
+apt-get install -y -f cryptsetup less python3-pip
+if [ -z "$UCC_MODE" ]; then
+  apt-get install -y docker-compose
+fi
+
 
 if [ -z "$UCC_MODE" ]; then
   if [ "$(findmnt -lo source,target,fstype,label,options,used -t btrfs)" ]; then
@@ -224,9 +228,6 @@ if [ "$(lsb_release -rs)" == "20.04" ]; then
   apt-get install -y tpm2-tools tpm2-abrmd libtss2-tcti-tabrmd0
   systemctl enable --now tpm2-abrmd
   ln -sf libtss2-tcti-tabrmd.so.0 /lib/x86_64-linux-gnu/libtss2-tcti-default.so
-elif [ "$(lsb_release -rs)" == "21.10" ]; then
-  apt-get install -y tpm2-tools tpm2-abrmd
-  systemctl enable --now tpm2-abrmd
 elif [ "$(lsb_release -rs)" == "22.04" ]; then
   apt-get install -y tpm2-tools tpm2-abrmd
   systemctl enable tpm2-abrmd
