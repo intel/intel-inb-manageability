@@ -1,5 +1,6 @@
 {
     "mqtt": {
+        "client_id": "{CLIENT_ID}",
         "username": "{TOKEN}",
         "hostname": "{HOSTNAME}",
         "port": {PORT}
@@ -17,7 +18,7 @@
         "port": {PROXY_PORT}
     },
     "event": {
-        "pub": "TopicTelemetryInfo",
+        "pub": "TopicTelemetryInfo/{CLIENT_ID}",
         "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
     },
     "telemetry": {

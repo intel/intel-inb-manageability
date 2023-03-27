@@ -13,7 +13,28 @@ cp ../*.preview.tar.gz .
 cp ../*-tc.sh .
 rm -rf /etc/intel-manageability/public/cloudadapter-agent
 mkdir -p /etc/intel-manageability/public/cloudadapter-agent
-apt-get purge -y docker-ce docker-ce-cli || true
+dpkg --purge docker-compose docker.io
+
+# Check before install that docker is gone
+
+fail_on_docker_packages() {
+    set +e
+    # Check if any installed package starts with the word 'docker'
+    installed_packages=$(dpkg-query -W -f='${Package}\n' | grep -i '^docker')
+
+    if [ ! -z "$installed_packages" ]; then
+        echo "FAIL: Found installed packages starting with the word 'docker':"
+        echo "$installed_packages"
+        exit 1
+    else
+        echo "PASS: No installed packages starting with the word 'docker' found."
+    fi
+    set -e
+}
+
+fail_on_docker_packages
+
+
 rm -rf /var/lib/apt/lists/*
 
 ## No TPM simulator in quicker mode
@@ -32,6 +53,8 @@ tar -zxvf *.preview.tar.gz
 
 sudo -H UCC_MODE=true DEV_MODE=true INSTALL_TPM2_SIMULATOR=false ACCEPT_INTEL_LICENSE=true bash -x ./install-tc.sh
 
+fail_on_docker_packages
+
 for i in cloudadapter ; do
   sed -i 's/ERROR/DEBUG/g' /etc/intel-manageability/public/"$i"-agent/logging.ini
 done
@@ -46,12 +69,17 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
 { "cloud": "ucc", 
   "config": {
     "mqtt": {
-        "username": "aabbccddeeff",
+        "client_id": "12345678abcd",
+        "username": "12345678abcd",
         "hostname": "127.0.0.1",
         "port": 1234
     },
+    "proxy": {
+        "hostname": "",
+        "port": 911
+    },
     "event": {
-        "pub": "TopicTelemetryInfo",
+        "pub": "TopicTelemetryInfo/12345678abcd",
         "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
     },
     "telemetry": {
@@ -90,4 +118,14 @@ echo All processes:
 ps -ax
 echo Cloudadapter:
 ps -ax | grep cloudadapter
+
+UCC_NATIVE_CERTS_DIR="/etc/intel-manageability/secret/ucc-native-service"
+
+if [ -d "$UCC_NATIVE_CERTS_DIR" ]; then
+    echo "Directory $UCC_NATIVE_CERTS_DIR exists."
+else
+    echo "Directory $UCC_NATIVE_CERTS_DIR does not exist."
+    exit 1
+fi
+
 

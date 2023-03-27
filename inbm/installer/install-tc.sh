@@ -143,7 +143,7 @@ for i in inbm-configuration inbm-dispatcher inbm-dispatcher inbm-telemetry inbm-
 done
 dpkg --remove --force-all no-tpm-provision tpm-provision inbm-configuration-agent configuration-agent inbm-dispatcher-agent dispatcher-agent inbm-diagnostic-agent diagnostic-agent inbm-cloudadapter-agent cloudadapter-agent inbm-telemetry-agent telemetry-agent mqtt-agent trtl mqtt >&/dev/null || true
 
-echo "Ensuring packages are installed: lxc mosquitto cryptsetup less docker-compose"
+echo "Ensuring prerequisite packages are installed."
 apt-get update >&/dev/null
 if [ "$OS_TYPE" == "Debian" ]; then
   apt-get install -y lxc
@@ -156,7 +156,11 @@ apt-mark unhold mosquitto
 apt-get install -y mosquitto
 systemctl disable mosquitto
 systemctl stop mosquitto
-apt-get install -y -f cryptsetup less docker-compose python3-pip
+apt-get install -y -f cryptsetup less python3-pip
+if [ -z "$UCC_MODE" ]; then
+  apt-get install -y docker-compose
+fi
+
 
 if [ -z "$UCC_MODE" ]; then
   if [ "$(findmnt -lo source,target,fstype,label,options,used -t btrfs)" ]; then

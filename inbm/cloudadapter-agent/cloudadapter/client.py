@@ -5,7 +5,6 @@ Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
-
 from .cloud import adapter_factory as adapter_factory
 from .cloud.cloud_publisher import CloudPublisher
 
@@ -13,7 +12,7 @@ from .agent.broker import Broker
 from .agent.publisher import Publisher
 from .agent.device_manager import DeviceManager
 
-from .constants import SLEEP_DELAY, TC_TOPIC, METHOD, UCC_TOPIC
+from .constants import SLEEP_DELAY, TC_TOPIC, METHOD, UCC_REMOTE_COMMAND
 from .exceptions import (
     ConnectError, DisconnectError, AuthenticationError, BadConfigError)
 from .utilities import make_threaded, is_ucc_mode
@@ -21,6 +20,7 @@ from .utilities import make_threaded, is_ucc_mode
 from time import sleep
 from typing import Callable
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -59,10 +59,14 @@ class Client:
             )
 
     def _bind_ucc_to_agent(self) -> None:
-        self._broker.bind_callback(
-            UCC_TOPIC.REMOTE_COMMAND,
-            lambda _, command: self._broker.publish_command(command)
-        )
+        """Bind cloudadapter to UCC Native Agent"""
+        client_id = self._adapter.get_client_id()
+        if not client_id:
+            raise BadConfigError("Client ID is required to bind with UCC agent.")
+        topic = f"{UCC_REMOTE_COMMAND}{client_id}"
+        remote_cmd = tuple([topic])
+        self._broker.bind_callback(remote_cmd,
+                                   lambda _, command: self._broker.publish_command(command))
 
     def _bind_cloud_to_agent(self) -> None:
         """Bind cloud methods to Intel(R) In-Band Manageability calls"""
@@ -94,6 +98,7 @@ class Client:
         @param loggers: (*args: Callable) The logger(s) to log to
         @return:        (Callable) The decorated function
         """
+
         def decorated(*args, **kwargs):
             message = ""
             try:

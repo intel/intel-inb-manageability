@@ -1,5 +1,6 @@
 {
     "mqtt": {
+        "client_id": "{CLIENT_ID}",
         "username": "{TOKEN}",
         "hostname": "{HOSTNAME}",
         "port": {PORT}

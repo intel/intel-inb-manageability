@@ -25,6 +25,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 527018 - Fixed miscellaneous build issues when building from repo root
  - RTC 527058 - Cloudadapter proxy error during startup (Azure)
  - RTC 527059 - Overall FOTA result is not publish to cloud (Azure)
+ - RTC 527158, 527530: Installation fixes for UCC
+
 
 ### Removed
  - RTC 525534 - Remove Bit Creek from INBC code and documentation
