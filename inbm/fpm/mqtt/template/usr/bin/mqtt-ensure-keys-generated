@@ -62,12 +62,16 @@ fix_permissions() {
             # Ensure user has read/write and group has read
             chmod -R u+rw,g+r "$dir"
         fi
-    done
-    for i in /etc/intel_manageability.conf /etc/intel_manageability.conf_bak; do
-	    touch "$i"
-        chgrp configuration-agent "$i"
-	    chmod g+rw "$i"
-    done
+    done    
+
+    # configuration-agent may not always be installed
+    if getent group configuration-agent >/dev/null; then
+        for i in /etc/intel_manageability.conf /etc/intel_manageability.conf_bak; do    
+            touch "$i"
+            chgrp configuration-agent "$i"
+            chmod g+rw "$i"
+        done
+    fi
 
     # Set up temp file permissions
     chown -R root.mqtt-ca /var/cache/manageability

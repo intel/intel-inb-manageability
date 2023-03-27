@@ -24,11 +24,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - JIRA NEXMGMT-16 - Added fix for configuration file not removed if config Load fail
  - RTC 527058 - Cloudadapter proxy error during startup (Azure)
  - RTC 527059 - Overall FOTA result is not publish to cloud (Azure)
+ - RTC 527158, 527530: Installation fixes for UCC
+
 
 ### Removed
  - RTC 525534 - Remove Bit Creek from INBC code and documentation
 
 ### Security
+ - RTC 527078 - Change golang-runtime 1.18 to 1.20
  - Harden tarfile extraction against path traversal attacks
  - Bump cryptography from 3.4.8 to 30.9.1 in /inbm/dispatcher-agent
 

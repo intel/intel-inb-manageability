@@ -45,7 +45,7 @@ Vagrant.configure("2") do |config|
   config.vm.provision "shell", inline: <<-SHELL
     set -e
     set -x
-    sed -i 's/linux-ftp.jf.intel.com/linux-ftp.ostc.intel.com/g' /etc/apt/sources.list
+    sed -i 's/linux-ftp.ostc.intel.com/linux-ftp.ostc.intel.com/g' /etc/apt/sources.list
     cat >/etc/apt/apt.conf <<EOF
 Acquire::http::proxy "http://proxy-chain.intel.com:911/";
 Acquire::https::proxy "http://proxy-chain.intel.com:912/";
