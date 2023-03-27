@@ -23,6 +23,7 @@ import (
 
 const thingsboard string = "thingsboard"
 const ucc string = "ucc"
+const uccClientIdFile string = "/etc/ucc/client_id"
 
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, "usage: inb-provision-cloud [cloud credential directory]"+
@@ -103,7 +104,11 @@ func setUpCloudCredentialDirectory(cloudCredentialDir string,
 	case "ThingsBoard":
 		cloudConfig = configureThingsBoard(cloudCredentialDir, thingsBoardTemplateDir)
 	case "UCC":
+		if !fileExists(uccClientIdFile) {
+            log.Fatalf("Client ID file is missing.  Unable to provision for UCC.")
+        }
 		cloudConfig = configureUcc(cloudCredentialDir, uccTemplateDir)
+
 	case "Custom":
 		cloudConfig = configureCustom(jsonSchemaFile)
 	default:
@@ -231,7 +236,7 @@ func configureThingsBoard(cloudCredentialDir string, templateDir string) string 
 	}
 
 	return makeCloudJson(thingsboard, jsonTemplate, caPath, deviceToken, serverIp,
-		serverPort, deviceCertPath, "", "", "")
+		serverPort, deviceCertPath, "", "", "", "")
 }
 
 func configureUcc(cloudCredentialDir string, templateDir string) string {
@@ -250,9 +255,19 @@ func configureUcc(cloudCredentialDir string, templateDir string) string {
 		jsonTemplate = createUnencryptedTemplate(templateDir)
 	}
 
+	clientId := getClientId()
+
 	proxyHostName, proxyPort := configureProxy()
 	return makeCloudJson(ucc, jsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath, deviceKeyPath,
-		proxyHostName, proxyPort)
+		proxyHostName, proxyPort, clientId)
+}
+
+func getClientId() string {
+	if content, err := ioutil.ReadFile(uccClientIdFile); err == nil {
+		return strings.TrimSpace(string(content))
+	}
+	log.Fatalf("Unable to read clientId.  Unable to provision for UCC")
+	return ""
 }
 
 func configureProxy() (string, string) {
@@ -412,7 +427,8 @@ func configureTls(templateDir string, caFileName string, cloudProviderName strin
 }
 
 func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
-	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string, proxyPort string) string {
+	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string,
+	proxyPort string, clientId string) string {
 	configJson := template
 	configJson = strings.Replace(configJson, "{CA_PATH}", caPath, -1)
 	configJson = strings.Replace(configJson, "{TOKEN}", deviceToken, -1)
@@ -422,6 +438,7 @@ func makeCloudJson(cloudProviderName string, template string, caPath string, dev
 	configJson = strings.Replace(configJson, "{CLIENT_KEY_PATH}", deviceKeyPath, -1)
 	configJson = strings.Replace(configJson, "{PROXY_HOSTNAME}", proxyHostName, -1)
 	configJson = strings.Replace(configJson, "{PROXY_PORT}", proxyPort, -1)
+	configJson = strings.Replace(configJson, "{CLIENT_ID}", clientId, -1)
 
 	return `{ "cloud": "` + cloudProviderName + `", "config": ` + configJson + ` }`
 }

@@ -13,6 +13,7 @@ from threading import Thread, Event
 from typing import Any, Callable
 
 logger = logging.getLogger(__name__)
+
 # ========== Utility classes
 
 
@@ -62,7 +63,9 @@ def make_threaded(f: Callable) -> Callable:
 
 def is_ucc_mode() -> bool:
     """Reads a file to determine if the cloud adapter is connected to the UCC broker to help determine
-    what topics to subscribe to.  If the file is not found, UCC mode will be False."""
+    what topics to subscribe to.  If the file is not found, UCC mode will be False.
+    @return True if UCC Flag file is found at the location; otherwise, False.
+    """
     if not os.path.exists(UCC_FILE):
         logger.debug('UCC flag file was not found.  Not using UCC broker and UCC Service Agent.')
         return False

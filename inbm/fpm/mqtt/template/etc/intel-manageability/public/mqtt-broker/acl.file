@@ -54,6 +54,11 @@ topic write manageability/response
 topic write manageability/telemetry
 topic read manageability/cmd/+
 
+user ucc-native-service
+topic write manageability/response
+topic write manageability/telemetry
+topic read manageability/request/command
+
 # Read from all state/broadcast channels - Anonymous users disabled
 pattern read +/state
 pattern read +/broadcast

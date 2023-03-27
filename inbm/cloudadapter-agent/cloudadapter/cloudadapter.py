@@ -34,10 +34,10 @@ class CloudAdapter(WindowsService):
 
         self.waiter: Waiter = Waiter()
 
-    def svc_stop(self) -> None:
+    def svc_stop(self) -> None:  # pragma: nocover
         self.waiter.finish()
 
-    def svc_main(self) -> None:
+    def svc_main(self) -> None:  # pragma: nocover
         self.start()
 
     def start(self) -> None:

@@ -69,12 +69,17 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
 { "cloud": "ucc", 
   "config": {
     "mqtt": {
-        "username": "aabbccddeeff",
+        "client_id": "12345678abcd",
+        "username": "12345678abcd",
         "hostname": "127.0.0.1",
         "port": 1234
     },
+    "proxy": {
+        "hostname": "",
+        "port": 911
+    },
     "event": {
-        "pub": "TopicTelemetryInfo",
+        "pub": "TopicTelemetryInfo/12345678abcd",
         "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
     },
     "telemetry": {

@@ -48,6 +48,7 @@ class MQTTConnection(Connection):
         self._subscribe_lock = RLock()
         self._subscriptions: Dict = {}
 
+        self._client_id = client_id
         self._connect_waiter = Waiter()
         self._client = self._create_mqtt_client(username, password, hostname, port, client_id)
 
@@ -59,6 +60,13 @@ class MQTTConnection(Connection):
                 str(proxy_config.endpoint)))
             self._set_proxy(proxy_config)
 
+    def get_client_id(self) -> Optional[str]:
+        """A readonly property
+
+        @return: (int) Client ID
+        """
+        return self._client_id
+
     def _set_proxy(self, config: ProxyConfig) -> None:
         """Set the proxy; this is needed to avoid a pylint recursion error
 
@@ -68,7 +76,8 @@ class MQTTConnection(Connection):
             socks.set_default_proxy(socks.PROXY_TYPE_HTTP, *config.endpoint)
             socket.socket = socks.socksocket  # type: ignore
 
-    def _create_mqtt_client(self, username: str, password: Optional[str], hostname: str, port: str, client_id: Optional[str] = "") -> Client:
+    def _create_mqtt_client(self, username: str, password: Optional[str], hostname: str, port: str,
+                            client_id: Optional[str] = "") -> Client:
         """Create an MQTT client"""
         client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
         client.username_pw_set(username, password)
