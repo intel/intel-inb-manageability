@@ -58,15 +58,17 @@ func main() {
 	setUpMqttCaDirectories(secretDir, publicDir, daysExpiry)
 	setUpMqttBrokerDirectories(secretDir, publicDir, daysExpiry)
 
-	agents := []string{
-		"dispatcher-agent", "telemetry-agent", "diagnostic-agent", "configuration-agent",
+	agents := []string{ // agents always set up
 		"cloudadapter-agent", "inbc-program", "cmd-program"}
 
-	// set up certs also for ucc-native-service, in UCC mode
 	uccFlagPath := "/etc/intel-manageability/public/ucc_flag"
 	if content, err := ioutil.ReadFile(uccFlagPath); err == nil &&
 		strings.TrimSpace(string(content)) == "TRUE" {
+		// append UCC specific agents
 		agents = append(agents, "ucc-native-service")
+	} else {
+		// append agents only installed when not in UCC mode
+		agents = append(agents, "dispatcher-agent", "telemetry-agent", "diagnostic-agent", "configuration-agent")
 	}
 
 	for _, each := range agents {
