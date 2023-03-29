@@ -45,6 +45,24 @@ listen_event() {
     timeout 120 mosquitto_sub -h localhost -p "$LOCAL_MQTT_PORT" --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -C 13 --keepalive 10| tee /tmp/listen_event_last_log
 }
 
+trigger_ucc_msg() {
+    CA_FILE=/etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt
+    CERT_FILE=/etc/intel-manageability/public/ucc-native-service/ucc-native-service.crt
+    KEY=/etc/intel-manageability/secret/ucc-native-service/ucc-native-service.key
+    ID=test
+    TOPIC=manageability/telemetry
+    MSG=$1
+    mosquitto_pub -h localhost -p "$LOCAL_MQTT_PORT" --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -m "${MSG}"
+}
+
+listen_ucc_telemetry() {
+    CA_FILE=/etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt
+    CERT_FILE=/etc/intel-manageability/public/ucc-native-service/ucc-native-service.crt
+    KEY=/etc/intel-manageability/secret/ucc-native-service/ucc-native-service.key
+    ID=test
+    TOPIC=manageability/telemetry
+    timeout 120 mosquitto_sub -h localhost -p "$LOCAL_MQTT_PORT" --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -C 1 --keepalive 10| tee /tmp/listen_telemetry &
+}
 
 clean_up_subscribe() {
 if pgrep mosquitto_sub ; then
