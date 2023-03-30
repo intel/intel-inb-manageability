@@ -31,7 +31,7 @@
     },
     "method": {
         "pub": "TopicRemoteCommands/response/{request_id}",
-        "format": "{ \"MessageHeader\": \"{messageHeader}\", \"MessageBody\": \"{MessageBody\"}}",
+        "format": "\"MessageHeader\": \"{messageHeader}\", \"MessageBody\": \"{MessageBody\"}",
         "sub": "TopicRemoteCommands/{CLIENT_ID}",
         "parse": {
             "single": {
