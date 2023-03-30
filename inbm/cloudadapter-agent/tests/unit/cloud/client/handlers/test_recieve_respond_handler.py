@@ -5,7 +5,7 @@ Unit tests for the ReceiveResponseHandler
 """
 
 
-from cloudadapter.cloud.client.handlers.recieve_respond_handler import ReceiveResponseHandler
+from cloudadapter.cloud.client.handlers.receive_response_handler import ReceiveResponseHandler
 from cloudadapter.cloud.client.connections._connection import Connection
 from cloudadapter.cloud.client.utilities import Formatter, MethodParser, MethodParsed
 
