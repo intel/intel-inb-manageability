@@ -64,8 +64,8 @@ class Client:
         if not client_id:
             raise BadConfigError("Client ID is required to bind with UCC agent.")
         topic = f"{UCC_REMOTE_COMMAND}{client_id}"
-        remote_cmd = tuple([topic])
-        self._broker.bind_callback(remote_cmd,
+        #remote_cmd = tuple([topic])
+        self._adapter.bind_callback(topic,
                                    lambda _, command: self._broker.publish_command(command))
 
     def _bind_cloud_to_agent(self) -> None:
