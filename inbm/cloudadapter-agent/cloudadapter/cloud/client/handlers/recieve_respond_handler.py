@@ -1,5 +1,5 @@
 """
-Recieve/respond handler parses incoming topic/payload and sends
+Receive/respond handler parses incoming topic/payload and sends
 a formatted message as a response.
 
 

@@ -12,7 +12,7 @@ from .agent.broker import Broker
 from .agent.publisher import Publisher
 from .agent.device_manager import DeviceManager
 
-from .constants import SLEEP_DELAY, TC_TOPIC, METHOD, UCC_REMOTE_COMMAND
+from .constants import SLEEP_DELAY, TC_TOPIC, METHOD
 from .exceptions import (
     ConnectError, DisconnectError, AuthenticationError, BadConfigError)
 from .utilities import make_threaded, is_ucc_mode
@@ -60,28 +60,29 @@ class Client:
 
     def _bind_ucc_to_agent(self) -> None:
         """Bind cloudadapter to UCC Native Agent"""
-        client_id = self._adapter.get_client_id()
-        if not client_id:
-            raise BadConfigError("Client ID is required to bind with UCC agent.")
-        topic = f"{UCC_REMOTE_COMMAND}{client_id}"
-
         loggers = [self._cloud_publisher.publish_event, logger.info]
+
         callback = self._with_log(self._publisher.publish_command, *loggers)
-        self._adapter.bind_callback(topic, callback)
+        self._adapter.bind_callback("topic", callback)
+
+    def _get_ucc_bindings(self) -> dict:
+        return {METHOD.COMMAND: self._publisher.publish_command}
+
+    def _get_cloud_bindings(self) -> dict:
+        return {
+                METHOD.MANIFEST: self._publisher.publish_manifest,
+                METHOD.AOTA: self._publisher.publish_aota,
+                METHOD.FOTA: self._publisher.publish_fota,
+                METHOD.SOTA: self._publisher.publish_sota,
+                METHOD.QUERY: self._publisher.publish_query,
+                METHOD.CONFIG: self._publisher.publish_config,
+                METHOD.SHUTDOWN: self._device_manager.shutdown_device,
+                METHOD.REBOOT: self._device_manager.reboot_device,
+                METHOD.DECOMMISSION: self._device_manager.decommission_device
+            }
 
     def _bind_cloud_to_agent(self) -> None:
-        """Bind cloud methods to Intel(R) In-Band Manageability calls"""
-        adapter_bindings = {
-            METHOD.MANIFEST: self._publisher.publish_manifest,
-            METHOD.AOTA: self._publisher.publish_aota,
-            METHOD.FOTA: self._publisher.publish_fota,
-            METHOD.SOTA: self._publisher.publish_sota,
-            METHOD.QUERY: self._publisher.publish_query,
-            METHOD.CONFIG: self._publisher.publish_config,
-            METHOD.SHUTDOWN: self._device_manager.shutdown_device,
-            METHOD.REBOOT: self._device_manager.reboot_device,
-            METHOD.DECOMMISSION: self._device_manager.decommission_device
-        }
+        adapter_bindings = self._get_ucc_bindings() if is_ucc_mode() else self._get_cloud_bindings()
 
         loggers = [self._cloud_publisher.publish_event, logger.info]
 
@@ -118,10 +119,10 @@ class Client:
         @exception BadConfigError: If the connection configuration is bad
         """
         self._bind_agent_to_cloud()
-        if is_ucc_mode():
-            self._bind_ucc_to_agent()
-        else:
-            self._bind_cloud_to_agent()
+        #if is_ucc_mode():
+        #    self._bind_ucc_to_agent()
+        #else:
+        self._bind_cloud_to_agent()
 
         connected = False
         while not connected:

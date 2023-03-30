@@ -95,7 +95,7 @@ class Publisher:
         @param command: command to send
         """
         logger.info("Send command invoked")
-        self._broker.publish_install(command)
+        self._broker.publish_command(command)
 
     def publish_aota(self, **arguments: str) -> str:
         """Publishes an AOTA update

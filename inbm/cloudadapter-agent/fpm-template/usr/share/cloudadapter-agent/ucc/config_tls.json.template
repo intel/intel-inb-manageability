@@ -30,13 +30,13 @@
         "format": ""
     },
     "method": {
-        "pub": "",
-        "format": "",
-        "sub": "",
+        "pub": "TopicRemoteCommands/response/{request_id}",
+        "format": "\"{timestamp}: {message}\"",
+        "sub": "TopicRemoteCommands/{CLIENT_ID}",
         "parse": {
             "single": {
                 "request_id": {
-                    "regex": "v1\\/devices\\/me\\/rpc\\/request\\/([0-9]+)",
+                    "regex": "TopicRemoteCommands\\/request\\/([0-9]+)",
                     "group": 1
                 },
                 "method": {

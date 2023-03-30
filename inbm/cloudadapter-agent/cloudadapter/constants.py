@@ -29,11 +29,11 @@ UCC_ENABLED_FLAG = "TRUE"
 
 STATE_CHANNEL = '+/state'
 
-UCC_REMOTE_COMMAND = "TopicRemoteCommands/"
+#UCC_REMOTE_COMMAND = "TopicRemoteCommands/"
 
 
-class UCC_TOPIC:
-    REMOTE_COMMAND = tuple([UCC_REMOTE_COMMAND])
+#class UCC_TOPIC:
+#    REMOTE_COMMAND = tuple([UCC_REMOTE_COMMAND])
 
 
 class TC_TOPIC:
@@ -88,6 +88,7 @@ class METHOD:
     DECOMMISSION = "decommission_device"
     UPLOAD = "file_upload"
     QUERY = "triggerquery"
+    COMMAND = "command"
 
 
 # ========== Cloud configuration constants

@@ -13,9 +13,13 @@ from typing import Callable
 from ..client.cloud_client import CloudClient
 from .adapter import Adapter
 
+import logging
+logger = logging.getLogger(__name__)
+
 
 class GenericAdapter(Adapter):
     def __init__(self, config: dict):
+        logger.debug("Initializing GenericAdapter")
         super().__init__(config)
 
     def configure(self, config: dict) -> CloudClient:
