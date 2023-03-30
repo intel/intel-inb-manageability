@@ -64,9 +64,10 @@ class Client:
         if not client_id:
             raise BadConfigError("Client ID is required to bind with UCC agent.")
         topic = f"{UCC_REMOTE_COMMAND}{client_id}"
-        #remote_cmd = tuple([topic])
-        self._adapter.bind_callback(topic,
-                                   lambda _, command: self._broker.publish_command(command))
+
+        loggers = [self._cloud_publisher.publish_event, logger.info]
+        callback = self._with_log(self._publisher.publish_command, *loggers)
+        self._adapter.bind_callback(topic, callback)
 
     def _bind_cloud_to_agent(self) -> None:
         """Bind cloud methods to Intel(R) In-Band Manageability calls"""
