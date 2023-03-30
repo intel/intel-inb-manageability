@@ -64,8 +64,8 @@ class Client:
         if not client_id:
             raise BadConfigError("Client ID is required to bind with UCC agent.")
         topic = f"{UCC_REMOTE_COMMAND}{client_id}"
-        remote_cmd = tuple([topic])
-        self._broker.bind_callback(remote_cmd,
+        #remote_cmd = tuple([topic])
+        self._adapter.bind_callback(topic,
                                    lambda _, command: self._broker.publish_command(command))
 
     def _bind_cloud_to_agent(self) -> None:
@@ -132,6 +132,11 @@ class Client:
             except ConnectError as e:
                 logger.error(str(e))
                 sleep(SLEEP_DELAY)
+
+        if is_ucc_mode():
+            self._bind_ucc_to_agent()
+        else:
+            self._bind_cloud_to_agent()
 
         self._cloud_publisher.publish_event("Connected")
 
