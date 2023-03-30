@@ -53,9 +53,9 @@ class ReceiveResponseHandler(Handler):
         # Parse the message
         try:
             parsed = self._method_parser.parse(topic, payload)
-        except ValueError:
+        except ValueError as e:
             logger.error("Received malformed message: see debug log")
-            logger.debug(f"message contents: {payload}")
+            logger.debug(f"message contents: {payload} error: {str(e)}")
             return
 
         if not parsed:

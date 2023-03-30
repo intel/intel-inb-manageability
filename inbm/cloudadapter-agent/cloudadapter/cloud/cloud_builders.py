@@ -8,7 +8,7 @@ import logging
 
 from .client.connections.mqtt_connection import MQTTConnection
 from .client.messengers.one_way_messenger import OneWayMessenger
-from .client.handlers.recieve_respond_handler import ReceiveResponseHandler
+from .client.handlers.receive_response_handler import ReceiveResponseHandler
 from .client.handlers.echo_handler import EchoHandler
 from .client.cloud_client import CloudClient
 from .client.utilities import ProxyConfig, TLSConfig, Formatter, MethodParser

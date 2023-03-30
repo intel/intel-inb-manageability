@@ -5,7 +5,7 @@ Cloud Client class that provides all cloud interactions
 """
 from .connections.mqtt_connection import MQTTConnection
 from .messengers.one_way_messenger import OneWayMessenger
-from .handlers.recieve_respond_handler import ReceiveResponseHandler
+from .handlers.receive_response_handler import ReceiveResponseHandler
 from typing import Callable, Optional
 from datetime import datetime
 
