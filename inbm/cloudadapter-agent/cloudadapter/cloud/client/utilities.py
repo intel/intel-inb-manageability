@@ -317,7 +317,6 @@ class MethodParser:
         @return: (List[MethodParsed]) All parsed method information
         @exception ValueError: If the input payload was malformed
         """
-        logger.debug("prior to parse json load")
         payload = json.loads(payload)
         logger.debug(f"payload: {payload}")
         if self._aggregate_info:

@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 class ReceiveResponseHandler(Handler):
 
-    def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, subscribe_topic: str, parser: MethodParser, connection: MQTTConnection) -> None:
+    def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, subscribe_topic: str,
+                 parser: MethodParser, connection: MQTTConnection) -> None:
         """Construct a generic handler
 
         @param topic_formatter:   (Formatter) Formatter for response publish topic
@@ -67,6 +68,7 @@ class ReceiveResponseHandler(Handler):
         for p in parsed:
 
             method, args, symbols = p.method, p.args, p.symbols
+            logger.debug(f"method={method} args={args} symbols={symbols}")
 
             # Check if method is valid
             if not method:
