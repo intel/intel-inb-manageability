@@ -277,6 +277,7 @@ func configureProxy() (string, string) {
 		hostName = promptString("\nPlease enter the proxy server hostname or IP:")
 		port = getServerPort("911", "proxy")
 	}
+
 	return hostName, port
 }
 
@@ -440,6 +441,10 @@ func makeCloudJson(cloudProviderName string, template string, caPath string, dev
 	configJson = strings.Replace(configJson, "{PROXY_PORT}", proxyPort, -1)
 	configJson = strings.Replace(configJson, "{CLIENT_ID}", clientId, -1)
 
+	if proxyHostName == "" {
+	    configJson = strings.ReplaceAll(configJson, "\"proxy\": {\"hostname\": \"{PROXY_HOSTNAME}\", \"port\": {PROXY_PORT}},", "")
+	}
+    println(configJson)
 	return `{ "cloud": "` + cloudProviderName + `", "config": ` + configJson + ` }`
 }
 
