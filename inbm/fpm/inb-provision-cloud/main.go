@@ -433,12 +433,7 @@ func removeProxySection(template string) string {
         "port": {PROXY_PORT}
     },`
 
-    newTemplate := strings.Replace(template, proxySection, "", 1)
-    regex, err := regexp.Compile("\n\n")
-    if err != nil {
-        return newTemplate
-    }
-    return regex.ReplaceAllString(newTemplate, "\n")
+    return strings.Replace(template, proxySection, "", 1)
 }
 
 func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
@@ -459,9 +454,6 @@ func makeCloudJson(cloudProviderName string, template string, caPath string, dev
 	configJson = strings.Replace(configJson, "{PROXY_PORT}", proxyPort, -1)
 	configJson = strings.Replace(configJson, "{CLIENT_ID}", clientId, -1)
 
-	if proxyHostName == "" {
-	    configJson = removeProxySection(configJson)
-	}
 	return `{ "cloud": "` + cloudProviderName + `", "config": ` + configJson + ` }`
 }
 
