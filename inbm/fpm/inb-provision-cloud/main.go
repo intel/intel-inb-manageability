@@ -427,9 +427,27 @@ func configureTls(templateDir string, caFileName string, cloudProviderName strin
 	return string(jsonBytes), caPath
 }
 
+func removeProxySection(template string) string {
+    proxySection := `"proxy": {
+        "hostname": "{PROXY_HOSTNAME}",
+        "port": {PROXY_PORT}
+    },`
+
+    newTemplate := strings.Replace(template, proxySection, "", 1)
+    regex, err := regexp.Compile("\n\n")
+    if err != nil {
+        return newTemplate
+    }
+    return regex.ReplaceAllString(newTemplate, "\n")
+}
+
 func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
 	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string,
 	proxyPort string, clientId string) string {
+	if proxyHostName == "" {
+	    template = removeProxySection(template)
+	}
+
 	configJson := template
 	configJson = strings.Replace(configJson, "{CA_PATH}", caPath, -1)
 	configJson = strings.Replace(configJson, "{TOKEN}", deviceToken, -1)
@@ -442,9 +460,8 @@ func makeCloudJson(cloudProviderName string, template string, caPath string, dev
 	configJson = strings.Replace(configJson, "{CLIENT_ID}", clientId, -1)
 
 	if proxyHostName == "" {
-	    configJson = strings.ReplaceAll(configJson, "\"proxy\": {\"hostname\": \"{PROXY_HOSTNAME}\", \"port\": {PROXY_PORT}},", "")
+	    configJson = removeProxySection(configJson)
 	}
-    println(configJson)
 	return `{ "cloud": "` + cloudProviderName + `", "config": ` + configJson + ` }`
 }
 
