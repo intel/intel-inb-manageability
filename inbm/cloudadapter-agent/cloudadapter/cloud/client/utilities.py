@@ -117,7 +117,7 @@ class TLSConfig:
 
 class Formatter:
 
-    def __init__(self, formatting, defaults={}):
+    def __init__(self, formatting: str, defaults={}):
         """Create a formatter for a given string formatting.
         Placeholder fields are surrounded with brackets,
         and there are no spaces in the bracketed placeholder field.
@@ -126,7 +126,7 @@ class Formatter:
         - {ts}: Integer epoch timestamp in milliseconds
         - {timestamp}: UTC string timestamp
         Additionally, the {timestamp} may be given a specific
-        formatting through through the syntax: {timestamp=[formatting]}
+        formatting through the syntax: {timestamp=[formatting]}
         where [formatting] is a strftime formatted string, per:
         https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
 
@@ -135,7 +135,8 @@ class Formatter:
         """
         self._formatting = formatting
         self._defaults = defaults
-
+        logger.debug(f"formatting={self._formatting}")
+        logger.debug(f"defaults={self._defaults}")
         self._fields = set()  # type: ignore
         fields = re.finditer(r"{([\w\=\:\-\.\%]+)}", self._formatting)
         for f in fields:
@@ -175,6 +176,7 @@ class Formatter:
             timestamp=time.strftime("%Y-%m-%d %H:%M:%S UTC"))
 
         for f in self._fields:
+            logger.debug(f"field={f}")
             if f in fields:
                 output = output.replace("{" + f + "}", self._escape(str(fields[f])))
             elif f in self._defaults:

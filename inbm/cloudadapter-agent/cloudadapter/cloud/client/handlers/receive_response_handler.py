@@ -86,9 +86,12 @@ class ReceiveResponseHandler(Handler):
             # Run the applicable bound callback
             response = f"\"Unknown method: '{method}'\""
             if method in self._methods:
+                logger.debug(f"Method found: {method}")
                 response = self._methods[method](**args)
 
             # Acknowledge the command
             topic = self._topic_formatter.format(**symbols)
+            logger.debug(f"topic={topic}")
             payload = self._payload_formatter.format(message=response, **symbols)
+            logger.debug(f"payload={payload}")
             self._connection.publish(topic, payload)
