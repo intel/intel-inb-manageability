@@ -46,6 +46,9 @@ class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
         """
         pass
 
+    def publish_command(self, command: str) -> None:
+        self._client.publish_command("command", command)
+
     def publish_event(self, message: str) -> None:
         """Publishes an event to the cloud
 

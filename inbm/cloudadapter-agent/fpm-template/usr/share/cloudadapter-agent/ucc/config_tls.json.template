@@ -29,6 +29,10 @@
         "pub": "",
         "format": ""
     },
+    "command": {
+        "pub": "manageability/request/command",
+        "format": "{ \"ts\": \"{ts}\", \"values\": {\"command\": \"{value}\"}}"
+    },
     "method": {
         "pub": "TopicRemoteCommands/response/{request_id}",
         "format": "\"MessageHeader\": \"{messageHeader}\", \"MessageBody\": \"{MessageBody\"}",

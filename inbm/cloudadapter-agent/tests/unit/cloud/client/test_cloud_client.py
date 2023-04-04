@@ -24,11 +24,13 @@ class TestCloudClient(unittest.TestCase):
         self.mock_attribute = mock.create_autospec(Messenger)
         self.mock_event = mock.create_autospec(Messenger)
         self.mock_handler = mock.create_autospec(Handler)
+        self.mock_command = mock.create_autospec(Messenger)
 
         self.cloud_client = CloudClient(
             connection=self.mock_connection,
             telemetry=self.mock_telemetry,
             event=self.mock_event,
+            command=self.mock_command,
             attribute=self.mock_attribute,
             handler=self.mock_handler
         )

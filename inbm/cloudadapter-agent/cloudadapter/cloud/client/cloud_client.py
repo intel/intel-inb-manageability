@@ -13,7 +13,7 @@ from datetime import datetime
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 attribute: OneWayMessenger, handler: ReceiveResponseHandler) -> None:
+                 command: OneWayMessenger, attribute: OneWayMessenger, handler: ReceiveResponseHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
@@ -25,6 +25,7 @@ class CloudClient:
         self._connection = connection
         self._telemetry = telemetry
         self._event = event
+        self._command = command
         self._attribute = attribute
         self._handler = handler
 
@@ -44,6 +45,9 @@ class CloudClient:
         @exception PublishError: If publish fails
         """
         return self._telemetry.publish(key, value, time)
+
+    def publish_command(self, key: str, value: str) -> None:
+        self._command.publish(key, value)
 
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
@@ -69,7 +73,7 @@ class CloudClient:
             (**kwargs): Keys/types are documented per action function
             (str): The success status and an accompanying message
 
-        @param name: name of the method to bind the callback to
+        @param name: name of the method to which to bind the callback
         @param callback: callback to trigger
         """
         return self._handler.bind(name, callback)

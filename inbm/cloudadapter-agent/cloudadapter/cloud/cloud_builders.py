@@ -107,6 +107,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     telemetry = config.get("telemetry")
     attribute = config.get("attribute")
     event = config.get("event")
+    command = config.get("command")
     if telemetry:
         telemetry = build_messenger_with_config(telemetry)
     else:
@@ -122,6 +123,12 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     else:
         raise ClientBuildError(
             "Missing 'event' MQTT config information while setting up cloud connection.")
+    if command:
+        command = build_messenger_with_config(command)
+    else:
+        raise ClientBuildError(
+            "Missing 'command' MQTT config information while setting up cloud connection."
+        )
 
     # Build handler
     handler_config = config.get("method")
@@ -158,5 +165,6 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
         connection=connection,
         telemetry=telemetry,
         event=event,
+        command=command,
         attribute=attribute,
         handler=handler)

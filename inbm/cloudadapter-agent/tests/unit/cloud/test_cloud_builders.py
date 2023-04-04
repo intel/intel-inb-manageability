@@ -43,6 +43,10 @@ class TestCloudBuilders(unittest.TestCase):
                 "pub": "attribute_pub",
                 "format": "attribute_formate"
             },
+            "command": {
+                "pub": "manageability/request/command",
+                "format": "{ \"ts\": \"{ts}\", \"values\": {\"command\": \"{value}\"}}"
+            },
             "method": {
                 "pub": "response_pub",
                 "format": "response_format",
@@ -85,6 +89,10 @@ class TestCloudBuilders(unittest.TestCase):
             "event": {
                 "pub": "event_pub",
                 "format": "event_format"
+            },
+            "command": {
+                "pub": "manageability/request/command",
+                "format": "{ \"ts\": \"{ts}\", \"values\": {\"command\": \"{value}\"}}"
             },
             "telemetry": {
                 "pub": "telemetry_pub",
