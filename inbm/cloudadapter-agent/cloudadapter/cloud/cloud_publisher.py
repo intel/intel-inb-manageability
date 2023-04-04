@@ -35,6 +35,7 @@ class CloudPublisher:
         @param message: (str) The event's message to send
         """
         try:
+            logger.debug(f"publish_event={message}")
             self._adapter.publish_event(message)
         except PublishError as e:
             logger.error(str(e))

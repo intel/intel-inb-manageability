@@ -66,6 +66,7 @@ class Client:
         self._adapter.bind_callback("topic", callback)
 
     def _get_ucc_bindings(self) -> dict:
+        logger.debug("Binding cloud to Command")
         return {METHOD.COMMAND: self._publisher.publish_command}
 
     def _get_cloud_bindings(self) -> dict:
@@ -119,9 +120,6 @@ class Client:
         @exception BadConfigError: If the connection configuration is bad
         """
         self._bind_agent_to_cloud()
-        #if is_ucc_mode():
-        #    self._bind_ucc_to_agent()
-        #else:
         self._bind_cloud_to_agent()
 
         connected = False
