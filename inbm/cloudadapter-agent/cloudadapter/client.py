@@ -83,9 +83,12 @@ class Client:
             }
 
     def _bind_cloud_to_agent(self) -> None:
-        adapter_bindings = self._get_ucc_bindings() if is_ucc_mode() else self._get_cloud_bindings()
-
-        loggers = [self._cloud_publisher.publish_event, logger.info]
+        if is_ucc_mode():
+            adapter_bindings = self._get_ucc_bindings()
+            loggers = [self._cloud_publisher.publish_command, logger.info]
+        else:
+            adapter_bindings = self._get_cloud_bindings()
+            loggers = [self._cloud_publisher.publish_event, logger.info]
 
         for name, callback in adapter_bindings.items():
             callback = self._with_log(callback, *loggers)
