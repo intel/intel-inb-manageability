@@ -117,7 +117,7 @@ class TLSConfig:
 
 class Formatter:
 
-    def __init__(self, formatting: str, defaults={}):
+    def __init__(self, formatting, defaults={}):
         """Create a formatter for a given string formatting.
         Placeholder fields are surrounded with brackets,
         and there are no spaces in the bracketed placeholder field.
