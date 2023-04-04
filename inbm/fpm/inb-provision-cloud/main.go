@@ -277,6 +277,7 @@ func configureProxy() (string, string) {
 		hostName = promptString("\nPlease enter the proxy server hostname or IP:")
 		port = getServerPort("911", "proxy")
 	}
+
 	return hostName, port
 }
 
@@ -426,9 +427,22 @@ func configureTls(templateDir string, caFileName string, cloudProviderName strin
 	return string(jsonBytes), caPath
 }
 
+func removeProxySection(template string) string {
+    proxySection := `"proxy": {
+        "hostname": "{PROXY_HOSTNAME}",
+        "port": {PROXY_PORT}
+    },`
+
+    return strings.Replace(template, proxySection, "", 1)
+}
+
 func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
 	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string,
 	proxyPort string, clientId string) string {
+	if proxyHostName == "" {
+	    template = removeProxySection(template)
+	}
+
 	configJson := template
 	configJson = strings.Replace(configJson, "{CA_PATH}", caPath, -1)
 	configJson = strings.Replace(configJson, "{TOKEN}", deviceToken, -1)
