@@ -17,6 +17,7 @@ from cloudadapter.exceptions import ClientBuildError
 from typing import Dict, Any, Optional
 import jsonschema
 import json
+import snoop
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +33,7 @@ def validate_config(config: Dict[str, Any]) -> None:
         jsonschema.validate(config, schema=schema)
 
 
+@snoop(depth=2)
 def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     """Create CloudClient instance from a schema conforming config object
 

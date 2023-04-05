@@ -1,7 +1,6 @@
 install_dependencies:
-	sudo apt install vagrant
-	sudo apt install virtualbox
 	sudo gem install winrm winrm-elevated
+	vagrant plugin install vagrant-proxyconf
 
 setup:
 	rm -rf inb-files
@@ -12,4 +11,4 @@ destroy:
 	vagrant destroy -f || true
 
 test:
-	VAGRANT_DISABLE_VBOXSYMLINKCREATE=1 vagrant up --provider virtualbox
+	VAGRANT_DISABLE_VBOXSYMLINKCREATE=1 NO_PROXY=127.0.0.1 no_proxy=127.0.0.1 vagrant up --provider virtualbox

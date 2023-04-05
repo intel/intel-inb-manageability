@@ -16,6 +16,7 @@ import os
 import signal
 import logging
 import sys
+import snoop
 from logging.config import fileConfig
 
 from inbm_lib.windows_service import WindowsService
@@ -57,6 +58,7 @@ class CloudAdapter(WindowsService):
         logger.info('Cloud Adapter agent is running')
 
         # Exit if configuration is malformed
+        snoop.install(out=logger.info)
         try:
             client = Client()
             client.start()
