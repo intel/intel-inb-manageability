@@ -131,7 +131,7 @@ class Client:
                 self._adapter.connect()
                 connected = True
             except AuthenticationError as e:
-                raise BadConfigError(str(e))
+                raise BadConfigError from e
             except ConnectError as e:
                 logger.error(str(e))
                 sleep(SLEEP_DELAY)

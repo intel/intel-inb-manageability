@@ -42,7 +42,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     try:
         validate_config(config)
     except jsonschema.ValidationError as e:
-        raise ClientBuildError(str(e))
+        raise ClientBuildError from e
 
     # Configure TLS
     tls_config = config.get("tls", None)
@@ -54,14 +54,14 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
                 device_cert=x509.get("device_cert", None),
                 device_key=x509.get("device_key", None))
         except IOError as e:
-            raise ClientBuildError(str(e))
+            raise ClientBuildError from e
     else:
         if tls_config:
             try:
                 tls_config = TLSConfig(
                     ca_certs=tls_config.get("certificates", None))
             except IOError as e:
-                raise ClientBuildError(str(e))
+                raise ClientBuildError from e
 
     # Configure Proxy
     proxy_config = config.get("proxy")

@@ -115,56 +115,70 @@ done
 cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 
 NO_CLOUD=1 PROVISION_TPM=auto NO_OTA_CERT=1 TELIT_HOST="localhost" bash -x /usr/bin/provision-tc
+
+# Copy certs/keys to paths expected by INBM
+cp /etc/ucc_mosquitto/certs/client.crt /etc/intel-manageability/secret/cloudadapter-agent/client.crt
+cp /etc/ucc_mosquitto/certs/client.key /etc/intel-manageability/secret/cloudadapter-agent/client.key
+cp /etc/ucc_mosquitto/certs/ca.crt /etc/intel-manageability/secret/cloudadapter-agent/ucc.ac.pem.crt
+chown root.cloudadapter-agent /etc/intel-manageability/secret/cloudadapter-agent/*
+chmod u=rw,g=r,o= /etc/intel-manageability/secret/cloudadapter-agent/*
+
 # NOTE: this has to be redone if we change the template or the
 # inb-provision-cloud binary. Alternately we could create a script
 # interface to inb-provision-cloud.
 sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
 { "cloud": "ucc", 
-  "config": {
-    "mqtt": {
-        "client_id": "12345678abcd",
-        "username": "12345678abcd",
-        "hostname": "127.0.0.1",
-        "port": 1234
-    },
-    "proxy": {
-        "hostname": "",
-        "port": 911
-    },
-    "event": {
-        "pub": "TopicTelemetryInfo/12345678abcd",
-        "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
-    },
-    "telemetry": {
-        "pub": "",
-        "format": ""
-    },
-    "attribute": {
-        "pub": "",
-        "format": ""
-    },
-    "method": {
-        "pub": "",
-        "format": "",
-        "sub": "",
-        "parse": {
-            "single": {
-                "request_id": {
-                    "regex": "",
-                    "group": 1
-                },
-                "method": {
-                    "path": "method"
-                },
-                "args": {
-                    "path": "params"
+    "config": {
+        "mqtt": {
+            "client_id": "12345678abcd",
+            "username": "",
+            "hostname": "127.0.0.1",
+            "port": 4000
+        },
+        "tls": {
+            "version": "TLSv1.2",
+            "certificates": "/etc/intel-manageability/secret/cloudadapter-agent/ucc.ca.pem.crt"
+        },
+        "x509": {
+            "device_cert": "/etc/intel-manageability/secret/cloudadapter-agent/client.crt",
+            "device_key": "/etc/intel-manageability/secret/cloudadapter-agent/client.key"
+        },
+        "event": {
+            "pub": "TopicTelemetryInfo/12345678abcd",
+            "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+        },
+        "telemetry": {
+            "pub": "",
+            "format": ""
+        },
+        "attribute": {
+            "pub": "",
+            "format": ""
+        },
+        "method": {
+            "pub": "TopicRemoteCommands/response/{request_id}",
+            "format": "\"MessageHeader\": \"{messageHeader}\", \"MessageBody\": \"{MessageBody\"}",
+            "sub": "TopicRemoteCommands/12345678abcd",
+            "parse": {
+                "single": {
+                    "request_id": {
+                        "regex": "TopicRemoteCommands\\/request\\/([0-9]+)",
+                        "group": 1
+                    },
+                    "method": {
+                        "path": "method"
+                    },
+                    "args": {
+                        "path": "params"
+                    }
                 }
             }
         }
     }
-  }
-}
+ }
 EOF
+
+systemctl restart inbm-cloudadapter
 
 sleep 5
 echo All processes:
