@@ -13,6 +13,8 @@ import jsonschema
 import unittest
 import mock
 
+import json
+
 
 class TestCloudBuilders(unittest.TestCase):
 
@@ -131,6 +133,17 @@ class TestCloudBuilders(unittest.TestCase):
             self, mock_validate_config, MockMQTTConnection, MockCloudClient):
         mock_validate_config.return_value = None
         client = build_client_with_config(self.CONFIG)
+        assert client is MockCloudClient.return_value
+
+    @mock.patch('cloudadapter.cloud.cloud_builders.CloudClient', autospec=True)
+    @mock.patch('cloudadapter.cloud.cloud_builders.MQTTConnection', autospec=True)
+    @mock.patch('cloudadapter.cloud.cloud_builders.validate_config', autospec=True)
+    def test_build_client_with_config_no_command_succeeds(
+            self, mock_validate_config, MockMQTTConnection, MockCloudClient):
+        mock_validate_config.return_value = None
+        no_command_config = self.CONFIG    
+        del no_command_config['command']
+        client = build_client_with_config(no_command_config)
         assert client is MockCloudClient.return_value
 
     @mock.patch('cloudadapter.cloud.cloud_builders.CloudClient', autospec=True)

@@ -13,12 +13,13 @@ from datetime import datetime
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 command: OneWayMessenger, attribute: OneWayMessenger, handler: ReceiveResponseHandler) -> None:
+                 command: Optional[OneWayMessenger], attribute: OneWayMessenger, handler: ReceiveResponseHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
         @param telemetry: Messenger to send telemetry
         @param event: Messenger to send events
+        @param command: Messenger to receive commands (optional)
         @param attribute: Messenger to send attributes
         @param handler: Handler to deal with cloud method calls
         """
@@ -46,7 +47,9 @@ class CloudClient:
         """
         return self._telemetry.publish(key, value, time)
 
-    def publish_command(self, key: str, value: str) -> None:
+    def publish_command(self, key: str, value: str) -> None:  # pragma: nocover
+        if not self._command:
+            return # ignore if no command set up
         self._command.publish(key, value)
 
     def publish_event(self, key: str, value: str) -> None:

@@ -59,7 +59,7 @@ sudo chown mosquitto: /var/run/ucc_mosquitto
 
 # Generate CA key and certificate
 sudo openssl genrsa -out /etc/ucc_mosquitto/certs/ca.key 2048
-sudo openssl req -new -x509 -days 3650 -key /etc/ucc_mosquitto/certs/ca.key -out /etc/ucc_mosquitto/certs/ca.crt -subj "/CN=MQTT CA"
+sudo openssl req -new -x509 -days 3650 -key /etc/ucc_mosquitto/certs/ca.key -out /etc/ucc_mosquitto/certs/ca.crt -subj "/CN=CA"
 
 # Generate server key and certificate, sign with CA
 sudo openssl genrsa -out /etc/ucc_mosquitto/certs/server.key 2048
@@ -68,8 +68,11 @@ sudo openssl x509 -req -in /etc/ucc_mosquitto/certs/server.csr -CA /etc/ucc_mosq
 
 # Generate client key and certificate, sign with CA
 sudo openssl genrsa -out /etc/ucc_mosquitto/certs/client.key 2048
-sudo openssl req -new -key /etc/ucc_mosquitto/certs/client.key -out /etc/ucc_mosquitto/certs/client.csr -subj "/CN=MQTT Client"
+sudo openssl req -new -key /etc/ucc_mosquitto/certs/client.key -out /etc/ucc_mosquitto/certs/client.csr -subj "/CN=localhost"
 sudo openssl x509 -req -in /etc/ucc_mosquitto/certs/client.csr -CA /etc/ucc_mosquitto/certs/ca.crt -CAkey /etc/ucc_mosquitto/certs/ca.key -CAcreateserial -out /etc/ucc_mosquitto/certs/client.crt -days 3650
+
+sudo chmod g+r /etc/ucc_mosquitto/certs/*
+sudo chown root.mosquitto /etc/ucc_mosquitto/certs/*
 
 # Set up mosquitto configuration
 echo "pid_file /var/run/ucc_mosquitto/mosquitto.pid
@@ -119,7 +122,7 @@ NO_CLOUD=1 PROVISION_TPM=auto NO_OTA_CERT=1 TELIT_HOST="localhost" bash -x /usr/
 # Copy certs/keys to paths expected by INBM
 cp /etc/ucc_mosquitto/certs/client.crt /etc/intel-manageability/secret/cloudadapter-agent/client.crt
 cp /etc/ucc_mosquitto/certs/client.key /etc/intel-manageability/secret/cloudadapter-agent/client.key
-cp /etc/ucc_mosquitto/certs/ca.crt /etc/intel-manageability/secret/cloudadapter-agent/ucc.ac.pem.crt
+cp /etc/ucc_mosquitto/certs/ca.crt /etc/intel-manageability/secret/cloudadapter-agent/ucc.ca.pem.crt
 chown root.cloudadapter-agent /etc/intel-manageability/secret/cloudadapter-agent/*
 chmod u=rw,g=r,o= /etc/intel-manageability/secret/cloudadapter-agent/*
 

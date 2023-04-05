@@ -124,12 +124,8 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
         raise ClientBuildError(
             "Missing 'event' MQTT config information while setting up cloud connection.")
     if command:
-        command = build_messenger_with_config(command)
-    else:
-        raise ClientBuildError(
-            "Missing 'command' MQTT config information while setting up cloud connection."
-        )
-
+        command = build_messenger_with_config(command) # command is optional for backwards compatibility
+        
     # Build handler
     handler_config = config.get("method")
     if handler_config:
