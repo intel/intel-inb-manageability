@@ -135,7 +135,7 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
         "mqtt": {
             "client_id": "12345678abcd",
             "username": "",
-            "hostname": "127.0.0.1",
+            "hostname": "localhost",
             "port": 4000
         },
         "tls": {
