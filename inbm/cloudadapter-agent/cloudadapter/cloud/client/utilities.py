@@ -177,7 +177,6 @@ class Formatter:
             timestamp=time.strftime("%Y-%m-%d %H:%M:%S UTC"))
 
         for f in self._fields:
-            logger.debug(f"field={f}")
             if f in fields:
                 output = output.replace("{" + f + "}", self._escape(str(fields[f])))
             elif f in self._defaults:
@@ -201,7 +200,7 @@ class MethodParsed:
 
     def __init__(self, method="", args={}, **symbols):
         """Construct readonly parsed method information
-        @param name:    (str) Method name
+        @param method:    (str) Method name
         @param args:   (dict) Method arguments
         @param symbols: (str) Additionally parsed symbols
         """

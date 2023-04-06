@@ -6,6 +6,7 @@ Cloud Client class that provides all cloud interactions
 from .connections.mqtt_connection import MQTTConnection
 from .messengers.one_way_messenger import OneWayMessenger
 from .handlers.receive_response_handler import ReceiveResponseHandler
+from .handlers.echo_handler import EchoHandler
 from typing import Callable, Optional
 from datetime import datetime
 
@@ -13,20 +14,21 @@ from datetime import datetime
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 command: Optional[OneWayMessenger], attribute: OneWayMessenger, handler: ReceiveResponseHandler) -> None:
+                 echo_handler: Optional[EchoHandler], attribute: OneWayMessenger,
+                 handler: ReceiveResponseHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
         @param telemetry: Messenger to send telemetry
         @param event: Messenger to send events
-        @param command: Messenger to receive commands (optional)
+        @param echo_handler: Handler to echo received payloads as received (optional)
         @param attribute: Messenger to send attributes
         @param handler: Handler to deal with cloud method calls
         """
         self._connection = connection
         self._telemetry = telemetry
         self._event = event
-        self._command = command
+        self._echo_handler = echo_handler
         self._attribute = attribute
         self._handler = handler
 
@@ -47,11 +49,6 @@ class CloudClient:
         """
         return self._telemetry.publish(key, value, time)
 
-    def publish_command(self, key: str, value: str) -> None:  # pragma: nocover
-        if not self._command:
-            return # ignore if no command set up
-        self._command.publish(key, value)
-
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
 
@@ -70,6 +67,10 @@ class CloudClient:
         """
         return self._attribute.publish(key, value)
 
+    def bind_echo_callback(self, name: str, callback: Callable) -> None:
+        if self._echo_handler:
+            self._echo_handler.bind(name, callback)
+
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud
         The callback has the signature: (**kwargs) -> (str)
@@ -79,7 +80,7 @@ class CloudClient:
         @param name: name of the method to which to bind the callback
         @param callback: callback to trigger
         """
-        return self._handler.bind(name, callback)
+        self._handler.bind(name, callback)
 
     def connect(self) -> None:
         """Establish a connection to the cloud service"""

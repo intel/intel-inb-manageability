@@ -29,10 +29,6 @@ class CloudPublisher:
     def __init__(self, adapter: Adapter) -> None:
         self._adapter = adapter
 
-    def publish_command(self, command: str) -> None:
-        logger.debug(f"publish_command={command}")
-        self._adapter.publish_command(command)
-
     def publish_event(self, message: str) -> None:
         """Publish an event to the cloud
 

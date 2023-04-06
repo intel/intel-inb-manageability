@@ -39,5 +39,10 @@
                 }
             }
         }
+    },
+    "echoer": {
+        "pub": "manageability/request/command/{CLIENT_ID}",
+        "format": "\"{message}\"",
+        "sub": "TopicRemoteCommands/{CLIENT_ID}"
     }
 }

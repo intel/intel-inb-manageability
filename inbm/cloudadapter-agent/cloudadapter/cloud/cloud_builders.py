@@ -107,7 +107,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     telemetry = config.get("telemetry")
     attribute = config.get("attribute")
     event = config.get("event")
-    command = config.get("command")
+
     if telemetry:
         telemetry = build_messenger_with_config(telemetry)
     else:
@@ -123,9 +123,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     else:
         raise ClientBuildError(
             "Missing 'event' MQTT config information while setting up cloud connection.")
-    if command:
-        command = build_messenger_with_config(command) # command is optional for backwards compatibility
-        
+
     # Build handler
     handler_config = config.get("method")
     if handler_config:
@@ -143,17 +141,18 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
                 aggregate_info=parser_config.get("aggregate")),
             connection=connection)
 
-    # Build echoers
-    echoer_configs = config.get("echoers", [])
-    for config in echoer_configs:
-        EchoHandler(
+    # Build echoer
+    echo_config = config.get("echoer")
+    echo_handler = None
+    if echo_config:
+        echo_handler = EchoHandler(
             topic_formatter=Formatter(
-                formatting=config.get("pub"),
+                formatting=echo_config.get("pub"),
                 defaults=defaults),
             payload_formatter=Formatter(
-                formatting=config.get("format"),
+                formatting=echo_config.get("format"),
                 defaults=defaults),
-            subscribe_topic=config.get("sub"),
+            subscribe_topic=echo_config.get("sub"),
             connection=connection)
 
     # Build CloudClient
@@ -161,6 +160,6 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
         connection=connection,
         telemetry=telemetry,
         event=event,
-        command=command,
+        echo_handler=echo_handler,
         attribute=attribute,
         handler=handler)

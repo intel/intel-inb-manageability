@@ -29,27 +29,28 @@
         "pub": "",
         "format": ""
     },
-    "command": {
-        "pub": "manageability/request/command",
-        "format": "{ \"ts\": \"{ts}\", \"values\": {\"command\": \"{value}\"}}"
-    },
     "method": {
-        "pub": "TopicRemoteCommands/response/{request_id}",
-        "format": "\"MessageHeader\": \"{messageHeader}\", \"MessageBody\": \"{MessageBody\"}",
-        "sub": "TopicRemoteCommands/{CLIENT_ID}",
+        "pub": "",
+        "format": "",
+        "sub": "",
         "parse": {
             "single": {
                 "request_id": {
-                    "regex": "TopicRemoteCommands\\/request\\/([0-9]+)",
+                    "regex": "",
                     "group": 1
                 },
                 "method": {
-                    "path": "method"
+                    "path": ""
                 },
                 "args": {
-                    "path": "params"
+                    "path": ""
                 }
             }
         }
+    },
+    "echoer": {
+        "pub": "manageability/request/command/{CLIENT_ID}",
+        "format": "\"{timestamp}: {command}\"",
+        "sub": "TopicRemoteCommands/{CLIENT_ID}"
     }
 }
