@@ -97,6 +97,14 @@ class Publisher:
         logger.info("COMMAND TRIGGERED")
         self._broker.publish_command(command)
 
+    def publish_ucc(self, contents: str = "") -> None:
+        """Sends message to the MQTT Broker for UCC
+
+        @param message: message to send
+        """
+        logger.info("UCC MESSAGE TRIGGERED")
+        self._broker.publish_ucc(contents)
+
     def publish_aota(self, **arguments: str) -> str:
         """Publishes an AOTA update
 

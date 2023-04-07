@@ -8,6 +8,7 @@ Unit tests for the ReceiveResponseHandler
 from cloudadapter.cloud.client.handlers.receive_response_handler import ReceiveResponseHandler
 from cloudadapter.cloud.client.connections._connection import Connection
 from cloudadapter.cloud.client.utilities import Formatter, MethodParser, MethodParsed
+from cloudadapter.constants import METHOD
 
 import unittest
 import mock
@@ -59,7 +60,7 @@ class TestReceiveResponseHandler(unittest.TestCase):
         self.mock_payload.format.return_value = "payload"
         mock_callback = mock.Mock()
 
-        receive_respond_handler.bind("raw", mock_callback)
+        receive_respond_handler.bind(METHOD.RAW, mock_callback)
 
         receive_respond_handler._on_method("topic", "payload")        
         

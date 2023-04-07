@@ -108,3 +108,14 @@ class Broker:
         """
         logger.info("Sending command...")
         self.mqttc.publish(TC_REQUEST_CHANNEL + COMMAND, command, retain=True)
+
+    def publish_ucc(self, message: str) -> None:
+        """Publishes a received command message to UCC
+        @param message: The message to send
+        """
+        logger.info("Sending command to UCC...")
+        # FIXME: put in real UCC channel
+        topic = TC_REQUEST_CHANNEL + COMMAND
+        logger.debug(f"details: topic = {topic}; message = {message}")
+
+        self.mqttc.publish(topic, message, retain=True)

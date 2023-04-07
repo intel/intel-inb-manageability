@@ -51,10 +51,10 @@ class Client:
     def _bind_ucc_to_agent(self) -> None:
         logger.debug("Binding cloud to Command")
 
-        callback = self._publisher.publish_command
-        loggers = [self._cloud_publisher.publish_event, logger.info]
+        callback = self._publisher.publish_ucc
+        loggers = [logger.info]
         callback = self._with_log(callback, *loggers)
-        self._adapter.bind_callback(METHOD.COMMAND, callback)
+        self._adapter.bind_callback(METHOD.RAW, callback)
 
     def _bind_cloud_to_agent(self) -> None:
         adapter_bindings = {

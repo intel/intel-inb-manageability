@@ -14,6 +14,7 @@ from ..utilities import Formatter
 from ..utilities import MethodParser
 from ..connections.mqtt_connection import MQTTConnection
 from ....utilities import make_threaded
+from cloudadapter.constants import METHOD
 
 import logging
 logger = logging.getLogger(__name__)
@@ -29,7 +30,7 @@ class ReceiveResponseHandler(Handler):
         @param payload_formatter: Formatter for response payload
         @param subscribe_topic:   Topic to subscribe for incoming messages
         @param parser:            Parser to use for incoming messages:
-                                  if None, simply call method 'raw' with
+                                  if None, simply call METHOD.RAW with
                                   argument 'contents' set to the MQTT payload                                        
         @param connection: (Connection) Connection to use
         """
@@ -66,18 +67,18 @@ class ReceiveResponseHandler(Handler):
         payload = self._payload_formatter.format(message=response, **symbols)
         self._connection.publish(topic, payload)
 
-    def _on_method(self, topic: str, payload: str) -> None:
+    def _on_method(self, topic: str, payload: bytes) -> None:
         """Callback for subscribed cloud messages
 
-        @param topic:   (str) Specific topic
-        @param payload: (str) Raw UTF-8 payload
+        @param topic:   Specific topic
+        @param payload: Raw UTF-8 payload
         """
 
         logger.debug(f"_on_method topic: {topic} payload: {payload} ")
 
         if self._method_parser is None:
-            logger.debug(f"method=raw contents={payload}")
-            self._fire_method('raw', {'contents': payload}, {})
+            logger.debug(f"method={METHOD.RAW} contents={payload}")
+            self._fire_method(METHOD.RAW, {'contents': payload.decode('utf-8', errors = "strict")}, {})
             return
     
         # Parse the message

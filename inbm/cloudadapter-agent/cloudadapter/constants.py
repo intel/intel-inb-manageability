@@ -89,6 +89,7 @@ class METHOD:
     UPLOAD = "file_upload"
     QUERY = "triggerquery"
     COMMAND = "command"
+    RAW = "raw"
 
 
 # ========== Cloud configuration constants
