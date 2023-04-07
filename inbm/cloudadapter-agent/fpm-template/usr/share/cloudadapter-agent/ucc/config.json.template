@@ -10,7 +10,7 @@
         "port": {PROXY_PORT}
     },
     "event": {
-        "pub": "TopicTelemetryInfo",
+        "pub": "TopicTelemetryInfo/{CLIENT_ID}",
         "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
     },
     "telemetry": {
@@ -22,27 +22,8 @@
         "format": ""
     },
     "method": {
-        "pub": "",
-        "format": "",
-        "sub": "",
-        "parse": {
-            "single": {
-                "request_id": {
-                    "regex": "v1\\/devices\\/me\\/rpc\\/request\\/([0-9]+)",
-                    "group": 1
-                },
-                "method": {
-                    "path": "method"
-                },
-                "args": {
-                    "path": "params"
-                }
-            }
-        }
-    },
-    "echoer": {
-        "pub": "manageability/request/command/{CLIENT_ID}",
-        "format": "\"{message}\"",
+        "pub": "TopicRemoteCommands/response/{request_id}",
+        "format": "\"{timestamp}: {message}\"",
         "sub": "TopicRemoteCommands/{CLIENT_ID}"
     }
 }

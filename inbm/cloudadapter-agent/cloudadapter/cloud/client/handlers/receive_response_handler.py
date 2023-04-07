@@ -74,10 +74,10 @@ class ReceiveResponseHandler(Handler):
         @param payload: Raw UTF-8 payload
         """
 
-        logger.debug(f"_on_method topic: {topic} payload: {payload} ")
+        logger.debug(f"_on_method topic: {topic} payload: {str(payload)} ")
 
         if self._method_parser is None:
-            logger.debug(f"method={METHOD.RAW} contents={payload}")
+            logger.debug(f"method={METHOD.RAW} contents={str(payload)}")
             self._fire_method(METHOD.RAW, {'contents': payload.decode('utf-8', errors = "strict")}, {})
             return
     
@@ -86,12 +86,12 @@ class ReceiveResponseHandler(Handler):
             parsed = self._method_parser.parse(topic, payload)
         except ValueError as e:
             logger.error("Received malformed message: see debug log")
-            logger.debug(f"message contents: {payload} error: {str(e)}")
+            logger.debug(f"message contents: {str(payload)} error: {str(e)}")
             return
 
         if not parsed:
             logger.info("Received non-RPC message: see debug log")
-            logger.debug(f"message contents: {payload}")
+            logger.debug(f"message contents: {str(payload)}")
             return
 
         # Loop through all parsed methods
