@@ -30,27 +30,8 @@
         "format": ""
     },
     "method": {
-        "pub": "",
-        "format": "",
-        "sub": "",
-        "parse": {
-            "single": {
-                "request_id": {
-                    "regex": "",
-                    "group": 1
-                },
-                "method": {
-                    "path": ""
-                },
-                "args": {
-                    "path": ""
-                }
-            }
-        }
-    },
-    "echoer": {
-        "pub": "manageability/request/command/{CLIENT_ID}",
-        "format": "\"{timestamp}: {command}\"",
-        "sub": "TopicRemoteCommands/{CLIENT_ID}"
+        "pub": "TopicRemoteCommands/response/{request_id}",
+        "format": "\"{timestamp}: {message}\"",
+        "sub": "TopicRemoteCommands/{CLIENT_ID}",
     }
 }

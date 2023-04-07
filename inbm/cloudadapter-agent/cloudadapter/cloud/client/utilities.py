@@ -9,7 +9,7 @@ import re
 from datetime import datetime
 from ssl import SSLContext, CERT_REQUIRED, PROTOCOL_TLS, OP_NO_TLSv1_1, OP_NO_TLSv1, OP_NO_COMPRESSION, \
     OP_NO_RENEGOTIATION, TLSVersion, OP_NO_SSLv2, OP_NO_SSLv3
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Dict, Any
 
 from future.moves.urllib.request import getproxies
 
@@ -198,7 +198,7 @@ class Formatter:
 
 class MethodParsed:
 
-    def __init__(self, method="", args={}, **symbols):
+    def __init__(self, method: str = "", args: Dict[str, Any] = {}, **symbols: str):
         """Construct readonly parsed method information
         @param method:    (str) Method name
         @param args:   (dict) Method arguments

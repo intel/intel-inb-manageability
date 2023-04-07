@@ -14,7 +14,7 @@ from .client.cloud_client import CloudClient
 from .client.utilities import ProxyConfig, TLSConfig, Formatter, MethodParser
 from cloudadapter.constants import GENERIC_SCHEMA_PATH
 from cloudadapter.exceptions import ClientBuildError
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import jsonschema
 import json
 
@@ -126,8 +126,15 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
 
     # Build handler
     handler_config = config.get("method")
-    if handler_config:
+    if handler_config:            
         parser_config = handler_config.get("parse")
+        parser: Optional[MethodParser]
+        if parser_config is None:
+            parser = None
+        else:
+            parser = MethodParser(
+                parse_info=parser_config.get("single"),
+                aggregate_info=parser_config.get("aggregate"))
         handler = ReceiveResponseHandler(
             topic_formatter=Formatter(
                 formatting=handler_config.get("pub"),
@@ -136,9 +143,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
                 formatting=handler_config.get("format"),
                 defaults=defaults),
             subscribe_topic=handler_config.get("sub"),
-            parser=MethodParser(
-                parse_info=parser_config.get("single"),
-                aggregate_info=parser_config.get("aggregate")),
+            parser=parser,
             connection=connection)
 
     # Build echoer

@@ -11,7 +11,15 @@ from cloudadapter.cloud.client.utilities import Formatter, MethodParser, MethodP
 
 import unittest
 import mock
+import logging
+import sys
 
+logging.basicConfig(level=logging.DEBUG) # set log level for root logger
+
+logger = logging.getLogger()
+logger.level = logging.DEBUG
+stream_handler = logging.StreamHandler(sys.stdout)
+logger.addHandler(stream_handler)
 
 class TestReceiveResponseHandler(unittest.TestCase):
 
@@ -38,6 +46,24 @@ class TestReceiveResponseHandler(unittest.TestCase):
 
         self.receive_respond_handler._on_method("topic", "payload")
         assert mock_callback.call_count == 1
+
+    def test_bind_succeeds_no_parser(self):
+        receive_respond_handler = ReceiveResponseHandler(
+            self.mock_topic,
+            self.mock_payload,
+            "subscribe_topic",
+            None,
+            self.mock_connection)
+        
+        self.mock_topic.format.return_value = "topic"
+        self.mock_payload.format.return_value = "payload"
+        mock_callback = mock.Mock()
+
+        receive_respond_handler.bind("raw", mock_callback)
+
+        receive_respond_handler._on_method("topic", "payload")        
+        
+        self.assertEqual(mock_callback.call_count, 1)
 
     def test_on_method_exits_on_no_methods_succeeds(self):
         self.mock_topic.format.return_value = "topic"

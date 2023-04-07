@@ -160,22 +160,8 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
         },
         "method": {
             "pub": "TopicRemoteCommands/response/{request_id}",
-            "format": "\"MessageHeader\": \"{messageHeader}\", \"MessageBody\": \"{MessageBody\"}",
+            "format": "\"{timestamp}: {message}\"",
             "sub": "TopicRemoteCommands/12345678abcd",
-            "parse": {
-                "single": {
-                    "request_id": {
-                        "regex": "TopicRemoteCommands\\/request\\/([0-9]+)",
-                        "group": 1
-                    },
-                    "method": {
-                        "path": "method"
-                    },
-                    "args": {
-                        "path": "params"
-                    }
-                }
-            }
         }
     }
  }

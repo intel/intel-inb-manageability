@@ -8,7 +8,7 @@ a formatted message as a response.
 
 from typing import Dict
 
-from typing import Callable
+from typing import Callable, Any, Optional
 from ._handler import Handler
 from ..utilities import Formatter
 from ..utilities import MethodParser
@@ -17,18 +17,20 @@ from ....utilities import make_threaded
 
 import logging
 logger = logging.getLogger(__name__)
-
+logger.setLevel(logging.DEBUG)
 
 class ReceiveResponseHandler(Handler):
 
     def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, subscribe_topic: str,
-                 parser: MethodParser, connection: MQTTConnection) -> None:
+                 parser: Optional[MethodParser], connection: MQTTConnection) -> None:
         """Construct a generic handler
 
-        @param topic_formatter:   (Formatter) Formatter for response publish topic
-        @param payload_formatter: (Formatter) Formatter for response payload
-        @param subscribe_topic:   (str) Topic to subscribe for incoming messages
-        @param parser:   (MethodParser) Parser to use for incoming messages
+        @param topic_formatter:   Formatter for response publish topic
+        @param payload_formatter: Formatter for response payload
+        @param subscribe_topic:   Topic to subscribe for incoming messages
+        @param parser:            Parser to use for incoming messages:
+                                  if None, simply call method 'raw' with
+                                  argument 'contents' set to the MQTT payload                                        
         @param connection: (Connection) Connection to use
         """
         self._topic_formatter = topic_formatter
@@ -43,6 +45,26 @@ class ReceiveResponseHandler(Handler):
 
     def bind(self, name: str, callback: Callable):
         self._methods[name] = callback
+    
+    def _fire_method(self, method: str, args: Dict[str, Any], symbols: Dict[str, Any]):
+        """Fire an individual method and provide response to cloud
+        
+        @param method:  Method to fire
+        @param args:    Arguments to the method
+        @param symbols: Keyword arguments to the method"""
+
+        logger.debug(f"_fire_method method: {method} args: {args} symbols: {symbols}")
+
+        # Run the applicable bound callback
+        response = f"\"Unknown method: '{method}'\""
+        if method in self._methods:
+            logger.debug(f"Method found: {method}")
+            response = self._methods[method](**args)
+
+        # Acknowledge the command
+        topic = self._topic_formatter.format(**symbols)
+        payload = self._payload_formatter.format(message=response, **symbols)
+        self._connection.publish(topic, payload)
 
     def _on_method(self, topic: str, payload: str) -> None:
         """Callback for subscribed cloud messages
@@ -51,6 +73,13 @@ class ReceiveResponseHandler(Handler):
         @param payload: (str) Raw UTF-8 payload
         """
 
+        logger.debug(f"_on_method topic: {topic} payload: {payload} ")
+
+        if self._method_parser is None:
+            logger.debug(f"method=raw contents={payload}")
+            self._fire_method('raw', {'contents': payload}, {})
+            return
+    
         # Parse the message
         try:
             parsed = self._method_parser.parse(topic, payload)
@@ -82,14 +111,6 @@ class ReceiveResponseHandler(Handler):
             logger.info(
                 "Received parsed method: '%s' Request ID: '%s'",
                 method, symbols.get("request_id"))
+            
+            self._fire_method(method, args, symbols)
 
-            # Run the applicable bound callback
-            response = f"\"Unknown method: '{method}'\""
-            if method in self._methods:
-                logger.debug(f"Method found: {method}")
-                response = self._methods[method](**args)
-
-            # Acknowledge the command
-            topic = self._topic_formatter.format(**symbols)
-            payload = self._payload_formatter.format(message=response, **symbols)
-            self._connection.publish(topic, payload)
