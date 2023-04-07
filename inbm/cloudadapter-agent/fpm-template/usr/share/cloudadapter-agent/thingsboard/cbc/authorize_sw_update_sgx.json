@@ -1,0 +1,184 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Authorize SW Update SGX",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null,
+    "externalId": null
+  },
+  "metadata": {
+    "firstNodeIndex": 1,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 675,
+          "layoutY": 150
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if swupdatesgx",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "return msg.method == \"swupdatesgx\";",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 361,
+          "layoutY": 147
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if INB device",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return metadata.deviceType === \"INB\";"
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 343,
+          "layoutY": 281
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Send DELETE api request",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${endpoint}",
+          "requestMethod": "DELETE",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": true,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {},
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 978,
+          "layoutY": 284
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save logs",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0,
+          "skipLatestPersistence": false,
+          "useServerTs": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 669,
+          "layoutY": 282
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create success message",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\r\n    \"event\": msg\r\n};\r\n\r\nmsgType = \"POST_TELEMETRY_REQUEST\";\r\nreturn { msg: body, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 983,
+          "layoutY": 154
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Fetch value from field",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var params = JSON.parse(msg.params);\r\nmetadata.endpoint = params[\"endpoint\"];\r\n\r\nreturn {msg: {}, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 673,
+          "layoutY": 371
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create failure message",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\r\n    \"event\": metadata.error\r\n};\r\n\r\nmsgType = \"POST_TELEMETRY_REQUEST\";\r\nreturn { msg: body, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 5,
+        "type": "True"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 0,
+        "type": "True"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 6,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 2,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 3,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

@@ -1,0 +1,326 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Trigger TEP Attestation Report",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null,
+    "externalId": null
+  },
+  "metadata": {
+    "firstNodeIndex": 2,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 899,
+          "layoutY": 154
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create POST msg body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var params = JSON.parse(msg.params);\nmetadata.hvs_endpoint = params.hvs_endpoint;\nmetadata.tcaas_endpoint = params.tcaas_endpoint;\nmetadata.tcaas_acc_id = params.tcaas_acc_id;\nmetadata.host_name = params.hostname;\nmetadata.token = \"eyJhbGciOiJSUzM4NCIsImtpZCI6ImIwZTE0ZTU0MTYxODc3NDYwMTYzZGI3M2IwYmY3OWJkMDFiMjBjZWQiLCJ0eXAiOiJKV1QifQ.eyJyb2xlcyI6W3sic2VydmljZSI6IkFBUyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIn0seyJzZXJ2aWNlIjoiVEEiLCJuYW1lIjoiQWRtaW5pc3RyYXRvciJ9LHsic2VydmljZSI6IkhWUyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIn1dLCJwZXJtaXNzaW9ucyI6W3sic2VydmljZSI6IkFBUyIsInJ1bGVzIjpbIio6KjoqIl19LHsic2VydmljZSI6IkhWUyIsInJ1bGVzIjpbIio6KjoqIl19LHsic2VydmljZSI6IlRBIiwicnVsZXMiOlsiKjoqOioiXX1dLCJleHAiOjg4Nzg0MzQ5MzEsImlhdCI6MTY3ODQzNDkwMSwiaXNzIjoiQUFTIEpXVCBJc3N1ZXIiLCJzdWIiOiJnbG9iYWxBZG1pblVzZXJuYW1lIn0.M4IlE9qVn41a1PkuoLeRGERp7qRbVho28r2dmJ7Y1ZPvfGk3tzBWAHl4LAhaOMmVh0tl3zN9MWiKk26TC_Ct3oIArNSiL-m9smHoGQBVUBiQha3TnNY0acY7eUQ-KUZRYmTv6reX6MLKL923y_hTjLs0rdqan9HWv9x_9mzK7Vw8kBfEnVnZDnDj3ofhm7PEMwgeJTSkJQTlBSkosPUFCbBNfkK2YBca_g0TgLgQXR2yd5Z-WWFjdfF7eklm2SsNZpmlML77fSPAod29xyajmtxE8v0R7IqBam8snOO5GF361YNKlIpNr5eCWDOVfarU10wXoCRdccuapXmvVd1ONVejttYGg2KM2k2wLVIuj6-Y4xvkgyeCnDG_bjWk-LHXlzD9NR5n1gPa4RwHm9aVd60FkpOHdXaTgD8mFgnjlVCc8ghs8i-2EKj0KQ9hbnYtEYD1fdOPSmOEdn9ovAyMmo3thzFbvSxY-7_W8qRElvLWD9YN-0_48ddWDiqeoO_f\";\n\n// if the user doesn't provide information, use the current values from dashboard.\nif (!metadata.hvs_endpoint){\n    metadata.hvs_endpoint = metadata.cs_hvs_endpoint;\n}\n\nif (!metadata.tcaas_endpoint){\n    metadata.tcaas_endpoint = metadata.cs_tcaas_endpoint;\n}\n\nif (!metadata.tcaas_acc_id){\n    metadata.tcaas_acc_id = metadata.cs_tcaas_acc_id;\n}\n\nif (!metadata.host_name){\n    metadata.host_name = metadata.cs_tep_hostname;\n}\n\nvar message = {\n  host_name: metadata.host_name\n};\n\n\nreturn {msg: message, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 600,
+          "layoutY": 151
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if trigger attestation request",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "return msg.method == \"triggerreport\";",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 315,
+          "layoutY": 150
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if INB device",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return metadata.deviceType === \"INB\";"
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1210,
+          "layoutY": 154
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Generate Attestation Report",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${hvs_endpoint}/hvs/v2/reports",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "Authorization": "Bearer ${token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1838,
+          "layoutY": 155
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Send Report to TCaaS",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${tcaas_endpoint}/hosts/${tcaas_acc_id}/assertions/tep",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "Authorization": "Bearer ${token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 2155,
+          "layoutY": 314
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create failure msg",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\r\n    \"event\": {\r\n        \"status\": 400,\r\n        \"logs\": metadata.error\r\n    }\r\n};\r\n\r\nmsgType = \"POST_TELEMETRY_REQUEST\";\r\nreturn { msg: body, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 2157,
+          "layoutY": 156
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create success msg",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\r\n    \"event\": {\r\n        \"Node overall Trust status\": metadata.overall,\r\n        \"Verifier\": \"Trigger Attestation Report complete.\",\r\n        \"TCaaS\": \"Assertion succuessfully reported.\"\r\n    }\r\n};\r\n\r\nmsgType = \"POST_TELEMETRY_REQUEST\";\r\nreturn { msg: body, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 2475,
+          "layoutY": 160
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save logs",
+        "debugMode": true,
+        "configuration": {
+          "defaultTTL": 0,
+          "skipLatestPersistence": false,
+          "useServerTs": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1534,
+          "layoutY": 154
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Store overall result",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "metadata.overall = msg.trust_information.OVERALL;\r\n\r\nreturn { msg: msg, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 742,
+          "layoutY": 293
+        },
+        "type": "org.thingsboard.rule.engine.metadata.TbGetAttributesNode",
+        "name": "Read current info from dashboard",
+        "debugMode": true,
+        "configuration": {
+          "tellFailureIfAbsent": true,
+          "fetchToData": false,
+          "clientAttributeNames": [
+            "hvs_endpoint",
+            "tcaas_endpoint",
+            "tcaas_acc_id",
+            "tep_hostname"
+          ],
+          "sharedAttributeNames": [],
+          "serverAttributeNames": [],
+          "latestTsKeyNames": [],
+          "getLatestValueWithTs": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 2681,
+          "layoutY": 517
+        },
+        "type": "org.thingsboard.rule.engine.flow.TbRuleChainInputNode",
+        "name": "Call refresh rule chain",
+        "debugMode": false,
+        "configuration": {
+          "ruleChainId": "c75e1ac0-c3ba-11ed-b991-078ca01c7ec8"
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 2377,
+          "layoutY": 523
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create refresh request",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\r\n    \"method\": \"querypodstats\",\r\n    \"params\": \"{}\",\r\n    \"additionalInfo\": null\r\n};\r\n\r\nmsgType = \"POST_TELEMETRY_REQUEST\";\r\nreturn { msg: body, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 3,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 9,
+        "type": "True"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 1,
+        "type": "True"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 5,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 8,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 5,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 6,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 11,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 0,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 11,
+        "toIndex": 10,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}

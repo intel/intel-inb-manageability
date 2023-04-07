@@ -1,0 +1,418 @@
+{
+  "ruleChain": {
+    "additionalInfo": {
+      "description": ""
+    },
+    "name": "Create Golden Template",
+    "type": "CORE",
+    "firstRuleNodeId": null,
+    "root": false,
+    "debugMode": false,
+    "configuration": null,
+    "externalId": null
+  },
+  "metadata": {
+    "firstNodeIndex": 3,
+    "nodes": [
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 672,
+          "layoutY": 149
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Get Token Body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var params = JSON.parse(msg.params);\nmetadata.aas_endpoint = params[\"aas_endpoint\"];\nmetadata.hvs_endpoint = params[\"hvs_endpoint\"];\n\nvar body = {\"username\": \"globalAdminUsername\",\"password\": \"globalAdminPassword\"};\n\nreturn {msg: body, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 794,
+          "layoutY": 296
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Get Token",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${aas_endpoint}/aas/v1/token",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "Content-Type": "application/json",
+            "Accept": "application/jwt"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 373,
+          "layoutY": 150
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if \"Create Golden Template\" request",
+        "debugMode": false,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "return msg.method == \"creategoldentemplate\";",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 238,
+          "layoutY": 299
+        },
+        "type": "org.thingsboard.rule.engine.filter.TbJsFilterNode",
+        "name": "Check if INB device",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return metadata.deviceType === \"INB\";"
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 948,
+          "layoutY": 151
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create flavor template body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "metadata.token = msg.token;\n\nvar body = {    \n    \"flavorgroup_names\": null,\n        \"flavor_template\": {\n            \"label\": \"default-tep\",\n            \"condition\": [\n            \"//host_info/os_name//*[text()='\\''OpenEmbedded'\\'']\",\n            \"//host_info/hardware_features/TPM/meta/tpm_version//*[text()='\\''2.0'\\'']\",\n            \"//host_info/hardware_features/UEFI/enabled//*[text()!='\\''true'\\''] or //host_info/hardware_features/UEFI/meta/secure_boot_enabled//*[text()!='\\''true'\\'']\"\n          ],\n        \"flavor_parts\": {\n            \"PLATFORM\": {\n                \"meta\": {\n                    \"tpm_version\": \"2.0\",\n                    \"vendor\": \"Linux\"\n                },\n                \"pcr_rules\": [\n                    {\n                        \"pcr\": {\n                            \"index\": 0,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true\n                    },\n                    {\n                        \"pcr\": {\n                            \"index\": 7,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true\n                    }\n                ]\n            },\n            \"OS\": {\n                \"meta\": {\n                    \"tpm_version\": \"2.0\",\n                    \"vendor\": \"Linux\"\n                },\n                \"pcr_rules\": [\n                    {\n                        \"pcr\": {\n                            \"index\": 8,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true\n                    },\n                    {\n                        \"pcr\": {\n                            \"index\": 9,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true\n                    },\n                    {\n                        \"pcr\": {\n                            \"index\": 12,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true\n                    }\n                ]\n            }\n        }\n    }\n }\n\nreturn {msg: JSON.stringify(body), metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1084,
+          "layoutY": 295
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Create Flavor Template",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${hvs_endpoint}/hvs/v2/flavor-templates",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "Accept": "application/json",
+            "Authorization": "Bearer ${token}",
+            "Content-Type": "application/json"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1223,
+          "layoutY": 151
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create flavor group body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "metadata.flavor_group_name = \"cbc_flavor_group_1\"\nvar body = {\n  \"name\": metadata.flavor_group_name,\n  \"flavorTemplateIds\": [\n    msg.id\n  ],\n  \"flavor_match_policy_collection\": {\n    \"flavor_match_policies\": [\n      {\n        \"flavor_part\": \"PLATFORM\",\n        \"match_policy\": {\n          \"match_type\": \"ANY_OF\",\n          \"required\": \"REQUIRED\"\n        }\n      },\n      {\n        \"flavor_part\": \"OS\",\n        \"match_policy\": {\n          \"match_type\": \"ANY_OF\",\n          \"required\": \"REQUIRED\"\n        }\n      }\n    ]\n  }\n};\n\nreturn {msg: body, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1360,
+          "layoutY": 294
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Create flavor group",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${hvs_endpoint}/hvs/v2/flavorgroups",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "Accept": "application/json",
+            "Authorization": "Bearer ${token}",
+            "Content-Type": "application/json"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1497,
+          "layoutY": 150
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Create flavor body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "metadata.flavor_group_id = msg.id;\n\nvar body = {\n    \"connection_string\": \"intel:nats://tep-adl-cbc\",\n    \"partial_flavor_types\": [\n        \"PLATFORM\",\n        \"OS\"\n    ],\n    \"flavorgroup_names\": [metadata.flavor_group_name]\n};\n\nreturn {msg: body, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1635,
+          "layoutY": 293
+        },
+        "type": "org.thingsboard.rule.engine.rest.TbRestApiCallNode",
+        "name": "Create flavor",
+        "debugMode": true,
+        "configuration": {
+          "restEndpointUrlPattern": "${hvs_endpoint}/hvs/v2/flavors",
+          "requestMethod": "POST",
+          "useSimpleClientHttpFactory": false,
+          "ignoreRequestBody": false,
+          "enableProxy": false,
+          "useSystemProxyProperties": true,
+          "proxyScheme": "https",
+          "proxyHost": "http://proxy-dmz.intel.com",
+          "proxyPort": 912,
+          "proxyUser": null,
+          "proxyPassword": null,
+          "readTimeoutMs": 20000,
+          "maxParallelRequestsCount": 0,
+          "headers": {
+            "Accept": "application/json",
+            "Authorization": "Bearer ${token}",
+            "Content-Type": "application/json"
+          },
+          "useRedisQueueForMsgPersistence": false,
+          "trimQueue": false,
+          "maxQueueSize": 0,
+          "credentials": {
+            "type": "anonymous"
+          }
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 949,
+          "layoutY": 450
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "MOCK Create flavor template body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "metadata.token = \"eyJhbGciOiJSUzM4NCIsImtpZCI6ImIwZTE0ZTU0MTYxODc3NDYwMTYzZGI3M2IwYmY3OWJkMDFiMjBjZWQiLCJ0eXAiOiJKV1QifQ.eyJyb2xlcyI6W3sic2VydmljZSI6IkFBUyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIn0seyJzZXJ2aWNlIjoiVEEiLCJuYW1lIjoiQWRtaW5pc3RyYXRvciJ9LHsic2VydmljZSI6IkhWUyIsIm5hbWUiOiJBZG1pbmlzdHJhdG9yIn1dLCJwZXJtaXNzaW9ucyI6W3sic2VydmljZSI6IkFBUyIsInJ1bGVzIjpbIio6KjoqIl19LHsic2VydmljZSI6IkhWUyIsInJ1bGVzIjpbIio6KjoqIl19LHsic2VydmljZSI6IlRBIiwicnVsZXMiOlsiKjoqOioiXX1dLCJleHAiOjg4Nzg0MzQ5MzEsImlhdCI6MTY3ODQzNDkwMSwiaXNzIjoiQUFTIEpXVCBJc3N1ZXIiLCJzdWIiOiJnbG9iYWxBZG1pblVzZXJuYW1lIn0.M4IlE9qVn41a1PkuoLeRGERp7qRbVho28r2dmJ7Y1ZPvfGk3tzBWAHl4LAhaOMmVh0tl3zN9MWiKk26TC_Ct3oIArNSiL-m9smHoGQBVUBiQha3TnNY0acY7eUQ-KUZRYmTv6reX6MLKL923y_hTjLs0rdqan9HWv9x_9mzK7Vw8kBfEnVnZDnDj3ofhm7PEMwgeJTSkJQTlBSkosPUFCbBNfkK2YBca_g0TgLgQXR2yd5Z-WWFjdfF7eklm2SsNZpmlML77fSPAod29xyajmtxE8v0R7IqBam8snOO5GF361YNKlIpNr5eCWDOVfarU10wXoCRdccuapXmvVd1ONVejttYGg2KM2k2wLVIuj6-Y4xvkgyeCnDG_bjWk-LHXlzD9NR5n1gPa4RwHm9aVd60FkpOHdXaTgD8mFgnjlVCc8ghs8i-2EKj0KQ9hbnYtEYD1fdOPSmOEdn9ovAyMmo3thzFbvSxY-7_W8qRElvLWD9YN-0_48ddWDiqeoO_f\";\n\nvar body = {\n        \"flavorgroup_names\": null,\n        \"flavor_template\": {\n            \"label\": \"default-tep\",\n            \"condition\": [\n            \"//host_info/os_name//*[text()='OpenEmbedded']\",\n            \"//host_info/hardware_features/TPM/meta/tpm_version//*[text()='2.0']\",\n            \"//host_info/hardware_features/UEFI/enabled//*[text()!='true'] or //host_info/hardware_features/UEFI/meta/secure_boot_enabled//*[text()!='true']\"\n          ],\n        \"flavor_parts\": {\n            \"PLATFORM\": {\n                \"meta\": {\n                    \"tpm_version\": \"2.0\",\n                    \"vendor\": \"Linux\"\n                },\n                \"pcr_rules\": [\n                    {\n                        \"pcr\": {\n                            \"index\": 0,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true\n                    },\n                    {\n                        \"pcr\": {\n                            \"index\": 7,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true,\n                        \"eventlog_equals\": {}\n                    }\n                ]\n            },\n            \"OS\": {\n                \"meta\": {\n                    \"tpm_version\": \"2.0\",\n                    \"vendor\": \"Linux\"\n                },\n                \"pcr_rules\": [\n                    {\n                        \"pcr\": {\n                            \"index\": 8,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true\n                    },\n                    {\n                        \"pcr\": {\n                            \"index\": 9,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true,\n                        \"eventlog_includes\": [\n                            \"/acrn.bin\",\n                            \"/bzImage-trustedVM\",\n                            \"/bzImage\",\n                            \"/ACPI_VM0.bin\"\n                        ]\n                    },\n                    {\n                        \"pcr\": {\n                            \"index\": 12,\n                            \"bank\": [\n                                \"SHA384\",\n                                \"SHA256\"\n                            ]\n                        },\n                        \"pcr_matches\": true\n                    }\n                ]\n            }\n        }\n    }\n };\n\nreturn {msg: body, metadata: metadata, msgType: msgType};",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1961,
+          "layoutY": 297
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgAttributesNode",
+        "name": "Save tep attributes",
+        "debugMode": true,
+        "configuration": {
+          "scope": "CLIENT_SCOPE",
+          "notifyDevice": false,
+          "sendAttributesUpdatedNotification": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 1823,
+          "layoutY": 152
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Update TEP Info Attribute",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var first_flavor = msg.signed_flavors;\r\nmetadata.flavor_id = first_flavor[0].flavor.meta.id;\r\n\r\nif (!msg.attributes) {\r\n  msg.attributes = {\r\n    tep_flavor_group_id: metadata.flavor_group_id,\r\n    tep_flavor_group_name: metadata.flavor_group_name,\r\n    tep_flavor_id: metadata.flavor_id,\r\n    hvs_endpoint: metadata.hvs_endpoint\r\n  }\r\n};\r\nmsgType = \"POST_ATTRIBUTES_REQUEST\";\r\nreturn { msg: msg.attributes, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 2272,
+          "layoutY": 298
+        },
+        "type": "org.thingsboard.rule.engine.telemetry.TbMsgTimeseriesNode",
+        "name": "Save logs",
+        "debugMode": false,
+        "configuration": {
+          "defaultTTL": 0,
+          "skipLatestPersistence": false,
+          "useServerTs": false
+        },
+        "externalId": null
+      },
+      {
+        "additionalInfo": {
+          "description": "",
+          "layoutX": 2138,
+          "layoutY": 156
+        },
+        "type": "org.thingsboard.rule.engine.transform.TbTransformMsgNode",
+        "name": "Add logs body",
+        "debugMode": true,
+        "configuration": {
+          "scriptLang": "JS",
+          "jsScript": "var body = {\r\n        \"event\": {\r\n        \"logs\": \"Golden Template Creation complete.\"\r\n        }\r\n};\r\n\r\nmsgType = \"POST_TELEMETRY_REQUEST\";\r\nreturn { msg: body, metadata: metadata, msgType: msgType }",
+          "tbelScript": null
+        },
+        "externalId": null
+      }
+    ],
+    "connections": [
+      {
+        "fromIndex": 0,
+        "toIndex": 1,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 4,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 1,
+        "toIndex": 10,
+        "type": "Failure"
+      },
+      {
+        "fromIndex": 2,
+        "toIndex": 0,
+        "type": "True"
+      },
+      {
+        "fromIndex": 3,
+        "toIndex": 2,
+        "type": "True"
+      },
+      {
+        "fromIndex": 4,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 5,
+        "toIndex": 6,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 6,
+        "toIndex": 7,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 7,
+        "toIndex": 8,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 8,
+        "toIndex": 9,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 9,
+        "toIndex": 12,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 10,
+        "toIndex": 5,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 11,
+        "toIndex": 14,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 12,
+        "toIndex": 11,
+        "type": "Success"
+      },
+      {
+        "fromIndex": 14,
+        "toIndex": 13,
+        "type": "Success"
+      }
+    ],
+    "ruleChainConnections": null
+  }
+}
