@@ -130,7 +130,8 @@ chmod u=rw,g=r,o= /etc/intel-manageability/secret/cloudadapter-agent/*
 # inb-provision-cloud binary. Alternately we could create a script
 # interface to inb-provision-cloud.
 sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
-{ "cloud": "ucc", 
+{ 
+    "cloud": "ucc", 
     "config": {
         "mqtt": {
             "client_id": "12345678abcd",
@@ -159,12 +160,12 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
             "format": ""
         },
         "method": {
-            "pub": "TopicRemoteCommands/response/{request_id}",
+            "pub": "TopicRemoteCommands/response/12345678abcd",
             "format": "\"{timestamp}: {message}\"",
             "sub": "TopicRemoteCommands/12345678abcd"
         }
     }
- }
+}
 EOF
 
 systemctl restart inbm-cloudadapter

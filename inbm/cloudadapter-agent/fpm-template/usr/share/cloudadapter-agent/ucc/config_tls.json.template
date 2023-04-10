@@ -30,7 +30,7 @@
         "format": ""
     },
     "method": {
-        "pub": "TopicRemoteCommands/response/{request_id}",
+        "pub": "TopicRemoteCommands/response/{CLIENT_ID}",
         "format": "\"{timestamp}: {message}\"",
         "sub": "TopicRemoteCommands/{CLIENT_ID}"
     }
