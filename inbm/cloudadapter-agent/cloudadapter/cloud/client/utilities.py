@@ -136,8 +136,6 @@ class Formatter:
         """
         self._formatting = formatting
         self._defaults = defaults
-        logger.debug(f"formatting={self._formatting}")
-        logger.debug(f"defaults={self._defaults}")
         self._fields = set()  # type: ignore
         fields = re.finditer(r"{([\w\=\:\-\.\%]+)}", self._formatting)
         for f in fields:
@@ -320,12 +318,11 @@ class MethodParser:
         @exception ValueError: If the input payload was malformed
         """
         payload = json.loads(payload)
-        logger.debug(f"payload: {payload}")
+
         if self._aggregate_info:
             parsed = []
-            logger.debug("Get path")
+
             path = self._aggregate_info.get("path")
-            logger.debug(f"path: {path}")
             payloads = self._parse_by_path(payload, path)
             if payloads:
                 for p in payloads:

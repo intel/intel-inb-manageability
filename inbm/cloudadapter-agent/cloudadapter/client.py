@@ -12,7 +12,7 @@ from .agent.broker import Broker
 from .agent.publisher import Publisher
 from .agent.device_manager import DeviceManager
 
-from .constants import SLEEP_DELAY, TC_TOPIC, METHOD, UCC_REMOTE_COMMAND
+from .constants import SLEEP_DELAY, TC_TOPIC, METHOD
 from .exceptions import (
     ConnectError, DisconnectError, AuthenticationError, BadConfigError)
 from .utilities import make_threaded, is_ucc_mode

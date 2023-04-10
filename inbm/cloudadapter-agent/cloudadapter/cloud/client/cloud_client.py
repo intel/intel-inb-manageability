@@ -5,8 +5,7 @@ Cloud Client class that provides all cloud interactions
 """
 from .connections.mqtt_connection import MQTTConnection
 from .messengers.one_way_messenger import OneWayMessenger
-from .handlers.receive_response_handler import ReceiveResponseHandler
-from .handlers.echo_handler import EchoHandler
+from .handlers.receive_respond_handler import ReceiveRespondHandler
 from typing import Callable, Optional
 from datetime import datetime
 
@@ -14,21 +13,18 @@ from datetime import datetime
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 echo_handler: Optional[EchoHandler], attribute: OneWayMessenger,
-                 handler: ReceiveResponseHandler) -> None:
+                 attribute: OneWayMessenger, handler: ReceiveRespondHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
         @param telemetry: Messenger to send telemetry
         @param event: Messenger to send events
-        @param echo_handler: Handler to echo received payloads as received (optional)
         @param attribute: Messenger to send attributes
         @param handler: Handler to deal with cloud method calls
         """
         self._connection = connection
         self._telemetry = telemetry
         self._event = event
-        self._echo_handler = echo_handler
         self._attribute = attribute
         self._handler = handler
 
@@ -66,10 +62,6 @@ class CloudClient:
         @exception PublishError: If publish fails
         """
         return self._attribute.publish(key, value)
-
-    def bind_echo_callback(self, name: str, callback: Callable) -> None:
-        if self._echo_handler:
-            self._echo_handler.bind(name, callback)
 
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud

@@ -35,13 +35,10 @@ class TestEchoHandler(unittest.TestCase):
         args, _ = self.mock_connection.publish.call_args
         assert args == ("topic", "payload")
 
-    def test_bind_succeeds(self):
-        self.mock_topic.format.return_value = "topic"
-        self.mock_payload.format.return_value = "payload"
-        #self.mock_parser.parse.return_value = [EchoParsed(method="command")]
-        mock_callback = mock.Mock()
-
-        self.echo_handler.bind("method", mock_callback)
-
-        self.echo_handler._on_message("topic", "payload")
-        #assert mock_callback.call_count == 1
+    def test_bind_fails(self):
+        failed = False
+        try:
+            self.echo_handler.bind("name", lambda: None)
+        except NotImplementedError:
+            failed = True
+        assert failed

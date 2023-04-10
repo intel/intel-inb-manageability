@@ -20,7 +20,8 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-class ReceiveResponseHandler(Handler):
+
+class ReceiveRespondHandler(Handler):
 
     def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, subscribe_topic: str,
                  parser: Optional[MethodParser], connection: MQTTConnection) -> None:

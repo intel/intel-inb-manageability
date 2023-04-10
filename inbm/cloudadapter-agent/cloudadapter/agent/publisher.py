@@ -94,15 +94,15 @@ class Publisher:
 
         @param command: command to send
         """
-        logger.info("COMMAND TRIGGERED")
+        logger.info("Send command invoked")
         self._broker.publish_command(command)
 
     def publish_ucc(self, contents: str = "") -> None:
         """Sends message to the MQTT Broker for UCC
 
-        @param message: message to send
+        @param contents: message contents to send
         """
-        logger.info("UCC MESSAGE TRIGGERED")
+        logger.info("UCC Message Triggered")
         self._broker.publish_ucc(contents)
 
     def publish_aota(self, **arguments: str) -> str:

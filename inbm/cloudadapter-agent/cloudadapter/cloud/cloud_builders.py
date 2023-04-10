@@ -8,7 +8,7 @@ import logging
 
 from .client.connections.mqtt_connection import MQTTConnection
 from .client.messengers.one_way_messenger import OneWayMessenger
-from .client.handlers.receive_response_handler import ReceiveResponseHandler
+from .client.handlers.receive_respond_handler import ReceiveRespondHandler
 from .client.handlers.echo_handler import EchoHandler
 from .client.cloud_client import CloudClient
 from .client.utilities import ProxyConfig, TLSConfig, Formatter, MethodParser
@@ -135,7 +135,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
             parser = MethodParser(
                 parse_info=parser_config.get("single"),
                 aggregate_info=parser_config.get("aggregate"))
-        handler = ReceiveResponseHandler(
+        handler = ReceiveRespondHandler(
             topic_formatter=Formatter(
                 formatting=handler_config.get("pub"),
                 defaults=defaults),
@@ -146,18 +146,17 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
             parser=parser,
             connection=connection)
 
-    # Build echoer
-    echo_config = config.get("echoer")
-    echo_handler = None
-    if echo_config:
-        echo_handler = EchoHandler(
+    # Build echoers
+    echoer_configs = config.get("echoers", [])
+    for config in echoer_configs:
+        EchoHandler(
             topic_formatter=Formatter(
-                formatting=echo_config.get("pub"),
+                formatting=config.get("pub"),
                 defaults=defaults),
             payload_formatter=Formatter(
-                formatting=echo_config.get("format"),
+                formatting=config.get("format"),
                 defaults=defaults),
-            subscribe_topic=echo_config.get("sub"),
+            subscribe_topic=config.get("sub"),
             connection=connection)
 
     # Build CloudClient
@@ -165,6 +164,5 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
         connection=connection,
         telemetry=telemetry,
         event=event,
-        echo_handler=echo_handler,
         attribute=attribute,
         handler=handler)

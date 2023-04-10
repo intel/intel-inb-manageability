@@ -5,7 +5,7 @@ Unit tests for the ReceiveResponseHandler
 """
 
 
-from cloudadapter.cloud.client.handlers.receive_response_handler import ReceiveResponseHandler
+from cloudadapter.cloud.client.handlers.receive_respond_handler import ReceiveRespondHandler
 from cloudadapter.cloud.client.connections._connection import Connection
 from cloudadapter.cloud.client.utilities import Formatter, MethodParser, MethodParsed
 from cloudadapter.constants import METHOD
@@ -22,7 +22,8 @@ logger.level = logging.DEBUG
 stream_handler = logging.StreamHandler(sys.stdout)
 logger.addHandler(stream_handler)
 
-class TestReceiveResponseHandler(unittest.TestCase):
+
+class TestReceiveRespondHandler(unittest.TestCase):
 
     def setUp(self):
         self.mock_connection = mock.create_autospec(Connection)
@@ -30,7 +31,7 @@ class TestReceiveResponseHandler(unittest.TestCase):
         self.mock_payload = mock.create_autospec(Formatter)
         self.mock_parser = mock.create_autospec(MethodParser)
 
-        self.receive_respond_handler = ReceiveResponseHandler(
+        self.receive_respond_handler = ReceiveRespondHandler(
             self.mock_topic,
             self.mock_payload,
             "subscribe_topic",
@@ -49,7 +50,7 @@ class TestReceiveResponseHandler(unittest.TestCase):
         assert mock_callback.call_count == 1
 
     def test_bind_succeeds_no_parser(self):
-        receive_respond_handler = ReceiveResponseHandler(
+        receive_respond_handler = ReceiveRespondHandler(
             self.mock_topic,
             self.mock_payload,
             "subscribe_topic",
