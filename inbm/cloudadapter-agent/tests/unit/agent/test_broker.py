@@ -8,7 +8,7 @@ Unit tests for the Broker class
 import unittest
 import mock
 
-from cloudadapter.agent.broker import Broker, TC_TOPIC, UCC_TOPIC
+from cloudadapter.agent.broker import Broker, TC_TOPIC
 
 from cloudadapter.constants import AGENT
 from cloudadapter.constants import TC_REQUEST_CHANNEL
@@ -50,18 +50,6 @@ class TestBroker(unittest.TestCase):
         assert mocked.subscribe.call_count == len(TC_TOPIC.EVENT)
         for args, _ in mocked.subscribe.call_args_list:
             assert args[0] in TC_TOPIC.EVENT
-        assert mock_logger.error.call_count == 0
-
-    @mock.patch('cloudadapter.agent.broker.logger')
-    def test_bind_callback_ucc_command_succeeds(self, mock_logger):
-        topic = "TopicRemoteCommands/12345678abcd"
-        self.broker.bind_callback(tuple([topic]), lambda: None)
-
-        mocked = self.MockMQTT.return_value
-        print (len(UCC_TOPIC.REMOTE_COMMAND))
-        assert mocked.subscribe.call_count == len(UCC_TOPIC.REMOTE_COMMAND)
-        for args, _ in mocked.subscribe.call_args_list:
-            assert args[0] in topic
         assert mock_logger.error.call_count == 0
 
     @mock.patch('cloudadapter.agent.broker.logger')

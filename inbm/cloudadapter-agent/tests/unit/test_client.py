@@ -56,4 +56,4 @@ class TestClient(unittest.TestCase):
     def test_bind_ucc_to_agent(self, mock_get_client):
         self.client._bind_ucc_to_agent()
         self.MockBroker.assert_called_once_with()
-        assert self.MockBroker.return_value.bind_callback.call_count > 0
+        assert self.mock_adapter.bind_callback.call_count > 0
