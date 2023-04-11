@@ -9,7 +9,7 @@ import re
 from datetime import datetime
 from ssl import SSLContext, CERT_REQUIRED, PROTOCOL_TLS, OP_NO_TLSv1_1, OP_NO_TLSv1, OP_NO_COMPRESSION, \
     OP_NO_RENEGOTIATION, TLSVersion, OP_NO_SSLv2, OP_NO_SSLv3
-from typing import Union, Tuple, Optional
+from typing import Union, Tuple, Optional, Dict, Any
 
 from future.moves.urllib.request import getproxies
 
@@ -72,7 +72,7 @@ class TLSConfig:
 
         @param ca_certs: (str) File path to CA certificates to use
         @exception IOError: If CA certificates path is invalid
-        """
+        """        
         self._context = self._make_tls_context(ca_certs, device_cert, device_key)
 
     @property
@@ -99,6 +99,7 @@ class TLSConfig:
         context.check_hostname = True
 
         if device_cert:
+            logger.debug(f'Loading cert chain. device_cert = {device_cert}, device_key = {device_key}')
             context.load_cert_chain(device_cert, device_key)
         if ca_certs:
             try:
@@ -126,7 +127,7 @@ class Formatter:
         - {ts}: Integer epoch timestamp in milliseconds
         - {timestamp}: UTC string timestamp
         Additionally, the {timestamp} may be given a specific
-        formatting through through the syntax: {timestamp=[formatting]}
+        formatting through the syntax: {timestamp=[formatting]}
         where [formatting] is a strftime formatted string, per:
         https://docs.python.org/2/library/datetime.html#strftime-strptime-behavior
 
@@ -135,7 +136,6 @@ class Formatter:
         """
         self._formatting = formatting
         self._defaults = defaults
-
         self._fields = set()  # type: ignore
         fields = re.finditer(r"{([\w\=\:\-\.\%]+)}", self._formatting)
         for f in fields:
@@ -196,9 +196,9 @@ class Formatter:
 
 class MethodParsed:
 
-    def __init__(self, method="", args={}, **symbols):
+    def __init__(self, method: str = "", args: Dict[str, Any] = {}, **symbols: str):
         """Construct readonly parsed method information
-        @param name:    (str) Method name
+        @param method:    (str) Method name
         @param args:   (dict) Method arguments
         @param symbols: (str) Additionally parsed symbols
         """

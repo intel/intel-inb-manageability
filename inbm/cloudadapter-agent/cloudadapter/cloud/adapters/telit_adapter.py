@@ -132,7 +132,7 @@ class TelitAdapter(Adapter):
         try:
             return build_client_with_config(config)
         except ClientBuildError as e:
-            raise AdapterConfigureError(str(e))
+            raise AdapterConfigureError from e
 
     def _parse_payload(self, payload: Dict) -> Dict:
         """Update the payload keys to match internally used ones

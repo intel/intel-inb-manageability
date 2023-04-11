@@ -30,22 +30,8 @@
         "format": ""
     },
     "method": {
-        "pub": "",
-        "format": "",
-        "sub": "",
-        "parse": {
-            "single": {
-                "request_id": {
-                    "regex": "v1\\/devices\\/me\\/rpc\\/request\\/([0-9]+)",
-                    "group": 1
-                },
-                "method": {
-                    "path": "method"
-                },
-                "args": {
-                    "path": "params"
-                }
-            }
-        }
+        "pub": "TopicRemoteCommands/response/{CLIENT_ID}",
+        "format": "\"{timestamp}: {message}\"",
+        "sub": "TopicRemoteCommands/{CLIENT_ID}"
     }
 }

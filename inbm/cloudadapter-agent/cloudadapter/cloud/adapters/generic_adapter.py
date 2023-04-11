@@ -27,7 +27,7 @@ class GenericAdapter(Adapter):
         try:
             return build_client_with_config(config)
         except ClientBuildError as e:
-            raise AdapterConfigureError(str(e))
+            raise AdapterConfigureError from e
 
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud

@@ -66,12 +66,12 @@ Please choose a cloud service to use:
 #? 3
 ```
 
-4. A prompt appears for the **IP address** and **Port**   
+4. A prompt appears for the **IP address or hostname** and **Port**   
     
 ```commandline
-Please enter the Server IP:
+Please enter the Server IP or hostname:
 
-127.0.0.1
+localhost
 ```
 > Note that the server port entry can be left empty to use the default port
 ```commandline

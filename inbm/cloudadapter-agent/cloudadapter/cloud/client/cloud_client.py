@@ -5,7 +5,7 @@ Cloud Client class that provides all cloud interactions
 """
 from .connections.mqtt_connection import MQTTConnection
 from .messengers.one_way_messenger import OneWayMessenger
-from .handlers.recieve_respond_handler import ReceiveResponseHandler
+from .handlers.receive_respond_handler import ReceiveRespondHandler
 from typing import Callable, Optional
 from datetime import datetime
 
@@ -13,7 +13,7 @@ from datetime import datetime
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 attribute: OneWayMessenger, handler: ReceiveResponseHandler) -> None:
+                 attribute: OneWayMessenger, handler: ReceiveRespondHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
@@ -69,10 +69,10 @@ class CloudClient:
             (**kwargs): Keys/types are documented per action function
             (str): The success status and an accompanying message
 
-        @param name: name of the method to bind the callback to
+        @param name: name of the method to which to bind the callback
         @param callback: callback to trigger
         """
-        return self._handler.bind(name, callback)
+        self._handler.bind(name, callback)
 
     def connect(self) -> None:
         """Establish a connection to the cloud service"""

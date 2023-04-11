@@ -117,7 +117,7 @@ class AzureAdapter(Adapter):
         try:
             return build_client_with_config(config)
         except ClientBuildError as e:
-            raise AdapterConfigureError(str(e))
+            raise AdapterConfigureError from e
 
     def _retrieve_hostname(self, scope_id: str, device_id: str, device_auth_set: Dict[str, Any], template_urn: Optional[str]) -> str:
         """Retrieve the IoT Central hostname associated to the device
