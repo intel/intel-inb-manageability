@@ -9,8 +9,6 @@
 """
 
 from ..constants import (
-    UCC_REMOTE_COMMAND,
-    UCC_TOPIC,
     TC_TOPIC,
     TC_REQUEST_CHANNEL,
     SHUTDOWN,
@@ -57,8 +55,7 @@ class Broker:
         @param topic:    The topic to bind the callback to
         @param callback: (Callable) The callback to trigger
         """
-        if topic not in TC_TOPIC.__dict__.values() \
-                and not topic[0].startswith(UCC_REMOTE_COMMAND):  # pylint: disable=dict-values-not-iterating
+        if topic not in TC_TOPIC.__dict__.values():  # pylint: disable=dict-values-not-iterating
             logger.error("Attempted to subscribe to unsupported topic: %s", topic)
             return
 
@@ -111,3 +108,14 @@ class Broker:
         """
         logger.info("Sending command...")
         self.mqttc.publish(TC_REQUEST_CHANNEL + COMMAND, command, retain=True)
+
+    def publish_ucc(self, message: str) -> None:
+        """Publishes a received command message to UCC
+        @param message: The message to send
+        """
+        logger.info("Sending command to UCC...")
+        # FIXME: put in real UCC channel
+        topic = TC_REQUEST_CHANNEL + COMMAND
+        logger.debug(f"details: topic = {topic}; message = {message}")
+
+        self.mqttc.publish(topic, message, retain=True)

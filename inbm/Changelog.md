@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Added
+ - RTC 527671 Allow hostnames for Server IP in provision script
  - RTC 527023,527027 - Add docker notes to README.md and download link to Thingsboard docs
  - RTC 527025 - Add to INBC README on how to provision-tc with no cloud--"inbc only mode"
  - RTC 527028 - Add notes to INBC fota section to mention about URL configuration
@@ -35,6 +36,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 527078 - Change golang-runtime 1.18 to 1.20
  - Harden tarfile extraction against path traversal attacks
  - Bump cryptography from 3.4.8 to 30.9.1 in /inbm/dispatcher-agent
+ - RTC 526357 - security.md file for SDL CT256
 
 ## 3.0.14 - 2022-11-07
 

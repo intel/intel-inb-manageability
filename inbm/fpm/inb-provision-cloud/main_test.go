@@ -7,6 +7,59 @@ package main
 
 import "testing"
 
+func TestServerIpTrue(t *testing.T) {
+	inputs := [4]string{"192.0.2.146", "2001:0db8:85a3:0000:0000:8a2e:0370:7334", "172.16.254.1",
+		"2001:db8:3333:4444:5555:6666:7777:8888"}
+	for i := 1; i < len(inputs); i++ {
+		actual := isValidIPaddress(inputs[i])
+		expected := true
+		if actual != expected {
+			t.Errorf("expected %v, got %v", expected, actual)
+			break
+		}
+	}
+
+}
+
+func TestServerIpFalse(t *testing.T) {
+	inputs := [3]string{"example.com", "www.example.org", "my-server.example.net"}
+	for i := 1; i < len(inputs); i++ {
+		actual := isValidIPaddress(inputs[i])
+		expected := false
+		if actual != expected {
+			t.Errorf("expected %v, got %v", expected, actual)
+			break
+		}
+	}
+
+}
+
+func TestHostnameTrue(t *testing.T) {
+	inputs := [3]string{"example.com", "www.example.org", "my-server.example.net"}
+	for i := 1; i < len(inputs); i++ {
+		actual := isValidHostname(inputs[i])
+		expected := true
+		if actual != expected {
+			t.Errorf("Invalid Hostname")
+			break
+		}
+	}
+
+}
+
+func TestHostnameFalse(t *testing.T) {
+	inputs := [4]string{"example..com", "www.-example.org", "my_server.example.net"}
+	for i := 1; i < len(inputs); i++ {
+		actual := isValidHostname(inputs[i])
+		expected := false
+		if actual != expected {
+			t.Errorf("Invalid Hostname")
+			break
+		}
+	}
+
+}
+
 func TestMakeCustomJson(t *testing.T) {
 	actual := makeCustomJson("cloud", "json")
 	expected := `{ "cloud": "custom: cloud", "config": json }`

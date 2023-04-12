@@ -105,8 +105,8 @@ func setUpCloudCredentialDirectory(cloudCredentialDir string,
 		cloudConfig = configureThingsBoard(cloudCredentialDir, thingsBoardTemplateDir)
 	case "UCC":
 		if !fileExists(uccClientIdFile) {
-            log.Fatalf("Client ID file is missing.  Unable to provision for UCC.")
-        }
+			log.Fatalf("Client ID file is missing.  Unable to provision for UCC.")
+		}
 		cloudConfig = configureUcc(cloudCredentialDir, uccTemplateDir)
 
 	case "Custom":
@@ -291,11 +291,28 @@ func createUnencryptedTemplate(templateDir string) string {
 }
 
 func getServerIp() string {
-	serverIp := promptString("\nPlease enter the server IP:")
-	if net.ParseIP(serverIp) == nil {
-		log.Fatalf("Invalid IP address provided.")
+	serverIPName := promptString("\nPlease enter the server IP or hostname:")
+	if !isValidIPaddress(serverIPName) {
+		if !isValidHostname(serverIPName) {
+			log.Fatalf("Invalid Hostname or IP address provided.")
+		}
 	}
-	return serverIp
+	return serverIPName
+}
+
+func isValidIPaddress(ipaddr string) bool {
+	if net.ParseIP(ipaddr) == nil {
+		return false
+	}
+	return true
+}
+
+func isValidHostname(hostname string) bool {
+	if len(hostname) == 0 || len(hostname) > 253 {
+		return false
+	}
+	validChars := regexp.MustCompile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
+	return validChars.MatchString(hostname)
 }
 
 func getServerPort(defaultPort string, portType string) string {
@@ -428,19 +445,19 @@ func configureTls(templateDir string, caFileName string, cloudProviderName strin
 }
 
 func removeProxySection(template string) string {
-    proxySection := `"proxy": {
+	proxySection := `"proxy": {
         "hostname": "{PROXY_HOSTNAME}",
         "port": {PROXY_PORT}
     },`
 
-    return strings.Replace(template, proxySection, "", 1)
+	return strings.Replace(template, proxySection, "", 1)
 }
 
 func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
 	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string,
 	proxyPort string, clientId string) string {
 	if proxyHostName == "" {
-	    template = removeProxySection(template)
+		template = removeProxySection(template)
 	}
 
 	configJson := template
