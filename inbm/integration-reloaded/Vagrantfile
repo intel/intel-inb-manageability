@@ -75,6 +75,7 @@ EOF
 
 	time sudo python3 -m pip install cryptography==38.0.1 # For create_signature.py
 	time sudo python3 -m pip install requests[security]==2.28.1
+	time sudo python3 -m pip install paho-mqtt==1.6.1
 
     # disable slow time sync
     sudo timedatectl set-ntp no
