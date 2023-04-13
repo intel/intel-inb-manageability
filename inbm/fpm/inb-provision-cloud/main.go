@@ -17,6 +17,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/google/uuid"
 	schema "github.com/lestrrat-go/jsschema"
 	"github.com/lestrrat-go/jsschema/validator"
 )
@@ -24,6 +25,7 @@ import (
 const thingsboard string = "thingsboard"
 const ucc string = "ucc"
 const uccClientIdFile string = "/etc/ucc/client_id"
+const uccServerIdFile string = "/etc/ucc/server_id"
 
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, "usage: inb-provision-cloud [cloud credential directory]"+
@@ -236,7 +238,7 @@ func configureThingsBoard(cloudCredentialDir string, templateDir string) string 
 	}
 
 	return makeCloudJson(thingsboard, jsonTemplate, caPath, deviceToken, serverIp,
-		serverPort, deviceCertPath, "", "", "", "")
+		serverPort, deviceCertPath, "", "", "", "", "")
 }
 
 func configureUcc(cloudCredentialDir string, templateDir string) string {
@@ -255,19 +257,37 @@ func configureUcc(cloudCredentialDir string, templateDir string) string {
 		jsonTemplate = createUnencryptedTemplate(templateDir)
 	}
 
-	clientId := getClientId()
+	clientId := getIdFromFile(uccClientIdFile)
+	serverId := getIdFromFile(uccServerIdFile)
+	if !isIdValid(serverId) {
+		log.Fatalf("UCC Server ID does not meet the requirements.  Unable to provision for UCC.")
+	}
 
 	proxyHostName, proxyPort := configureProxy()
 	return makeCloudJson(ucc, jsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath, deviceKeyPath,
-		proxyHostName, proxyPort, clientId)
+		proxyHostName, proxyPort, clientId, serverId)
 }
 
-func getClientId() string {
-	if content, err := ioutil.ReadFile(uccClientIdFile); err == nil {
+func getIdFromFile(filepath string) string {
+	if content, err := ioutil.ReadFile(filepath); err == nil {
 		return strings.TrimSpace(string(content))
 	}
-	log.Fatalf("Unable to read clientId.  Unable to provision for UCC")
+	log.Fatalf("Unable to read id from " + filepath + ".  Unable to provision for UCC")
 	return ""
+}
+
+func isIdValid(id string) bool {
+	if len(id) > 128 {
+		log.Fatalf("ID Length is greater than 128 characters.")
+		return false
+	}
+	if _, err := uuid.Parse(id); err == nil {
+		return true
+	}
+	if net.ParseIP(id) == nil {
+		return false
+	}
+	return true
 }
 
 func configureProxy() (string, string) {
@@ -292,7 +312,7 @@ func createUnencryptedTemplate(templateDir string) string {
 
 func getServerIp() string {
 	serverIPName := promptString("\nPlease enter the server IP or hostname:")
-	if !isValidIPaddress(serverIPName) {
+	if !isValidIpAddress(serverIPName) {
 		if !isValidHostname(serverIPName) {
 			log.Fatalf("Invalid Hostname or IP address provided.")
 		}
@@ -300,7 +320,7 @@ func getServerIp() string {
 	return serverIPName
 }
 
-func isValidIPaddress(ipaddr string) bool {
+func isValidIpAddress(ipaddr string) bool {
 	if net.ParseIP(ipaddr) == nil {
 		return false
 	}
@@ -455,7 +475,7 @@ func removeProxySection(template string) string {
 
 func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
 	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string,
-	proxyPort string, clientId string) string {
+	proxyPort string, clientId string, serverId string) string {
 	if proxyHostName == "" {
 		template = removeProxySection(template)
 	}
@@ -470,6 +490,7 @@ func makeCloudJson(cloudProviderName string, template string, caPath string, dev
 	configJson = strings.Replace(configJson, "{PROXY_HOSTNAME}", proxyHostName, -1)
 	configJson = strings.Replace(configJson, "{PROXY_PORT}", proxyPort, -1)
 	configJson = strings.Replace(configJson, "{CLIENT_ID}", clientId, -1)
+	configJson = strings.Replace(configJson, "{SERVER_ID}", serverId, -1)
 
 	return `{ "cloud": "` + cloudProviderName + `", "config": ` + configJson + ` }`
 }

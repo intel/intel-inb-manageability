@@ -79,7 +79,7 @@ class ReceiveRespondHandler(Handler):
 
         if self._method_parser is None:
             logger.debug(f"method={METHOD.RAW} contents={str(payload)}")
-            self._fire_method(METHOD.RAW, {'contents': payload.decode('utf-8', errors = "strict")}, {})
+            self._fire_method(METHOD.RAW, {'contents': payload.decode('utf-8', errors="strict")}, {})
             return
     
         # Parse the message
