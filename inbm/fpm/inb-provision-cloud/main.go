@@ -258,10 +258,14 @@ func configureUcc(cloudCredentialDir string, templateDir string) string {
 	}
 
 	clientId := getIdFromFile(uccClientIdFile)
-	isClientIdValid(clientId)
+	if !isClientIdValid(clientId) {
+		log.Fatalf("UCC Client ID does not meet the requirements.  Unable to provision for UCC.")
+	}
 
 	serverId := getIdFromFile(uccServerIdFile)
-	isServerIdValid(serverId)
+	if !isServerIdValid(serverId) {
+		log.Fatalf("UCC Server ID does not meet the requirements.  Unable to provision for UCC.")
+	}
 
 	proxyHostName, proxyPort := configureProxy()
 	return makeCloudJson(ucc, jsonTemplate, caPath, deviceToken, serverIp, serverPort, deviceCertPath, deviceKeyPath,
@@ -278,11 +282,11 @@ func getIdFromFile(filepath string) string {
 
 func isClientIdValid(id string) bool {
 	if len(id) == 0 || len(id) > 128 {
-		log.Fatalf("Client ID Length is greater than 128 characters.  Unable to provision for UCC.")
+		log.Println("Client ID Length is greater than 128 characters.  Unable to provision for UCC.")
 		return false
 	}
 	if strings.ContainsAny(id, "# + \x00") {
-		log.Fatalf("Client ID contains invalid characters.  Unable to provision for UCC.")
+		log.Println("Client ID contains invalid characters.  Unable to provision for UCC.")
 		return false
 	}	
 	return true
@@ -290,14 +294,14 @@ func isClientIdValid(id string) bool {
 
 func isServerIdValid(id string) bool {
 	if len(id) == 0 || len(id) > 128 {
-		log.Fatalf("Server ID Length is greater than 128 characters.  Unable to provision for UCC.")
+		log.Println("Server ID Length is greater than 128 characters.  Unable to provision for UCC.")
 		return false
 	}
 	if _, err := uuid.Parse(id); err == nil {
 		return true
 	}
 	if net.ParseIP(id) == nil {
-		log.Fatalf("Server ID doesn't contain a valid (UUID or IP). Unable to provision for UCC.")
+		log.Println("Server ID doesn't contain a valid (UUID or IP). Unable to provision for UCC.")
 		return false
 	}
 	return true
