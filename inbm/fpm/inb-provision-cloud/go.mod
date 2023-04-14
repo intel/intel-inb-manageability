@@ -12,7 +12,7 @@ require (
 	github.com/lestrrat-go/pdebug v0.0.0-20200204225717-4d6bd78da58d // indirect
 	github.com/lestrrat-go/structinfo v0.0.0-20210312050401-7f8bd69d6acb // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/stretchr/testify v1.7.0 // indirect
+	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/theothertomelliott/go-must v0.0.0-20180901182306-492b25fad7e5 // indirect
 	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
 )

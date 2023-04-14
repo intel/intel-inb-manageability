@@ -18,8 +18,8 @@
         "port": {PROXY_PORT}
     },
     "event": {
-        "pub": "TopicTelemetryInfo/{CLIENT_ID}",
-        "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+        "pub": "uccctl/tel/req/{SERVER_ID}/{CLIENT_ID}",
+        "format": "{\"{value}\"}"
     },
     "telemetry": {
         "pub": "",
@@ -30,8 +30,8 @@
         "format": ""
     },
     "method": {
-        "pub": "TopicRemoteCommands/response/{CLIENT_ID}",
-        "format": "\"{timestamp}: {message}\"",
-        "sub": "TopicRemoteCommands/{CLIENT_ID}"
+        "pub": "uccctl/cmd/res/{SERVER_ID}/{CLIENT_ID}",
+        "format": "\"{timestamp}: OK\"",
+        "sub": "uccctl/cmd/req/{SERVER_ID}/{CLIENT_ID}"
     }
 }
