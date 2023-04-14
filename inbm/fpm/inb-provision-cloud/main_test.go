@@ -13,7 +13,7 @@ import (
 func TestTrueValidServerId(t *testing.T) {
 	inputs := [2]string{"e18122c6-d99f-11ed-bc72-af4d111a5c5e", "172.16.254.1"}
 	for i := 1; i < len(inputs); i++ {
-		assert.True(t, isIdValid(inputs[i]), "Expected valid Server ID.  ID is invalid: "+inputs[i])
+		assert.True(t, isServerIdValid(inputs[i]), "Expected valid Server ID.  ID is invalid: "+inputs[i])
 	}
 }
 
@@ -21,7 +21,21 @@ func TestFalseInvalidServerId(t *testing.T) {
 	inputs := [6]string{"18122c6-d99f-11ed-bc72-af4d111a5c5e", "e18122c6-d99f-11ed-bc72-af4d111a5c5",
 		"e18122c#-d99f-11ed-bc72-af4d111a5c5e", "e18122c6-d99f-1ed-bc72-af4d111a5c5e", "example.com", "300.300.300.300"}
 	for i := 1; i < len(inputs); i++ {
-		assert.False(t, isIdValid(inputs[i]), "Expected invalid Server ID.  Server ID is valid: "+inputs[i])
+		assert.False(t, isServerIdValid(inputs[i]), "Expected invalid Server ID.  Server ID is valid: "+inputs[i])
+	}
+}
+
+func TestTrueValidClientId(t *testing.T) {
+	inputs := [3]string{"ABCDEF123456", "abcdef123456", "abcdef-1234-5678"}
+	for i := 1; i < len(inputs); i++ {
+		assert.True(t, isClientIdValid(inputs[i]), "Expected valid Client ID.  Client ID is invalid: "+inputs[i])
+	}
+}
+
+func TestFalseInvalidClientId(t *testing.T) {
+	inputs := [3]string{"clientId#", "clientid+client", "client\x00id"}
+	for i := 1; i < len(inputs); i++ {
+		assert.False(t, isClientIdValid(inputs[i]), "Expected invalid Client ID.  Client ID is valid: "+inputs[i])
 	}
 }
 

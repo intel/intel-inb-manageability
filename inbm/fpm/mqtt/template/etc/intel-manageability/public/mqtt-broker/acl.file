@@ -17,11 +17,9 @@ topic write dispatcher/query
 user cloudadapter-agent
 topic cloudadapter/#
 topic write manageability/request/+
-topic write uccctl/tel/req/#
 topic read manageability/response
 topic read manageability/telemetry
 topic read manageability/event
-topic read uccctl/cmd/req/#
 
 user telemetry-agent
 topic telemetry/#
