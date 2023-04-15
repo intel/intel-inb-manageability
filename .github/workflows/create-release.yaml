@@ -1,0 +1,62 @@
+name: Create Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      commit_hash:
+        description: 'Commit hash'
+        required: true
+      version:
+        description: 'Version number (e.g. x.y.z)'
+        required: true
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.inputs.commit_hash }}
+
+    - name: Create release branch
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "github-actions@users.noreply.github.com"
+        git checkout -b release-${{ github.event.inputs.version }}
+
+    - name: Update version.txt and inbm/Changelog.md
+      run: |
+        echo "${{ github.event.inputs.version }}" >version.txt
+        sed -i "s/NEXT - \?/${{ github.event.inputs.version }} - ($(date +%Y-%m-%d))/g" inbm/Changelog.md
+
+    - name: Run set-version.sh
+      run: |
+        chmod +x set-version.sh
+        ./set-version.sh 0.0.0 "${{ github.event.inputs.version }}"
+
+    - name: Commit changes
+      run: |
+        git add version.txt inbm/Changelog.md
+        git commit -m "Update version to ${{ github.event.inputs.version }}"
+        git push origin release-${{ github.event.inputs.version }}
+
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        title: "Release ${{ github.event.inputs.version }}"
+        base: main
+        branch: release-${{ github.event.inputs.version }}
+
+    - name: Create draft release
+      uses: actions/create-release@v1
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: v${{ github.event.inputs.version }}
+        release_name: Release ${{ github.event.inputs.version }}
+        body: |
+          ${{ github.event.inputs.version }} - ($(date +%Y-%m-%d))
+          $(awk -v ver="## \${github.event.inputs.version} -" '/^## /{p=\$0~ver} p&&p{print}' Changelog.md)
+        draft: true
