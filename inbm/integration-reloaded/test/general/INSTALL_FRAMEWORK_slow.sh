@@ -31,11 +31,6 @@ if [ "$(lsb_release -rs)" == "20.04" ]; then
   sed -i -e 's#ConditionPathExistsGlob=/dev/tpm.##g' /lib/systemd/system/tpm2-abrmd.service
   sed -i -e 's#ExecStart=/usr/sbin/tpm2-abrmd#ExecStart=/usr/sbin/tpm2-abrmd --tcti=libtss2-tcti-mssim.so.0#g' /lib/systemd/system/tpm2-abrmd.service
   SIMULATOR=1
-elif [ "$(lsb_release -rs)" == "18.04" ]; then
-  echo "Will install TPM Simulator"	
-  dpkg -i ../tpm2-simulator18.04-0.1332-1.deb
-  sed -i -e 's#ExecStart=/usr/sbin/tpm2-abrmd#ExecStart=/usr/sbin/tpm2-abrmd --tcti=libtss2-tcti-mssim.so#g' /lib/systemd/system/tpm2-abrmd.service
-  SIMULATOR=1
 fi
 
 if [ "$SIMULATOR" == "1" ]; then

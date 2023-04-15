@@ -2,7 +2,7 @@
     Central communication agent in the manageability framework responsible
     for issuing commands and signals to other tools/agents
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -299,6 +299,7 @@ class Dispatcher(WindowsService):
                     remove_file(new_file_loc)
                 return Result(CODE_OK, 'Configuration load: SUCCESSFUL')
             except DispatcherException as error:
+                remove_file(new_file_loc)
                 logger.error(error)
                 return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED')
         else:
@@ -881,6 +882,7 @@ class Dispatcher(WindowsService):
             In case of a good health report, it just deletes the snapshot."""
             try:
                 self.install_check(check_type='swCheck')
+                self.install_check(check_type='check_network')
                 self._telemetry('On Boot, Diagnostics reports healthy system')
                 self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
             except DispatcherException:

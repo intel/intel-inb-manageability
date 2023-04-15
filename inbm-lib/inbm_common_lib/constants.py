@@ -1,7 +1,7 @@
 """
     Constants used by both inbm-vision and inbm.
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
  """
 from datetime import datetime

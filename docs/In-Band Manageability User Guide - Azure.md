@@ -5,11 +5,11 @@
 
 1. [Introduction](#introduction)
     1. [Audience](#audience)
-3. [Azure&reg; Overview](#azurereg-overview)
-    1. [Getting Started with Azure&reg;](#getting-started-with-azurereg)
-        1. [Creating Azure&reg; portal account](#creating-azurereg-portal-account)
-        2. [Setting up an Azure&reg; IoT Central Application ](#setting-up-an-azurereg-iot-central-application)
-        3. [Accessing Azure&reg;](#accessing-azurereg)
+3. [Azure&reg; Overview](#azure-overview)
+    1. [Getting Started with Azure&reg;](#getting-started-with-azure)
+        1. [Creating Azure&reg; portal account](#creating-azure-portal-account)
+        2. [Setting up an Azure&reg; IoT Central Application ](#setting-up-an-azure-iot-central-application)
+        3. [Accessing Azure&reg;](#accessing-azure)
         4. [Setting up the application for X509 based device enrollment](#setting-up-the-application-for-x509-based-device-enrollment)
     2. [Creating a Device and Obtaining Device Credentials](#creating-a-device-and-obtaining-device-credentials)
         1. [Shared Access Signature (SAS) authentication:](#shared-access-signature-sas-authentication)
@@ -127,6 +127,17 @@ In order to setup an Azure&reg; account, follow the steps below:
     link below:  
     <https://azure.microsoft.com/en-us/free/>
 
+-    Steps explained through **Images** as below.	
+
+-   Click **Start Free** as seen in the image below.	
+    <img src="media/In-Band Manageability User Guide - Azure/media/image88.png" style="width:4.84028in;height:4.77014in" />
+	
+-   Fill out the necessary details as seen in the image below and click **sign up**.  
+    <img src="media/In-Band Manageability User Guide - Azure/media/image89.png" style="width:4.84028in;height:4.77014in" />
+
+-   At last Click **Go to the Azure Portal** as seen in the image below.
+    <img src="media/In-Band Manageability User Guide - Azure/media/image90.png" style="width:4.84028in;height:4.77014in" />	
+
 #### Setting up an Azure&reg; IoT Central Application 
 
 -   To use the reference Intel® In-Band Manageability Framework IoT Central application, use the link mentioned within the following path.
@@ -139,7 +150,15 @@ In order to setup an Azure&reg; account, follow the steps below:
 
 -   The following form will appear
 
+-	Click **Build** -> Click **Create app**
+
     <img src="media/In-Band Manageability User Guide - Azure/media/image4.png" style="width:4.84028in;height:4.77014in" />
+
+-	Then after creating the app following form will appear
+
+-	In New application select the drop down **Free Trail** in Azure Subscription 
+	
+	<img src="media/In-Band Manageability User Guide - Azure/media/image91.png" style="width:4.84028in;height:4.77014in" />
 
 -   Fill out the form accordingly, then click **Create.**
 
@@ -147,6 +166,8 @@ In order to setup an Azure&reg; account, follow the steps below:
 
 -   After provisioning, the IoT Central application with premade device templates and dashboards will appear. As noted before, this can be accessed at 
     <https://apps.azureiotcentral.com/> under *My Apps* tab or through the Azure&reg; portal.
+	
+#### Note: Azure Subscription  may change depends on **end users** and their **Azure Accounts**
 
 #### Accessing Azure&reg;
 
@@ -282,7 +303,7 @@ sudo provision-tc
 -   If the device was previously provisioned, the following message appears. To override the previous cloud configuration, press **Y**.
 
 ```
-A cloud configuration already exists: "Telit"
+A cloud configuration already exists: "Azure"
 Replace configuration?
 [Y/N] Y
 ```
@@ -291,10 +312,11 @@ Replace configuration?
 
 ```
 Please choose a cloud service to use:
-
-1) Telit Device Cloud 3) ThingsBoard
-2) Azure IoT Central  4) Custom
-#? 2
+1) Azure IoT Central
+2) Thingsboard
+3) UCC
+4) Custom
+#? 1
 ```
 
 -   Next, enter the information for **Scope ID**, **Device ID**, and the
@@ -318,7 +340,7 @@ Please choose provision type.
 ```
 
 -   When the user selects 1: SAS key authentication, a prompt to enter SAS key is seen, the SAS key information can be obtained by
-    following the steps in [Shared Access Signature (SAS) authentication](#shared-access-signature-(sas)-authentication):
+    following the steps in [Shared Access Signature (SAS) authentication](#shared-access-signature-sas-authentication):
 
 ```
 Please enter the device SAS primary key (Hint: https://docs.microsoft.com/en-us/azure/iot-central/howto-generate-connection-string)
@@ -659,7 +681,7 @@ AOTA Field Details
 | App and its command                                            | `docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `list', load`, `import`, `pull`, `remove` and `stats`<br>Application: update                                                                                                                                                        |
 | Container Tag                                                  | Name tag for image/container.<br>Note: Conatiner Tag can have both the Name and Version in this format Image:Version                                                                                                                                                                                                            |
 | Docker&reg; Compose File                                       | Field to specify the name of custom yaml file for docker-compose command. Example: `custom.yml`                                                                                                                                                                                                                                 |
-| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)                                                                                |
+| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package)                                                                                 |
 | Server Username/<br>Server Password                            | If server where we host the package to download AOTA file needs credentials, we need to specify the username and password                                                                                                                                                                                                       |
 | Docker&reg; Registry<br>Docker&reg; Registry Username/Password | Specify Docker&reg; Registry if accessing any registry other than the default ‘index.docker.io’.<br>Example for docker Registry: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands. |
 
@@ -1103,7 +1125,7 @@ In order to trigger Decommission:
     <img src="media/In-Band Manageability User Guide - Azure/media/image65.png" style="width:3.02153in;height:1.91736in" />
 
 ### Query Command
-The Intel® In-Band Manageability provides a way to query attribute information on either the Host, Edge Device, or Nodes.
+The Intel® In-Band Manageability provides a way to query attribute information
 
 -   To query attributes, provide the desire option type in the text box.  Then click the **Trigger Query** button.
 

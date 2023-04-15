@@ -1,7 +1,7 @@
 """
 Abstract base class used by all cloud adapters
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -9,13 +9,20 @@ SPDX-License-Identifier: Apache-2.0
 import abc
 
 from datetime import datetime
-from typing import Callable
+from typing import Callable, Optional
 from ..client.cloud_client import CloudClient
 
 
 class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
     def __init__(self, config: dict):
         self._client = self.configure(config)
+
+    def get_client_id(self) -> Optional[str]:
+        """A readonly property
+
+        @return: Client ID
+        """
+        return self._client.get_client_id()
 
     @abc.abstractmethod
     def configure(self, config: dict) -> CloudClient:
@@ -57,7 +64,7 @@ class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
         self._client.publish_attribute(attribute, value)
 
     def publish_telemetry(self, key: str, value: str, timestamp: datetime) -> None:
-        """Publishes telemetry to the cloud
+        """Publishes individual telemetry data point to the cloud
 
         @param key: telemetry's key to publish
         @param value: data to publish to the telemetry

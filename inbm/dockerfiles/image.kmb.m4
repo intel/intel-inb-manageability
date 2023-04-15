@@ -1,4 +1,4 @@
-FROM registry.hub.docker.com/arm64v8/ubuntu:18.04 as base-arm64v8
+FROM registry.hub.docker.com/arm64v8/ubuntu:20.04 as base-arm64v8
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 include(`commands.base-setup.m4')
 COPY inbm-lib /src/inbm-lib-editable
@@ -8,8 +8,9 @@ RUN python3.8 -m venv /venv-py3 && \
     pip3.8 install -U wheel teamcity-messages virtualenv setuptools-rust
 RUN . /venv-py3/bin/activate && rm -rf /output && \
     pip3.8 install -e /src/inbm-lib-editable
+RUN rm /usr/lib/*/libreadline* # extra protection against libreadline in pyinstaller binaries
 
-FROM registry.hub.docker.com/library/ubuntu:18.04 as base-x86_64
+FROM registry.hub.docker.com/library/ubuntu:20.04 as base-x86_64
 include(`commands.base-setup.m4')
 
 # ------Build Agents for arm64------
@@ -37,15 +38,15 @@ pyinstaller_kmb(`inbm-telemetry', `agent', `arm64v8', `inbm/telemetry-agent')
 pyinstaller_kmb(`inbm-configuration', `agent', `arm64v8', `inbm/configuration-agent')
 pyinstaller_kmb(`inbc', `program', `arm64v8', 'inbc-program')
 
-FROM registry.hub.docker.com/arm64v8/golang:1.18-buster as build-inb-provision-certs
+FROM registry.hub.docker.com/arm64v8/golang:1.20-buster as build-inb-provision-certs
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs /output
 
-FROM registry.hub.docker.com/arm64v8/golang:1.18-buster as build-inb-provision-cloud
+FROM registry.hub.docker.com/arm64v8/golang:1.20-buster as build-inb-provision-cloud
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud /output
 
-FROM registry.hub.docker.com/arm64v8/golang:1.18-buster as build-inb-provision-ota-cert
+FROM registry.hub.docker.com/arm64v8/golang:1.20-buster as build-inb-provision-ota-cert
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert /output
 
@@ -53,7 +54,7 @@ RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /outpu
 FROM base-x86_64 as misc-rpms
 WORKDIR /
 RUN wget https://github.com/certifi/python-certifi/archive/refs/tags/2020.12.05.zip -O python-certifi-src-2020.12.05.zip
-RUN gem install --no-ri --no-rdoc fpm -v 1.11.0
+RUN gem install --no-document fpm -v 1.14.0
 COPY inbm/fpm /src/fpm
 WORKDIR /src/fpm
 COPY --from=build-inb-provision-certs /output/inb-provision-certs /src/fpm/mqtt/template/usr/bin/inb-provision-certs
@@ -77,7 +78,7 @@ RUN cat Makefile && \
 
 # --- trtl ---
 
-FROM registry.hub.docker.com/arm64v8/golang:1.18-buster as trtl-build-arm64
+FROM registry.hub.docker.com/arm64v8/golang:1.20-buster as trtl-build-arm64
 WORKDIR /
 ENV GOPATH /build/go
 ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin

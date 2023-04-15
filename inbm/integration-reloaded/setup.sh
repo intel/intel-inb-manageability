@@ -8,9 +8,7 @@ if ! [ -e "$DIR"/input ] ; then
   ln -sf ../output "$DIR"/input
 fi
 
-if [ "x$1" == "x18.04" ] ; then
-  "$DIR"/scripts/select-ubuntu-18.04.sh
-elif [ "x$1" == "x20.04" ] ; then
+if [ "x$1" == "x20.04" ] ; then
   "$DIR"/scripts/select-ubuntu-20.04.sh
 elif [ "x$1" == "x22.04" ] ; then
   "$DIR"/scripts/select-ubuntu-22.04.sh

@@ -1,9 +1,10 @@
 """
     Constants used by the common manageability library
-    @copyright: Copyright 2017-2022 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2017-2023 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
 from inbm_common_lib.utility import get_canonical_representation_of_path
+from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX
 
 COMPOSE = 'compose'
 DOCKER = 'docker'
@@ -50,3 +51,22 @@ CENTOS_VERSION_PATH = get_canonical_representation_of_path('/etc/centos-release'
 # QUERY
 QUERY_CMD_CHANNEL = 'dispatcher/query'
 HOST_QUERY_CHANNEL = 'manageability/request/query'
+
+# OTA types
+FOTA = "fota"
+SOTA = "sota"
+POTA = "pota"
+
+RESTART = "restart"
+QUERY = "query"
+
+OTA_UPDATE = "install"
+PROVISION = 'provision'
+REQUEST_CHANNEL = 'ma/request/'
+INSTALL_CHANNEL = REQUEST_CHANNEL + OTA_UPDATE
+RESTART_CHANNEL = REQUEST_CHANNEL + RESTART
+QUERY_CHANNEL = REQUEST_CHANNEL + QUERY
+PROVISION_CHANNEL = REQUEST_CHANNEL + PROVISION
+
+# Device local cache
+CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool/')

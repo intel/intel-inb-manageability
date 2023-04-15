@@ -1,7 +1,7 @@
 # build x86 assets
 include(`image.main.m4')
 
-FROM registry.hub.docker.com/library/ubuntu:18.04 as base-x86_64
+FROM registry.hub.docker.com/library/ubuntu:20.04 as base-x86_64
 include(`commands.base-setup.m4')
 
 FROM base-x86_64 as output-ehl

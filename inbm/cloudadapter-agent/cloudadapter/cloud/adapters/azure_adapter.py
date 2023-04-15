@@ -4,7 +4,7 @@ creation of the cloud connection, termination, creating commands etc.
 
 Connects to Azure IoT Central via the General Cloud MQTT client
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -117,7 +117,7 @@ class AzureAdapter(Adapter):
         try:
             return build_client_with_config(config)
         except ClientBuildError as e:
-            raise AdapterConfigureError(str(e))
+            raise AdapterConfigureError from e
 
     def _retrieve_hostname(self, scope_id: str, device_id: str, device_auth_set: Dict[str, Any], template_urn: Optional[str]) -> str:
         """Retrieve the IoT Central hostname associated to the device
@@ -159,6 +159,7 @@ class AzureAdapter(Adapter):
                 "registrationId": device_id,
             }
 
+        sleep(1)  # Pause for a bit
         # Place a registration request for the device (it should already be registered)
         result = requests.put(endpoint + registration, data=json.dumps(data),
                               headers=headers, cert=device_auth_set.get('certs', None))

@@ -3,6 +3,52 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## 3.0.15 - 2023-04-14
+
+### Added
+ - RTC 527671 Allow hostnames for Server IP in provision script
+ - RTC 527023,527027 - Add docker notes to README.md and download link to Thingsboard docs
+ - RTC 527025 - Add to INBC README on how to provision-tc with no cloud--"inbc only mode"
+ - RTC 527028 - Add notes to INBC fota section to mention about URL configuration
+ - RTC 527026 - Add notes to INBC docs
+ - RTC 523847 - Support for Thingsboard 3.4.2
+ - Added UCC mode for INBM installer and cloud adapter
+
+### Fixed
+ - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
+ - RTC 518125 - Fix Missing DBS log when docker image is removed
+ - RTC 518127 - Fix DBS not removing failed container and failed image
+ - RTC 517481 - Fix DBS image is removed when there is DBS container doesn't pass DBS check
+ - HSD 15012036803 - Fix for few telemetry data of the OTA update is not published to Thingsboard cloud
+ - RTC 517426 - Network check added after reboot for SOTA.
+ - RTC 522583 - Added a command to fix for SOTA update fail due to apt-get -yq upgrade failed
+ - JIRA NEXMGMT-16 - Added fix for configuration file not removed if config Load fail
+ - RTC 527018 - Fixed miscellaneous build issues when building from repo root
+ - RTC 527058 - Cloudadapter proxy error during startup (Azure)
+ - RTC 527059 - Overall FOTA result is not publish to cloud (Azure)
+ - RTC 527158, 527530: Installation fixes for UCC
+
+
+### Removed
+ - RTC 525534 - Remove Bit Creek from INBC code and documentation
+
+### Security
+ - RTC 527078 - Change golang-runtime 1.18 to 1.20
+ - Harden tarfile extraction against path traversal attacks
+ - Bump cryptography from 3.4.8 to 30.9.1 in /inbm/dispatcher-agent
+ - RTC 526357 - security.md file for SDL CT256
+
+## 3.0.14 - 2022-11-07
+
+### Fixed
+ - RTC 521500      - Fixed build error by updating PyInstaller to 5.6.2
+ - RTC 520951      - Remove references to 'inbm-lib' from requirements.txt in intel-inb-manageability repository
+ - HSD 15011727901 - Fix POTA/INBC POTA print "Firmware Update Aborted" message after firmware update is success
+ - HSD 15011730318 - Fix INBC FOTA/POTA not supporting "guid" arguments
+
+### Removed
+ - RTC 517780 - Remove Ubuntu 18.04 support
+
 ## 3.0.13 - 2022-08-07
 
 ### Added
@@ -13,7 +59,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 517230 - Added fix for telemetry agent to receive latest values after performing config set OTA and restart of telemetry agent
  - RTC 517028 - Set schema boundary limits for telemetry configuration values
  - RTC 498253 - Fix duplicate of DBS remove operation in docker-compose OTA
-
 
 ## 3.0.12 - 2022-07-14
 

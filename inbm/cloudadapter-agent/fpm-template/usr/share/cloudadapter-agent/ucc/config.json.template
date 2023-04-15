@@ -1,0 +1,29 @@
+{
+    "mqtt": {
+        "client_id": "{CLIENT_ID}",
+        "username": "{TOKEN}",
+        "hostname": "{HOSTNAME}",
+        "port": {PORT}
+    },
+    "proxy": {
+        "hostname": "{PROXY_HOSTNAME}",
+        "port": {PROXY_PORT}
+    },
+    "event": {
+        "pub": "uccctl/tel/req/{SERVER_ID}/{CLIENT_ID}",
+        "format": "{\"{value}\"}"
+    },
+    "telemetry": {
+        "pub": "",
+        "format": ""
+    },
+    "attribute": {
+        "pub": "",
+        "format": ""
+    },
+    "method": {
+        "pub": "uccctl/cmd/res/{SERVER_ID}/{CLIENT_ID}",
+        "format": "\"{timestamp}: OK\"",
+        "sub": "uccctl/cmd/req/{SERVER_ID}/{CLIENT_ID}"
+    }
+}

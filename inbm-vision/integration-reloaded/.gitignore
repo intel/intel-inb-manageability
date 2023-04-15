@@ -1,7 +1,0 @@
-.vagrant/
-input/
-turtlecreek.box
-.idea/
-input
-*.box
-Vagrantfile-vm-box

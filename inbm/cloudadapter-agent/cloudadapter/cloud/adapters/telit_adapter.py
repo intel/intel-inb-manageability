@@ -4,7 +4,7 @@ creation of the cloud connection, termination, creating commands etc.
 
 Uses Wind River HDC Python bindings within the adapter APIs.
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -132,7 +132,7 @@ class TelitAdapter(Adapter):
         try:
             return build_client_with_config(config)
         except ClientBuildError as e:
-            raise AdapterConfigureError(str(e))
+            raise AdapterConfigureError from e
 
     def _parse_payload(self, payload: Dict) -> Dict:
         """Update the payload keys to match internally used ones

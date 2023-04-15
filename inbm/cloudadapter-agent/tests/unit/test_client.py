@@ -51,3 +51,9 @@ class TestClient(unittest.TestCase):
         self.mock_adapter.disconnect.side_effect = DisconnectError
         self.client.stop()
         assert mock_logger.error.call_count == 1
+
+    @mock.patch('cloudadapter.cloud.adapters.adapter.Adapter.get_client_id', return_value="abc123")
+    def test_bind_ucc_to_agent(self, mock_get_client):
+        self.client._bind_ucc_to_agent()
+        self.MockBroker.assert_called_once_with()
+        assert self.mock_adapter.bind_callback.call_count > 0

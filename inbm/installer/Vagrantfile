@@ -1,0 +1,153 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# All Vagrant configuration is done below. The "2" in Vagrant.configure
+# configures the configuration version (we support older styles for
+# backwards compatibility). Please don't change it unless you know what
+# you're doing.
+Vagrant.configure("2") do |config|
+  # The most common configuration options are documented and commented below.
+  # For a complete reference, please see the online documentation at
+  # https://docs.vagrantup.com.
+
+  config.ssh.username = 'vagrant'
+  config.ssh.password = 'vagrant'
+  config.ssh.insert_key = 'true'
+  config.ssh.extra_args = ["-o", "ServerAliveInterval=2", "-o", "ServerAliveCountMax=5"]
+
+
+  # Every Vagrant development environment requires a box. You can search for
+  # boxes at https://atlas.hashicorp.com/search.
+  eval File.read("Vagrantfile-vm-box")
+
+
+  config.vm.synced_folder '.', '/vagrant', disabled: true
+
+  config.vm.provider :libvirt do |domain|
+      domain.memory = 4196
+      domain.cpus = 4
+  end
+  config.vm.provider :libvirt do |libvirt|
+      libvirt.driver = 'kvm'
+  end
+
+  config.vagrant.sensitive = [ENV["DOCKER_PASSWORD"]]
+  config.vm.provision "shell", inline: "sudo apt-get update && sudo apt-get -y install gnupg2 pass && echo " + ENV["DOCKER_PASSWORD"] + " | sudo docker login -u " + ENV["DOCKER_USERNAME"] + " --password-stdin"
+  config.vm.provision "file", source: "./snapperfilter.txt", 
+    destination: "/tmp/snapperfilter.txt"
+  config.vm.provision "shell", inline: "sudo mkdir -p /etc/snapper/filters && sudo cp /tmp/snapperfilter.txt /etc/snapper/filters" 
+
+  
+  config.vm.provider "virtualbox" do |vb|
+      vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
+  end
+
+  config.vm.provision "shell", inline: <<-SHELL
+    set -e
+    set -x
+    sed -i 's/linux-ftp.ostc.intel.com/linux-ftp.ostc.intel.com/g' /etc/apt/sources.list
+    cat >/etc/apt/apt.conf <<EOF
+Acquire::http::proxy "http://proxy-chain.intel.com:911/";
+Acquire::https::proxy "http://proxy-chain.intel.com:912/";
+EOF
+    export https_proxy=http://proxy-chain.intel.com:912/
+    echo "http_proxy=http://proxy-chain.intel.com:911/" >>/etc/environment
+    echo "HTTP_PROXY=http://proxy-chain.intel.com:911/" >>/etc/environment
+    echo "https_proxy=http://proxy-chain.intel.com:912/" >>/etc/environment
+    echo "HTTPS_proxy=http://proxy-chain.intel.com:912/" >>/etc/environment
+    echo "no_proxy=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
+    echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
+    echo 'Dpkg::options { "--force-confdef"; "--force-confold"; }' >>/etc/apt/apt.conf.d/local # FIXME: WORKAROUND FOR SOTA BUG
+    echo 'APT::Periodic::Update-Package-Lists "0";'  >/etc/apt/apt.conf.d/20auto-upgrades
+    echo 'APT::Periodic::Update-Package-Lists "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
+    echo 'APT::Periodic::Download-Upgradeable-Packages "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
+    echo 'APT::Periodic::AutocleanInterval "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
+    echo 'APT::Periodic::Unattended-Upgrade "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
+    ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list || ex -s -c '%s/mirrors.edge.kernel.org\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+    cat /etc/apt/sources.list
+
+    rm -rf /var/lib/apt/lists/*
+
+    mkdir -p /var/log/journal
+    mkdir /var/log/sota_test
+    systemd-tmpfiles --create --prefix /var/log/journal
+    time systemctl restart systemd-journald
+
+	time sudo python3 -m pip install cryptography==38.0.1 # For create_signature.py
+	time sudo python3 -m pip install requests[security]==2.28.1
+
+    # disable slow time sync
+    sudo timedatectl set-ntp no
+  SHELL
+  config.vm.provision "shell", inline: "sudo python3 -c 'import cryptography'"
+  config.vm.provision "file", source: "./scripts/afulnx_64",
+    destination: "/tmp/afulnx_64"
+  config.vm.provision "shell", inline: "cp /tmp/afulnx_64 /opt/afulnx"
+
+  #setting up files for nginx-content
+  config.vm.provision "file", source: "./nginx/nginx.conf", 
+	  destination: "/tmp/nginx.conf"
+  config.vm.provision "shell", inline: <<-SHELL
+    sudo cp /tmp/nginx.conf /etc/nginx/nginx.conf
+    nginx -s reload
+    sed -i "3i 127.0.1.1       ci_nginx" /etc/hosts
+    sed -i "3i 127.0.1.1       cslm_nginx" /etc/hosts
+  SHELL
+
+
+  # Share an additional folder to the guest VM. The first argument is
+  # the path on the host to the actual folder. The second argument is
+  # the path on the guest to mount the folder. And the optional third
+  # argument is a set of non-required options.
+  config.vm.synced_folder './nginx-data', '/vagrant/nginx-data', id: 'nginx-data', type: 'rsync'
+  config.vm.synced_folder './input', '/vagrant/input', id: 'input', type: 'rsync'
+  config.vm.synced_folder './test', '/test', id: 'test', type: 'rsync'
+  config.vm.synced_folder './scripts', '/scripts', id: 'scripts', type: 'rsync'
+
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update && /test/intel-cert-setup-debian.sh
+  SHELL
+
+  # following line is a workaround for a Vagrant bug (run never not working)
+  if ARGV.include? '--provision-with'
+    config.vm.provision "AOTA_LOAD", type: "shell", run: "never",
+      path: "./test/aota/AOTA_LOAD.sh"
+
+    config.vm.provision "AOTA_IMPORT_MULTIPLE", type: "shell", run: "never",
+      path: "./test/aota/AOTA_IMPORT_MULTIPLE.sh"
+
+    config.vm.provision "TC15_REMOTE_IMAGE_INSTALL", type: "shell", run: "never",
+      path: "./test/aota/TC15_REMOTE_IMAGE_INSTALL.sh"
+
+    config.vm.provision "TC16_SUCCESS_PULL_IMAGE", type: "shell", run: "never",
+      path: "./test/aota/TC16_SUCCESS_PULL_IMAGE.sh"
+
+    config.vm.provision "TC17_AOTA_DOCKER_STATS", type: "shell", run: "never",
+      path: "./test/aota/TC17_AOTA_DOCKER_STATS.sh"
+
+    config.vm.provision "fota_good_ami_test_preboot", type: "shell", run: "never",
+      path: "./test/fota/FOTA_GOOD_AMI_TEST_preboot.sh"
+
+    config.vm.provision "fota_good_ami_test_postboot", type: "shell", run: "never",
+      path: "./test/fota/FOTA_GOOD_AMI_TEST_postboot.sh"
+
+    config.vm.provision "fota_good_test_no_tar_preboot", type: "shell", run: "never",
+      path: "./test/fota/FOTA_GOOD_TEST_NO_TAR_preboot.sh"
+
+    config.vm.provision "fota_good_test_no_tar_postboot", type: "shell", run: "never",
+      path: "./test/fota/FOTA_GOOD_TEST_NO_TAR_postboot.sh"
+
+    config.vm.provision "fota_good_local_test_preboot", type: "shell", run: "never",
+      path: "./test/fota/FOTA_GOOD_LOCAL_TEST_preboot.sh"
+
+    config.vm.provision "fota_good_local_test_postboot", type: "shell", run: "never",
+      path: "./test/fota/FOTA_GOOD_LOCAL_TEST_postboot.sh"
+
+    config.vm.provision "dbs_fail", type: "shell", run: "never",
+      path: "./test/dbs/dbs_fail.sh"
+
+    config.vm.provision "dbs_confirm_off", type: "shell", run: "never",
+      path: "./test/dbs/dbs_confirm_off.sh"
+
+  end
+end

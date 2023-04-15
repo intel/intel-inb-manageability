@@ -1,20 +1,20 @@
 """
 Module containing functions that direct the building of CloudClients
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 import logging
 
 from .client.connections.mqtt_connection import MQTTConnection
 from .client.messengers.one_way_messenger import OneWayMessenger
-from .client.handlers.recieve_respond_handler import RecieveRespondHandler
+from .client.handlers.receive_respond_handler import ReceiveRespondHandler
 from .client.handlers.echo_handler import EchoHandler
 from .client.cloud_client import CloudClient
 from .client.utilities import ProxyConfig, TLSConfig, Formatter, MethodParser
 from cloudadapter.constants import GENERIC_SCHEMA_PATH
 from cloudadapter.exceptions import ClientBuildError
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 import jsonschema
 import json
 
@@ -42,7 +42,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     try:
         validate_config(config)
     except jsonschema.ValidationError as e:
-        raise ClientBuildError(str(e))
+        raise ClientBuildError from e
 
     # Configure TLS
     tls_config = config.get("tls", None)
@@ -54,14 +54,14 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
                 device_cert=x509.get("device_cert", None),
                 device_key=x509.get("device_key", None))
         except IOError as e:
-            raise ClientBuildError(str(e))
+            raise ClientBuildError from e
     else:
         if tls_config:
             try:
                 tls_config = TLSConfig(
                     ca_certs=tls_config.get("certificates", None))
             except IOError as e:
-                raise ClientBuildError(str(e))
+                raise ClientBuildError from e
 
     # Configure Proxy
     proxy_config = config.get("proxy")
@@ -107,27 +107,35 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     telemetry = config.get("telemetry")
     attribute = config.get("attribute")
     event = config.get("event")
+
     if telemetry:
         telemetry = build_messenger_with_config(telemetry)
     else:
         raise ClientBuildError(
-            "Missing 'attribute' information in the config to while setting up cloud connection.")
+            "Missing 'telemetry' information in the config to while setting up cloud connection.")
     if attribute:
         attribute = build_messenger_with_config(attribute)
     else:
         raise ClientBuildError(
-            "Missing MQTT config information while setting up cloud connection.")
+            "Missing 'attribute' MQTT config information while setting up cloud connection.")
     if event:
         event = build_messenger_with_config(event)
     else:
         raise ClientBuildError(
-            "Missing MQTT config information while setting up cloud connection.")
+            "Missing 'event' MQTT config information while setting up cloud connection.")
 
     # Build handler
     handler_config = config.get("method")
-    if handler_config:
+    if handler_config:            
         parser_config = handler_config.get("parse")
-        handler = RecieveRespondHandler(
+        parser: Optional[MethodParser]
+        if parser_config is None:
+            parser = None
+        else:
+            parser = MethodParser(
+                parse_info=parser_config.get("single"),
+                aggregate_info=parser_config.get("aggregate"))
+        handler = ReceiveRespondHandler(
             topic_formatter=Formatter(
                 formatting=handler_config.get("pub"),
                 defaults=defaults),
@@ -135,9 +143,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
                 formatting=handler_config.get("format"),
                 defaults=defaults),
             subscribe_topic=handler_config.get("sub"),
-            parser=MethodParser(
-                parse_info=parser_config.get("single"),
-                aggregate_info=parser_config.get("aggregate")),
+            parser=parser,
             connection=connection)
 
     # Build echoers

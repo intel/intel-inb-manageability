@@ -20,7 +20,7 @@ docker build \
     --build-arg https_proxy=${https_proxy:-} \
     --build-arg NO_PROXY=${NO_PROXY:-} \
     --build-arg no_proxy=${no_proxy:-} \
-    --disable-content-trust \
+      \
     -t ${DOCKER_NAME} \
     -f "$DIR"/Dockerfile "$DIR"
 
@@ -37,20 +37,17 @@ scan_golang () {
 rm -rf "$DIR"/results
 mkdir -p "$DIR"/results
 
-scan_golang /repository/inbm/trtl trtl  >"$DIR"/results/snyk-trtl.html
-scan_golang /repository/inbm/fpm/inb-provision-cloud inb-provision-cloud >"$DIR"/results/snyk-inb-provision-cloud.html
-scan_golang /repository/inbm/fpm/inb-provision-certs inb-provision-certs >"$DIR"/results/snyk-inb-provision-certs.html
+fail=0
+scan_golang /repository/inbm/trtl trtl  >"$DIR"/results/snyk-trtl.html || fail=1
+scan_golang /repository/inbm/fpm/inb-provision-cloud inb-provision-cloud >"$DIR"/results/snyk-inb-provision-cloud.html || fail=1
+scan_golang /repository/inbm/fpm/inb-provision-certs inb-provision-certs >"$DIR"/results/snyk-inb-provision-certs.html || fail=1
 
 for i in dispatcher diagnostic cloudadapter configuration telemetry ; do 
-    scan_python /repository/inbm/$i-agent $i-agent >"$DIR"/results/snyk-$i-agent.html
+    scan_python /repository/inbm/$i-agent $i-agent >"$DIR"/results/snyk-$i-agent.html || fail=1
 done
 
-for i in vision node ; do
-    scan_python /repository/inbm-vision/$i-agent $i-agent  >"$DIR"/results/snyk-$i-agent.html
-done
-
-scan_python /repository/inbm-vision/flashless-program flashless-program  >"$DIR"/results/snyk-flashless-program.html
-scan_python /repository/inbc-program inbc-program >"$DIR"/results/snyk-inbc-program.html
+scan_python /repository/inbc-program inbc-program >"$DIR"/results/snyk-inbc-program.html || fail=1
 
 
 cat "$DIR"/results/snyk-*.html >"$DIR"/results/all-in-one-snyk.html
+exit $fail

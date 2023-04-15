@@ -1,7 +1,7 @@
 """
 Constants and other config variables used throughout the cloudadapter module
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -14,24 +14,25 @@ AGENT = 'cloudadapter'
 
 LOGGERCONFIG = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / 'public' / 'cloudadapter-agent' / 'logging.ini'
 CLIENT_CERTS = BROKER_ETC_PATH / \
-    'public' / 'cloudadapter-agent' / 'cloudadapter-agent.crt'
+               'public' / 'cloudadapter-agent' / 'cloudadapter-agent.crt'
 CLIENT_KEYS = BROKER_ETC_PATH / \
-    'secret' / 'cloudadapter-agent' / 'cloudadapter-agent.key'
-
+              'secret' / 'cloudadapter-agent' / 'cloudadapter-agent.key'
 
 # Delay to sleep in seconds
 SLEEP_DELAY = 1
 
+# Flag for UCC mode to determine which channels to subscribe to
+UCC_FILE = "/etc/intel-manageability/public/ucc_flag"
+UCC_ENABLED_FLAG = "TRUE"
 
 # ========== Subscription channels
-
 
 STATE_CHANNEL = '+/state'
 
 
 class TC_TOPIC:
     STATE = tuple([STATE_CHANNEL])
-    TELEMETRY = tuple([TELEMETRY_CHANNEL])
+    TELEMETRY = tuple([TELEMETRY_CHANNEL])  # Shared by TC and UCC
     EVENT = tuple([EVENT_CHANNEL, RESPONSE_CHANNEL])  # TODO: What's up with response?
 
 
@@ -44,6 +45,7 @@ DECOMMISSION = 'decommission'
 SHUTDOWN = 'shutdown'
 RESTART = 'restart'
 INSTALL = 'install'
+COMMAND = 'command'
 
 # TODO: What are these two?
 UNKNOWN = {'rc': 1, 'message': 'Unknown command invoked'}
@@ -65,6 +67,7 @@ class MESSAGE:
     CONFIG = "Configuration Method Triggered"
     QUERY = "Query Method Triggered"
 
+
 # ========== Cloud method bindings
 
 
@@ -79,19 +82,21 @@ class METHOD:
     DECOMMISSION = "decommission_device"
     UPLOAD = "file_upload"
     QUERY = "triggerquery"
+    COMMAND = "command"
+    RAW = "raw"
+
 
 # ========== Cloud configuration constants
 
 
 # The adapter configuration file
 ADAPTER_CONFIG_PATH = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / \
-    'secret' / 'cloudadapter-agent' / 'adapter.cfg'
+                      'secret' / 'cloudadapter-agent' / 'adapter.cfg'
 
 # Log certain telemetry keys by default
 LOGGED_TELEMETRY = {DOCKER_STATS, 'networkInformation',
                     'resourceMonitoring', 'resourceAlert', 'softwareBOM',
                     'queryResult', 'queryEndResult'}  # 'disk-information'
-
 
 # ========== Azure configuration constants
 
@@ -103,7 +108,6 @@ AZURE_TOKEN_EXPIRATION = 31556952000
 # Endpoint for device provisioning
 AZURE_DPS_ENDPOINT = "https://global.azure-devices-provisioning.net"
 
-
 # ========== Telit configuration constants
 
 
@@ -113,10 +117,9 @@ TELIT_APP_ID = "intel-manageability"
 # Datetime formatting expected for telemetry
 TELIT_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
-
 # ========== Generic configuration constants
 
 
 # The system path to the JSON schema
 GENERIC_SCHEMA_PATH = INTEL_MANAGEABILITY_SHARE_PATH_PREFIX / \
-    'cloudadapter-agent' / 'config_schema.json'
+                      'cloudadapter-agent' / 'config_schema.json'

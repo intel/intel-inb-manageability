@@ -2,8 +2,7 @@
     Module which fetches and stores external update packages. It fetches a
     package from the specified URL and stores into a configured local cache
     on the device
-
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -25,15 +24,15 @@ logger = logging.getLogger(__name__)
 class RemediationManager:
     """Receives notification from diagnostic to perform remediation management on
     containers/images via TRTL application
-
     @param dispatcher_callbacks: DispatcherCallbacks instance
+    @param container_image_list_to_be_removed: Container image list to be removed. Default it will be empty list. When containers are active, respective images will be added to this list.
     """
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
-        self.container_image_list: List = []
+        self.container_image_list_to_be_removed: List = []
 
     def run(self) -> None:
         """Subscribes to remediation channels"""
@@ -72,15 +71,15 @@ class RemediationManager:
     def _remove_images(self, ids: Any) -> None:
         logger.debug("Removing Images...")
         for image_id in ids:
-            if image_id in self.container_image_list:
-                self._remove_single_image(image_id)
-        self.container_image_list[:] = []
+            self._remove_single_image(image_id)
+
+        self.container_image_list_to_be_removed[:] = []
 
     def _remove_single_image(self, image_id: str) -> None:
         logger.debug("")
         if not self.ignore_dbs_results:
             trtl = Trtl(PseudoShellRunner())
-            (out, err, code) = trtl.image_remove_by_id(str(image_id), True)
+            (out, err, code) = trtl.image_remove_all(str(image_id), True)
             if err is None:
                 err = ""
             if code != 0:
@@ -99,7 +98,6 @@ class RemediationManager:
 
     def _get_image_id(self, trtl: Trtl, container_id: str) -> Tuple[Optional[str], Optional[str]]:
         """Get the image id associated with the container id via TRTL
-
         @param trtl: TRTL object
         @param container_id: container ID
         """
@@ -127,26 +125,19 @@ class RemediationManager:
                 trtl = Trtl(PseudoShellRunner())
                 image_id = None
 
-                image_name = re.sub(r"and|[-,_]", ":", container_id)
-                err, out = trtl.list()
+                temp_image_name = re.sub(r"and|[-,_]", ":", container_id)
+                err, active_containers_list = trtl.list()
                 if err:
                     logger.error("Error encountered while getting container ID")
 
-                if not image_name in str(out) or "DBS" in container_id:
-                    self._dispatcher_callbacks.broker_core.telemetry(
-                        'DBS Security issue raised on containerID: ' +
-                        str(container_id) + ' not present in list.')
-                    continue
-
-                if image_name in str(out) and not self.dbs_remove_image_on_failed_container:
-                    self.container_image_list.append(image_name)
+                if temp_image_name in str(active_containers_list) and not self.dbs_remove_image_on_failed_container:
+                    self.container_image_list_to_be_removed.append(temp_image_name)
 
                 if self.dbs_remove_image_on_failed_container:
                     image_id, image_name = self._get_image_id(trtl, container_id)
                     if image_id is None:
                         raise ValueError('Cannot read image ID')
-
-                (out, err, code) = trtl.stop_by_id(str(container_id))
+                (out, err, code) = trtl.stop_all(str(container_id))
                 if err is None:
                     err = ""
                 if code != 0:
@@ -158,7 +149,8 @@ class RemediationManager:
                         'DBS Security issue raised on containerID: ' +
                         str(container_id) + '.  Container has been stopped.')
 
-                err = trtl.remove_container(str(container_id), True)
+                err = trtl.remove_container(container_id, True)
+
                 if err:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         'DBS Security issue raised on containerID: ' +

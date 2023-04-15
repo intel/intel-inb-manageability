@@ -56,7 +56,7 @@ else
   false
 fi) &
 
-inbc sota --nohddl --uri https://ci_nginx/BIOSUPDATE.tar   
+inbc sota --uri https://ci_nginx/BIOSUPDATE.tar
 
 #[ -f /var/cache/manageability/repository-tool/sota/"$TEST_FILE" ] # ensure test file was downloaded
 echo "<REBOOT> SOTA YOCTO UPDATE DOWNLOAD" | systemd-cat

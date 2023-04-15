@@ -2,7 +2,7 @@
 Messenger responsible for publishing events.
 Publishes are one way, purely based on the MQTT protocol.
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -12,6 +12,7 @@ from .. utilities import Formatter
 from ..connections.mqtt_connection import MQTTConnection
 from datetime import datetime
 from typing import Optional
+from threading import Lock
 
 
 class OneWayMessenger(Messenger):
@@ -26,8 +27,11 @@ class OneWayMessenger(Messenger):
         self._topic_formatter = topic_formatter
         self._payload_formatter = payload_formatter
         self._connection = connection
+        self.lock = Lock()
 
     def publish(self, key: str, value: str, time: Optional[datetime] = None) -> None:
+        self.lock.acquire()
         topic = self._topic_formatter.format(request_id=self._connection.request_id)
         payload = self._payload_formatter.format(time, key=key, value=value)
         self._connection.publish(topic, payload)
+        self.lock.release()

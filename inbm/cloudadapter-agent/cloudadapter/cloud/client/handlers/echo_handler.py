@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 
 class EchoHandler(Handler):
 
-    def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, subscribe_topic: Optional[str], connection: MQTTConnection) -> None:
+    def __init__(self, topic_formatter: Formatter, payload_formatter: Formatter, subscribe_topic: Optional[str],
+                 connection: MQTTConnection) -> None:
         """Construct a generic handler
 
         @param topic_formatter:   (Formatter) Formatter for response publish topic
@@ -32,13 +33,13 @@ class EchoHandler(Handler):
         self._connection.subscribe(subscribe_topic, make_threaded(self._on_message))
 
     def bind(self, key: str, callback: Callable):
-        """This is currently unused, but would be useful to allow sideffects on messages
+        """This is currently unused, but would be useful to allow side effects on messages
         @exception NotImplementedError: If called
         """
         raise NotImplementedError("Callbacks for echo handler not implemented")
 
     def _on_message(self, topic: str, payload: str):
-        """Callback for subscribed cloud messages
+        """Callback for subscribed messages
 
         @param topic:   (str) Specific topic
         @param payload: (str) Raw UTF-8 payload

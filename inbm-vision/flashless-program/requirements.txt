@@ -1,2 +1,0 @@
-pyinstaller==4.2
-inbm-lib

@@ -2,7 +2,7 @@
     SOTA updates factory class. Used to trigger
     package installation, updates, security updates etc
     
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -106,11 +106,13 @@ class DebianBasedUpdater(OsUpdater):
                     CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only -f install",  # needs network
                     DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f install",  # local
                     CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",
+                    CHROOT_PREFIX + "/usr/bin/dpkg --configure -a",
                     CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only upgrade",  # needs network
                     DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq upgrade"]  # local
         else:
             cmds = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
+                    "dpkg --configure -a",
                     "apt-get -yq -f install",
                     "apt-get -yq upgrade"]
         return CommandList(cmds).cmd_list
@@ -274,7 +276,6 @@ class WindowsUpdater(OsUpdater):
     @staticmethod
     def get_estimated_size() -> int:
         """Gets the size of the update.  Stub.
-
         @return: Returns 0 if size is freed. Returns in bytes of size consumed
         """
         return 0

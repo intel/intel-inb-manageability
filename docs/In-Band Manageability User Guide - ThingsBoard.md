@@ -21,17 +21,17 @@
     1. [Trusted Repositories](#trusted-repositories)
     2. [Preparing OTA Update Packages](#preparing-ota-update-packages)
     3. [OTA Updates](#ota-updates)
-    3. [Configuration Update](#configuration-update)
-    4. [Power Management](#power-management)
-    5. [Decommission Command](#decommission-command)
-    6. [Query Command](#query-command)
+    4. [Configuration Update](#configuration-update)
+    5. [Power Management](#power-management)
+    6. [Decommission Command](#decommission-command)
+    7. [Query Command](#query-command)
 4. [Telemetry Data](#telemetry-data)
     1. [Static Telemetry Data](#static-telemetry-data)
     2. [Dynamic Telemetry Data](#dynamic-telemetry-data)
     3. [Viewing Telemetry Data](#viewing-telemetry-data)
 5. [Issues and Troubleshooting](#issues-and-troubleshooting)
     1. [OTA Error Status](#ota-error-status)
-    3. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
+    2. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
 
 </details>
 
@@ -89,7 +89,11 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
     ❗ In a sandbox environment, choose the `Community` edition
 
 - In order to run a ThingsBoard&reg; server instance on the same device as
-    Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboard-server-port)
+    Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboardreg-server-port)
+	
+#### NOTE: Thingsboard is currently compatible with the following:
+* Thingsboard 3.4.2
+* Thingsboard 3.3.1
 
 #### Setting up ThingsBoard TLS
 
@@ -184,6 +188,8 @@ devices and set up the dashboard, an account with the privileges of a
 
 2. The following window should appear; fill it out accordingly, then
     click `Add`.
+	
+### NOTE: While creating device, new device should mapped with the existing device profile json file.
 
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image7.png" style="width:5.73333in;height:4.09653in" />
 
@@ -210,7 +216,9 @@ generate a client-side certificate can be found in the following link:
 <https://thingsboard.io/docs/user-guide/certificates/>
 
 - Enter and save the *keygen.properties* accordingly and download the
-    *client.keygen.sh* script.
+    *client.keygen.sh* script from the below link:
+
+<https://github.com/thingsboard/thingsboard/tree/master/tools/src/main/shell>
 
 - Running the script will generate *.jks*, *.nopass.pem*, *.pub.pem*
     files.
@@ -247,7 +255,7 @@ sudo provision-tc
     appears. To override the previous cloud configuration, press **Y**:
 
 ```
-A cloud configuration already exists: "Telit"
+A cloud configuration already exists: "Thingsboard"
 Replace configuration?
 [Y/N] Y
 ```
@@ -255,23 +263,25 @@ Replace configuration?
 3. A prompt appears to choose the cloud service; press **3** and
     **\[ENTER\]** for ThingsBoard:
 
-```
+```commandline
 Please choose a cloud service to use:
-1) Telit Device Cloud 3) ThingsBoard
-2) Azure IoT Central  4) Custom
-#? 3
+1) Azure IoT Central
+2) Thingsboard
+3) UCC
+4) Custom
+#? 2
 ```
 
 4. A prompt appears for the **IP address** and **Port** set up in
-    section [Accessing ThingsBoard&reg;](#accessing-thingsboard)  
+    section [Accessing ThingsBoard](#accessing-thingsboardreg)  
     
-```
+```commandline
 Please enter the Server IP:
 
 127.0.0.1
 ```
 > Note that the server port entry can be left empty to use the default port
-```
+```commandline
 Please enter the server port (default 1883):
 
 8883
@@ -286,7 +296,7 @@ Please choose provision type:
 ```
 
 6. Choosing option **1. Token Authentication** requires user to enter
-    the token. Refer [Obtaining Device Credentials](#obtaining-device-credentials)
+    the token. Refer to [Obtaining Device Credentials](#obtaining-device-credentials)
 
 7. Choosing option **2. X509 Authentication** requires user to have
     device certificate and key generated as mention in [Generating Device Keys and Certificates](#generating-device-keys-and-certificates).
@@ -358,14 +368,14 @@ Created symlink /etc/systemd/system/multi-user.target.wants/inbm-dispatcher.serv
 Created symlink /etc/systemd/system/multi-user.target.wants/inbm-diagnostic.service → /etc/systemd/system/inbm-diagnostic.service.
 Created symlink /etc/systemd/system/multi-user.target.wants/inbm-cloudadapter.service → /etc/systemd/system/inbm-cloudadapter.service.
 Created symlink /etc/systemd/system/multi-user.target.wants/inbm-telemetry.service → /etc/systemd/system/inbm-telemetry.service.
-Turtle Creek Provisioning Complete
+Intel(R) In-Band Manageability Provisioning Complete
 ```
 
 13. If at any time the cloud service configuration needs to be changed
     or updated, run the provisioning steps again.
 
 **Note:** 
-> If provisioning is unsuccessful, refer to **[Provisioning Unsuccessful](#provisioning-unsuccessful-or-device-not-connected-to-cloud)** for Troubleshooting.
+> If provisioning is unsuccessful, refer to **[Provisioning Unsuccessful](#issues-and-troubleshooting)** for Troubleshooting.
 
 #### Provisioning Command Parameters
 
@@ -399,7 +409,7 @@ sudo PROVISION_TPM=disable provision-tc
     <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image12.png" style="width:5.75in;height:3.26042in" />
 
 2. The following window should appear. Choose the
-    *intel\_manageability\_widgets.json* file; if INB has been
+    *intel\_manageability\_widgets\_version\_X.X.X.json* file; if INB has been
     installed, this file can be found at
     ```
     /usr/share/cloudadapter-agent/thingsboard/  
@@ -409,9 +419,9 @@ sudo PROVISION_TPM=disable provision-tc
 3. Click `Dashboards`, then the plus button and the import button as
     before
 
-4. A window similar to the one in step 4 should appear; this time,
-    choose the *intel\_manageability\_devices.json* and
-    *intel\_manageability\_batch.json* files, which can also be found in
+4. A window similar to the one in step 2 should appear; this time,
+    choose the *intel\_manageability\_devices\_version\_X.X.X.json* and
+    *intel\_manageability\_batch\_version\_X.X>X.json* files, which can also be found in
     the same directory.
 
 5. The dashboards should now appear as options in the menu.
@@ -446,6 +456,12 @@ A. Change the dashboard (i.e. to the Intel Manageability Batch; see
 [**Interacting with Multiple Devices**](#interacting-with-multiple-devices)
 
 B. Change the device being viewed
+
+### NOTE: If the device being viewed as like entities will appear below
+	
+<img src="media/In-Band Manageability User Guide - ThingsBoard/media/image66.png" style="width:5.525in;height:3.0in" />	
+
+### NOTE: To view the device list, new device should mapped with the existing device profile json file while creating new device.
 
 C. Change the time interval of the dashboard, affecting the dynamic
     telemetry displayed
@@ -633,10 +649,10 @@ SOTA on Yocto is handled by INB based on OS implementation:
 AOTA Package structure for the below commands should follow the below
 format
 
-|AOTA Command|AOTA Package Structure|
-|---|---|
-|AOTA docker-compose package<br>(Same format for up/pull)|Container Tag == Container Image Name<br>Example: The container Image name and the tar file name should be the same<br>*Container Tag =* `CPU`<br>*Tar file =* `CPU.tar.gz`<br>*Note: The tar file should contain a folder with the same name `CPU`. This folder `CPU` needs to have the `docker-compose.yml` file.*<br>Steps:<br>1. Make a folder<br>2. Copy the `docker-compose.yml` file into the folder<br>Tar the folder|
-|AOTA Docker&reg; Load/Import|Package needs to be `tar.gz` format<br>The package needs to have a folder within the same name as the package.|
+| AOTA Command                                             | AOTA Package Structure                                                                                                                                                                                                                                                                                                                                                                                                        |
+|----------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| AOTA docker-compose package<br>(Same format for up/pull) | Container Tag == Container Image Name<br>Example: The container Image name and the tar file name should be the same<br>*Container Tag =* `CPU`<br>*Tar file =* `CPU.tar.gz`<br>*Note: The tar file should contain a folder with the same name `CPU`. This folder `CPU` needs to have the `docker-compose.yml` file.*<br>Steps:<br>1. Make a folder<br>2. Copy the `docker-compose.yml` file into the folder<br>Tar the folder |
+| AOTA Docker&reg; Load/Import                             | Package needs to be `tar.gz` format<br>The package needs to have a folder within the same name as the package.                                                                                                                                                                                                                                                                                                                |
 
 #### Creating Configuration Load Package
 
@@ -690,17 +706,16 @@ buttons\[3\]** as seen below
 
 ### Commands - Definitions and Usage
 
-| Command                     | Definition                                                                                                                        |
-|-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------|
-| Trigger AOTA          | Remotely launch/update docker containers on the Edge IoT Device                                                                   |
-| Trigger FOTA          | Update the BIOS firmware on the system                                                                                            |
-| Trigger SOTA          | User-friendly, parameter driven updates to OS software packages on the system                                                     |
-| Trigger Config Update | Update the In-Band Manageability configurations                                                                                   |
-| Reboot                | Remotely reboot the Endpoint                                                                                                      |
-| Shutdown             | Remotely shutdown the Endpoint                                                                                                     |
-| Query                | Fetch device firmware, software, guid and other hardware related informatin                                                        | 
-| Manifest Update             | Any OTA update type can be done via the Manifest Update, by entering XML text to update the Endpoint. Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md).
- 
+| Command               | Definition                                                                                                                                                                            |
+|-----------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Trigger AOTA          | Remotely launch/update docker containers on the Edge IoT Device                                                                                                                       |
+| Trigger FOTA          | Update the BIOS firmware on the system                                                                                                                                                |
+| Trigger SOTA          | User-friendly, parameter driven updates to OS software packages on the system                                                                                                         |
+| Trigger Config Update | Update the In-Band Manageability configurations                                                                                                                                       |
+| Reboot                | Remotely reboot the Endpoint                                                                                                                                                          |
+| Shutdown              | Remotely shutdown the Endpoint                                                                                                                                                        |
+| Query                 | Fetch device firmware, software, guid and other hardware related informatin                                                                                                           | 
+| Manifest Update       | Any OTA update type can be done via the Manifest Update, by entering XML text to update the Endpoint. Refer to the [Developer Guide](In-Band%20Manageability%20Developer%20Guide.md). |
 
 #### Supported AOTA commands and AOTA form descriptions
 [AOTA Updates](AOTA.md)
@@ -721,7 +736,7 @@ AOTA Field Details
 | Application and supported command                              | `docker-compose` supports: `up`, `down`, `pull`, `list` and `remove`.<br>`docker` supports: `list`, `load`, `import`, `pull`, `remove` and `stats`<br>Application: update                                                                                                                           |
 | Container Tag                                                  | Name tag for image/container.<br>Note: Container Tag can have both the Name and Version in this format Image:Version                                                                                                                                                                                |
 | Docker&reg; Compose File                                       | Name of custom YAML file for docker-compose command. Example: `custom.yml`                                                                                                                                                                                                                          |
-| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package#)                                                    |
+| Fetch                                                          | Server URL to download the AOTA container `tar.gz` file<br>If the server requires username/password to download the file, you can provide in server username/ server password<br>*NOTE*: Follow [Creating AOTA Package](#creating-aota-package)                                                     |
 | Server Username/<br>Server Password                            | Credentials to download remote package when required.                                                                                                                                                                                                                                               |
 | Docker&reg; Registry<br>Docker&reg; Registry Username/Password | Docker&reg; Registry if accessing any registry other than the default `index.docker.io`.<br>Example: `registry.hub.docker.com`<br>Optional fields Docker&reg; Registry Username/Password can be used to when using private images in AOTA through docker pull and docker-compose up, pull commands. |
 
@@ -1182,7 +1197,7 @@ titled **`Decommission Device`**.
 
 ### Query Command
 
-The Intel® In-Band Manageability provides a way to query attribute information on either the Host, Edge Device, or Nodes.
+The Intel® In-Band Manageability provides a way to query attribute information
 
 To trigger a query request, click the **Trigger Query** button as seen below.
 

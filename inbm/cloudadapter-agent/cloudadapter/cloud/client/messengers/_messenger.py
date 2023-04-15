@@ -3,7 +3,7 @@ Abstract base class used by all high level messaging objects.
 Messengers are responsible for creating a properly formatted payload,
 then ensuring their successful publish to the cloud.
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -21,7 +21,7 @@ class Messenger(metaclass=abc.ABCMeta):  # pragma: no cover
 
         @param key:       (str) Data key to publish
         @param value:     (str) Data value to publish
-        @param time: (datetime) Time of the publish to use
+        @param time: (datetime) Time of the publishing to use
         @exception PublishError: If publishing fails
         """
         pass

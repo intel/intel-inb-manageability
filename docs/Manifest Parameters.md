@@ -1,6 +1,6 @@
 # Manifest Overview
 
-The following outlines the manifest parameters used to perform the supported OTA updates, configuration commands, query, and provision node.
+The following outlines the manifest parameters used to perform the supported OTA updates, configuration commands, and query.
 
 ## Table of Contents
 1. [Manifest Rules](#manifest-rules)
@@ -14,7 +14,6 @@ The following outlines the manifest parameters used to perform the supported OTA
 9. [Configuration LOAD](#Load)
 10. [Configuration APPEND](#Append)
 11. [Configuration REMOVE](#Remove)
-12. [Provision Node](#Provision-Node)
 
 ## Manifest Rules 
 
@@ -101,35 +100,6 @@ description will trigger a FOTA update via Manifest.
 </manifest>
 ```
 
-### Sample FOTA Manifest - Target Intel Vision cards: 
-```xml
-<?xml version='1.0' encoding='utf-8'?>
-<manifest>
-    <type>ota</type>
-    <ota>
-        <header>
-            <type>fota</type>
-            <repo>remote</repo>
-        </header>
-        <type>
-            <fota name='sample'>
-                <fetch>http://yoururl/package.tar</fetch>
-                <targetType>node</targetType>
-                <targets>
-                    <target>000732767ffb-16781312</target>
-                    <target>000732767ffb-16780544</target>
-                </targets>
-                <biosversion>U-boot 2021.01</biosversion>
-                <vendor>Intel</vendor>
-                <manufacturer>intel</manufacturer>
-                <product>kmb-m2</product>
-                <releasedate>2022-04-15</releasedate>
-            </fota>
-        </type>
-    </ota>
-</manifest>
-```
-
 ## SOTA
 
 ### SOTA Manifest Parameters 
@@ -204,66 +174,6 @@ description will trigger a FOTA update via Manifest.
 </manifest>
 ```
 
-### Sample SOTA Manifest - Target specific Intel Vision cards: 
-
-- Specific targets identified in <targets></targets> section.
-
-- The Vision-agent will double-check to ensure that the targets are eligible for the upgrade.
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>ota</type>
-    <ota>
-        <header>
-            <type>sota</type>
-            <repo>remote</repo>
-        </header>
-        <type>
-            <sota>
-                <cmd logtofile="Y">update</cmd>
-                <fetch>https://yoururl/mender.file</fetch>
-                <username>user</username>
-                <password>pwd</password>
-                <targetType>node</targetType>
-                <targets>
-                    <target>000732767ffb-16781312</target>
-                    <target>000732767ffb-16780544</target>
-                </targets>
-                <release-date>2020-0101</release_date>
-            </sota>
-        </type>
-    </ota>
-</manifest>
-```
-
-### Sample SOTA Manifest - Target all eligible Intel Vision cards: 
-
-- No <targets></targets> section included.
-- The Vision-agent will determine which Vision cards are eligible for the upgrade based on its internal registry.  It will compare the release-date in this manifest with the release date of each vision card in its registry.
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>ota</type>
-    <ota>
-        <header>
-            <type>sota</type>
-            <repo>remote</repo>
-        </header>
-        <type>
-            <sota>
-                <cmd logtofile="Y">update</cmd>
-                <fetch>https://yoururl/mender.file</fetch>
-                <username>user</username>
-                <password>pwd</password>
-                <targetType>node</targetType>
-                <release-date>2020-0101</release_date>
-            </sota>
-        </type>
-    </ota>
-</manifest>
-```
 
 ## POTA
 The POTA manifest is used to perform both a FOTA and SOTA update at the same time to avoid conflicts when trying to update them individually.  This manifest combines both the FOTA and SOTA into one.
@@ -755,35 +665,6 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
-#### Example of all query manifest on Vision-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>all</option>
-        <targetType>vision</targetType>  
-    </query>
-</manifest>
-```
-
-#### Example of all query manifest on Node-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>all</option>
-        <targetType>node</targetType>
-        <targets>
-            <target>node-id</target>
-	</targets>
-    </query>
-</manifest>
-```
-
 #### Example of hw query manifest example on Edge device 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -792,35 +673,6 @@ The query command can be used to gather information about the system and the Vis
     <cmd>query</cmd>
     <query>
         <option>hw</option>
-    </query>
-</manifest>
-```
-
-#### Example of hw query manifest on Vision-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>hw</option>
-        <targetType>vision</targetType>  
-    </query>
-</manifest>
-```
-
-#### Example of hw query manifest on Node-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>hw</option>
-        <targetType>node</targetType>
-        <targets>
-            <target>node-id</target>
-	</targets>
     </query>
 </manifest>
 ```
@@ -837,35 +689,6 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
-#### Example of fw query manifest on Vision-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>fw</option>
-        <targetType>vision</targetType>  
-    </query>
-</manifest>
-```
-
-#### Example of fw query manifest on Node-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>fw</option>
-        <targetType>node</targetType>
-        <targets>
-            <target>node-id</target>
-	</targets>
-    </query>
-</manifest>
-```
-
 #### Example of os query manifest example on Edge device 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -874,35 +697,6 @@ The query command can be used to gather information about the system and the Vis
     <cmd>query</cmd>
     <query>
         <option>os</option>
-    </query>
-</manifest>
-```
-
-#### Example of os query manifest on Vision-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>os</option>
-        <targetType>vision</targetType>  
-    </query>
-</manifest>
-```
-
-#### Example of os query manifest on Node-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>os</option>
-        <targetType>node</targetType>
-        <targets>
-            <target>node-id</target>
-	</targets>
     </query>
 </manifest>
 ```
@@ -919,121 +713,6 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
-#### Example of version query manifest on Vision-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>version</option>
-        <targetType>vision</targetType>  
-    </query>
-</manifest>
-```
-
-#### Example of version query manifest on Node-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>version</option>
-        <targetType>node</targetType>
-        <targets>
-            <target>node-id</target>
-	</targets>
-    </query>
-</manifest>
-```
-
-#### Example of security query manifest on Vision-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>security</option>
-        <targetType>vision</targetType>  
-    </query>
-</manifest>
-```
-
-#### Example of security query manifest on Node-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>security</option>
-        <targetType>node</targetType>
-        <targets>
-	    <target>node-id</target>
-	</targets>
-    </query>
-</manifest>
-```
-
-#### Example of status query manifest on Vision-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>status</option>
-        <targetType>vision</targetType>  
-    </query>
-</manifest>
-```
-
-#### Example of status query manifest on Node-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>status</option>
-        <targetType>node</targetType>
-        <targets>
-            <target>node-id</target>
-	</targets>
-    </query>
-</manifest>
-```
-
-#### Example of guid query manifest on Vision-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>guid</option>
-        <targetType>vision</targetType>  
-    </query>
-</manifest>
-```
-
-#### Example of guid query manifest on Node-agent 
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<manifest>
-    <type>cmd</type>
-    <cmd>query</cmd>
-    <query>
-        <option>guid</option>
-        <targetType>node</targetType>
-        <targets>
-            <target>node-id</target>
-        </targets>
-    </query>
-</manifest>
-```
 
 #### Example of swbom query manifest on Edge device
 ```xml
@@ -1106,98 +785,6 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 </manifest>
 ```
 
-##### Get Example on Vision-agent
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>get_element</cmd>
-        <targetType>vision</targetType>
-        <configtype>
-            <get>
-                <path>isAliveTimerSecs;heartbeatRetryLimit</path>
-            </get>
-        </configtype>
-    </config>
-</manifest>
-```
-
-##### Get Example on **ALL** Node-agents
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>get_element</cmd>
-        <targetType>node</targetType>
-        <configtype>
-            <get>
-                <path>isAliveTimerSecs;heartbeatRetryLimit</path>
-            </get>
-        </configtype>
-    </config>
-</manifest>
-```
-
-##### Get Example on **SPECIFIC** Node-agents
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>get_element</cmd>
-        <targetType>node</targetType>
-        <configtype>
-            <targets>
-                <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <get>
-                <path>isAliveTimerSecs;heartbeatRetryLimit</path>
-            </get>
-        </configtype>
-    </config>
-</manifest>
-```
-
-#### Get Example on **ALL** INB Nodes
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>get_element</cmd>
-        <targetType>node_client</targetType>
-        <configtype>
-            <get>
-                <path>isAliveTimerSecs;heartbeatRetryLimit</path>
-            </get>
-        </configtype>
-    </config>
-</manifest>
-```
-
-#### Get Example on **SPECIFIC** INB Nodes
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>get_element</cmd>
-        <targetType>node_client</targetType>
-        <configtype>
-            <targets>
-                <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <get>
-                <path>minStorageMB;minMemoryMB</path>
-            </get>
-        </configtype>
-    </config>
-</manifest>
-```
 
 ## Set
 
@@ -1243,98 +830,6 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 </manifest>
 ```
 
-##### Set Example on Vision-agent
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>set_element</cmd>
-        <targetType>vision</targetType>
-        <configtype>
-            <set>
-                <path>isAliveTimerSecs:100;heartbeatRetryLimit:3</path>
-            </set>
-        </configtype>
-    </config>
-</manifest>
-```
-
-##### Example Configuration SET on **ALL** Node-agents
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>set_element</cmd>
-        <targetType>node</targetType>
-        <configtype>
-            <set>
-                <path>heartbeatResponseTimerSecs:350;registrationRetryLimit:7</path>
-            </set>
-        </configtype>
-    </config>
-</manifest>
-```
-
-##### Set Example on **SPECIFIC** Node-agents
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>set_element</cmd>
-        <targetType>node</targetType>
-        <configtype>
-            <targets>
-                <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <set>
-                <path>heartbeatResponseTimerSecs:350;registrationRetryLimit:7</path>
-            </set>
-        </configtype>
-    </config>
-</manifest>
-```
-
-#### Set Example on **ALL** INB Nodes
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>set_element</cmd>
-        <targetType>node_client</targetType>
-        <configtype>
-            <set>
-                <path>minStorageMB:100;minMemoryMB:200</path>
-            </set>
-        </configtype>
-    </config>
-</manifest>
-```
-
-#### Set Example on **SPECIFIC** INB Nodes
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>set_element</cmd>
-        <targetType>node_client</targetType>
-        <configtype>
-            <targets>
-                <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <set>
-                <path>minStorageMB:100;minMemoryMB:200</path>
-            </set>
-        </configtype>
-    </config>
-</manifest>
-```
 
 ## Load
 
@@ -1374,100 +869,6 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 </manifest>
 ```
 
-##### Load Example on Vision-agent
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>load</cmd>
-        <targetType>vision</targetType>
-        <configtype>
-            <load>
-                <fetch>http://yoururl:port/intel_manageabilty_vision.conf</fetch>
-            </load>
-        </configtype>
-    </config>
-</manifest>
-```
-
-##### Load Example on **ALL** Node-agents
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>load</cmd>
-        <targetType>node</targetType>
-        <configtype>
-            <load>
-                <fetch>http://yoururl:port/intel_manageabilty_node.conf</fetch>
-            </load>
-        </configtype>
-    </config>
-</manifest>
-```
-
-##### Load Example on **SPECIFIC** Node-agents
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>load</cmd>
-        <targetType>node</targetType>
-        <configtype>
-            <targets>
-                <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <load>
-                <fetch>http://yoururl:port/intel_manageabilty_node.conf</fetch>
-            </load>
-        </configtype>
-    </config>
-</manifest>
-```
-
-#### Load Example on **ALL** INB Nodes
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>load</cmd>
-        <targetType>node_client</targetType>
-        <configtype>
-            <load>
-                <fetch>http://yoururl:port/intel_manageabilty.conf</fetch>
-            </load>
-        </configtype>
-    </config>
-</manifest>
-```
-
-#### Load Example on **SPECIFIC** INB Nodes
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>load</cmd>
-        <targetType>node_client</targetType>
-        <configtype>
-            <targets>
-                <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <load>
-                <fetch>http://yoururl:port/intel_manageabilty.conf</fetch>
-            </load>
-        </configtype>
-    </config>
-</manifest>
-```
-
-
 ## Append
 
 #### Configuration Append Manifest Parameters
@@ -1488,8 +889,6 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 
 #### Append Example
 
-* Append can currently only be used on INB agents in either the Edge or Vision card solution.
-* Append would not be used on the vision or node agents
 * Append is only applicable to three configuration tags, for example,
     **trustedRepositories**, **sotaSW** and **ubuntuAptSource**
 * Path takes in key value pair format, example: trustedRepositories:  https://dummyURL.com
@@ -1502,27 +901,6 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
         <configtype>
             <append>
                 <path>trustedRepositories:https://dummyURL.com</path>
-            </append>
-        </configtype>
-    </config>
-</manifest>
-```
-
-#### Append Example on **SPECIFIC** INB Nodes
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>append</cmd>
-        <targetType>node_client</targetType>
-        <configtype>
-            <targets>
-                <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <append>
-                <path>sotaSW:trtl</path>
             </append>
         </configtype>
     </config>
@@ -1548,8 +926,6 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 | `</manifest>`                            | `</manifest>`                            |         R         |                 |
 
 #### Remove Example
-* Remove can currently only be used on INB agents in either the Edge or Vision card solution.
-* Remove would not be used on the vision or node agents
 * *Remove* is only applicable to three configuration tags, for
     example, **trustedRepositories**, **sotaSW** and
     **ubuntuAptSource**.
@@ -1567,61 +943,5 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
             </remove>
         </configtype>
     </config>
-</manifest>
-```
-
-#### Remove Example on **SPECIFIC** INB Nodes
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-    <type>config</type>
-    <config>
-        <cmd>remove</cmd>
-        <targetType>node_client</targetType>
-        <configtype>
-            <targets>
-                <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <remove>
-                <path>sotaSW:trtl</path>
-            </remove>
-        </configtype>
-    </config>
-</manifest>
-```
-
-## Provision Node
-
-Provision Node is only used by the INBM Vision solution to provision a flashless device.
-
-#### Configuration Provision Node Manifest Parameters
-| Tag                                      | Example                                             | Required/Optional | Notes                                                                               |
-|:-----------------------------------------|:----------------------------------------------------|:-----------------:|:------------------------------------------------------------------------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`            |         R         |                                                                                     |
-| `<manifest>`                             | `<manifest>`                                        |         R         |                                                                                     |
-| `<type></type>`                          | `<type>cmd</type>`                                  |         R         | Always 'cmd'                                                                        |
-| `<cmd></cmd>`'`                          | `<cmd>provisionNode</cmd>`                          |         R         | Always 'provisionNode'                                                              |
-| `<provisionNode>`                        | `<provisionNode>`                                   |         R         |                                                                                     |
-| `<fetch></fetch>`                        | `<fetch>https://www.repo.com/provision.tar</fetch>` |         R         |                                                                                     |
-| `<signature></signature`>                | `<signature>96e92d</signature>`                     |         O         | Signature of package–signed checksum of package.  Recommended for security purposes |
-| `<hash_algorithm></hash_algorithm`       | `<hash_algorithm>384</hash_algorithm`               |         O         | 384 or 512                                                                          |
-| `<username></username>`                  | `<username>user</username>`                         |         O         | Username used during fetch from remote repository                                   |
-| `<password><password>`                   | `<password>pwd</password>`                          |         O         | Password used during fetch from remote repository                                   |
-| `</provisionNode>`                       | `</provisionNode>`                                  |         R         |                                                                                     |
-| `</manifest>`                            | `</manifest>`                                       |         R         |                                                                                     |
-
-#### Provision Node Example
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-	<type>cmd</type>
-	<cmd>provisionNode</cmd>
-	<provisionNode>
-		<fetch>https://www.repo.com/provision.tar</fetch>
-		<signature>signature</signature>
-		<hash_algorithm>384</hash_algorithm>
-	</provisionNode>
 </manifest>
 ```

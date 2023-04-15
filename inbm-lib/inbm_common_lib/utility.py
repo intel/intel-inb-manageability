@@ -1,7 +1,7 @@
 """
     Utilities
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import html
@@ -172,6 +172,34 @@ def canonicalize_uri(url: str) -> CanonicalUri:
 
     return CanonicalUri(value=url_normalize.url_normalize(url))
 
+def is_within_directory(directory: str, target: str) -> bool:
+    """Check if target is within directory
+    
+    @param directory: directory to check
+    @param target: target to check
+    @return whether target is within directory
+    """
+
+    abs_directory = os.path.abspath(directory)
+    abs_target = os.path.abspath(target)
+
+    prefix = os.path.commonprefix([abs_directory, abs_target])
+
+    return prefix == abs_directory
+
+def safe_extract(tarball: tarfile.TarFile, path=".", members=None, *, numeric_owner=False):
+    """Avoid path traversal when extracting tarball
+
+    @param tarball: tarball to extract
+    @param path: path to extract to
+    @param members: members to extract
+    @param numeric_owner: whether to extract numeric owner
+    """
+    for member in tarball.getmembers():
+        member_path = os.path.join(path, member.name)
+        if not is_within_directory(path, member_path):
+            raise IOError("Attempted Path Traversal in Tar File")
+    tarball.extractall(path, members, numeric_owner=numeric_owner) 
 
 def validate_file_type(path: List[str]) -> None:
     """ Method to check target file's type. Example of supported file list:
@@ -190,10 +218,10 @@ def validate_file_type(path: List[str]) -> None:
     for tarball in tarball_list:
         with tarfile.open(tarball) as tar:
             logger.debug("Extract {0}.".format(tarball))
-            tar.extractall(path=TEMP_EXT_FOLDER)
-            extracted_file = tar.getmembers()
-            for index in range(len(extracted_file)):
-                extracted_file_list.append(os.path.join(TEMP_EXT_FOLDER, extracted_file[index].name))
+            safe_extract(tar, path=TEMP_EXT_FOLDER)
+            extracted_files = tar.getmembers()
+            for index in range(len(extracted_files)):
+                extracted_file_list.append(os.path.join(TEMP_EXT_FOLDER, extracted_files[index].name))
 
     # Add the extracted file path into check list
     for file_path in path + extracted_file_list:

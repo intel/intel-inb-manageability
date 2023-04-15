@@ -63,6 +63,12 @@ class TestMQTTConnection(unittest.TestCase):
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS
         self.mqtt_connection.publish("topic", "payload")
         assert self.mock_client.publish.call_count == 1
+    
+    def test_publish_blank_topic_succeeds(self):
+        # blank topic is used to disable publishing in our template files
+        self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS
+        self.mqtt_connection.publish("", "payload")
+        assert self.mock_client.publish.call_count == 0
 
     def test_publish_with_publish_fail_fails(self):
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_INVAL
@@ -173,6 +179,13 @@ class TestMQTTConnection(unittest.TestCase):
 
         args, _ = self.mock_client.subscribe.call_args
         assert ("topic",) == args
+
+    def test_subscribe_blank_topic_succeeds(self):
+        # blank topic is used to disable a topic in our config templates
+        self.mqtt_connection.subscribe("", lambda: None)
+
+        assert self.mock_client.subscribe.call_count == 0
+        assert self.mock_client.message_callback_add.call_count == 0
 
     def test_connect_resubscribe_succeeds(self):
         callback = mock.Mock()

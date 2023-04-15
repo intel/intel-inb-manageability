@@ -142,7 +142,7 @@
         },
         "method": {
             "type": "object",
-            "required": ["pub", "format", "sub", "parse"],
+            "required": ["pub", "format", "sub"],
             "properties": {
                 "pub": {
                     "description": "The topic to publish RPC responses to",

@@ -1,7 +1,7 @@
 """
     FOTA update tool which is called from the dispatcher during installation
 
-    Copyright (C) 2017-2022 Intel Corporation
+    Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -153,6 +153,7 @@ class FOTA:
                 state = {'restart_reason': "pota"}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
                 logger.debug(status)
+                return_message = COMMAND_SUCCESS
                 self._dispatcher_callbacks.broker_core.telemetry(status)
         except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError) as e:
             error = 'Firmware Update Aborted: ' + str(e)

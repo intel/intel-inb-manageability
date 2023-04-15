@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Shell script that provisions Intel(R) In-Band Manageability Framework
-# Copyright (C) 2017-2022 Intel Corporation
+# Copyright (C) 2017-2023 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 # PROVISION_TPM could be set to auto, disable, or enable, or could be unset
@@ -35,8 +35,10 @@ function provision {
   if [[ "x$NO_CLOUD" == "x" ]]; then
     configure_cloud
   fi
-  if [[ "x$NO_OTA_CERT" == "x" ]]; then
-    inb-provision-ota-cert
+  if ! [[ -v UCC_MODE ]]; then
+    if [[ "x$NO_OTA_CERT" == "x" ]]; then
+      inb-provision-ota-cert
+    fi
   fi
   enable_agents
   echo "Intel(R) In-Band Manageability Provisioning Complete"
@@ -45,7 +47,11 @@ function provision {
 
 function enable_mqtt {
   echo "Enabling and starting mqtt (this may take some time to generate secrets)..."
-  systemctl disable --now mqtt inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  if [[ -v UCC_MODE ]]; then
+    systemctl disable --now mqtt inbm-cloudadapter
+  else
+    systemctl disable --now mqtt inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  fi
   systemctl enable mqtt
   systemctl start mqtt
   sleep 1
@@ -54,7 +60,11 @@ function enable_mqtt {
 function enable_agents {
   echo "Enabling and starting agents..."
   systemctl restart apparmor
-  systemctl enable --now inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  if [[ -v UCC_MODE ]]; then
+    systemctl enable --now inbm-cloudadapter
+  else	
+    systemctl enable --now inbm inbm-dispatcher inbm-telemetry inbm-configuration inbm-cloudadapter inbm-diagnostic
+  fi
 }
 
 ### Ensure the prerequisites are in place before proceeding
@@ -70,14 +80,20 @@ function check_requirements {
     echo "WARNING: Safe mode is on. Provisioned credentials will go away on next boot."
   fi
 
-  # Ensure we have Docker installed
-  if [ -x "$(command -v docker)" ]; then
-        # Docker is installed
-        echo "Confirmed Docker Engine"
+  # Do not install docker for UCC configuration
+  if [[ -v UCC_MODE ]]; then
+    echo "Not installing docker in UCC Mode"
+    SKIP_DOCKER_CONFIGURATION="true"
   else
-        # Docker is not installed
-        echo "No Docker Installation found"
-        SKIP_DOCKER_CONFIGURATION="true"
+    # Ensure we have Docker installed
+    if [ -x "$(command -v docker)" ]; then
+          # Docker is installed
+          echo "Confirmed Docker Engine"
+    else
+          # Docker is not installed
+          echo "No Docker Installation found"
+          SKIP_DOCKER_CONFIGURATION="true"
+    fi
   fi
 
   # Ensure we're running in a supported OS
@@ -85,7 +101,7 @@ function check_requirements {
     return 0
   fi
 
-  verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10" "Ubuntu 22.04")
+  verified_os_list=("Ubuntu 20.04" "Ubuntu 22.04")
 
   if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
     echo "Confirmed Supported Platform (Ubuntu $(lsb_release -rs))"
@@ -190,7 +206,7 @@ cloud_config="" # The main config data
 ### Choose the cloud service to configure
 function configure_cloud {
   mkdir -p "$CLOUD_DIR"
-  inb-provision-cloud "$CLOUD_DIR" /usr/share/cloudadapter-agent/thingsboard /usr/share/cloudadapter-agent/config_schema.json
+  inb-provision-cloud "$CLOUD_DIR" /usr/share/cloudadapter-agent/thingsboard /usr/share/cloudadapter-agent/ucc /usr/share/cloudadapter-agent/config_schema.json
   chgrp -R cloudadapter-agent "$CLOUD_DIR"
 }
 
@@ -267,6 +283,11 @@ function get_file_input {
     fi
   done
 }
+
+if grep -q "TRUE" /etc/intel-manageability/public/ucc_flag ; then
+    echo "UCC mode."
+    UCC_MODE=true
+fi
 
 provision
 

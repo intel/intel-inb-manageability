@@ -1,5 +1,5 @@
 # base image with all dependencies for building
-FROM registry.hub.docker.com/library/ubuntu:18.04 as base
+FROM registry.hub.docker.com/library/ubuntu:20.04 as base
 include(`commands.base-setup.m4')
 
 
@@ -16,6 +16,7 @@ RUN perl -pi -e 'chomp if eof' /src/version.txt
 COPY inbm-lib /src/inbm-lib-editable
 RUN source /venv-py3/bin/activate && \
     pip3.8 install -e /src/inbm-lib-editable
+RUN rm /usr/lib/x86_64-linux-gnu/libreadline* # extra protection against libreadline in pyinstaller binaries
 
 # ---inbc-program---
 
@@ -136,7 +137,7 @@ RUN source /venv-py3/bin/activate && \
 
 # ---trtl---
 
-FROM registry.hub.docker.com/library/golang:1.18-buster as trtl-build
+FROM registry.hub.docker.com/library/golang:1.20-buster as trtl-build
 WORKDIR /
 ENV GOPATH /build/go
 ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin
@@ -164,19 +165,19 @@ RUN rm -rf /output/ && mv ./output/ /output/
 
 # --inb-provision-certs-
 
-FROM registry.hub.docker.com/library/golang:1.18-buster as inb-provision-certs
+FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-certs
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs /output/inb-provision-certs
 
 # --inb-provision-cloud-
 
-FROM registry.hub.docker.com/library/golang:1.18-buster as inb-provision-cloud
+FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-cloud
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && go test . && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud /output/inb-provision-cloud
 
 # --inb-provision-ota-cert-
 
-FROM registry.hub.docker.com/library/golang:1.18-buster as inb-provision-ota-cert
+FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-ota-cert
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert /output/inb-provision-ota-cert
 
@@ -223,7 +224,7 @@ RUN make build && \
     mv output/* /output
 
 # output container
-FROM registry.hub.docker.com/library/ubuntu:18.04 as output-main
+FROM registry.hub.docker.com/library/ubuntu:20.04 as output-main
 COPY --from=packaging /output /packaging
 COPY --from=inbc-py3 /output /inbc
 COPY --from=diagnostic-py3 /output /diagnostic
@@ -248,8 +249,4 @@ COPY inbm/installer/install-tc.sh /output
 RUN chmod +x /output/install-tc.sh
 COPY inbm/installer/uninstall-tc.sh /output
 RUN chmod +x /output/uninstall-tc.sh
-COPY inbm/installer/install-inb.sh /output
-RUN chmod +x /output/install-inb.sh
-COPY inbm/installer/uninstall-inb.sh /output
-RUN chmod +x /output/uninstall-inb.sh
 COPY inbm/packaging/misc-files/* /output/

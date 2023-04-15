@@ -5,6 +5,11 @@ set -eo pipefail
 #   Run with SSL Certificates (default): sudo ./install-tc.sh
 #   Run without SSL Certificates (dev): sudo ./install-tc.sh dev
 
+# If environment variable UCC_MODE is set, install in UCC mode.
+# This means only install mqtt and cloudadapter agents, and write
+# "TRUE" to $UCC_FILE
+UCC_FILE=/etc/intel-manageability/public/ucc_flag
+
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 # Function will print an error and exit with code 1 if a user exists
@@ -44,7 +49,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Ensure we're running a supported OS
-verified_os_list=("Ubuntu 18.04" "Ubuntu 20.04" "Ubuntu 21.10" "Ubuntu 22.04")
+verified_os_list=("Ubuntu 20.04" "Ubuntu 22.04")
 
 if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
   OS_TYPE="Ubuntu-$(lsb_release -rs)"
@@ -85,47 +90,49 @@ if [[ "x$no_proxy" == "x" ]]; then
   no_proxy="$NO_PROXY"
 fi
 
-# Confirm Docker is installed
-if [ -x "$(command -v docker)" ]; then
-  # Docker is installed
-  echo "Confirmed Docker Engine"
-else
-  # Docker is not installed
-  echo "Docker not found. Installing automatically."
-  echo "Running apt-get update..."
-  apt-get update >&/dev/null
-  echo "Installing Docker..."
-  apt-get -y install docker.io
-  echo "Setting proxies for Docker..."
-  DOCKER_SERVICE_D="/etc/systemd/system/docker.service.d"
-  mkdir -p "$DOCKER_SERVICE_D"
-  if ! [[ "x$http_proxy" == "x" ]]; then
-    cat >"$DOCKER_SERVICE_D"/im-http-proxy.conf << EOF
-    [Service]
-    Environment="HTTP_PROXY=$http_proxy"
-EOF
-  fi
-  if ! [[ "x$https_proxy" == "x" ]]; then
-    cat >"$DOCKER_SERVICE_D"/im-https-proxy.conf << EOF
-    [Service]
-    Environment="HTTPS_PROXY=$https_proxy"
-EOF
-  fi
-  if ! [[ "x$no_proxy" == "x" ]]; then
-    cat >"$DOCKER_SERVICE_D"/im-no-proxy.conf << EOF
-    [Service]
-    Environment="NO_PROXY=$no_proxy"
-EOF
-  fi
-  systemctl daemon-reload
-  systemctl enable docker
-  systemctl restart docker
-  echo "Docker installed. Running self test."
-  if docker run registry.hub.docker.com/library/hello-world ; then
-    echo "Docker confirmed good."
+if [ -z "$UCC_MODE" ]; then
+  # Confirm Docker is installed
+  if [ -x "$(command -v docker)" ]; then
+    # Docker is installed
+    echo "Confirmed Docker Engine"
   else
-    echo "Problem running docker run registry.hub.docker.com/library/hello-world; exiting."
-    exit 1
+    # Docker is not installed
+    echo "Docker not found. Installing automatically."
+    echo "Running apt-get update..."
+    apt-get update >&/dev/null
+    echo "Installing Docker..."
+    apt-get -y install docker.io
+    echo "Setting proxies for Docker..."
+    DOCKER_SERVICE_D="/etc/systemd/system/docker.service.d"
+    mkdir -p "$DOCKER_SERVICE_D"
+    if ! [[ "x$http_proxy" == "x" ]]; then
+      cat >"$DOCKER_SERVICE_D"/im-http-proxy.conf << EOF
+      [Service]
+      Environment="HTTP_PROXY=$http_proxy"
+EOF
+    fi
+    if ! [[ "x$https_proxy" == "x" ]]; then
+      cat >"$DOCKER_SERVICE_D"/im-https-proxy.conf << EOF
+      [Service]
+      Environment="HTTPS_PROXY=$https_proxy"
+EOF
+    fi
+    if ! [[ "x$no_proxy" == "x" ]]; then
+      cat >"$DOCKER_SERVICE_D"/im-no-proxy.conf << EOF
+      [Service]
+      Environment="NO_PROXY=$no_proxy"
+EOF
+    fi
+    systemctl daemon-reload
+    systemctl enable docker
+    systemctl restart docker
+    echo "Docker installed. Running self test."
+    if docker run registry.hub.docker.com/library/hello-world ; then
+      echo "Docker confirmed good."
+    else
+      echo "Problem running docker run registry.hub.docker.com/library/hello-world; exiting."
+      exit 1
+    fi
   fi
 fi
 
@@ -136,7 +143,7 @@ for i in inbm-configuration inbm-dispatcher inbm-dispatcher inbm-telemetry inbm-
 done
 dpkg --remove --force-all no-tpm-provision tpm-provision inbm-configuration-agent configuration-agent inbm-dispatcher-agent dispatcher-agent inbm-diagnostic-agent diagnostic-agent inbm-cloudadapter-agent cloudadapter-agent inbm-telemetry-agent telemetry-agent mqtt-agent trtl mqtt >&/dev/null || true
 
-echo "Ensuring packages are installed: lxc mosquitto cryptsetup less docker-compose"
+echo "Ensuring prerequisite packages are installed."
 apt-get update >&/dev/null
 if [ "$OS_TYPE" == "Debian" ]; then
   apt-get install -y lxc
@@ -149,18 +156,26 @@ apt-mark unhold mosquitto
 apt-get install -y mosquitto
 systemctl disable mosquitto
 systemctl stop mosquitto
-apt-get install -y -f cryptsetup less docker-compose python3-pip
-
-if [ "$(findmnt -lo source,target,fstype,label,options,used -t btrfs)" ]; then
-  echo "BTRFS filesystem detected. Ensuring snapper is installed to enable Rollback capability..."
-  apt-get install -y -f snapper
-else
-  echo "WARNING: Rollback functionality is not supported on a non-btrfs filesystem."
+apt-get install -y -f cryptsetup less python3-pip
+if [ -z "$UCC_MODE" ]; then
+  apt-get install -y docker-compose
 fi
 
-# workaround for docker-compose credential helper
-# it is OK if it fails; only need to mv the file if it exists
-mv /usr/bin/docker-credential-secretservice /usr/bin/docker-credential-secretservice.broken >&/dev/null || true
+
+if [ -z "$UCC_MODE" ]; then
+  if [ "$(findmnt -lo source,target,fstype,label,options,used -t btrfs)" ]; then
+    echo "BTRFS filesystem detected. Ensuring snapper is installed to enable Rollback capability..."
+    apt-get install -y -f snapper
+  else
+    echo "WARNING: Rollback functionality is not supported on a non-btrfs filesystem."
+  fi
+fi
+
+if [ -z "$UCC_MODE" ]; then
+  # workaround for docker-compose credential helper
+  # it is OK if it fails; only need to mv the file if it exists
+  mv /usr/bin/docker-credential-secretservice /usr/bin/docker-credential-secretservice.broken >&/dev/null || true
+fi
 
 # Use script directory as installation directory
 INST="$DIR"
@@ -192,7 +207,6 @@ fi
 # If all pre-requisites are met, install Intel Manageability framework
 
 
-
 # Extract installation packages
 # Convert to cpio function to preserve user permissions?
 for i in $(ls "$INST_DIR" | grep preview.tar.gz); do
@@ -214,15 +228,12 @@ if [ "$(lsb_release -rs)" == "20.04" ]; then
   apt-get install -y tpm2-tools tpm2-abrmd libtss2-tcti-tabrmd0
   systemctl enable --now tpm2-abrmd
   ln -sf libtss2-tcti-tabrmd.so.0 /lib/x86_64-linux-gnu/libtss2-tcti-default.so
-elif [ "$(lsb_release -rs)" == "21.10" ]; then
-  apt-get install -y tpm2-tools tpm2-abrmd
-  systemctl enable --now tpm2-abrmd
 elif [ "$(lsb_release -rs)" == "22.04" ]; then
   apt-get install -y tpm2-tools tpm2-abrmd
   systemctl enable tpm2-abrmd
 else
-  dpkg -i tpm2-tss*.deb tpm2-abrmd*.deb tpm2-tools*.deb
-  ln -sf libtss2-tcti-tabrmd.so /usr/lib/libtss2-tcti-default.so
+  apt-get install -y tpm2-tools tpm2-abrmd
+  systemctl enable tpm2-abrmd
 fi
 
 if [ $? -ne 0 ]; then
@@ -246,14 +257,16 @@ else
   echo "MQTT Installation Complete"
 fi
 
-# install TRTL
-echo "Will install trtl executable"
+if [ -z "$UCC_MODE" ]; then
+  # install TRTL
+  echo "Will install trtl executable"
 
-if ! dpkg -i trtl-*.deb ; then
-  echo "Issue with installation. Will force."
-  apt-get install -f
-else
-  echo "TRTL Installation Complete"
+  if ! dpkg -i trtl-*.deb ; then
+    echo "Issue with installation. Will force."
+    apt-get install -f
+  else
+    echo "TRTL Installation Complete"
+  fi
 fi
 
 # install INB
@@ -267,16 +280,35 @@ else
 fi
 
 
-# install Agent(s)
-echo "Will install Manageability Agents"
-mkdir -p /cache # to unify with Yocto
-dpkg -i ./*-agent-*.deb
-if ! dpkg -i ./*-agent-*.deb ; then
-  echo "Issue with installation. Will force."
-  apt-get install -f
+if [ -z "$UCC_MODE" ]; then
+  # install Agent(s)
+  echo "Will install Manageability Agents"
+  mkdir -p /cache # to unify with Yocto
+  dpkg -i ./*-agent-*.deb
+  if ! dpkg -i ./*-agent-*.deb ; then
+    echo "Issue with installation. Will force."
+    apt-get install -f
+  else
+    echo "Agent Installation Complete"
+  fi
 else
-  echo "Agent Installation Complete"
+  # install Agent(s)
+  echo "Will install Manageability Agents in UCC mode"
+  mkdir -p /cache # to unify with Yocto
+  dpkg -i ./*cloudadapter-agent-*.deb
+  if ! dpkg -i ./*cloudadapter-agent-*.deb ; then
+    echo "Issue with installation. Will force."
+    apt-get install -f
+  else
+    echo "Agent Installation Complete"
+  fi
 fi
+
+# set ucc_mode flag if needed
+if [ -n "$UCC_MODE" ]; then
+  echo "TRUE" > /etc/intel-manageability/public/ucc_flag
+fi
+
 
 popd > /dev/null
 

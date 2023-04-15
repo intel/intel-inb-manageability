@@ -18,6 +18,7 @@ m4 -I "$DIR" "$DIR"/Dockerfile-"$1".m4 >"$TMPFILE"
 
 
 VERSION=$(cat $DIR/../version.txt)
+set +u # ignore missing CI_INB_COMMIT VARIABLE
 if git rev-parse --short HEAD >&/dev/null ; then
     COMMIT=$(git rev-parse --short HEAD)
 elif [[ "$CI_INB_COMMIT" ]] ; then  # fall back to CI/CD commit information
@@ -25,6 +26,7 @@ elif [[ "$CI_INB_COMMIT" ]] ; then  # fall back to CI/CD commit information
 else
     COMMIT="unknown commit"
 fi
+set -u
 
 echo Version: $VERSION
 echo Commit: $COMMIT
@@ -38,7 +40,7 @@ docker build \
     --build-arg no_proxy=${no_proxy:-} \
     --build-arg VERSION="$VERSION" \
     --build-arg COMMIT="$COMMIT" \
-    --disable-content-trust \
+      \
     -t ${NAME} \
     -f "$TMPFILE" \
     "$DIR"/../..

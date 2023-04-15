@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright (C) 2017-2022 Intel Corporation
+# Copyright (C) 2017-2023 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 PACKAGE_TYPE="$1"

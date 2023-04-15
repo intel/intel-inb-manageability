@@ -2,7 +2,7 @@
 Responsible for publishing messages to Intel(R) In-Band Manageability, doing some pre-parsing
 before calling appropriate Broker methods.
 
-Copyright (C) 2017-2022 Intel Corporation
+Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -88,6 +88,22 @@ class Publisher:
 
         self._send_manifest(manifest)
         return MESSAGE.MANIFEST
+
+    def publish_command(self, command: str = "") -> None:
+        """Sends command to the MQTT Broker
+
+        @param command: command to send
+        """
+        logger.info("Send command invoked")
+        self._broker.publish_command(command)
+
+    def publish_ucc(self, contents: str = "") -> None:
+        """Sends message to the MQTT Broker for UCC
+
+        @param contents: message contents to send
+        """
+        logger.info("UCC Message Triggered")
+        self._broker.publish_ucc(contents)
 
     def publish_aota(self, **arguments: str) -> str:
         """Publishes an AOTA update
