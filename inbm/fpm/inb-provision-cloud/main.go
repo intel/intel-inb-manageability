@@ -277,10 +277,10 @@ func configureUcc(config CloudConfig) string {
 	println("\nConfiguring to use UCC...")
 
 	if !fileExists(config.UccClientIdFile) {
-		log.Fatalf("Client ID file is missing.  Unable to provision for UCC.")
+		log.Fatalf("Client ID file (%s) is missing. Unable to provision for UCC.", config.UccClientIdFile)
 	}
 	if !fileExists(config.UccServerIdFile) {
-		log.Fatalf("Server ID file is missing.  Unable to provision for UCC.")
+		log.Fatalf("Server ID file (%s) is missing. Unable to provision for UCC.", config.UccServerIdFile)
 	}
 
 	serverIp := getServerIp()

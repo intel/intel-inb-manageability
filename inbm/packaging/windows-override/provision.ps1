@@ -5,7 +5,6 @@ Stop-Service mosquitto -ErrorAction SilentlyContinue
 $Env:Path += ";c:\program files\openssl-win64\bin"
 
 Set-Location C:\intel-manageability\broker
-mkdir etc\secret
 usr/bin/inb-provision-certs.exe etc\public etc\secret
 
 start-service mosquitto

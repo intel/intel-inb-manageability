@@ -13,11 +13,18 @@ if ($env:UCC_MODE) {
 }
 
 
-Copy-Item -Path C:\inb-files\intel-manageability\ -Destination \intel-manageability\ -Recurse
-Copy-Item -Path C:\inb-files\broker\ -Destination \intel-manageability\broker\ -Recurse
+$folders = @("\intel-manageability\", "\intel-manageability\broker\")
+
+foreach ($folder in $folders) {
+    if (!(Test-Path $folder)) {
+        New-Item -ItemType Directory -Force -Path $folder
+    }
+}
+
+Copy-Item -Path C:\inb-files\intel-manageability\* -Destination "\intel-manageability\" -Recurse
+Copy-Item -Path C:\inb-files\broker\* -Destination "\intel-manageability\broker\" -Recurse
 
 C:\inb-files\Win64OpenSSL_Light-3_1_0.msi /qn
-# C:\inb-files\vc_redist.x64.exe /quiet
 C:\inb-files\mosquitto-2.0.15-install-windows-x64.exe /S /D=C:\intel-manageability\mosquitto
 start-sleep -seconds 1
 copy -path C:\inb-files\intel-manageability\mosquitto.conf -destination c:\intel-manageability\mosquitto\mosquitto.conf
