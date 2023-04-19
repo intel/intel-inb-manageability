@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -24,8 +25,6 @@ import (
 
 const thingsboard string = "thingsboard"
 const ucc string = "ucc"
-const uccClientIdFile string = "/etc/ucc/client_id"
-const uccServerIdFile string = "/etc/ucc/server_id"
 
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, "usage: inb-provision-cloud [cloud credential directory]"+
@@ -37,6 +36,28 @@ func usage() {
 func main() {
 	flag.Usage = usage
 	flag.Parse()
+
+	var uccClientIdFile string
+	var uccServerIdFile string
+	var cloudCredentialPublicDir string
+	var cloudCredentialSecretDir string
+
+	if runtime.GOOS == "windows" {
+		uccClientIdFile = "c:\\intel-manageability\\inbm\\etc\\ucc\\client_id"
+		uccServerIdFile = "c:\\intel-manageability\\inbm\\etc\\ucc\\server_id"
+		cloudCredentialPublicDir = "c:\\intel-manageability\\public\\cloudadapter-agent\\"
+		cloudCredentialSecretDir = "c:\\intel-manageability\\secret\\cloudadapter-agent\\"
+	} else {
+		uccClientIdFile = "/etc/ucc/client_id"
+		uccServerIdFile = "/etc/ucc/server_id"
+		cloudCredentialPublicDir = "/etc/intel-manageability/public/cloudadapter-agent/"
+		cloudCredentialSecretDir = "/etc/intel-manageability/secret/cloudadapter-agent/"
+	}
+
+	cloudCredentialPublicDir, err := filepath.Abs(cloudCredentialPublicDir)
+	must(err, "Getting absolute cloud public directory")
+	cloudCredentialSecretDir, err = filepath.Abs(cloudCredentialSecretDir)
+	must(err, "Getting absolute cloud credential directory")
 
 	args := flag.Args()
 	if len(args) < 3 {
@@ -76,16 +97,35 @@ func main() {
 		log.Fatalf("JSON schema file does not exist: %s\n", jsonSchemaFile)
 	}
 
-	setUpCloudCredentialDirectory(cloudCredentialDir, thingsBoardTemplateDir, uccTemplateDir, jsonSchemaFile)
+	config := CloudConfig{
+		CloudCredentialDir:       cloudCredentialDir,
+		ThingsBoardTemplateDir:   thingsBoardTemplateDir,
+		UccTemplateDir:           uccTemplateDir,
+		JsonSchemaFile:           jsonSchemaFile,
+		UccClientIdFile:          uccClientIdFile,
+		UccServerIdFile:          uccServerIdFile,
+		CloudCredentialPublicDir: cloudCredentialPublicDir,
+		CloudCredentialSecretDir: cloudCredentialSecretDir,
+	}
+
+	setUpCloudCredentialDirectory(config)
+}
+
+type CloudConfig struct {
+	CloudCredentialDir       string
+	ThingsBoardTemplateDir   string
+	UccTemplateDir           string
+	JsonSchemaFile           string
+	UccClientIdFile          string
+	UccServerIdFile          string
+	CloudCredentialPublicDir string
+	CloudCredentialSecretDir string
 }
 
 // setUpCloudCredentialDirectory prompts the user for information to connect to a cloud and sets up the cloud
-func setUpCloudCredentialDirectory(cloudCredentialDir string,
-	thingsBoardTemplateDir string,
-	uccTemplateDir string,
-	jsonSchemaFile string) {
+func setUpCloudCredentialDirectory(config CloudConfig) {
 	cloudFile := "adapter.cfg" // The main config file
-	cloudFilePath := filepath.Join(cloudCredentialDir, filepath.Clean(cloudFile))
+	cloudFilePath := filepath.Join(config.CloudCredentialDir, filepath.Clean(cloudFile))
 	if fileExists(cloudFilePath) {
 		if !confirmReplaceConfiguration(cloudFilePath) {
 			os.Exit(0)
@@ -102,17 +142,13 @@ func setUpCloudCredentialDirectory(cloudCredentialDir string,
 	cloudConfig := ""
 	switch selection {
 	case "Azure IoT Central":
-		cloudConfig = configureAzure()
+		cloudConfig = configureAzure(config)
 	case "ThingsBoard":
-		cloudConfig = configureThingsBoard(cloudCredentialDir, thingsBoardTemplateDir)
+		cloudConfig = configureThingsBoard(config)
 	case "UCC":
-		if !fileExists(uccClientIdFile) {
-			log.Fatalf("Client ID file is missing.  Unable to provision for UCC.")
-		}
-		cloudConfig = configureUcc(cloudCredentialDir, uccTemplateDir)
-
+		cloudConfig = configureUcc(config)
 	case "Custom":
-		cloudConfig = configureCustom(jsonSchemaFile)
+		cloudConfig = configureCustom(config)
 	default:
 		log.Fatalf("Internal error: selection prompt returned invalid option")
 	}
@@ -126,7 +162,7 @@ func setUpCloudCredentialDirectory(cloudCredentialDir string,
 	println("Successfully configured cloud service!")
 }
 
-func configureCustom(jsonSchemaFile string) string {
+func configureCustom(config CloudConfig) string {
 	println("\nConfiguring to use a custom cloud service...")
 	name := promptString("Please enter a name for the cloud service:")
 
@@ -138,7 +174,7 @@ func configureCustom(jsonSchemaFile string) string {
 			println("Input custom JSON:")
 			json = []byte(readMultilineString())
 		}
-		s, err := schema.ReadFile(jsonSchemaFile)
+		s, err := schema.ReadFile(config.JsonSchemaFile)
 		if err != nil {
 			log.Fatalf("Unable to read generic JSON schema")
 		}
@@ -155,7 +191,7 @@ func makeCustomJson(name string, json string) string {
 	return `{ "cloud": "custom: ` + name + `", "config": ` + json + ` }`
 }
 
-func configureAzure() string {
+func configureAzure(config CloudConfig) string {
 	println("\nConfiguring to use Azure...")
 
 	scopeId := promptString("Please enter the device Scope ID (" +
@@ -174,13 +210,9 @@ func configureAzure() string {
 	case "X509 authentication":
 		println("\nConfiguring device to use X509 auth requires device certificate verification.\n")
 		if promptYesNo("\nAre device certs and keys generated? ") {
-			cloudCredentialPublicDir, err := filepath.Abs("/etc/intel-manageability/public/cloudadapter-agent/")
-			must(err, "Getting absolute cloud public directory")
-			cloudCredentialSecretDir, err := filepath.Abs("/etc/intel-manageability/secret/cloudadapter-agent/")
-			must(err, "Getting absolute cloud credential directory")
 
-			deviceCertPath = filepath.Join(cloudCredentialPublicDir, "device_cert.pem")
-			deviceKeyPath = filepath.Join(cloudCredentialSecretDir, "device_key.pem")
+			deviceCertPath = filepath.Join(config.CloudCredentialPublicDir, "device_cert.pem")
+			deviceKeyPath = filepath.Join(config.CloudCredentialSecretDir, "device_key.pem")
 
 			certData := []byte{}
 			if promptYesNo("\nInput Device certificate from file?") {
@@ -220,49 +252,56 @@ func makeAzureJson(scopeId string, deviceId string, deviceCertPath string, devic
 		`", "device_id": "` + deviceId + `", "device_cert": "` + deviceCertPath + `", "device_key": "` + deviceKeyPath + `", "device_sas_key": "` + deviceSasKey + `" } }`
 }
 
-func configureThingsBoard(cloudCredentialDir string, templateDir string) string {
+func configureThingsBoard(config CloudConfig) string {
 	println("\nConfiguring to use ThingsBoard...")
 
 	serverIp := getServerIp()
 	serverPort := getServerPort("1883", "")
 
-	doConfigureTls, deviceToken, deviceCertPath, _ := provisionToCloud(cloudCredentialDir, thingsboard)
+	doConfigureTls, deviceToken, deviceCertPath, _ := provisionToCloud(config.CloudCredentialDir, thingsboard)
 	jsonTemplate := ""
 	caPath := ""
 
 	if doConfigureTls {
-		jsonTemplate, caPath = configureTls(templateDir, "thingsboard.pub.pem",
-			"ThingsBoard", cloudCredentialDir)
+		jsonTemplate, caPath = configureTls(config.ThingsBoardTemplateDir, "thingsboard.pub.pem",
+			"ThingsBoard", config.CloudCredentialDir)
 	} else {
-		jsonTemplate = createUnencryptedTemplate(templateDir)
+		jsonTemplate = createUnencryptedTemplate(config.ThingsBoardTemplateDir)
 	}
 
 	return makeCloudJson(thingsboard, jsonTemplate, caPath, deviceToken, serverIp,
 		serverPort, deviceCertPath, "", "", "", "", "")
 }
 
-func configureUcc(cloudCredentialDir string, templateDir string) string {
+func configureUcc(config CloudConfig) string {
 	println("\nConfiguring to use UCC...")
+
+	if !fileExists(config.UccClientIdFile) {
+		log.Fatalf("Client ID file is missing.  Unable to provision for UCC.")
+	}
+	if !fileExists(config.UccServerIdFile) {
+		log.Fatalf("Server ID file is missing.  Unable to provision for UCC.")
+	}
 
 	serverIp := getServerIp()
 	serverPort := getServerPort("1883", "")
-	doConfigureTls, deviceToken, deviceCertPath, deviceKeyPath := provisionToCloud(cloudCredentialDir, "ucc")
+	doConfigureTls, deviceToken, deviceCertPath, deviceKeyPath := provisionToCloud(config.CloudCredentialDir, "ucc")
 	jsonTemplate := ""
 	caPath := ""
 
 	if doConfigureTls {
-		jsonTemplate, caPath = configureTls(templateDir, "ucc.ca.pem.crt",
-			ucc, cloudCredentialDir)
+		jsonTemplate, caPath = configureTls(config.UccTemplateDir, "ucc.ca.pem.crt",
+			ucc, config.CloudCredentialDir)
 	} else {
-		jsonTemplate = createUnencryptedTemplate(templateDir)
+		jsonTemplate = createUnencryptedTemplate(config.UccTemplateDir)
 	}
 
-	clientId := getIdFromFile(uccClientIdFile)
+	clientId := getIdFromFile(config.UccClientIdFile)
 	if !isClientIdValid(clientId) {
 		log.Fatalf("UCC Client ID does not meet the requirements.  Unable to provision for UCC.")
 	}
 
-	serverId := getIdFromFile(uccServerIdFile)
+	serverId := getIdFromFile(config.UccServerIdFile)
 	if !isServerIdValid(serverId) {
 		log.Fatalf("UCC Server ID does not meet the requirements.  Unable to provision for UCC.")
 	}
@@ -288,7 +327,7 @@ func isClientIdValid(id string) bool {
 	if strings.ContainsAny(id, "# + \x00") {
 		log.Println("Client ID contains invalid characters.  Unable to provision for UCC.")
 		return false
-	}	
+	}
 	return true
 }
 

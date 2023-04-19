@@ -26,4 +26,3 @@ start-service mosquitto
 
 start-service inbm-cloud-adapter
 set-service -name inbm-cloud-adapter -startuptype automatic
-# check if mosquitto restarts on reboot?
