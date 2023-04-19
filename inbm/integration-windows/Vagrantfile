@@ -22,6 +22,51 @@ Vagrant.configure("2") do |config|
     v.cpus = 4
   end
 
-  config.vm.provision "shell", path: "inb-files/intel-manageability/install.ps1"
-  config.vm.provision "shell", path: "inb-files/intel-manageability/provision.ps1"
+  config.vm.provision "shell", path: "inb-files/intel-manageability/install.ps1", env: {"UCC_MODE" => "true"}
+
+  config.vm.provision "shell", inline: <<-SHELL
+    $adapterCfg = @'
+    { 
+        "cloud": "ucc", 
+        "config": {
+            "mqtt": {
+                "client_id": "12345678abcd",
+                "username": "",
+                "hostname": "localhost",
+                "port": 4000
+            },
+            "tls": {
+                "version": "TLSv1.2",
+                "certificates": "C:\\intel-manageability\\inbm\\etc\\secret\\cloudadapter-agent\\ucc.ca.pem.crt"
+            },
+            "x509": {
+                "device_cert": "C:\\intel-manageability\\inbm\\etc\\secret\\cloudadapter-agent\\client.crt",
+                "device_key": "C:\\intel-manageability\\inbm\\etc\\secret\\cloudadapter-agent\\client.key"
+            },
+            "event": {
+                "pub": "TopicTelemetryInfo/12345678abcd",
+                "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+            },
+            "telemetry": {
+                "pub": "",
+                "format": ""
+            },
+            "attribute": {
+                "pub": "",
+                "format": ""
+            },
+            "method": {
+                "pub": "TopicRemoteCommands/response/12345678abcd",
+                "format": "\"{timestamp}: {message}\"",
+                "sub": "TopicRemoteCommands/12345678abcd"
+            }
+        }
+    }
+    '@
+    
+    Set-Content -Path \intel-manageability\inbm\etc\secret\cloudadapter-agent\adapter.cfg -Value $adapterCfg
+  SHELL
+  end
+
+  config.vm.provision "shell", path: "inb-files/intel-manageability/provision.ps1", env: {"NO_CLOUD" => "true"}
 end

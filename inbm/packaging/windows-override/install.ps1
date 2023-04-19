@@ -1,14 +1,18 @@
-#stop-service inbm-dispatcher
-#stop-service inbm-diagnostic
-#stop-service inbm-telemetry
-Stop-Service inbm-cloud-adapter -ErrorAction SilentlyContinue
-#stop-service inbm-configuration
-Stop-Service mosquitto -ErrorAction SilentlyContinue
-
 $ErrorActionPreference = "Stop"
 Set-PSDebug -Trace 1
 
-Remove-Item -Path c:\intel-manageability -Recurse -ErrorAction Ignore
+if (-not $env:UCC_MODE) {
+    Write-Host "Attempted to install in normal (non-UCC) mode."
+    Write-Host "This is not yet supported. Exiting."
+    exit 1
+}
+
+$UCC_FILE = "C:\inb-files\intel-manageability\inbm\etc\public\ucc_flag"
+if ($env:UCC_MODE) {
+    "TRUE" | Set-Content -Path $UCC_FILE
+}
+
+
 Copy-Item -Path C:\inb-files\intel-manageability\ -Destination \intel-manageability\ -Recurse
 Copy-Item -Path C:\inb-files\broker\ -Destination \intel-manageability\broker\ -Recurse
 
