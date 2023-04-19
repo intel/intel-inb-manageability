@@ -24,6 +24,7 @@ The `Makefile` includes the following commands:
 * `make setup` - Deletes the existing `inb-files` folder (if present), builds the Windows output, and transfers it to the `inb-files` folder.
 * `make destroy` - Removes the Vagrant environment.
 * `make test` - Deactivates the VBoxSymlinkCreate option and configures the Vagrant environment using VirtualBox as the provider.
+* `make test` - Reprovision the test system without destroying the VM. Please uninstall Turtle Creek first.
 
 ## Further Information
 
