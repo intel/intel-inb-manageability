@@ -32,7 +32,6 @@ def validate_config(config: Dict[str, Any]) -> None:
         jsonschema.validate(config, schema=schema)
 
 
-@snoop(depth=2)
 def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     """Create CloudClient instance from a schema conforming config object
 

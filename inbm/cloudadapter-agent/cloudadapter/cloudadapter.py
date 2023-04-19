@@ -57,7 +57,6 @@ class CloudAdapter(WindowsService):
         logger.info('Cloud Adapter agent is running')
 
         # Exit if configuration is malformed
-        snoop.install(out=logger.info)
         try:
             client = Client()
             client.start()
