@@ -16,7 +16,6 @@ import os
 import signal
 import logging
 import sys
-import snoop
 from logging.config import fileConfig
 
 from inbm_lib.windows_service import WindowsService

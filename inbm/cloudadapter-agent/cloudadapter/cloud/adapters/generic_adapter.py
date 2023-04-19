@@ -12,13 +12,11 @@ from ..cloud_builders import build_client_with_config
 from typing import Callable
 from ..client.cloud_client import CloudClient
 from .adapter import Adapter
-import snoop
 
 class GenericAdapter(Adapter):
     def __init__(self, config: dict):
         super().__init__(config)
 
-    @snoop
     def configure(self, config: dict) -> CloudClient:
         """Configure the adapter to connect to the server
 
