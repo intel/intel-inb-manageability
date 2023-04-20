@@ -1,3 +1,6 @@
+$ErrorActionPreference = "Stop"
+set-psdebug -trace 1
+
 Stop-Service inbm-cloud-adapter -ErrorAction SilentlyContinue
 Stop-Service mosquitto -ErrorAction SilentlyContinue
 
@@ -5,12 +8,13 @@ Stop-Service mosquitto -ErrorAction SilentlyContinue
 $Env:Path += ";c:\program files\openssl-win64\bin"
 
 Set-Location C:\intel-manageability\broker
+if (!(Test-Path -Path "etc\secret")) {
+    New-Item -ItemType Directory -Path "etc\secret"
+}
 usr/bin/inb-provision-certs.exe etc\public etc\secret
 
 start-service mosquitto
 
-$ErrorActionPreference = "Stop"
-set-psdebug -trace 1
 
 \intel-manageability\inbm\usr\bin\inbm-cloudadapter.exe install
 

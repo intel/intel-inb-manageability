@@ -43,8 +43,8 @@ func main() {
 	var cloudCredentialSecretDir string
 
 	if runtime.GOOS == "windows" {
-		uccClientIdFile = "c:\\intel-manageability\\inbm\\etc\\ucc\\client_id"
-		uccServerIdFile = "c:\\intel-manageability\\inbm\\etc\\ucc\\server_id"
+		uccClientIdFile = "c:\\ucc\\etc\\client_id"
+		uccServerIdFile = "c:\\ucc\\etc\\server_id"
 		cloudCredentialPublicDir = "c:\\intel-manageability\\public\\cloudadapter-agent\\"
 		cloudCredentialSecretDir = "c:\\intel-manageability\\secret\\cloudadapter-agent\\"
 	} else {
