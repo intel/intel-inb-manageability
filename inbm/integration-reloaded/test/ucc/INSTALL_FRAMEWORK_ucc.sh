@@ -130,8 +130,8 @@ chmod u=rw,g=r,o= /etc/intel-manageability/secret/cloudadapter-agent/*
 # inb-provision-cloud binary. Alternately we could create a script
 # interface to inb-provision-cloud.
 sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
-{ 
-    "cloud": "ucc", 
+{
+    "cloud": "ucc",
     "config": {
         "mqtt": {
             "client_id": "12345678abcd",
@@ -148,8 +148,8 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
             "device_key": "/etc/intel-manageability/secret/cloudadapter-agent/client.key"
         },
         "event": {
-            "pub": "TopicTelemetryInfo/12345678abcd",
-            "format": "{ \"ts\": \"{ts}\", \"values\": {\"telemetry\": \"{value}\"}}"
+            "pub": "uccctl/tel/req/123/12345678abcd",
+            "format": "{\"{value}\"}"
         },
         "telemetry": {
             "pub": "",
@@ -160,10 +160,10 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
             "format": ""
         },
         "method": {
-            "pub": "TopicRemoteCommands/response/12345678abcd",
-            "format": "\"{timestamp}: {message}\"",
-            "sub": "TopicRemoteCommands/12345678abcd"
-        }
+            "pub": "uccctl/cmd/res/123/12345678abcd",
+            "format": "\"{timestamp}: OK\"",
+            "sub": "uccctl/cmd/req/123/12345678abcd"
+         }
     }
 }
 EOF

@@ -17,5 +17,5 @@ suite_finished "Prepare tests"
 #trap general 0
 
 launchers/ucc/install-framework-ucc.sh
-
+launchers/ucc/ucc-test.sh
 #launchers/setup-servers.sh  # This should happen after any docker uninstalls.

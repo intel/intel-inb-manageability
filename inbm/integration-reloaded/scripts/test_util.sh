@@ -46,6 +46,51 @@ listen_event() {
 }
 
 
+trigger_ucc() {
+    CA_FILE=/etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt
+    CERT_FILE=/etc/intel-manageability/secret/ucc-native-service/ucc-native-service.crt
+    KEY=/etc/intel-manageability/secret/ucc-native-service/ucc-native-service.key
+    ID=test
+    TOPIC=manageability/telemetry
+    MSG=$1
+    UCC_MQTT_PORT=8883
+    sudo mosquitto_pub -h localhost -p $UCC_MQTT_PORT --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -m "${MSG}"
+}
+
+listen_ucc_telemetry() {
+    CA_FILE=/etc/ucc_mosquitto/certs/ca.crt
+    CERT_FILE=/etc/ucc_mosquitto/certs/client.crt
+    KEY=/etc/ucc_mosquitto/certs/client.key
+    ID=test
+    TOPIC=uccctl/tel/req/123/12345678abcd
+    UCC_MQTT_PORT=4000
+    sudo timeout 300 mosquitto_sub -h localhost -p $UCC_MQTT_PORT --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -C 1 --keepalive 10| tee ucc-telemetry-response &
+}
+
+
+trigger_ucc_command() {
+    CA_FILE=/etc/ucc_mosquitto/certs/ca.crt
+    CERT_FILE=/etc/ucc_mosquitto/certs/client.crt
+    KEY=/etc/ucc_mosquitto/certs/client.key
+    ID=test
+    TOPIC=uccctl/cmd/req/123/12345678abcd
+    MSG=$1
+    UCC_MQTT_PORT=4000
+    sudo mosquitto_pub -h localhost -p $UCC_MQTT_PORT --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -m "${MSG}"
+}
+
+
+listen_ucc_command() {
+    CA_FILE=/etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt
+    CERT_FILE=/etc/intel-manageability/public/ucc-native-service/ucc-native-service.crt
+    KEY=/etc/intel-manageability/secret/ucc-native-service/ucc-native-service.key
+    ID=test
+    TOPIC=manageability/request/command
+    UCC_MQTT_PORT=8883
+    sudo timeout 300 mosquitto_sub -h localhost -p $UCC_MQTT_PORT --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -C 1 --keepalive 10| tee ucc-command-response &
+}
+
+
 clean_up_subscribe() {
 if pgrep mosquitto_sub ; then
 pkill mosquitto_sub
