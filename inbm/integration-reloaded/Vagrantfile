@@ -63,7 +63,7 @@ config.vm.provision "shell", inline: <<-SHELL
     Acquire::http::proxy "#{http_proxy}";
     Acquire::https::proxy "#{https_proxy}";
     Acquire::http::proxy::linux-ftp.ostc.intel.com "DIRECT";
-    Acquire::htts::proxy::linux-ftp.ostc.intel.com "DIRECT";
+    Acquire::https::proxy::linux-ftp.ostc.intel.com "DIRECT";
 EOF
     export https_proxy=#{https_proxy}
     echo "http_proxy=#{http_proxy}" >>/etc/environment
