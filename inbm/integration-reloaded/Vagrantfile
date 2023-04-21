@@ -62,14 +62,16 @@ config.vm.provision "shell", inline: <<-SHELL
     cat >/etc/apt/apt.conf <<EOF
     Acquire::http::proxy "#{http_proxy}";
     Acquire::https::proxy "#{https_proxy}";
-    EOF
-      export https_proxy=#{https_proxy}
-      echo "http_proxy=#{http_proxy}" >>/etc/environment
-      echo "HTTP_PROXY=#{http_proxy}" >>/etc/environment
-      echo "https_proxy=#{https_proxy}" >>/etc/environment
-      echo "HTTPS_proxy=#{https_proxy}" >>/etc/environment    
-    echo "no_proxy=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
-    echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
+    Acquire::http::proxy::linux-ftp.ostc.intel.com "DIRECT";
+    Acquire::htts::proxy::linux-ftp.ostc.intel.com "DIRECT";
+EOF
+    export https_proxy=#{https_proxy}
+    echo "http_proxy=#{http_proxy}" >>/etc/environment
+    echo "HTTP_PROXY=#{http_proxy}" >>/etc/environment
+    echo "https_proxy=#{https_proxy}" >>/etc/environment
+    echo "HTTPS_proxy=#{https_proxy}" >>/etc/environment    
+    echo "no_proxy=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost,linux-ftp.ostc.intel.com" >>/etc/environment
+    echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost,linux-ftp.ostc.intel.com" >>/etc/environment
     echo 'Dpkg::options { "--force-confdef"; "--force-confold"; }' >>/etc/apt/apt.conf.d/local # FIXME: WORKAROUND FOR SOTA BUG
     echo 'APT::Periodic::Update-Package-Lists "0";'  >/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::Update-Package-Lists "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
@@ -86,12 +88,13 @@ config.vm.provision "shell", inline: <<-SHELL
     systemd-tmpfiles --create --prefix /var/log/journal
     time systemctl restart systemd-journald
 
-	time sudo python3 -m pip install cryptography==38.0.1 # For create_signature.py
-	time sudo python3 -m pip install requests[security]==2.28.1
+	  time sudo python3 -m pip install cryptography==38.0.1 # For create_signature.py
+	  time sudo python3 -m pip install requests[security]==2.28.1
 
     # disable slow time sync
     sudo timedatectl set-ntp no
   SHELL
+
   config.vm.provision "shell", inline: "sudo python3 -c 'import cryptography'"
   config.vm.provision "file", source: "./scripts/afulnx_64",
     destination: "/tmp/afulnx_64"
