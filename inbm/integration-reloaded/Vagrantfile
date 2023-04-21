@@ -78,7 +78,10 @@ EOF
     echo 'APT::Periodic::Download-Upgradeable-Packages "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::AutocleanInterval "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::Unattended-Upgrade "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
-    ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list || ex -s -c '%s/mirrors.edge.kernel.org\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+
+    # following line disabled to let us use mirror configured in Vagrant image
+    # ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list || ex -s -c '%s/mirrors.edge.kernel.org\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+
     # ppa.launchpad.net is often slow and times out the integration test
     # during the test, don't try to fetch from it
     sudo add-apt-repository --remove ppa:deadsnakes/ppa
