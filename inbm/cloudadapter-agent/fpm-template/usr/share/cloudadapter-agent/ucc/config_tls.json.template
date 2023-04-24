@@ -19,7 +19,7 @@
     },
     "event": {
         "pub": "uccctl/tel/req/{SERVER_ID}/{CLIENT_ID}",
-        "format": "{\"{value}\"}"
+        "format": "{raw_value}"
     },
     "telemetry": {
         "pub": "",
@@ -31,7 +31,7 @@
     },
     "method": {
         "pub": "uccctl/cmd/res/{SERVER_ID}/{CLIENT_ID}",
-        "format": "\"{timestamp}: OK\"",
+        "format": "OK",
         "sub": "uccctl/cmd/req/{SERVER_ID}/{CLIENT_ID}"
     }
 }
