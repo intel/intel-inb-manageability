@@ -79,6 +79,16 @@ class TestFormatter(unittest.TestCase):
         result = formatter.format(escape="\r\t\n\"")
         assert result == "\\r\\t\\n\\\""
 
+    def test_raw_format_no_escapes(self):
+        formatter = Formatter("{raw_escape}")
+        result = formatter.format(escape="\r\t\n\"")
+        assert result == "\r\t\n\""
+
+    def test_raw_format_no_escapes_default(self):
+        formatter = Formatter("{raw_default}", {"default": "f\"illed"})
+        result = formatter.format()
+        assert result == "f\"illed"
+
     def test_format_backslash_escape_succeeds(self):
         formatter = Formatter("{escape}")
         result = formatter.format(escape="\\")

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Fixed
+ - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
+
 ## 3.0.15 - 2023-04-14
 
 ### Added
