@@ -9,6 +9,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ./build.sh
 cp -r debs-20.04/*simulator* "$DIR"/output-main/ )
 
+touch "$DIR"/output-main/jenkins-a.txt
 
 ( cd "$DIR"/output-main ;
   TAR_CONTENTS="./*-agent*.deb trtl*.deb tpm-provision*.deb mqtt*.deb inbc*.deb"
