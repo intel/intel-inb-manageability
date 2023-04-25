@@ -300,7 +300,7 @@ func configureUcc(config CloudConfig) string {
 		log.Fatalf("UCC Client ID does not meet the requirements.  Unable to provision for UCC.")
 	}
 
-	serverId := getIdFromFile(uccServerIdFile)
+	serverId := getIdFromFile(config.UccServerIdFile)
 	if !isValidServerId(serverId) {
 		log.Fatalf("UCC Server ID does not meet the requirements.  Unable to provision for UCC.")
 	}
