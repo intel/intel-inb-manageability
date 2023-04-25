@@ -25,7 +25,6 @@ def main() -> None:
             win32serviceutil.HandleCommandLine(Dispatcher)
     else:
         dispatcher = Dispatcher()
-        dispatcher.start()
 
 
 if __name__ == "__main__":
