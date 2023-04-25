@@ -18,7 +18,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/google/uuid"
 	schema "github.com/lestrrat-go/jsschema"
 	"github.com/lestrrat-go/jsschema/validator"
 )
@@ -301,8 +300,8 @@ func configureUcc(config CloudConfig) string {
 		log.Fatalf("UCC Client ID does not meet the requirements.  Unable to provision for UCC.")
 	}
 
-	serverId := getIdFromFile(config.UccServerIdFile)
-	if !isServerIdValid(serverId) {
+	serverId := getIdFromFile(uccServerIdFile)
+	if !isValidServerId(serverId) {
 		log.Fatalf("UCC Server ID does not meet the requirements.  Unable to provision for UCC.")
 	}
 
@@ -326,21 +325,6 @@ func isClientIdValid(id string) bool {
 	}
 	if strings.ContainsAny(id, "# + \x00") {
 		log.Println("Client ID contains invalid characters.  Unable to provision for UCC.")
-		return false
-	}
-	return true
-}
-
-func isServerIdValid(id string) bool {
-	if len(id) == 0 || len(id) > 128 {
-		log.Println("Server ID Length is greater than 128 characters.  Unable to provision for UCC.")
-		return false
-	}
-	if _, err := uuid.Parse(id); err == nil {
-		return true
-	}
-	if net.ParseIP(id) == nil {
-		log.Println("Server ID doesn't contain a valid (UUID or IP). Unable to provision for UCC.")
 		return false
 	}
 	return true
@@ -381,6 +365,14 @@ func isValidIpAddress(ipaddr string) bool {
 		return false
 	}
 	return true
+}
+
+func isValidServerId(name string) bool {
+	if len(name) == 0 || len(name) > 128 {
+		return false
+	}
+	validChars := regexp.MustCompile(`^([a-zA-Z0-9-_,.]*)$`)
+	return validChars.MatchString(name)
 }
 
 func isValidHostname(hostname string) bool {

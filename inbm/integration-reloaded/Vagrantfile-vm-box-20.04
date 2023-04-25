@@ -1,2 +1,2 @@
-config.vm.box = "turtlecreek-packer-ubuntu-20.04-20220216"
-config.vm.box_url = "https://ubit-artifactory-or.intel.com/artifactory/turtle-creek-debian-local/boxes/turtlecreek-packer-ubuntu-20.04-20220216.box"
+config.vm.box = "turtlecreek-packer-ubuntu-20.04-20230421"
+config.vm.box_url = "https://ubit-artifactory-or.intel.com/artifactory/turtle-creek-debian-local/boxes/turtlecreek-packer-ubuntu-20.04-20230421.box"
