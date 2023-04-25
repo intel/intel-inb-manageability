@@ -149,7 +149,7 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
         },
         "event": {
             "pub": "uccctl/tel/req/123/12345678abcd",
-            "format": "{\"{value}\"}"
+            "format": "{raw_value}"
         },
         "telemetry": {
             "pub": "",
@@ -161,9 +161,9 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
         },
         "method": {
             "pub": "uccctl/cmd/res/123/12345678abcd",
-            "format": "\"{timestamp}: OK\"",
+            "format": "OK",
             "sub": "uccctl/cmd/req/123/12345678abcd"
-         }
+        }
     }
 }
 EOF
@@ -185,4 +185,4 @@ else
     exit 1
 fi
 
-
+pip3 install paho-mqtt==1.6.1
