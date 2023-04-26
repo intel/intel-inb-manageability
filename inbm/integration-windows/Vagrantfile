@@ -29,15 +29,22 @@ Vagrant.configure("2") do |config|
     New-Item -Path "C:\\ucc\\etc\\server_id" -ItemType File -Force
     Set-Content -Path "C:\\ucc\\etc\\server_id" -Value "12345678abcd"
   SHELL
-  config.vm.provision "shell", path: "python.ps1"
-
   config.vm.provision "shell", path: "inb-files/intel-manageability/uninstall.ps1", env: {"UCC_MODE" => "true"}
   config.vm.provision "shell", path: "inb-files/intel-manageability/install.ps1", env: {"UCC_MODE" => "true"}
   config.vm.provision "file", source: "adapter.cfg", destination: "/intel-manageability/inbm/etc/secret/cloudadapter-agent/adapter.cfg"
-  config.vm.provision "shell", path: "uccmosquitto.ps1"  
   config.vm.provision "shell", path: "inb-files/intel-manageability/provision.ps1", env: {"NO_CLOUD" => "true"}
+
+  config.vm.provision "shell", path: "python.ps1"
+  config.vm.provision "shell", path: "uccmosquitto.ps1"
   config.vm.provision "shell", inline: <<-SHELL
+    net start uccmosquitto
+    net start inbm-cloudadapter
     pip install paho-mqtt==1.6.1
     python c:\\inb-files\\UCC_FLOW_TEST.py
+  SHELL
+  
+  config.vm.provision "shell", run: "always", inline: <<-SHELL
+    Write-Output "Contents of manageability.log:"
+    Get-Content "C:\\intel-manageability\\inbm\\var\\manageability.log"
   SHELL
 end

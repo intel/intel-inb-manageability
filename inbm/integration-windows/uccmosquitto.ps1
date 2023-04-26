@@ -1,8 +1,9 @@
 $ErrorActionPreference = "Stop"
 set-psdebug -trace 1
 
+$uccMosquittoPath = "C:\uccmosquitto"
+
 # Set paths
-$mosquittoConfPath = "c:\intel-manageability\mosquitto\mosquitto.conf"
 $caCertPath = "C:\intel-manageability\broker\etc\secret\cloudadapter-agent\ucc-ca.crt"
 $caKeyPath = "C:\intel-manageability\broker\etc\secret\cloudadapter-agent\ucc-ca.key"
 $serverCertPath = "C:\intel-manageability\broker\etc\secret\cloudadapter-agent\ucc-server.crt"
@@ -90,13 +91,10 @@ Remove-Item client.csr
 Remove-Item server.conf
 Remove-Item client.conf
 
-# Read and update the mosquitto.conf file
-$mosquittoConf = Get-Content -Path $mosquittoConfPath
+# UCC mosquitto configuration
+$mosquittoConf = @"
 
-# Append the second listener configuration
-$secondListenerConf = @"
-
-listener 4000
+port 4000
 cafile $caCertPath
 certfile $serverCertPath
 keyfile $serverKeyPath
@@ -105,7 +103,46 @@ use_identity_as_username true
 tls_version tlsv1.2
 "@
 
-$mosquittoConf += $secondListenerConf
 
-# Write the updated mosquitto.conf file
-Set-Content -Path $mosquittoConfPath -Value $mosquittoConf
+C:\inb-files\mosquitto-2.0.15-install-windows-x64.exe /S /D=$uccMosquittoPath
+start-sleep -seconds 1
+
+# Variables
+$instances = @(
+    @{
+        Name = "UCCMosquitto"
+        Binary = "uccmosquitto.exe"
+        Config = "uccmosquitto.conf"
+    }
+)
+
+# Download NSSM
+$nssmUrl = "https://nssm.cc/release/nssm-2.24.zip"
+$nssmZipPath = Join-Path $uccMosquittoPath "nssm.zip"
+$extractPath = Join-Path $uccMosquittoPath "nssm"
+
+if (-not (Test-Path $extractPath)) {
+    Invoke-WebRequest -Uri $nssmUrl -OutFile $nssmZipPath
+    Expand-Archive -Path $nssmZipPath -DestinationPath $extractPath
+}
+
+$nssmExe = Join-Path $extractPath "nssm-2.24\win64\nssm.exe"
+
+# Create separate Mosquitto instances and services
+foreach ($instance in $instances) {
+    $binaryPath = Join-Path $uccMosquittoPath $instance.Binary
+    $configPath = Join-Path $uccMosquittoPath $instance.Config
+
+    if (-not (Test-Path $binaryPath)) {
+        Copy-Item -Path (Join-Path $uccMosquittoPath "mosquitto.exe") -Destination $binaryPath
+    }
+
+    if (-not (Test-Path $configPath)) {
+        Set-Content -Path $configPath -Value $mosquittoConf
+    }
+
+    $service = Get-Service -Name $instance.Name -ErrorAction SilentlyContinue
+    if ($null -eq $service) {
+        & $nssmExe install $instance.Name $binaryPath "-c $configPath"
+    }
+}
