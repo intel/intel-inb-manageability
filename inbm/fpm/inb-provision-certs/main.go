@@ -64,7 +64,7 @@ func main() {
 
 	var uccFlagPath string
 	if runtime.GOOS == "windows" {
-		uccFlagPath = "c:\\intel-manageability\\inbm\\public\\ucc_flag"
+		uccFlagPath = "c:\\intel-manageability\\inbm\\etc\\public\\ucc_flag"
 	} else {
 		uccFlagPath = "/etc/intel-manageability/public/ucc_flag"
 	}

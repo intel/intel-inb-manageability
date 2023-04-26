@@ -2,25 +2,47 @@
 
 import paho.mqtt.client as mqtt
 import time
+import os
 
-ucc_broker = "localhost"
-ucc_port = 4000
-ucc_ca_file = "/etc/ucc_mosquitto/certs/ca.crt"
-ucc_client_cert = "/etc/ucc_mosquitto/certs/client.crt"
-ucc_client_key = "/etc/ucc_mosquitto/certs/client.key"
+if os.name == 'nt':
+    ucc_broker = "localhost"
+    ucc_port = 4000
+    ucc_ca_file = '/intel-manageability/broker/etc/secret/cloudadapter-agent/ucc-ca.crt'
+    ucc_client_cert = '/intel-manageability/broker/etc/secret/cloudadapter-agent/ucc-client.crt'
+    ucc_client_key = '/intel-manageability/broker/etc/secret/cloudadapter-agent/ucc-client.key'
 
-tc_broker = "localhost"
-tc_port = 8883
-tc_ca_file = "/etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt"
-tc_client_cert = (
-    "/etc/intel-manageability/public/ucc-native-service/ucc-native-service.crt"
-)
-tc_client_key = (
-    "/etc/intel-manageability/secret/ucc-native-service/ucc-native-service.key"
-)
+    tc_broker = "localhost"
+    tc_port = 8883
+    tc_ca_file = "/intel-manageability/broker/etc/public/mqtt-ca/mqtt-ca.crt"
+    tc_client_cert = (
+        "/intel-manageability/broker/etc/public/ucc-native-service/ucc-native-service.crt"
+    )
+    tc_client_key = (
+        "/intel-manageability/broker/etc/secret/ucc-native-service/ucc-native-service.key"
+    )
+elif os.name == 'posix':
+    ucc_broker = "localhost"
+    ucc_port = 4000
+    ucc_ca_file = "/etc/ucc_mosquitto/certs/ca.crt"
+    ucc_client_cert = "/etc/ucc_mosquitto/certs/client.crt"
+    ucc_client_key = "/etc/ucc_mosquitto/certs/client.key"
+
+    tc_broker = "localhost"
+    tc_port = 8883
+    tc_ca_file = "/etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt"
+    tc_client_cert = (
+        "/etc/intel-manageability/public/ucc-native-service/ucc-native-service.crt"
+    )
+    tc_client_key = (
+        "/etc/intel-manageability/secret/ucc-native-service/ucc-native-service.key"
+    )
+else:
+    print("Unsupported platform.")
+    exit(1)
 
 
 def on_message(client, userdata, message):
+    print(f"Received message on topic {message.topic}:{message.payload.decode()}")
     userdata[message.topic] = message.payload.decode()
 
 
@@ -40,17 +62,19 @@ tc_client = setup_client(tc_broker, tc_port, tc_ca_file, tc_client_cert, tc_clie
 ucc_received_messages = {}
 ucc_client.user_data_set(ucc_received_messages)
 ucc_client.loop_start()
+ucc_client.subscribe("#")  # for debugging
 
 tc_received_messages = {}
 tc_client.user_data_set(tc_received_messages)
 tc_client.loop_start()
+ucc_client.subscribe("#")  # for debugging
 
 TEST_PAYLOAD = '{"some": "arbitrary", "json": "string"}'
 
 # Telemetry test
 UCC_TEL_REQ = "uccctl/tel/req/123/12345678abcd"
 
-ucc_client.subscribe(UCC_TEL_REQ)
+ucc_client.subscribe("UCC_TEL_REQ")
 tc_client.publish("manageability/telemetry", TEST_PAYLOAD)
 
 time.sleep(2)
