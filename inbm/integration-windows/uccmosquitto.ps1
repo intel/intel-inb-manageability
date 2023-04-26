@@ -133,16 +133,14 @@ foreach ($instance in $instances) {
     $binaryPath = Join-Path $uccMosquittoPath $instance.Binary
     $configPath = Join-Path $uccMosquittoPath $instance.Config
 
-    if (-not (Test-Path $binaryPath)) {
-        Copy-Item -Path (Join-Path $uccMosquittoPath "mosquitto.exe") -Destination $binaryPath
-    }
+    Copy-Item -Path (Join-Path $uccMosquittoPath "mosquitto.exe") -Destination $binaryPath
 
-    if (-not (Test-Path $configPath)) {
-        Set-Content -Path $configPath -Value $mosquittoConf
-    }
+    Set-Content -Path $configPath -Value $mosquittoConf
 
     $service = Get-Service -Name $instance.Name -ErrorAction SilentlyContinue
     if ($null -eq $service) {
         & $nssmExe install $instance.Name $binaryPath "-c $configPath"
     }
 }
+
+net start uccmosquitto

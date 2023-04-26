@@ -32,4 +32,15 @@ c:\intel-manageability\mosquitto\mosquitto.exe install
 start-sleep -seconds 1
 Stop-Service mosquitto -ErrorAction SilentlyContinue
 
+# Create key and cert and move them
+$Env:Path += ";c:\program files\openssl-win64\bin"
+
+Set-Location C:\intel-manageability\broker
+if (!(Test-Path -Path "etc\secret")) {
+    New-Item -ItemType Directory -Path "etc\secret"
+}
+usr/bin/inb-provision-certs.exe etc\public etc\secret
+
+start-service mosquitto
+
 Write-Host 'INBM setup complete. Next step: provision broker + cloud.'
