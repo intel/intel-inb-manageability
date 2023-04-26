@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 set-psdebug -trace 1
 
-Stop-Service inbm-cloud-adapter -ErrorAction SilentlyContinue
+Stop-Service inbm-cloudadapter -ErrorAction SilentlyContinue
 Stop-Service mosquitto -ErrorAction SilentlyContinue
 
 # Create key and cert and move them
@@ -27,5 +27,5 @@ if (-not $env:NO_CLOUD) {
 }
 start-service mosquitto
 
-start-service inbm-cloud-adapter
-set-service -name inbm-cloud-adapter -startuptype automatic
+start-service inbm-cloudadapter
+set-service -name inbm-cloudadapter -startuptype automatic

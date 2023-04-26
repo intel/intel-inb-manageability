@@ -1,13 +1,25 @@
 Set-PSDebug -Trace 1
 
-Stop-Service inbm-cloud-adapter -ErrorAction SilentlyContinue
+Stop-Service inbm-cloudadapter -ErrorAction SilentlyContinue
 Stop-Service mosquitto -ErrorAction SilentlyContinue
-
-
 
 $ErrorActionPreference = "Stop"
 
+$mosquittoPath = "c:\intel-manageability\mosquitto\mosquitto.exe"
+$inbmCloudAdapterPath = "c:\intel-manageability\inbm\usr\bin\inbm-cloudadapter.exe"
 
-c:\intel-manageability\mosquitto\mosquitto.exe uninstall
-c:\intel-manageability\inbm\usr\bin\inbm-cloudadapter.exe remove
-Remove-Item -Path c:\intel-manageability -Recurse -ErrorAction Ignore
+if (Test-Path $mosquittoPath) {
+    & $mosquittoPath uninstall
+}
+
+if (Test-Path $inbmCloudAdapterPath) {
+    & $inbmCloudAdapterPath remove
+}
+
+$directoryPath = "c:\intel-manageability"
+
+if (Test-Path $directoryPath) {
+    Remove-Item -Path $directoryPath -Recurse
+} else {
+    Write-Host "Directory not found. Skipping removal."
+}

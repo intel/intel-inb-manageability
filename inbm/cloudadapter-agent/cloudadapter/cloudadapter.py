@@ -17,12 +17,13 @@ import signal
 import logging
 import sys
 from logging.config import fileConfig
+import snoop
 
 from inbm_lib.windows_service import WindowsService
 
 
 class CloudAdapter(WindowsService):
-    _svc_name_ = 'inbm-cloud-adapter'
+    _svc_name_ = 'inbm-cloudadapter'
     _svc_display_name_ = 'Cloud Adapter Agent'
     _svc_description_ = 'Intel Manageability agent handling cloud connections'
 
@@ -55,6 +56,8 @@ class CloudAdapter(WindowsService):
                 "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
         logger.info('Cloud Adapter agent is running')
+
+        snoop.install(out=logger.info)
 
         # Exit if configuration is malformed
         try:

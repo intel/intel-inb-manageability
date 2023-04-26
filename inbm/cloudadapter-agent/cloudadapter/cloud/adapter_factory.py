@@ -13,6 +13,7 @@ from ..exceptions import BadConfigError
 from typing import Dict, List
 from .adapters.adapter import Adapter
 import json
+import snoop
 
 
 def load_adapter_config() -> Dict:

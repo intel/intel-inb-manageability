@@ -24,13 +24,15 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     New-Item -Path "C:\\ucc\\etc\\client_id" -ItemType File -Force
-    Set-Content -Path "C:\\ucc\\etc\\client_id" -Value "12345678"
+    Set-Content -Path "C:\\ucc\\etc\\client_id" -Value "123"
 
     New-Item -Path "C:\\ucc\\etc\\server_id" -ItemType File -Force
-    Set-Content -Path "C:\\ucc\\etc\\server_id" -Value "127.0.0.1"
+    Set-Content -Path "C:\\ucc\\etc\\server_id" -Value "12345678abcd"
   SHELL
 
+  config.vm.provision "shell", path: "inb-files/intel-manageability/uninstall.ps1", env: {"UCC_MODE" => "true"}
   config.vm.provision "shell", path: "inb-files/intel-manageability/install.ps1", env: {"UCC_MODE" => "true"}
   config.vm.provision "file", source: "adapter.cfg", destination: "/intel-manageability/inbm/etc/secret/cloudadapter-agent/adapter.cfg"
+  config.vm.provision "shell", path: "uccmosquitto.ps1"
   config.vm.provision "shell", path: "inb-files/intel-manageability/provision.ps1", env: {"NO_CLOUD" => "true"}
 end
