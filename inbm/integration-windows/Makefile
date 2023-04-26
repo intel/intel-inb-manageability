@@ -6,6 +6,7 @@ setup:
 	rm -rf inb-files
 	( cd .. && ./build-windows.sh )
 	cp -r ../output-windows/windows inb-files
+	cp *.py inb-files
 
 destroy:
 	vagrant destroy -f || true

@@ -13,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"crypto/rand"
@@ -61,7 +62,13 @@ func main() {
 	agents := []string{ // agents always set up
 		"cloudadapter-agent"}
 
-	uccFlagPath := "/etc/intel-manageability/public/ucc_flag"
+	var uccFlagPath string
+	if runtime.GOOS == "windows" {
+		uccFlagPath = "c:\\intel-manageability\\inbm\\public\\ucc_flag"
+	} else {
+		uccFlagPath = "/etc/intel-manageability/public/ucc_flag"
+	}
+
 	if content, err := ioutil.ReadFile(uccFlagPath); err == nil &&
 		strings.TrimSpace(string(content)) == "TRUE" {
 		// append UCC specific agents
