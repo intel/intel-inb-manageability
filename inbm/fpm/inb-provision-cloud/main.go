@@ -521,6 +521,10 @@ func removeProxySection(template string) string {
 	return strings.Replace(template, proxySection, "", 1)
 }
 
+func escapeJSONString(s string) string {
+	return strings.ReplaceAll(s, "\\", "\\\\")
+}
+
 func makeCloudJson(cloudProviderName string, template string, caPath string, deviceToken string, serverIp string,
 	serverPort string, deviceCertPath string, deviceKeyPath string, proxyHostName string,
 	proxyPort string, clientId string, serverId string) string {
@@ -529,16 +533,17 @@ func makeCloudJson(cloudProviderName string, template string, caPath string, dev
 	}
 
 	configJson := template
-	configJson = strings.Replace(configJson, "{CA_PATH}", caPath, -1)
-	configJson = strings.Replace(configJson, "{TOKEN}", deviceToken, -1)
-	configJson = strings.Replace(configJson, "{HOSTNAME}", serverIp, -1)
-	configJson = strings.Replace(configJson, "{PORT}", serverPort, -1)
-	configJson = strings.Replace(configJson, "{CLIENT_CERT_PATH}", deviceCertPath, -1)
-	configJson = strings.Replace(configJson, "{CLIENT_KEY_PATH}", deviceKeyPath, -1)
-	configJson = strings.Replace(configJson, "{PROXY_HOSTNAME}", proxyHostName, -1)
-	configJson = strings.Replace(configJson, "{PROXY_PORT}", proxyPort, -1)
-	configJson = strings.Replace(configJson, "{CLIENT_ID}", clientId, -1)
-	configJson = strings.Replace(configJson, "{SERVER_ID}", serverId, -1)
+
+	configJson = strings.Replace(configJson, "{CA_PATH}", escapeJSONString(caPath), -1)
+	configJson = strings.Replace(configJson, "{TOKEN}", escapeJSONString(deviceToken), -1)
+	configJson = strings.Replace(configJson, "{HOSTNAME}", escapeJSONString(serverIp), -1)
+	configJson = strings.Replace(configJson, "{PORT}", escapeJSONString(serverPort), -1)
+	configJson = strings.Replace(configJson, "{CLIENT_CERT_PATH}", escapeJSONString(deviceCertPath), -1)
+	configJson = strings.Replace(configJson, "{CLIENT_KEY_PATH}", escapeJSONString(deviceKeyPath), -1)
+	configJson = strings.Replace(configJson, "{PROXY_HOSTNAME}", escapeJSONString(proxyHostName), -1)
+	configJson = strings.Replace(configJson, "{PROXY_PORT}", escapeJSONString(proxyPort), -1)
+	configJson = strings.Replace(configJson, "{CLIENT_ID}", escapeJSONString(clientId), -1)
+	configJson = strings.Replace(configJson, "{SERVER_ID}", escapeJSONString(serverId), -1)
 
 	return `{ "cloud": "` + cloudProviderName + `", "config": ` + configJson + ` }`
 }
