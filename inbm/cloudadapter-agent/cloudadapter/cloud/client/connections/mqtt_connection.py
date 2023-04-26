@@ -18,7 +18,6 @@ from threading import RLock
 import socket
 import socks
 import logging
-import snoop
 logger = logging.getLogger(__name__)
 
 
@@ -109,7 +108,6 @@ class MQTTConnection(Connection):
         with self._rid_lock:
             return self._rid
 
-    @snoop
     def start(self) -> None:
         logger.debug("Connecting to the cloud...")
 
