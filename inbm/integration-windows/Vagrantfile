@@ -24,10 +24,10 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision "shell", inline: <<-SHELL
     New-Item -Path "C:\\ucc\\etc\\client_id" -ItemType File -Force
-    Set-Content -Path "C:\\ucc\\etc\\client_id" -Value "123"
+    Set-Content -Path "C:\\ucc\\etc\\client_id" -Value "12345678abcd"
 
     New-Item -Path "C:\\ucc\\etc\\server_id" -ItemType File -Force
-    Set-Content -Path "C:\\ucc\\etc\\server_id" -Value "12345678abcd"
+    Set-Content -Path "C:\\ucc\\etc\\server_id" -Value "123"
   SHELL
   config.vm.provision "shell", path: "inb-files/intel-manageability/uninstall.ps1", env: {"UCC_MODE" => "true"}
   config.vm.provision "shell", path: "inb-files/intel-manageability/install.ps1", env: {"UCC_MODE" => "true"}
