@@ -10,18 +10,17 @@ import (
 	"testing"
 )
 
-func TestTrueValidServerId(t *testing.T) {
-	inputs := [2]string{"e18122c6-d99f-11ed-bc72-af4d111a5c5e", "172.16.254.1"}
+func TestServerNameTrue(t *testing.T) {
+	inputs := [7]string{"192.0.2.146", "localhost", "hello-test", "hello_test", "hello.test", "hello,test", "hello1234-_,."}
 	for i := 1; i < len(inputs); i++ {
-		assert.True(t, isServerIdValid(inputs[i]), "Expected valid Server ID.  ID is invalid: "+inputs[i])
+		assert.True(t, isValidServerId(inputs[i]), "Expected valid Server ID.  Server ID is invalid: "+inputs[i])
 	}
 }
 
-func TestFalseInvalidServerId(t *testing.T) {
-	inputs := [6]string{"18122c6-d99f-11ed-bc72-af4d111a5c5e", "e18122c6-d99f-11ed-bc72-af4d111a5c5",
-		"e18122c#-d99f-11ed-bc72-af4d111a5c5e", "e18122c6-d99f-1ed-bc72-af4d111a5c5e", "example.com", "300.300.300.300"}
+func TestServerNameFalse(t *testing.T) {
+	inputs := [4]string{"hello$test", "hello:test", "hello&test", "hello\x00tset"}
 	for i := 1; i < len(inputs); i++ {
-		assert.False(t, isServerIdValid(inputs[i]), "Expected invalid Server ID.  Server ID is valid: "+inputs[i])
+		assert.False(t, isValidServerId(inputs[i]), "Expected invalid server ID.  Server ID is Valid: "+inputs[i])
 	}
 }
 

@@ -152,7 +152,7 @@ else
   apt-get -y purge mosquitto || true
 fi
 
-apt-mark unhold mosquitto
+apt-mark unhold mosquitto || true
 apt-get install -y mosquitto
 systemctl disable mosquitto
 systemctl stop mosquitto
