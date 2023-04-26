@@ -182,7 +182,7 @@ INST="$DIR"
 
 # Confirm expected packages exist.
 FOUND_INSTALL_PACKAGE="false"
-for file in "$INST"/*.preview.tar.gz; do
+for file in "$INST"/*.preview.tar.gz "$INST"/*.ucc.tar.gz; do
   if [ -e "$file" ]; then
     echo "Confirmed Installation Package: $file"
     FOUND_INSTALL_PACKAGE="true"
@@ -209,7 +209,7 @@ fi
 
 # Extract installation packages
 # Convert to cpio function to preserve user permissions?
-for i in $(ls "$INST_DIR" | grep preview.tar.gz); do
+for i in $(ls "$INST_DIR" | grep tar.gz); do
     if ! tar -xzf "$INST_DIR/$i" -C "$INST_DIR/"; then
         echo "Issue with extracting packages. Exiting."
         exit 1
