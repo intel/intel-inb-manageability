@@ -54,8 +54,7 @@ inbm
 │   │   │   ├───dispatcher-agent
 │   │   │   └───telemetry-agent
 │   │   ├───secret
-│   │   │   └───cloudadapter-agent
-│   │   └───ucc
+│   │       └───cloudadapter-agent
 │   ├───usr
 │   │   ├───bin
 │   │   └───share
