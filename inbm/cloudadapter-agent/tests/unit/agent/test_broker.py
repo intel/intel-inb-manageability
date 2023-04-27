@@ -115,4 +115,4 @@ class TestBroker(unittest.TestCase):
 
         mocked = self.MockMQTT.return_value
         mocked.publish.assert_called_once_with(
-            TC_REQUEST_CHANNEL + COMMAND, command, retain=True)
+            TC_REQUEST_CHANNEL + COMMAND, command, retain=False)
