@@ -11,19 +11,6 @@ RUN pip3 install wheel
 COPY inbm-lib /src/inbm-lib
 RUN pip3 install -e /src/inbm-lib
 
-# FROM base-windows as windows-dispatcher-py3
-# COPY inbm/dispatcher-agent/requirements.txt /src/dispatcher-agent/requirements.txt
-# COPY inbm/dispatcher-agent/test-requirements.txt /src/dispatcher-agent/test-requirements.txt
-# WORKDIR /src/dispatcher-agent
-# RUN pip3 install -r requirements.txt && \
-#     pip3 install -r test-requirements.txt
-
-# COPY inbm/dispatcher-agent /src/dispatcher-agent
-# COPY inbm/packaging /src/packaging
-# RUN mkdir -p /output && \
-#     ../packaging/run-pyinstaller-py3.sh inbm-dispatcher-agent dispatcher && \
-#     cp -r ../dispatcher-agent/dist/"dispatcher.exe" /output
-
 FROM base-windows as windows-cloudadapter-py3
 COPY inbm/cloudadapter-agent/requirements.txt /src/cloudadapter-agent/requirements.txt
 COPY inbm/cloudadapter-agent/test-requirements.txt /src/cloudadapter-agent/test-requirements.txt
@@ -40,40 +27,6 @@ RUN \
     pyinstaller inbm-cloudadapter.spec && \
     wine ../cloudadapter-agent/dist/inbm-cloudadapter.exe install && \
     cp -r ../cloudadapter-agent/dist/"inbm-cloudadapter.exe" /output
-
-# FROM base-windows as windows-telemetry-py3
-# COPY inbm/telemetry-agent/requirements.txt /src/telemetry-agent/requirements.txt
-# COPY inbm/telemetry-agent/test-requirements.txt /src/telemetry-agent/test-requirements.txt
-# WORKDIR /src/telemetry-agent
-# RUN pip3 install -r requirements.txt && \
-#     pip3 uninstall -y chardet # license issue
-# COPY inbm/telemetry-agent /src/telemetry-agent
-# COPY inbm/packaging /src/packaging
-# RUN mkdir -p /output && \
-#     ../packaging/run-pyinstaller-py3.sh telemetry-agent telemetry && \
-#     cp -r ../telemetry-agent/dist/"telemetry.exe" /output
-
-# FROM base-windows as windows-configuration-py3
-# COPY inbm/configuration-agent/requirements.txt /src/configuration-agent/requirements.txt
-# COPY inbm/configuration-agent/test-requirements.txt /src/configuration-agent/test-requirements.txt
-# WORKDIR /src/configuration-agent
-# RUN pip3 install -r requirements.txt
-# COPY inbm/configuration-agent /src/configuration-agent
-# COPY inbm/packaging /src/packaging
-# RUN mkdir -p /output && \
-#     ../packaging/run-pyinstaller-py3.sh configuration-agent configuration && \
-#     cp -r ../configuration-agent/dist/"configuration.exe" /output
-
-# FROM base-windows as windows-diagnostic-py3
-# COPY inbm/diagnostic-agent/requirements.txt /src/diagnostic-agent/requirements.txt
-# COPY inbm/diagnostic-agent/test-requirements.txt /src/diagnostic-agent/test-requirements.txt
-# WORKDIR /src/diagnostic-agent
-# RUN pip3 install -r requirements.txt
-# COPY inbm/diagnostic-agent /src/diagnostic-agent
-# COPY inbm/packaging /src/packaging
-# RUN mkdir -p /output && \
-#     ../packaging/run-pyinstaller-py3.sh diagnostic-agent diagnostic && \
-#     cp -r ../diagnostic-agent/dist/"diagnostic.exe" /output
 
 FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-certs-windows
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
@@ -101,7 +54,8 @@ COPY --from=windows-cloudadapter-py3 /output/ /windows-cloudadapter-py3
 COPY --from=inb-provision-certs-windows /output /windows-inb-provision-certs
 COPY --from=inb-provision-cloud-windows /output /windows-inb-provision-cloud
 COPY --from=inb-provision-ota-cert-windows /output /windows-inb-provision-ota-cert
-COPY --from=output-main /output /output-main
+COPY --from=cloudadapter-py3 /output /cloudadapter
+COPY --from=fpm /output /fpm
 COPY inbm/packaging/windows-override /windows-override
 RUN mkdir -p /output/windows 
 COPY third-party-programs.txt /output/windows
@@ -125,11 +79,12 @@ RUN \
     mkdir -p broker/etc/public/mqtt-broker/ && \
     mkdir -p intel-manageability/inbm/var && \
     touch intel-manageability/inbm/var/manageability.log && \
-    dpkg -X /output-main/inbm-cloudadapter*.deb /cloudadapter-deb && \    
+    dpkg -X /cloudadapter/inbm-cloudadapter*.deb /cloudadapter-deb && \    
     cp -v /cloudadapter-deb/usr/share/cloudadapter-agent/config_schema.json intel-manageability/inbm/usr/share/cloudadapter-agent/ && \
     cp -rv /cloudadapter-deb/usr/share/cloudadapter-agent/thingsboard intel-manageability/inbm/usr/share/cloudadapter-agent/ && \
     cp -rv /cloudadapter-deb/usr/share/cloudadapter-agent/ucc intel-manageability/inbm/usr/share/cloudadapter-agent/ && \
-    dpkg -X /output-main/mqtt*.deb /mqtt-deb && \
+    ls -lR /fpm/ && \
+    dpkg -X /fpm/mqtt*.deb /mqtt-deb && \
     cp -rv /mqtt-deb/usr/share/intel-manageability/ intel-manageability/inbm/usr/share/intel-manageability/ && \
     cp -rv /mqtt-deb/etc/intel-manageability/public/mqtt-broker/acl.file broker/etc/public/mqtt-broker/
 
