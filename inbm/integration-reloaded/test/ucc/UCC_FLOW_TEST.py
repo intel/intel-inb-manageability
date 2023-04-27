@@ -94,7 +94,8 @@ TEST_PAYLOAD = '{"some": "arbitrary", "json": "string"}'
 # Telemetry test
 UCC_TEL_REQ = "uccctl/tel/req/123/12345678abcd"
 
-ucc_client.subscribe("UCC_TEL_REQ")
+# not necessary due to subscribing to # above
+# ucc_client.subscribe("UCC_TEL_REQ")
 
 # Publish to tc_client and check for errors
 result, _ = tc_client.publish("manageability/telemetry", TEST_PAYLOAD)
@@ -121,8 +122,9 @@ print("UCC telemetry test passed")
 UCC_CMD_RES = "uccctl/cmd/res/123/12345678abcd"
 TC_CMD_REQ = "manageability/request/command"
 
-ucc_client.subscribe(UCC_CMD_RES)
-tc_client.subscribe(TC_CMD_REQ)
+# not necessary due to subscribing to # above
+# ucc_client.subscribe(UCC_CMD_RES)
+# tc_client.subscribe(TC_CMD_REQ)
 
 # Publish to ucc_client and check for errors
 result, _ = ucc_client.publish("uccctl/cmd/req/123/12345678abcd", TEST_PAYLOAD)

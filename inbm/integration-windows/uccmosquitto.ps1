@@ -126,6 +126,14 @@ if (-not (Test-Path $extractPath)) {
     Expand-Archive -Path $nssmZipPath -DestinationPath $extractPath
 }
 
+$serviceName = "uccmosquitto"
+$service = Get-Service -Name $serviceName -ErrorAction SilentlyContinue
+
+if ($service -and $service.Status -eq "Running") {
+    Stop-Service -Name $serviceName -PassThru
+}
+
+
 $nssmExe = Join-Path $extractPath "nssm-2.24\win64\nssm.exe"
 
 # Create separate Mosquitto instances and services
