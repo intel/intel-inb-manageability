@@ -9,8 +9,9 @@ apt-get update
 # Simulate user calling the installer
 mkdir "install TC" # test install dir with spaces
 cd "install TC"
-cp ../*.preview.tar.gz .
-cp ../*-tc.sh .
+cp ../ucc/*.tar.gz .
+cp ../ucc/*.sh .
+cp ../ucc/LICENSE .
 rm -rf /etc/intel-manageability/public/cloudadapter-agent
 mkdir -p /etc/intel-manageability/public/cloudadapter-agent
 dpkg --purge docker-compose docker.io
@@ -105,9 +106,10 @@ sudo systemctl enable ucc-mosquitto.service
 sudo systemctl start ucc-mosquitto.service
 
 
-tar -zxvf *.preview.tar.gz
+tar -zxvf *ucc*.tar.gz
 
-sudo -H UCC_MODE=true DEV_MODE=true INSTALL_TPM2_SIMULATOR=false ACCEPT_INTEL_LICENSE=true bash -x ./install-tc.sh
+# no UCC_MODE=true here as the ucc install script should include it automatically
+sudo -H DEV_MODE=true INSTALL_TPM2_SIMULATOR=false ACCEPT_INTEL_LICENSE=true bash -x ./install-tc-ucc.sh
 
 fail_on_docker_packages
 
@@ -149,7 +151,7 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
         },
         "event": {
             "pub": "uccctl/tel/req/123/12345678abcd",
-            "format": "{\"{value}\"}"
+            "format": "{raw_value}"
         },
         "telemetry": {
             "pub": "",
@@ -161,9 +163,9 @@ sudo dd of=/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg <<EOF
         },
         "method": {
             "pub": "uccctl/cmd/res/123/12345678abcd",
-            "format": "\"{timestamp}: OK\"",
+            "format": "OK",
             "sub": "uccctl/cmd/req/123/12345678abcd"
-         }
+        }
     }
 }
 EOF
@@ -185,4 +187,4 @@ else
     exit 1
 fi
 
-
+pip3 install paho-mqtt==1.6.1

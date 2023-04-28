@@ -122,7 +122,8 @@ class Formatter:
         """Create a formatter for a given string formatting.
         Placeholder fields are surrounded with brackets,
         and there are no spaces in the bracketed placeholder field.
-        For instance: "Hello {name}!"
+        Add the raw_ prefix to any variable name to avoid escaping the string.
+        For instance: "Hello {name}!" or "Hello {raw_name}!"
         The following placeholders will be given a value by default:
         - {ts}: Integer epoch timestamp in milliseconds
         - {timestamp}: UTC string timestamp
@@ -175,18 +176,23 @@ class Formatter:
             timestamp=time.strftime("%Y-%m-%d %H:%M:%S UTC"))
 
         for f in self._fields:
-            if f in fields:
-                output = output.replace("{" + f + "}", self._escape(str(fields[f])))
-            elif f in self._defaults:
-                output = output.replace("{" + f + "}", str(self._defaults[f]))
+            replacement = None
+            field_name = f[4:] if f.startswith("raw_") else f
+
+            if field_name in fields:
+                replacement = str(fields[field_name])
+                if not f.startswith("raw_"):
+                    replacement = self._escape(replacement)
+            elif field_name in self._defaults:
+                replacement = str(self._defaults[field_name])
             elif "timestamp" in f.split("="):
-                # Use special timestamp formatting
                 time_format = f.split("=")[1]
-                timestamp = time.strftime(time_format)
-                output = output.replace("{" + f + "}", timestamp)
+                replacement = time.strftime(time_format)
             else:
-                logger.error(
-                    "Field {%s} not supplied in: %s", f, self._formatting)
+                logger.error("Field {%s} not supplied in: %s", f, self._formatting)
+                continue
+
+            output = output.replace("{" + f + "}", replacement)
 
         return output
 
