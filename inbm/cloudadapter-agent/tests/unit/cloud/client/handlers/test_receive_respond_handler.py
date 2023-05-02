@@ -40,13 +40,13 @@ class TestReceiveRespondHandler(unittest.TestCase):
 
     def test_bind_succeeds(self):
         self.mock_topic.format.return_value = "topic"
-        self.mock_payload.format.return_value = b"payload"
+        self.mock_payload.format.return_value = b'{"manifest":"\'<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?><manifest><type>ota</type><ota><header><type>fota</type><repo>remote</repo></header><type><username>XXXXX</username><password>XXXXX</password><fota name=\\"sample\\"></fota></type></ota></manifest>"}' 
         self.mock_parser.parse.return_value = [MethodParsed(method="method")]
         mock_callback = mock.Mock()
 
         self.receive_respond_handler.bind("method", mock_callback)
 
-        self.receive_respond_handler._on_method("topic", b"payload")
+        self.receive_respond_handler._on_method("topic", self.mock_payload.format.return_value)
         assert mock_callback.call_count == 1
 
     def test_bind_succeeds_no_parser(self):

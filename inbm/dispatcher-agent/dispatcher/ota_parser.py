@@ -17,7 +17,7 @@ from .dispatcher_exception import DispatcherException
 from .dispatcher_callbacks import DispatcherCallbacks
 from inbm_lib.xmlhandler import XmlException
 from inbm_lib.xmlhandler import XmlHandler
-
+from inbm_lib.security_masker import mask_security_info
 from inbm_common_lib.constants import LOCAL_SOURCE
 
 logger = logging.getLogger(__name__)
@@ -80,7 +80,7 @@ class FotaParser(OtaParser):
         @return: kwargs(dict)
         """
         logger.debug(
-            f"parsing FOTA manifest. resource: {resource!r} kwargs: {kwargs!r} parsed: {parsed!r}")
+            f"parsing FOTA manifest. resource: {mask_security_info(str(resource))!r} kwargs: {mask_security_info(str(kwargs))!r} parsed: {parsed!r}")
         super().parse(resource, kwargs, parsed)
 
         resource_dict = {'uri': self._uri, 'signature': self._signature,
@@ -93,7 +93,7 @@ class FotaParser(OtaParser):
             return resource_dict
 
         kwargs.update(resource_dict)
-        logger.debug(f"returning kwargs {kwargs!r}")
+        logger.debug(f"returning kwargs {mask_security_info(str(kwargs))!r}")
         return kwargs
 
 
