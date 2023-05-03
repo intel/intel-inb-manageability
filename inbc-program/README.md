@@ -65,11 +65,7 @@ Ensure trusted repository in intel_manageability.conf is to be configured with t
 ### Usage
 ```
 inbc fota {--uri, -u=URI}  
-   [--releasedate, -r RELEASE_DATE; default="2026-12-31"] 
-   [--vendor, -v VENDOR; default="Intel Corporation"] 
-   [--biosversion, -b BIOS_VERSION; default="ADLSFWI1.R00"] 
-   [--manufacturer, -m MANUFACTURER; default="Intel Corporation"] 
-   [--product, -pr PRODUCT; default="Alder Lake Client Platform"] 
+   [--releasedate, -r RELEASE_DATE; default="2026-12-31"]   
    [--signature, -s SIGNATURE_STRING; default=None] 
    [--tooloptions, -to TOOL_OPTIONS]
    [--username, -un USERNAME] 
@@ -133,10 +129,6 @@ A platform update is the equivalent of performing both a SOTA and FOTA with the 
 inbc pota {--fotauri, -fu=FOTA_URI}
    [--sotauri, -su=SOTA_URI] - N/A for Ubuntu based 
    [--releasedate, -r FOTA_RELEASE_DATE; default="2026-12-31"] 
-   [--vendor, -v VENDOR; default="Intel Corporation"] 
-   [--biosversion, -b BIOS_VERSION; default="ADLSFWI1.R00"] 
-   [--manufacturer, -m MANUFACTURER; default="Intel Corporation"] 
-   [--product, -pr PRODUCT; default="Alder Lake Client Platform"] 
    [--release_date, -sr SOTA_RELEASE_DATE; default="2026-12-31"] 
    [--fotasignature, -fs SIGNATURE_STRING] 
    [--username, -u USERNAME] 
