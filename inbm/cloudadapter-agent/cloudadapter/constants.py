@@ -22,7 +22,7 @@ CLIENT_KEYS = BROKER_ETC_PATH / \
 SLEEP_DELAY = 1
 
 # Flag for UCC mode to determine which channels to subscribe to
-UCC_FILE = "/etc/intel-manageability/public/ucc_flag"
+UCC_FILE = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / 'public' / 'ucc_flag'
 UCC_ENABLED_FLAG = "TRUE"
 
 # ========== Subscription channels

@@ -7,9 +7,9 @@
     1. [Purpose](#purpose)
     2. [Audience](#audience)
 2. [Ultra Cloud Client (UCC) Overview](#ultra-cloud-client-ucc-overview)
-    1. [Generating Device Keys and Certificates](#generating-device-keys-and-certificates)
 3. [Provisioning a Device](#provisioning-a-device)
-   1. [Provisioning Command Parameters](#provisioning-command-parameters)
+   1.[UCC Key and Certificate](#UCC-Key-and-Certificate)
+   2.[Provisioning Command Parameters](#provisioning-command-parameters)
 4. [Issues and Troubleshooting](#issues-and-troubleshooting)
     1. [Acquiring Debug Messages from Agents](#acquiring-debug-messages-from-agents)
 
@@ -30,10 +30,14 @@ This guide is intended for
 
 ## Ultra Cloud Client (UCC) Overview
 
-### Generating Device Keys and Certificates
+UCC (Ultra Cloud Client) is a System Administration solution to address critical problems  Performance, Manageability, Security and Reliability  impacting IT operational efficiency and productivity.
+UCC leverages INBM capability of enabling Device Management behind proxy using MQTT protocol and enables receiving platform telemetry and over-the-air commands to perform critical actions on the managed platform.
 
-Prior to having the device authentication done using X509 mechanism, it
-is mandatory to have TLS set on the UCC server. 
+Below diagram shows the interaction between INBM and UCC-Native-Service agent.
+
+<img src="media/In-Band Manageability User Guide - UCC/media/UCC-INBM.png" style="width:4.84028in;height:4.77014in" />
+
+
 
 ## Provisioning a Device
 
@@ -177,6 +181,23 @@ Intel(R) In-Band Manageability Provisioning Complete
 
 **Note:** 
 > If provisioning is unsuccessful, refer to **[Provisioning Unsuccessful](#issues-and-troubleshooting)** for Troubleshooting.
+
+### UCC Key and Certificate
+
+Prior to having the device authentication done using X509 mechanism, it
+is mandatory to have TLS set on the UCC server.
+
+The following file paths indicate the locations of the CA_FILE, CERT_FILE, and KEY files required for ucc-native-service:
+
+1. CA_FILE: /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt
+2. CERT_FILE: /etc/intel-manageability/public/ucc-native-service/ucc-native-service.crt
+3. KEY: /etc/intel-manageability/secret/ucc-native-service/ucc-native-service.key
+
+The permissions for these files are as follows:
+
+- /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt: -rw-r--r-- (owned by root, readable by all users)
+- /etc/intel-manageability/public/ucc-native-service/ucc-native-service.crt: -rw-r--r-- (owned by root, readable by all users)
+- /etc/intel-manageability/secret/ucc-native-service/ucc-native-service.key: -rw-r----- (owned by root, readable only by root and ucc-native-service group members)
 
 ### Provisioning Command Parameters
 

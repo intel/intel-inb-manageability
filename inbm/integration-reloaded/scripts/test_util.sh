@@ -45,7 +45,6 @@ listen_event() {
     timeout 120 mosquitto_sub -h localhost -p "$LOCAL_MQTT_PORT" --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -C 13 --keepalive 10| tee /tmp/listen_event_last_log
 }
 
-
 clean_up_subscribe() {
 if pgrep mosquitto_sub ; then
 pkill mosquitto_sub

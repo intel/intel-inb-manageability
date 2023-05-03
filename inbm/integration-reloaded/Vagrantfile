@@ -31,8 +31,17 @@ Vagrant.configure("2") do |config|
       libvirt.driver = 'kvm'
   end
 
-  config.vagrant.sensitive = [ENV["DOCKER_PASSWORD"]]
-  config.vm.provision "shell", inline: "sudo apt-get update && sudo apt-get -y install gnupg2 pass && echo " + ENV["DOCKER_PASSWORD"] + " | sudo docker login -u " + ENV["DOCKER_USERNAME"] + " --password-stdin"
+  docker_username = ENV["DOCKER_USERNAME"]
+  docker_password = ENV["DOCKER_PASSWORD"]
+
+  if docker_username.nil? || docker_password.nil?
+    puts "Error: DOCKER_USERNAME and DOCKER_PASSWORD environment variables must be set."
+    exit 1
+  else
+    config.vagrant.sensitive = [ENV["DOCKER_PASSWORD"]]
+    config.vm.provision "shell", inline: "sudo apt-get update && sudo apt-get -y install gnupg2 pass && echo #{docker_password} | sudo docker login -u #{docker_username} --password-stdin"
+  end
+
   config.vm.provision "file", source: "./snapperfilter.txt", 
     destination: "/tmp/snapperfilter.txt"
   config.vm.provision "shell", inline: "sudo mkdir -p /etc/snapper/filters && sudo cp /tmp/snapperfilter.txt /etc/snapper/filters" 
@@ -42,28 +51,40 @@ Vagrant.configure("2") do |config|
       vb.customize ['modifyvm', :id, '--uartmode1', 'disconnected']
   end
 
-  config.vm.provision "shell", inline: <<-SHELL
+  http_proxy = ENV['http_proxy'] || ''
+  https_proxy = ENV['https_proxy'] || ''
+
+
+config.vm.provision "shell", inline: <<-SHELL
     set -e
     set -x
     sed -i 's/linux-ftp.jf.intel.com/linux-ftp.ostc.intel.com/g' /etc/apt/sources.list
     cat >/etc/apt/apt.conf <<EOF
-Acquire::http::proxy "http://proxy-chain.intel.com:911/";
-Acquire::https::proxy "http://proxy-chain.intel.com:912/";
+    Acquire::http::proxy "#{http_proxy}";
+    Acquire::https::proxy "#{https_proxy}";
+    Acquire::http::proxy::linux-ftp.ostc.intel.com "DIRECT";
+    Acquire::https::proxy::linux-ftp.ostc.intel.com "DIRECT";
 EOF
-    export https_proxy=http://proxy-chain.intel.com:912/
-    echo "http_proxy=http://proxy-chain.intel.com:911/" >>/etc/environment
-    echo "HTTP_PROXY=http://proxy-chain.intel.com:911/" >>/etc/environment
-    echo "https_proxy=http://proxy-chain.intel.com:912/" >>/etc/environment
-    echo "HTTPS_proxy=http://proxy-chain.intel.com:912/" >>/etc/environment
-    echo "no_proxy=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
-    echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost" >>/etc/environment
+    export https_proxy=#{https_proxy}
+    echo "http_proxy=#{http_proxy}" >>/etc/environment
+    echo "HTTP_PROXY=#{http_proxy}" >>/etc/environment
+    echo "https_proxy=#{https_proxy}" >>/etc/environment
+    echo "HTTPS_proxy=#{https_proxy}" >>/etc/environment    
+    echo "no_proxy=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost,linux-ftp.ostc.intel.com" >>/etc/environment
+    echo "NO_PROXY=intel.com,ci_nginx,127.0.0.1,cslm_nginx,localhost,linux-ftp.ostc.intel.com" >>/etc/environment
     echo 'Dpkg::options { "--force-confdef"; "--force-confold"; }' >>/etc/apt/apt.conf.d/local # FIXME: WORKAROUND FOR SOTA BUG
     echo 'APT::Periodic::Update-Package-Lists "0";'  >/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::Update-Package-Lists "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::Download-Upgradeable-Packages "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::AutocleanInterval "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
     echo 'APT::Periodic::Unattended-Upgrade "0";' >>/etc/apt/apt.conf.d/20auto-upgrades
-    ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list || ex -s -c '%s/mirrors.edge.kernel.org\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+
+    # following line disabled to let us use mirror configured in Vagrant image
+    # ex -s -c '%s/security.ubuntu.com\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list || ex -s -c '%s/mirrors.edge.kernel.org\\/ubuntu/linux-ftp.ostc.intel.com\\/pub\\/mirrors\\/ubuntu/g' /etc/apt/sources.list
+
+    # ppa.launchpad.net is often slow and times out the integration test
+    # during the test, don't try to fetch from it
+    sudo add-apt-repository --remove ppa:deadsnakes/ppa
     cat /etc/apt/sources.list
 
     rm -rf /var/lib/apt/lists/*
@@ -73,12 +94,13 @@ EOF
     systemd-tmpfiles --create --prefix /var/log/journal
     time systemctl restart systemd-journald
 
-	time sudo python3 -m pip install cryptography==38.0.1 # For create_signature.py
-	time sudo python3 -m pip install requests[security]==2.28.1
+	  time sudo python3 -m pip install cryptography==38.0.1 # For create_signature.py
+	  time sudo python3 -m pip install requests[security]==2.28.1
 
     # disable slow time sync
     sudo timedatectl set-ntp no
   SHELL
+
   config.vm.provision "shell", inline: "sudo python3 -c 'import cryptography'"
   config.vm.provision "file", source: "./scripts/afulnx_64",
     destination: "/tmp/afulnx_64"
