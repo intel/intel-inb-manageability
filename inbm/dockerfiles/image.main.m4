@@ -17,6 +17,8 @@ COPY inbm-lib /src/inbm-lib-editable
 RUN source /venv-py3/bin/activate && \
     pip3.8 install -e /src/inbm-lib-editable
 RUN rm /usr/lib/x86_64-linux-gnu/libreadline* # extra protection against libreadline in pyinstaller binaries
+RUN rm /usr/lib/x86_64-linux-gnu/libuuid.so.1 /usr/lib/x86_64-linux-gnu/libuuid.so.1.3.0
+RUN rm /usr/lib/x86_64-linux-gnu/libncursesw.so.6
 
 # ---inbc-program---
 

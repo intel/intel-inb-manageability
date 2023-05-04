@@ -40,4 +40,5 @@ else
     pip3 install -r requirements.txt 
 fi
 
+rm /usr/lib/x86_64-linux-gnu/libtinfo.so.6
 pyinstaller "$DESTNAME".spec 

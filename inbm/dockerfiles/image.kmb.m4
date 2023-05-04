@@ -9,6 +9,8 @@ RUN python3.8 -m venv /venv-py3 && \
 RUN . /venv-py3/bin/activate && rm -rf /output && \
     pip3.8 install -e /src/inbm-lib-editable
 RUN rm /usr/lib/*/libreadline* # extra protection against libreadline in pyinstaller binaries
+RUN rm /usr/lib/x86_64-linux-gnu/libuuid.so.1 /usr/lib/x86_64-linux-gnu/libuuid.so.1.3.0
+RUN rm /usr/lib/x86_64-linux-gnu/libncursesw.so.6
 
 FROM registry.hub.docker.com/library/ubuntu:20.04 as base-x86_64
 include(`commands.base-setup.m4')
