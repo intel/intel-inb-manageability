@@ -280,6 +280,27 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 ### Docker manifest examples
 
+#### Example of docker application manifest
+```xml
+<?xml version='1.0' encoding='utf-8'?>
+<manifest>
+    <type>ota</type>
+    <ota>
+        <header>
+            <type>aota</type>
+            <repo>remote</repo>
+        </header>
+        <type>
+            <aota name='samplerpm'>
+                <cmd>update</cmd>
+                <app>application </app>
+                <fetch>yoururl/simplecompose.tar.gz</fetch>
+            </aota>
+        </type>
+    </ota>
+</manifest>
+```
+
 #### Example of docker image import manifest 
 ```xml
 <?xml version='1.0' encoding='utf-8'?>
