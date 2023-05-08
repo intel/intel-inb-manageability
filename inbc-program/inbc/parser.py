@@ -321,10 +321,10 @@ def pota(args) -> str:
 
     arguments = {
         'releasedate': args.releasedate,
-        'vendor': p.vendor,
-        'biosversion': p.biosversion,
-        'manufacturer': p.manufacturer,
-        'product': p.product,
+        'vendor': p.bios_vendor,
+        'biosversion': p.bios_version,
+        'manufacturer': p.platform_mfg,
+        'product': p.platform_product,
         'release_date': args.release_date,
         FOTA_SIGNATURE: args.fotasignature,
         'guid': args.guid
