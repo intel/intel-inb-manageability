@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
  - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
 
+### Security
+ - RTC 528652 Mask Confidential data (Username & Password) of OTA is exposed in logs
+
 ## 3.0.15 - 2023-04-14
 
 ### Added

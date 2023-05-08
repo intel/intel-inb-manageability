@@ -15,6 +15,7 @@ from ..utilities import MethodParser
 from ..connections.mqtt_connection import MQTTConnection
 from ....utilities import make_threaded
 from cloudadapter.constants import METHOD
+from inbm_lib.security_masker import mask_security_info
 
 import logging
 logger = logging.getLogger(__name__)
@@ -55,7 +56,7 @@ class ReceiveRespondHandler(Handler):
         @param args:    Arguments to the method
         @param symbols: Keyword arguments to the method"""
 
-        logger.debug(f"_fire_method method: {method} args: {args} symbols: {symbols}")
+        logger.debug(f"_fire_method method: {method} args: mask_security_info(str(args)) symbols: {symbols}")
 
         # Run the applicable bound callback
         response = f"\"Unknown method: '{method}'\""
@@ -74,11 +75,11 @@ class ReceiveRespondHandler(Handler):
         @param topic:   Specific topic
         @param payload: Raw UTF-8 payload
         """
-
-        logger.debug(f"_on_method topic: {topic} payload: {str(payload)} ")
+         
+        logger.debug(f"_on_method topic: {topic} payload: {mask_security_info(str(payload))} ")
 
         if self._method_parser is None:
-            logger.debug(f"method={METHOD.RAW} contents={str(payload)}")
+            logger.debug(f"method={METHOD.RAW} contents={mask_security_info(str(payload))}")
             self._fire_method(METHOD.RAW, {'contents': payload.decode('utf-8', errors="strict")}, {})
             return
     
@@ -87,19 +88,19 @@ class ReceiveRespondHandler(Handler):
             parsed = self._method_parser.parse(topic, payload)
         except ValueError as e:
             logger.error("Received malformed message: see debug log")
-            logger.debug(f"message contents: {str(payload)} error: {str(e)}")
+            logger.debug(f"message contents: {mask_security_info(str(payload))} error: {str(e)}")
             return
 
         if not parsed:
             logger.info("Received non-RPC message: see debug log")
-            logger.debug(f"message contents: {str(payload)}")
+            logger.debug(f"message contents: {mask_security_info(str(payload))}")
             return
 
         # Loop through all parsed methods
         for p in parsed:
 
             method, args, symbols = p.method, p.args, p.symbols
-            logger.debug(f"method={method} args={args} symbols={symbols}")
+            logger.debug(f"method={method} args={mask_security_info(str(args))} symbols={symbols}")
 
             # Check if method is valid
             if not method:
