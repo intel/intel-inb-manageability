@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
+ - RTC 528654 - [Defect] Remove parameters from INBC for version, manufacturer, product, and vendor for both POTA and FOTA commands
 
 ### Security
  - RTC 528652 Mask Confidential data (Username & Password) of OTA is exposed in logs
