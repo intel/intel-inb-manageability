@@ -8,15 +8,13 @@ rm -rf "$DIR"/dist
 mkdir -p "$DIR"/dist
 
 "$DIR"/inbm/build.sh
-"$DIR"/inbm/build-windows.sh
 mkdir -p "$DIR"/dist/inbm
 cp "$DIR"/inbm/output/install*.sh "$DIR"/dist/inbm
 cp "$DIR"/inbm/output/uninstall*.sh "$DIR"/dist/inbm
 cp "$DIR"/inbm/output/Intel*.tar.gz "$DIR"/dist/inbm
 cp "$DIR"/inbm/LICENSE "$DIR"/dist/inbm
 cp -r "$DIR"/inbm/output/ucc "$DIR"/dist/inbm-ucc
-"$DIR"/inbm/build-windows.sh
-( cd "$DIR"/dist && mkdir inb-files && cp -r ../inbm/output-windows/windows/* inb-files && zip -r inbm-windows.zip inb-files && rm -rf inb-files )
+cp "$DIR"/inbm/output/inbm-windows.zip "$DIR"/dist/inbm/inbm-windows.zip
 
 cat >"$DIR"/dist/README.txt <<EOF
 Build output files
