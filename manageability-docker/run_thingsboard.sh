@@ -13,7 +13,7 @@ function start {
     exit 1
   fi
   echo $INSTALL_DIR
-  echo  "Generating cloud config file to onboard device to Thingsboard using INB containerGenerating cloud config file to onboard device to Thingsboard using INB container..."
+  echo  "Generating cloud config file to onboard device to Thingsboard using INB container..."
   if [ ! -f $CLOUD_FILE ]; then
         install_and_provision
   fi

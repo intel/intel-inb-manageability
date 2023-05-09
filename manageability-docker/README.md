@@ -1,7 +1,7 @@
 # Manageability Docker
-This folder contains the build instructions for creating mangeability docker container packages for Azure and Thingsboard cloud service providers.
+This folder contains the build instructions for creating a Manageability docker container packages for Azure and Thingsboard cloud service providers.
 
-PLEASE NOTE: You must have 'btrfs-progs' and 'snapper' installed on the host machine for Ubuntu or Debian based OSes, for btrfs-based snapshot/rollback functionality to work with system updates.
+PLEASE NOTE: If you want btrfs-based snapshot/rollback functionality on Ubuntu or Debian based OSes, 'btrfs-progs' and 'snapper' must be installed on the host machine.
 
 ## BUILD INSTRUCTIONS
 
@@ -31,7 +31,7 @@ If an error such as 'unable to resolve' or a DNS error or 'unable to look up' is
 ```
 -v <your_directory>:/var/certs
 ```
-* Edit the thingsboard_conf_file file with your configuration
+* Edit the following file with your configuration: thingsboard_conf_file
 * Run the following command
 ```shell
  sudo ./run.sh
@@ -41,4 +41,4 @@ If an error such as 'unable to resolve' or a DNS error or 'unable to look up' is
 ```shell
 sudo python3 mqtt_client.py
 ```
-* Trigger the manifest(refer email below) from the TB server and you should be able to see the move command received on the console that is running the mqtt_client.py.
+* Trigger the manifest(refer email below) from the TB server, and you should be able to see the move command received on the console that is running the mqtt_client.py.
