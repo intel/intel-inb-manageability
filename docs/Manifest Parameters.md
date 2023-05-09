@@ -278,9 +278,9 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `</ota>`                                 | `</ota>`                                                 |         R         |                                                                                     |
 | `</manifest>`                            | `</manifest>`                                            |         R         |                                                                                     |
 
-### Docker manifest examples
+### Application update manifest examples
 
-#### Example of docker application manifest
+#### Example of Debian package application update manifest
 ```xml
 <?xml version='1.0' encoding='utf-8'?>
 <manifest>
@@ -294,12 +294,15 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
             <aota name='samplerpm'>
                 <cmd>update</cmd>
                 <app>application </app>
-                <fetch>yoururl/simplecompose.tar.gz</fetch>
+                <fetch>yoururl/package.deb/fetch>
+                <deviceReboot>yes</deviceReboot>
             </aota>
         </type>
     </ota>
 </manifest>
 ```
+
+### Docker manifest examples
 
 #### Example of docker image import manifest 
 ```xml
@@ -410,7 +413,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
     </ota>
 </manifest>
 ```
-#### Docker-Compose Manifest Examples
+### Docker-Compose Manifest Examples
 
 #### Example of docker-compose up manifest 
 ```xml
