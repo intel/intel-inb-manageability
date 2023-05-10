@@ -3,7 +3,7 @@
 The following outlines the manifest parameters used to perform the supported OTA updates, configuration commands, and query.
 
 ## Table of Contents
-1. [Manifest Rules](#manifest-rules)
+1. [Manifest Rules](#manifest-rules-)
 2. [FOTA](#FOTA)
 3. [SOTA](#SOTA)
 4. [POTA](#POTA)
@@ -55,8 +55,6 @@ The following outlines the manifest parameters used to perform the supported OTA
 | `<type>`                                 | `<type>`                                            |         R          ||
 | `<fota name=''>`                         | `<fota name='text'>`                                |         R          | Text must be compliant with XML Standards                                                                                                                   |
 | `<fetch></fetch>`                        | `<fetch>http://yoururl:80/BIOSUPDATE.tar</fetch>`   |         R          | FOTA path created in repository                                                                                                                             |
-| `<targetType></targetType>`              | `<targetType>node</targetType>`                     |         O          | [host or node] Used when updating either the host of vision cards (host) or vision cards (node)                                                             |
-| `<targets></targets>`                    | `<targets><target>389C0A</target></targets>`        |         O          | Used when targetType=node.  Designates the Ids of the nodes to update                                                                                       |
 | `<signature></signature>`                | `<signature>ABC123</signature>`                     |         O          | Digital signature of *.tar file.                                                                                                                            |
 | `<biosversion></biosversion>`            | `<biosversion>A..ZZZZ.B11.1</biosversion>`          |         R          | Verify with BIOS Vendor (IBV)                                                                                                                               |
 | `<vendor></vendor>`                      | `<vendor>VendorName</vendor>`                       |         R          | Verify with BIOS Vendor (IBV)                                                                                                                               |
@@ -67,7 +65,6 @@ The following outlines the manifest parameters used to perform the supported OTA
 | `<guid></guid>`                          | `<guid>7acbd1a5a-33a4-48c3ab11-a4c33b3d0e56</guid>` |         O          | Check for ‘System Firmware Type’ on running cmd:fwupdate -l                                                                                                 |
 | `<username></username>`                  | `<username>user</username>`                         |         O          | Username used during fetch from remote repository                                                                                                           |
 | `<password><password>`                   | `<password>pwd</password>`                          |         O          | Password used during fetch from remote repository                                                                                                           |
-| `<path></path>`                          | `<path></path>`                                     |         R          ||
 | `</fota>`                                | `</fota>`                                           |         R          ||
 | `</type>`                                | `</type>`                                           |         R          ||
 | `</ota>`                                 | `</ota>`                                            |         R          ||
@@ -119,10 +116,7 @@ description will trigger a FOTA update via Manifest.
 | `<type>`                                 | `<type>`                                     |         R         ||
 | `<sota>`                                 | `<sota>`                                     |         R         ||
 | `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`            |         R         ||
-| `<targetType></targetType>`              | `<targetType>node</targetType>`              |         O         | [host or node] Used when updating either the host of vision cards (host) or vision cards (node)                                                             |
-| `<targets></targets>`                    | `<targets><target>389C0A</target></targets>` |         O         | Used when targetType=node.  Designates the Ids of the nodes to update                                                                                       |
 | `<fetch></fetch>`                        | `<fetch>https://yoururl/file.mender</fetch>` |         O         | Used to download mender file from remote repository. (use repo=remote)                                                                                      |
-| `<path></path>`                          | `<path>/var/cache/file.mender</path>`        |         O         | Used to update using a local mender file  .  (use repo=local)                                                                                               |
 | `<username></username>`                  | `<username>xx</username>`                    |         O         | Username for remote repository                                                                                                                              |                                                                 |
 | `<password></password>`                  | `<password>xxx</password>`                   |         O         | Password for remote repository                                                                                                                              |                                                                 |
 | `<release_date></release_ date>`         | `<release_date>2020-01-01</release_date>`    |         O         | The release date provided should be in ‘YYYY-MM-DD’ format.                                                                                                 |
@@ -131,7 +125,7 @@ description will trigger a FOTA update via Manifest.
 | `</ota>`                                 | `</ota>`                                     |         R         ||
 | `</manifest>`                            | `</manifest`>                                |         R         ||
 
-### Sample SOTA Manifest - Ubuntu on Edge device: 
+### Sample SOTA Manifest - Ubuntu: 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -144,14 +138,13 @@ description will trigger a FOTA update via Manifest.
         <type>
             <sota>
                 <cmd logtofile="Y">update</cmd>
-                <release-date>2020-0101</release_date>
             </sota>
         </type>
     </ota>
 </manifest>
 ```
 
-### Sample SOTA Manifest - Mender update on Edge device: 
+### Sample SOTA Manifest - Mender update: 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -179,55 +172,48 @@ description will trigger a FOTA update via Manifest.
 The POTA manifest is used to perform both a FOTA and SOTA update at the same time to avoid conflicts when trying to update them individually.  This manifest combines both the FOTA and SOTA into one.
 
 ### POTA Manifest Parameters
-| Tag                                      | Example                                                         | Required/Optional | Notes                                                                                           |
-|:-----------------------------------------|:----------------------------------------------------------------|:-----------------:|:------------------------------------------------------------------------------------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`                        |         R         |                                                                                                 |
-| `<manifest>`                             | `<manifest>`                                                    |         R         |                                                                                                 |
-| `<type></type>`                          | `<type>ota</type>`                                              |         R         | Always 'ota'                                                                                    |
-| `<ota>`                                  | `<ota>`                                                         |         R         |                                                                                                 |
-| `<header>`                               | `<header>`                                                      |         R         |                                                                                                 |
-| `<id></id>`                              | `<id>yourid</id>`                                               |         O         |                                                                                                 |
-| `<name></name>`                          | `<name>SampleAOTA</name>`                                       |         O         |                                                                                                 |
-| `<description></description>`            | `<description>Yourdescription</description>`                    |         O         |                                                                                                 |
-| `<type></type>`                          | `<type>pota</type>`                                             |         R         | Always 'pota'                                                                                   |
-| `<repo></repo>`                          | `<repo>remote</repo>`                                           |         R         | 'remote' or 'local'                                                                             |
-| `</header>`                              | `</header>`                                                     |         R         |                                                                                                 |
-| `<type>`                                 | `<type>`                                                        |         R         |                                                                                                 |
-| `<pota>`                                 | `<pota>`                                                        |         R         ||
-| `<targetType></targetType>`              | `<targetType>node</targetType>`                                 |         O         | [host or node] Used when updating either the host of vision cards (host) or vision cards (node) |
-| `<targets></targets>`                    | `<targets><target>389C0A</target></targets>`                    |         O         | Used when targetType=node.  Designates the Ids of the nodes to update                           |
-| `<fota name=''>`                         | `<fota name='text'>`                                            |         R         | Text must be compliant with XML Standards                                                       |
-| `<fetch></fetch>`                        | `<fetch>http://yoururl:80/BIOSUPDATE.tar</fetch>`               |         R         | FOTA path created in repository                                                                 |
-| `<targetType></targetType>`              | `<targetType>node</targetType>`                                 |         O         | [host or node] Used when updating either the host of vision cards (host) or vision cards (node) |
-| `<targets></targets>`                    | `<targets><targets><target>389C0A</target></targets></targets>` |         O         | Used when targetType=node.  Designates the Ids of the nodes to update                           |
-| `<signature></signature>`                | `<signature>ABC123</signature>`                                 |         O         | Digital signature of *.tar file.                                                                |
-| `<biosversion></biosversion>`            | `<biosversion>A..ZZZZ.B11.1</biosversion>`                      |         R         | Verify with BIOS Vendor (IBV)                                                                   |
-| `<vendor></vendor>`                      | `<vendor>VendorName</vendor>`                                   |         R         | Verify with BIOS Vendor (IBV)                                                                   |
-| `<manufacturer></manufacturer>`          | `<manufacturer>BIOS_Manufacturer</manufacturer>`                |         R         | In Release Notes supplied by BIOS vendor                                                        |
-| `<product></product>`                    | `<product>BIOS_Product</product>`                               |         R         | Product Name set by Manufacturer                                                                |
-| `<releasedate></releasedate>`            | `<releasedate>2021-06-23</releasedate>`                         |         R         | Verify with BIOS Vendor (IBV)                                                                   |
-| `<tooloptions></tooloptions>`            | `<tooloptions>p/b/n</tooloptions>`                              |         O         | Verify with BIOS Vendor (IBV)                                                                   |
-| `<guid></guid>`                          | `<guid>7acbd1a5a-33a4-48c3ab11-a4c33b3d0e56</guid>`             |         O         | Check for ‘System Firmware Type’ on running cmd:fwupdate -l                                     |
-| `<username></username>`                  | `<username>user</username>`                                     |         O         | Username used during fetch from remote repository                                               |
-| `<password><password>`                   | `<password>pwd</password>`                                      |         O         | Password used during fetch from remote repository                                               |
-| `<path></path>`                          | `<path></path>`                                                 |         R         ||
-| `</fota>`                                | `</fota>`                                                       |         R         ||
-| `<sota>`                                 | `<sota>`                                                        |         R         ||
-| `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`                               |         R         ||
-| `<targetType></targetType>`              | `<targetType>node</targetType>`                                 |         O         | [host or node] Used when updating either the host of vision cards (host) or vision cards (node) |
-| `<targets></targets>`                    | `<targets><targets><target>389C0A</target></targets></targets>` |         O         | Used when targetType=node.  Designates the Ids of the nodes to update                           |
-| `<fetch></fetch>`                        | `<fetch>https://yoururl/file.mender</fetch>`                    |         O         | Used to download mender file from remote repository. (use repo=remote)                          |
-| `<path></path>`                          | `<path>/var/cache/file.mender</path>`                           |         O         | Used to update using a local mender file  .  (use repo=local)                                   |
-| `<username></username>`                  | `<username>xx</username>`                                       |         O         | Username for remote repository                                                                  |                                                                 |
-| `<password></password>`                  | `<password>xxx</password>`                                      |         O         | Password for remote repository                                                                  |                                                                 |
-| `<release_date></release_ date>`         | `<release_date>2020-01-01</release_date>`                       |         O         | The release date provided should be in ‘YYYY-MM-DD’ format.                                     |
-| `</sota>`                                | `</sota>`                                                       |         R         ||
-| `</pota>`                                | `</pota>`                                                       |         R         ||
-| `</type>`                                | `</type>`                                                       |         R         |                                                                                                 |
-| `</ota>`                                 | `</ota>`                                                        |         R         |                                                                                                 |
-| `</manifest>`                            | `</manifest>`                                                   |         R         |                                                                                                 |
+| Tag                                      | Example                                             | Required/Optional | Notes                                                                  |
+|:-----------------------------------------|:----------------------------------------------------|:-----------------:|:-----------------------------------------------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`            |         R         |                                                                        |
+| `<manifest>`                             | `<manifest>`                                        |         R         |                                                                        |
+| `<type></type>`                          | `<type>ota</type>`                                  |         R         | Always 'ota'                                                           |
+| `<ota>`                                  | `<ota>`                                             |         R         |                                                                        |
+| `<header>`                               | `<header>`                                          |         R         |                                                                        |
+| `<id></id>`                              | `<id>yourid</id>`                                   |         O         |                                                                        |
+| `<name></name>`                          | `<name>SampleAOTA</name>`                           |         O         |                                                                        |
+| `<description></description>`            | `<description>Yourdescription</description>`        |         O         |                                                                        |
+| `<type></type>`                          | `<type>pota</type>`                                 |         R         | Always 'pota'                                                          |
+| `<repo></repo>`                          | `<repo>remote</repo>`                               |         R         | 'remote' or 'local'                                                    |
+| `</header>`                              | `</header>`                                         |         R         |                                                                        |
+| `<type>`                                 | `<type>`                                            |         R         |                                                                        |
+| `<pota>`                                 | `<pota>`                                            |         R         |                                                                        |
+| `<fota name=''>`                         | `<fota name='text'>`                                |         R         | Text must be compliant with XML Standards                              |
+| `<fetch></fetch>`                        | `<fetch>http://yoururl:80/BIOSUPDATE.tar</fetch>`   |         R         | FOTA path created in repository                                        |
+| `<signature></signature>`                | `<signature>ABC123</signature>`                     |         O         | Digital signature of *.tar file.                                       |
+| `<biosversion></biosversion>`            | `<biosversion>A..ZZZZ.B11.1</biosversion>`          |         R         | Verify with BIOS Vendor (IBV)                                          |
+| `<vendor></vendor>`                      | `<vendor>VendorName</vendor>`                       |         R         | Verify with BIOS Vendor (IBV)                                          |
+| `<manufacturer></manufacturer>`          | `<manufacturer>BIOS_Manufacturer</manufacturer>`    |         R         | In Release Notes supplied by BIOS vendor                               |
+| `<product></product>`                    | `<product>BIOS_Product</product>`                   |         R         | Product Name set by Manufacturer                                       |
+| `<releasedate></releasedate>`            | `<releasedate>2021-06-23</releasedate>`             |         R         | Verify with BIOS Vendor (IBV)                                          |
+| `<tooloptions></tooloptions>`            | `<tooloptions>p/b/n</tooloptions>`                  |         O         | Verify with BIOS Vendor (IBV)                                          |
+| `<guid></guid>`                          | `<guid>7acbd1a5a-33a4-48c3ab11-a4c33b3d0e56</guid>` |         O         | Check for ‘System Firmware Type’ on running cmd:fwupdate -l            |
+| `<username></username>`                  | `<username>user</username>`                         |         O         | Username used during fetch from remote repository                      |
+| `<password><password>`                   | `<password>pwd</password>`                          |         O         | Password used during fetch from remote repository                      |
+| `</fota>`                                | `</fota>`                                           |         R         |                                                                        |
+| `<sota>`                                 | `<sota>`                                            |         R         |                                                                        |
+| `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`                   |         R         |                                                                        |
+| `<fetch></fetch>`                        | `<fetch>https://yoururl/file.mender</fetch>`        |         O         | Used to download mender file from remote repository. (use repo=remote) |
+| `<path></path>`                          | `<path>/var/cache/file.mender</path>`               |         O         | Used to update using a local mender file  .  (use repo=local)          |
+| `<username></username>`                  | `<username>xx</username>`                           |         O         | Username for remote repository                                         |                                                                 |
+| `<password></password>`                  | `<password>xxx</password>`                          |         O         | Password for remote repository                                         |                                                                 |
+| `<release_date></release_ date>`         | `<release_date>2020-01-01</release_date>`           |         O         | The release date provided should be in ‘YYYY-MM-DD’ format.            |
+| `</sota>`                                | `</sota>`                                           |         R         |                                                                        |
+| `</pota>`                                | `</pota>`                                           |         R         |                                                                        |
+| `</type>`                                | `</type>`                                           |         R         |                                                                        |
+| `</ota>`                                 | `</ota>`                                            |         R         |                                                                        |
+| `</manifest>`                            | `</manifest>`                                       |         R         |                                                                        |
 
-### POTA Example Manifest - Targets not specified
+### POTA Example Manifest
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -239,54 +225,17 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
       </header>
       <type>
          <pota>
-            <targetType>node</targetType>
             <fota name="sample">
-               <fetch>https://yoururl/fip-hddl2.bin</fetch>
+               <fetch>https://yoururl/capsule.bin</fetch>
                <biosversion>5.12</biosversion>
                <manufacturer>intel</manufacturer>
-               <product>kmb-hddl2</product>
+               <product>Alder Lake Client Platform</product>
                <vendor>Intel</vendor>
                <releasedate>2021-02-08</releasedate>
             </fota>
             <sota>
                <cmd logtofile="y">update</cmd>
-               <fetch>https://yoururl/core-image-minimal-keembay-20201028223515.dm-verity.mender</fetch>
-               <release_date>2021-10-10</release_date>
-            </sota>
-         </pota>
-      </type>
-   </ota>
-</manifest>
-```
-
-### POTA Example Manifest - Targets specified
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<manifest>
-   <type>ota</type>
-   <ota> 
-      <header>
-         <type>pota</type>
-         <repo>remote</repo>
-      </header>
-      <type>
-         <pota>
-            <targetType>node</targetType>
-            <targets>
-               <target>000732767ffb-16781312</target>
-                <target>000732767ffb-16780544</target>
-            </targets>
-            <fota name="sample">
-               <fetch>https://yoururl/fip-hddl2.bin</fetch>
-               <biosversion>5.12</biosversion>
-               <manufacturer>intel</manufacturer>
-               <product>kmb-hddl2</product>
-               <vendor>Intel</vendor>
-               <releasedate>2021-02-08</releasedate>
-            </fota>
-            <sota>
-               <cmd logtofile="y">update</cmd>
-               <fetch>https://yoururl/core-image-minimal-keembay-20201028223515.dm-verity.mender</fetch>
+               <fetch>https://yoururl/core-image-minimal-20201028223515.dm-verity.mender</fetch>
                <release_date>2021-10-10</release_date>
             </sota>
          </pota>
@@ -328,6 +277,30 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `</type>`                                | `</type>`                                                |         R         |                                                                                     |
 | `</ota>`                                 | `</ota>`                                                 |         R         |                                                                                     |
 | `</manifest>`                            | `</manifest>`                                            |         R         |                                                                                     |
+
+### Application update manifest examples
+
+#### Example of Debian package application update manifest
+```xml
+<?xml version='1.0' encoding='utf-8'?>
+<manifest>
+    <type>ota</type>
+    <ota>
+        <header>
+            <type>aota</type>
+            <repo>remote</repo>
+        </header>
+        <type>
+            <aota name='samplerpm'>
+                <cmd>update</cmd>
+                <app>application </app>
+                <fetch>yoururl/package.deb/fetch>
+                <deviceReboot>yes</deviceReboot>
+            </aota>
+        </type>
+    </ota>
+</manifest>
+```
 
 ### Docker manifest examples
 
@@ -440,7 +413,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
     </ota>
 </manifest>
 ```
-#### Docker-Compose Manifest Examples
+### Docker-Compose Manifest Examples
 
 #### Example of docker-compose up manifest 
 ```xml
@@ -632,28 +605,26 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 The query command can be used to gather information about the system and the Vision cards.
 
-| XML Tags                                 | Definition                     | Required/Optional | Notes                         |
-|:-----------------------------------------|:-------------------------------|:-----------------:|:------------------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` |                                |         R         |                               |
-| `<manifest>`                             | `<manifest>`                   |         R         |                               |
-| `<type><type>`                           | `<type>cmd</type>`             |         R         | will always be 'cmd'          |
-| `<cmd></cmd>`                            | `<cmd>query</cmd>`             |         R         | will always be 'query'        |
-| `<query>`                                | `<query>`                      |         R         |                               |
-| `<option></option>`                      | `<option>all</option>`         |         R         | [Available Options](Query.md) |
-| `<targetType></targetType>`              | `<targetType>node</targetType>`|         O         | [vision, node] Used when updating either the host of vision cards (host) or vision cards (node) |
-| `<targets></targets>`                    | `<targets><target>389C0A</target></targets>` |         O         | Used when targetType=node.  Designates the Ids of the nodes to update    
-| `</query>`                               | `</query>`                     |         R         |                               |
-| `</manifest>`                            | `</manifest>`                  |         R         |                               |
+| XML Tags                                 | Definition                                   | Required/Optional | Notes                                                                                           |
+|:-----------------------------------------|:---------------------------------------------|:-----------------:|:------------------------------------------------------------------------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` |                                              |         R         |                                                                                                 |
+| `<manifest>`                             | `<manifest>`                                 |         R         |                                                                                                 |
+| `<type><type>`                           | `<type>cmd</type>`                           |         R         | will always be 'cmd'                                                                            |
+| `<cmd></cmd>`                            | `<cmd>query</cmd>`                           |         R         | will always be 'query'                                                                          |
+| `<query>`                                | `<query>`                                    |         R         |                                                                                                 |
+| `<option></option>`                      | `<option>all</option>`                       |         R         | [Available Options](Query.md)                                                                   |
+| `</query>`                               | `</query>`                                   |         R         |                                                                                                 |
+| `</manifest>`                            | `</manifest>`                                |         R         |                                                                                                 |
 
 
-## Query types supported on Edge and HDDL platforms
+## Query types supported
   
-| Supported on Edge only  | Supported on HDDL only | Supported on both Edge and HDDL |
-|:------------------------|:-----------------------|:-------------------------------:|
-|  swbom                  | security, status, guid | all, hw, fw, os, version        |  
+| Supported on Edge only |    Supported options     |
+|:-----------------------|:------------------------:|
+| swbom                  | all, hw, fw, os, version |  
 
 
-#### Example of all query manifest example on Edge device 
+#### Example of all query manifest 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -665,7 +636,7 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
-#### Example of hw query manifest example on Edge device 
+#### Example of hw query manifest
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -677,7 +648,7 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
-#### Example of fw query manifest example on Edge device 
+#### Example of fw query manifest
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -689,7 +660,7 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
-#### Example of os query manifest example on Edge device 
+#### Example of os query manifest
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -701,7 +672,7 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
-#### Example of version query manifest example on Edge device 
+#### Example of version query manifest
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -714,7 +685,7 @@ The query command can be used to gather information about the system and the Vis
 ```
 
 
-#### Example of swbom query manifest on Edge device
+#### Example of swbom query manifest
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <manifest>
@@ -728,18 +699,6 @@ The query command can be used to gather information about the system and the Vis
 
 ## Configuration Settings
 
-On an Edge device there will be only one configuration file that this command can target; therefore you will not need to use the <targetType> and <targets> tags in the chart below.
-
-On an Intel Vision card solution, there will be 2 configuration files on the host and 2 configuration files on each node that can be targeted by the Get, Set, and Load commands.  
-The '_Append_' and '_Remove_' commands only supported on the Host agents (not vision).
-
-| \<TargetType> | System |                             Agent(s)                              |
-|:--------------|:-------|:-----------------------------------------------------------------:|
-| None          | Host   | INB = Dispatcher, Telemetry, Configuration, and Diagnostic agents |
-| vision        | Host   |                           Vision-agent                            |
-| node          | Node   |                            Node-agent                             |
-| node_client   | Node   | INB = Dispatcher, Telemetry, Configuration, and Diagnostic agents |
-
 ### Get
 
 #### Get Configuration Manifest Parameters
@@ -750,9 +709,7 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 | `<type></type>`                          | `<type>config</type>`                        |         R         | Always 'config'                                                                                                 |
 | `<config>`                               | `<config>`                                   |         R         |                                                                                                                 |
 | `<cmd></cmd>`                            | `<cmd>get_elemeent</cmd>`                    |         R         |                                                                                                                 |
-| `<targetType></targetType>`              | `<targetType>node</targetType>`              |         O         | [vision, node, or node_client] Used when updating either the host of vision cards (host) or vision cards (node) |
 | `<configtype>`                           | `<configtype>`                               |         R         |                                                                                                                 |
-| `<targets></targets>`                    | `<targets><target>389C0A</target></targets>` |         O         | Used when targetType=node or node_client.  Designates the Ids of the nodes to update                            |
 | `<get>`                                  | `<get>`                                      |         R         |                                                                                                                 |
 | `<path></path>`                          | `<path>minStorageMB;minMemoryMB</path>`      |         R         |                                                                                                                 |
 | `</get>`                                 | `</get>`                                     |         R         |                                                                                                                 |
@@ -769,7 +726,8 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
     multiple values at once, use ‘**;**’ to separate one tag from
     another as shown above.
 
-##### Get Example on Host INB agents
+##### Configuration Get Manifest Example
+
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -786,7 +744,7 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 ```
 
 
-## Set
+### Set
 
 #### Configuration Set Manifest Parameters
 | Tag                                      | Example                                         | Required/Optional | Notes                                                                                                           |
@@ -796,9 +754,7 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 | `<type></type>`                          | `<type>config</type>`                           |         R         | Always 'config'                                                                                                 |
 | `<config>`                               | `<config>`                                      |         R         |                                                                                                                 |
 | `<cmd></cmd>`                            | `<cmd>set_elemeent</cmd>`                       |         R         |                                                                                                                 |
-| `<targetType></targetType>`              | `<targetType>node</targetType>`                 |         O         | [vision, node, or node_client] Used when updating either the host of vision cards (host) or vision cards (node) |
 | `<configtype>`                           | `<configtype>`                                  |         R         |                                                                                                                 |
-| `<targets></targets>`                    | `<targets><target>389C0A</target></targets>`    |         O         | Used when targetType=node or node_client.  Designates the Ids of the nodes to update                            |
 | `<set>`                                  | `<set>`                                         |         R         |                                                                                                                 |
 | `<path></path>`                          | `<path>minStorageMB:100;minMemoryMB:200</path>` |         R         |                                                                                                                 |
 | `</set>`                                 | `</set>`                                        |         R         |                                                                                                                 |
@@ -814,7 +770,7 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
     multiple key:value pairs, use “**;**” to separate one pair from
     another as shown in the example above.
 
-##### Set Example on Host INB agents
+##### Configuration Set Manifest Example
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -853,7 +809,7 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 * The configuration file you provide in Fetch needs to be named *intel_manageability.conf*. If you wish to send with
     signature; then TAR both the PEM file and the *intel_manageability.conf* in a TAR file.
 
-##### Load Example on Host INB agents
+##### Configuration Load Manifest Example
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -887,7 +843,7 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 | `</config>`                              | `</config`                               |         R         |                 |
 | `</manifest>`                            | `</manifest>`                            |         R         |                 |
 
-#### Append Example
+#### Configuration Append Manifest Example
 
 * Append is only applicable to three configuration tags, for example,
     **trustedRepositories**, **sotaSW** and **ubuntuAptSource**
@@ -925,7 +881,7 @@ The '_Append_' and '_Remove_' commands only supported on the Host agents (not vi
 | `</config>`                              | `</config>`                              |         R         |                 |
 | `</manifest>`                            | `</manifest>`                            |         R         |                 |
 
-#### Remove Example
+#### Configuration Remove Manifest Example
 * *Remove* is only applicable to three configuration tags, for
     example, **trustedRepositories**, **sotaSW** and
     **ubuntuAptSource**.
