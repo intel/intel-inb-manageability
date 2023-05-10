@@ -56,8 +56,6 @@ class ReceiveRespondHandler(Handler):
         @param args:    Arguments to the method
         @param symbols: Keyword arguments to the method"""
 
-        logger.debug(f"_fire_method method: {method} args: mask_security_info(str(args)) symbols: {symbols}")
-
         # Run the applicable bound callback
         response = f"\"Unknown method: '{method}'\""
         if method in self._methods:
@@ -76,10 +74,7 @@ class ReceiveRespondHandler(Handler):
         @param payload: Raw UTF-8 payload
         """
          
-        logger.debug(f"_on_method topic: {topic} payload: {mask_security_info(str(payload))} ")
-
         if self._method_parser is None:
-            logger.debug(f"method={METHOD.RAW} contents={mask_security_info(str(payload))}")
             self._fire_method(METHOD.RAW, {'contents': payload.decode('utf-8', errors="strict")}, {})
             return
     
@@ -104,7 +99,7 @@ class ReceiveRespondHandler(Handler):
 
             # Check if method is valid
             if not method:
-                logger.info("Received non-RPC message on %s: %s", topic, payload)
+                logger.info("Received non-RPC message on %s: %s", topic, str(p.args))
                 return
 
             # Supply request_id if not parsed

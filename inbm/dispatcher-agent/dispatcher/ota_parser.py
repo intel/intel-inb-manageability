@@ -79,8 +79,6 @@ class FotaParser(OtaParser):
         @param parsed: parameter current not used for FOTA
         @return: kwargs(dict)
         """
-        logger.debug(
-            f"parsing FOTA manifest. resource: {mask_security_info(str(resource))!r} kwargs: {mask_security_info(str(kwargs))!r} parsed: {parsed!r}")
         super().parse(resource, kwargs, parsed)
 
         resource_dict = {'uri': self._uri, 'signature': self._signature,
@@ -93,7 +91,6 @@ class FotaParser(OtaParser):
             return resource_dict
 
         kwargs.update(resource_dict)
-        logger.debug(f"returning kwargs {mask_security_info(str(kwargs))!r}")
         return kwargs
 
 
