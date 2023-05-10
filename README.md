@@ -50,7 +50,6 @@ INBC is a command line tool that can be used instead of the cloud to perform the
 * If you are behind a proxy, ensure your http_proxy, https_proxy, and no_proxy variables are set correctly and exported.  E.g., in bash, you could run: "http_proxy=http://foo.com:1234/ && export http_proxy"
 * Ensure you are in docker group.
 * Ensure Docker run hello-world command succeeds, E.g., in bash, you could run: "docker run hello-world". Alternately you can use sudo, where you have to ensure the command in bash "sudo docker run hello-world" succeeds.
-* Optional but recommended for better build speed and caching: export DOCKER_BUILDKIT=1
 * Run: ./build.sh
 
 If you see something like 'unable to resolve' or a DNS error or 'unable to look up' near the start of the build, follow the instructions under https://docs.docker.com/install/linux/linux-postinstall/ --> "DISABLE DNSMASQ".  This can occur in some Linux distributions that put 127.0.0.1 in /etc/resolv.conf.
@@ -61,3 +60,5 @@ If you see something like 'unable to resolve' or a DNS error or 'unable to look 
 
 ### Next Steps
 Please see the [Ubuntu Installation Guide](https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
+
+This build process will also build Windows binaries. See `docs/INBM Windows.md` for Windows installation instructions. INBM Windows today only supports a limited installation in "UCC mode".

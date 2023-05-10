@@ -7,6 +7,8 @@ if [ $# -eq 0 ]
     exit 1
 fi
 
+export DOCKER_BUILDKIT=1
+
 DOCKER_CONTENT_TRUST=0
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR"
