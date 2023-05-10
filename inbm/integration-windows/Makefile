@@ -11,7 +11,7 @@ setup:
 destroy:
 	vagrant destroy -f || true
 
-test:
+up:
 	VAGRANT_DISABLE_VBOXSYMLINKCREATE=1 NO_PROXY=127.0.0.1 no_proxy=127.0.0.1 vagrant up --provider virtualbox
 
 

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Added
+ - Added Windows output (UCC only) from main build
+
 ### Fixed
  - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
 
