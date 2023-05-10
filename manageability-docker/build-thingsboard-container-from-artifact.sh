@@ -10,11 +10,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd "$DIR"
 rm -rf "$DIR"/output
 mkdir -p "$DIR"/output
+cp Intel-Manageability.preview.tar.gz "$DIR"/output
 cd ../inbm
-
-./build.sh
-
-cp output/Intel-Manageability.preview.tar.gz "$DIR"/output
 
 cp cloudadapter-agent/fpm-template/usr/share/cloudadapter-agent/thingsboard/config_tls.json.template cloudadapter-agent/fpm-template/usr/share/cloudadapter-agent/thingsboard/config.json.template "$DIR"/output
 
