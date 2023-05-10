@@ -1,7 +1,7 @@
 include(`image.main.m4')
 
 # base windows/wine build image
-FROM registry.hub.docker.com/batonogov/pyinstaller-windows:python-3.10 as base-windows
+FROM registry.hub.docker.com/batonogov/pyinstaller-windows:3.1.0 as base-windows
 
 RUN ln -sf /usr/bin/pip /usr/bin/pip3
 RUN python -m pip install --upgrade pip
@@ -23,8 +23,7 @@ COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 COPY inbm/packaging /src/packaging
 RUN mkdir -p /output && \
     pip3 install -r requirements.txt
-RUN \
-    pyinstaller inbm-cloudadapter.spec && \
+RUN pyinstaller inbm-cloudadapter.spec && \
     wine ../cloudadapter-agent/dist/inbm-cloudadapter.exe install && \
     cp -r ../cloudadapter-agent/dist/"inbm-cloudadapter.exe" /output
 
