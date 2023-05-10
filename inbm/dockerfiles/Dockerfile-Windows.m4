@@ -46,10 +46,6 @@ RUN cd /inb-provision-ota-cert && GOOS=windows GOARCH=amd64 go build . && \
 # output container
 FROM registry.hub.docker.com/library/ubuntu:20.04 as output-windows
 RUN apt-get update && apt-get install -y -q wget
-# Copy 3rd-party msi/install files to /output/windows/
-RUN \
-    wget -P /output/windows https://slproweb.com/download/Win64OpenSSL_Light-3_1_0.msi && \
-    wget -P /output/windows https://mosquitto.org/files/binary/win64/mosquitto-2.0.15-install-windows-x64.exe
 COPY --from=windows-cloudadapter-py3 /output/ /windows-cloudadapter-py3
 COPY --from=inb-provision-certs-windows /output /windows-inb-provision-certs
 COPY --from=inb-provision-cloud-windows /output /windows-inb-provision-cloud
