@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Security
  - RTC 528652 Mask Confidential data (Username & Password) of OTA is exposed in logs
+ - RTC 529258 Adjust Windows build to address 3rd party vulnerabilities
 
 ## 3.0.15 - 2023-04-14
 
