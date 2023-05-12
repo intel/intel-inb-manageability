@@ -53,3 +53,6 @@ COPY ./cloud_source /src/cloud_source
 RUN sed -i '/^ExecStart=.*/a ExecStartPost=/src/cloud_source' /lib/systemd/system/mqtt.service
 RUN sed -i 's/^[ \t]*docker[ \t]*$//g' /etc/intel_manageability.conf
 RUN mkdir -p /var/certs
+
+# If thingsboard.pub.pem exist, copy it to container
+COPY ./thingsboard.pub.pe[m] /src/thingsboard.pub.pem

@@ -16,6 +16,9 @@ function start {
   echo  "Generating cloud config file to onboard device to Thingsboard using INB container..."
   if [ ! -f $CLOUD_FILE ]; then
         install_and_provision
+  else
+    echo $CLOUD_FILE exist. Will not provision and create thingsboard.pub.pem.
+    echo Please remove $CLOUD_FILE if you want to create thingsboard.pub.pem.
   fi
 
   docker_start
