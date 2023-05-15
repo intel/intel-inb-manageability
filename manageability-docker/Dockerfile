@@ -56,3 +56,5 @@ RUN mkdir -p /var/certs
 
 # If thingsboard.pub.pem exist, copy it to container
 COPY ./thingsboard.pub.pe[m] /src/thingsboard.pub.pem
+# If client.nopass.pem(device x509 cert) exist, copy it to container
+COPY ./client.nopass.pe[m] /src/client.nopass.pem

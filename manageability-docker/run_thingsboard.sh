@@ -43,11 +43,22 @@ function install_and_provision {
 	echo $PEM_INPUT
 	local CA_PATH="${INSTALL_DIR}/thingsboard.pub.pem"
 	local CONTAINER_CA_PATH="${CLOUD_DIR}/thingsboard.pub.pem"
+	rm CA_PATH || true
 	printf "%s" "$PEM_INPUT" > $CA_PATH
+
+	if [[ -f $DEVICE_CERTS && -r $DEVICE_CERTS ]]; then
+	  CLIENT_PEM=$(cat $DEVICE_CERTS)
+    echo $CLIENT_PEM
+    local CLIENT_PEM_PATH="${INSTALL_DIR}/client.nopass.pem"
+	  local CONTAINER_CLIENT_PEM_PATH="${CLOUD_DIR}/client.nopass.pem"
+	  rm CLIENT_PEM_PATH || true
+	  printf "%s" "$PEM_INPUT" > $CLIENT_PEM_PATH
+	fi
+
 	# Use the TLS ThingsBoard template
 	JSON=$(cat $INSTALL_DIR/config_tls.json.template \
       	| sed "s|{CA_PATH}|${CONTAINER_CA_PATH}|g" \
-        | sed "s|{CLIENT_CERT_PATH}|${DEVICE_CERTS}|g")
+        | sed "s|{CLIENT_CERT_PATH}|${CONTAINER_CLIENT_PEM_PATH}|g")
     else
         echo
         echo "Invalid PEM file!"
