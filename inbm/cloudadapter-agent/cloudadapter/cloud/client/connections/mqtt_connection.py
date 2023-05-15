@@ -116,7 +116,7 @@ class MQTTConnection(Connection):
         try:  # A lot of different socket errors can happen here
             self._client.connect()
         except Exception as e:
-            raise ConnectError from e
+            raise ConnectError(str(e))
 
         # Set up the MQTT connection thread
         if self._client.loop_start() is not None:
