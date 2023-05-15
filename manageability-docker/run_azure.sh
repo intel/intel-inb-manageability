@@ -42,8 +42,9 @@ function install_and_provision {
   TEMPLATE_URN=$TEMPLATE_URN
   echo "$TEMPLATE_URN"
   #sed -ir "s/^[#]*\s*DEVICE_ID=.*/DEVICE_ID=$DEVICE_ID/" $default_file
-  PRIMARY_KEY=$PRIMARY_KEY
-  DEVICE_KEY=`dps-keygen -mk:"$PRIMARY_KEY" -di:"$DEVICE_ID" | tail -2 | xargs`
+  #PRIMARY_KEY=$PRIMARY_KEY
+  DEVICE_KEY=$PRIMARY_KEY
+  #DEVICE_KEY=`dps-keygen -mk:"$PRIMARY_KEY" -di:"$DEVICE_ID" | tail -2 | xargs`
   echo "DEVICE_KEY=${DEVICE_KEY}" >> /usr/share/azure_conf_file
   configure_default_azure
   return 0
@@ -76,7 +77,7 @@ function configure_default_azure {
     \"config\": {
       \"scope_id\": \"$SCOPE_ID\",
       \"device_id\": \"$DEVICE_ID\",
-      \"device_key\": \"$DEVICE_KEY\",
+      \"device_sas_key\": \"$DEVICE_KEY\",
       \"template_urn\": \"$TEMPLATE_URN\"
     }
   }"
