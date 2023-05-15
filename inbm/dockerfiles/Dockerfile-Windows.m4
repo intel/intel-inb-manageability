@@ -1,7 +1,7 @@
 include(`image.main.m4')
 
 # base windows/wine build image
-FROM registry.hub.docker.com/batonogov/pyinstaller-windows:python-3.10 as base-windows
+FROM registry.hub.docker.com/batonogov/pyinstaller-windows:3.1.0 as base-windows
 
 RUN ln -sf /usr/bin/pip /usr/bin/pip3
 RUN python -m pip install --upgrade pip
@@ -23,8 +23,7 @@ COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 COPY inbm/packaging /src/packaging
 RUN mkdir -p /output && \
     pip3 install -r requirements.txt
-RUN \
-    pyinstaller inbm-cloudadapter.spec && \
+RUN pyinstaller inbm-cloudadapter.spec && \
     wine ../cloudadapter-agent/dist/inbm-cloudadapter.exe install && \
     cp -r ../cloudadapter-agent/dist/"inbm-cloudadapter.exe" /output
 
@@ -46,10 +45,6 @@ RUN cd /inb-provision-ota-cert && GOOS=windows GOARCH=amd64 go build . && \
 # output container
 FROM registry.hub.docker.com/library/ubuntu:20.04 as output-windows
 RUN apt-get update && apt-get install -y -q wget
-# Copy 3rd-party msi/install files to /output/windows/
-RUN \
-    wget -P /output/windows https://slproweb.com/download/Win64OpenSSL_Light-3_1_0.msi && \
-    wget -P /output/windows https://mosquitto.org/files/binary/win64/mosquitto-2.0.15-install-windows-x64.exe
 COPY --from=windows-cloudadapter-py3 /output/ /windows-cloudadapter-py3
 COPY --from=inb-provision-certs-windows /output /windows-inb-provision-certs
 COPY --from=inb-provision-cloud-windows /output /windows-inb-provision-cloud

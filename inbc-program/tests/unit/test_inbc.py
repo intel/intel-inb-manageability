@@ -5,11 +5,9 @@ from inbc.parser import ArgsParser, fota, sota, load, get, set, append, remove
 from inbc.constants import COMMAND_FAIL, COMMAND_SUCCESS
 from inbc.inbc_exception import InbcCode, InbcException
 from inbc.command.ota_command import FotaCommand
-from inbc.command.command import QueryCommand
 
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_lib.request_message_constants import *
-from inbm_common_lib.request_message_constants import QUERY_SUCCESS, QUERY_FAILURE, QUERY_HOST_SUCCESS
 from mock import patch, mock_open, Mock
 from io import StringIO
 
@@ -47,13 +45,9 @@ class TestINBC(TestCase):
     def test_fota_manifest_pass(self):
         f = self.arg_parser.parse_args(
             ['fota', '-un', 'username', '-to', '/b /p', '-u', 'https://abc.com/test.tar'])
-        self.assertEqual(f.biosversion, 'ADLSFWI1.R00')
-        self.assertEqual(f.manufacturer, 'Intel Corporation')
         self.assertEqual(f.uri, 'https://abc.com/test.tar')
-        self.assertEqual(f.product, 'Alder Lake Client Platform')
         self.assertEqual(f.releasedate, '2026-12-31')
         self.assertEqual(f.tooloptions, '/b /p')
-        self.assertEqual(f.vendor, 'Intel Corporation')
         self.assertEqual(f.username, 'username')
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
@@ -93,38 +87,6 @@ class TestINBC(TestCase):
                                         '-s', OVER_ONE_THOUSAND_CHARACTER_STRING])
         self.assertRegexpMatches(mock_stderr.getvalue(
         ), r"Signature is greater than allowed string size")
-
-    @patch('sys.stderr', new_callable=StringIO)
-    def test_raise_too_long_fota_manufacturer(self, mock_stderr):
-        with self.assertRaises(SystemExit):
-            self.arg_parser.parse_args(['fota', '-u', 'https://abc.com/test.tar',
-                                        '-r', '2024-12-31',
-                                        '-m', OVER_FIFTY_CHARACTER_STRING])
-        self.assertRegexpMatches(mock_stderr.getvalue(
-        ), r"Manufacturer is greater than allowed string size")
-
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('sys.stderr', new_callable=StringIO)
-    def test_raise_too_long_fota_vendor(self, mock_stderr, mock_reconnect):
-        with self.assertRaises(SystemExit):
-            self.arg_parser.parse_args(
-                ['fota', '-u', 'https://abc.com/test.tar',
-                 '-r', '2024-12-31', '-v', OVER_FIFTY_CHARACTER_STRING])
-        self.assertRegexpMatches(mock_stderr.getvalue(
-        ), r"Vendor is greater than allowed string size")
-
-    @patch('sys.stderr', new_callable=StringIO)
-    def test_raise_too_long_fota_bios_version(self, mock_stderr):
-        with self.assertRaises(SystemExit):
-            self.arg_parser.parse_args(
-                ['fota', '-u', 'https://abc.com/test.tar'
-                 '-r', '2024-12-31',
-                 '-v', 'Intel',
-                 '-b', OVER_FIFTY_CHARACTER_STRING])
-            print("Error")
-            print(mock_stderr.getvalue())
-        self.assertRegexpMatches(mock_stderr.getvalue(
-        ), r"BIOS Version is greater than allowed string size")
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -167,8 +129,7 @@ class TestINBC(TestCase):
     def test_create_fota_manifest_clean_input(self, mock_start, m_sub, m_pub,
                                   m_connect, m_pass, m_dmi, mock_reconnect, mock_thread):
         f = self.arg_parser.parse_args(
-            ['fota', '-u', 'https://abc.com/\x00package.bin',
-             '-b', '5.\x0014', '-m', 'Int\x00el', '-v', 'ven\x00dor', '-r', '2024-12-31'])
+            ['fota', '-u', 'https://abc.com/\x00package.bin', '-r', '2024-12-31'])
         Inbc(f, 'fota', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type' \
                    '><repo>remote</repo></header><type><fota name="sample">' \
@@ -233,8 +194,12 @@ class TestINBC(TestCase):
                 ['sota', '-u', 'https://abc.com/test.mender', '-r', '12-31-2024'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
 
+    @patch('inbc.parser._gather_system_details',
+           return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',
+                                            'Intel Corporation', 'Alder Lake Client Platform'))
     @patch('inbc.parser.detect_os', return_value='NonUbuntu')
-    def test_create_pota_uri_manifest_nohddl_non_ubuntu(self, mock_os):
+    def test_create_pota_uri_manifest_non_ubuntu(self, mock_os, mock_info):
+        p = PlatformInformation()
         s = self.arg_parser.parse_args(
             ['pota', '-fu', '/var/cache/manageability/repository-tool/fip.bin', '-su',
              '/var/cache/manageability/repository-tool/file.mender'])

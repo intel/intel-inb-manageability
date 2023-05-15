@@ -13,7 +13,7 @@ function start {
     exit 1
   fi
   echo $INSTALL_DIR
-  echo  "Onboard device to Azure (Installing In-band Manageability Framework and HDDL manageability)"
+  echo  "Onboard device to Azure (Installing In-band Manageability Framework)"
   if [ ! -f $CLOUD_FILE ]; then
         install_and_provision
   fi

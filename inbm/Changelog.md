@@ -5,11 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Added
+ - Added Windows output (UCC only) from main build
+
 ### Fixed
  - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
+ - RTC 528654 - [Defect] Remove parameters from INBC for version, manufacturer, product, and vendor for both POTA and FOTA commands
 
 ### Security
  - RTC 528652 Mask Confidential data (Username & Password) of OTA is exposed in logs
+ - RTC 529258 Adjust Windows build to address 3rd party vulnerabilities
 
 ## 3.0.15 - 2023-04-14
 

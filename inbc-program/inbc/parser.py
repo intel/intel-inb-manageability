@@ -61,17 +61,6 @@ class ArgsParser(object):
                                  help='Remote URI from where to retrieve package')
         parser_fota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        parser_fota.add_argument('--vendor', '-v', default='Intel Corporation', required=False, help='Platform vendor',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Vendor', 50))
-        parser_fota.add_argument('--biosversion', '-b', default='ADLSFWI1.R00', required=False,
-                                 help='Platform BIOS version',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'BIOS Version', 50))
-        parser_fota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False,
-                                 help='Platform manufacturer',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Manufacturer', 50))
-        parser_fota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
-                                 help='Platform product name',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Product', 50))
         parser_fota.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         parser_fota.add_argument('--tooloptions', '-to', required=False, help='Firmware tool options',
@@ -106,20 +95,6 @@ class ArgsParser(object):
                                  help='Remote URI from where to retrieve FOTA package')
         parser_pota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        parser_pota.add_argument('--vendor', '-v', default='Intel Corporation', required=False,
-                                 help='Platform vendor')
-        parser_pota.add_argument('--biosversion', '-b', default='ADLSFWI1.R00', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'BIOS Version', 50),
-                                 help='Platform BIOS version')
-        parser_pota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'Manufacturer', 50),
-                                 help='Platform manufacturer')
-        parser_pota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'Product', 50),
-                                 help='Platform product name')
         parser_pota.add_argument('--sotauri', '-su', default=None, required=True,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'SOTA path', 500),
@@ -224,7 +199,7 @@ def sota(args) -> str:
     # if source_location is None, then update is local Ubuntu and does not need a release date.
     release_date = args.releasedate if source_location else None
 
-    # This if clause is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd schema.
+    # This is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd schema.
     if source_tag == PATH_STRING:
         path_location = source_location
         fetch_location = None
@@ -267,8 +242,8 @@ def sota(args) -> str:
 
 
 def _gather_system_details() -> PlatformInformation:
-    print("BIOS version, Vendor, Manufacturer and Product information not provided via command-line."
-          " So gathering the firmware info using dmi path/deviceTree")
+    print("BIOS version, Vendor, Manufacturer and Product information will be automatically "
+          "gathered using DMI path/deviceTree.")
 
     if is_dmi_path_exists():
         print("DMI path exists. Getting BIOS information from DMI path")
@@ -285,6 +260,7 @@ def fota(args) -> str:
     @param args: Arguments provided by the user from command line
     @return: Generated XML manifest string
     """
+
     p = _gather_system_details()
 
     arguments = {
@@ -336,6 +312,7 @@ def pota(args) -> str:
     @return: Generated xml manifest string
     """
     os_type = detect_os()
+    p = _gather_system_details()
 
     if args.fotauri:
         if os_type != LinuxDistType.Ubuntu.name and not args.sotauri:
@@ -344,10 +321,10 @@ def pota(args) -> str:
 
     arguments = {
         'releasedate': args.releasedate,
-        'vendor': args.vendor,
-        'biosversion': args.biosversion,
-        'manufacturer': args.manufacturer,
-        'product': args.product,
+        'vendor': p.bios_vendor,
+        'biosversion': p.bios_version,
+        'manufacturer': p.platform_mfg,
+        'product': p.platform_product,
         'release_date': args.release_date,
         FOTA_SIGNATURE: args.fotasignature,
         'guid': args.guid
