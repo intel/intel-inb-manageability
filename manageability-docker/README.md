@@ -3,12 +3,23 @@ This folder contains the build instructions for creating Manageability docker co
 
 PLEASE NOTE: If you want btrfs-based snapshot/rollback functionality on Ubuntu or Debian based OSes, 'btrfs-progs' and 'snapper' must be installed on the host machine.
 
-## BUILD INSTRUCTIONS
+## BUILD INSTRUCTIONS (From Source)
 
 * Prepare a Linux machine with git and Docker installed.  Ensure the 'm4' and 'bash' packages are also installed (these are available in all major Linux distributions).
 * If you are behind a proxy, ensure your http_proxy, https_proxy, and no_proxy variables are set correctly and exported.  E.g., in bash, you could run: "http_proxy=http://foo.com:1234/ && export http_proxy"
-* Run: ./build-azure-container.sh for Azure (or) ./build-thingsboard-container.sh for Thingsboard. 
+* Optional but recommended for better build speed and caching: export DOCKER_BUILDKIT=1
+* Run: ./build-azure-container.sh for Azure (or) ./build-thingsboard-container-from-source.sh for Thingsboard. 
 * When build is complete, build output will be in the output folder. For Azure, use package named inb_azure_container.zip, for Thingsboard use inb_thingsboard_container.zip
+
+## BUILD INSTRUCTIONS (From Artifact-Thingsboard only)
+
+* Place the Intel-Manageability.preview.tar.gz package in the /manageability-docker directory.
+* Prepare a Linux machine with git and Docker installed.  Ensure the 'm4' and 'bash' packages are also installed (these are available in all major Linux distributions).
+* If you are behind a proxy, ensure your http_proxy, https_proxy, and no_proxy variables are set correctly and exported.  E.g., in bash, you could run: "http_proxy=http://foo.com:1234/ && export http_proxy"
+* Optional but recommended for better build speed and caching: export DOCKER_BUILDKIT=1
+* Run: ./build-thingsboard-container-from-artifact.sh for Thingsboard. 
+* When build is complete, build output will be in the output folder. For Azure, use package named inb_azure_container.zip, for Thingsboard use inb_thingsboard_container.zip
+
 
 ## HOW TO BUILD INB IMAGE AND START THE CONTAINER
 
