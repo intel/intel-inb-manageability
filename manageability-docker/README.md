@@ -1,5 +1,5 @@
 # Manageability Docker
-This folder contains the build instructions for creating a Manageability docker container packages for Azure and Thingsboard cloud service providers.
+This folder contains the build instructions for creating Manageability docker container packages for Azure and Thingsboard cloud service providers.
 
 PLEASE NOTE: If you want btrfs-based snapshot/rollback functionality on Ubuntu or Debian based OSes, 'btrfs-progs' and 'snapper' must be installed on the host machine.
 
