@@ -13,7 +13,7 @@ FROM base as venv-py3
 WORKDIR /
 RUN python3.8 -m venv /venv-py3
 RUN source /venv-py3/bin/activate && \
-    pip3 install wheel==0.34.2 && \
+    pip3 install wheel==0.40.0 && \
     pip3 install \
         nose==1.3.7 \
         flake8==3.7.9 \
