@@ -2,12 +2,12 @@ FROM registry.hub.docker.com/arm64v8/ubuntu:20.04 as base-arm64v8
 ENV LANG=C.UTF-8 LC_ALL=C.UTF-8
 include(`commands.base-setup.m4')
 COPY inbm-lib /src/inbm-lib-editable
-RUN python3.8 -m venv /venv-py3 && \
+RUN python3.11 -m venv /venv-py3 && \
     . /venv-py3/bin/activate && \
-    pip3.8 install -U pip && \
-    pip3.8 install -U wheel teamcity-messages virtualenv setuptools-rust
+    pip3.11 install -U pip && \
+    pip3.11 install -U wheel teamcity-messages virtualenv setuptools-rust
 RUN . /venv-py3/bin/activate && rm -rf /output && \
-    pip3.8 install -e /src/inbm-lib-editable
+    pip3.11 install -e /src/inbm-lib-editable
 RUN rm /usr/lib/*/libreadline* # extra protection against libreadline in pyinstaller binaries
 
 FROM registry.hub.docker.com/library/ubuntu:20.04 as base-x86_64
@@ -19,9 +19,9 @@ define(`pyinstaller_kmb', `FROM base-arm64v8 as build-$1
 WORKDIR /
 COPY $4/requirements.txt /src/$1-$2/requirements.txt
 RUN . /venv-py3/bin/activate && \
-    pip3.8 install --upgrade pip && \
-    pip3.8 install -r /src/$1-$2/requirements.txt && \
-    if pip3.8 list | grep chardet ; then pip3.8 uninstall -y chardet ; fi # license issue
+    pip3.11 install --upgrade pip && \
+    pip3.11 install -r /src/$1-$2/requirements.txt && \
+    if pip3.11 list | grep chardet ; then pip3.11 uninstall -y chardet ; fi # license issue
 COPY inbm/packaging /src/packaging
 COPY $4 /src/$1-$2
 WORKDIR /src

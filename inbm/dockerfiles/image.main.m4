@@ -8,14 +8,14 @@ include(`commands.base-setup.m4')
 # py3 venv
 FROM base as venv-py3-x86_64
 WORKDIR /
-RUN python3.8 -m venv /venv-py3 && \
+RUN python3.11 -m venv /venv-py3 && \
     source /venv-py3/bin/activate && \
-    pip3.8 install teamcity-messages virtualenv  wheel -U
+    pip3.11 install teamcity-messages virtualenv  wheel -U
 COPY inbm/version.txt /src/version.txt
 RUN perl -pi -e 'chomp if eof' /src/version.txt
 COPY inbm-lib /src/inbm-lib-editable
 RUN source /venv-py3/bin/activate && \
-    pip3.8 install -e /src/inbm-lib-editable
+    pip3.11 install -e /src/inbm-lib-editable
 RUN rm /usr/lib/x86_64-linux-gnu/libreadline* # extra protection against libreadline in pyinstaller binaries
 
 # ---inbc-program---
@@ -24,7 +24,7 @@ FROM venv-py3-x86_64 as venv-inbc-py3
 COPY inbc-program/requirements.txt /src/inbc-program/requirements.txt
 WORKDIR /src/inbc-program
 RUN source /venv-py3/bin/activate && \
-    pip3.8 install -r requirements.txt
+    pip3.11 install -r requirements.txt
 COPY inbm/version.txt /src/version.txt
 COPY inbm/packaging /src/packaging
 COPY inbc-program /src/inbc-program
@@ -42,7 +42,7 @@ FROM venv-py3-x86_64 as venv-diagnostic-py3
 COPY inbm/diagnostic-agent/requirements.txt /src/diagnostic-agent/requirements.txt
 WORKDIR /src/diagnostic-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.8 install -r requirements.txt
+    pip3.11 install -r requirements.txt
 COPY inbm/packaging /src/packaging
 COPY inbm/diagnostic-agent /src/diagnostic-agent
 
@@ -61,10 +61,10 @@ COPY inbm/dispatcher-agent/requirements.txt /src/dispatcher-agent/requirements.t
 WORKDIR /src/dispatcher-agent
 RUN source /venv-py3/bin/activate && \
     ln -sf /usr/bin/pip /usr/bin/pip3 && \
-    pip3.8 install --upgrade pip && \
-    pip3.8 install setuptools-rust && \
-    pip3.8 install -r requirements.txt && \
-    pip3.8 uninstall -y chardet # license issue
+    pip3.11 install --upgrade pip && \
+    pip3.11 install setuptools-rust && \
+    pip3.11 install -r requirements.txt && \
+    pip3.11 uninstall -y chardet # license issue
 
 COPY inbm/packaging /src/packaging
 COPY inbm/dispatcher-agent /src/dispatcher-agent
@@ -86,8 +86,8 @@ FROM venv-py3-x86_64 as venv-cloudadapter-py3
 COPY inbm/cloudadapter-agent/requirements.txt /src/cloudadapter-agent/requirements.txt
 WORKDIR /src/cloudadapter-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.8 install -r requirements.txt && \
-    pip3.8 uninstall -y chardet # license issue
+    pip3.11 install -r requirements.txt && \
+    pip3.11 uninstall -y chardet # license issue
 COPY inbm/packaging /src/packaging
 COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 
@@ -105,7 +105,7 @@ FROM venv-py3-x86_64 as venv-telemetry-py3
 COPY inbm/telemetry-agent/requirements.txt /src/telemetry-agent/requirements.txt
 WORKDIR /src/telemetry-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.8 install -r requirements.txt
+    pip3.11 install -r requirements.txt
 COPY inbm/packaging /src/packaging
 COPY inbm/telemetry-agent /src/telemetry-agent
 
@@ -122,7 +122,7 @@ FROM venv-py3-x86_64 as venv-configuration-py3
 COPY inbm/configuration-agent/requirements.txt /src/configuration-agent/requirements.txt
 WORKDIR /src/configuration-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.8 install -r requirements.txt
+    pip3.11 install -r requirements.txt
 COPY inbm/packaging /src/packaging
 COPY inbm/configuration-agent /src/configuration-agent
 

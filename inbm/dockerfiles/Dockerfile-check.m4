@@ -13,20 +13,20 @@ FROM base as venv-py3
 WORKDIR /
 RUN python3.11 -m venv /venv-py3
 RUN source /venv-py3/bin/activate && \
-    pip3 install wheel==0.34.2 && \
-    pip3 install \
-        nose==1.3.7 \
-        flake8==3.7.9 \
-        bandit==1.7.2 \
-        flake8-bandit==2.1.2 \
-        coverage==5.1 \
-        flakehell==0.3.0 \
-        wemake-python-styleguide==0.14.0 \
-        teamcity-messages==1.28 \
-        pylint==2.4.3 \
-        mypy==0.812 \
-        -U
-RUN pip3 install wemake-python-styleguide==0.17.0
+    pip3 install wheel==0.40.0 && \
+                nose==1.3.7 \
+                flake8==3.7.9 \
+                bandit==1.7.2 \
+                coverage==5.1 \
+                flakehell==0.3.0 \
+                pylint==2.4.3 \
+                mypy==0.812
+
+RUN pip3 install flake8-bandit==2.1.2
+RUN pip3 install wemake-python-styleguide==0.14.0
+RUN pip3 install teamcity-messages==1.28
+#    -U
+
 COPY inbm-lib /src/inbm-lib
 ENV PYTHONPATH=/src/inbm-lib
 ENV MYPYPATH=/src/inbm-lib
