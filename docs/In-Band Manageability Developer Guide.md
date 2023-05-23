@@ -167,7 +167,7 @@ TRTL is a binary executable developed in Golang.  It is a command-line tool whic
      - Snapshot
      - Rollback
      - List
- - [List of Commands](https://github.com/intel/intel-inb-manageability/blob/develop/inbm/trtl/README.md)
+ - [List of Commands](../inbm/trtl/README.md)
 
    #### TRTL High Level Class Diagram
    TRTL parses the incoming command and then creates the concrete class based on the type of command (docker, compose, btrfs).  It will then activate the designated command.  
@@ -246,7 +246,7 @@ to accommodate this health check tag with a certain value by following these ste
 ~/inbm/configuration-agent/fpm-template/usr/share/configuration-agent/iotg_inb_schema.xsd
 ```
 
-3. (a) Test the changes by creating a new build using the [build instructions](https://github.com/intel/intel-inb-manageability/blob/develop/README.md). Uninstall and reinstall INBM from the output folder after the build is complete.
+3. (a) Test the changes by creating a new build using the [build instructions](../README.md). Uninstall and reinstall INBM from the output folder after the build is complete.
 
 (Or)
 
