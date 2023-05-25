@@ -85,8 +85,8 @@ Ex:
 ## Install from Source
 NOTE: Ensure any Python version greater than 3.8 is installed
 
-1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
-2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
+1. [Build INBM](#../../README.md#build-instructions)
+2. [Install INBM](#../../docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
 ## Usage
 

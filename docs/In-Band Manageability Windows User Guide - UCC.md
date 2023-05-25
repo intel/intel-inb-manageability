@@ -11,6 +11,9 @@ Before you begin, ensure that the following files contain the client and server 
 
 Also ensure you are installing on Windows 10, our supported Windows version.
 
+Not required, but highly recommended for security of your device keys: enable BitLocker in Windows. Please see
+Windows documentation for details.
+
 ## Installation
 
 1. Download or build the INBM for Windows zip file and extract its contents to `C:\`. This will create a directory called `C:\inb-files`. To build, see instructions for building INBM. The build output in `dist` will contain a file `inbm-windows.zip`.

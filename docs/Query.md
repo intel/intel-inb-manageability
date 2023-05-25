@@ -5,9 +5,9 @@ The Query command can be called by either the cloud or INBC.  It will provide at
 
 ### How to Call
 
-- [INBC](https://github.com/intel/intel-inb-manageability/blob/develop/inbc-program/README.md#Query)
+- [INBC](../inbc-program/README.md#Query)
 
-- [Manifest](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Manifest%20Parameters.md#Query)
+- [Manifest](../docs/Manifest%20Parameters.md#Query)
 
 ## Options
 

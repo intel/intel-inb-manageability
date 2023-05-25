@@ -256,7 +256,7 @@ inbc query
 ```
 
 ### Option Results
-[Allowed Options and Results](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)
+[Allowed Options and Results](../docs/Query.md)
 
 ### Examples
 #### Return all attributes

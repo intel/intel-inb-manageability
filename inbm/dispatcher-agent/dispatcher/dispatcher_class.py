@@ -504,8 +504,6 @@ class Dispatcher(WindowsService):
             if key == 'fota':
                 ota_resource['holdReboot'] = True
             ota_resource_dict[key] = ota_resource
-        logger.debug("DICT: {} parsed_head :{}, resource:{}".format(
-            ota_resource_dict, parsed_head, resource))
         return ota_resource_dict
 
     def _do_ota_update(self, xml: str, ota_type: str, repo_type: str, target_type: Optional[str], resource: Dict,
