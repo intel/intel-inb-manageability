@@ -21,7 +21,8 @@ def load_adapter_config() -> Dict:
     @exception BadConfigError: If there was an issue loading the configuration file
     """
     if os.path.islink(ADAPTER_CONFIG_PATH):  # pragma: no cover
-        raise BadConfigError(f"Configuration file ({ADAPTER_CONFIG_PATH}) is a symbolic link, which is not allowed.")
+        raise BadConfigError(
+            f"Configuration file ({ADAPTER_CONFIG_PATH}) is a symbolic link, which is not allowed.")
 
     try:
         with open(ADAPTER_CONFIG_PATH) as config_file:

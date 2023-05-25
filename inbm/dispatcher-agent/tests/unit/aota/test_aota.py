@@ -616,7 +616,6 @@ class TestAOTA(TestCase):
         with self.assertRaisesRegex(AotaError, "Invalid file type"):
             aota.run()
 
-
     @patch('dispatcher.aota.application_command.CentOsApplication._is_rpm_file_type', return_value=True)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)

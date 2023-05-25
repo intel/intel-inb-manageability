@@ -48,11 +48,14 @@ def _configure_tls(config: Dict[str, Any]) -> TLSConfig:
         device_key = x509.get("device_key", None)
 
         if ca_certs is not None and os.path.islink(ca_certs):  # pragma: no cover
-            raise ClientBuildError(f"ca_certs ({ca_certs}) should not be a symlink")  # pragma: no cover
+            raise ClientBuildError(
+                f"ca_certs ({ca_certs}) should not be a symlink")  # pragma: no cover
         if device_cert is not None and os.path.islink(device_cert):  # pragma: no cover
-            raise ClientBuildError(f"device_cert ({device_cert}) should not be a symlink")  # pragma: no cover
+            raise ClientBuildError(
+                f"device_cert ({device_cert}) should not be a symlink")  # pragma: no cover
         if device_key is not None and os.path.islink(device_key):  # pragma: no cover
-            raise ClientBuildError(f"device_key ({device_key}) should not be a symlink")  # pragma: no cover
+            raise ClientBuildError(
+                f"device_key ({device_key}) should not be a symlink")  # pragma: no cover
 
         try:
             tls_config = TLSConfig(
@@ -66,17 +69,18 @@ def _configure_tls(config: Dict[str, Any]) -> TLSConfig:
             ca_certs = tls_config.get("certificates", None)
 
             if ca_certs is not None and os.path.islink(ca_certs):  # pragma: no cover
-                raise ClientBuildError(f"ca_certs ({ca_certs}) should not be a symlink")  # pragma: no cover
+                raise ClientBuildError(
+                    f"ca_certs ({ca_certs}) should not be a symlink")  # pragma: no cover
 
             try:
                 tls_config = TLSConfig(
                     ca_certs=ca_certs)
             except IOError as e:
                 raise ClientBuildError from e
-            
+
     return tls_config
 
-    
+
 def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     """Create CloudClient instance from a schema conforming config object
 
@@ -155,7 +159,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
 
     # Build handler
     handler_config = config.get("method")
-    if handler_config:            
+    if handler_config:
         parser_config = handler_config.get("parse")
         parser: Optional[MethodParser]
         if parser_config is None:

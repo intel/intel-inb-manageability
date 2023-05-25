@@ -14,9 +14,9 @@ AGENT = 'cloudadapter'
 
 LOGGERCONFIG = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / 'public' / 'cloudadapter-agent' / 'logging.ini'
 CLIENT_CERTS = BROKER_ETC_PATH / \
-               'public' / 'cloudadapter-agent' / 'cloudadapter-agent.crt'
+    'public' / 'cloudadapter-agent' / 'cloudadapter-agent.crt'
 CLIENT_KEYS = BROKER_ETC_PATH / \
-              'secret' / 'cloudadapter-agent' / 'cloudadapter-agent.key'
+    'secret' / 'cloudadapter-agent' / 'cloudadapter-agent.key'
 
 # Delay to sleep in seconds
 SLEEP_DELAY = 1
@@ -91,7 +91,7 @@ class METHOD:
 
 # The adapter configuration file
 ADAPTER_CONFIG_PATH = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / \
-                      'secret' / 'cloudadapter-agent' / 'adapter.cfg'
+    'secret' / 'cloudadapter-agent' / 'adapter.cfg'
 
 # Log certain telemetry keys by default
 LOGGED_TELEMETRY = {DOCKER_STATS, 'networkInformation',
@@ -122,4 +122,4 @@ TELIT_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 # The system path to the JSON schema
 GENERIC_SCHEMA_PATH = INTEL_MANAGEABILITY_SHARE_PATH_PREFIX / \
-                      'cloudadapter-agent' / 'config_schema.json'
+    'cloudadapter-agent' / 'config_schema.json'

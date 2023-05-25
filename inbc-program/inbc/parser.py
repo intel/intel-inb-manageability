@@ -57,7 +57,8 @@ class ArgsParser(object):
         parser_fota = self._create_subparser('fota')
 
         parser_fota.add_argument('--uri', '-u', required=True,
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
         parser_fota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')

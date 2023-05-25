@@ -36,19 +36,20 @@ class Broker:
 
     def __init__(self, tls: bool = True) -> None:
         if os.path.islink(CLIENT_CERTS) or os.path.islink(CLIENT_KEYS):  # pragma: no cover
-            raise ValueError(f"CLIENT_CERTS ({CLIENT_CERTS}) and CLIENT_KEYS ({CLIENT_KEYS}) should not be symbolic links.")
+            raise ValueError(
+                f"CLIENT_CERTS ({CLIENT_CERTS}) and CLIENT_KEYS ({CLIENT_KEYS}) should not be symbolic links.")
 
         logger.debug("Initializing connection to MQTT broker. MQTT host: {}. MQTT port: {}. tls: {}."
-                    " client certs: {}. client keys: {}.".
-                    format(DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, tls, CLIENT_CERTS, CLIENT_KEYS))
+                     " client certs: {}. client keys: {}.".
+                     format(DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, tls, CLIENT_CERTS, CLIENT_KEYS))
         self.mqttc = MQTT(AGENT + "-agent",
-                        DEFAULT_MQTT_HOST,
-                        DEFAULT_MQTT_PORT,
-                        MQTT_KEEPALIVE_INTERVAL,
-                        env_config=True,
-                        tls=tls,
-                        client_certs=str(CLIENT_CERTS),
-                        client_keys=str(CLIENT_KEYS))
+                          DEFAULT_MQTT_HOST,
+                          DEFAULT_MQTT_PORT,
+                          MQTT_KEEPALIVE_INTERVAL,
+                          env_config=True,
+                          tls=tls,
+                          client_certs=str(CLIENT_CERTS),
+                          client_keys=str(CLIENT_KEYS))
 
     def bind_callback(self, topic: Tuple[str, ...], callback: Callable):
         """Bind a callback to process messages from certain topics

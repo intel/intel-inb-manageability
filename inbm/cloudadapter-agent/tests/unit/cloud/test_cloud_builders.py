@@ -141,7 +141,7 @@ class TestCloudBuilders(unittest.TestCase):
     def test_build_client_with_config_no_command_succeeds(
             self, mock_validate_config, MockMQTTConnection, MockCloudClient):
         mock_validate_config.return_value = None
-        no_command_config = self.CONFIG    
+        no_command_config = self.CONFIG
         del no_command_config['command']
         client = build_client_with_config(no_command_config)
         assert client is MockCloudClient.return_value

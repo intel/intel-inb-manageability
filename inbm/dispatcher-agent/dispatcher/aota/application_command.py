@@ -131,7 +131,7 @@ class CentOsApplication(Application):
         # Check if it's CentOS and inside container. In CentOS inb container, chroot is used to switch to CentOS
         # rootfs and install the driver.
         driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
-        
+
         logger.debug(f"driver path = {driver_path}")
         try:
             if not self._is_rpm_file_type(driver_path):
@@ -153,7 +153,7 @@ class CentOsApplication(Application):
             uninstall_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -e --nodeps {old_driver_name}'
             out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
-           
+
             # If old packages wasn't install on system, it will return error too.
             if code != 0 and "is not installed" not in str(err):
                 raise AotaError(err)
