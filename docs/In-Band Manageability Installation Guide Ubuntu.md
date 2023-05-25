@@ -114,5 +114,5 @@ Details of provisioning steps are present in the **User Guide**, depending on th
 -   [UCC User Guide](In-Band%20Manageability%20User%20Guide%20-%20UCC.md)
 
 Provisioning can also be performed without selecting a cloud, no cloud provisioning can be achieved by INBC, refer to
--   [INBC Only Mode](https://github.com/intel/intel-inb-manageability/blob/develop/inbc-program/README.md#prerequisites)
+-   [INBC Only Mode](../inbc-program/README.md#prerequisites)
 
