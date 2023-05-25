@@ -28,7 +28,7 @@ class TestCloudBuilders(unittest.TestCase):
                 "client_id": "client_id"
             },
             "tls": {
-                "version": "TLSv1.2"
+                "version": "TLSv1.2",
             },
             "proxy": {
                 "auto": True
@@ -79,7 +79,7 @@ class TestCloudBuilders(unittest.TestCase):
                 "client_id": "client_id"
             },
             "tls": {
-                "version": "TLSv1.1"
+                "version": "TLSv1.1",
             },
             "x509": {
                 "device_cert": "device_cert",
