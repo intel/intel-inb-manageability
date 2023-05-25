@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+
+### Fixed
+ - RTC 529956 - [UCC Win] Bug: C:\intel-manageability\ directory can be written by non-admin user
+
+### Changed
+ - Added recommendation to use BitLocker when installing in Windows.
+
+
 ## 4.0.0 - 2023-05-16
 
 ### Added
@@ -13,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
  - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
  - RTC 528654 - [Defect] Remove parameters from INBC for version, manufacturer, product, and vendor for both POTA and FOTA commands
+ - RTC 529947 - Fix UCC bitsize 
 
 ### Security
  - RTC 528652 Mask Confidential data (Username & Password) of OTA is exposed in logs

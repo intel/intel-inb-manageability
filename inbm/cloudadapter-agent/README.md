@@ -31,8 +31,8 @@
 The agent supports MQTT for communication with cloud services.
 
 There are two supported cloud services:
-  - [Azure IoT Central](https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
-  - [ThingsBoard](https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
+  - [Azure IoT Central](../../docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
+  - [ThingsBoard](../../docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
 
 ### Intel Manageability
 
@@ -92,8 +92,8 @@ For example:
 ## Install from Source
 ❗ Use a Python version greater than 3.8 is installed
 
-- [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
-- [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
+- [Build INBM](#../../README.md#build-instructions)
+- [Install INBM](#../../docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
 ## Usage
 ❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
@@ -104,8 +104,8 @@ For example:
 ### Setup:
 - Run: `make config`
 - Refer to the following documents for cloud setup:
-  - [Azure](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
-  - [Thingsboard](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
+  - [Azure](#../../docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
+  - [Thingsboard](#../../docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
 
 ### Changing the logging level:
 

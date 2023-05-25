@@ -79,7 +79,7 @@ client.stop()
 ```
 ## OTA/Config Manifest
 
-- Dispatcher expects a `Manifest`.  [Manifest parameters and examples](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Manifest%20Parameters.md)
+- Dispatcher expects a `Manifest`.  [Manifest parameters and examples](#../../docs/Manifest%20Parameters.md)
 - The manifest schema with the current format: `inbm/dispatcher-agent/fpm-template/usr/share/manifest_schema.xsd`
 - The contents of this file (without the spaces, indent etc.) is sent through the `Trigger OTA` custom action
 - If a file needs to be pulled from a remote repository it checks whether the repository is a secured/trusted.  The secured repositories list is stored in the config file in configuration manager.  If the remote repository is not in the trusted list, the request will be rejected. 
@@ -116,8 +116,8 @@ Query system information.
 ## Install from Source
 ❗ Use a Python version greater than 3.8 is installed
 
-1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
-2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
+1. [Build INBM](#../../README.md#build-instructions)
+2. [Install INBM](#../../docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
 ## Usage
 

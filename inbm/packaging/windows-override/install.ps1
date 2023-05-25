@@ -35,13 +35,29 @@ if ($env:UCC_MODE) {
     "TRUE" | Set-Content -Path $UCC_FILE
 }
 
-
+# This loop iterates through a list of folders, creates them if they don't exist,  
+# sets their Access Control List (ACL) protections, and adds two access rules, granting FullControl 
+# privileges to SYSTEM and Administrators groups on the specified folders.
 $folders = @("\intel-manageability\", "\intel-manageability\broker\")
-
 foreach ($folder in $folders) {
     if (!(Test-Path $folder)) {
         New-Item -ItemType Directory -Force -Path $folder
     }
+
+    $acl = Get-Acl -Path $folder
+    $acl.SetAccessRuleProtection($true, $false)
+    Set-Acl -Path $folder -AclObject $acl
+
+    $inheritanceFlags = [System.Security.AccessControl.InheritanceFlags]"ContainerInherit, ObjectInherit"
+    $propagationFlags = [System.Security.AccessControl.PropagationFlags]"None"
+
+    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule("NT AUTHORITY\SYSTEM", "FullControl", $inheritanceFlags, $propagationFlags, "Allow")
+    $acl.AddAccessRule($rule)
+
+    $rule = New-Object System.Security.AccessControl.FileSystemAccessRule("BUILTIN\Administrators", "FullControl", $inheritanceFlags, $propagationFlags, "Allow")
+    $acl.AddAccessRule($rule)
+    
+    Set-Acl -Path $folder -AclObject $acl
 }
 
 Copy-Item -Path C:\inb-files\intel-manageability\* -Destination "\intel-manageability\" -Recurse
