@@ -5,8 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+
+### Fixed
+ - RTC 529956 - [UCC Win] Bug: C:\intel-manageability\ directory can be written by non-admin user
+
 ### Changed
  - Added recommendation to use BitLocker when installing in Windows.
+
 
 ## 4.0.0 - 2023-05-16
 
