@@ -1132,7 +1132,7 @@ The Intel® In-Band Manageability provides a way to query attribute information
     <img src="media/In-Band Manageability User Guide - Azure/media/image87.png" style="width:6in;height:1.47639in"/>
 
 For the details on **Query options**
-Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md) 
+Refer to [Query options ](../docs/Query.md) 
 
 The query command capabilities are supported via manifest.
 

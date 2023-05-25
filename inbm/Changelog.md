@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Changed
+ - Added recommendation to use BitLocker when installing in Windows.
+
 ## 4.0.0 - 2023-05-16
 
 ### Added
