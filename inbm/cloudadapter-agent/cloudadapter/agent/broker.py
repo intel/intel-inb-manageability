@@ -35,7 +35,7 @@ class Broker:
     """
 
     def __init__(self, tls: bool = True) -> None:
-        if os.path.islink(CLIENT_CERTS) or os.path.islink(CLIENT_KEYS):  # pragma: no cover
+        if os.path.islink(CLIENT_CERTS) or os.path.islink(CLIENT_KEYS):
             raise ValueError(
                 f"CLIENT_CERTS ({CLIENT_CERTS}) and CLIENT_KEYS ({CLIENT_KEYS}) should not be symbolic links.")
 

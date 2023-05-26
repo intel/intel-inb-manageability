@@ -20,7 +20,7 @@ def load_adapter_config() -> Dict:
     """Loads and parses the adapter configuration file
     @exception BadConfigError: If there was an issue loading the configuration file
     """
-    if os.path.islink(ADAPTER_CONFIG_PATH):  # pragma: no cover
+    if os.path.islink(ADAPTER_CONFIG_PATH):
         raise BadConfigError(
             f"Configuration file ({ADAPTER_CONFIG_PATH}) is a symbolic link, which is not allowed.")
 

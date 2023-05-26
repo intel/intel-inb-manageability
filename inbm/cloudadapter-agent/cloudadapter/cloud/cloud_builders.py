@@ -47,15 +47,15 @@ def _configure_tls(config: Dict[str, Any]) -> TLSConfig:
         device_cert = x509.get("device_cert", None)
         device_key = x509.get("device_key", None)
 
-        if ca_certs is not None and os.path.islink(ca_certs):  # pragma: no cover
+        if ca_certs is not None and os.path.islink(ca_certs):
             raise ClientBuildError(
-                f"ca_certs ({ca_certs}) should not be a symlink")  # pragma: no cover
-        if device_cert is not None and os.path.islink(device_cert):  # pragma: no cover
+                f"ca_certs ({ca_certs}) should not be a symlink")
+        if device_cert is not None and os.path.islink(device_cert):
             raise ClientBuildError(
-                f"device_cert ({device_cert}) should not be a symlink")  # pragma: no cover
-        if device_key is not None and os.path.islink(device_key):  # pragma: no cover
+                f"device_cert ({device_cert}) should not be a symlink")
+        if device_key is not None and os.path.islink(device_key):
             raise ClientBuildError(
-                f"device_key ({device_key}) should not be a symlink")  # pragma: no cover
+                f"device_key ({device_key}) should not be a symlink")
 
         try:
             tls_config = TLSConfig(
@@ -68,9 +68,9 @@ def _configure_tls(config: Dict[str, Any]) -> TLSConfig:
         if tls_config:
             ca_certs = tls_config.get("certificates", None)
 
-            if ca_certs is not None and os.path.islink(ca_certs):  # pragma: no cover
+            if ca_certs is not None and os.path.islink(ca_certs):
                 raise ClientBuildError(
-                    f"ca_certs ({ca_certs}) should not be a symlink")  # pragma: no cover
+                    f"ca_certs ({ca_certs}) should not be a symlink")
 
             try:
                 tls_config = TLSConfig(

@@ -49,7 +49,7 @@ class CloudAdapter(WindowsService):
         path = os.environ.get('LOGGERCONFIG', LOGGERCONFIG)
         print(f"Looking for logging configuration file at {path}")
 
-        if os.path.islink(path):  # pragma: no cover
+        if os.path.islink(path):
             print(f"Logger config at path {path} is a symbolic link. Exiting.")
             sys.exit(1)
 

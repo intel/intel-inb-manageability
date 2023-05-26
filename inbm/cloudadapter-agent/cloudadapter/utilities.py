@@ -70,7 +70,7 @@ def is_ucc_mode() -> bool:
         logger.debug('UCC flag file was not found.  Not using UCC broker and UCC Service Agent.')
         return False
 
-    if os.path.islink(UCC_FILE):  # pragma: no cover
+    if os.path.islink(UCC_FILE):
         logger.debug(f"Security error: UCC flag file is a symlink")
         raise IOError("Security error: UCC flag file is a symlink")
 
