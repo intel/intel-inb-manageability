@@ -33,7 +33,7 @@ set -u
 echo Version: $VERSION
 echo Commit: $COMMIT
 
-docker build \
+nerdctl build \
     --build-arg HTTP_PROXY=${HTTP_PROXY:-} \
     --build-arg http_proxy=${http_proxy:-} \
     --build-arg HTTPS_PROXY=${HTTPS_PROXY:-} \
@@ -49,13 +49,16 @@ docker build \
 
 rm -f "$TMPFILE"
 
-docker rm ${NAME}-tmp 2>/dev/null || true
+nerdctl rm ${NAME}-tmp 2>/dev/null || true
 echo "starting docker create"
-docker create --name ${NAME}-tmp ${NAME}
+nerdctl create --name ${NAME}-tmp ${NAME}
 echo "starting cleanup"
 rm -rf "$DIR"/../output-"${1,,}"/
 mkdir -p "$DIR"/../output-"${1,,}"/
-docker cp ${NAME}-tmp:/output "$DIR"/../output-"${1,,}"/
+nerdctl start -a ${NAME}-tmp &
+sleep 2
+nerdctl cp ${NAME}-tmp:/output "$DIR"/../output-"${1,,}"/
 mv "$DIR"/../output-"${1,,}"/output/* "$DIR"/../output-"${1,,}"/
 rmdir "$DIR"/../output-"${1,,}"/output
-docker rm ${NAME}-tmp
+nerdctl kill ${NAME}-tmp
+nerdctl rm ${NAME}-tmp

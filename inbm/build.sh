@@ -45,16 +45,16 @@ rm -rf output-windows
   cp -r "$DIR"/packaging "$DIR"/scratch-packaging
   cd "$DIR"/scratch-packaging
 rm -f docker-sample-container/sample-container.tgz
-cd docker-sample-container && cp -v "$DIR"/output/*.rpm ./docker && docker build -t sample-container docker
+cd docker-sample-container && cp -v "$DIR"/output/*.rpm ./docker && nerdctl build -t sample-container docker
 : Creating temp container.
 rm -f tmp-container.txt
-TMP_CONTAINER=$(docker create sample-container /bin/true)
+TMP_CONTAINER=$(nerdctl create sample-container /bin/true)
 : Exporting, compressing temp container.
-docker export "${TMP_CONTAINER}" | ${GZIP} >"$DIR"/output/sample-container.tgz
+#nerdctl export "${TMP_CONTAINER}" | ${GZIP} >"$DIR"/output/sample-container.tgz
 : Saving image
-docker save sample-container | ${GZIP} >"$DIR"/output/sample-container-load.tgz
+#nerdctl save sample-container | ${GZIP} >"$DIR"/output/sample-container-load.tgz
 : Removing temp container.
-docker rm "${TMP_CONTAINER}"
+nerdctl rm "${TMP_CONTAINER}"
 : Cleaning up
 rm -rf "$DIR"/scratch-packaging
 : Done. )
