@@ -1,25 +1,24 @@
 import atheris
 import sys
 
-from cloudadapter.exceptions import ConnectError, DisconnectError, PublishError, AuthenticationError
 with atheris.instrument_imports():
     from cloudadapter.cloud.client.connections.mqtt_connection import MQTTConnection
-
+    enable_loader_override = False
 
 @atheris.instrument_func
 def TestOneInput(input_bytes):
     fdp = atheris.FuzzedDataProvider(input_bytes)
-    data = fdp.ConsumeString(2000)
+    user_data = fdp.ConsumeString(60)
+    hostname_data = fdp.ConsumeString(60)
+    port_data = fdp.ConsumeString(10)
+    password_data = fdp.ConsumeString(60)
 
     try:
-        MQTTConnection(username="user", hostname=data, port="8883")
+        MQTTConnection(username=user_data, hostname=hostname_data, port=port_data, password=password_data)
+    except ValueError:
+        pass
     except Exception:
-        return
-
-    input_type = str(type(data))
-    codebytes = data.decode('utf8', 'surrogateescape')
-    sys.stdout.write(f"Input was {input_type}: {codebytes}\n")
-    #raise
+        raise
 
 
 def main():

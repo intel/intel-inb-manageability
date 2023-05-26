@@ -324,7 +324,10 @@ class MethodParser:
         @return: (List[MethodParsed]) All parsed method information
         @exception ValueError: If the input payload was malformed
         """
-        payload = json.loads(payload)
+        try:
+            payload = json.loads(payload)
+        except (json.JSONDecodeError, TypeError) as e:
+            raise ValueError(str(e))
 
         if self._aggregate_info:
             parsed = []
