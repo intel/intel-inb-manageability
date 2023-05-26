@@ -6,4 +6,3 @@ psutil==5.9.4
 shortuuid==1.0.1
 pyinstaller==5.7.0
 setuptools==65.5.1
-snoop==0.4.3

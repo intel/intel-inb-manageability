@@ -121,10 +121,10 @@ def is_enough_space_to_download(uri: CanonicalUri,
         raise DispatcherException(e)
 
     logger.debug("Content-length: " + repr(content_length))
-    file_size: int=int(content_length)
+    file_size: int = int(content_length)
     if destination_repo.exists():
-        get_free_space=destination_repo.get_free_space()
-        free_space: int=int(get_free_space)
+        get_free_space = destination_repo.get_free_space()
+        free_space: int = int(get_free_space)
     else:
         raise DispatcherException("Repository does not exist : " +
                                   destination_repo.get_repo_path())

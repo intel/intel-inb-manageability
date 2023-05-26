@@ -17,6 +17,7 @@ from cloudadapter.exceptions import ClientBuildError
 from typing import Dict, Any, Optional
 import jsonschema
 import json
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +28,57 @@ def validate_config(config: Dict[str, Any]) -> None:
     @param config: (dict) Config object to check against schema
     @exception ValidationError: If it fails to validate
     """
-    with open(GENERIC_SCHEMA_PATH) as schema_file:
+    with open(GENERIC_SCHEMA_PATH) as schema_file:  # pragma: no cover
         schema = json.loads(schema_file.read())
         jsonschema.validate(config, schema=schema)
+
+
+def _configure_tls(config: Dict[str, Any]) -> TLSConfig:
+    """Configure the TLS settings for a client using the provided configuration dictionary.
+
+    @param config: Config object containing the TLS and X.509 settings
+    @return: A TLSConfig object with the appropriate settings
+    """
+
+    tls_config = config.get("tls", None)
+    x509 = config.get("x509", None)
+    if x509 and tls_config:
+        ca_certs = tls_config.get("certificates", None)
+        device_cert = x509.get("device_cert", None)
+        device_key = x509.get("device_key", None)
+
+        if ca_certs is not None and os.path.islink(ca_certs):
+            raise ClientBuildError(
+                f"ca_certs ({ca_certs}) should not be a symlink")
+        if device_cert is not None and os.path.islink(device_cert):
+            raise ClientBuildError(
+                f"device_cert ({device_cert}) should not be a symlink")
+        if device_key is not None and os.path.islink(device_key):
+            raise ClientBuildError(
+                f"device_key ({device_key}) should not be a symlink")
+
+        try:
+            tls_config = TLSConfig(
+                ca_certs=ca_certs,
+                device_cert=device_cert,
+                device_key=device_key)
+        except IOError as e:
+            raise ClientBuildError from e
+    else:
+        if tls_config:
+            ca_certs = tls_config.get("certificates", None)
+
+            if ca_certs is not None and os.path.islink(ca_certs):
+                raise ClientBuildError(
+                    f"ca_certs ({ca_certs}) should not be a symlink")
+
+            try:
+                tls_config = TLSConfig(
+                    ca_certs=ca_certs)
+            except IOError as e:
+                raise ClientBuildError from e
+
+    return tls_config
 
 
 def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
@@ -45,23 +94,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
         raise ClientBuildError from e
 
     # Configure TLS
-    tls_config = config.get("tls", None)
-    x509 = config.get("x509", None)
-    if x509 and tls_config:
-        try:
-            tls_config = TLSConfig(
-                ca_certs=tls_config.get("certificates", None),
-                device_cert=x509.get("device_cert", None),
-                device_key=x509.get("device_key", None))
-        except IOError as e:
-            raise ClientBuildError from e
-    else:
-        if tls_config:
-            try:
-                tls_config = TLSConfig(
-                    ca_certs=tls_config.get("certificates", None))
-            except IOError as e:
-                raise ClientBuildError from e
+    tls_config = _configure_tls(config)
 
     # Configure Proxy
     proxy_config = config.get("proxy")
@@ -126,7 +159,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
 
     # Build handler
     handler_config = config.get("method")
-    if handler_config:            
+    if handler_config:
         parser_config = handler_config.get("parse")
         parser: Optional[MethodParser]
         if parser_config is None:

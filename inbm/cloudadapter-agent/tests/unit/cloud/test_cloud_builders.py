@@ -5,15 +5,12 @@ Unit tests for the cloud_builders module
 """
 
 
-from cloudadapter.cloud.cloud_builders import build_client_with_config
+from cloudadapter.cloud.cloud_builders import build_client_with_config, _configure_tls, TLSConfig
 from cloudadapter.exceptions import ClientBuildError
-from ssl import SSLContext
 import jsonschema
 
 import unittest
 import mock
-
-import json
 
 
 class TestCloudBuilders(unittest.TestCase):
@@ -28,7 +25,7 @@ class TestCloudBuilders(unittest.TestCase):
                 "client_id": "client_id"
             },
             "tls": {
-                "version": "TLSv1.2"
+                "version": "TLSv1.2",
             },
             "proxy": {
                 "auto": True
@@ -79,7 +76,7 @@ class TestCloudBuilders(unittest.TestCase):
                 "client_id": "client_id"
             },
             "tls": {
-                "version": "TLSv1.1"
+                "version": "TLSv1.1",
             },
             "x509": {
                 "device_cert": "device_cert",
@@ -126,6 +123,34 @@ class TestCloudBuilders(unittest.TestCase):
             }]
         }
 
+
+    def test_configure_tls_raises_error_on_symlink(self):
+        config = {
+            "tls": {
+                "certificates": "fake_ca_certs"
+            },
+            "x509": {
+                "device_cert": "fake_device_cert",
+                "device_key": "fake_device_key"
+            }
+        }
+
+        with mock.patch("os.path.islink", return_value=True):
+            with self.assertRaises(ClientBuildError) as context:
+                _configure_tls(config)
+            self.assertIn("ca_certs (fake_ca_certs) should not be a symlink", str(context.exception))
+
+            config["tls"]["certificates"] = None
+            with self.assertRaises(ClientBuildError) as context:
+                _configure_tls(config)
+            self.assertIn("device_cert (fake_device_cert) should not be a symlink", str(context.exception))
+
+            config["x509"]["device_cert"] = None
+            with self.assertRaises(ClientBuildError) as context:
+                _configure_tls(config)
+            self.assertIn("device_key (fake_device_key) should not be a symlink", str(context.exception))
+
+
     @mock.patch('cloudadapter.cloud.cloud_builders.CloudClient', autospec=True)
     @mock.patch('cloudadapter.cloud.cloud_builders.MQTTConnection', autospec=True)
     @mock.patch('cloudadapter.cloud.cloud_builders.validate_config', autospec=True)
@@ -141,7 +166,7 @@ class TestCloudBuilders(unittest.TestCase):
     def test_build_client_with_config_no_command_succeeds(
             self, mock_validate_config, MockMQTTConnection, MockCloudClient):
         mock_validate_config.return_value = None
-        no_command_config = self.CONFIG    
+        no_command_config = self.CONFIG
         del no_command_config['command']
         client = build_client_with_config(no_command_config)
         assert client is MockCloudClient.return_value

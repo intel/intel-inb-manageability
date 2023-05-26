@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 
 current_dbs_mode = DEFAULT_DBS_MODE
 
+
 class EventWatcher(Thread):
     """Starts up a thread to watch for events coming from Docker"""
 

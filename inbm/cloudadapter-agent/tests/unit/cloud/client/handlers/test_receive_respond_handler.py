@@ -15,7 +15,7 @@ import mock
 import logging
 import sys
 
-logging.basicConfig(level=logging.DEBUG) # set log level for root logger
+logging.basicConfig(level=logging.DEBUG)  # set log level for root logger
 
 logger = logging.getLogger()
 logger.level = logging.DEBUG
@@ -40,7 +40,7 @@ class TestReceiveRespondHandler(unittest.TestCase):
 
     def test_bind_succeeds(self):
         self.mock_topic.format.return_value = "topic"
-        self.mock_payload.format.return_value = b'{"manifest":"\'<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?><manifest><type>ota</type><ota><header><type>fota</type><repo>remote</repo></header><type><username>XXXXX</username><password>XXXXX</password><fota name=\\"sample\\"></fota></type></ota></manifest>"}' 
+        self.mock_payload.format.return_value = b'{"manifest":"\'<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?><manifest><type>ota</type><ota><header><type>fota</type><repo>remote</repo></header><type><username>XXXXX</username><password>XXXXX</password><fota name=\\"sample\\"></fota></type></ota></manifest>"}'
         self.mock_parser.parse.return_value = [MethodParsed(method="method")]
         mock_callback = mock.Mock()
 
@@ -56,15 +56,15 @@ class TestReceiveRespondHandler(unittest.TestCase):
             "subscribe_topic",
             None,
             self.mock_connection)
-        
+
         self.mock_topic.format.return_value = "topic"
         self.mock_payload.format.return_value = b"payload"
         mock_callback = mock.Mock()
 
         receive_respond_handler.bind(METHOD.RAW, mock_callback)
 
-        receive_respond_handler._on_method("topic", b"payload")        
-        
+        receive_respond_handler._on_method("topic", b"payload")
+
         self.assertEqual(mock_callback.call_count, 1)
 
     def test_on_method_exits_on_no_methods_succeeds(self):
