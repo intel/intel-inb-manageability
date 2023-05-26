@@ -7,11 +7,12 @@
 from ..ibroker import IBroker
 from ..inbc_exception import InbcException
 from .command import Command, RestartCommand, QueryCommand
-from .ota_command import FotaCommand, SotaCommand, PotaCommand
-from .config_command import GetConfigCommand, SetConfigCommand, LoadConfigCommand, AppendConfigCommand, RemoveConfigCommand
+from .ota_command import FotaCommand, SotaCommand, PotaCommand, AotaCommand
+from .config_command import GetConfigCommand, SetConfigCommand, LoadConfigCommand, AppendConfigCommand, \
+    RemoveConfigCommand
 
 from inbm_common_lib.constants import CONFIG_LOAD, CONFIG_APPEND, CONFIG_REMOVE
-from inbm_lib.constants import FOTA, SOTA, POTA, RESTART, QUERY
+from inbm_lib.constants import AOTA, FOTA, SOTA, POTA, RESTART, QUERY
 
 
 def create_command_factory(cmd: str, broker: IBroker) -> Command:
@@ -27,6 +28,8 @@ def create_command_factory(cmd: str, broker: IBroker) -> Command:
         return FotaCommand(broker)
     if cmd == SOTA:
         return SotaCommand(broker)
+    if cmd == AOTA:
+        return AotaCommand(broker)
     if cmd == RESTART:
         return RestartCommand(broker)
     if cmd == QUERY:
