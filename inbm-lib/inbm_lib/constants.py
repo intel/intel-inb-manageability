@@ -53,6 +53,7 @@ QUERY_CMD_CHANNEL = 'dispatcher/query'
 HOST_QUERY_CHANNEL = 'manageability/request/query'
 
 # OTA types
+AOTA = "aota"
 FOTA = "fota"
 SOTA = "sota"
 POTA = "pota"

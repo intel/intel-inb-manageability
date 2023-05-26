@@ -28,8 +28,9 @@ class ArgsParser(object):
         self.parser = argparse.ArgumentParser(
             description='INBC Command-line tool to trigger updates')
         self.subparsers = self.parser.add_subparsers(
-            help='valid commands: [fota, sota, pota, load, get, set, restart, query]')
+            help='valid commands: [aota, fota, sota, pota, load, get, set, restart, query]')
 
+        self.parse_aota_args()
         self.parse_fota_args()
         self.parse_sota_args()
         self.parse_pota_args()
@@ -50,6 +51,23 @@ class ArgsParser(object):
 
     def _create_subparser(self, subparser_name: str) -> argparse.ArgumentParser:
         return self.subparsers.add_parser(subparser_name)
+
+    def parse_aota_args(self) -> None:
+        """Method to parse AOTA arguments"""
+        parser = self._create_subparser('aota')
+
+        parser.add_argument('--app', '-a', default='application', required=False, choices=['application'],
+                            help='Type of information [ application ]')
+        parser.add_argument('--command', '-c', default='update', required=False, choices=['update'],
+                            help='Type of information [ update ]')
+        parser.add_argument('--uri', '-u', required=True,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                            help='Remote URI from where to retrieve package')
+        parser.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                            help='Type of information [ yes | no ]')
+        parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
+                            type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser.set_defaults(func=aota)
 
     def parse_fota_args(self) -> None:
         """Method to parse FOTA arguments"""
@@ -183,6 +201,47 @@ def _get_password(args) -> Optional[str]:
     if args.username:
         password = getpass.getpass("Please provide the password: ")
     return password
+
+
+def aota(args) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest string
+    """
+    arguments = {
+        'cmd': args.command,
+        'app': args.app,
+        'fetch': args.uri,
+        'deviceReboot': args.reboot,
+        'username': args.username,
+        'password': _get_password(args)
+    }
+
+    manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
+                '<manifest>' +
+                '<type>ota</type>' +
+                '<ota>' +
+                '<header>' +
+                '<type>aota</type>' +
+                '<repo>remote</repo>' +
+                '</header>' +
+                '<type><aota>' +
+                '{0}' +
+                '</aota></type>' +
+                '</ota>' +
+                '</manifest>').format(
+        create_xml_tag(arguments,
+                       "cmd",
+                       "app",
+                       "fetch",
+                       "deviceReboot",
+                       "username",
+                       "password"
+                       )
+    )
+    print("manifest {0}".format(manifest))
+    return manifest
 
 
 def sota(args) -> str:

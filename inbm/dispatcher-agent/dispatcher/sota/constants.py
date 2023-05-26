@@ -35,5 +35,3 @@ FILE = "FILE"
 CLOUD = "CLOUD"
 
 BTRFS = "btrfs"
-
-SOTA_FAILED_RESULT = "Final result in SOTA execution: SOTA fail"

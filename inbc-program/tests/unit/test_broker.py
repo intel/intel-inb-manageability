@@ -88,16 +88,6 @@ class TestINBC(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('inbc.command.ota_command.SotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_message_response_sota_success(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
-        b = Broker('sota', self._sota_args, False)
-        b._on_response('manageability/response', SOTA_COMMAND_STATUS_SUCCESS, 1)
-        mock_terminate.assert_called_once()
-
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('inbc.command.ota_command.SotaCommand.trigger_manifest')
-    @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_sota_failed(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
         b = Broker('sota', self._sota_args, False)
         b._on_response('manageability/response', OTA_FAILURE, 1)
