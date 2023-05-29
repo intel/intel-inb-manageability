@@ -15,6 +15,7 @@ from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
 from inbm_lib.detect_os import detect_os
+from inbm_lib.constants import OTA_PENDING, OTA_FAIL
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_exception import DispatcherException
@@ -195,7 +196,9 @@ class SOTA:
         snapshot = self.factory.create_snapshotter(
             self.sota_cmd, self.snap_num, self.proceed_without_rollback)
         rebooter = self.factory.create_rebooter()
+
         if self.sota_state == 'diagnostic_system_unhealthy':
+            self._dispatcher_callbacks.logger.update_log(OTA_FAIL)
             snapshot.revert(rebooter, time_to_wait_before_reboot)
         elif self.sota_state == 'diagnostic_system_healthy':
             try:
@@ -208,6 +211,7 @@ class SOTA:
                 msg = "FAILED INSTALL: System has not been properly updated; reverting."
                 logger.debug(str(e))
                 self._dispatcher_callbacks.broker_core.send_result(msg)
+                self._dispatcher_callbacks.logger.update_log(OTA_FAIL)
                 snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:
             self.execute_from_manifest(setup_helper=setup_helper,
@@ -283,10 +287,16 @@ class SOTA:
                 self._clean_local_repo_file()
             print_execution_summary(cmd_list, self._dispatcher_callbacks)
             if success:
+                # Save the log before reboot
+                self._dispatcher_callbacks.logger.set_status_and_error(OTA_PENDING, None)
+                self._dispatcher_callbacks.logger.save_log()
                 self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")
                 time.sleep(time_to_wait_before_reboot)
                 rebooter.reboot()
             else:
+                # Save the log before reboot
+                self._dispatcher_callbacks.logger.set_status_and_error(OTA_FAIL, None)
+                self._dispatcher_callbacks.logger.save_log()
                 self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILURE)
                 self._dispatcher_callbacks.broker_core.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)

@@ -12,6 +12,7 @@ from cloudadapter.exceptions import BadConfigError
 from cloudadapter.cloud.adapter_factory import load_adapter_config, ADAPTER_CONFIG_PATH
 import cloudadapter.cloud.adapter_factory as adapter_factory
 
+
 class TestAdapterFactory(unittest.TestCase):
 
     def setUp(self):
