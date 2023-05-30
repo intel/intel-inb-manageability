@@ -4,7 +4,7 @@ from inbc.inbc import Inbc
 from inbc.parser import ArgsParser, fota, sota, load, get, set, append, remove
 from inbc.constants import COMMAND_FAIL, COMMAND_SUCCESS
 from inbc.inbc_exception import InbcCode, InbcException
-from inbc.command.ota_command import FotaCommand
+from inbc.command.ota_command import FotaCommand, AotaCommand
 
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_lib.request_message_constants import *
@@ -41,6 +41,21 @@ class TestINBC(TestCase):
     def setUp(self):
         self.arg_parser = ArgsParser()
         self.maxDiff = None
+
+    def test_aota_manifest_pass(self):
+        f = self.arg_parser.parse_args(
+            ['aota', '-un', 'username', '-u', 'https://abc.com/test.deb', '-rb', 'no', '-a', 'application', '-c', 'update'])
+        self.assertEqual(f.uri, 'https://abc.com/test.deb')
+        self.assertEqual(f.app, 'application')
+        self.assertEqual(f.command, 'update')
+        self.assertEqual(f.reboot, 'no')
+        self.assertEqual(f.username, 'username')
+
+    @patch('sys.stderr', new_callable=StringIO)
+    def test_aota_raises_no_uri(self, mock_stderr):
+        with self.assertRaises(SystemExit):
+            self.arg_parser.parse_args(['aota'])
+        self.assertRegexpMatches(mock_stderr.getvalue(), r"the following arguments are required: --uri/-u")
 
     def test_fota_manifest_pass(self):
         f = self.arg_parser.parse_args(
@@ -263,6 +278,22 @@ class TestINBC(TestCase):
             self.arg_parser.parse_args(
                 ['query', '-o', 'everything'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"invalid choice: 'everything'")
+
+    @patch('threading.Thread._bootstrap_inner')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.timer.Timer.stop')
+    def test_aota_terminate_operation_success(self, t_stop, mock_reconnect, mock_thread):
+        c = AotaCommand(Mock())
+        c.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
+        print(t_stop.call_count)
+        assert t_stop.call_count == 1
+
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbm_lib.timer.Timer.stop')
+    def test_aota_terminate_operation_failed(self, t_stop, mock_reconnect):
+        c = AotaCommand(Mock())
+        c.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
+        t_stop.assert_called_once()
 
     @patch('threading.Thread._bootstrap_inner')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
