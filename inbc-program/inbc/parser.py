@@ -63,7 +63,7 @@ class ArgsParser(object):
                             help='Type of information [ application ]')
         parser.add_argument('--command', '-c', default='update', required=False, choices=['update'],
                             help='Type of information [ update ]')
-        parser.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+        parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
                             help='Type of information [ yes | no ]')
         parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
                             type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))

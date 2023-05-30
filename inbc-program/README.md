@@ -161,7 +161,7 @@ INBC is only supporting the application update portion of AOTA.
 inbc aota {--uri, -u=URI} 
    [--app, -a APP_TYPE; default="application"] 
    [--command, -c COMMAND; default="update"]
-   [--reboot, -rb REBOOT; default="yes"]
+   [--reboot, -rb REBOOT; default="no"]
    [--username, -un USERNAME] 
 ```
 
