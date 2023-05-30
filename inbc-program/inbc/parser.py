@@ -56,13 +56,13 @@ class ArgsParser(object):
         """Method to parse AOTA arguments"""
         parser = self._create_subparser('aota')
 
+        parser.add_argument('--uri', '-u', required=True,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                            help='Remote URI from where to retrieve package')
         parser.add_argument('--app', '-a', default='application', required=False, choices=['application'],
                             help='Type of information [ application ]')
         parser.add_argument('--command', '-c', default='update', required=False, choices=['update'],
                             help='Type of information [ update ]')
-        parser.add_argument('--uri', '-u', required=True,
-                            type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
-                            help='Remote URI from where to retrieve package')
         parser.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
                             help='Type of information [ yes | no ]')
         parser.add_argument('--username', '-un', required=False, help='Username on the remote server',

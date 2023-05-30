@@ -13,11 +13,12 @@
    1. [FOTA](#fota)
    2. [SOTA](#sota)
    3. [POTA](#pota)
-   4. [Configuration Load](#load)
-   5. [Configuration Get](#get)
-   6. [Configuration Set](#set)
-   7. [Restart](#restart)
-   8. [Query](#query)
+   4. [AOTA](#aota)
+   5. [Configuration Load](#load)
+   6. [Configuration Get](#get)
+   7. [Configuration Set](#set)
+   8. [Restart](#restart)
+   9. [Query](#query)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -148,6 +149,28 @@ inbc pota
      --fotauri <remote URI to FOTA file>/bios.bin 
      -r 2021-02-22 
  ```
+
+## AOTA
+### Description
+Performs an Application Over The Air update (AOTA)
+
+INBC is only supporting the application update portion of AOTA.
+
+### Usage
+```
+inbc aota {--uri, -u=URI} 
+   [--app, -a APP_TYPE; default="application"] 
+   [--command, -c COMMAND; default="update"]
+   [--reboot, -rb REBOOT; default="yes"]
+   [--username, -un USERNAME] 
+```
+
+### Examples
+#### Application Update
+```
+inbc aota
+     --uri <remote URI to AOTA file>/update.deb 
+```
 
 ## LOAD
 ### Description
