@@ -12,14 +12,14 @@ from typing import Any, List, Optional, Union, Mapping
 
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
+from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
-from inbm_common_lib.request_message_constants import SOTA_COMMAND_STATUS_SUCCESSFUL, SOTA_COMMAND_FAILURE
 from inbm_lib.detect_os import detect_os
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_exception import DispatcherException
 from .command_handler import run_commands, print_execution_summary, get_command_status
-from .constants import SOTA_FAILED_RESULT, SUCCESS, SOTA_STATE, SOTA_CACHE, PROCEED_WITHOUT_ROLLBACK_DEFAULT
+from .constants import SUCCESS, SOTA_STATE, SOTA_CACHE, PROCEED_WITHOUT_ROLLBACK_DEFAULT
 from .downloader import Downloader
 from .log_helper import get_log_destination
 from .os_factory import ISotaOs, SotaOsFactory
@@ -287,9 +287,9 @@ class SOTA:
                 time.sleep(time_to_wait_before_reboot)
                 rebooter.reboot()
             else:
-                self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILED_RESULT)
-                self._dispatcher_callbacks.broker_core.send_result(SOTA_FAILED_RESULT)
-                raise SotaError(SOTA_FAILED_RESULT)
+                self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILURE)
+                self._dispatcher_callbacks.broker_core.send_result(SOTA_FAILURE)
+                raise SotaError(SOTA_FAILURE)
 
     def check(self) -> None:
         """Perform manifest checking before SOTA"""

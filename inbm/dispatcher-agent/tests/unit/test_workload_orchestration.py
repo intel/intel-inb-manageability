@@ -203,7 +203,7 @@ class TestWorkloadOrchestration(TestCase):
             WorkloadOrchestration(mock_callback).switch_wo_status("true")
         except (DispatcherException) as e:
             self.assertEqual(
-                "Invalid URL 'ip_port/api/v1/nodes/test/maintenance?token=ip_port': No schema supplied. Perhaps you meant http://ip_port/api/v1/nodes/test/maintenance?token=ip_port?", str(e))
+                "Invalid URL 'ip_port/api/v1/nodes/test/maintenance?token=ip_port': No scheme supplied. Perhaps you meant https://ip_port/api/v1/nodes/test/maintenance?token=ip_port?", str(e))
 
     @patch('time.sleep', return_value=0)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
