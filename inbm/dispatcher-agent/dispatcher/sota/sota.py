@@ -141,6 +141,12 @@ class SOTA:
                 cmd_list = self.installer.update_local_source(self._local_file_path)
         elif self.sota_cmd == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
+        elif self.sota_cmd == 'no-download':
+            self.installer = self.factory. create_os_upgrader()
+            cmd_list = self.installer.no_download() 
+        elif self.sota_cmd == 'download-only':
+             self.installer = self.factory. create_os_upgrader() 
+             cmd_list = self.installer.download_only() 
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
         run_commands(log_destination=log_destination,
                      cmd_list=cmd_list,
@@ -235,7 +241,7 @@ class SOTA:
         @param time_to_wait_before_reboot: Policy: wait this many seconds before rebooting.
         @param release_date: manifest release date
         """
-
+        self.sota_cmd = self._parsed_manifest['sota_cmd']
         cmd_list: List = []
         success = False
         download_success = False
@@ -285,7 +291,8 @@ class SOTA:
             if success:
                 self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")
                 time.sleep(time_to_wait_before_reboot)
-                rebooter.reboot()
+                if self.sota_cmd != "download-only": 
+                    rebooter.reboot()
             else:
                 self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILURE)
                 self._dispatcher_callbacks.broker_core.send_result(SOTA_FAILURE)

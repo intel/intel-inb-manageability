@@ -127,6 +127,14 @@ class DebianBasedUpdater(OsUpdater):
         logger.error('Local install of Debian packages is not supported.')
         return CommandList([]).cmd_list
 
+    def no_download(self):
+        cmds = ["apt-upgrade --download-only"]
+        return CommandList(cmds).cmd_list
+   
+    def download_only(self):
+        cmds = ["apt-upgrade --no-download"]
+        return CommandList(cmds).cmd_list
+
     @staticmethod
     def get_estimated_size() -> int:
         """Gets the size of the update
