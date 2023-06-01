@@ -301,7 +301,7 @@ def sota(args) -> str:
                        "release_date",
                        "path"
                        )
-    )
+    ))
     print("manifest {0}".format(manifest))
     return manifest
 

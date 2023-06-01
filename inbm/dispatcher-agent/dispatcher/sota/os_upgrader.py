@@ -36,6 +36,12 @@ class OsUpgrader:
         logger.debug("")
         self.cmd_list = CommandList(cmds).cmd_list
 
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
 
 class UbuntuUpgrader(OsUpgrader):
     """UbuntuUpgrader class, child of OsUpgrader"""
@@ -54,6 +60,12 @@ class UbuntuUpgrader(OsUpgrader):
         self.build_command_checklist(full_command)
         return self.cmd_list
 
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
 
 class WindowsUpgrader(OsUpgrader):
     """WindowsUpgrader class, child of OsUpgrader"""
@@ -68,6 +80,12 @@ class WindowsUpgrader(OsUpgrader):
         @return: returns file to log the upgrade to
         """
         logger.debug("")
+        pass
+
+    def download_only(self):
+        pass
+
+    def no_download(self):
         pass
 
 
@@ -88,3 +106,9 @@ class YoctoUpgrader(OsUpgrader):
         cmds = ['uname']
         self.build_command_checklist(cmds)
         return self.cmd_list
+
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass

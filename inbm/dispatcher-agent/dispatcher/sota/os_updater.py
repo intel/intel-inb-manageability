@@ -81,6 +81,14 @@ class OsUpdater(ABC):  # pragma: no cover
                     file_path + " " + MENDER_MINIMIZE_LOGS_ARGUMENT]
         return CommandList(commands).cmd_list
 
+    @abstractmethod
+    def no_download(self):
+        pass
+
+    @abstractmethod
+    def download_only(self):
+        pass
+
 
 class DebianBasedUpdater(OsUpdater):
     """DebianBasedUpdater class, child of OsUpdater"""
@@ -217,6 +225,12 @@ class YoctoX86_64Updater(OsUpdater):
         """
         return 0
 
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
 
 class YoctoARMUpdater(OsUpdater):
     """YoctoARMUpdater class, child of OsUpdater"""
@@ -258,6 +272,11 @@ class YoctoARMUpdater(OsUpdater):
         """
         return 0
 
+    def download_only(self):
+        pass
+
+    def no_download(self):
+        pass
 
 class WindowsUpdater(OsUpdater):
     """WindowsUpdater class, child of OsUpdater"""
@@ -288,3 +307,9 @@ class WindowsUpdater(OsUpdater):
         @return: Returns 0 if size is freed. Returns in bytes of size consumed
         """
         return 0
+
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass

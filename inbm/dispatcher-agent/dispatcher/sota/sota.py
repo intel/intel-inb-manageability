@@ -83,13 +83,14 @@ class SOTA:
         """
 
         self._parsed_manifest = parsed_manifest
+        self._cmd = self._parsed_manifest['cmd']
         self._username = parsed_manifest['username']
         self._password = parsed_manifest['password']
         self._ota_element = parsed_manifest.get('resource')
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
         self.sota_state = SOTA_STATE
-        self.sota_cmd: Optional[str] = None
+        self._sota_cmd: Optional[str] = None
         self.snap_num: Optional[str] = None
         self.log_to_file: Optional[str] = None
         self._dispatcher_callbacks = dispatcher_callbacks
@@ -124,7 +125,7 @@ class SOTA:
         logger.debug("")
 
         cmd_list: List = []
-        if self.sota_cmd == 'update':
+        if self._cmd == 'update':
             # the following line will be optimized out in byte code and only used in unit testing
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
@@ -139,15 +140,19 @@ class SOTA:
                         canonicalize_uri(self._uri), repo)
             else:
                 cmd_list = self.installer.update_local_source(self._local_file_path)
-        elif self.sota_cmd == 'upgrade':
+        elif self._cmd == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
-        elif self.sota_cmd == 'no-download':
-            self.installer = self.factory. create_os_upgrader()
-            cmd_list = self.installer.no_download() 
-        elif self.sota_cmd == 'download-only':
-             self.installer = self.factory. create_os_upgrader() 
-             cmd_list = self.installer.download_only() 
-        log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
+        elif self._cmd == 'no-download':
+            # If it has factory
+            if self.factory: 
+                self.installer = self.factory.create_os_upgrader()
+                cmd_list = self.installer.no_download() 
+        elif self._cmd == 'download-only':
+            # If it has factory
+            if self.factory:
+                self.installer = self.factory.create_os_upgrader() 
+                cmd_list = self.installer.download_only() 
+        log_destination = get_log_destination(self.log_to_file, self._sota_cmd)
         run_commands(log_destination=log_destination,
                      cmd_list=cmd_list,
                      dispatcher_callbacks=self._dispatcher_callbacks)
@@ -167,8 +172,8 @@ class SOTA:
 
         self.proceed_without_rollback = proceed_without_rollback
         self.log_to_file = self._parsed_manifest['log_to_file']
-        self.sota_cmd = self._parsed_manifest['sota_cmd']
-        if self.sota_cmd is None:
+        self._cmd = self._parsed_manifest['cmd']
+        if self._sota_cmd is None:
             raise SotaError('sota_cmd is None')
         release_date = self._parsed_manifest['release_date']
         if not os.path.exists(SOTA_CACHE):
@@ -196,10 +201,10 @@ class SOTA:
 
         self.factory = os_factory.get_os(os_type)
         setup_helper = self.factory.create_setup_helper()
-        if self.sota_cmd == 'rollback':
+        if self._sota_cmd == 'rollback':
             self.snap_num = setup_helper.get_snapper_snapshot_number()
         snapshot = self.factory.create_snapshotter(
-            self.sota_cmd, self.snap_num, self.proceed_without_rollback)
+            self._sota_cmd, self.snap_num, self.proceed_without_rollback)
         rebooter = self.factory.create_rebooter()
         if self.sota_state == 'diagnostic_system_unhealthy':
             snapshot.revert(rebooter, time_to_wait_before_reboot)
@@ -241,7 +246,7 @@ class SOTA:
         @param time_to_wait_before_reboot: Policy: wait this many seconds before rebooting.
         @param release_date: manifest release date
         """
-        self.sota_cmd = self._parsed_manifest['sota_cmd']
+#        self.sota_cmd = self._parsed_manifest['sota_cmd']
         cmd_list: List = []
         success = False
         download_success = False
@@ -291,7 +296,7 @@ class SOTA:
             if success:
                 self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")
                 time.sleep(time_to_wait_before_reboot)
-                if self.sota_cmd != "download-only": 
+                if self._sota_cmd != "download-only": 
                     rebooter.reboot()
             else:
                 self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILURE)
