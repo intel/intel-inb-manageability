@@ -13,7 +13,7 @@ from typing import Optional, Any, Mapping
 from inbm_lib.detect_os import is_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
-from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX, OTA_SUCCESS
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
@@ -86,6 +86,10 @@ class Application(AotaCommand):
 
     def _reboot(self, cmd: str) -> None:
         if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
+            # Save the log before reboot
+            self._dispatcher_callbacks.logger.set_status_and_error(OTA_SUCCESS, None)
+            self._dispatcher_callbacks.logger.save_log()
+
             logger.debug(f" Application {self.resource} installed. Rebooting...")
             self._dispatcher_callbacks.broker_core.telemetry('Rebooting...')
             (output, err, code) = PseudoShellRunner.run(cmd)

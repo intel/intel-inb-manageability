@@ -30,7 +30,7 @@ class TestBroker(unittest.TestCase):
             Broker()
 
         expected_error_message = f"CLIENT_CERTS ({CLIENT_CERTS}) and CLIENT_KEYS ({CLIENT_KEYS}) should not be symbolic links."
-        self.assertEqual(str(context.exception), expected_error_message)    
+        self.assertEqual(str(context.exception), expected_error_message)
 
     @mock.patch('cloudadapter.agent.broker.logger')
     def test_bind_callback_telemetry_succeeds(self, mock_logger):
