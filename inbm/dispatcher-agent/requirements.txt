@@ -1,7 +1,7 @@
 #Production
 
 psutil==5.8.0
-cryptography==39.0.1
+cryptography==41.0.0
 jsonschema==4.1.2
 shortuuid==1.0.1
 requests==2.31.0
