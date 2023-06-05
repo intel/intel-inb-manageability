@@ -100,11 +100,18 @@ System update flow can be broken into two parts:
 1.  Pre-reboot: The pre-boot part is when a system update is triggered.
 2.  Post-reboot: The post-boot checks the health of critical manageability services and takes corrective action.
 
+SOTA on Ubuntu is supported in 3 modes:
+1. Update/Full - Performs the software update.
+2. No download - Retrieves and installs packages.
+3. Download only - Retrieve packages (will not unpack or install).
+
+
 ### Usage
 ```
 inbc sota {--uri, -u=URI} 
-   [--releasedata, -r RELEASE_DATE; default="2026-12-31"] 
-   [--username, -un USERNAME] 
+   [--releasedate, -r RELEASE_DATE; default="2026-12-31"] 
+   [--username, -un USERNAME]
+   [--mode, -m MODE; default="full", choices=["full", "no-download", "download-only"] ]
 ```
 ### Examples
 #### Edge Device on Yocto OS requiring username/password
@@ -114,9 +121,19 @@ inbc sota
      --releasedate 2022-02-22 
      --username <username>
 ```
-#### Edge Device on Ubuntu
+#### Edge Device on Ubuntu in Update/Full mode
 ```
 inbc sota
+```
+
+#### Edge Device on Ubuntu in download-only mode
+```
+inbc sota --mode download-only
+```
+
+#### Edge Device on Ubuntu in no-download mode
+```
+inbc sota --mode no-download
 ```
 
 ## POTA

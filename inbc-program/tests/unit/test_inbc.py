@@ -68,9 +68,11 @@ class TestINBC(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     def test_sota_manifest_pass(self, mock_reconnect):
         f = self.arg_parser.parse_args(
-            ['sota', '-un', 'username', '-u', 'https://abc.com/test.tar'])
+            ['sota', '-un', 'username', '-u', 'https://abc.com/test.tar', '-m', 'full'])
         self.assertEqual(f.uri, 'https://abc.com/test.tar')
         self.assertEqual(f.username, 'username')
+        self.assertEqual(f.mode, "full")
+
 
     def test_load_manifest_pass(self):
         f = self.arg_parser.parse_args(
@@ -172,7 +174,7 @@ class TestINBC(TestCase):
     def test_create_ubuntu_update_manifest(self):
         s = self.arg_parser.parse_args(['sota'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
-                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd></sota></type>' \
+                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode></sota></type>' \
                    '</ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
@@ -183,10 +185,24 @@ class TestINBC(TestCase):
             ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd ' \
-                   'logtofile="y">update</cmd>' \
+                   'logtofile="y">update</cmd><mode>full</mode>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
                    '<release_date>2026-12-31</release_date></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
+
+
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
+    @patch('inbc.parser.getpass.getpass', return_value='123abc')
+    def test_create_sota_mode_manifest(self, mock_pass, mock_reconnect):
+        s = self.arg_parser.parse_args(
+            ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank', '-m', 'full'])
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
+                   '><repo>remote</repo></header><type><sota><cmd ' \
+                   'logtofile="y">update</cmd><mode>full</mode>' \
+                   '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
+                   '<release_date>2026-12-31</release_date></sota></type></ota></manifest>'
+        self.assertEqual(s.func(s), expected)
+
 
     @patch('inbc.parser.get_dmi_system_info',
            return_value=PlatformInformation('2024-12-31', 'Intel', '5.12', 'Intel', 'kmb'))

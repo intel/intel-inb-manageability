@@ -102,6 +102,8 @@ class ArgsParser(object):
                                  help='Release date of the applying package - format YYYY-MM-DD')
         parser_sota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser_sota.add_argument('--mode', '-m', default='full', 
+                                 required=False, choices=['full', 'download-only', 'no-download']) 
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
@@ -268,12 +270,14 @@ def sota(args) -> str:
         path_location = None
 
     arguments = {
+        'mode': args.mode, 
         'release_date': release_date,
         'fetch': fetch_location,
         'username': args.username,
         'password': _get_password(args),
         'path': path_location
     }
+
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
@@ -288,14 +292,15 @@ def sota(args) -> str:
                 '{0}' +
                 '</sota></type>' +
                 '</ota>' +
-                '</manifest>').format(
-        create_xml_tag(arguments,
+                '</manifest>').format( 
+                       (create_xml_tag(arguments,
+                       "mode", 
                        "fetch",
                        "username",
                        "password",
                        "release_date",
                        "path"
-                       )
+                       ))
     )
     print("manifest {0}".format(manifest))
     return manifest
