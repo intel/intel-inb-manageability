@@ -15,7 +15,7 @@ from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
 from inbm_lib.detect_os import detect_os
-from inbm_lib.constants import OTA_PENDING, OTA_FAIL
+from inbm_lib.constants import OTA_PENDING, OTA_FAIL, OTA_SUCCESS
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_exception import DispatcherException
@@ -97,7 +97,8 @@ class SOTA:
         self.installer: Union[None, OsUpdater, OsUpgrader] = None
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
-        self.sota_mode = parsed_manifest['sota_mode']  
+        self.sota_mode = parsed_manifest['sota_mode']
+        self._device_reboot = parsed_manifest['deviceReboot']
         
         if self._repo_type == LOCAL_SOURCE:
             if self._ota_element is None:
@@ -126,7 +127,11 @@ class SOTA:
         logger.debug("")
 
         cmd_list: List = []
+<<<<<<< HEAD
         if (self.sota_cmd == 'update' and self.sota_mode is None) or (self.sota_mode == 'full'):
+=======
+        if self.sota_mode == 'update':
+>>>>>>> e666b2b ([529912,529913] Add reboot option in OTA and INBC cmd)
             # the following line will be optimized out in byte code and only used in unit testing
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
@@ -143,6 +148,7 @@ class SOTA:
                 cmd_list = self.installer.update_local_source(self._local_file_path)
         elif self.sota_mode == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
+<<<<<<< HEAD
         elif self.sota_mode == 'no-download':
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
@@ -150,6 +156,15 @@ class SOTA:
         elif self.sota_mode == 'download-only':
             assert self.factory  # noqa: S101     
             self.installer = self.factory.create_os_updater() 
+=======
+        elif self.sota_mode == 'update-no-download':
+            assert self.factory  # noqa: S101
+            self.installer = self.factory.create_os_updater()
+            cmd_list = self.installer.no_download() 
+        elif self.sota_mode == 'update-download-only':
+            assert self.factory  # noqa: S101     
+            self.installer = self.factory.create_os_updater()
+>>>>>>> e666b2b ([529912,529913] Add reboot option in OTA and INBC cmd)
             cmd_list = self.installer.download_only() 
         
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
@@ -289,8 +304,10 @@ class SOTA:
             self._dispatcher_callbacks.broker_core.telemetry(str(e))
             self._dispatcher_callbacks.broker_core.send_result(
                 '{"status": 400, "message": "SOTA command status: FAILURE"}')
-            if download_success:
+            if download_success and self.sota_mode != 'update-download-only':
                 snapshotter.recover(rebooter, time_to_wait_before_reboot)
+            self._dispatcher_callbacks.logger.set_status_and_error(OTA_FAIL, None)
+            self._dispatcher_callbacks.logger.save_log()
             raise SotaError(str(msg))
         finally:
             if self._repo_type == LOCAL_SOURCE:
@@ -298,11 +315,18 @@ class SOTA:
             print_execution_summary(cmd_list, self._dispatcher_callbacks)
             if success:
                 # Save the log before reboot
-                self._dispatcher_callbacks.logger.set_status_and_error(OTA_PENDING, None)
+                if self.sota_mode == 'update-download-only':
+                    self._dispatcher_callbacks.logger.set_status_and_error(OTA_SUCCESS, None)
+                else:
+                    self._dispatcher_callbacks.logger.set_status_and_error(OTA_PENDING, None)
                 self._dispatcher_callbacks.logger.save_log()
-                self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")
-                time.sleep(time_to_wait_before_reboot)
-                rebooter.reboot()
+                if self.sota_mode == 'update-download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]: # pragma: no cover
+                    self._dispatcher_callbacks.broker_core.telemetry("No reboot (SOTA pass)")
+                else:
+                    self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")
+                    time.sleep(time_to_wait_before_reboot)
+                    rebooter.reboot()
+
             else:
                 # Save the log before reboot
                 self._dispatcher_callbacks.logger.set_status_and_error(OTA_FAIL, None)

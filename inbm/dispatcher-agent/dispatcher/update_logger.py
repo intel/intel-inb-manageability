@@ -23,7 +23,7 @@ class UpdateLogger:
 
     def __init__(self, ota_type: Optional[str], data: Optional[str]) -> None:
         self._status = ""
-        self._ota_type = ota_type
+        self.ota_type = ota_type
         self._time = datetime.datetime.now()
         self._meta_data = data
         self._error: Optional[str] = None
@@ -43,12 +43,12 @@ class UpdateLogger:
 
     def set_ota_type(self, ota_type: str) -> None:
         """Set ota type."""
-        self._ota_type = ota_type
+        self.ota_type = ota_type
 
     def save_log(self) -> None:
         """Save the log to a log file."""
         log = f"Status: {self._status}\n" \
-            f"Type: {self._ota_type}\n" \
+            f"Type: {self.ota_type}\n" \
             f"Time: {self._time}\n" \
             f"Metadata: {self._meta_data}\n" \
             f"Error: {self._error}\n"

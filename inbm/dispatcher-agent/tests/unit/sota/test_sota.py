@@ -39,7 +39,7 @@ class TestSota(testtools.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': TestSota._build_mock_repo(0), 'username': username,
-                           'password': password, 'sota_mode': 'full'}
+                           'password': password, 'sota_mode': 'full', 'deviceReboot': 'yes'}
         cls.sota_instance = SOTA(parsed_manifest, 'remote',
                                  cls.mock_disp_callbacks_obj, snapshot=1)
         cls.sota_local_instance = SOTA(parsed_manifest, 'local',
@@ -126,7 +126,7 @@ class TestSota(testtools.TestCase):
     def test_run_pass(self, mock_run, mock_rollback_and_delete_snap, mock_print,
                       mock_detect_os):
         mock_detect_os.return_value = 'Ubuntu'
-        parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
+        parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update-download-only',
                            'sota_repos': None,
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, 'sota_mode': 'download-only'}

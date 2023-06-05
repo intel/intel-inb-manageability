@@ -86,6 +86,8 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Tool Options', 10))
         parser_fota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser_fota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
         parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
                                  type=validate_guid)
         parser_fota.set_defaults(func=fota)
@@ -105,7 +107,9 @@ class ArgsParser(object):
         parser_sota.add_argument('--command', '-c', default='update',
                                  required=False) 
         parser_sota.add_argument('--mode', '-m', default='full', 
-                                 required=False, choices=['full', 'download-only', 'no-download']) 
+                                 required=False, choices=['full', 'download-only', 'no-download'])
+        parser_sota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
@@ -130,6 +134,8 @@ class ArgsParser(object):
                                  help='FOTA Signature string')
         parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware GUID update',
                                  type=validate_guid)
+        parser_pota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
         parser_pota.set_defaults(func=pota)
 
     def parse_load_args(self) -> None:
@@ -277,6 +283,7 @@ def sota(args) -> str:
         'fetch': fetch_location,
         'username': args.username,
         'password': _get_password(args),
+        'deviceReboot': args.reboot,
         'path': path_location
     }
 
@@ -292,18 +299,19 @@ def sota(args) -> str:
                 '<repo>remote</repo>' +
                 '</header>' +
                 '<type><sota>' +
-                '<cmd logtofile="y">update</cmd>' +
-                '{0}' +
+                '<cmd logtofile="y">{0}</cmd>' +
+                '{1}' +
                 '</sota></type>' +
                 '</ota>' +
                 '</manifest>').format( 
         (create_xml_tag(arguments,
-                       "mode", 
+                       "mode",
                        "fetch",
                        "username",
                        "password",
                        "release_date",
-                       "path"
+                       "path",
+                       "deviceReboot"
                        ))
     )
     print("manifest {0}".format(manifest))
@@ -343,7 +351,8 @@ def fota(args) -> str:
         'fetch': args.uri,
         'username': args.username,
         'password': _get_password(args),
-        'guid': args.guid
+        'guid': args.guid,
+        'deviceReboot': args.reboot
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -368,7 +377,8 @@ def fota(args) -> str:
                        "username",
                        "password",
                        "guid",
-                       'fetch')
+                       'fetch',
+                       "deviceReboot")
     )
     print("manifest {0}".format(manifest))
     return manifest
@@ -400,7 +410,8 @@ def pota(args) -> str:
     }
 
     fota_tag = f'<fetch>{args.fotauri}</fetch>'
-    sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
+    sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>' \
+                                                               f'<deviceReboot>{args.reboot}</deviceReboot>'
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +

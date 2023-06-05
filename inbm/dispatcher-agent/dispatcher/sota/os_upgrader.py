@@ -37,6 +37,14 @@ class OsUpgrader:
         self.cmd_list = CommandList(cmds).cmd_list
 
 
+    @abstractmethod
+    def no_download(self):
+        pass
+
+    @abstractmethod
+    def download_only(self):
+        pass
+
 class UbuntuUpgrader(OsUpgrader):
     """UbuntuUpgrader class, child of OsUpgrader"""
 
@@ -54,6 +62,28 @@ class UbuntuUpgrader(OsUpgrader):
         self.build_command_checklist(full_command)
         return self.cmd_list
 
+    def no_download(self):
+        """Upgrade command overridden from factory. It builds the commands for Ubuntu upgrade
+        of no_download command 
+
+        @return: returns commands 
+        """
+ 
+        cmds = ["apt-get upgrade --fix-missing",
+                "apt-get upgrade --download-only"]
+        return CommandList(cmds).cmd_list
+
+    def download_only(self):
+        """Upgrade command overridden from factory. It builds the commands for Ubuntu upgrade
+        of download_only command
+
+        @return: returns commands
+        """
+        
+        cmds = ["apt-get upgrade --fix-missing",
+                "apt-get upgrade --no-download"]
+        return CommandList(cmds).cmd_list
+
 
 class WindowsUpgrader(OsUpgrader):
     """WindowsUpgrader class, child of OsUpgrader"""
@@ -69,7 +99,13 @@ class WindowsUpgrader(OsUpgrader):
         """
         logger.debug("")
         pass
-    
+
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
 
 class YoctoUpgrader(OsUpgrader):
     """YoctoUpgrader class, child of OsUpgrader"""
@@ -88,4 +124,9 @@ class YoctoUpgrader(OsUpgrader):
         cmds = ['uname']
         self.build_command_checklist(cmds)
         return self.cmd_list
-    
+
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass

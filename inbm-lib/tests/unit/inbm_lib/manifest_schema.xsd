@@ -384,6 +384,8 @@
         <xs:restriction base="xs:string">
 	    <xs:enumeration value="update"/>	
             <xs:enumeration value="upgrade"/>
+   	    <xs:enumeration value="update-no-download"/>
+            <xs:enumeration value="update-download-only"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:simpleType name="sotamode">

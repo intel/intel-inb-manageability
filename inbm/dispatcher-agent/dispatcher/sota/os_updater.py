@@ -81,6 +81,14 @@ class OsUpdater(ABC):  # pragma: no cover
                     file_path + " " + MENDER_MINIMIZE_LOGS_ARGUMENT]
         return CommandList(commands).cmd_list
 
+    @abstractmethod
+    def no_download(self):
+        pass
+
+    @abstractmethod
+    def download_only(self):
+        pass
+
 
     @abstractmethod
     def no_download(self):
@@ -186,7 +194,7 @@ class DebianBasedUpdater(OsUpdater):
 
         cmds = ["dpkg --configure -a",
                 "apt-get -yq -f install",
-                "apt-get upgrade --no-download --fix-missing -yq"] 
+                "apt-get upgrade --no-download --fix-missing -yq"]
         return CommandList(cmds).cmd_list
 
     def download_only(self):
@@ -250,6 +258,7 @@ class YoctoX86_64Updater(OsUpdater):
     def download_only(self):
         pass
 
+
 class YoctoARMUpdater(OsUpdater):
     """YoctoARMUpdater class, child of OsUpdater"""
 
@@ -296,6 +305,7 @@ class YoctoARMUpdater(OsUpdater):
 
     def download_only(self):
         pass
+
 
 class WindowsUpdater(OsUpdater):
     """WindowsUpdater class, child of OsUpdater"""

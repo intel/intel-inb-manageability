@@ -105,7 +105,6 @@ SOTA on Ubuntu is supported in 3 modes:
 2. No download - Retrieves and installs packages.
 3. Download only - Retrieve packages (will not unpack or install).
 
-
 ### Usage
 ```
 inbc sota {--uri, -u=URI} 
@@ -122,9 +121,24 @@ inbc sota
      --releasedate 2022-02-22 
      --username <username>
 ```
+<<<<<<< HEAD
 #### Edge Device on Ubuntu in Update/Full mode
+=======
+
+#### Edge Device on Ubuntu update command
+>>>>>>> e666b2b ([529912,529913] Add reboot option in OTA and INBC cmd)
 ```
-inbc sota
+inbc sota [--command update]
+```
+
+#### Edge Device on Ubuntu in update (download-only) command
+```
+inbc sota [--command update-download-only]
+```
+
+#### Edge Device on Ubuntu in update (no-download) command
+```
+inbc sota [--command update-no-download]
 ```
 
 #### Edge Device on Ubuntu in download-only mode
