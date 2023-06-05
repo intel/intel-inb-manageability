@@ -143,6 +143,7 @@ class Dispatcher(WindowsService):
         self.update_queue: Queue[Tuple[str, str]] = Queue(1)
         self._thread_count = 1
         self.sota_repos = None
+        self.sota_mode = None 
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
         self.dbs_remove_image_on_failed_container = True
@@ -852,7 +853,7 @@ class Dispatcher(WindowsService):
         """
         logger.debug('Invoking SOTA')
 
-        parsed_manifest = {'sota_cmd': 'rollback', 'log_to_file': None,
+        parsed_manifest = {'sota_mode': self.sota_mode, 'sota_cmd': 'rollback', 'log_to_file': None,
                            'sota_repos': self.sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None}

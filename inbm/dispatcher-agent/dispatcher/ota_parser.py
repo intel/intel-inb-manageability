@@ -116,6 +116,7 @@ class SotaParser(OtaParser):
         sota_cmd = resource.get('cmd', None)
         release_date = resource.get('release_date', None)
         header = parsed.get_children('ota/header')
+        sota_mode = resource.get('mode', None) 
         main_ota = header['type']
         try:
             if self._ota_type == OtaType.POTA.name.lower() or main_ota == OtaType.POTA.name.lower():
@@ -125,7 +126,8 @@ class SotaParser(OtaParser):
         except (KeyError, DispatcherException):
             log_to_file = 'N'
 
-        resource_dict = {'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri, 'signature': self._signature,
+        resource_dict = {'sota_mode': sota_mode, 'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri, 
+                         'signature': self._signature,
                          'hash_algorithm': self._hash_algorithm, 'resource': resource, 'username': self._username,
                          'password': self._password, 'release_date': release_date}
 

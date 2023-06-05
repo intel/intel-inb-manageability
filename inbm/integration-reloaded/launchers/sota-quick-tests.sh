@@ -29,6 +29,19 @@ else
 	test_fail "update success"
 fi
 
+
+test_started "SOTA No-Download success"
+echo .. update-No-Download success test running. ..
+vagrant ssh -c "sudo /test/sota/SOTA_NO_DOWNLOAD_SUCCESS_preboot.sh" || true
+"$DIR"/vagrant-reboot.sh
+echo .. Checking results of update success test. ..
+if vagrant ssh -c "sudo /test/sota/SOTA_NO_DOWNLOAD_SUCCESS_postboot.sh"; then
+        test_pass "sota no-download success"
+else
+        test_fail "sota no-download success"
+fi
+
+
 "$DIR"/sota-quick-tests/yocto-update-download.sh
 
 suite_finished SOTA

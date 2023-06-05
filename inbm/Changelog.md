@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - RTC 530033 - Add AOTA Applicaiton Update command to INBC
+ - RTC 530032 - Add INBC SOTA update, download-only and no-download modes 
 
 ## 4.0.1 - 2023-05-26
  - RTC 529914 - Implement OTA logger

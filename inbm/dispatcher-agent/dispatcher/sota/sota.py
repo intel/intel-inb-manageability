@@ -97,7 +97,8 @@ class SOTA:
         self.installer: Union[None, OsUpdater, OsUpgrader] = None
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
-
+        self.sota_mode = parsed_manifest['sota_mode']  
+        
         if self._repo_type == LOCAL_SOURCE:
             if self._ota_element is None:
                 raise SotaError("ota_element is missing for SOTA")
@@ -125,7 +126,7 @@ class SOTA:
         logger.debug("")
 
         cmd_list: List = []
-        if self.sota_cmd == 'update':
+        if (self.sota_cmd == 'update' and self.sota_mode is None) or (self.sota_mode == 'full'):
             # the following line will be optimized out in byte code and only used in unit testing
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
@@ -140,8 +141,17 @@ class SOTA:
                         canonicalize_uri(self._uri), repo)
             else:
                 cmd_list = self.installer.update_local_source(self._local_file_path)
-        elif self.sota_cmd == 'upgrade':
+        elif self.sota_mode == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
+        elif self.sota_mode == 'no-download':
+            assert self.factory  # noqa: S101
+            self.installer = self.factory.create_os_updater()
+            cmd_list = self.installer.no_download() 
+        elif self.sota_mode == 'download-only':
+            assert self.factory  # noqa: S101     
+            self.installer = self.factory.create_os_updater() 
+            cmd_list = self.installer.download_only() 
+        
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
         run_commands(log_destination=log_destination,
                      cmd_list=cmd_list,

@@ -82,6 +82,15 @@ class OsUpdater(ABC):  # pragma: no cover
         return CommandList(commands).cmd_list
 
 
+    @abstractmethod
+    def no_download(self):
+        pass
+
+    @abstractmethod
+    def download_only(self):
+        pass
+
+
 class DebianBasedUpdater(OsUpdater):
     """DebianBasedUpdater class, child of OsUpdater"""
 
@@ -168,6 +177,31 @@ class DebianBasedUpdater(OsUpdater):
             return 0
 
 
+    def no_download(self):
+        """Update command overridden from factory. It builds the commands for Ubuntu update
+        of no-download command
+
+        @return: returns commands
+        """
+
+        cmds = ["dpkg --configure -a",
+                "apt-get -yq -f install",
+                "apt-get upgrade --no-download --fix-missing -yq"] 
+        return CommandList(cmds).cmd_list
+
+    def download_only(self):
+        """Update command overridden from factory. It builds the commands for Ubuntu update
+        of download-only command
+
+        @return: returns commands
+        """
+
+        cmds = ["apt-get update",
+                "dpkg-query -f '${binary:Package}\\n' -W",
+                "apt-get upgrade --download-only --fix-missing -yq"]
+        return CommandList(cmds).cmd_list
+
+
 class YoctoX86_64Updater(OsUpdater):
     """YoctoX86_64Updater class, child of OsUpdater"""
 
@@ -210,6 +244,12 @@ class YoctoX86_64Updater(OsUpdater):
         return 0
 
 
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
 class YoctoARMUpdater(OsUpdater):
     """YoctoARMUpdater class, child of OsUpdater"""
 
@@ -251,6 +291,12 @@ class YoctoARMUpdater(OsUpdater):
         return 0
 
 
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
 class WindowsUpdater(OsUpdater):
     """WindowsUpdater class, child of OsUpdater"""
 
@@ -279,4 +325,11 @@ class WindowsUpdater(OsUpdater):
         """Gets the size of the update.  Stub.
         @return: Returns 0 if size is freed. Returns in bytes of size consumed
         """
-        return 0
+        return 0 
+    
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
