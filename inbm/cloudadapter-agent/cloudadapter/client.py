@@ -26,7 +26,6 @@ logger = logging.getLogger(__name__)
 
 class Client:
 
-
     def __init__(self) -> None:
         """Construct the Client object
         @exception BadConfigError: If the adapter configuration is bad
@@ -49,7 +48,7 @@ class Client:
             self._broker.bind_callback(
                 TC_TOPIC.TELEMETRY,
                 lambda _, payload: self._cloud_publisher.publish_event(payload)
-            )        
+            )
         else:
             self._broker.bind_callback(
                 TC_TOPIC.TELEMETRY,

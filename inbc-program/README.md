@@ -13,11 +13,12 @@
    1. [FOTA](#fota)
    2. [SOTA](#sota)
    3. [POTA](#pota)
-   4. [Configuration Load](#load)
-   5. [Configuration Get](#get)
-   6. [Configuration Set](#set)
-   7. [Restart](#restart)
-   8. [Query](#query)
+   4. [AOTA](#aota)
+   5. [Configuration Load](#load)
+   6. [Configuration Get](#get)
+   7. [Configuration Set](#set)
+   8. [Restart](#restart)
+   9. [Query](#query)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -149,6 +150,28 @@ inbc pota
      -r 2021-02-22 
  ```
 
+## AOTA
+### Description
+Performs an Application Over The Air update (AOTA)
+
+INBC is only supporting the application update portion of AOTA.
+
+### Usage
+```
+inbc aota {--uri, -u=URI} 
+   [--app, -a APP_TYPE; default="application"] 
+   [--command, -c COMMAND; default="update"]
+   [--reboot, -rb REBOOT; default="no"]
+   [--username, -un USERNAME] 
+```
+
+### Examples
+#### Application Update
+```
+inbc aota
+     --uri <remote URI to AOTA file>/update.deb 
+```
+
 ## LOAD
 ### Description
 Load a new configuration file.   This will replace the existing configuration file with the new file.
@@ -256,7 +279,7 @@ inbc query
 ```
 
 ### Option Results
-[Allowed Options and Results](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)
+[Allowed Options and Results](../docs/Query.md)
 
 ### Examples
 #### Return all attributes

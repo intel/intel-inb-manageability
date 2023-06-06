@@ -34,6 +34,7 @@ MENDER_MINIMIZE_LOGS_ARGUMENT = "-log-level panic"
 MENDER_UPDATE_SCRIPT_EHL = "/etc/mender/scripts/ArtifactInstall_Leave_00_relabel_ext4"
 MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
 
+
 def mender_install_argument():
     (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
     if "-install" in out or ((err is not None) and "-install" in err):

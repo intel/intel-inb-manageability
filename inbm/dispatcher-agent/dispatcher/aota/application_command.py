@@ -13,7 +13,7 @@ from typing import Optional, Any, Mapping
 from inbm_lib.detect_os import is_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
-from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX, OTA_SUCCESS
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
@@ -86,6 +86,10 @@ class Application(AotaCommand):
 
     def _reboot(self, cmd: str) -> None:
         if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
+            # Save the log before reboot
+            self._dispatcher_callbacks.logger.set_status_and_error(OTA_SUCCESS, None)
+            self._dispatcher_callbacks.logger.save_log()
+
             logger.debug(f" Application {self.resource} installed. Rebooting...")
             self._dispatcher_callbacks.broker_core.telemetry('Rebooting...')
             (output, err, code) = PseudoShellRunner.run(cmd)
@@ -131,7 +135,7 @@ class CentOsApplication(Application):
         # Check if it's CentOS and inside container. In CentOS inb container, chroot is used to switch to CentOS
         # rootfs and install the driver.
         driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
-        
+
         logger.debug(f"driver path = {driver_path}")
         try:
             if not self._is_rpm_file_type(driver_path):
@@ -153,7 +157,7 @@ class CentOsApplication(Application):
             uninstall_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -e --nodeps {old_driver_name}'
             out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
-           
+
             # If old packages wasn't install on system, it will return error too.
             if code != 0 and "is not installed" not in str(err):
                 raise AotaError(err)

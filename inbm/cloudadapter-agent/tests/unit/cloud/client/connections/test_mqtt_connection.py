@@ -63,7 +63,7 @@ class TestMQTTConnection(unittest.TestCase):
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS
         self.mqtt_connection.publish("topic", "payload")
         assert self.mock_client.publish.call_count == 1
-    
+
     def test_publish_blank_topic_succeeds(self):
         # blank topic is used to disable publishing in our template files
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS

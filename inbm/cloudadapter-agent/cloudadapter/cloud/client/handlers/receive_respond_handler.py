@@ -48,10 +48,10 @@ class ReceiveRespondHandler(Handler):
 
     def bind(self, name: str, callback: Callable):
         self._methods[name] = callback
-    
+
     def _fire_method(self, method: str, args: Dict[str, Any], symbols: Dict[str, Any]):
         """Fire an individual method and provide response to cloud
-        
+
         @param method:  Method to fire
         @param args:    Arguments to the method
         @param symbols: Keyword arguments to the method"""
@@ -73,11 +73,12 @@ class ReceiveRespondHandler(Handler):
         @param topic:   Specific topic
         @param payload: Raw UTF-8 payload
         """
-         
+
         if self._method_parser is None:
-            self._fire_method(METHOD.RAW, {'contents': payload.decode('utf-8', errors="strict")}, {})
+            self._fire_method(
+                METHOD.RAW, {'contents': payload.decode('utf-8', errors="strict")}, {})
             return
-    
+
         # Parse the message
         try:
             parsed = self._method_parser.parse(topic, payload)
@@ -109,6 +110,5 @@ class ReceiveRespondHandler(Handler):
             logger.info(
                 "Received parsed method: '%s' Request ID: '%s'",
                 method, symbols.get("request_id"))
-            
-            self._fire_method(method, args, symbols)
 
+            self._fire_method(method, args, symbols)

@@ -39,7 +39,8 @@ class TestOsUpdater(unittest.TestCase):
                                  DispatcherCallbacks(install_check=cls.mock_disp_obj.install_check,
                                                      broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
                                                      sota_repos=cls.mock_disp_obj.sota_repos,
-                                                     proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback),
+                                                     proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
+                                                     logger=cls.mock_disp_obj.update_logger),
                                  snapshot=1)
 
     def test_Ubuntu_update(self):

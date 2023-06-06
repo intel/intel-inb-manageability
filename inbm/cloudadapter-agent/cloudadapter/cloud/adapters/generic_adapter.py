@@ -13,6 +13,7 @@ from typing import Callable
 from ..client.cloud_client import CloudClient
 from .adapter import Adapter
 
+
 class GenericAdapter(Adapter):
     def __init__(self, config: dict):
         super().__init__(config)

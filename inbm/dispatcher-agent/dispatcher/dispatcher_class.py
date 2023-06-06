@@ -28,7 +28,7 @@ from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.utility import remove_file
-from inbm_lib.constants import QUERY_CMD_CHANNEL
+from inbm_lib.constants import QUERY_CMD_CHANNEL, OTA_SUCCESS, OTA_FAIL
 
 from .aota.aota_error import AotaError
 from .command import Command
@@ -56,6 +56,7 @@ from .workload_orchestration import WorkloadOrchestration
 from inbm_lib.xmlhandler import *
 from inbm_lib.version import get_friendly_inbm_version_commit
 from inbm_lib.security_masker import mask_security_info
+from .update_logger import UpdateLogger
 
 logger = logging.getLogger(__name__)
 
@@ -151,6 +152,7 @@ class Dispatcher(WindowsService):
                                    'cmd': 'diagnostic OR MQTT',
                                    'message': 'No health report from diagnostic'}
         self.RUNNING = False
+        self._update_logger = UpdateLogger(ota_type=None, data=None)
         self.remediation_instance = RemediationManager(self._make_callbacks_object())
         self._wo: Optional[WorkloadOrchestration] = None
 
@@ -158,7 +160,8 @@ class Dispatcher(WindowsService):
         return DispatcherCallbacks(install_check=self.install_check,
                                    sota_repos=self.sota_repos,
                                    proceed_without_rollback=self.proceed_without_rollback,
-                                   broker_core=self._broker)
+                                   broker_core=self._broker,
+                                   logger=self._update_logger)
 
     def svc_stop(self) -> None:
         self.RUNNING = False
@@ -447,6 +450,11 @@ class Dispatcher(WindowsService):
                     target_type = TargetType.none.name
                 logger.debug(f"Target type: {target_type}")
 
+                # Record OTA data for logging.
+                self._update_logger.set_time()
+                self._update_logger.set_ota_type(ota_type)
+                self._update_logger.set_metadata(xml)
+
                 if target_type is TargetType.none.name and ota_type == OtaType.POTA.name.lower():
                     ota_list = self._create_ota_resource_list(parsed_head, resource)
                     # Perform manifest checking first before OTA
@@ -479,15 +487,22 @@ class Dispatcher(WindowsService):
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
+            self._update_logger.set_status_and_error(OTA_FAIL, str(error))
         except XmlException as error:
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
+            self._update_logger.set_status_and_error(OTA_FAIL, str(error))
         except (AotaError, FotaError, SotaError) as e:
             result = Result(CODE_BAD_REQUEST, str(e))
+            self._update_logger.set_status_and_error(OTA_FAIL, str(e))
         finally:
             logger.info('Install result: %s', str(result))
             self._send_result(str(result))
             if result.status != CODE_OK and parsed_head:
+                self._update_logger.set_status_and_error(OTA_FAIL, str(result))
                 self.invoke_workload_orchestration_check(True, type_of_manifest, parsed_head)
+            if result.status == CODE_OK:
+                self._update_logger.set_status_and_error(OTA_SUCCESS, None)
+            self._update_logger.save_log()
             return result.status
 
     def _create_ota_resource_list(self, parsed_head: XmlHandler, resource: Dict) -> Dict[str, Any]:
@@ -504,8 +519,6 @@ class Dispatcher(WindowsService):
             if key == 'fota':
                 ota_resource['holdReboot'] = True
             ota_resource_dict[key] = ota_resource
-        logger.debug("DICT: {} parsed_head :{}, resource:{}".format(
-            ota_resource_dict, parsed_head, resource))
         return ota_resource_dict
 
     def _do_ota_update(self, xml: str, ota_type: str, repo_type: str, target_type: Optional[str], resource: Dict,
@@ -885,10 +898,12 @@ class Dispatcher(WindowsService):
                 self.install_check(check_type='check_network')
                 self._telemetry('On Boot, Diagnostics reports healthy system')
                 self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
+                self._update_logger.update_log(OTA_SUCCESS)
             except DispatcherException:
                 self._telemetry(
                     'On Boot, Diagnostics reports some services not up after previous SOTA')
                 self.invoke_sota(action='diagnostic_system_unhealthy', snapshot=None)
+                self._update_logger.update_log(OTA_FAIL)
 
         def _check_fota_state(fota_state: Dict) -> None:
             """This method checks the FOTA info in dispatcher state file and validates the release date
@@ -897,6 +912,9 @@ class Dispatcher(WindowsService):
 
             @params fota_state: The consumed information from the dispatcher state file.
             """
+            # If all the checks pass, the OTA status changes to SUCCESS at the end.
+            self._update_logger.update_log(OTA_FAIL)
+
             os_type = platform.system()
             platform_info = PlatformInformation()
             try:
@@ -928,6 +946,7 @@ class Dispatcher(WindowsService):
                 self._send_result(
                     "SUCCESSFUL INSTALL: Overall FOTA update successful. "
                     "System has been updated with new Firmware version...")
+                self._update_logger.update_log(OTA_SUCCESS)
             else:
                 self._send_result(
                     "FAILED INSTALL: Overall FOTA update failed. Firmware not updated.")

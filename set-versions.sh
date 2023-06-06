@@ -19,5 +19,5 @@ echo $NEW_VERSION >inbm/version.txt
 
 mv inbm/packaging/yocto/meta-intel-ese-manageability/recipes-inb/inb/inb_{$OLD_VERSION,$NEW_VERSION}.bb
 echo ====
-echo ==== Remember to update inbm/Changelog.md and inbm-vision/Changelog.md.
+echo ==== Remember to update inbm/Changelog.md.
 echo ====

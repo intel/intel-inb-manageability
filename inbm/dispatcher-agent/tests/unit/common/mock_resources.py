@@ -12,6 +12,7 @@ from dispatcher.config_dbs import ConfigDbs
 from dispatcher.dispatcher_broker import DispatcherBroker
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_class import Dispatcher
+from dispatcher.update_logger import UpdateLogger
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.constants import UNKNOWN, UNKNOWN_DATETIME
@@ -278,6 +279,7 @@ class MockDispatcherCallbacks(DispatcherCallbacks):
         self.broker_core = MockDispatcherBroker.build_mock_dispatcher_broker()
         self.sota_repos = None
         self.proceed_without_rollback = False
+        self.logger = UpdateLogger(None, None)
 
     def install_check(self, size: int, check_type: str) -> None:
         pass
@@ -329,6 +331,7 @@ class MockDispatcher(Dispatcher):
         self.dbs_remove_image_on_failed_container = True
         self.sota_repos = None
         self.proceed_without_rollback = False
+        self.update_logger = UpdateLogger(None, None)
 
     def install_check(self, size=None, check_type=None) -> None:
         pass

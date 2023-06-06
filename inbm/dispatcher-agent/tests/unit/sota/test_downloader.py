@@ -38,7 +38,8 @@ class TestDownloader(unittest.TestCase):
                                  DispatcherCallbacks(install_check=cls.mock_disp_callbacks_obj.install_check,
                                                      broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
                                                      sota_repos=cls.mock_disp_callbacks_obj.sota_repos,
-                                                     proceed_without_rollback=cls.mock_disp_callbacks_obj.proceed_without_rollback))
+                                                     proceed_without_rollback=cls.mock_disp_callbacks_obj.proceed_without_rollback,
+                                                     logger=cls.mock_disp_callbacks_obj.logger))
         cls.sota_instance.factory = SotaOsFactory(
             cls.mock_disp_callbacks_obj).get_os('YoctoX86_64')
 

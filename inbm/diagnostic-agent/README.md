@@ -37,8 +37,8 @@ The agent publishes to the following topics:
 ### Subscribe Channels
 The agent subscribes to the following topics:
   - [Diagnostic commands](#commands-supported): `diagnostic/command/+`
-  - [Diagnostic Configuration Settings](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Configuration%20Parameters.md#diagnostic): `configuration/update/diagnostic/+`
-  - [All Configuration Settings](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Configuration%20Parameters.md#all): `configuration/update/all/+`
+  - [Diagnostic Configuration Settings](#../../docs/Configuration%20Parameters.md#diagnostic): `configuration/update/diagnostic/+`
+  - [All Configuration Settings](#../../docs/Configuration%20Parameters.md#all): `configuration/update/all/+`
   - Agent states: `+/state`
  
 ❗`+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
@@ -90,8 +90,8 @@ Ex:
 ## Install from Source
 ❗ Use a Python version greater than 3.8 is installed
 
-1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
-2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
+1. [Build INBM](#../../README.md#build-instructions)
+2. [Install INBM](#../../docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
 ## Usage
 

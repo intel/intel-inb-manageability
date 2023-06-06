@@ -8,9 +8,9 @@ Unit tests for the adapter_factory
 import unittest
 import mock
 
-from cloudadapter.exceptions import BadConfigError, AdapterConfigureError
+from cloudadapter.exceptions import BadConfigError
+from cloudadapter.cloud.adapter_factory import load_adapter_config, ADAPTER_CONFIG_PATH
 import cloudadapter.cloud.adapter_factory as adapter_factory
-from cloudadapter.cloud.client.cloud_client import CloudClient
 
 
 class TestAdapterFactory(unittest.TestCase):
@@ -19,6 +19,21 @@ class TestAdapterFactory(unittest.TestCase):
         self.CONFIG = {
             "sample": "config"
         }
+
+    @mock.patch("os.path.islink")
+    def test_islink_error(self, mock_islink):
+        # Mock the islink function to return True
+        mock_islink.return_value = True
+
+        # Call the load_adapter_config function and assert it raises a BadConfigError
+        with self.assertRaises(BadConfigError) as context:
+            load_adapter_config()
+
+        # Check if the error message contains the expected text
+        self.assertIn(
+            f"Configuration file ({ADAPTER_CONFIG_PATH}) is a symbolic link, which is not allowed.",
+            str(context.exception),
+        )
 
     @mock.patch('cloudadapter.cloud.adapter_factory.AzureAdapter')
     @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)

@@ -7,6 +7,7 @@ Abstract base class used by all cloud connection objects.
 import abc
 from typing import Optional
 
+
 class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
 
     @abc.abstractproperty

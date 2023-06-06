@@ -53,6 +53,7 @@ QUERY_CMD_CHANNEL = 'dispatcher/query'
 HOST_QUERY_CHANNEL = 'manageability/request/query'
 
 # OTA types
+AOTA = "aota"
 FOTA = "fota"
 SOTA = "sota"
 POTA = "pota"
@@ -70,3 +71,11 @@ PROVISION_CHANNEL = REQUEST_CHANNEL + PROVISION
 
 # Device local cache
 CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool/')
+
+# OTA log file location
+LOG_FILE = get_canonical_representation_of_path("/var/cache/manageability/update-status.log")
+
+# OTA STATUS
+OTA_SUCCESS = "SUCCESS"
+OTA_FAIL = "FAIL"
+OTA_PENDING = "PENDING"
