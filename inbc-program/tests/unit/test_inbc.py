@@ -205,7 +205,7 @@ class TestINBC(TestCase):
                    '><repo>remote</repo></header><type><sota><cmd ' \
                    'logtofile="y">update</cmd><mode>full</mode>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
-                   '<release_date>2026-12-31</release_date></sota></type></ota></manifest>'
+                   '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
 
@@ -246,6 +246,7 @@ class TestINBC(TestCase):
                    '<biosversion>ADLSFWI1.R00</biosversion><manufacturer>Intel Corporation</manufacturer>' \
                    '<product>Alder Lake Client Platform</product>' \
                    '<vendor>Intel Corporation</vendor><releasedate>2026-12-31</releasedate>' \
+                   '<deviceReboot>yes</deviceReboot>' \
                    '<fetch>/var/cache/manageability/repository-tool/fip.bin</fetch></fota><sota><cmd ' \
                    'logtofile="y">update</cmd>' \
                    '<release_date>2026-12-31</release_date>' \

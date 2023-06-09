@@ -127,11 +127,7 @@ class SOTA:
         logger.debug("")
 
         cmd_list: List = []
-<<<<<<< HEAD
         if (self.sota_cmd == 'update' and self.sota_mode is None) or (self.sota_mode == 'full'):
-=======
-        if self.sota_mode == 'update':
->>>>>>> e666b2b ([529912,529913] Add reboot option in OTA and INBC cmd)
             # the following line will be optimized out in byte code and only used in unit testing
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
@@ -148,23 +144,13 @@ class SOTA:
                 cmd_list = self.installer.update_local_source(self._local_file_path)
         elif self.sota_mode == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
-<<<<<<< HEAD
         elif self.sota_mode == 'no-download':
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
             cmd_list = self.installer.no_download() 
         elif self.sota_mode == 'download-only':
             assert self.factory  # noqa: S101     
-            self.installer = self.factory.create_os_updater() 
-=======
-        elif self.sota_mode == 'update-no-download':
-            assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
-            cmd_list = self.installer.no_download() 
-        elif self.sota_mode == 'update-download-only':
-            assert self.factory  # noqa: S101     
-            self.installer = self.factory.create_os_updater()
->>>>>>> e666b2b ([529912,529913] Add reboot option in OTA and INBC cmd)
             cmd_list = self.installer.download_only() 
         
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
@@ -304,7 +290,7 @@ class SOTA:
             self._dispatcher_callbacks.broker_core.telemetry(str(e))
             self._dispatcher_callbacks.broker_core.send_result(
                 '{"status": 400, "message": "SOTA command status: FAILURE"}')
-            if download_success and self.sota_mode != 'update-download-only':
+            if download_success and self.sota_mode != 'download-only':
                 snapshotter.recover(rebooter, time_to_wait_before_reboot)
             self._dispatcher_callbacks.logger.set_status_and_error(OTA_FAIL, None)
             self._dispatcher_callbacks.logger.save_log()
@@ -315,12 +301,12 @@ class SOTA:
             print_execution_summary(cmd_list, self._dispatcher_callbacks)
             if success:
                 # Save the log before reboot
-                if self.sota_mode == 'update-download-only':
+                if self.sota_mode == 'download-only':
                     self._dispatcher_callbacks.logger.set_status_and_error(OTA_SUCCESS, None)
                 else:
                     self._dispatcher_callbacks.logger.set_status_and_error(OTA_PENDING, None)
                 self._dispatcher_callbacks.logger.save_log()
-                if self.sota_mode == 'update-download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]: # pragma: no cover
+                if self.sota_mode == 'download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]: # pragma: no cover
                     self._dispatcher_callbacks.broker_core.telemetry("No reboot (SOTA pass)")
                 else:
                     self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")

@@ -107,7 +107,8 @@ class TestSota(testtools.TestCase):
         parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
                            'sota_repos': None,
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
-                           'username': None, 'password': None, 'release_date': None, 'sota_mode': 'full'}
+                           'username': None, 'password': None, 'release_date': None, 'sota_mode': 'full',
+                           'deviceReboot': "no"}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, snapshot=1)
@@ -126,10 +127,11 @@ class TestSota(testtools.TestCase):
     def test_run_pass(self, mock_run, mock_rollback_and_delete_snap, mock_print,
                       mock_detect_os):
         mock_detect_os.return_value = 'Ubuntu'
-        parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update-download-only',
+        parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
                            'sota_repos': None,
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
-                           'username': None, 'password': None, 'release_date': None, 'sota_mode': 'download-only'}
+                           'username': None, 'password': None, 'release_date': None, 'sota_mode': 'download-only',
+                           'deviceReboot': "no"}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, snapshot=1)

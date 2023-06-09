@@ -299,8 +299,8 @@ def sota(args) -> str:
                 '<repo>remote</repo>' +
                 '</header>' +
                 '<type><sota>' +
-                '<cmd logtofile="y">{0}</cmd>' +
-                '{1}' +
+                '<cmd logtofile="y">update</cmd>' +
+                '{0}' +
                 '</sota></type>' +
                 '</ota>' +
                 '</manifest>').format( 
@@ -406,7 +406,8 @@ def pota(args) -> str:
         'product': p.platform_product,
         'release_date': args.release_date,
         FOTA_SIGNATURE: args.fotasignature,
-        'guid': args.guid
+        'guid': args.guid,
+        'deviceReboot': args.reboot
     }
 
     fota_tag = f'<fetch>{args.fotauri}</fetch>'
@@ -431,7 +432,8 @@ def pota(args) -> str:
                        "product",
                        "vendor",
                        "releasedate",
-                       "guid"
+                       "guid",
+                       'deviceReboot'
                        ),
         fota_tag,
         create_xml_tag(arguments,

@@ -70,6 +70,7 @@ inbc fota {--uri, -u=URI}
    [--signature, -s SIGNATURE_STRING; default=None] 
    [--tooloptions, -to TOOL_OPTIONS]
    [--username, -un USERNAME] 
+   [--reboot; default=yes] 
 ```
 
 ### Examples
@@ -105,6 +106,7 @@ SOTA on Ubuntu is supported in 3 modes:
 2. No download - Retrieves and installs packages.
 3. Download only - Retrieve packages (will not unpack or install).
 
+
 ### Usage
 ```
 inbc sota {--uri, -u=URI} 
@@ -112,6 +114,7 @@ inbc sota {--uri, -u=URI}
    [--username, -un USERNAME]
    [--command, -c COMMAND; default="update"]
    [--mode, -m MODE; default="full", choices=["full","no-download", "download-only"] ]
+   [--reboot; default=yes]
 ```
 ### Examples
 #### Edge Device on Yocto OS requiring username/password
@@ -121,24 +124,9 @@ inbc sota
      --releasedate 2022-02-22 
      --username <username>
 ```
-<<<<<<< HEAD
 #### Edge Device on Ubuntu in Update/Full mode
-=======
-
-#### Edge Device on Ubuntu update command
->>>>>>> e666b2b ([529912,529913] Add reboot option in OTA and INBC cmd)
 ```
-inbc sota [--command update]
-```
-
-#### Edge Device on Ubuntu in update (download-only) command
-```
-inbc sota [--command update-download-only]
-```
-
-#### Edge Device on Ubuntu in update (no-download) command
-```
-inbc sota [--command update-no-download]
+inbc sota
 ```
 
 #### Edge Device on Ubuntu in download-only mode
@@ -165,6 +153,7 @@ inbc pota {--fotauri, -fu=FOTA_URI}
    [--release_date, -sr SOTA_RELEASE_DATE; default="2026-12-31"] 
    [--fotasignature, -fs SIGNATURE_STRING] 
    [--username, -u USERNAME] 
+   [--reboot; default=yes] 
 ```
 ### Examples
 #### Edge Device on Yocto OS
@@ -344,4 +333,3 @@ inbc query --option sw
 |     -2      |     2     | COMMAND TIMED OUT            |
 |     -3      |     3     | HOST UNAVAILABLE             |
 |     -6      |     6     | HOST BUSY                    |
-

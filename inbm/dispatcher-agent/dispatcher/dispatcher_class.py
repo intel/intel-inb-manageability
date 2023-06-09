@@ -861,7 +861,7 @@ class Dispatcher(WindowsService):
         parsed_manifest = {'sota_mode': self.sota_mode, 'sota_cmd': 'rollback', 'log_to_file': None,
                            'sota_repos': self.sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
-                           'username': None, 'password': None, 'release_date': None}
+                           'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
         sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(),
                              **kwargs)
 
