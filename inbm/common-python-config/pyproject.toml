@@ -41,4 +41,4 @@ max_tuple_unpack_length = 4
 [tool.flakeheaven.plugins]
 "flake8-annotations" = ["-*", "+ANN001", "+ANN2??", "+ANN301"]
 "wemake-python-styleguide" = ["-*", "+WPS2??", "-WPS220", "-WPS223", "-WPS222"] # WPS2?? is complexity; 220 is deep nesting; 223 is elifs; 222 is logic
-"flake8-bandit" = ["+*", "-S404", "-S603", "-E902"]
+"flake8-bandit" = ["+*", "-S404", "-S603"]
