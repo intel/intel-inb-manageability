@@ -3,7 +3,7 @@ jsonschema==4.1.2
 requests==2.31.0
 urllib3==1.26.16
 PySocks==1.7.1
-psutil==5.9.4
+psutil==5.9.5
 shortuuid==1.0.1
-pyinstaller==5.7.0
+pyinstaller==5.11.0
 setuptools==65.5.1

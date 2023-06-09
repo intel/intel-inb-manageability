@@ -5,11 +5,12 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
+import json
 import datetime
 import logging
 from typing import Optional
 
-from inbm_lib.constants import LOG_FILE, OTA_PENDING
+from inbm_lib.constants import LOG_FILE, OTA_PENDING, FORMAT_VERSION
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +18,7 @@ logger = logging.getLogger(__name__)
 class UpdateLogger:
     """UpdateLogger class stores the OTA update information and generates
        log file.
-    @param type: Command to be executed
+    @param ota_type: Type of OTA
     @param data: meta-data of the OTA
     """
 
@@ -33,28 +34,39 @@ class UpdateLogger:
         self._time = datetime.datetime.now()
 
     def set_status_and_error(self, status: str, err: Optional[str]) -> None:
-        """Set status and error message."""
+        """Set status and error message.
+
+        @param status: status to be set.
+        @param err:  error message to be set
+        """
         self._status = status
         self._error = err
 
     def set_metadata(self, data: str) -> None:
-        """Set metadata."""
+        """Set metadata.
+
+        @param data: metadata to be set (xml manifest)
+        """
         self._meta_data = data
 
     def set_ota_type(self, ota_type: str) -> None:
-        """Set ota type."""
+        """Set ota type.
+
+        @param ota_type: type of OTA to be set
+        """
         self._ota_type = ota_type
 
     def save_log(self) -> None:
         """Save the log to a log file."""
-        log = f"Status: {self._status}\n" \
-            f"Type: {self._ota_type}\n" \
-            f"Time: {self._time}\n" \
-            f"Metadata: {self._meta_data}\n" \
-            f"Error: {self._error}\n"
+        log = {'Status': self._status,
+               'Type': self._ota_type,
+               'Time': self._time.strftime("%Y-%m-%d %H:%M:%S"),
+               'Metadata': self._meta_data,
+               'Error': self._error,
+               'Version': FORMAT_VERSION}
         try:
             with open(LOG_FILE, 'w') as log_file:
-                log_file.write(log)
+                log_file.write(json.dumps(str(log)))
         except OSError as e:
             logger.error(f'Error {e} on writing the file {LOG_FILE}')
 
