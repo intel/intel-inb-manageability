@@ -70,7 +70,7 @@ inbc fota {--uri, -u=URI}
    [--signature, -s SIGNATURE_STRING; default=None] 
    [--tooloptions, -to TOOL_OPTIONS]
    [--username, -un USERNAME] 
-   [--reboot; default=yes] 
+   [--reboot, -rb; default=yes] 
 ```
 
 ### Examples
@@ -113,7 +113,7 @@ inbc sota {--uri, -u=URI}
    [--releasedate, -r RELEASE_DATE; default="2026-12-31"] 
    [--username, -un USERNAME]
    [--mode, -m MODE; default="full", choices=["full","no-download", "download-only"] ]
-   [--reboot; default=yes]
+   [--reboot, -rb; default=yes]
 ```
 ### Examples
 #### Edge Device on Yocto OS requiring username/password
@@ -152,7 +152,7 @@ inbc pota {--fotauri, -fu=FOTA_URI}
    [--release_date, -sr SOTA_RELEASE_DATE; default="2026-12-31"] 
    [--fotasignature, -fs SIGNATURE_STRING] 
    [--username, -u USERNAME] 
-   [--reboot; default=yes] 
+   [--reboot, -rb; default=yes] 
 ```
 ### Examples
 #### Edge Device on Yocto OS
