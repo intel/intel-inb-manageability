@@ -46,6 +46,7 @@ from .fota.fota_error import FotaError
 from .ota_factory import OtaFactory
 from .ota_target import *
 from .ota_thread import ota_lock
+from .ota_util import create_ota_resource_list
 from .packagemanager.local_repo import DirectoryRepo
 from .provision_target import ProvisionTarget
 from .remediationmanager.remediation_manager import RemediationManager
@@ -386,7 +387,8 @@ class Dispatcher(WindowsService):
                     state = {'restart_reason': 'restart_cmd'}
                     dispatcher_state.write_dispatcher_state_to_state_file(state)
             else:
-                message = self._do_restart_on_target(xml)
+                self._broker.mqtt_publish(TARGET_CMD_RESTART, xml)
+                message = PUBLISH_SUCCESS
         elif cmd == "query":
             if target_type is None:
                 self._broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
@@ -456,7 +458,7 @@ class Dispatcher(WindowsService):
                 self._update_logger.set_metadata(xml)
 
                 if target_type is TargetType.none.name and ota_type == OtaType.POTA.name.lower():
-                    ota_list = self._create_ota_resource_list(parsed_head, resource)
+                    ota_list = create_ota_resource_list(parsed_head, resource)
                     # Perform manifest checking first before OTA
                     self._validate_pota_manifest(
                         repo_type, target_type, kwargs, parsed_head, ota_list)
@@ -504,22 +506,6 @@ class Dispatcher(WindowsService):
                 self._update_logger.set_status_and_error(OTA_SUCCESS, None)
             self._update_logger.save_log()
             return result.status
-
-    def _create_ota_resource_list(self, parsed_head: XmlHandler, resource: Dict) -> Dict[str, Any]:
-        """Creates a list of OTA commands requested under POTA along with the resources and arguments
-        associated with each OTA
-
-        @param parsed_head: Parsed head of the manifest xml
-        @param resource: resource to parse
-        @return Dict: A dict containing all the OTAs to be performed
-        """
-        ota_resource_dict = {}
-        for key in resource.keys():
-            ota_resource = parsed_head.get_children(f'ota/type/pota/{key}')
-            if key == 'fota':
-                ota_resource['holdReboot'] = True
-            ota_resource_dict[key] = ota_resource
-        return ota_resource_dict
 
     def _do_ota_update(self, xml: str, ota_type: str, repo_type: str, target_type: Optional[str], resource: Dict,
                        kwargs: Dict, parsed_head: XmlHandler) -> Result:
@@ -629,11 +615,6 @@ class Dispatcher(WindowsService):
         else:
             broker_core.mqtt_publish(CONFIG_CHANNEL + config_cmd, xml)
             return PUBLISH_SUCCESS
-
-    def _do_restart_on_target(self, xml: str) -> Result:
-        logger.debug("")
-        self._broker.mqtt_publish(TARGET_CMD_RESTART, xml)
-        return PUBLISH_SUCCESS
 
     def _do_install_on_target(self, ota_type: str, xml: str, repo_type: str, parsed_manifest: Mapping[str, Optional[Any]]):
         logger.debug("")
@@ -882,74 +863,74 @@ class Dispatcher(WindowsService):
                 if ota_type in [OtaType.SOTA.name.lower(), OtaType.FOTA.name.lower(), OtaType.POTA.name.lower()]:
                     self._wo.set_workload_orchestration_mode(online_mode)
 
+    def check_sota_state(self) -> None:
+        """If the restart reason is SOTA then it waits for diag agent to respond with health report. If the wait
+        times-outs or in case of bad health report, it performs a SOTA rollback
+        In case of a good health report, it just deletes the snapshot."""
+        try:
+            self.install_check(check_type='swCheck')
+            self.install_check(check_type='check_network')
+            self._telemetry('On Boot, Diagnostics reports healthy system')
+            self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
+            self._update_logger.update_log(OTA_SUCCESS)
+        except DispatcherException:
+            self._telemetry(
+                'On Boot, Diagnostics reports some services not up after previous SOTA')
+            self.invoke_sota(action='diagnostic_system_unhealthy', snapshot=None)
+            self._update_logger.update_log(OTA_FAIL)
+
+    def check_fota_state(self, fota_state: Dict) -> None:
+        """This method checks the FOTA info in dispatcher state file and validates the release date
+        and bios version number within the file to match the device's fw info and sends the _telemetry
+        info accordingly based on the validation of information above.
+
+        @params fota_state: The consumed information from the dispatcher state file.
+        """
+        # If all the checks pass, the OTA status changes to SUCCESS at the end.
+        self._update_logger.update_log(OTA_FAIL)
+
+        os_type = platform.system()
+        platform_info = PlatformInformation()
+        try:
+            ds_bios_version = str(fota_state['bios_version'])
+            ds_rel_date = str(fota_state['release_date'])
+            if os_type == OsType.Linux.name:
+                if is_dmi_path_exists():
+                    logger.debug("Getting BIOS information from DMI path")
+                    platform_info = get_dmi_system_info()
+                else:
+                    logger.debug("Checking device_tree information")
+                    platform_info = get_device_tree_system_info()
+                    logger.debug("Device-Tree parsed successfully")
+                if UNKNOWN in [platform_info.bios_version, platform_info.bios_release_date]:
+                    self._send_result(
+                        "FOTA INSTALL UNKNOWN: Error gathering BIOS information.")
+                    return
+            else:
+                platform_info.bios_version = wmi.wmic_query('bios', 'caption')['Caption']
+                platform_info.bios_release_date = datetime.datetime.strptime(wmi.wmic_query(
+                    'bios', 'releasedate')['ReleaseDate'], '%Y%m%d000000.000000+000')
+        except (KeyError, ValueError, FotaError, WmiException) as e:
+            self._send_result(
+                f"FOTA INSTALL UNKNOWN: Error gathering BIOS information: {e}")
+            return
+        logger.debug("FW version on system:{} , FW rel date on system: {}".format(
+            platform_info.bios_version, platform_info.bios_release_date))
+        if platform_info.bios_release_date != ds_rel_date and platform_info.bios_version != ds_bios_version:
+            self._send_result(
+                "SUCCESSFUL INSTALL: Overall FOTA update successful. "
+                "System has been updated with new Firmware version...")
+            self._update_logger.update_log(OTA_SUCCESS)
+        else:
+            self._send_result("FAILED INSTALL: Overall FOTA update failed. Firmware not updated.")
+
     def check_dispatcher_state_info(self) -> None:
         """This method is always called on restarting dispatcher.  If there is a dispatcher state
         file existing, then it checks for the restart reason.
         If the restart reason is SOTA, check_sota_state function continues
-        If the restart reason is FOTA, check_fota_state function continues 
+        If the restart reason is FOTA, check_fota_state function continues
         If the restart reason is POTA, both SOTA and FOTA info is checked.
         """
-        def _check_sota_state() -> None:
-            """If the restart reason is SOTA then it waits for diag agent to respond with health report. If the wait
-            times-outs or in case of bad health report, it performs a SOTA rollback
-            In case of a good health report, it just deletes the snapshot."""
-            try:
-                self.install_check(check_type='swCheck')
-                self.install_check(check_type='check_network')
-                self._telemetry('On Boot, Diagnostics reports healthy system')
-                self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
-                self._update_logger.update_log(OTA_SUCCESS)
-            except DispatcherException:
-                self._telemetry(
-                    'On Boot, Diagnostics reports some services not up after previous SOTA')
-                self.invoke_sota(action='diagnostic_system_unhealthy', snapshot=None)
-                self._update_logger.update_log(OTA_FAIL)
-
-        def _check_fota_state(fota_state: Dict) -> None:
-            """This method checks the FOTA info in dispatcher state file and validates the release date
-            and bios version number within the file to match the device's fw info and sends the _telemetry 
-            info accordingly based on the validation of information above.
-
-            @params fota_state: The consumed information from the dispatcher state file.
-            """
-            # If all the checks pass, the OTA status changes to SUCCESS at the end.
-            self._update_logger.update_log(OTA_FAIL)
-
-            os_type = platform.system()
-            platform_info = PlatformInformation()
-            try:
-                ds_bios_version = str(fota_state['bios_version'])
-                ds_rel_date = str(fota_state['release_date'])
-                if os_type == OsType.Linux.name:
-                    if is_dmi_path_exists():
-                        logger.debug("Getting BIOS information from DMI path")
-                        platform_info = get_dmi_system_info()
-                    else:
-                        logger.debug("Checking device_tree information")
-                        platform_info = get_device_tree_system_info()
-                        logger.debug("Device-Tree parsed successfully")
-                    if UNKNOWN in [platform_info.bios_version, platform_info.bios_release_date]:
-                        self._send_result(
-                            "FOTA INSTALL UNKNOWN: Error gathering BIOS information.")
-                        return
-                else:
-                    platform_info.bios_version = wmi.wmic_query('bios', 'caption')['Caption']
-                    platform_info.bios_release_date = datetime.datetime.strptime(wmi.wmic_query(
-                        'bios', 'releasedate')['ReleaseDate'], '%Y%m%d000000.000000+000')
-            except (KeyError, ValueError, FotaError, WmiException) as e:
-                self._send_result(
-                    f"FOTA INSTALL UNKNOWN: Error gathering BIOS information: {e}")
-                return
-            logger.debug("FW version on system:{} , FW rel date on system: {}".format(
-                platform_info.bios_version, platform_info.bios_release_date))
-            if platform_info.bios_release_date != ds_rel_date and platform_info.bios_version != ds_bios_version:
-                self._send_result(
-                    "SUCCESSFUL INSTALL: Overall FOTA update successful. "
-                    "System has been updated with new Firmware version...")
-                self._update_logger.update_log(OTA_SUCCESS)
-            else:
-                self._send_result(
-                    "FAILED INSTALL: Overall FOTA update failed. Firmware not updated.")
 
         if dispatcher_state.is_dispatcher_state_file_exists():
             state = dispatcher_state.consume_dispatcher_state_file(read=True)
@@ -965,14 +946,14 @@ class Dispatcher(WindowsService):
                     raise DispatcherException(
                         "The dispatcher state file doesn't contain 'restart_reason' key...")
             if OtaType.FOTA.name.lower() in restart_reason:
-                _check_fota_state(state)
+                self.check_fota_state(state)
             elif OtaType.POTA.name.lower() in restart_reason:
-                _check_fota_state(state)
-                _check_sota_state()
+                self.check_fota_state(state)
+                self.check_sota_state()
             elif 'restart' in restart_reason:
                 self._send_result("Reboot SUCCESSFUL.")
             else:
-                _check_sota_state()
+                self.check_sota_state()
 
             dispatcher_state.clear_dispatcher_state()
         else:

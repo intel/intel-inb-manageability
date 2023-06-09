@@ -55,6 +55,7 @@
 12. [Issues and Troubleshooting](#issues-and-troubleshooting)
     1. [OTA Error Status](#ota-error-status)
     2. [Dispatcher-Agent Not Receiving Messages](#dispatcher-agent-not-receiving-messages)
+    3. [OTA Status Log File](#ota-status-log-file)
 </details>
 
 ## Introduction
@@ -768,4 +769,13 @@ sudo rm /var/lib/mosquitto/mosquitto.db
 Step 3:
 ```shell
 sudo systemctl start mqtt
+```
+
+### OTA Status Log File
+During the OTA, the OTA status will be recorded and saved at /var/cache/manageability/update-status.log.
+The log file contains the information such as the status, OTA type, time, metadata, error message and format version.
+
+#### Log File Sample
+```text
+"{'Status': 'SUCCESS', 'Type': 'sota', 'Time': '2023-06-07 05:06:43', 'Metadata': '<?xml version=\"1.0\" encoding=\"utf-8\"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile=\"y\">update</cmd></sota></type></ota></manifest>', 'Error': None, 'Version': 'v1'}"
 ```

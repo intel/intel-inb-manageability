@@ -7,12 +7,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - RTC 530033 - Add AOTA Applicaiton Update command to INBC
+ - RTC 529914 - Implement OTA logger
 
 ### Fixed
  - RTC 530482 - Remove 'force' option in OTA's
 
 ## 4.0.1 - 2023-05-26
- - RTC 529914 - Implement OTA logger
 
 ### Security
  - RTC 529956 - [UCC Win] Bug: C:\intel-manageability\ directory can be written by non-admin user

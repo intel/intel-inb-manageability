@@ -15,6 +15,7 @@ from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.ota_thread import AotaThread
 from inbm_lib.xmlhandler import XmlHandler
+from dispatcher.ota_util import create_ota_resource_list
 
 from inbm_common_lib.platform_info import PlatformInformation
 
@@ -176,7 +177,7 @@ class TestDispatcher(TestCase):
             assert "400" in result
 
     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
-    @patch('dispatcher.dispatcher_class.Dispatcher._create_ota_resource_list')
+    @patch('dispatcher.ota_util.create_ota_resource_list')
     @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
     def test_do_install_pota_resource_func_called(self, mock_ota_update, mock_ota_resource_func, MockXmlHandler,
                                                   mock_logging):
@@ -209,7 +210,7 @@ class TestDispatcher(TestCase):
         with patch('dispatcher.dispatcher_class._check_type_validate_manifest', return_value=("ota", parsed_head)):
             d.send_result = Mock()  # type: ignore
             d.do_install("<xml></xml>")
-            res = d._create_ota_resource_list(parsed_head, resource)
+            res = create_ota_resource_list(parsed_head, resource)
             self.assertEquals(list(res.keys()), ['fota', 'sota'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
