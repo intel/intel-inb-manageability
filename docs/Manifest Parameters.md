@@ -116,6 +116,7 @@ description will trigger a FOTA update via Manifest.
 | `<type>`                                 | `<type>`                                     |         R         ||
 | `<sota>`                                 | `<sota>`                                     |         R         ||
 | `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`            |         R         ||
+| `<mode></mode>`                          | `<mode>full</mode>`                          |         O         | Valid values: [full, no-download, download-only]
 | `<fetch></fetch>`                        | `<fetch>https://yoururl/file.mender</fetch>` |         O         | Used to download mender file from remote repository. (use repo=remote)                                                                                      |
 | `<username></username>`                  | `<username>xx</username>`                    |         O         | Username for remote repository                                                                                                                              |                                                                 |
 | `<password></password>`                  | `<password>xxx</password>`                   |         O         | Password for remote repository                                                                                                                              |                                                                 |
@@ -138,6 +139,7 @@ description will trigger a FOTA update via Manifest.
         <type>
             <sota>
                 <cmd logtofile="Y">update</cmd>
+                <mode>full</mode>
             </sota>
         </type>
     </ota>
@@ -201,7 +203,8 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `<password><password>`                   | `<password>pwd</password>`                          |         O         | Password used during fetch from remote repository                      |
 | `</fota>`                                | `</fota>`                                           |         R         |                                                                        |
 | `<sota>`                                 | `<sota>`                                            |         R         |                                                                        |
-| `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`                   |         R         |                                                                        |
+| `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`                   |         R         |                                                                        
+| `<mode></mode>`                          | `<mode>full</mode>`                                 |         O         |  Valid values: [full, no-download, download-only]                      |                                                              
 | `<fetch></fetch>`                        | `<fetch>https://yoururl/file.mender</fetch>`        |         O         | Used to download mender file from remote repository. (use repo=remote) |
 | `<path></path>`                          | `<path>/var/cache/file.mender</path>`               |         O         | Used to update using a local mender file  .  (use repo=local)          |
 | `<username></username>`                  | `<username>xx</username>`                           |         O         | Username for remote repository                                         |                                                                 |
@@ -235,6 +238,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
             </fota>
             <sota>
                <cmd logtofile="y">update</cmd>
+               <mode>full</mode>
                <fetch>https://yoururl/core-image-minimal-20201028223515.dm-verity.mender</fetch>
                <release_date>2021-10-10</release_date>
             </sota>

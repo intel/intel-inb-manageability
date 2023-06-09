@@ -392,7 +392,15 @@
         <xs:restriction base="xs:string">
             <xs:enumeration value="update"/>
             <xs:enumeration value="upgrade"/>
-        </xs:restriction>
+    	</xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="sotamode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="full"/>
+            <xs:enumeration value="no-download"/>
+            <xs:enumeration value="download-only"/> 
+    	</xs:restriction>
     </xs:simpleType>
 
     <xs:element name="sota">
@@ -407,7 +415,15 @@
                         </xs:simpleContent>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="targetType" minOccurs="0" maxOccurs="1">
+	 	<xs:element name="mode" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="sotamode">
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+		<xs:element name="targetType" minOccurs="0" maxOccurs="1">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
                             <xs:enumeration value="host"/>

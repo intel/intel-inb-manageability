@@ -39,7 +39,7 @@ class TestSota(testtools.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': TestSota._build_mock_repo(0), 'username': username,
-                           'password': password}
+                           'password': password, 'sota_mode': 'full'}
         cls.sota_instance = SOTA(parsed_manifest, 'remote',
                                  cls.mock_disp_callbacks_obj, snapshot=1)
         cls.sota_local_instance = SOTA(parsed_manifest, 'local',
@@ -107,7 +107,7 @@ class TestSota(testtools.TestCase):
         parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
                            'sota_repos': None,
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
-                           'username': None, 'password': None, 'release_date': None}
+                           'username': None, 'password': None, 'release_date': None, 'sota_mode': 'full'}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, snapshot=1)
@@ -129,7 +129,7 @@ class TestSota(testtools.TestCase):
         parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
                            'sota_repos': None,
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
-                           'username': None, 'password': None, 'release_date': None}
+                           'username': None, 'password': None, 'release_date': None, 'sota_mode': 'download-only'}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, snapshot=1)
