@@ -231,6 +231,32 @@ class SOTA:
                                        rebooter=rebooter,
                                        time_to_wait_before_reboot=time_to_wait_before_reboot,
                                        release_date=release_date)
+            
+    def _download_sota_files(self, sota_cache_repo: IRepo, release_date: Optional[str]) -> None:
+        """Download SOTA files from either a remote source or use a local source, and clean the cache directory.
+
+        This method is responsible for downloading the necessary SOTA files from the specified remote source or
+        using the local source. It also cleans the cache directory before the download process.
+
+        @param sota_cache_repo: Repo object to store the downloaded files, and to delete all files from cache directory.
+        @param release_date: The release date of the SOTA manifest, used for filtering downloads from the remote source.
+        """
+
+        sota_cache_repo.delete_all()  # clean cache directory
+        # the following line will be optimized out in byte code and only used in unit testing
+        assert self.factory  # noqa: S101
+        if self._repo_type.lower() == REMOTE_SOURCE:
+            downloader: Downloader = self.factory.create_downloader()
+            logger.debug(f"SOTA Download URI: {self._uri}")
+            if self._uri is None:
+                downloader.download(
+                    self._dispatcher_callbacks, None, sota_cache_repo,
+                    self._username, self._password, release_date)
+            else:
+                downloader.download(
+                    self._dispatcher_callbacks, canonicalize_uri(
+                        self._uri), sota_cache_repo,
+                    self._username, self._password, release_date)
 
     def execute_from_manifest(self,
                               setup_helper: SetupHelper,
@@ -257,21 +283,7 @@ class SOTA:
 
         try:
             if setup_helper.pre_processing():
-                sota_cache_repo.delete_all()  # clean cache directory
-                # the following line will be optimized out in byte code and only used in unit testing
-                assert self.factory  # noqa: S101
-                if self._repo_type.lower() == REMOTE_SOURCE:
-                    downloader: Downloader = self.factory.create_downloader()
-                    logger.debug(f"SOTA Download URI: {self._uri}")
-                    if self._uri is None:
-                        downloader.download(
-                            self._dispatcher_callbacks, None, sota_cache_repo,
-                            self._username, self._password, release_date)
-                    else:
-                        downloader.download(
-                            self._dispatcher_callbacks, canonicalize_uri(
-                                self._uri), sota_cache_repo,
-                            self._username, self._password, release_date)
+                self._download_sota_files(sota_cache_repo, release_date)
                 download_success = True
                 snapshotter.take_snapshot()
                 cmd_list = self.calculate_and_execute_sota_upgrade(sota_cache_repo)
