@@ -142,7 +142,7 @@ class SOTA:
                         canonicalize_uri(self._uri), repo)
             else:
                 cmd_list = self.installer.update_local_source(self._local_file_path)
-        elif self.sota_mode == 'upgrade':
+        elif self.sota_cmd == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
         elif self.sota_mode == 'no-download':
             assert self.factory  # noqa: S101
