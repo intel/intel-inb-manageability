@@ -9,7 +9,7 @@ mkdir -p /var/log/sota_test
 echo "Triggering SOTA integration INB test 1: SOTA UPDATE SUCCESS"
 echo "<START> SOTA UPDATE SUCCESS" | systemd-cat
 
-inbc sota --command update
+inbc sota
 
 RESULT=$?
 if [ $RESULT -eq 0 ]; then
