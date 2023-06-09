@@ -54,12 +54,12 @@ class UpdateLogger:
 
         @param ota_type: type of OTA to be set
         """
-        self._ota_type = ota_type
+        self.ota_type = ota_type
 
     def save_log(self) -> None:
         """Save the log to a log file."""
         log = {'Status': self._status,
-               'Type': self._ota_type,
+               'Type': self.ota_type,
                'Time': self._time.strftime("%Y-%m-%d %H:%M:%S"),
                'Metadata': self._meta_data,
                'Error': self._error,
