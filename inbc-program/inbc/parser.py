@@ -104,12 +104,10 @@ class ArgsParser(object):
                                  help='Release date of the applying package - format YYYY-MM-DD')
         parser_sota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
-        parser_sota.add_argument('--command', '-c', default='update',
-                                 required=False) 
-        parser_sota.add_argument('--mode', '-m', default='full', 
-                                 required=False, choices=['full', 'download-only', 'no-download'])
         parser_sota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
                                  help='Type of information [ yes | no ]')
+        parser_sota.add_argument('--mode', '-m', default='full', 
+                                 required=False, choices=['full', 'download-only', 'no-download']) 
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
@@ -287,9 +285,6 @@ def sota(args) -> str:
         'path': path_location
     }
 
-    if not args.command:
-        args.command = 'update'
-    
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>ota</type>' +
@@ -304,8 +299,8 @@ def sota(args) -> str:
                 '</sota></type>' +
                 '</ota>' +
                 '</manifest>').format( 
-        (create_xml_tag(arguments,
-                       "mode",
+                       (create_xml_tag(arguments,
+                       "mode", 
                        "fetch",
                        "username",
                        "password",

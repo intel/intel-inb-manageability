@@ -90,6 +90,15 @@ class OsUpdater(ABC):  # pragma: no cover
         pass
 
 
+    @abstractmethod
+    def no_download(self):
+        pass
+
+    @abstractmethod
+    def download_only(self):
+        pass
+
+
 class DebianBasedUpdater(OsUpdater):
     """DebianBasedUpdater class, child of OsUpdater"""
 
@@ -186,6 +195,7 @@ class DebianBasedUpdater(OsUpdater):
         cmds = ["dpkg --configure -a",
                 "apt-get -yq -f install",
                 "apt-get upgrade --no-download --fix-missing -yq"]
+
         return CommandList(cmds).cmd_list
 
     def download_only(self):

@@ -1,9 +1,10 @@
 import datetime
+import json
 import os
 from unittest import TestCase
 
 from dispatcher.update_logger import UpdateLogger
-from inbm_lib.constants import LOG_FILE, OTA_PENDING, OTA_SUCCESS, OTA_FAIL
+from inbm_lib.constants import LOG_FILE, OTA_PENDING, OTA_SUCCESS, OTA_FAIL, FORMAT_VERSION
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX
 
 
@@ -51,16 +52,17 @@ class TestUpdateLogger(TestCase):
             os.makedirs(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX)
         self.update_logger.save_log()
 
-        expected_log = f"Status: {expected_status}\n" \
-                       f"Type: {expected_type}\n" \
-                       f"Time: 2023-12-25 00:00:00\n" \
-                       f"Metadata: {expected_metadata}\n" \
-                       f"Error: {expected_error}\n"
+        expected_log = {'Status': OTA_FAIL,
+                        'Type': expected_type,
+                        'Time': datetime.datetime(2023, 12, 25, 00, 00, 00, 000000).strftime("%Y-%m-%d %H:%M:%S"),
+                        'Metadata': expected_metadata,
+                        'Error': expected_error,
+                        'Version': FORMAT_VERSION}
 
         with open(LOG_FILE, 'r') as log_file:
             log = log_file.read()
 
-        self.assertEquals(expected_log, log)
+        self.assertEquals(json.dumps(str(expected_log)), log)
 
     def test_update_log(self):
         expected_type = "sota"
@@ -72,13 +74,14 @@ class TestUpdateLogger(TestCase):
         self.update_logger.save_log()
         self.update_logger.update_log(status=OTA_SUCCESS)
 
-        expected_log = f"Status: {OTA_SUCCESS}\n" \
-                       f"Type: {expected_type}\n" \
-                       f"Time: 2023-12-25 00:00:00\n" \
-                       f"Metadata: {SOTA_MANIFEST}\n" \
-                       f"Error: {self.update_logger._error}\n"
+        expected_log = {'Status': OTA_SUCCESS,
+                        'Type': expected_type,
+                        'Time': datetime.datetime(2023, 12, 25, 00, 00, 00, 000000).strftime("%Y-%m-%d %H:%M:%S"),
+                        'Metadata': SOTA_MANIFEST,
+                        'Error': '',
+                        'Version': FORMAT_VERSION}
 
         with open(LOG_FILE, 'r') as log_file:
             log = log_file.read()
 
-        self.assertEquals(expected_log, log)
+        self.assertEquals(json.dumps(str(expected_log)), log)

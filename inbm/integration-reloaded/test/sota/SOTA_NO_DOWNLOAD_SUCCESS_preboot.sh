@@ -8,7 +8,7 @@ mkdir -p /var/log/sota_test
 echo "Triggering SOTA integration INB test 1: SOTA NO-DOWNLOAD SUCCESS"
 echo "<START> SOTA NO-DOWNLOAD SUCCESS" | systemd-cat
 
-inbc sota --command update --mode no-download
+inbc sota --mode no-download
 
 RESULT=$?
 if [ $RESULT -eq 0 ]; then

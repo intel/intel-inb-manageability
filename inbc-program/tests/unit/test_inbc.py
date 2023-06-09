@@ -68,10 +68,9 @@ class TestINBC(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     def test_sota_manifest_pass(self, mock_reconnect):
         f = self.arg_parser.parse_args(
-            ['sota', '-un', 'username', '-u', 'https://abc.com/test.tar', '-c', 'update', '-m', 'full'])
+            ['sota', '-un', 'username', '-u', 'https://abc.com/test.tar', '-m', 'full'])
         self.assertEqual(f.uri, 'https://abc.com/test.tar')
         self.assertEqual(f.username, 'username')
-        self.assertEqual(f.command, "update")
         self.assertEqual(f.mode, "full")
 
 
@@ -200,7 +199,7 @@ class TestINBC(TestCase):
     @patch('inbc.parser.getpass.getpass', return_value='123abc')
     def test_create_sota_mode_manifest(self, mock_pass, mock_reconnect):
         s = self.arg_parser.parse_args(
-            ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank', '-c', 'update', '-m', 'full'])
+            ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank', '-m', 'full'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd ' \
                    'logtofile="y">update</cmd><mode>full</mode>' \

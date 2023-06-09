@@ -100,12 +100,6 @@ class WindowsUpgrader(OsUpgrader):
         logger.debug("")
         pass
 
-    def no_download(self):
-        pass
-
-    def download_only(self):
-        pass
-
 
 class YoctoUpgrader(OsUpgrader):
     """YoctoUpgrader class, child of OsUpgrader"""
@@ -124,9 +118,3 @@ class YoctoUpgrader(OsUpgrader):
         cmds = ['uname']
         self.build_command_checklist(cmds)
         return self.cmd_list
-
-    def no_download(self):
-        pass
-
-    def download_only(self):
-        pass

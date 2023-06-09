@@ -382,7 +382,7 @@
 
     <xs:simpleType name="sotacmd">
         <xs:restriction base="xs:string">
-	        <xs:enumeration value="update"/>
+	          <xs:enumeration value="update"/>	
             <xs:enumeration value="upgrade"/>
         </xs:restriction>
     </xs:simpleType>

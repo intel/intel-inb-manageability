@@ -110,9 +110,8 @@ SOTA on Ubuntu is supported in 3 modes:
 ### Usage
 ```
 inbc sota {--uri, -u=URI} 
-   [--releasedata, -r RELEASE_DATE; default="2026-12-31"] 
+   [--releasedate, -r RELEASE_DATE; default="2026-12-31"] 
    [--username, -un USERNAME]
-   [--command, -c COMMAND; default="update"]
    [--mode, -m MODE; default="full", choices=["full","no-download", "download-only"] ]
    [--reboot; default=yes]
 ```

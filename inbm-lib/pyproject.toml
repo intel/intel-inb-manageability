@@ -1,4 +1,4 @@
-[tool.flakehell]
+[tool.flakeheaven]
 baseline = ".flakehell_baseline"
 format = "grouped"
 show_source = true
@@ -40,7 +40,7 @@ max_decorators = 5
 max_annotation_complexity = 5
 
 
-[tool.flakehell.plugins]
+[tool.flakeheaven.plugins]
 "flake8-annotations" = ["-*", "+ANN001", "+ANN2??", "+ANN301"]
 "flake8-bandit" = ["+*", "-S404", "-S603", "-S101"]
 "wemake-python-styleguide" = ["-*", "+WPS2??", "-WPS220", "-WPS222", "-WPS223", "-WPS202"]
