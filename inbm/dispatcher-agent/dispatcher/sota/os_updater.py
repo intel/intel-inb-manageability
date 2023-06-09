@@ -90,15 +90,6 @@ class OsUpdater(ABC):  # pragma: no cover
         pass
 
 
-    @abstractmethod
-    def no_download(self):
-        pass
-
-    @abstractmethod
-    def download_only(self):
-        pass
-
-
 class DebianBasedUpdater(OsUpdater):
     """DebianBasedUpdater class, child of OsUpdater"""
 
