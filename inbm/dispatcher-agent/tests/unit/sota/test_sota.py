@@ -11,6 +11,8 @@ from dispatcher.sota.sota import SOTA
 from dispatcher.sota.sota import SOTAUtil
 from dispatcher.sota.constants import *
 from inbm_lib.xmlhandler import XmlHandler
+from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX
+
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../../fpm-template/usr/share/dispatcher-agent/'
@@ -37,7 +39,7 @@ class TestSota(testtools.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': TestSota._build_mock_repo(0), 'username': username,
-                           'password': password}
+                           'password': password, 'sota_mode': 'full'}
         cls.sota_instance = SOTA(parsed_manifest, 'remote',
                                  cls.mock_disp_callbacks_obj, snapshot=1)
         cls.sota_local_instance = SOTA(parsed_manifest, 'local',
@@ -105,7 +107,7 @@ class TestSota(testtools.TestCase):
         parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
                            'sota_repos': None,
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
-                           'username': None, 'password': None, 'release_date': None}
+                           'username': None, 'password': None, 'release_date': None, 'sota_mode': 'full'}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, snapshot=1)
@@ -114,6 +116,28 @@ class TestSota(testtools.TestCase):
             if TestSota.sota_instance.proceed_without_rollback:
                 mock_rollback_and_delete_snap.assert_called_once()
             mock_reboot.assert_called_once()
+        except SotaError as e:
+            self.assertEquals(str(e), "SOTA cache directory cannot be created")
+
+    @patch("inbm_lib.detect_os.detect_os")
+    @patch("dispatcher.sota.sota.print_execution_summary")
+    @patch("dispatcher.sota.snapshot.DebianBasedSnapshot._rollback_and_delete_snap")
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=('200', "", 0))
+    def test_run_pass(self, mock_run, mock_rollback_and_delete_snap, mock_print,
+                      mock_detect_os):
+        mock_detect_os.return_value = 'Ubuntu'
+        parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
+                           'sota_repos': None,
+                           'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
+                           'username': None, 'password': None, 'release_date': None, 'sota_mode': 'download-only'}
+        mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
+        try:
+            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, snapshot=1)
+            sota_instance.execute(proceed_without_rollback=False, skip_sleeps=True)
+            mock_print.assert_called_once()
+            if TestSota.sota_instance.proceed_without_rollback:
+                mock_rollback_and_delete_snap.assert_called_once()
+            mock_run.assert_called_once()
         except SotaError as e:
             self.assertEquals(str(e), "SOTA cache directory cannot be created")
 

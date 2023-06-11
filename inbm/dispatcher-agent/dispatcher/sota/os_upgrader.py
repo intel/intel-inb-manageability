@@ -8,7 +8,7 @@
 import logging
 
 from typing import List
-
+from abc import ABC, abstractmethod
 from .command_list import CommandList
 
 logger = logging.getLogger(__name__)
@@ -69,7 +69,7 @@ class WindowsUpgrader(OsUpgrader):
         """
         logger.debug("")
         pass
-
+    
 
 class YoctoUpgrader(OsUpgrader):
     """YoctoUpgrader class, child of OsUpgrader"""
@@ -88,3 +88,4 @@ class YoctoUpgrader(OsUpgrader):
         cmds = ['uname']
         self.build_command_checklist(cmds)
         return self.cmd_list
+    

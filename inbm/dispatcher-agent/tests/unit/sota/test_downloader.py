@@ -33,12 +33,13 @@ class TestDownloader(unittest.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url, 'repo': TestDownloader._build_mock_repo(0), 'username': username,
-                           'password': password}
+                           'password': password, 'sota_mode': 'no-download'}
         cls.sota_instance = SOTA(parsed_manifest, "remote",
                                  DispatcherCallbacks(install_check=cls.mock_disp_callbacks_obj.install_check,
                                                      broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
                                                      sota_repos=cls.mock_disp_callbacks_obj.sota_repos,
-                                                     proceed_without_rollback=cls.mock_disp_callbacks_obj.proceed_without_rollback))
+                                                     proceed_without_rollback=cls.mock_disp_callbacks_obj.proceed_without_rollback,
+                                                     logger=cls.mock_disp_callbacks_obj.logger))
         cls.sota_instance.factory = SotaOsFactory(
             cls.mock_disp_callbacks_obj).get_os('YoctoX86_64')
 

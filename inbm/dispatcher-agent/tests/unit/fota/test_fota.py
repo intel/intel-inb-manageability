@@ -35,7 +35,8 @@ class TestFota(unittest.TestCase):
     mock_disp_callbacks = DispatcherCallbacks(install_check=mock_disp_obj.install_check,
                                               sota_repos=mock_disp_obj.sota_repos,
                                               proceed_without_rollback=mock_disp_obj.proceed_without_rollback,
-                                              broker_core=MockDispatcherBroker.build_mock_dispatcher_broker())
+                                              broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
+                                              logger=mock_disp_obj.update_logger)
 
     @classmethod
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))

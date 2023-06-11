@@ -12,6 +12,7 @@ from threading import Timer
 from typing import Any, Optional, Mapping
 
 from future.moves.urllib.parse import urlparse
+from inbm_lib.constants import OTA_PENDING
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.constants import REMOTE_SOURCE
@@ -48,9 +49,7 @@ class FOTA:
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: DispatcherCallbacks instance
         """
-        logger.debug(f"parsed_manifest: {parsed_manifest}")
         self._ota_element = parsed_manifest.get('resource')
-        logger.debug(f"ota_element: {self._ota_element}")
         self._dispatcher_callbacks = dispatcher_callbacks
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
@@ -141,6 +140,11 @@ class FOTA:
             def trigger_reboot() -> None:
                 """This method triggers a reboot."""
                 factory.create_rebooter().reboot()
+
+            # Save the log before reboot
+            self._dispatcher_callbacks.logger.set_status_and_error(OTA_PENDING, None)
+            self._dispatcher_callbacks.logger.save_log()
+
             if not hold_reboot:
                 logger.debug("")
                 state = {'restart_reason': "fota"}

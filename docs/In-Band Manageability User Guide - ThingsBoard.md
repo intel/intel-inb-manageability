@@ -487,7 +487,7 @@ Manageability Batch` entry:
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image16.png" style="width:5.78333in;height:2.34975in" />
 
 A dashboard similar to the one below should appear:  
-<img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_516194/docs/media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image17.PNG" style="width:5.78333in;height:3.0in" />
+<img src="media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image17.PNG" style="width:5.78333in;height:3.0in" />
 
 A. Change the dashboard (i.e. to the Intel Manageability Devices; refer
     [Setting up the Dashboards](#setting-up-the-dashboards))
@@ -1212,7 +1212,7 @@ Populate the **Trigger Query** pop-up window with the required parameters and cl
 </p>
 
 For the details on **Query options**
-Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)							 
+Refer to [Query options ](../docs/Query.md)							 
 	
 The query command capabilities are also supported via manifest.
 

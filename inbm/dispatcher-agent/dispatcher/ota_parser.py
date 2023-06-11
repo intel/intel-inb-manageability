@@ -17,7 +17,7 @@ from .dispatcher_exception import DispatcherException
 from .dispatcher_callbacks import DispatcherCallbacks
 from inbm_lib.xmlhandler import XmlException
 from inbm_lib.xmlhandler import XmlHandler
-
+from inbm_lib.security_masker import mask_security_info
 from inbm_common_lib.constants import LOCAL_SOURCE
 
 logger = logging.getLogger(__name__)
@@ -79,8 +79,6 @@ class FotaParser(OtaParser):
         @param parsed: parameter current not used for FOTA
         @return: kwargs(dict)
         """
-        logger.debug(
-            f"parsing FOTA manifest. resource: {resource!r} kwargs: {kwargs!r} parsed: {parsed!r}")
         super().parse(resource, kwargs, parsed)
 
         resource_dict = {'uri': self._uri, 'signature': self._signature,
@@ -93,7 +91,6 @@ class FotaParser(OtaParser):
             return resource_dict
 
         kwargs.update(resource_dict)
-        logger.debug(f"returning kwargs {kwargs!r}")
         return kwargs
 
 
@@ -119,6 +116,7 @@ class SotaParser(OtaParser):
         sota_cmd = resource.get('cmd', None)
         release_date = resource.get('release_date', None)
         header = parsed.get_children('ota/header')
+        sota_mode = resource.get('mode', None) 
         main_ota = header['type']
         try:
             if self._ota_type == OtaType.POTA.name.lower() or main_ota == OtaType.POTA.name.lower():
@@ -128,7 +126,8 @@ class SotaParser(OtaParser):
         except (KeyError, DispatcherException):
             log_to_file = 'N'
 
-        resource_dict = {'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri, 'signature': self._signature,
+        resource_dict = {'sota_mode': sota_mode, 'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri, 
+                         'signature': self._signature,
                          'hash_algorithm': self._hash_algorithm, 'resource': resource, 'username': self._username,
                          'password': self._password, 'release_date': release_date}
 

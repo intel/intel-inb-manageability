@@ -2,8 +2,3 @@ Changes in logging for inbm in next version
 -------------------------------------------
 
 ## NEXT - ?
-
-### Added
-   - Added a dispatcher log "Container is not present in active containers list" if dbs is trying to remove a container which was removed already.
-   - Added a dispatcher log "Image is not present in container image list to be removed" if dbs is trying to remove a container image which was already removed.
-

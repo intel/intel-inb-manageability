@@ -3,7 +3,7 @@ from mock import Mock
 from inbc.inbc_exception import InbcException
 from inbc.command.command_factory import create_command_factory
 from inbc.command.command import RestartCommand, QueryCommand
-from inbc.command.ota_command import FotaCommand, SotaCommand, PotaCommand
+from inbc.command.ota_command import FotaCommand, SotaCommand, PotaCommand, AotaCommand
 from inbc.command.config_command import LoadConfigCommand, SetConfigCommand, GetConfigCommand, \
     AppendConfigCommand, RemoveConfigCommand
 
@@ -18,6 +18,9 @@ class TestOsFactory(TestCase):
 
     def test_create_fota_command(self):
         assert type(create_command_factory("fota", Mock())) is FotaCommand
+
+    def test_create_aota_command(self):
+        assert type(create_command_factory("aota", Mock())) is AotaCommand
 
     def test_create_sota_command(self):
         assert type(create_command_factory("sota", Mock())) is SotaCommand

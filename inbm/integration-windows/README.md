@@ -20,11 +20,11 @@ See https://developer.hashicorp.com/vagrant/downloads
 
 The `Makefile` includes the following commands:
 
-* `make install_dependencies` - Installs required dependencies for the integration test.
-* `make setup` - Deletes the existing `inb-files` folder (if present), builds the Windows output, and transfers it to the `inb-files` folder.
-* `make destroy` - Removes the Vagrant environment.
-* `make test` - Deactivates the VBoxSymlinkCreate option and configures the Vagrant environment using VirtualBox as the provider.
-* `make test` - Reprovision the test system without destroying the VM. Please uninstall Turtle Creek first.
+* `make install_dependencies` - Installs required system dependencies for the integration test. Generally this will only be done once per host system.
+* `make setup` - Deletes the existing `inb-files` folder (if present), builds the Windows output, and transfers it to the `inb-files` folder. Any time you want to run or rerun tests this is necessary.
+* `make up` - Brings Vagrant VM up from scratch and runs tests.
+* `make provision` - Rerun tests without destroying the VM.
+* `make destroy` - Removes the Vagrant VM.
 
 ## Further Information
 

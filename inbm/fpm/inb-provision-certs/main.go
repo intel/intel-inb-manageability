@@ -21,7 +21,7 @@ import (
 	"crypto/x509"
 )
 
-const bitSize = 3072
+const bitSize = 4096
 
 func usage() {
 	_, _ = fmt.Fprintf(os.Stderr, "usage: inb-provision-certs [public directory] [secret directory]\n")

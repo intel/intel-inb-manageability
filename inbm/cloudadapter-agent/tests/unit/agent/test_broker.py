@@ -10,9 +10,7 @@ import mock
 
 from cloudadapter.agent.broker import Broker, TC_TOPIC
 
-from cloudadapter.constants import AGENT
-from cloudadapter.constants import TC_REQUEST_CHANNEL
-from cloudadapter.constants import SHUTDOWN, RESTART, INSTALL, COMMAND
+from cloudadapter.constants import AGENT, TC_REQUEST_CHANNEL, SHUTDOWN, RESTART, INSTALL, COMMAND, CLIENT_CERTS, CLIENT_KEYS
 
 
 class TestBroker(unittest.TestCase):
@@ -21,6 +19,18 @@ class TestBroker(unittest.TestCase):
     def setUp(self, MockMQTT):
         self.MockMQTT = MockMQTT
         self.broker = Broker()
+
+    @mock.patch("os.path.islink")
+    def test_init_raises_value_error_if_certs_or_keys_are_symlinks(self, mock_islink):
+        # Make os.path.islink return True for either CLIENT_CERTS or CLIENT_KEYS
+        mock_islink.side_effect = lambda path: path == CLIENT_CERTS or path == CLIENT_KEYS
+
+        # Check if ValueError is raised when initializing Broker with symbolic links
+        with self.assertRaises(ValueError) as context:
+            Broker()
+
+        expected_error_message = f"CLIENT_CERTS ({CLIENT_CERTS}) and CLIENT_KEYS ({CLIENT_KEYS}) should not be symbolic links."
+        self.assertEqual(str(context.exception), expected_error_message)
 
     @mock.patch('cloudadapter.agent.broker.logger')
     def test_bind_callback_telemetry_succeeds(self, mock_logger):

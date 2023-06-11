@@ -30,6 +30,16 @@ rm -rf output-check/
 rsync -av output-main/ output/
 rm -rf output-main/
 
+# Build main output for Windows
+./build-windows.sh
+rm -rf inb-files
+mkdir -p inb-files
+cp -r output-windows/windows/* inb-files
+zip -r inbm-windows.zip inb-files
+mv inbm-windows.zip output
+rm -rf inb-files
+rm -rf output-windows
+
 # rpmlite tgz/load tgz
 ( rm -rf "$DIR"/scratch-packaging # to avoid docker cache invalidation
   cp -r "$DIR"/packaging "$DIR"/scratch-packaging

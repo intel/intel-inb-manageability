@@ -17,7 +17,6 @@ import signal
 import logging
 import sys
 from logging.config import fileConfig
-import snoop
 
 from inbm_lib.windows_service import WindowsService
 
@@ -35,10 +34,10 @@ class CloudAdapter(WindowsService):
 
         self.waiter: Waiter = Waiter()
 
-    def svc_stop(self) -> None:  # pragma: nocover
+    def svc_stop(self) -> None:  # pragma: no cover
         self.waiter.finish()
 
-    def svc_main(self) -> None:  # pragma: nocover
+    def svc_main(self) -> None:  # pragma: no cover
         self.start()
 
     def start(self) -> None:
@@ -49,6 +48,11 @@ class CloudAdapter(WindowsService):
         # Configure logging
         path = os.environ.get('LOGGERCONFIG', LOGGERCONFIG)
         print(f"Looking for logging configuration file at {path}")
+
+        if os.path.islink(path):
+            print(f"Logger config at path {path} is a symbolic link. Exiting.")
+            sys.exit(1)
+
         fileConfig(path, disable_existing_loggers=False)
         logger = logging.getLogger(__name__)
         if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
@@ -56,8 +60,6 @@ class CloudAdapter(WindowsService):
                 "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
         logger.info('Cloud Adapter agent is running')
-
-        snoop.install(out=logger.info)
 
         # Exit if configuration is malformed
         try:

@@ -185,7 +185,7 @@ class TestPublisher(unittest.TestCase):
 
         self.QUERY_ARGUMENTS_ALL = {
             "option": "all",
-         }
+        }
 
         self.QUERY_HW = ('<?xml version="1.0" encoding="UTF-8"?>'
                       '<manifest>'
@@ -290,7 +290,7 @@ class TestPublisher(unittest.TestCase):
         self.QUERY_ARGUMENTS_STATUS = {
             "option": "status",
         }
- 
+
     def test_publish_manifest_succeed(self):
         manifest = "<manifest></mainfest>"
 
@@ -449,7 +449,6 @@ class TestPublisher(unittest.TestCase):
         arguments.update(option="invalid")
 
         self.assertRaises(ValueError, self.publisher.publish_query, **arguments)
-
 
     def test_publish_config_without_arguments_fail(self):
         failed = False

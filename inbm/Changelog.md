@@ -5,8 +5,40 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Added
+ - RTC 530033 - Add AOTA Applicaiton Update command to INBC
+ - RTC 530032 - Add INBC SOTA update, download-only and no-download modes 
+ - RTC 529914 - Implement OTA logger
+
+### Fixed
+ - RTC 530482 - Remove 'force' option in OTA's
+
+## 4.0.1 - 2023-05-26
+
+### Security
+ - RTC 529956 - [UCC Win] Bug: C:\intel-manageability\ directory can be written by non-admin user
+ - RTC 529951 - Cloudadapter does not check if certain files are symlinks
+ - Increased bit size when generating TLS keys
+ - Updated pypi requests to fix dependabot security alert
+
+### Changed
+ - Added recommendation to use BitLocker when installing in Windows.
+
+
+## 4.0.0 - 2023-05-16
+
+### Added
+ - Added Windows output (UCC only) from main build
+
 ### Fixed
  - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
+ - RTC 528654 - [Defect] Remove parameters from INBC for version, manufacturer, product, and vendor for both POTA and FOTA commands
+ - RTC 529947 - Fix UCC bitsize 
+
+### Security
+ - RTC 528652 Mask Confidential data (Username & Password) of OTA is exposed in logs
+ - RTC 529258 Adjust Windows build to address 3rd party vulnerabilities
+ - Removed some unneeded libraries with vulnerabilities
 
 ## 3.0.15 - 2023-04-14
 

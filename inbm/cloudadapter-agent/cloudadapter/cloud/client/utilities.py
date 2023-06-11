@@ -72,7 +72,7 @@ class TLSConfig:
 
         @param ca_certs: (str) File path to CA certificates to use
         @exception IOError: If CA certificates path is invalid
-        """        
+        """
         self._context = self._make_tls_context(ca_certs, device_cert, device_key)
 
     @property
@@ -99,7 +99,8 @@ class TLSConfig:
         context.check_hostname = True
 
         if device_cert:
-            logger.debug(f'Loading cert chain. device_cert = {device_cert}, device_key = {device_key}')
+            logger.debug(
+                f'Loading cert chain. device_cert = {device_cert}, device_key = {device_key}')
             context.load_cert_chain(device_cert, device_key)
         if ca_certs:
             try:

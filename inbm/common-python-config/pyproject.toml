@@ -1,4 +1,4 @@
-[tool.flakehell]
+[tool.flakeheaven]
 baseline = ".flakehell_baseline"
 format = "grouped"
 show_source = true
@@ -15,9 +15,9 @@ max_line_length = 99
 max_jones_score = 12
 max_cognitive_score = 208 # extremely high
 max_line_complexity = 21 # high
-max_imports = 47 # very high
+max_imports = 49 # very high
 max_module_members = 14 # very high
-max_imported_names = 58 # very high
+max_imported_names = 62 # very high
 max_module_expressions = 47 # very high
 max_function_expressions = 8 # high
 max_local_variables = 15 # very high
@@ -38,7 +38,7 @@ max_annotation_complexity = 4
 max_import_from_members = 12
 max_tuple_unpack_length = 4
 
-[tool.flakehell.plugins]
+[tool.flakeheaven.plugins]
 "flake8-annotations" = ["-*", "+ANN001", "+ANN2??", "+ANN301"]
 "wemake-python-styleguide" = ["-*", "+WPS2??", "-WPS220", "-WPS223", "-WPS222"] # WPS2?? is complexity; 220 is deep nesting; 223 is elifs; 222 is logic
 "flake8-bandit" = ["+*", "-S404", "-S603"]
