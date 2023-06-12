@@ -36,6 +36,16 @@ if [ -f /etc/dispatcher_state ] ; then
   exit 1
 fi
 
+# Check status in log file
+if grep -Fq "SUCCESS" ${OTA_LOG_FILE}
+then
+    echo "Found SUCCESS status in log file."
+else
+    echo "SUCCESS status not found in log file."
+    echo "<FAILED> SOTA NO_DOWNLOAD SUCCESS TEST"
+    exit 1
+fi
+
 echo "<PASS> SOTA NO_DOWNLOAD SUCCESS TEST"
 #snapper -c rootConfig list | grep
 
