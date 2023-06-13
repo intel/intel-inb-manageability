@@ -46,7 +46,7 @@ class TestFota(unittest.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': "/cache/", 'username': username,
-                           'password': password}
+                           'password': password, 'deviceReboot': 'yes'}
         TestFota._fota_instance = FOTA(parsed_manifest, "remote", cls.mock_disp_callbacks)
         TestFota._fota_local_instance = FOTA(parsed_manifest, "local", cls.mock_disp_callbacks)
         parsed_manifest.update({'resource': cls.resource_2})

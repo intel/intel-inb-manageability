@@ -19,3 +19,13 @@ else
   exit 1
 fi
 
+# Check status in log file
+if grep -Fq "PENDING" ${OTA_LOG_FILE}
+then
+    echo "<REBOOT> SOTA NO-DOWNLOAD SUCCESS TEST"
+    echo "Found PENDING status."
+else
+    echo "PENDING status not found in log file."
+    echo "<FAILED> SOTA NO-DOWNLOAD SUCCESS TEST"
+    exit 1
+fi

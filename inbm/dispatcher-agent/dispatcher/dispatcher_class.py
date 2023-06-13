@@ -144,7 +144,7 @@ class Dispatcher(WindowsService):
         self.update_queue: Queue[Tuple[str, str]] = Queue(1)
         self._thread_count = 1
         self.sota_repos = None
-        self.sota_mode = None 
+        self.sota_mode = None
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
         self.dbs_remove_image_on_failed_container = True
@@ -503,7 +503,12 @@ class Dispatcher(WindowsService):
             if result.status != CODE_OK and parsed_head:
                 self._update_logger.set_status_and_error(OTA_FAIL, str(result))
                 self.invoke_workload_orchestration_check(True, type_of_manifest, parsed_head)
-            if result.status == CODE_OK:
+
+            # FOTA, SOTA and POTA will be in PENDING state before system reboot.
+            if result.status == CODE_OK and \
+                    self._update_logger.ota_type != "sota" and \
+                    self._update_logger.ota_type != "fota" and \
+                    self._update_logger.ota_type != "pota":
                 self._update_logger.set_status_and_error(OTA_SUCCESS, None)
             self._update_logger.save_log()
             return result.status
@@ -837,7 +842,7 @@ class Dispatcher(WindowsService):
         parsed_manifest = {'sota_mode': self.sota_mode, 'sota_cmd': 'rollback', 'log_to_file': None,
                            'sota_repos': self.sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
-                           'username': None, 'password': None, 'release_date': None}
+                           'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
         sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(),
                              **kwargs)
 
