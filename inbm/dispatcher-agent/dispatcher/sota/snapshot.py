@@ -12,6 +12,8 @@ from abc import ABC, abstractmethod
 from inbm_lib.trtl import Trtl
 from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_common_lib.utility import check_filesystem_type
+from inbm_common_lib.constants import EXT4
 from .constants import MENDER_FILE_PATH
 from .mender_util import read_current_mender_version
 from .rebooter import Rebooter
@@ -120,6 +122,7 @@ class DebianBasedSnapshot(Snapshot):
         logger.debug("")
         self._dispatcher_callbacks.broker_core.telemetry(
             f"SOTA Attempting snapshot of system before SOTA {self.sota_cmd}")
+
         try:
             temp_snapshot_num, err = self.trtl.single_snapshot("sota_" + self.sota_cmd)
             if err:
@@ -139,6 +142,13 @@ class DebianBasedSnapshot(Snapshot):
 
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
+            if check_filesystem_type() == EXT4:
+                # In ext4, there is no snapper. Create this initial state so that dispatcher will perform
+                # sota_state checking after reboot.
+                logger.debug(f"{EXT4} filesystem. Create dummy dispatcher state file.")
+                initial_state = {'restart_reason': "sota_" +
+                                                   self.sota_cmd, 'snapshot_num': 0}
+                dispatcher_state.write_dispatcher_state_to_state_file(initial_state)
             if self.proceed_without_rollback:
                 self._dispatcher_callbacks.broker_core.telemetry(
                     "SOTA snapshot of system failed, will proceed "

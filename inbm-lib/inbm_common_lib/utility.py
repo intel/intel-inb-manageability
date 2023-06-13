@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Union
 
-from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER
+from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER, FSTAB_PATH, EXT4, UNKNOWN
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 from .constants import URL_NULL_CHAR
@@ -250,3 +250,19 @@ def validate_file_type(path: List[str]) -> None:
     if os.path.exists(TEMP_EXT_FOLDER):
         shutil.rmtree(TEMP_EXT_FOLDER, ignore_errors=True)
     remove_file_list(extracted_file_list)
+
+
+def check_filesystem_type() -> str:
+    with open(FSTAB_PATH, "r") as file:
+        lines = file.readlines()
+
+    for line in lines:
+        if line.startswith('#'):
+            continue
+        filesystem = line.split()
+        if len(filesystem) >= 2:
+            mount = filesystem[1]
+            if mount == '/':
+                logger.debug(f"System is {filesystem[2]}")
+                return filesystem[2]
+    return UNKNOWN

@@ -58,3 +58,10 @@ AFULNX_64 = 'afulnx_64'
 
 # Default signature version
 DEFAULT_HASH_ALGORITHM = 384
+
+# Fstab location:
+FSTAB_PATH = '/etc/fstab'
+
+# Filesystem type:
+EXT4 = 'ext4'
+BTRFS = 'btrfs'
