@@ -94,4 +94,3 @@ class YoctoUpgrader(OsUpgrader):
         cmds = ['uname']
         self.build_command_checklist(cmds)
         return self.cmd_list
-

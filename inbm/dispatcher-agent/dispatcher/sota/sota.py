@@ -99,7 +99,7 @@ class SOTA:
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.sota_mode = parsed_manifest['sota_mode']
         self._device_reboot = parsed_manifest['deviceReboot']
-        
+
         if self._repo_type == LOCAL_SOURCE:
             if self._ota_element is None:
                 raise SotaError("ota_element is missing for SOTA")
@@ -147,12 +147,12 @@ class SOTA:
         elif self.sota_mode == 'no-download':
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
-            cmd_list = self.installer.no_download() 
+            cmd_list = self.installer.no_download()
         elif self.sota_mode == 'download-only':
-            assert self.factory  # noqa: S101     
+            assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
-            cmd_list = self.installer.download_only() 
-        
+            cmd_list = self.installer.download_only()
+
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
         run_commands(log_destination=log_destination,
                      cmd_list=cmd_list,
@@ -231,7 +231,7 @@ class SOTA:
                                        rebooter=rebooter,
                                        time_to_wait_before_reboot=time_to_wait_before_reboot,
                                        release_date=release_date)
-            
+
     def _download_sota_files(self, sota_cache_repo: IRepo, release_date: Optional[str]) -> None:
         """Download SOTA files from either a remote source or use a local source, and clean the cache directory.
 
@@ -318,7 +318,7 @@ class SOTA:
                 else:
                     self._dispatcher_callbacks.logger.set_status_and_error(OTA_PENDING, None)
                 self._dispatcher_callbacks.logger.save_log()
-                if self.sota_mode == 'download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]: # pragma: no cover
+                if self.sota_mode == 'download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]:  # pragma: no cover
                     self._dispatcher_callbacks.broker_core.telemetry("No reboot (SOTA pass)")
                 else:
                     self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")

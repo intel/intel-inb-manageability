@@ -144,7 +144,7 @@ class Dispatcher(WindowsService):
         self.update_queue: Queue[Tuple[str, str]] = Queue(1)
         self._thread_count = 1
         self.sota_repos = None
-        self.sota_mode = None 
+        self.sota_mode = None
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
         self.dbs_remove_image_on_failed_container = True

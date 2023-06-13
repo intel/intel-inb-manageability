@@ -175,7 +175,6 @@ class DebianBasedUpdater(OsUpdater):
             logger.info('Update size could not be extracted!')
             return 0
 
-
     def no_download(self):
         """Update command overridden from factory. It builds the commands for Ubuntu update
         of no-download command
@@ -243,7 +242,6 @@ class YoctoX86_64Updater(OsUpdater):
         """
         return 0
 
-
     def no_download(self):
         pass
 
@@ -291,7 +289,6 @@ class YoctoARMUpdater(OsUpdater):
         """
         return 0
 
-
     def no_download(self):
         pass
 
@@ -327,11 +324,10 @@ class WindowsUpdater(OsUpdater):
         """Gets the size of the update.  Stub.
         @return: Returns 0 if size is freed. Returns in bytes of size consumed
         """
-        return 0 
-    
+        return 0
+
     def no_download(self):
         pass
 
     def download_only(self):
         pass
-
