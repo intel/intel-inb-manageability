@@ -190,6 +190,8 @@ class DebianBasedSnapshot(Snapshot):
         err: Optional[str]
         if self.snap_num is None:
             rc, err = 1, 'snap_num is None'
+        elif self.snap_num == 0:
+            rc, err = 0, 'snap_num is 0 (dummy snapshot); no need to delete'
         else:
             rc, err = self.trtl.delete_snapshot(self.snap_num)
         if err is None:
