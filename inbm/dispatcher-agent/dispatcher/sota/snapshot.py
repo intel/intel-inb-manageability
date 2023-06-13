@@ -124,12 +124,6 @@ class DebianBasedSnapshot(Snapshot):
         try:
             temp_snapshot_num, err = self.trtl.single_snapshot("sota_" + self.sota_cmd)
             if err:
-                # Even if we can't take a snapshot, on a subsequent boot we still
-                # need dispatcher_state to reflect that we ran a SOTA so we can update
-                # logs, perform health check, etc.
-                initial_state = {'restart_reason': "sota_" +
-                            self.sota_cmd, 'snapshot_num': 0}
-                dispatcher_state.write_dispatcher_state_to_state_file(initial_state)
                 raise DispatcherException(err)
             snapshot_num: str = temp_snapshot_num.strip(' \t\n\r')
             if snapshot_num:
@@ -147,6 +141,12 @@ class DebianBasedSnapshot(Snapshot):
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
             if self.proceed_without_rollback:
+                # Even if we can't take a snapshot, on a subsequent boot we still
+                # need dispatcher_state to reflect that we ran a SOTA so we can update
+                # logs, perform health check, etc.
+                initial_state = {'restart_reason': "sota_" +
+                            self.sota_cmd, 'snapshot_num': 0}
+                dispatcher_state.write_dispatcher_state_to_state_file(initial_state)
                 self._dispatcher_callbacks.broker_core.telemetry(
                     "SOTA snapshot of system failed, will proceed "
                     "without snapshot/rollback feature")
