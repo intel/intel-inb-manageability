@@ -129,7 +129,8 @@ class TestINBC(TestCase):
                    '<product>Alder Lake Client Platform</product><releasedate>2024-12-31</releasedate>' \
                    '<tooloptions>/b /p</tooloptions>' \
                    '<username>frank</username><password>123abc</password>' \
-                   '<fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
+                   '<fetch>https://abc.com/package.bin</fetch><deviceReboot>yes</deviceReboot>' \
+                   '</fota></type></ota></manifest>'
         self.assertEqual(p.func(p), expected)
         assert mock_start.call_count == 1
 
@@ -153,7 +154,8 @@ class TestINBC(TestCase):
                    '<biosversion>ADLSFWI1.R00</biosversion><vendor>Intel Corporation</vendor' \
                    '><manufacturer>Intel Corporation</manufacturer><product>Alder Lake Client Platform</product>' \
                    '<releasedate>2024-12-31' \
-                   '</releasedate><fetch>https://abc.com/package.bin</fetch></fota></type></ota></manifest>'
+                   '</releasedate><fetch>https://abc.com/package.bin</fetch><deviceReboot>yes</deviceReboot>' \
+                   '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
     @patch('sys.stderr', new_callable=StringIO)
@@ -174,7 +176,8 @@ class TestINBC(TestCase):
     def test_create_ubuntu_update_manifest(self):
         s = self.arg_parser.parse_args(['sota'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
-                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode></sota></type>' \
+                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode>' \
+                   '<deviceReboot>yes</deviceReboot></sota></type>' \
                    '</ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
@@ -187,7 +190,8 @@ class TestINBC(TestCase):
                    '><repo>remote</repo></header><type><sota><cmd ' \
                    'logtofile="y">update</cmd><mode>full</mode>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
-                   '<release_date>2026-12-31</release_date></sota></type></ota></manifest>'
+                   '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot>' \
+                   '</sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
 
@@ -200,7 +204,7 @@ class TestINBC(TestCase):
                    '><repo>remote</repo></header><type><sota><cmd ' \
                    'logtofile="y">update</cmd><mode>full</mode>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
-                   '<release_date>2026-12-31</release_date></sota></type></ota></manifest>'
+                   '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
 
@@ -215,6 +219,7 @@ class TestINBC(TestCase):
                    '><manufacturer>Intel</manufacturer><product>kmb</product>' \
                    '<releasedate>2024-12-31' \
                    '</releasedate><fetch>https://abc.com/BIOS.img</fetch>' \
+                   '<deviceReboot>yes</deviceReboot>' \
                    '</fota></type></ota></manifest>'
         self.assertEqual(f.func(f), expected)
 
@@ -240,10 +245,12 @@ class TestINBC(TestCase):
                    '<biosversion>ADLSFWI1.R00</biosversion><manufacturer>Intel Corporation</manufacturer>' \
                    '<product>Alder Lake Client Platform</product>' \
                    '<vendor>Intel Corporation</vendor><releasedate>2026-12-31</releasedate>' \
+                   '<deviceReboot>yes</deviceReboot>' \
                    '<fetch>/var/cache/manageability/repository-tool/fip.bin</fetch></fota><sota><cmd ' \
                    'logtofile="y">update</cmd>' \
                    '<release_date>2026-12-31</release_date>' \
                    '<fetch>/var/cache/manageability/repository-tool/file.mender</fetch>' \
+                   '<deviceReboot>yes</deviceReboot>' \
                    '</sota></pota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 

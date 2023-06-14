@@ -29,7 +29,7 @@ class TestOsUpgrader(unittest.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url, 'repo': TestOsUpgrader._build_mock_repo(0), 'username': username,
-                           'password': password, 'sota_mode': 'download-only'}
+                           'password': password, 'sota_mode': 'download-only', 'deviceReboot': "no"}
         sota_instance = SOTA(parsed_manifest, "remote", DispatcherCallbacks(install_check=cls.mock_disp_callbacks_obj.install_check,
                                                                             broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
                                                                             sota_repos=cls.mock_disp_callbacks_obj.sota_repos,

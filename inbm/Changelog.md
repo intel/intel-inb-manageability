@@ -5,10 +5,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## 4.1.0 - 2023-06-13
+
 ### Added
  - RTC 530033 - Add AOTA Applicaiton Update command to INBC
  - RTC 530032 - Add INBC SOTA update, download-only and no-download modes 
  - RTC 529914 - Implement OTA logger
+ - RTC 529912 - Add a reboot option (optional) in OTA manifest for FOTA, SOTA and POTA
+ - RTC 529913 - Update INBC to take in the optional reboot option in an OTA cmd
 
 ### Fixed
  - RTC 530482 - Remove 'force' option in OTA's

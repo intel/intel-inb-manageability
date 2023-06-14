@@ -36,7 +36,7 @@ class TestUpdateLogger(TestCase):
     def test_set_ota_type(self):
         expected_type = "aota"
         self.update_logger.set_ota_type(expected_type)
-        self.assertEquals(expected_type, self.update_logger._ota_type)
+        self.assertEquals(expected_type, self.update_logger.ota_type)
 
     def test_save_log(self):
         expected_status = OTA_FAIL

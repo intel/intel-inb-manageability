@@ -86,6 +86,8 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Tool Options', 10))
         parser_fota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser_fota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
         parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
                                  type=validate_guid)
         parser_fota.set_defaults(func=fota)
@@ -102,6 +104,8 @@ class ArgsParser(object):
                                  help='Release date of the applying package - format YYYY-MM-DD')
         parser_sota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser_sota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
         parser_sota.add_argument('--mode', '-m', default='full', 
                                  required=False, choices=['full', 'download-only', 'no-download']) 
         parser_sota.set_defaults(func=sota)
@@ -128,6 +132,8 @@ class ArgsParser(object):
                                  help='FOTA Signature string')
         parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware GUID update',
                                  type=validate_guid)
+        parser_pota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
         parser_pota.set_defaults(func=pota)
 
     def parse_load_args(self) -> None:
@@ -275,9 +281,9 @@ def sota(args) -> str:
         'fetch': fetch_location,
         'username': args.username,
         'password': _get_password(args),
+        'deviceReboot': args.reboot,
         'path': path_location
     }
-
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
@@ -299,7 +305,8 @@ def sota(args) -> str:
                        "username",
                        "password",
                        "release_date",
-                       "path"
+                       "path",
+                       "deviceReboot"
                        ))
     )
     print("manifest {0}".format(manifest))
@@ -339,7 +346,8 @@ def fota(args) -> str:
         'fetch': args.uri,
         'username': args.username,
         'password': _get_password(args),
-        'guid': args.guid
+        'guid': args.guid,
+        'deviceReboot': args.reboot
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -364,7 +372,8 @@ def fota(args) -> str:
                        "username",
                        "password",
                        "guid",
-                       'fetch')
+                       'fetch',
+                       "deviceReboot")
     )
     print("manifest {0}".format(manifest))
     return manifest
@@ -392,11 +401,13 @@ def pota(args) -> str:
         'product': p.platform_product,
         'release_date': args.release_date,
         FOTA_SIGNATURE: args.fotasignature,
-        'guid': args.guid
+        'guid': args.guid,
+        'deviceReboot': args.reboot
     }
 
     fota_tag = f'<fetch>{args.fotauri}</fetch>'
-    sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
+    sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>' \
+                                                               f'<deviceReboot>{args.reboot}</deviceReboot>'
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
@@ -416,7 +427,8 @@ def pota(args) -> str:
                        "product",
                        "vendor",
                        "releasedate",
-                       "guid"
+                       "guid",
+                       'deviceReboot'
                        ),
         fota_tag,
         create_xml_tag(arguments,

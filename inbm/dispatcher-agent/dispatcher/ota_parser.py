@@ -81,11 +81,13 @@ class FotaParser(OtaParser):
         """
         super().parse(resource, kwargs, parsed)
 
+        device_reboot = resource.get('deviceReboot', "yes")
         resource_dict = {'uri': self._uri, 'signature': self._signature,
                          'hash_algorithm': self._hash_algorithm,
                          'resource': resource,
                          'username': self._username,
-                         'password': self._password}
+                         'password': self._password,
+                         'deviceReboot': device_reboot}
 
         if self._ota_type == OtaType.POTA.name.lower():
             return resource_dict
@@ -116,8 +118,9 @@ class SotaParser(OtaParser):
         sota_cmd = resource.get('cmd', None)
         release_date = resource.get('release_date', None)
         header = parsed.get_children('ota/header')
-        sota_mode = resource.get('mode', None) 
+        sota_mode = resource.get('mode', None)
         main_ota = header['type']
+        device_reboot = resource.get('deviceReboot', "yes")
         try:
             if self._ota_type == OtaType.POTA.name.lower() or main_ota == OtaType.POTA.name.lower():
                 log_to_file = parsed.get_attribute('ota/type/pota/sota/cmd', 'logtofile')
@@ -126,10 +129,10 @@ class SotaParser(OtaParser):
         except (KeyError, DispatcherException):
             log_to_file = 'N'
 
-        resource_dict = {'sota_mode': sota_mode, 'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri, 
+        resource_dict = {'sota_mode': sota_mode, 'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri,
                          'signature': self._signature,
                          'hash_algorithm': self._hash_algorithm, 'resource': resource, 'username': self._username,
-                         'password': self._password, 'release_date': release_date}
+                         'password': self._password, 'release_date': release_date, 'deviceReboot': device_reboot}
 
         if self._ota_type == OtaType.POTA.name.lower():
             return resource_dict

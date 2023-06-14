@@ -79,6 +79,8 @@ class FOTA:
 
         self._username = parsed_manifest['username']
         self._password = parsed_manifest['password']
+        self._password = parsed_manifest['password']
+        self._device_reboot = parsed_manifest['deviceReboot']
         if self._dispatcher_callbacks is None:
             raise FotaError("dispatcher_callbacks not specified in FOTA constructor")
         self._dispatcher_callbacks.broker_core.telemetry("Firmware Update Tool launched")
@@ -149,8 +151,9 @@ class FOTA:
                 logger.debug("")
                 state = {'restart_reason': "fota"}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
-                time_to_trigger_reboot = Timer(0.1, trigger_reboot)
-                time_to_trigger_reboot.start()
+                if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
+                    time_to_trigger_reboot = Timer(0.1, trigger_reboot)
+                    time_to_trigger_reboot.start()
                 return_message = COMMAND_SUCCESS
             else:
                 status = 'Reboot on hold after Firmware update...'
