@@ -17,17 +17,15 @@ mp = MethodParser({
 @atheris.instrument_func
 def TestOneInput(input_bytes):
     fdp = atheris.FuzzedDataProvider(input_bytes)
-    data = fdp.ConsumeString(4000)
+    topic_data = fdp.ConsumeString(1000)
+    payload_data = fdp.ConsumeString(5000)
 
     try:
-        mp.parse(data, "payload")
+        mp.parse(topic_data, payload_data)
     except ValueError:
         pass
-
-    input_type = str(type(data))
-    codepoints = [hex(ord(x)) for x in data]
-    sys.stdout.write(f"Input was {input_type}: {data}\nCodepoints: {codepoints}")
-    raise
+    except Exception:
+        raise
 
 
 def main():

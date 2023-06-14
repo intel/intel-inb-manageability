@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 MAX_STRING_CHARS = 50
 MAX_PORT_LENGTH = 7
+MAX_CLIENT_ID_LENGTH = 35
+
 
 class MQTTConnection(Connection):
 
@@ -58,6 +60,8 @@ class MQTTConnection(Connection):
             raise ValueError(f"{hostname} is too long.  Must be less than {MAX_STRING_CHARS} in length")
         if len(port) > MAX_PORT_LENGTH:
             raise ValueError(f"{port} is too long.  Must be less than {MAX_PORT_LENGTH} in length")
+        if len(client_id) > MAX_CLIENT_ID_LENGTH:
+            raise ValueError(f"{client_id} is too long.  Must be less than {MAX_CLIENT_ID_LENGTH} in length")
 
         self._username = username
         self._password = password

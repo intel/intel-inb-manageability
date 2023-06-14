@@ -9,8 +9,7 @@ import re
 from datetime import datetime
 from ssl import SSLContext, CERT_REQUIRED, PROTOCOL_TLS, OP_NO_TLSv1_1, OP_NO_TLSv1, OP_NO_COMPRESSION, \
     OP_NO_RENEGOTIATION, TLSVersion, OP_NO_SSLv2, OP_NO_SSLv3
-from typing import Union, Tuple, Optional, Dict, Any
-
+from typing import Dict, Any
 from future.moves.urllib.request import getproxies
 
 logger = logging.getLogger(__name__)
@@ -73,7 +72,10 @@ class TLSConfig:
         @param ca_certs: (str) File path to CA certificates to use
         @exception IOError: If CA certificates path is invalid
         """
-        self._context = self._make_tls_context(ca_certs, device_cert, device_key)
+        try:
+            self._context = self._make_tls_context(ca_certs, device_cert, device_key)
+        except OSError:
+            raise
 
     @property
     def context(self):
@@ -98,10 +100,15 @@ class TLSConfig:
         context.verify_mode = CERT_REQUIRED
         context.check_hostname = True
 
-        if device_cert:
+        if device_cert and device_key:
             logger.debug(
                 f'Loading cert chain. device_cert = {device_cert}, device_key = {device_key}')
-            context.load_cert_chain(device_cert, device_key)
+            try:
+                context.load_cert_chain(device_cert, device_key)
+            except OSError:
+                logger.debug(f"Invalid device cert or key path: cert={device_cert} key={device_key}")
+                raise OSError(f"Invalid device cert/key path")
+
         if ca_certs:
             try:
                 context.load_verify_locations(ca_certs)

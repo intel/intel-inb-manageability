@@ -22,6 +22,7 @@ from future.moves.urllib.request import quote
 from hmac import HMAC
 from time import time, sleep
 from typing import Optional, Any, Dict, Callable, Tuple
+from urllib3.exceptions import ProxyError
 import requests
 import json
 import logging
@@ -57,7 +58,11 @@ class AzureAdapter(Adapter):
 
         device_auth_set = {"certs": certs, "sas_key": device_sas_key}
 
-        hostname = self._retrieve_hostname(scope_id, device_id, device_auth_set, template_urn)
+        try:
+            hostname = self._retrieve_hostname(scope_id, device_id, device_auth_set, template_urn)
+        except json.JSONDecodeError as e:
+            raise AdapterConfigureError(f"Error retrieving hostname: {e}")
+
         if device_sas_key:
             device_sas_key = self._generate_sas_token(hostname, device_sas_key)
 
@@ -160,9 +165,13 @@ class AzureAdapter(Adapter):
             }
 
         sleep(1)  # Pause for a bit
-        # Place a registration request for the device (it should already be registered)
-        result = requests.put(endpoint + registration, data=json.dumps(data),
-                              headers=headers, cert=device_auth_set.get('certs', None))
+        try:
+            # Place a registration request for the device (it should already be registered)
+            result = requests.put(endpoint + registration, data=json.dumps(data),
+                                  headers=headers, cert=device_auth_set.get('certs', None))
+        except ProxyError as e:
+            raise AdapterConfigureError(f"Error registering the device: {str(e)}")
+
         result_data = json.loads(result.text)
 
         # Continue checking device's registration status until it resolves
@@ -178,7 +187,7 @@ class AzureAdapter(Adapter):
 
         # Get the device's assigned hub
         if not result.ok:
-            error = "Ran into an error retrieving hostname: {} {}".format(
+            error = "Error retrieving hostname: {} {}".format(
                 result.status_code, result.text)
             raise AdapterConfigureError(error)
         else:
@@ -205,8 +214,11 @@ class AzureAdapter(Adapter):
             expiration = int(time() + AZURE_TOKEN_EXPIRATION)
 
         sign_key = f"{resource}\n{expiration}".encode('utf-8')
-        signature = b64encode(HMAC(b64decode(device_key), sign_key,  # type: ignore
-                                   sha256).digest())
+        try:
+            signature = b64encode(HMAC(b64decode(device_key), sign_key,  # type: ignore
+                                       sha256).digest())
+        except ValueError as e:
+            raise AdapterConfigureError(f"Error generating SAS Token: {str(e)}")
         signature = quote(signature)
 
         return "SharedAccessSignature sr={!s}&sig={!s}&se={}".format(
