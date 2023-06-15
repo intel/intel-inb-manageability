@@ -34,14 +34,9 @@ class TestUpdateLogger(TestCase):
 
         self.update_logger.save_log()
 
-        expected_log = {'Status': OTA_FAIL,
-                        'Type': expected_type,
-                        'Time': datetime.datetime(2023, 12, 25, 00, 00, 00, 000000).strftime("%Y-%m-%d %H:%M:%S"),
-                        'Metadata': expected_metadata,
-                        'Error': expected_error,
-                        'Version': FORMAT_VERSION}
+        expected_log = r'{"Status": "FAIL", "Type": "aota", "Time": "2023-12-25 00:00:00", "Metadata": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><manifest><type>ota</type><ota><header><type>aota</type><repo>remote</repo></header><type><aota name=\"application-update\"><cmd>update</cmd><app>application</app><fetch>http://security.ubuntu.com/ubuntu/pool/main/n/net-tools/net-tools_1.60-25ubuntu2.1_amd64.deb</fetch><deviceReboot>no</deviceReboot></aota></type></ota></manifest>", "Error": "{\"status\": 302, \"message\": \"OTA FAILURE\"}", "Version": "v1"}'
 
-        mock_write_log_file.assert_called_once_with(json.dumps(str(expected_log)))
+        mock_write_log_file.assert_called_once_with(expected_log)
 
     @patch('dispatcher.update_logger.UpdateLogger.read_log_file')
     @patch('dispatcher.update_logger.UpdateLogger.write_log_file')
@@ -59,15 +54,10 @@ class TestUpdateLogger(TestCase):
                        'Error': '',
                        'Version': FORMAT_VERSION}
 
-        mock_read_log_file.return_value = json.dumps(str(pending_log))
+        mock_read_log_file.return_value = json.dumps(pending_log)
 
         self.update_logger.update_log(status=OTA_SUCCESS)
 
-        expected_log = {'Status': OTA_SUCCESS,
-                        'Type': expected_type,
-                        'Time': datetime.datetime(2023, 12, 25, 00, 00, 00, 000000).strftime("%Y-%m-%d %H:%M:%S"),
-                        'Metadata': SOTA_MANIFEST,
-                        'Error': '',
-                        'Version': FORMAT_VERSION}
+        expected_log = r'{"Status": "SUCCESS", "Type": "sota", "Time": "2023-12-25 00:00:00", "Metadata": "<?xml version=\"1.0\" encoding=\"utf-8\"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile=\"y\">update</cmd></sota></type></ota></manifest>", "Error": "", "Version": "v1"}'
 
-        mock_write_log_file.assert_called_once_with(json.dumps(str(expected_log)))
+        mock_write_log_file.assert_called_once_with(expected_log)

@@ -589,4 +589,6 @@ class TestDispatcher(TestCase):
 
     @staticmethod
     def _build_dispatcher() -> Dispatcher:
-        return Dispatcher(None, MockDispatcherBroker.build_mock_dispatcher_broker())
+        d = Dispatcher(None, MockDispatcherBroker.build_mock_dispatcher_broker())
+        d._update_logger = Mock()  # type: ignore
+        return d

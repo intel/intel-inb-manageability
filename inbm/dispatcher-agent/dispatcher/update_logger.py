@@ -42,7 +42,7 @@ class UpdateLogger:
                'Error': self.error,
                'Version': FORMAT_VERSION}
 
-        self.write_log_file(json.dumps(str(log)))
+        self.write_log_file(json.dumps(log))
 
     def write_log_file(self, log: str) -> None:
         try:
