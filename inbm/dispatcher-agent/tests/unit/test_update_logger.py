@@ -1,12 +1,11 @@
 import datetime
 import json
-import os
 from unittest import TestCase
+from unittest.mock import patch
 
 from dispatcher.update_logger import UpdateLogger
 from inbm_lib.constants import LOG_FILE, OTA_PENDING, OTA_SUCCESS, OTA_FAIL, FORMAT_VERSION
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX
-
 
 SOTA_MANIFEST = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd></sota></type></ota></manifest>'
 
@@ -19,9 +18,10 @@ class TestUpdateLogger(TestCase):
     def test_set_time(self):
         ori_time = self.update_logger._time
         self.update_logger.set_time()
-        self.assertNotEquals(ori_time, self.update_logger._time)
+        self.assertNotEqual(ori_time, self.update_logger._time)
 
-    def test_save_log(self):
+    @patch('dispatcher.update_logger.UpdateLogger.write_log_file')
+    def test_save_log(self, mock_write_log_file):
         expected_status = OTA_FAIL
         self.update_logger._time = datetime.datetime(2023, 12, 25, 00, 00, 00, 000000)
         expected_error = '{"status": 302, "message": "OTA FAILURE"}'
@@ -32,8 +32,6 @@ class TestUpdateLogger(TestCase):
         self.update_logger.metadata = expected_metadata
         self.update_logger.ota_type = expected_type
 
-        if not os.path.exists(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX):
-            os.makedirs(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX)
         self.update_logger.save_log()
 
         expected_log = {'Status': OTA_FAIL,
@@ -43,20 +41,26 @@ class TestUpdateLogger(TestCase):
                         'Error': expected_error,
                         'Version': FORMAT_VERSION}
 
-        with open(LOG_FILE, 'r') as log_file:
-            log = log_file.read()
+        mock_write_log_file.assert_called_once_with(json.dumps(str(expected_log)))
 
-        self.assertEquals(json.dumps(str(expected_log)), log)
-
-    def test_update_log(self):
+    @patch('dispatcher.update_logger.UpdateLogger.read_log_file')
+    @patch('dispatcher.update_logger.UpdateLogger.write_log_file')
+    def test_update_log(self, mock_write_log_file, mock_read_log_file):
         expected_type = "sota"
         self.update_logger._time = datetime.datetime(2023, 12, 25, 00, 00, 00, 000000)
         self.update_logger.ota_type = expected_type
         self.update_logger.status = OTA_PENDING
         self.update_logger.error = ""
-        if not os.path.exists(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX):
-            os.makedirs(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX)
-        self.update_logger.save_log()
+
+        pending_log = {'Status': OTA_PENDING,
+                       'Type': expected_type,
+                       'Time': datetime.datetime(2023, 12, 25, 00, 00, 00, 000000).strftime("%Y-%m-%d %H:%M:%S"),
+                       'Metadata': SOTA_MANIFEST,
+                       'Error': '',
+                       'Version': FORMAT_VERSION}
+
+        mock_read_log_file.return_value = json.dumps(str(pending_log))
+
         self.update_logger.update_log(status=OTA_SUCCESS)
 
         expected_log = {'Status': OTA_SUCCESS,
@@ -66,7 +70,4 @@ class TestUpdateLogger(TestCase):
                         'Error': '',
                         'Version': FORMAT_VERSION}
 
-        with open(LOG_FILE, 'r') as log_file:
-            log = log_file.read()
-
-        self.assertEquals(json.dumps(str(expected_log)), log)
+        mock_write_log_file.assert_called_once_with(json.dumps(str(expected_log)))

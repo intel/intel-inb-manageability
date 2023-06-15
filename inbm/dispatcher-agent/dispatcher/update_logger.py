@@ -42,9 +42,12 @@ class UpdateLogger:
                'Error': self.error,
                'Version': FORMAT_VERSION}
 
+        self.write_log_file(json.dumps(str(log)))
+
+    def write_log_file(self, log: str) -> None:
         try:
             with open(LOG_FILE, 'w') as log_file:
-                log_file.write(json.dumps(str(log)))
+                log_file.write(log)
         except OSError as e:
             logger.error(f'Error {e} on writing the file {LOG_FILE}')
 
@@ -55,12 +58,16 @@ class UpdateLogger:
 
         @param status: status to be set
         """
-        log = ""
+        log = self.read_log_file()
+
+        if log:
+            log = log.replace(OTA_PENDING, status)
+            self.write_log_file(log)
+
+    def read_log_file(self) -> Optional[str]:
         try:
             with open(LOG_FILE, 'r') as log_file:
-                log = log_file.read()
-            log = log.replace(OTA_PENDING, status)
-            with open(LOG_FILE, 'w') as log_file:
-                log_file.write(log)
+                return log_file.read()
         except OSError as e:
             logger.error(f'Error {e} on opening the file {LOG_FILE}')
+            return None
