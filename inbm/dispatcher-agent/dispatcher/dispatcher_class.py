@@ -154,7 +154,7 @@ class Dispatcher(WindowsService):
                                    'cmd': 'diagnostic OR MQTT',
                                    'message': 'No health report from diagnostic'}
         self.RUNNING = False
-        self._update_logger = UpdateLogger(ota_type=None, data=None)
+        self._update_logger = UpdateLogger(ota_type="", data="")
         self.remediation_instance = RemediationManager(self._make_callbacks_object())
         self._wo: Optional[WorkloadOrchestration] = None
 
@@ -455,8 +455,8 @@ class Dispatcher(WindowsService):
 
                 # Record OTA data for logging.
                 self._update_logger.set_time()
-                self._update_logger.set_ota_type(ota_type)
-                self._update_logger.set_metadata(xml)
+                self._update_logger.ota_type = ota_type
+                self._update_logger.metadata = xml
 
                 if target_type is TargetType.none.name and ota_type == OtaType.POTA.name.lower():
                     ota_list = create_ota_resource_list(parsed_head, resource)
@@ -490,18 +490,22 @@ class Dispatcher(WindowsService):
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
-            self._update_logger.set_status_and_error(OTA_FAIL, str(error))
+            self._update_logger.status = OTA_FAIL
+            self._update_logger.error = str(error)
         except XmlException as error:
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
-            self._update_logger.set_status_and_error(OTA_FAIL, str(error))
+            self._update_logger.status = OTA_FAIL
+            self._update_logger.error = str(error)
         except (AotaError, FotaError, SotaError) as e:
             result = Result(CODE_BAD_REQUEST, str(e))
-            self._update_logger.set_status_and_error(OTA_FAIL, str(e))
+            self._update_logger.status = OTA_FAIL
+            self._update_logger.error = str(e)
         finally:
             logger.info('Install result: %s', str(result))
             self._send_result(str(result))
             if result.status != CODE_OK and parsed_head:
-                self._update_logger.set_status_and_error(OTA_FAIL, str(result))
+                self._update_logger.status = OTA_FAIL
+                self._update_logger.error = str(result)
                 self.invoke_workload_orchestration_check(True, type_of_manifest, parsed_head)
 
             # FOTA, SOTA and POTA will be in PENDING state before system reboot.
@@ -509,7 +513,8 @@ class Dispatcher(WindowsService):
                     self._update_logger.ota_type != "sota" and \
                     self._update_logger.ota_type != "fota" and \
                     self._update_logger.ota_type != "pota":
-                self._update_logger.set_status_and_error(OTA_SUCCESS, None)
+                self._update_logger.status = OTA_SUCCESS
+                self._update_logger.error = ""
             self._update_logger.save_log()
             return result.status
 

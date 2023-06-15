@@ -87,7 +87,8 @@ class Application(AotaCommand):
     def _reboot(self, cmd: str) -> None:
         if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
             # Save the log before reboot
-            self._dispatcher_callbacks.logger.set_status_and_error(OTA_SUCCESS, None)
+            self._dispatcher_callbacks.logger.status = OTA_SUCCESS
+            self._dispatcher_callbacks.logger.error = ""
             self._dispatcher_callbacks.logger.save_log()
 
             logger.debug(f" Application {self.resource} installed. Rebooting...")
