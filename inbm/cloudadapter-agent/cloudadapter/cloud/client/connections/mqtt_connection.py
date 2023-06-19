@@ -20,6 +20,10 @@ import socks
 import logging
 logger = logging.getLogger(__name__)
 
+MAX_STRING_CHARS = 50
+MAX_PORT_LENGTH = 7
+MAX_CLIENT_ID_LENGTH = 35
+
 
 class MQTTConnection(Connection):
 
@@ -48,9 +52,25 @@ class MQTTConnection(Connection):
         self._subscribe_lock = RLock()
         self._subscriptions: Dict = {}
 
+        if len(username) > MAX_STRING_CHARS:
+            raise ValueError(f"{username} is too long.  Must be less than {MAX_STRING_CHARS} in length.")
+        if password and len(password) > MAX_STRING_CHARS:
+            raise ValueError(f"{password} is too long.  Must be less than {MAX_STRING_CHARS} in length")
+        if len(hostname) > MAX_STRING_CHARS:
+            raise ValueError(f"{hostname} is too long.  Must be less than {MAX_STRING_CHARS} in length")
+        if len(port) > MAX_PORT_LENGTH:
+            raise ValueError(f"{port} is too long.  Must be less than {MAX_PORT_LENGTH} in length")
+        if client_id and len(client_id) > MAX_CLIENT_ID_LENGTH:
+            raise ValueError(f"{client_id} is too long.  Must be less than {MAX_CLIENT_ID_LENGTH} in length")
+
+        self._username = username
+        self._password = password
+        self._hostname = hostname
+        self._port = port
+
         self._client_id = client_id
         self._connect_waiter = Waiter()
-        self._client = self._create_mqtt_client(username, password, hostname, port, client_id)
+        self._client = self._create_mqtt_client(client_id)
 
         if tls_config:
             self._client.tls_set_context(tls_config.context)
@@ -76,15 +96,17 @@ class MQTTConnection(Connection):
             socks.set_default_proxy(socks.PROXY_TYPE_HTTP, *config.endpoint)
             socket.socket = socks.socksocket  # type: ignore
 
-    def _create_mqtt_client(self, username: str, password: Optional[str], hostname: str, port: str,
-                            client_id: Optional[str] = "") -> Client:
+    def _create_mqtt_client(self, client_id: Optional[str] = "") -> Client:
         """Create an MQTT client"""
-        client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
-        client.username_pw_set(username, password)
-        client.connect = partial(client.connect, host=hostname, port=port)
-        client.on_connect = self._on_connect
-        client.on_disconnect = self._on_disconnect
-        return client
+        try:
+            client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
+            client.username_pw_set(self._username, self._password)
+            client.connect = partial(client.connect, host=self._hostname, port=self._port)
+            client.on_connect = self._on_connect
+            client.on_disconnect = self._on_disconnect
+            return client
+        except ValueError as e:
+            raise ConnectError(f"Error connecting to MQTT client: {e}")
 
     def _subscribe_all(self) -> None:
         """Subscribe to all collected subscriptions"""
