@@ -25,7 +25,7 @@
         "debugMode": true,
         "configuration": {
           "scriptLang": "JS",
-          "jsScript": "var params = JSON.parse(msg.params);\nmetadata.tcaas_endpoint = params[\"tcaas_endpoint\"];\n\nvar body = {\n  \"info\": {\n    \"name\": \"node-01\",\n    \"desc\": \"Cluster-01\"\n  },\n  \"policy\": {\n    \"trust_type\": [\n      \"TEP\"\n    ]\n  }\n};\n\nreturn {msg: body, metadata: metadata, msgType: msgType};",
+          "jsScript": "var params = JSON.parse(msg.params);\nmetadata.tcaas_endpoint = params[\"tcaas_endpoint\"];\n\nvar body = {\n  \"info\": {\n    \"name\": \"node-01\",\n    \"desc\": \"Cluster-01\"\n  },\n  \"policy\": {\n    \"trust_type\": [\n      \"TEP\"\n    ],\n    \"evaluation\": {\n        \"level\": 1,\n        \"data\": \"None\"\n    }\n  }\n};\n\nreturn {msg: body, metadata: metadata, msgType: msgType};",
           "tbelScript": null
         },
         "externalId": null
@@ -51,7 +51,7 @@
           "proxyPort": 912,
           "proxyUser": null,
           "proxyPassword": null,
-          "readTimeoutMs": 0,
+          "readTimeoutMs": 20000,
           "maxParallelRequestsCount": 0,
           "headers": {
             "Content-Type": "application/json",
