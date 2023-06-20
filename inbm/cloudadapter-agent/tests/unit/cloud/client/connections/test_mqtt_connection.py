@@ -27,13 +27,13 @@ class TestMQTTConnection(unittest.TestCase):
         self.mock_waiter = MockWaiter.return_value
         self.mock_client = mock_mqtt.Client.return_value
         self.mqtt_connection = MQTTConnection(
-            "username",
-            "password",
-            "hostname",
-            1234,
-            "client_id",
-            mock_tls_config,
-            mock_proxy_config)
+            username="username",
+            hostname="hostname",
+            port="1234",
+            password="password",
+            client_id="client_id",
+            tls_config=mock_tls_config,
+            proxy_config=mock_proxy_config)
 
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.Waiter', autospec=True)
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.mqtt', autospec=True)
@@ -44,13 +44,13 @@ class TestMQTTConnection(unittest.TestCase):
         self.mock_waiter = MockWaiter.return_value
         self.mock_client = mock_mqtt.Client.return_value
         self.mqtt_connection = MQTTConnection(
-            "username",
-            "password",
-            "hostname",
-            1234,
-            "client_id",
-            mock_tls_config,
-            mock_proxy_config)
+            username="username",
+            hostname="hostname",
+            port="1234",
+            password="password",
+            client_id="client_id",
+            tls_config=mock_tls_config,
+            proxy_config=mock_proxy_config)
 
     def test_request_id_generation_succeeds(self):
         r0 = self.mqtt_connection.request_id

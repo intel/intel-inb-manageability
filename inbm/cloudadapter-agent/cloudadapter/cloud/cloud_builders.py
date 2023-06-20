@@ -13,7 +13,7 @@ from .client.handlers.echo_handler import EchoHandler
 from .client.cloud_client import CloudClient
 from .client.utilities import ProxyConfig, TLSConfig, Formatter, MethodParser
 from cloudadapter.constants import GENERIC_SCHEMA_PATH
-from cloudadapter.exceptions import ClientBuildError
+from cloudadapter.exceptions import ClientBuildError, ConnectError
 from typing import Dict, Any, Optional
 import jsonschema
 import json
@@ -107,14 +107,17 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     # Build connection
     mqtt_config = config.get("mqtt")
     if mqtt_config:
-        connection = MQTTConnection(
-            username=mqtt_config.get("username"),
-            password=mqtt_config.get("password", None),
-            hostname=mqtt_config.get("hostname"),
-            port=mqtt_config.get("port"),
-            client_id=mqtt_config.get("client_id"),
-            tls_config=tls_config,
-            proxy_config=proxy_config)
+        try:
+            connection = MQTTConnection(
+                username=mqtt_config.get("username"),
+                password=mqtt_config.get("password", None),
+                hostname=mqtt_config.get("hostname"),
+                port=mqtt_config.get("port"),
+                client_id=mqtt_config.get("client_id"),
+                tls_config=tls_config,
+                proxy_config=proxy_config)
+        except (ValueError, ConnectError, OSError, FileNotFoundError) as e:
+            raise ClientBuildError(f"Error creating MQTT Connection: {e}")
     else:
         raise ClientBuildError(
             "Missing MQTT config information while setting up cloud connection.")
