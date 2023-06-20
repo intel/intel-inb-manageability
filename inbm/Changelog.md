@@ -3,6 +3,53 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## 3.0.15.1 - 2023-06-20
+
+### Fixed
+
+ - RTC 530482 - Remove 'force' options in OTA's. 
+
+### NOTE:
+
+ - This is a hotfix release to remove the "-f (force)" argument from reboot commands in INBM. Sometimes "-f" can cause problems with some systems coming back up from reboot.
+ - This release does not include some updates to 3rd party components that have been included in INBM, versions 4.0.0 or later.
+
+## 3.0.15 - 2023-04-14
+
+### Added
+ - RTC 530033 - Add AOTA Applicaiton Update command to INBC
+
+### Fixed
+ - RTC 530482 - Remove 'force' option in OTA's
+
+## 4.0.1 - 2023-05-26
+ - RTC 529914 - Implement OTA logger
+
+### Security
+ - RTC 529956 - [UCC Win] Bug: C:\intel-manageability\ directory can be written by non-admin user
+ - RTC 529951 - Cloudadapter does not check if certain files are symlinks
+ - Increased bit size when generating TLS keys
+ - Updated pypi requests to fix dependabot security alert
+
+### Changed
+ - Added recommendation to use BitLocker when installing in Windows.
+
+
+## 4.0.0 - 2023-05-16
+
+### Added
+ - Added Windows output (UCC only) from main build
+
+### Fixed
+ - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
+ - RTC 528654 - [Defect] Remove parameters from INBC for version, manufacturer, product, and vendor for both POTA and FOTA commands
+ - RTC 529947 - Fix UCC bitsize 
+
+### Security
+ - RTC 528652 Mask Confidential data (Username & Password) of OTA is exposed in logs
+ - RTC 529258 Adjust Windows build to address 3rd party vulnerabilities
+ - Removed some unneeded libraries with vulnerabilities
+
 ## 3.0.15 - 2023-04-14
 
 ### Added
