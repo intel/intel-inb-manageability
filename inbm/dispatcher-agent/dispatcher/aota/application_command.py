@@ -22,7 +22,7 @@ from dispatcher.common.result_constants import CODE_OK
 from dispatcher.constants import UMASK_OTA, REPO_CACHE
 from dispatcher.packagemanager.package_manager import get
 
-from .checker import check_application_command_supported, check_url
+from .checker import check_application_command_supported, check_url, check_resource
 from .aota_command import AotaCommand
 from .constants import CENTOS_DRIVER_PATH, SupportedDriver
 from .cleaner import cleanup_repo, remove_directory
@@ -67,6 +67,8 @@ class Application(AotaCommand):
     def _download_package(self) -> DirectoryRepo:
         if self._uri is None:
             raise AotaError("missing URI.")
+
+        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
 
         logger.debug("AOTA to download a package")
         self._dispatcher_callbacks.broker_core.telemetry(
