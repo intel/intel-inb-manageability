@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - RTC 530482 - Remove 'force' option in OTA's
+ - RTC 530846 - INBC AOTA Application update command to check package fetch from trusted repo
 
 ## 4.0.1 - 2023-05-26
 
