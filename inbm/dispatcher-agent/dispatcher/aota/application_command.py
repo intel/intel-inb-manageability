@@ -24,7 +24,7 @@ from dispatcher.packagemanager.package_manager import get
 
 from .checker import check_application_command_supported, check_url
 from .aota_command import AotaCommand
-from .constants import CENTOS_DRIVER_PATH, SupportedDriver
+from .constants import CENTOS_DRIVER_PATH, SupportedDriver, CMD_SUCCESS, CMD_TERMINATED_BY_SIGTERM
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 
@@ -93,7 +93,7 @@ class Application(AotaCommand):
             logger.debug(f" Application {self.resource} installed. Rebooting...")
             self._dispatcher_callbacks.broker_core.telemetry('Rebooting...')
             (output, err, code) = PseudoShellRunner.run(cmd)
-            if code != 0 and code != -15:
+            if code != CMD_SUCCESS and code != CMD_TERMINATED_BY_SIGTERM:
                 raise AotaError(f'Reboot Failed {err}')
 
     def update(self) -> None:
