@@ -4,7 +4,7 @@
     @license: SPDX-License-Identifier: Apache-2.0
 """
 from inbm_common_lib.utility import get_canonical_representation_of_path
-from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX
+from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, LOG_PATH
 
 COMPOSE = 'compose'
 DOCKER = 'docker'
@@ -73,7 +73,7 @@ PROVISION_CHANNEL = REQUEST_CHANNEL + PROVISION
 CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool/')
 
 # OTA log file location
-LOG_FILE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / "update-status.log")
+LOG_FILE = str(LOG_PATH / "inbm-update-status.log")
 
 # OTA STATUS
 OTA_SUCCESS = "SUCCESS"

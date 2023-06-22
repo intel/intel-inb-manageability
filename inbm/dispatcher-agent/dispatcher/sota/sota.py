@@ -304,7 +304,8 @@ class SOTA:
                 '{"status": 400, "message": "SOTA command status: FAILURE"}')
             if download_success and self.sota_mode != 'download-only':
                 snapshotter.recover(rebooter, time_to_wait_before_reboot)
-            self._dispatcher_callbacks.logger.set_status_and_error(OTA_FAIL, None)
+            self._dispatcher_callbacks.logger.status = OTA_FAIL
+            self._dispatcher_callbacks.logger.error = ""
             self._dispatcher_callbacks.logger.save_log()
             raise SotaError(str(msg))
         finally:
@@ -314,9 +315,11 @@ class SOTA:
             if success:
                 # Save the log before reboot
                 if self.sota_mode == 'download-only':
-                    self._dispatcher_callbacks.logger.set_status_and_error(OTA_SUCCESS, None)
+                    self._dispatcher_callbacks.logger.status = OTA_SUCCESS
+                    self._dispatcher_callbacks.logger.error = ""
                 else:
-                    self._dispatcher_callbacks.logger.set_status_and_error(OTA_PENDING, None)
+                    self._dispatcher_callbacks.logger.status = OTA_PENDING
+                    self._dispatcher_callbacks.logger.error = ""
                 self._dispatcher_callbacks.logger.save_log()
                 if self.sota_mode == 'download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]:  # pragma: no cover
                     self._dispatcher_callbacks.broker_core.telemetry("No reboot (SOTA pass)")
@@ -327,7 +330,8 @@ class SOTA:
 
             else:
                 # Save the log before reboot
-                self._dispatcher_callbacks.logger.set_status_and_error(OTA_FAIL, None)
+                self._dispatcher_callbacks.logger.status = OTA_FAIL
+                self._dispatcher_callbacks.logger.error = ""
                 self._dispatcher_callbacks.logger.save_log()
                 self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILURE)
                 self._dispatcher_callbacks.broker_core.send_result(SOTA_FAILURE)

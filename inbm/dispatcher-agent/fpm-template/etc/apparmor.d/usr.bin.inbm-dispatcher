@@ -216,6 +216,7 @@
   /var/local/intel-manageability/backups/version.txt r,
   /var/local/intel-manageability/backups/** w,
   /var/log/dpkg.log w,
+  /var/log/inbm-update-status.log rw,
   /etc/intel-manageability/public/telemetry-agent/ w,
   /etc/intel-manageability/public/telemetry-agent/* l,
   /etc/intel-manageability/public/telemetry-agent/* rw,

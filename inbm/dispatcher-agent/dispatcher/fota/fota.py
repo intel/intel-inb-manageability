@@ -144,7 +144,8 @@ class FOTA:
                 factory.create_rebooter().reboot()
 
             # Save the log before reboot
-            self._dispatcher_callbacks.logger.set_status_and_error(OTA_PENDING, None)
+            self._dispatcher_callbacks.logger.status = OTA_PENDING
+            self._dispatcher_callbacks.logger.error = ""
             self._dispatcher_callbacks.logger.save_log()
 
             if not hold_reboot:

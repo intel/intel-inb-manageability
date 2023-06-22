@@ -772,7 +772,7 @@ sudo systemctl start mqtt
 ```
 
 ### OTA Status Log File
-During the OTA, the OTA status will be recorded and saved at /var/cache/manageability/update-status.log.
+During the OTA, the OTA status will be recorded and saved at /var/cache/manageability/inbm-update-status.log.
 The log file contains the information such as the status, OTA type, time, metadata, error message and format version.
 
 #### Log File Sample
