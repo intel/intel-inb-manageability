@@ -6,7 +6,7 @@ AMI_BIOSUPDATE_TAR=U1170000F60X043.tar
 VAGRANT_INPUT_PATH=/vagrant/input
 CONFIG_FILE=intel_manageability.txt
 LOCAL_MQTT_PORT=$(cat /etc/intel-manageability/local-mqtt-port.txt)
-OTA_LOG_FILE=/var/cache/manageability/update-status.log
+OTA_LOG_FILE=/var/log/inbm-update-status.log
 
 
 cleanup_after_test() {
@@ -14,7 +14,7 @@ cleanup_after_test() {
     rm -rf /var/log/sota_test/*
     rm -rf /boot/efi/*
     rm -rf /etc/intel-manageability/public/dispatcher-agent/ota_signature_cert.pem
-    rm -rf /var/cache/manageability/update-status.log
+    rm -rf /var/log/inbm-update-status.log
 }
 
 trigger_ota() {

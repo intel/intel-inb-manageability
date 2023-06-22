@@ -22,52 +22,32 @@ class UpdateLogger:
     @param data: meta-data of the OTA
     """
 
-    def __init__(self, ota_type: Optional[str], data: Optional[str]) -> None:
-        self._status = ""
+    def __init__(self, ota_type: str, data: str) -> None:
+        self.status = ""
         self.ota_type = ota_type
         self._time = datetime.datetime.now()
-        self._meta_data = data
-        self._error: Optional[str] = None
+        self.metadata = data
+        self.error = ""
 
     def set_time(self) -> None:
         """Set the OTA starting time."""
         self._time = datetime.datetime.now()
 
-    def set_status_and_error(self, status: str, err: Optional[str]) -> None:
-        """Set status and error message.
-
-        @param status: status to be set.
-        @param err:  error message to be set
-        """
-        self._status = status
-        self._error = err
-
-    def set_metadata(self, data: str) -> None:
-        """Set metadata.
-
-        @param data: metadata to be set (xml manifest)
-        """
-        self._meta_data = data
-
-    def set_ota_type(self, ota_type: str) -> None:
-        """Set ota type.
-
-        @param ota_type: type of OTA to be set
-        """
-        self.ota_type = ota_type
-
     def save_log(self) -> None:
         """Save the log to a log file."""
-        log = {'Status': self._status,
+        log = {'Status': self.status,
                'Type': self.ota_type,
                'Time': self._time.strftime("%Y-%m-%d %H:%M:%S"),
-               'Metadata': self._meta_data,
-               'Error': self._error,
+               'Metadata': self.metadata,
+               'Error': self.error,
                'Version': FORMAT_VERSION}
 
+        self.write_log_file(json.dumps(log))
+
+    def write_log_file(self, log: str) -> None:
         try:
             with open(LOG_FILE, 'w') as log_file:
-                log_file.write(json.dumps(str(log)))
+                log_file.write(log)
         except OSError as e:
             logger.error(f'Error {e} on writing the file {LOG_FILE}')
 
@@ -78,12 +58,16 @@ class UpdateLogger:
 
         @param status: status to be set
         """
-        log = ""
+        log = self.read_log_file()
+
+        if log:
+            log = log.replace(OTA_PENDING, status)
+            self.write_log_file(log)
+
+    def read_log_file(self) -> Optional[str]:
         try:
             with open(LOG_FILE, 'r') as log_file:
-                log = log_file.read()
-            log = log.replace(OTA_PENDING, status)
-            with open(LOG_FILE, 'w') as log_file:
-                log_file.write(log)
+                return log_file.read()
         except OSError as e:
             logger.error(f'Error {e} on opening the file {LOG_FILE}')
+            return None

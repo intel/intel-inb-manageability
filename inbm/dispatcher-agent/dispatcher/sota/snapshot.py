@@ -145,7 +145,7 @@ class DebianBasedSnapshot(Snapshot):
                 # need dispatcher_state to reflect that we ran a SOTA so we can update
                 # logs, perform health check, etc.
                 initial_state = {'restart_reason': "sota_" +
-                            self.sota_cmd, 'snapshot_num': 0}
+                                 self.sota_cmd, 'snapshot_num': 0}
                 dispatcher_state.write_dispatcher_state_to_state_file(initial_state)
                 self._dispatcher_callbacks.broker_core.telemetry(
                     "SOTA snapshot of system failed, will proceed "

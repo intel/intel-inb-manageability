@@ -106,8 +106,8 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         parser_sota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
                                  help='Type of information [ yes | no ]')
-        parser_sota.add_argument('--mode', '-m', default='full', 
-                                 required=False, choices=['full', 'download-only', 'no-download']) 
+        parser_sota.add_argument('--mode', '-m', default='full',
+                                 required=False, choices=['full', 'download-only', 'no-download'])
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
@@ -276,7 +276,7 @@ def sota(args) -> str:
         path_location = None
 
     arguments = {
-        'mode': args.mode, 
+        'mode': args.mode,
         'release_date': release_date,
         'fetch': fetch_location,
         'username': args.username,
@@ -298,16 +298,16 @@ def sota(args) -> str:
                 '{0}' +
                 '</sota></type>' +
                 '</ota>' +
-                '</manifest>').format( 
-                       (create_xml_tag(arguments,
-                       "mode", 
-                       "fetch",
-                       "username",
-                       "password",
-                       "release_date",
-                       "path",
-                       "deviceReboot"
-                       ))
+                '</manifest>').format(
+        (create_xml_tag(arguments,
+                        "mode",
+                        "fetch",
+                        "username",
+                        "password",
+                        "release_date",
+                        "path",
+                        "deviceReboot"
+                        ))
     )
     print("manifest {0}".format(manifest))
     return manifest
