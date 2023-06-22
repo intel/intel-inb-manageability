@@ -98,10 +98,13 @@ class TLSConfig:
         context.verify_mode = CERT_REQUIRED
         context.check_hostname = True
 
-        if device_cert:
+        if device_cert and device_key:
             logger.debug(
                 f'Loading cert chain. device_cert = {device_cert}, device_key = {device_key}')
-            context.load_cert_chain(device_cert, device_key)
+            try:
+                context.load_cert_chain(device_cert, device_key)
+            except OSError:
+                raise OSError(f"Invalid device cert/key path")
         if ca_certs:
             try:
                 context.load_verify_locations(ca_certs)
@@ -324,7 +327,10 @@ class MethodParser:
         @return: (List[MethodParsed]) All parsed method information
         @exception ValueError: If the input payload was malformed
         """
-        payload = json.loads(payload)
+        try:
+            payload = json.loads(payload)
+        except (json.JSONDecodeError, TypeError) as e:
+            raise ValueError(str(e))
 
         if self._aggregate_info:
             parsed = []
