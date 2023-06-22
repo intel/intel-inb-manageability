@@ -226,6 +226,7 @@ class DebianBasedSnapshot(Snapshot):
         """Revert after second system SOTA boot when we see a problem with startup.
 
         On Debian-based OSes, we need to rollback, delete snapshot, and reboot.
+        If there is no snapshot, the system will not reboot.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
         """
@@ -233,8 +234,10 @@ class DebianBasedSnapshot(Snapshot):
         dispatcher_state.clear_dispatcher_state()
         if self.snap_num:
             self._rollback_and_delete_snap()
-        time.sleep(time_to_wait_before_reboot)
-        rebooter.reboot()
+            time.sleep(time_to_wait_before_reboot)
+            rebooter.reboot()
+        else:
+            logger.info("No snapshot. Cancel reboot.")
 
     def update_system(self) -> None:
         """If the system supports it, check whether the system was updated, after rebooting.
