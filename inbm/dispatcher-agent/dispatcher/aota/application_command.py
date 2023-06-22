@@ -22,9 +22,9 @@ from dispatcher.common.result_constants import CODE_OK
 from dispatcher.constants import UMASK_OTA, REPO_CACHE
 from dispatcher.packagemanager.package_manager import get
 
-from .checker import check_application_command_supported, check_url
+from .checker import check_application_command_supported, check_url, check_resource
 from .aota_command import AotaCommand
-from .constants import CENTOS_DRIVER_PATH, SupportedDriver
+from .constants import CENTOS_DRIVER_PATH, SupportedDriver, CMD_SUCCESS, CMD_TERMINATED_BY_SIGTERM
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 
@@ -68,6 +68,8 @@ class Application(AotaCommand):
         if self._uri is None:
             raise AotaError("missing URI.")
 
+        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+
         logger.debug("AOTA to download a package")
         self._dispatcher_callbacks.broker_core.telemetry(
             f'OTA Trigger Install command invoked for package: {self._uri}')
@@ -87,13 +89,14 @@ class Application(AotaCommand):
     def _reboot(self, cmd: str) -> None:
         if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
             # Save the log before reboot
-            self._dispatcher_callbacks.logger.set_status_and_error(OTA_SUCCESS, None)
+            self._dispatcher_callbacks.logger.status = OTA_SUCCESS
+            self._dispatcher_callbacks.logger.error = ""
             self._dispatcher_callbacks.logger.save_log()
 
             logger.debug(f" Application {self.resource} installed. Rebooting...")
             self._dispatcher_callbacks.broker_core.telemetry('Rebooting...')
             (output, err, code) = PseudoShellRunner.run(cmd)
-            if code != 0:
+            if code != CMD_SUCCESS and code != CMD_TERMINATED_BY_SIGTERM:
                 raise AotaError(f'Reboot Failed {err}')
 
     def update(self) -> None:

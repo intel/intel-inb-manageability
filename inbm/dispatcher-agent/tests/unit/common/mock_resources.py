@@ -279,7 +279,7 @@ class MockDispatcherCallbacks(DispatcherCallbacks):
         self.broker_core = MockDispatcherBroker.build_mock_dispatcher_broker()
         self.sota_repos = None
         self.proceed_without_rollback = False
-        self.logger = UpdateLogger(None, None)
+        self.logger = UpdateLogger("", "")
 
     def install_check(self, size: int, check_type: str) -> None:
         pass
@@ -331,7 +331,7 @@ class MockDispatcher(Dispatcher):
         self.dbs_remove_image_on_failed_container = True
         self.sota_repos = None
         self.proceed_without_rollback = False
-        self.update_logger = UpdateLogger(None, None)
+        self.update_logger = UpdateLogger("", "")
 
     def install_check(self, size=None, check_type=None) -> None:
         pass

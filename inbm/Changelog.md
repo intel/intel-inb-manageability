@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Fixed
+ - RTC 530729 - Fix AOTA update log file show Reboot Failed although platform already rebooted and application updated
+ - RTC 530881 - Fix JSON update log/access
+
 ## 4.1.0 - 2023-06-13
 
 ### Added
@@ -16,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - RTC 530482 - Remove 'force' option in OTA's
+ - RTC 530846 - INBC AOTA Application update command to check package fetch from trusted repo
 
 ## 4.0.1 - 2023-05-26
 
