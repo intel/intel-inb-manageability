@@ -3,7 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - ?
+## 4.1.1 - 2023-06-23
+
+NOTE: update log path has changed to /var/log/inbm-update-status.log
 
 ### Fixed
  - RTC 530729 - Fix AOTA update log file show Reboot Failed although platform already rebooted and application updated
