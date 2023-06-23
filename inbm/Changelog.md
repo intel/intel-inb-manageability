@@ -11,6 +11,7 @@ NOTE: update log path has changed to /var/log/inbm-update-status.log
  - RTC 530729 - Fix AOTA update log file show Reboot Failed although platform already rebooted and application updated
  - RTC 530881 - Fix JSON update log/access
  - RTC 530960 - Fix INBC SOTA observe post-install check and rollback on EXT4
+ - RTC 530992 - [TC Base] [Bug] Cloudadapter Agent failed to start - TypeError: object of type 'int' has no len()
 
 ## 4.1.0 - 2023-06-13
 
