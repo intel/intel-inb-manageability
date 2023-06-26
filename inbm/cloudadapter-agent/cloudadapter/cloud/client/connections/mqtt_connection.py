@@ -31,7 +31,7 @@ class MQTTConnection(Connection):
             self,
             username: str,
             hostname: str,
-            port: str,
+            port: int,
             password: Optional[str] = None,
             client_id: Optional[str] = None,
             tls_config: Optional[TLSConfig] = None,
@@ -41,7 +41,7 @@ class MQTTConnection(Connection):
         @param username:  (str) MQTT username
         @param password:  (str) MQTT password
         @param hostname:  (str) Target broker hostname
-        @param port:      (str) Target broker port
+        @param port:      (int) Target broker port
         @param client_id: (str) Client ID to use when connecting to broker
         @param tls_config: (TLSConfig) TLS configuration to use
         @param proxy_config: (ProxyConfig) Proxy configuration to use
@@ -58,8 +58,6 @@ class MQTTConnection(Connection):
             raise ValueError(f"{password} is too long.  Must be less than {MAX_STRING_CHARS} in length")
         if len(hostname) > MAX_STRING_CHARS:
             raise ValueError(f"{hostname} is too long.  Must be less than {MAX_STRING_CHARS} in length")
-        if len(port) > MAX_PORT_LENGTH:
-            raise ValueError(f"{port} is too long.  Must be less than {MAX_PORT_LENGTH} in length")
         if client_id and len(client_id) > MAX_CLIENT_ID_LENGTH:
             raise ValueError(f"{client_id} is too long.  Must be less than {MAX_CLIENT_ID_LENGTH} in length")
 
