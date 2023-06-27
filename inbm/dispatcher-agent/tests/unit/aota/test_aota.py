@@ -608,9 +608,8 @@ class TestAOTA(TestCase):
                                 uri="http://example.com", device_reboot="Yes")
         self.assertRaises(AotaError, aota.run)
 
-    
     @patch('dispatcher.aota.checker.check_resource')
-    @patch('dispatcher.aota.checker.verify_source') 
+    @patch('dispatcher.aota.checker.verify_source')
     @patch('dispatcher.aota.application_command.get', return_value=Result(200, "ok"))
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
@@ -620,9 +619,8 @@ class TestAOTA(TestCase):
         with self.assertRaisesRegex(AotaError, "Invalid file type"):
             aota.run()
 
-
     @patch('dispatcher.aota.checker.check_resource')
-    @patch('dispatcher.aota.checker.verify_source') 
+    @patch('dispatcher.aota.checker.verify_source')
     @patch('dispatcher.aota.application_command.CentOsApplication._is_rpm_file_type', return_value=True)
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)

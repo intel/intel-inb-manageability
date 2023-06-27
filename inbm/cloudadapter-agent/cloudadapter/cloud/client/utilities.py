@@ -98,7 +98,7 @@ class TLSConfig:
         context.verify_mode = CERT_REQUIRED
         context.check_hostname = True
 
-        # NOTE: only device_cert is required, assuming the device_cert file contains both a 
+        # NOTE: only device_cert is required, assuming the device_cert file contains both a
         # device cert and a device key inside it. Normally with ThingsBoard this is the case,
         # and here device_key will be None. load_cert_chain allows None for device_key and will
         # try to load both key/cert from device_cert.
