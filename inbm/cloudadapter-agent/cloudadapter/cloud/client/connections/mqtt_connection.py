@@ -20,9 +20,9 @@ import socks
 import logging
 logger = logging.getLogger(__name__)
 
-MAX_STRING_CHARS = 50
+MAX_STRING_CHARS = 2048
 MAX_PORT_LENGTH = 7
-MAX_CLIENT_ID_LENGTH = 35
+MAX_CLIENT_ID_LENGTH = 500
 
 
 class MQTTConnection(Connection):
@@ -54,16 +54,16 @@ class MQTTConnection(Connection):
 
         if len(username) > MAX_STRING_CHARS:
             raise ValueError(
-                f"{username} is too long.  Must be less than {MAX_STRING_CHARS} in length.")
+                f"username {username} is too long.  Must be less than {MAX_STRING_CHARS} in length.")
         if password and len(password) > MAX_STRING_CHARS:
             raise ValueError(
-                f"{password} is too long.  Must be less than {MAX_STRING_CHARS} in length")
+                f"password is too long.  Must be less than {MAX_STRING_CHARS} in length")
         if len(hostname) > MAX_STRING_CHARS:
             raise ValueError(
-                f"{hostname} is too long.  Must be less than {MAX_STRING_CHARS} in length")
+                f"hostname {hostname} is too long.  Must be less than {MAX_STRING_CHARS} in length")
         if client_id and len(client_id) > MAX_CLIENT_ID_LENGTH:
             raise ValueError(
-                f"{client_id} is too long.  Must be less than {MAX_CLIENT_ID_LENGTH} in length")
+                f"client_id {client_id} is too long.  Must be less than {MAX_CLIENT_ID_LENGTH} in length")
 
         self._username = username
         self._password = password

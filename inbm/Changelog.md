@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - RTC 531066 - [TC Base] [Bug] Cloud Adapter disconnected upon provisioned
+ - RTC 532217 - [TC Base] [Bug] Cloud Adapter cannot connect to Azure
 
 ## 4.1.1 - 2023-06-23
 
