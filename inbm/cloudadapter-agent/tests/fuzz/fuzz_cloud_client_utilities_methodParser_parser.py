@@ -14,6 +14,7 @@ mp = MethodParser({
     }
 })
 
+
 @atheris.instrument_func
 def TestOneInput(input_bytes):
     fdp = atheris.FuzzedDataProvider(input_bytes)
