@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - ?
+## 4.1.2 - 2023-06-29
 
 ### Fixed
  - RTC 531066 - [TC Base] [Bug] Cloud Adapter disconnected upon provisioned
