@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 531066 - [TC Base] [Bug] Cloud Adapter disconnected upon provisioned
  - RTC 532217 - [TC Base] [Bug] Cloud Adapter cannot connect to Azure
 
+### Security
+ - Updated Windows Python version to pull in security updates
+
 ## 4.1.1 - 2023-06-23
 
 NOTE: update log path has changed to /var/log/inbm-update-status.log

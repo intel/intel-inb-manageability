@@ -1,7 +1,7 @@
 include(`image.main.m4')
 
 # base windows/wine build image
-FROM registry.hub.docker.com/batonogov/pyinstaller-windows:3.1.0 as base-windows
+FROM registry.hub.docker.com/batonogov/pyinstaller-windows:3.1.2 as base-windows
 
 RUN ln -sf /usr/bin/pip /usr/bin/pip3
 RUN python -m pip install --upgrade pip
