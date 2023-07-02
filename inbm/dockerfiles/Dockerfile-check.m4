@@ -24,7 +24,8 @@ RUN source /venv-py3/bin/activate && \
         wemake-python-styleguide==0.14.1 \
         teamcity-messages==1.28 \
         pylint==2.5.3 \
-        mypy==0.812 \
+        mypy==1.3 \
+        types-requests==2.31.0.1 \
         -U
 COPY inbm-lib /src/inbm-lib
 ENV PYTHONPATH=/src/inbm-lib

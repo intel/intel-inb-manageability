@@ -257,7 +257,7 @@ class Dispatcher(WindowsService):
         self.invoke_workload_orchestration_check(True)
 
     def _do_config_install_load(self, parsed_head: XmlHandler, target_type: str,
-                                xml: str = None) -> Result:
+                                xml: Optional[str] = None) -> Result:
         """Invoked by do_config_operation to perform config file load. It replaces the existing
         TC conf file with a new file.
 

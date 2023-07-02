@@ -5,6 +5,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
+from abc import abstractmethod
 import logging
 from datetime import datetime
 
@@ -65,6 +66,7 @@ class Downloader:
         logger.debug(f"System mender release date: {platform_mender_date}")
         return True if manifest_release_date > platform_mender_date else False
 
+    @abstractmethod
     def check_release_date(self, release_date: Optional[str]) -> bool:
         pass
 
@@ -121,7 +123,7 @@ class WindowsDownloader(Downloader):
         logger.debug("")
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
-        pass
+        raise NotImplementedError()
 
 
 class YoctoDownloader(Downloader):

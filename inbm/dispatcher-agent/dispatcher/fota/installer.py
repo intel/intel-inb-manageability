@@ -35,7 +35,7 @@ class Installer(ABC):
 
     @abstractmethod
     def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
-                hash_algorithm: Optional[int], bios_vendor: str = None, platform_product: str = None) -> None:
+                hash_algorithm: Optional[int], bios_vendor: Optional[str] = None, platform_product: Optional[str] = None) -> None:
         pass
 
     def get_product_params(self, platform_product: str) -> Dict:
@@ -133,7 +133,7 @@ class LinuxInstaller(Installer):
         super().__init__(dispatcher_callbacks, repo, xml_file, xml_schema)
 
     def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
-                hash_algorithm: Optional[int], bios_vendor: str = None, platform_product: str = None) -> None:
+                hash_algorithm: Optional[int], bios_vendor: Optional[str] = None, platform_product: Optional[str] = None) -> None:
         """Performs a Linux FOTA install
 
         @param guid: system firmware type
@@ -183,7 +183,7 @@ class WindowsInstaller(Installer):
         super().__init__(dispatcher_callbacks, repo, xml_file, xml_schema)
 
     def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
-                hash_algorithm: Optional[int], bios_vendor: str = None, platform_product: str = None) -> None:
+                hash_algorithm: Optional[int], bios_vendor: Optional[str] = None, platform_product: Optional[str] = None) -> None:
         super().prepare_for_install(pkg_filename=pkg_filename,
                                     checksum=signature,
                                     hash_algorithm=hash_algorithm)
