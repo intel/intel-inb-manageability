@@ -6,8 +6,8 @@ FROM registry.hub.docker.com/library/ubuntu:22.04 as base-windows
 ENV DEBIAN_FRONTEND noninteractive
 
 ARG WINE_VERSION=winehq-stable
-ARG PYTHON_VERSION=3.11.3   # 3.11.4 does not work due to https://github.com/pyinstaller/pyinstaller/issues/7692
-ARG PYINSTALLER_VERSION=5.12.0
+ARG PYTHON_VERSION=3.11.4
+ARG PYINSTALLER_VERSION=5.13.0
 
 # we need wine for this all to work, so we'll use the PPA
 RUN set -x \
