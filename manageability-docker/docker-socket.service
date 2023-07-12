@@ -1,0 +1,7 @@
+[Service]
+ExecStart=/bin/sh -c 'ln -sf /docker.sock /var/run/docker.sock'
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target

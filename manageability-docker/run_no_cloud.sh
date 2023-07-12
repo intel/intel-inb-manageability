@@ -35,7 +35,8 @@ function docker_start {
     --privileged=true \
     --network=host \
     -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
-    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /usr/bin/docker:/usr/bin/docker \
+    -v /run/docker.sock:/docker.sock \
     -v /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool \
     -v /:/host \
     inb

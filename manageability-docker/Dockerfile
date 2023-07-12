@@ -48,12 +48,15 @@ RUN mkdir -p /etc/intel-manageability/public/ \
 && chmod g+rwx /var/persistent-log/mosquitto \
 && chmod -R g+rw /var/persistent-log/mosquitto  \
 && mkdir -p /var/cache/manageability/repository-tool/sota
-RUN systemctl enable mqtt inbm inbm-dispatcher inbm-diagnostic inbm-cloudadapter inbm-configuration inbm-telemetry && \
-systemctl disable docker
+RUN sed -i 's/ERROR/DEBUG/g' /etc/intel-manageability/public/dispatcher-agent/logging.ini
+RUN systemctl enable mqtt inbm inbm-dispatcher inbm-diagnostic inbm-cloudadapter inbm-configuration inbm-telemetry 
 COPY ./cloud_source /src/cloud_source
 RUN sed -i '/^ExecStart=.*/a ExecStartPost=/src/cloud_source' /lib/systemd/system/mqtt.service
 RUN sed -i 's/^[ \t]*docker[ \t]*$//g' /etc/intel_manageability.conf
 RUN mkdir -p /var/certs
+RUN dpkg --purge docker.io
+COPY docker-socket.service /etc/systemd/system/docker-socket.service
+RUN systemctl enable docker-socket
 
 # If thingsboard.pub.pem exist, copy it to container
 COPY ./thingsboard.pub.pe[m] /src/thingsboard.pub.pem
