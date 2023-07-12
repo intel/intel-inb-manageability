@@ -10,7 +10,6 @@ inbm-vision/output
 inbm/scratch-packaging
 inbm-vision/scratch-packaging
 inbm/dockerfiles
-inbm-vision/dockerfiles
 inbm/Dockerfile-*
-inbm-vision/Dockerfile-*
 dist/
+manageability-docker/
