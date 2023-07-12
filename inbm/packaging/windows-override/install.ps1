@@ -74,9 +74,42 @@ c:\intel-manageability\mosquitto\mosquitto.exe install
 start-sleep -seconds 1
 Stop-Service mosquitto -ErrorAction SilentlyContinue
 
-# Create key and cert and move them
-$Env:Path += ";c:\program files (x86)\openssl-win32\bin"
+# Search for openssl install location
+# Array of possible openssl locations
+$possibleOpensslLocations = @(
+    "${env:ProgramFiles(x86)}\OpenSSL*\bin",
+    "${env:ProgramFiles}\OpenSSL*\bin"
+)
 
+# Hold the found location
+$foundOpensslLocation = $null
+
+# Perform a search
+foreach($location in $possibleOpensslLocations)
+{
+    $found = Get-Item -Path $location -ErrorAction SilentlyContinue
+
+    if($null -ne $found)
+    {
+        $foundOpensslLocation = $found.FullName
+        break
+    }
+}
+
+if($null -eq $foundOpensslLocation)
+{
+    Write-Output "Could not locate 32-bit OpenSSL binary directory."
+    return
+}
+else
+{
+    Write-Output "Found 32-bit OpenSSL binary directory at: $foundOpensslLocation"
+}
+
+# Update PATH environment variable with the found OpenSSL bin directory
+$Env:Path += ";$foundOpensslLocation"
+
+# Create key and cert and move them
 Set-Location C:\intel-manageability\broker
 if (!(Test-Path -Path "etc\secret")) {
     New-Item -ItemType Directory -Path "etc\secret"
