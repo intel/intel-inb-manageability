@@ -1,7 +1,7 @@
 # Copyright (C) 2021-2023 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
-FROM jrei/systemd-ubuntu:20.04
+FROM jrei/systemd-ubuntu:22.04
 WORKDIR /src/
 
 ENV container docker
@@ -36,6 +36,7 @@ RUN mkdir -p /etc/intel-manageability/public/ \
 && dpkg -i ./inbm-cloudadapter*.deb \
 && dpkg -i ./inbm-telemetry*.deb \
 && dpkg -i ./trtl*.deb \
+&& dpkg -i ./inbc-program*.deb \
 && groupadd -f mqtt-broker \
 && groupadd -f dispatcher-agent \
 && groupadd -f telemetry-agent \
