@@ -15,6 +15,8 @@ function start {
 
 function docker_start {
 
+  sudo apparmor_parser -r docker-manageability-policy
+
   docker build \
       --build-arg HTTP_PROXY=${HTTP_PROXY:-} \
       --build-arg http_proxy=${http_proxy:-} \
@@ -33,10 +35,14 @@ function docker_start {
     --name inb \
     --restart always \
     --privileged=true \
+    --cap-add SYS_ADMIN \
     --network=host \
+    --tmpfs /run \
+    --tmpfs /run/lock \
+    --security-opt seccomp=unconfined --security-opt apparmor=docker-manageability-policy \
     -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
+    -v /var/run/docker.sock:/docker.sock \
     -v /usr/bin/docker:/usr/bin/docker \
-    -v /run/docker.sock:/docker.sock \
     -v /var/cache/manageability/repository-tool:/var/cache/manageability/repository-tool \
     -v /:/host \
     inb
