@@ -37,7 +37,7 @@ def get_app_os(dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mappi
     our_os = detect_os()
     if our_os == LinuxDistType.Ubuntu.name:
         return UbuntuApplication(dispatcher_callbacks, parsed_manifest, dbs)
-    elif our_os == LinuxDistType.CentOS.name and is_inside_container:
+    elif our_os == LinuxDistType.CentOS.name and is_inside_container():
         return CentOsApplication(dispatcher_callbacks, parsed_manifest, dbs)
     else:
         raise AotaError(f'Application commands are unsupported on the OS: {detect_os()}')

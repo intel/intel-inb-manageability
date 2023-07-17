@@ -71,8 +71,8 @@ def get_platform_ca_certs() -> Union[bool, str]:
 
 def is_enough_space_to_download(uri: CanonicalUri,
                                 destination_repo: IRepo,
-                                username: str = None,
-                                password: str = None) -> bool:
+                                username: Optional[str] = None,
+                                password: Optional[str] = None) -> bool:
     """Checks if enough free space exists on platform to hold download.
 
     Calculates the file size from the server and checks if required free space is available on

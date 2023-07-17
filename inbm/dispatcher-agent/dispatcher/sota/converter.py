@@ -7,11 +7,12 @@
 
 import logging
 import enum
+from typing import Union
 
 logger = logging.getLogger(__name__)
 
 
-def size_to_bytes(update_size: str) -> int:
+def size_to_bytes(update_size: str) -> Union[float, int]:
     """Cleans the data and returns a sanitized size in bytes
 
     @param update_size: The dirty size from apt-commands

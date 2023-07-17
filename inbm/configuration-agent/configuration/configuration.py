@@ -13,8 +13,9 @@ import signal
 import sys
 from logging.config import fileConfig
 from time import sleep
+from types import FrameType
 
-from typing import Callable, Any, Optional, List
+from typing import Callable, Any, Optional, List, Union
 
 from configuration.broker import Broker
 from configuration.constants import DEFAULT_LOGGING_PATH, XML_LOCATION, SCHEMA_LOCATION
@@ -49,7 +50,7 @@ class Configuration(WindowsService):
 
         super().__init__(args)
 
-    def _set_up_signal_handlers(self, handler: Callable[[signal.Signals, Any], None]) -> None:
+    def _set_up_signal_handlers(self, handler: Union[Callable[[int, Optional[FrameType]], Any], int, signal.Handlers, None]) -> None:
         # Register with systemd for termination.
         signal.signal(signal.SIGTERM, handler)
         # Terminate on control-c from user."""

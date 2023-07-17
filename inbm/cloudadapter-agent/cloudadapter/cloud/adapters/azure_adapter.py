@@ -202,7 +202,7 @@ class AzureAdapter(Adapter):
     def _generate_sas_token(self,
                             resource: str,
                             device_key: str,
-                            expiration: int = None) -> str:
+                            expiration: Optional[int] = None) -> str:
         """Create a SAS token for authentication. More information:
         https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-security
 
