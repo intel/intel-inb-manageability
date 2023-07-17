@@ -341,7 +341,7 @@ class WindowsBiosNUC(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: str = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename

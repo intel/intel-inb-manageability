@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class ProxyConfig:
 
-    def __init__(self, hostname: str = None, port: int = None) -> None:
+    def __init__(self, hostname: Optional[str] = None, port: Optional[int] = None) -> None:
         """Construct a proxy configuration object
 
         @param hostname: (str) Hostname for proxy without http://
