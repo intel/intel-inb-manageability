@@ -16,7 +16,7 @@ RUN if [ ! -z "$NO_PROXY" ]; then echo "NO_PROXY=$NO_PROXY" >> /etc/environment;
 RUN if [ ! -z "$no_proxy" ]; then echo "no_proxy=$no_proxy" >> /etc/environment; fi
 
 # Install required packages
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto cryptsetup openssl dmidecode dbus vim net-tools rsyslog libffi-dev pciutils lxc dkms libglib2.0 libssl1.0 udev docker.io docker-compose && \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto openssl dmidecode dbus net-tools rsyslog libffi-dev pciutils lxc udev && \
     apt-get clean && \ 
     rm -rf /var/lib/apt/lists/*
 
@@ -54,7 +54,6 @@ COPY ./cloud_source /src/cloud_source
 RUN sed -i '/^ExecStart=.*/a ExecStartPost=/src/cloud_source' /lib/systemd/system/mqtt.service
 RUN sed -i 's/^[ \t]*docker[ \t]*$//g' /etc/intel_manageability.conf
 RUN mkdir -p /var/certs
-RUN dpkg --purge docker.io
 COPY docker-socket.service /etc/systemd/system/docker-socket.service
 RUN systemctl enable docker-socket
 
