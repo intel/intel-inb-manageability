@@ -16,7 +16,7 @@ RUN if [ ! -z "$NO_PROXY" ]; then echo "NO_PROXY=$NO_PROXY" >> /etc/environment;
 RUN if [ ! -z "$no_proxy" ]; then echo "no_proxy=$no_proxy" >> /etc/environment; fi
 
 # Install required packages
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto openssl dmidecode dbus net-tools rsyslog libffi-dev pciutils lxc udev && \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto lsb-release openssl dmidecode dbus net-tools rsyslog libffi-dev pciutils lxc udev && \
     apt-get clean && \ 
     rm -rf /var/lib/apt/lists/*
 
