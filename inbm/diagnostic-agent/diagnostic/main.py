@@ -75,7 +75,7 @@ class Diagnostic(WindowsService):  # pragma: no cover
             # Catch the CTRL-C exit from the user
             signal.signal(signal.SIGINT, _sig_handler)
 
-        def _sig_handler(signo: signal.Signals, _: types.FrameType) -> None:
+        def _sig_handler(signo: int, _: Optional[types.FrameType]) -> None:
             if signo in (signal.SIGINT, signal.SIGTERM):
                 self.running = False
 
