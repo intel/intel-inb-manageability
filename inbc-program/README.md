@@ -178,12 +178,18 @@ INBC is only supporting the application update portion of AOTA.
 
 ### Usage
 ```
-inbc aota {--uri, -u=URI} 
-   [--app, -a APP_TYPE; default="application"] 
-   [--command, -c COMMAND; default="update"]
+inbc aota {--app, -a APP_TYPE} {--command, -c COMMAND}
+   [--uri, -u URI]
+   [--version, -v VERSION]
+   [--containertag, -ct CONTAINERTAG]
+   [--file, -f FILE]
    [--reboot, -rb REBOOT; default="no"]
-   [--username, -un USERNAME] 
+   [--username, -un USERNAME]
+   [--dockerusername, -du DOCKERUSERNAME]
+   [--dockerregistry, -dr DOCKERPASSWORD]
 ```
+
+Note: when the arguments --username/--dockerusername are used, passwords need to be entered after the prompt "Enter Password".
 
 ### Examples
 #### Application Update
@@ -191,6 +197,38 @@ inbc aota {--uri, -u=URI}
 inbc aota
      --uri <remote URI to AOTA file>/update.deb 
 ```
+
+
+#### Docker-compose Up
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-up.tar.gz --version 1.0 --containertag compose-up --dockerusername xxx --dockerregistry xxxxx
+```
+
+#### Docker-compose Up with custom file
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-up-multiple-yml.tar.gz --version 1.0 --containertag compose-up-multiple-yml --file docker-compose-2.yml
+```
+
+#### Docker-compose Pull
+
+```
+inbc aota --app compose --command pull --uri <remote URI to AOTA file>/compose-pull.tar.gz --version 1.0 --containertag compose-pull
+```
+
+#### Docker-compose Pull with custom file
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-pull-multiple-yml.tar.gz --version 1.0 --containertag compose-pull-multiple-yml --file docker-compose-2.yml
+```
+
+#### Docker-compose Down
+
+```
+inbc aota --app compose --command down --version 1.0 --containertag compose-up
+```
+
 
 ## LOAD
 ### Description

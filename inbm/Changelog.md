@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Security
  - (dependabot) - Updated cryptography from 41.0.0 to 41.0.2
 
+### Added
+- RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
+
 ## 4.1.2 - 2023-06-29
 
 ### Fixed

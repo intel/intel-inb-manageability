@@ -51,11 +51,49 @@ class TestINBC(TestCase):
         self.assertEqual(f.reboot, 'no')
         self.assertEqual(f.username, 'username')
 
-    @patch('sys.stderr', new_callable=StringIO)
-    def test_aota_raises_no_uri(self, mock_stderr):
-        with self.assertRaises(SystemExit):
-            self.arg_parser.parse_args(['aota'])
-        self.assertRegexpMatches(mock_stderr.getvalue(), r"the following arguments are required: --uri/-u")
+
+    def test_aota_docker_compose_pull_manifest_pass(self):
+        f = self.arg_parser.parse_args(
+            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz',  '-a', 'compose', '-c', 'pull', '-v', '1.0', '-ct', 'compose'])
+        self.assertEqual(f.uri, 'https://abc.com/compose.tar.gz')
+        self.assertEqual(f.app, 'compose')
+        self.assertEqual(f.command, 'pull')
+        self.assertEqual(f.version, '1.0')
+        self.assertEqual(f.containertag, 'compose')
+        self.assertEqual(f.username, 'username')
+
+
+    def test_aota_docker_compose_up_manifest_pass(self):
+        f = self.arg_parser.parse_args(
+            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz',  '-a', 'compose', '-c', 'up', '-v', '1.0', '-ct', 'compose',
+                '-du', 'dockerusername', '-dr', 'dockerregistry'])
+        self.assertEqual(f.uri, 'https://abc.com/compose.tar.gz')
+        self.assertEqual(f.app, 'compose')
+        self.assertEqual(f.command, 'up')
+        self.assertEqual(f.version, '1.0')
+        self.assertEqual(f.containertag, 'compose')
+        self.assertEqual(f.username, 'username')
+        self.assertEqual(f.dockerusername, 'dockerusername')
+        self.assertEqual(f.dockerregistry, 'dockerregistry')
+
+    def test_aota_docker_compose_up_file_manifest_pass(self):
+        f = self.arg_parser.parse_args(
+            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz',  '-a', 'compose', '-c', 'up', '-v', '1.0', '-ct', 'compose', '-f', 'compose.yml'])
+        self.assertEqual(f.uri, 'https://abc.com/compose.tar.gz')
+        self.assertEqual(f.app, 'compose')
+        self.assertEqual(f.command, 'up')
+        self.assertEqual(f.version, '1.0')
+        self.assertEqual(f.containertag, 'compose')
+        self.assertEqual(f.file, 'compose.yml')
+        self.assertEqual(f.username, 'username')
+
+    def test_aota_docker_compose_down_manifest_pass(self):
+        f = self.arg_parser.parse_args(
+            ['aota',  '-a', 'compose', '-c', 'down', '-v', '1.0', '-ct', 'compose'])
+        self.assertEqual(f.app, 'compose')
+        self.assertEqual(f.command, 'down')
+        self.assertEqual(f.version, '1.0')
+        self.assertEqual(f.containertag, 'compose')
 
     def test_fota_manifest_pass(self):
         f = self.arg_parser.parse_args(
