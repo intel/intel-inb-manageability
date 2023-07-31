@@ -56,17 +56,24 @@ class ArgsParser(object):
         """Method to parse AOTA arguments"""
         parser = self._create_subparser('aota')
 
-        parser.add_argument('--uri', '-u', required=True,
+        parser.add_argument('--uri', '-u', required=False,
                             type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
                             help='Remote URI from where to retrieve package')
-        parser.add_argument('--app', '-a', default='application', required=False, choices=['application'],
-                            help='Type of information [ application ]')
-        parser.add_argument('--command', '-c', default='update', required=False, choices=['update'],
-                            help='Type of information [ update ]')
+        parser.add_argument('--app', '-a', required=True, choices=['application', 'compose'],
+                            help='Type of information [ application, compose ]')
+        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down'],
+                            help='Type of information [ update , pull, up, down]')
         parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
                             help='Type of information [ yes | no ]')
         parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
                             type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser.add_argument('--version', '-v', required=False)
+        parser.add_argument('--containertag', '-ct', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'TAG', 50),
+                            help='Container Tag name')                        
+        parser.add_argument('--file', '-f', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'FILE', 100),
+                            help='File name')
+        parser.add_argument('--dockerusername', '-du', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50), help='docker username')
+        parser.add_argument('--dockerregistry', '-dr', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Registry', 500), help='docker registry')
         parser.set_defaults(func=aota)
 
     def parse_fota_args(self) -> None:
@@ -204,12 +211,13 @@ class ArgsParser(object):
         parser_query.set_defaults(func=query)
 
 
-def _get_password(args) -> Optional[str]:
+def _get_password(username, dockerusername) -> Optional[str]:
     password = None
-    if args.username:
+    if username: 
         password = getpass.getpass("Please provide the password: ")
+    if dockerusername:
+        password = getpass.getpass("Please provide the docker password: ")
     return password
-
 
 def aota(args) -> str:
     """Creates manifest in XML format.
@@ -222,9 +230,15 @@ def aota(args) -> str:
         'app': args.app,
         'fetch': args.uri,
         'deviceReboot': args.reboot,
+        'version': args.version,
+        'containerTag': args.containertag,
+        'file': args.file, 
         'username': args.username,
-        'password': _get_password(args)
-    }
+        'password': _get_password(args.username, None),
+        'dockerUsername': args.dockerusername,
+        'dockerRegistry': args.dockerregistry,
+        'dockerPassword': _get_password(None, args.dockerusername) 
+         }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
@@ -244,9 +258,14 @@ def aota(args) -> str:
                        "app",
                        "fetch",
                        "deviceReboot",
+                       "version",
+                       "containerTag",
+                       "file", 
                        "username",
                        "password"
-                       )
+                       "dockerUsername",
+                       "dockerPassport",
+                       "dockerRegistry")
     )
     print("manifest {0}".format(manifest))
     return manifest
@@ -280,7 +299,7 @@ def sota(args) -> str:
         'release_date': release_date,
         'fetch': fetch_location,
         'username': args.username,
-        'password': _get_password(args),
+        'password': _get_password(args.username, None),
         'deviceReboot': args.reboot,
         'path': path_location
     }
@@ -309,7 +328,6 @@ def sota(args) -> str:
                         "deviceReboot"
                         ))
     )
-    print("manifest {0}".format(manifest))
     return manifest
 
 
@@ -345,7 +363,7 @@ def fota(args) -> str:
         'tooloptions': args.tooloptions,
         'fetch': args.uri,
         'username': args.username,
-        'password': _get_password(args),
+        'password': _get_password(args.username, None),
         'guid': args.guid,
         'deviceReboot': args.reboot
     }
@@ -452,7 +470,7 @@ def load(args) -> str:
         'fetch': args.uri,
         'signature': args.signature,
         'username': args.username,
-        'password': _get_password(args)
+        'password': _get_password(args.username, None)
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +

@@ -12,7 +12,7 @@ class TestINBC(TestCase):
     def setUp(self, mock_subscribe, mock_publish, mock_connect):
         self.arg_parser = ArgsParser()
         self._aota_args = self.arg_parser.parse_args(
-            ['aota', '-u', 'https://abc.com/test.deb'])
+            ['aota', '-a', 'application', '-c', 'update', '-u', 'https://abc.com/test.deb'])
         self._fota_args = self.arg_parser.parse_args(
             ['fota', '-u', 'https://abc.com/BIOS.img'])
         self._sota_args = self.arg_parser.parse_args(
