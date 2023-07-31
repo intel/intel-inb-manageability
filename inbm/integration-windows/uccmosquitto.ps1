@@ -10,7 +10,7 @@ $serverCertPath = "C:\intel-manageability\broker\etc\secret\cloudadapter-agent\u
 $serverKeyPath = "C:\intel-manageability\broker\etc\secret\cloudadapter-agent\ucc-server.key"
 $clientCertPath = "C:\intel-manageability\broker\etc\secret\cloudadapter-agent\ucc-client.crt"
 $clientKeyPath = "C:\intel-manageability\broker\etc\secret\cloudadapter-agent\ucc-client.key"
-$opensslPath = "C:\Program Files\OpenSSL-Win64\bin\openssl.exe"
+$opensslPath = "C:\Program Files (x86)\OpenSSL-Win32\bin\openssl.exe"
 
 $serverConfig = @"
 [ req ]
@@ -104,7 +104,7 @@ tls_version tlsv1.2
 "@
 
 
-C:\inb-files\mosquitto-2.0.15-install-windows-x64.exe /S /D=$uccMosquittoPath
+C:\inb-files\mosquitto-2.0.15-install-windows-x86.exe /S /D=$uccMosquittoPath
 start-sleep -seconds 1
 
 # Variables
