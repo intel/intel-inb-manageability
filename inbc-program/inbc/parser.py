@@ -69,7 +69,7 @@ class ArgsParser(object):
                             type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         parser.add_argument('--version', '-v', required=False)
         parser.add_argument('--containertag', '-ct', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'TAG', 50),
-                            help='Container Tag name')                        
+                            help='Container Tag name')                 
         parser.add_argument('--file', '-f', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'FILE', 100),
                             help='File name')
         parser.add_argument('--dockerusername', '-du', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50), help='docker username')
@@ -232,12 +232,12 @@ def aota(args) -> str:
         'deviceReboot': args.reboot,
         'version': args.version,
         'containerTag': args.containertag,
-        'file': args.file, 
+        'file': args.file,
         'username': args.username,
         'password': _get_password(args.username, None),
         'dockerUsername': args.dockerusername,
         'dockerRegistry': args.dockerregistry,
-        'dockerPassword': _get_password(None, args.dockerusername) 
+        'dockerPassword': _get_password(None, args.dockerusername)
          }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -260,7 +260,7 @@ def aota(args) -> str:
                        "deviceReboot",
                        "version",
                        "containerTag",
-                       "file", 
+                       "file",
                        "username",
                        "password"
                        "dockerUsername",

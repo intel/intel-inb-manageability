@@ -137,7 +137,7 @@ RUN source /venv-py3/bin/activate && \
 
 # ---trtl---
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as trtl-build
+FROM registry.hub.docker.com/library/golang:1.20-bookworm as trtl-build
 WORKDIR /
 ENV GOPATH /build/go
 ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin
@@ -165,19 +165,19 @@ RUN rm -rf /output/ && mv ./output/ /output/
 
 # --inb-provision-certs-
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-certs
+FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-certs
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs /output/inb-provision-certs
 
 # --inb-provision-cloud-
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-cloud
+FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-cloud
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && go test . && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud /output/inb-provision-cloud
 
 # --inb-provision-ota-cert-
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-ota-cert
+FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-ota-cert
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert /output/inb-provision-ota-cert
 
