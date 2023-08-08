@@ -118,7 +118,7 @@ setup_docker_registry() {
 
     sudo -H docker run \
       --entrypoint htpasswd \
-      registry.hub.docker.com/library/registry:2.7.0 -Bbn testuser testpass > auth/htpasswd
+      registry:2.7.0 -Bbn testuser testpass > auth/htpasswd
 
     sudo -H docker run -d \
       -p 5000:443 \
@@ -132,7 +132,7 @@ setup_docker_registry() {
       -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
       -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
       -e REGISTRY_HTTP_ADDR=0.0.0.0:443 \
-      registry.hub.docker.com/library/registry:2.7.0
+      registry:2.7.0
     
     docker stop registry
 }

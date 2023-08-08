@@ -1,7 +1,7 @@
 include(`image.main.m4')
 
 # base windows/wine build image
-FROM registry.hub.docker.com/library/ubuntu:22.04 as base-windows
+FROM ubuntu:22.04 as base-windows
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -9,18 +9,19 @@ ARG WINE_VERSION=winehq-stable
 ARG PYTHON_VERSION=3.11.4
 ARG PYINSTALLER_VERSION=5.13.0
 
+ADD download-caches/winehq.key .
+ADD download-caches/winetricks .
+
 # we need wine for this all to work, so we'll use the PPA
 RUN set -x \
     && dpkg --add-architecture i386 \
     && apt-get update -qy \
     && apt-get install --no-install-recommends -qfy gpg-agent apt-transport-https software-properties-common wget rename \
-    && wget -nv https://dl.winehq.org/wine-builds/winehq.key \
     && apt-key add winehq.key \
     && add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' \
     && apt-get update -qy \
     && apt-get install --no-install-recommends -qfy $WINE_VERSION winbind cabextract \
     && apt-get clean \
-    && wget -nv https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \
     && chmod +x winetricks \
     && mv winetricks /usr/local/bin
 
@@ -106,23 +107,26 @@ RUN pyinstaller inbm-cloudadapter.spec && \
     wine ../cloudadapter-agent/dist/inbm-cloudadapter.exe install && \
     cp -r ../cloudadapter-agent/dist/"inbm-cloudadapter.exe" /output
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-certs-windows
+FROM golang:1.20-buster as inb-provision-certs-windows
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && GOOS=windows GOARCH=386 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs.exe /output/inb-provision-certs.exe
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-cloud-windows
+FROM golang:1.20-buster as inb-provision-cloud-windows
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && GOOS=windows GOARCH=386 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud.exe /output/inb-provision-cloud.exe
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-ota-cert-windows
+FROM golang:1.20-buster as inb-provision-ota-cert-windows
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && GOOS=windows GOARCH=386 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert.exe /output/inb-provision-ota-cert.exe
 
 # output container
-FROM registry.hub.docker.com/library/ubuntu:20.04 as output-windows
+FROM ubuntu:20.04 as output-windows
 RUN apt-get update && apt-get install -y -q wget
 COPY --from=windows-cloudadapter-py3 /output/ /windows-cloudadapter-py3
 COPY --from=inb-provision-certs-windows /output /windows-inb-provision-certs
