@@ -14,7 +14,7 @@ trap test_failed ERR
 
 echo "Starting TC17 test." | systemd-cat
 
-docker run registry.hub.docker.com/library/hello-world
+docker run hello-world
 
 test_echo Checking that docker stats are shown.
 trtl -type=docker -cmd=stats | grep ContainerStats

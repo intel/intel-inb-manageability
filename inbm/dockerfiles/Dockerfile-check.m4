@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # base image with all dependencies for running unit tests/lints
-FROM registry.hub.docker.com/library/ubuntu:20.04 as base
+FROM ubuntu:20.04 as base
 include(`commands.base-setup.m4')
 
 

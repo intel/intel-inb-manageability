@@ -10,7 +10,7 @@ RUN . /venv-py3/bin/activate && rm -rf /output && \
     pip3.8 install -e /src/inbm-lib-editable
 RUN rm /usr/lib/*/libreadline* # extra protection against libreadline in pyinstaller binaries
 
-FROM registry.hub.docker.com/library/ubuntu:20.04 as base-x86_64
+FROM ubuntu:20.04 as base-x86_64
 include(`commands.base-setup.m4')
 
 # ------Build Agents for arm64------
@@ -53,7 +53,7 @@ RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /outpu
 
 FROM base-x86_64 as misc-rpms
 WORKDIR /
-RUN wget https://github.com/certifi/python-certifi/archive/refs/tags/2020.12.05.zip -O python-certifi-src-2020.12.05.zip
+ADD download-caches/python-certifi-src-2020.12.05.zip.dont_extract python-certifi-src-2020.12.05.zip
 RUN gem install --no-document fpm -v 1.14.0
 COPY inbm/fpm /src/fpm
 WORKDIR /src/fpm

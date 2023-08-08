@@ -7,6 +7,7 @@ cd "$DIR"
 rm -rf "$DIR"/dist
 mkdir -p "$DIR"/dist
 
+tar -xf "$DIR"/download-caches.tar
 "$DIR"/inbm/build.sh
 mkdir -p "$DIR"/dist/inbm
 cp "$DIR"/inbm/output/install*.sh "$DIR"/dist/inbm

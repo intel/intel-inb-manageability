@@ -6,5 +6,5 @@ set -euxo pipefail
 rm -rf realdocker/*test*
 mkdir -p ./output/
 go test -coverprofile ./trtl-coverage.out ./...
-go install golang.org/x/tools/cmd/cover@latest
+go install golang.org/x/tools/cmd/cover@v0.1.0-deprecated
 cover -func=./trtl-coverage.out >./output/trtl-coverage.txt

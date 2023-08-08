@@ -1,5 +1,5 @@
 # base image with all dependencies for building
-FROM registry.hub.docker.com/library/ubuntu:20.04 as base
+FROM ubuntu:20.04 as base
 include(`commands.base-setup.m4')
 
 
@@ -137,7 +137,7 @@ RUN source /venv-py3/bin/activate && \
 
 # ---trtl---
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as trtl-build
+FROM golang:1.20-buster as trtl-build
 WORKDIR /
 ENV GOPATH /build/go
 ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin
@@ -148,10 +148,13 @@ COPY inbm/trtl /src/trtl
 WORKDIR /repo
 RUN mkdir -p /build/go/src/iotg-inb && cp -r /src/trtl /build/go/src/iotg-inb
 WORKDIR /build/go/src/iotg-inb/trtl
+
+ADD download-caches/go/pkg /build/go/pkg
+
 RUN scripts/set-up-trtl-deps
 RUN scripts/build-trtl
 
-RUN go get -t github.com/stretchr/testify/assert
+#RUN go get -t github.com/stretchr/testify/assert@v1.7.0
 
 RUN scripts/test-trtl
 COPY inbm/version.txt /build/go/src/iotg-inb/version.txt
@@ -165,19 +168,22 @@ RUN rm -rf /output/ && mv ./output/ /output/
 
 # --inb-provision-certs-
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-certs
+FROM golang:1.20-buster as inb-provision-certs
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs /output/inb-provision-certs
 
 # --inb-provision-cloud-
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-cloud
+FROM golang:1.20-buster as inb-provision-cloud
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && go test . && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud /output/inb-provision-cloud
 
 # --inb-provision-ota-cert-
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-ota-cert
+FROM golang:1.20-buster as inb-provision-ota-cert
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert /output/inb-provision-ota-cert
 
@@ -202,7 +208,7 @@ RUN cp -v docker-sample-container/docker/certs/succeed_rpm_key.pem /output
 
 FROM base as fpm
 WORKDIR /
-RUN wget https://github.com/certifi/python-certifi/archive/refs/tags/2020.12.05.zip -O python-certifi-src-2020.12.05.zip
+ADD download-caches/python-certifi-src-2020.12.05.zip.dont_extract python-certifi-src-2020.12.05.zip
 COPY inbm/fpm /src/fpm
 WORKDIR /src/fpm
 COPY --from=inb-provision-certs /output/inb-provision-certs /src/fpm/mqtt/template/usr/bin/inb-provision-certs
@@ -224,7 +230,7 @@ RUN make build && \
     mv output/* /output
 
 # output container
-FROM registry.hub.docker.com/library/ubuntu:20.04 as output-main
+FROM ubuntu:20.04 as output-main
 COPY --from=packaging /output /packaging
 COPY --from=inbc-py3 /output /inbc
 COPY --from=diagnostic-py3 /output /diagnostic

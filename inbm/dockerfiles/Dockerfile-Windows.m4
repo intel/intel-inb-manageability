@@ -1,7 +1,7 @@
 include(`image.main.m4')
 
 # base windows/wine build image
-FROM registry.hub.docker.com/batonogov/pyinstaller-windows:3.1.0 as base-windows
+FROM batonogov/pyinstaller-windows:3.1.0 as base-windows
 
 RUN ln -sf /usr/bin/pip /usr/bin/pip3
 RUN python -m pip install --upgrade pip
@@ -27,23 +27,26 @@ RUN pyinstaller inbm-cloudadapter.spec && \
     wine ../cloudadapter-agent/dist/inbm-cloudadapter.exe install && \
     cp -r ../cloudadapter-agent/dist/"inbm-cloudadapter.exe" /output
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-certs-windows
+FROM golang:1.20-buster as inb-provision-certs-windows
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && GOOS=windows GOARCH=amd64 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs.exe /output/inb-provision-certs.exe
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-cloud-windows
+FROM golang:1.20-buster as inb-provision-cloud-windows
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && GOOS=windows GOARCH=amd64 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud.exe /output/inb-provision-cloud.exe
 
-FROM registry.hub.docker.com/library/golang:1.20-buster as inb-provision-ota-cert-windows
+FROM golang:1.20-buster as inb-provision-ota-cert-windows
+ADD download-caches/go/pkg /go/pkg
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && GOOS=windows GOARCH=amd64 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert.exe /output/inb-provision-ota-cert.exe
 
 # output container
-FROM registry.hub.docker.com/library/ubuntu:20.04 as output-windows
+FROM ubuntu:20.04 as output-windows
 RUN apt-get update && apt-get install -y -q wget
 COPY --from=windows-cloudadapter-py3 /output/ /windows-cloudadapter-py3
 COPY --from=inb-provision-certs-windows /output /windows-inb-provision-certs

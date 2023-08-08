@@ -127,10 +127,10 @@ EOF
     systemctl enable docker
     systemctl restart docker
     echo "Docker installed. Running self test."
-    if docker run registry.hub.docker.com/library/hello-world ; then
+    if docker run hello-world ; then
       echo "Docker confirmed good."
     else
-      echo "Problem running docker run registry.hub.docker.com/library/hello-world; exiting."
+      echo "Problem running docker run hello-world; exiting."
       exit 1
     fi
   fi

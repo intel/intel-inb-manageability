@@ -176,10 +176,10 @@ function configure_docker {
   systemctl restart docker
 
   echo "Docker proxies set. Running self test."
-  if docker pull registry.hub.docker.com/library/hello-world && docker run registry.hub.docker.com/library/hello-world ; then
+  if docker pull hello-world && docker run hello-world ; then
     echo "Docker confirmed good."
   else
-    echo "Problem running docker run registry.hub.docker.com/library/hello-world; exiting."
+    echo "Problem running docker run hello-world; exiting."
     exit 1
   fi
 
