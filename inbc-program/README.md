@@ -198,6 +198,30 @@ inbc aota
      --uri <remote URI to AOTA file>/update.deb 
 ```
 
+#### Docker pull
+
+```
+inbc aota --app docker --command pull --version 1.0 --containertag name
+```
+
+#### Docker load
+
+```
+inbc aota --app docker --command load --uri <remote URI to AOTA file>/name.tgz --version 1.0 --containertag name
+```
+
+#### Docker import
+
+```
+inbc aota --app docker --command import --uri <remote URI to AOTA file>/name.tgz --version 1.0 --containertag name
+```
+
+#### Docker remove
+
+```
+inbc aota --app docker --command remove --version 1.0 --containertag name
+```
+
 #### Docker-compose Up
 
 ```

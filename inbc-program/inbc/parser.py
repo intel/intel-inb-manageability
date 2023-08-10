@@ -59,9 +59,9 @@ class ArgsParser(object):
         parser.add_argument('--uri', '-u', required=False,
                             type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
                             help='Remote URI from where to retrieve package')
-        parser.add_argument('--app', '-a', required=True, choices=['application', 'compose'],
-                            help='Type of information [ application, compose ]')
-        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down'],
+        parser.add_argument('--app', '-a', required=True, choices=['application', 'compose', 'docker'],
+                            help='Type of information [ application, compose, docker]')
+        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down', 'import', 'load', 'remove'],
                             help='Type of information [ update , pull, up, down]')
         parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
                             help='Type of information [ yes | no ]')
