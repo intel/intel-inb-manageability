@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Security
  - (dependabot) - Updated cryptography from 41.0.0 to 41.0.2
+ - (dependabot) - Updated cryptography from 41.0.2 to 41.0.3
  - Updated golang runtime from 1.20.5 to 1.20.6
 
 ## 4.1.2 - 2023-06-29
