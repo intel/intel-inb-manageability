@@ -1,5 +1,4 @@
 #!/bin/sh
 set -ex
 
-ls -lR /mqtt-deb/usr/bin/
-false
+/mqtt-deb/usr/bin/inb-provision-certs
