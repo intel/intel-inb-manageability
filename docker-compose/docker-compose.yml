@@ -1,0 +1,44 @@
+version: '3'
+services:
+  certgen:
+    image: debian
+    build:
+      context: .
+      dockerfile: certgen/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+    volumes:
+      - dispatcher_certs:/dispatcher_certs
+      - mosquitto_certs:/mosquitto_certs
+    command: /bin/bash /generate-certs.sh
+
+  dispatcher:
+    build:
+      context: .
+      dockerfile: dispatcher/Dockerfile
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=8883
+    volumes:
+      - dispatcher_certs:/certs
+    depends_on:
+      - certgen
+
+  mosquitto:
+    build:
+      context: .
+      dockerfile: mosquitto/Dockerfile
+    ports:
+      - 8883:8883
+    volumes:
+      - mosquitto_certs:/mosquitto/config/certs
+    environment:
+      - MOSQUITTO_CONF=/mosquitto/config/mosquitto.conf
+    depends_on:
+      - certgen
+      
+volumes:
+  dispatcher_certs:
+  mosquitto_certs:
