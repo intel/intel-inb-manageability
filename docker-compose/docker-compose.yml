@@ -10,19 +10,31 @@ services:
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
     volumes:
-      - dispatcher_certs:/dispatcher_certs
-      - mosquitto_certs:/mosquitto_certs
+      - dispatcher_certs:/dispatcher-agent-certs
+      - mqtt_broker_certs:/mqtt-broker-certs
     command: /bin/bash /generate-certs.sh
 
   dispatcher:
     build:
       context: .
       dockerfile: dispatcher/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
     environment:
       - MQTT_HOST=mosquitto
       - MQTT_PORT=8883
+      - MQTT_CA_CERTS=/certs/mqtt-ca.cert
+      - MQTT_CLIENT_CERTS=/certs/dispatcher-agent.crt
+      - MQTT_CLIENT_KEYS=/certs/dispatcher-agent.key
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}  
     volumes:
       - dispatcher_certs:/certs
+    networks:
+      - inbm_network
     depends_on:
       - certgen
 
@@ -33,12 +45,15 @@ services:
     ports:
       - 8883:8883
     volumes:
-      - mosquitto_certs:/mosquitto/config/certs
-    environment:
-      - MOSQUITTO_CONF=/mosquitto/config/mosquitto.conf
+      - mqtt_broker_certs:/certs
+    networks:
+      - inbm_network
     depends_on:
       - certgen
       
 volumes:
   dispatcher_certs:
-  mosquitto_certs:
+  mqtt_broker_certs:
+
+networks:
+  inbm_network:
