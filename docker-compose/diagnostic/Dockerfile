@@ -11,6 +11,7 @@ ARG http_proxy
 ARG https_proxy
 ARG no_proxy
 ENV http_proxy=$http_proxy https_proxy=$https_proxy no_proxy=$no_proxy
+ENV container docker
 RUN apt-get update && apt-get install -y lxc curl
 RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-24.0.5.tgz \
     && tar xzvf docker-24.0.5.tgz \

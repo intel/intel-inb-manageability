@@ -11,6 +11,7 @@ ARG http_proxy
 ARG https_proxy
 ARG no_proxy
 ENV http_proxy=$http_proxy https_proxy=$https_proxy no_proxy=$no_proxy
+ENV container docker
 RUN apt-get update && apt-get install -y lxc
 RUN mkdir /debs
 COPY --from=untar /src/inbc*.deb /debs

@@ -13,6 +13,7 @@ services:
       - dispatcher_certs:/dispatcher-agent-certs
       - configuration_certs:/configuration-agent-certs
       - diagnostic_certs:/diagnostic-agent-certs
+      - telemetry_certs:/telemetry-agent-certs
       - inbc_certs:/inbc-program-certs
       - mqtt_broker_certs:/mqtt-broker-certs
     command: /bin/bash /generate-certs.sh
@@ -34,6 +35,7 @@ services:
       - http_proxy=${http_proxy}
       - https_proxy=${https_proxy}
       - no_proxy=${no_proxy}  
+    restart: always
     volumes:
       - dispatcher_certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock
@@ -56,6 +58,7 @@ services:
       - MQTT_CA_CERTS=/certs/mqtt-ca.crt
       - MQTT_CLIENT_CERTS=/certs/configuration-agent.crt
       - MQTT_CLIENT_KEYS=/certs/configuration-agent.key
+    restart: always
     volumes:
       - configuration_certs:/certs      
     networks:
@@ -77,8 +80,32 @@ services:
       - MQTT_CA_CERTS=/certs/mqtt-ca.crt
       - MQTT_CLIENT_CERTS=/certs/diagnostic-agent.crt
       - MQTT_CLIENT_KEYS=/certs/diagnostic-agent.key
+    restart: always
     volumes:
       - diagnostic_certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - inbm_network
+    depends_on:
+      - certgen
+  
+  telemetry:
+    build:
+      context: .
+      dockerfile: telemetry/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=8883
+      - MQTT_CA_CERTS=/certs/mqtt-ca.crt
+      - MQTT_CLIENT_CERTS=/certs/telemetry-agent.crt
+      - MQTT_CLIENT_KEYS=/certs/telemetry-agent.key
+    restart: always
+    volumes:
+      - telemetry_certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - inbm_network
@@ -99,6 +126,7 @@ services:
       - MQTT_CA_CERTS=/certs/mqtt-ca.crt
       - MQTT_CLIENT_CERTS=/certs/inbc-program.crt
       - MQTT_CLIENT_KEYS=/certs/inbc-program.key
+    restart: always
     volumes:
       - inbc_certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock
@@ -107,8 +135,6 @@ services:
     depends_on:
       - certgen
   
-
-
   mosquitto:
     build:
       context: .
@@ -126,6 +152,7 @@ volumes:
   dispatcher_certs:
   configuration_certs:
   diagnostic_certs:
+  telemetry_certs:
   inbc_certs:
   mqtt_broker_certs:
 
