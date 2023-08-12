@@ -25,7 +25,7 @@ services:
     environment:
       - MQTT_HOST=mosquitto
       - MQTT_PORT=8883
-      - MQTT_CA_CERTS=/certs/mqtt-ca.cert
+      - MQTT_CA_CERTS=/certs/mqtt-ca.crt
       - MQTT_CLIENT_CERTS=/certs/dispatcher-agent.crt
       - MQTT_CLIENT_KEYS=/certs/dispatcher-agent.key
       - http_proxy=${http_proxy}

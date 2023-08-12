@@ -160,6 +160,7 @@ subjectAltName = @alt_names
 
 [alt_names]
 DNS.1 = localhost
+DNS.2 = mosquitto
 
 [req_distinguished_name]
 `)
@@ -180,7 +181,7 @@ DNS.1 = localhost
 		"v3_req", "-CA", mqttCaSecretCrtFilename, "-CAkey",
 		mqttCaSecretKeyFilename, "-CAcreateserial", "-in",
 		mqttBrokerSecretCsrFilename,
-		"-out", mqttBrokerSecretCrtFilename)
+		"-out", mqttBrokerSecretCrtFilename, "-extensions", "v3_req", "-extfile", opensslSanSecretCnfFilename)
 	mustRunCmd(cmd)
 
 	mqttBrokerPublicDir := filepath.Join(publicDir, "mqtt-broker")
