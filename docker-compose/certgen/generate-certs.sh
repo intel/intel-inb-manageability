@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-cert_types="mqtt-broker dispatcher-agent configuration-agent diagnostic-agent"
+cert_types="mqtt-broker dispatcher-agent configuration-agent diagnostic-agent inbc-program"
 
 provisioned=1
 for cert_type in $cert_types; do
