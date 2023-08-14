@@ -21,7 +21,7 @@ services:
   dispatcher:
     build:
       context: .
-      dockerfile: dispatcher/Dockerfile
+      dockerfile: Dockerfile-inbm
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -43,11 +43,12 @@ services:
       - inbm_network
     depends_on:
       - certgen
+    command: /usr/bin/inbm-dispatcher
   
   configuration:
     build:
       context: .
-      dockerfile: configuration/Dockerfile
+      dockerfile: Dockerfile-inbm
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -65,11 +66,12 @@ services:
       - inbm_network
     depends_on:
       - certgen
+    command: /usr/bin/inbm-configuration
   
   diagnostic:
     build:
       context: .
-      dockerfile: diagnostic/Dockerfile
+      dockerfile: Dockerfile-inbm
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -88,11 +90,12 @@ services:
       - inbm_network
     depends_on:
       - certgen
+    command: /usr/bin/inbm-diagnostic
   
   telemetry:
     build:
       context: .
-      dockerfile: telemetry/Dockerfile
+      dockerfile: Dockerfile-inbm
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -111,11 +114,12 @@ services:
       - inbm_network
     depends_on:
       - certgen
+    command: /usr/bin/inbm-telemetry
 
   inbc:
     build:
       context: .
-      dockerfile: inbc/Dockerfile
+      dockerfile: Dockerfile-inbm
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -134,6 +138,7 @@ services:
       - inbm_network
     depends_on:
       - certgen
+    command: /keep-container-running.sh
   
   mosquitto:
     build:
