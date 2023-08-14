@@ -22,6 +22,7 @@ COPY --from=untar /src/inbm-diagnostic*.deb /debs
 COPY --from=untar /src/trtl*.deb /debs
 WORKDIR /debs
 RUN dpkg -i ./inbm-diagnostic*.deb ./trtl*.deb
+RUN mkdir /var/cache/manageability
 RUN sed -i "s/ERROR/DEBUG/g" /etc/intel-manageability/public/diagnostic-agent/logging.ini
 COPY wait-for-certs.sh /wait-for-certs.sh
 RUN chmod +x /wait-for-certs.sh

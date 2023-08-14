@@ -225,11 +225,13 @@ class SoftwareChecker(Command):
                     self._result['message'] = 'Trtl not present '
                     return self._result
             else:
-                command = f"systemctl is-active --quiet {s}"
-                (out, err, code) = PseudoShellRunner().run(command)
-                if code != 0:
-                    self._result['message'] = s + ' not present'
-                    self._result['rc'] = code
+                # skip any systemctl checks if we're running in a container
+                if os.getenv('container') != 'docker':
+                    command = f"systemctl is-active --quiet {s}"
+                    (out, err, code) = PseudoShellRunner().run(command)
+                    if code != 0:
+                        self._result['message'] = s + ' not present'
+                        self._result['rc'] = code
 
         return self._result
 

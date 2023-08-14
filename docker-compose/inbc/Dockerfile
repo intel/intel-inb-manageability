@@ -19,4 +19,5 @@ WORKDIR /debs
 RUN dpkg -i ./inbc*.deb
 COPY wait-for-certs.sh /wait-for-certs.sh
 RUN chmod +x /wait-for-certs.sh
-ENTRYPOINT [ "/wait-for-certs.sh", "sleep", "infinity" ] # inbc exists only to be execed into
+COPY inbc/start.sh /start.sh
+ENTRYPOINT [ "/wait-for-certs.sh", "/start.sh" ]
