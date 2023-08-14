@@ -12,6 +12,14 @@ FROM ubuntu:22.04 as untar
 COPY ../Intel-Manageability.preview.tar.gz /src/Intel-Manageability.preview.tar.gz
 WORKDIR /src/
 RUN tar zxvf Intel-Manageability.preview.tar.gz
+RUN dpkg -X /src/inbm-dispatcher*.deb /extract
+RUN dpkg -X /src/inbm-configuration*.deb /extract
+RUN dpkg -X /src/inbm-telemetry*.deb /extract
+RUN dpkg -X /src/inbm-diagnostic*.deb /extract
+RUN dpkg -X /src/trtl*.deb /extract
+RUN dpkg -X /src/inbc*.deb /extract
+# lib is a symlink in ubuntu 22.04
+RUN mv /extract/lib/* /extract/usr/lib && rm -rf /extract/lib
 
 FROM ubuntu:22.04 as final
 ARG http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
@@ -23,14 +31,7 @@ RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-24
     && mv docker/docker /usr/bin \
     && rm -r docker docker-24.0.5*
 RUN mkdir /debs
-COPY --from=untar /src/inbm-dispatcher*.deb /debs
-COPY --from=untar /src/inbm-configuration*.deb /debs
-COPY --from=untar /src/inbm-telemetry*.deb /debs
-COPY --from=untar /src/inbm-diagnostic*.deb /debs
-COPY --from=untar /src/trtl*.deb /debs
-COPY --from=untar /src/inbc*.deb /debs
-WORKDIR /debs
-RUN dpkg -i ./inbm-dispatcher*.deb ./inbm-configuration*.deb ./inbm-telemetry*.deb ./inbm-diagnostic*.deb ./trtl*.deb ./inbc*.deb
+COPY --from=untar /extract /
 RUN sed -i "s/ERROR/DEBUG/g" /etc/intel-manageability/public/*-agent/logging.ini
 COPY scripts/keep-container-running.sh /keep-container-running.sh
 COPY scripts/wait-for-certs.sh /wait-for-certs.sh
