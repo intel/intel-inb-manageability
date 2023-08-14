@@ -16,16 +16,17 @@ if [ $provisioned -eq 1 ]; then
   exit 0
 fi
 
+echo Generating certs...
 mkdir -p /public-certs
 mkdir -p /private-certs
-echo Generating certs...
 /mqtt-deb/usr/bin/inb-provision-certs /public-certs /private-certs
 
 echo Copying certs...
 for cert_type in $cert_types; do
-  cp /public-certs/"${cert_type}"/"${cert_type}".crt /"${cert_type}"-certs
-  cp /private-certs/"${cert_type}"/"${cert_type}".key /"${cert_type}"-certs
-  cp /public-certs/mqtt-ca/mqtt-ca.crt /"${cert_type}"-certs
+  echo Copying certs for "${cert_type}"...
+  cp -v /public-certs/"${cert_type}"/"${cert_type}".crt /"${cert_type}"-certs
+  cp -v /private-certs/"${cert_type}"/"${cert_type}".key /"${cert_type}"-certs
+  cp -v /public-certs/mqtt-ca/mqtt-ca.crt /"${cert_type}"-certs
   touch /"${cert_type}"-certs/provisioned # signals to services certs are ready
 done
 

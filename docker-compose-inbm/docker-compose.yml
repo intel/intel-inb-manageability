@@ -24,7 +24,7 @@ services:
   dispatcher:
     build:
       context: .
-      dockerfile: Dockerfile-inbm
+      dockerfile: inbm/Dockerfile
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -55,7 +55,7 @@ services:
   configuration:
     build:
       context: .
-      dockerfile: Dockerfile-inbm
+      dockerfile: inbm/Dockerfile
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -81,7 +81,7 @@ services:
   diagnostic:
     build:
       context: .
-      dockerfile: Dockerfile-inbm
+      dockerfile: inbm/Dockerfile
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -108,7 +108,7 @@ services:
   telemetry:
     build:
       context: .
-      dockerfile: Dockerfile-inbm
+      dockerfile: inbm/Dockerfile
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -135,7 +135,7 @@ services:
   inbc:
     build:
       context: .
-      dockerfile: Dockerfile-inbm
+      dockerfile: inbm/Dockerfile
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
