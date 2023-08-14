@@ -9,5 +9,7 @@ do
   sleep 1
 done
 
+echo "Certs are ready. Starting service: $@"
+
 # Start the service
 exec "$@"
