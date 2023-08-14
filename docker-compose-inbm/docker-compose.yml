@@ -9,6 +9,9 @@ services:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
     volumes:
       - dispatcher_certs:/dispatcher-agent-certs
       - configuration_certs:/configuration-agent-certs
@@ -26,6 +29,9 @@ services:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
     environment:
       - MQTT_HOST=mosquitto
       - MQTT_PORT=8883
@@ -39,6 +45,7 @@ services:
     volumes:
       - dispatcher_certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
     networks:
       - inbm_network
     depends_on:
@@ -53,6 +60,9 @@ services:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
     environment:
       - MQTT_HOST=mosquitto
       - MQTT_PORT=8883
@@ -76,6 +86,9 @@ services:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
     environment:
       - MQTT_HOST=mosquitto
       - MQTT_PORT=8883
@@ -100,6 +113,9 @@ services:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
         no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
     environment:
       - MQTT_HOST=mosquitto
       - MQTT_PORT=8883
