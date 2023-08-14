@@ -17,7 +17,7 @@ FROM ubuntu:22.04 as final
 ARG http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
 ENV http_proxy=$http_proxy https_proxy=$https_proxy no_proxy=$no_proxy HTTP_PROXY=$HTTP_PROXY HTTPS_PROXY=$HTTPS_PROXY NO_PROXY=$NO_PROXY
 ENV container docker
-RUN apt-get update && apt-get install -y lxc curl
+RUN apt-get update && apt-get install -y lxc curl && rm -rf /var/lib/apt/lists/*
 RUN curl -fsSLO https://download.docker.com/linux/static/stable/x86_64/docker-24.0.5.tgz \
     && tar xzvf docker-24.0.5.tgz \
     && mv docker/docker /usr/bin \
