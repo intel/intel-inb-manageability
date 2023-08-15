@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2023 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2023 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
@@ -8,7 +8,6 @@ package realdocker
 import (
 	"fmt"
 	"os"
-	"time"
 )
 
 const maxWaitTimeToStopContainer = 20
@@ -56,7 +55,7 @@ func getContainersAndStop(dw DockerWrapper, image string) error {
 // It returns any error encountered.
 func StopContainer(dw DockerWrapper, containerID string) error {
 	fmt.Println("Stopping container", containerID, "...")
-	timeout := maxWaitTimeToStopContainer * time.Second
+	timeout := maxWaitTimeToStopContainer
 	if err := dw.ContainerStop(containerID, &timeout); err != nil {
 		return err
 	}
