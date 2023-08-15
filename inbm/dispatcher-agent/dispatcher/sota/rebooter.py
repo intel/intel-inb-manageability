@@ -48,7 +48,7 @@ class LinuxRebooter(Rebooter):
         cmd = "/sbin/reboot"
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
-            (output, err, code) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)
+            # (output, err, code) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)
         else:
             (output, err, code) = PseudoShellRunner.run(cmd)
         # return code will be None if reboot is submitted but not yet executed.
