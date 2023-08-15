@@ -1,14 +1,14 @@
 /*
-    Copyright (C) 2017-2023 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2023 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
 
 import (
-	"github.com/docker/docker/api/types/registry"
 	"io"
-	"time"
+
+	"github.com/docker/docker/api/types/registry"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -44,7 +44,7 @@ type FakeDockerWrapper struct {
 	HijackedResp       types.HijackedResponse
 	Stats              types.ContainerStats
 	IDResponse         types.IDResponse
-	CreatedBody        container.ContainerCreateCreatedBody
+	CreatedBody        container.CreateResponse
 	ErrorChan          <-chan error
 	MessageChan        <-chan events.Message
 }
@@ -86,7 +86,7 @@ func (d FakeDockerWrapper) ContainerCommit(containerID string, options types.Con
 
 // ContainerCreate makes the actual call to docker to create the container.
 func (d FakeDockerWrapper) ContainerCreate(config *container.Config, hostConfig *container.HostConfig,
-	netConfig *network.NetworkingConfig, containerName string) (container.ContainerCreateCreatedBody, error) {
+	netConfig *network.NetworkingConfig, containerName string) (container.CreateResponse, error) {
 
 	return d.CreatedBody, d.Err
 }
@@ -117,7 +117,7 @@ func (d FakeDockerWrapper) ContainerStats(containerID string, stream bool) (type
 }
 
 // ContainerStop is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerStop(string, *time.Duration) error {
+func (d FakeDockerWrapper) ContainerStop(string, *int) error {
 	return d.Err
 }
 
