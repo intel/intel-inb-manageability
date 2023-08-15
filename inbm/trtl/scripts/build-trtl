@@ -2,5 +2,5 @@
 
 set -euxo pipefail
 
-go build -o trtl
+CGO_ENABLED=0 go build -o trtl
 chmod +x trtl
