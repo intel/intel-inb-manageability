@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Fixed
+ - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
+ - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
+
 ### Added
 - RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
 
