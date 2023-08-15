@@ -167,19 +167,19 @@ RUN rm -rf /output/ && mv ./output/ /output/
 
 FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-certs
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
-RUN cd /inb-provision-certs && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs /output/inb-provision-certs
+RUN cd /inb-provision-certs && CGO_ENABLED=0 go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs /output/inb-provision-certs
 
 # --inb-provision-cloud-
 
 FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-cloud
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
-RUN cd /inb-provision-cloud && go test . && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud /output/inb-provision-cloud
+RUN cd /inb-provision-cloud && go test . && CGO_ENABLED=0 go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud /output/inb-provision-cloud
 
 # --inb-provision-ota-cert-
 
 FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-ota-cert
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
-RUN cd /inb-provision-ota-cert && go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert /output/inb-provision-ota-cert
+RUN cd /inb-provision-ota-cert && CGO_ENABLED=0 go build . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert /output/inb-provision-ota-cert
 
 # --packaging--
 
