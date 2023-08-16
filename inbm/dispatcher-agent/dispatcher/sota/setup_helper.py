@@ -89,10 +89,7 @@ class DebianBasedSetupHelper(SetupHelper):
         if not temp_payload.startswith('http'):
             return
         
-        logger.debug("2")
-
         apt_file = fileinput.input(filename, inplace=True, backup='.bak')
-        logger.debug("3")
         for line in apt_file:
             if line.startswith("#") or line.startswith("\n"):
                 sys.stdout.write(line)

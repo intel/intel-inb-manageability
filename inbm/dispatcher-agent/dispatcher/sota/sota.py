@@ -286,9 +286,7 @@ class SOTA:
                 self._download_sota_files(sota_cache_repo, release_date)
                 download_success = True
                 snapshotter.take_snapshot()
-                logger.debug("calculating and executing sota upgrade")
                 cmd_list = self.calculate_and_execute_sota_upgrade(sota_cache_repo)
-                logger.debug("deleting sota cache")
                 sota_cache_repo.delete_all()  # clean cache directory
                 if get_command_status(cmd_list) == SUCCESS:
                     self._dispatcher_callbacks.broker_core.send_result(
