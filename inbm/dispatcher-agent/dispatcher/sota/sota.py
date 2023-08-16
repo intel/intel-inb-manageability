@@ -295,7 +295,8 @@ class SOTA:
                 else:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         '{"status": 400, "message": "SOTA command status: FAILURE"}')
-                    snapshotter.recover(rebooter, time_to_wait_before_reboot)
+                    if self.sota_mode != 'download-only':
+                        snapshotter.recover(rebooter, time_to_wait_before_reboot)
         except (DispatcherException, SotaError, UrlSecurityException) as e:
             msg = "Caught exception during SOTA: " + str(e)
             logger.debug(msg)
