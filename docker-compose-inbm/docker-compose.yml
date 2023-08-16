@@ -33,7 +33,7 @@ services:
         HTTPS_PROXY: ${HTTPS_PROXY}
         NO_PROXY: ${NO_PROXY}
     environment:
-      - MQTT_HOST=mosquitto
+      - MQTT_HOST=localhost
       - MQTT_PORT=8883
       - MQTT_CA_CERTS=/certs/mqtt-ca.crt
       - MQTT_CLIENT_CERTS=/certs/dispatcher-agent.crt
@@ -46,8 +46,7 @@ services:
       - dispatcher_certs:/certs
       - /var/run/docker.sock:/var/run/docker.sock
       - /:/host
-    networks:
-      - inbm_network
+    network_mode: host  # needed for apt-get chroots to function properly
     depends_on:
       - certgen
     command: /usr/bin/inbm-dispatcher
