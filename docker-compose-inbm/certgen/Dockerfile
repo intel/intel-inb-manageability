@@ -1,9 +1,9 @@
-FROM ubuntu:22.04 as untar
+FROM debian:bookworm-slim as untar
 COPY Intel-Manageability.preview.tar.gz /src/Intel-Manageability.preview.tar.gz
 WORKDIR /src
 RUN tar zxvf Intel-Manageability.preview.tar.gz
 
-FROM ubuntu:22.04 as final
+FROM debian:bookworm-slim as final
 ARG http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
 ENV http_proxy=$http_proxy https_proxy=$https_proxy no_proxy=$no_proxy HTTP_PROXY=$HTTP_PROXY HTTPS_PROXY=$HTTPS_PROXY NO_PROXY=$NO_PROXY
 RUN mkdir /deb
