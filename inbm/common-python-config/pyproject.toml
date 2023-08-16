@@ -1,6 +1,6 @@
 [tool.flakeheaven]
 baseline = ".flakehell_baseline"
-format = "grouped"
+format = "default"
 show_source = true
 statistics = false
 doctests = false
