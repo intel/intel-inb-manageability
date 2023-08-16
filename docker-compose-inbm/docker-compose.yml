@@ -1,10 +1,9 @@
 version: '3'
 services:
   certgen:
-    image: debian
     build:
       context: .
-      dockerfile: certgen/Dockerfile
+      dockerfile: inbm/Dockerfile
       args:
         http_proxy: ${http_proxy}
         https_proxy: ${https_proxy}
@@ -19,7 +18,7 @@ services:
       - telemetry_certs:/telemetry-agent-certs
       - inbc_certs:/inbc-program-certs
       - mqtt_broker_certs:/mqtt-broker-certs
-    command: /bin/bash /generate-certs.sh
+    entrypoint: /bin/bash /generate-certs.sh
 
   dispatcher:
     build:

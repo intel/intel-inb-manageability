@@ -19,7 +19,7 @@ fi
 echo Generating certs...
 mkdir -p /public-certs
 mkdir -p /private-certs
-/mqtt-deb/usr/bin/inb-provision-certs /public-certs /private-certs
+/usr/bin/inb-provision-certs /public-certs /private-certs
 
 echo Copying certs...
 for cert_type in $cert_types; do

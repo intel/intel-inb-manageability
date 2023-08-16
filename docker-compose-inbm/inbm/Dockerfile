@@ -23,6 +23,7 @@ RUN dpkg -X /src/inbm-telemetry*.deb /extract
 RUN dpkg -X /src/inbm-diagnostic*.deb /extract
 RUN dpkg -X /src/trtl*.deb /extract
 RUN dpkg -X /src/inbc*.deb /extract
+RUN dpkg -X /src/mqtt*.deb /extract
 RUN sed -i "s/ERROR/DEBUG/g" /extract/etc/intel-manageability/public/*-agent/logging.ini
 # lib is a symlink in debian/ubuntu
 RUN mv /extract/lib/* /extract/usr/lib && rm -rf /extract/lib
@@ -31,10 +32,15 @@ FROM debian:bookworm-slim as final
 ARG http_proxy https_proxy no_proxy HTTP_PROXY HTTPS_PROXY NO_PROXY
 ENV http_proxy=$http_proxy https_proxy=$https_proxy no_proxy=$no_proxy HTTP_PROXY=$HTTP_PROXY HTTPS_PROXY=$HTTPS_PROXY NO_PROXY=$NO_PROXY
 ENV container docker
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends openssl && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 COPY --from=fetch /usr/bin/docker /usr/bin/docker
 COPY --from=fetch /extract /
 COPY scripts/keep-container-running.sh /keep-container-running.sh
 COPY scripts/wait-for-certs.sh /wait-for-certs.sh
+COPY scripts/generate-certs.sh /generate-certs.sh
 RUN chmod +x /wait-for-certs.sh
 ENTRYPOINT [ "/wait-for-certs.sh" ]
 CMD [ "echo", "needs startup cmd passed into container"]
