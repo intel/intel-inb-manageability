@@ -8,13 +8,13 @@ import (
 	"encoding/pem"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
+	"sync"
 
 	"crypto/rand"
 	"crypto/rsa"
@@ -69,7 +69,7 @@ func main() {
 		uccFlagPath = "/etc/intel-manageability/public/ucc_flag"
 	}
 
-	if content, err := ioutil.ReadFile(uccFlagPath); err == nil &&
+	if content, err := os.ReadFile(uccFlagPath); err == nil &&
 		strings.TrimSpace(string(content)) == "TRUE" {
 		// append UCC specific agents
 		agents = append(agents, "ucc-native-service")
@@ -78,9 +78,20 @@ func main() {
 		agents = append(agents, "dispatcher-agent", "telemetry-agent", "diagnostic-agent", "configuration-agent", "inbc-program", "cmd-program")
 	}
 
+	// Create a wait group to wait until all goroutines are done
+	var wg sync.WaitGroup
+
+	// Run the loop with goroutines. Agent certs can be set up in parallel to use more CPU cores.
 	for _, each := range agents {
-		setUpClientDirectories(secretDir, publicDir, daysExpiry, each)
+		wg.Add(1)
+		go func(s, p string, d string, c string) {
+			defer wg.Done()
+			setUpClientDirectories(s, p, d, c)
+		}(secretDir, publicDir, daysExpiry, each)
 	}
+
+	// Wait for all goroutines to complete
+	wg.Wait()
 }
 
 func createPrivateKey(keyFilePath string) {
@@ -165,7 +176,7 @@ DNS.2 = mosquitto
 [req_distinguished_name]
 `)
 	opensslSanSecretCnfFilename := filepath.Join(mqttBrokerSecretDir, "openssl-san.cnf")
-	err := ioutil.WriteFile(opensslSanSecretCnfFilename, opensslSanCnf, 0600)
+	err := os.WriteFile(opensslSanSecretCnfFilename, opensslSanCnf, 0600)
 	must(err, "Write "+opensslSanSecretCnfFilename)
 
 	mqttBrokerSecretCsrFilename := filepath.Join(mqttBrokerSecretDir, "mqtt-broker.csr")
