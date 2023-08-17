@@ -5,12 +5,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Fixed
+ - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
+ - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
+ - RTC [533020] - Fix SOTA to  handle dpkg interactive prompt
+
 ### Added
 - RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
 - RTC 532848 - Add AOTA docker pull, import, load and remove commands to INBC
 
+### Fixed
+ - Changed golang builds to not depend on glibc.
+
 ### Security
  - (dependabot) - Updated cryptography from 41.0.0 to 41.0.2
+ - (dependabot) - Updated cryptography from 41.0.2 to 41.0.3
  - Updated golang runtime from 1.20.5 to 1.20.6
 
 ## 4.1.2 - 2023-06-29

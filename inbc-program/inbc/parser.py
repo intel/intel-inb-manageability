@@ -297,7 +297,7 @@ def sota(args) -> str:
         'fetch': fetch_location,
         'username': args.username,
         'password': _get_password(args.username, "Please provide the password: "),
-        'deviceReboot': args.reboot,
+        'deviceReboot': "no" if args.mode == "download-only" else args.reboot,
         'path': path_location
     }
 
