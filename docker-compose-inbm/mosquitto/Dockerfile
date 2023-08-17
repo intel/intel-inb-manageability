@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 as untar
+FROM debian:bookworm-slim as untar
 COPY ../Intel-Manageability.preview.tar.gz /src/Intel-Manageability.preview.tar.gz
 WORKDIR /src/
 RUN tar zxvf Intel-Manageability.preview.tar.gz
