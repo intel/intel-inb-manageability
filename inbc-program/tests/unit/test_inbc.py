@@ -73,7 +73,40 @@ class TestINBC(TestCase):
             ['load', '-u', 'https://abc.com/intel_manageability.conf'])
         self.assertEqual(f.uri, 'https://abc.com/intel_manageability.conf')
 
-    
+    def test_aota_docker_pull(self):
+        f = self.arg_parser.parse_args(
+            ['aota', '-a', 'docker', '-c', 'pull', '-v', '1.0', '-ct', 'hello-world'])
+        self.assertEqual(f.app, 'docker')
+        self.assertEqual(f.command, 'pull')
+        self.assertEqual(f.version, '1.0')
+        self.assertEqual(f.containertag, 'hello-world')
+
+    def test_aota_docker_import(self):
+        f = self.arg_parser.parse_args(
+            ['aota', '-a', 'docker', '-c', 'import', '-u', 'https://abc.com/docker.tgz', '-v', '1.0', '-ct', 'docker'])
+        self.assertEqual(f.uri, 'https://abc.com/docker.tgz')
+        self.assertEqual(f.app, 'docker')
+        self.assertEqual(f.command, 'import')
+        self.assertEqual(f.version, '1.0')
+        self.assertEqual(f.containertag, 'docker')
+
+    def test_aota_docker_load(self):
+        f = self.arg_parser.parse_args(
+            ['aota', '-a', 'docker', '-c', 'load', '-u', 'https://abc.com/docker.tgz', '-v', '1.0', '-ct', 'docker'])
+        self.assertEqual(f.uri, 'https://abc.com/docker.tgz')
+        self.assertEqual(f.app, 'docker')
+        self.assertEqual(f.command, 'load')
+        self.assertEqual(f.version, '1.0')
+        self.assertEqual(f.containertag, 'docker')
+
+    def test_aota_docker_remove(self):
+        f = self.arg_parser.parse_args(
+            ['aota', '-a', 'docker', '-c', 'remove', '-v', '1.0', '-ct', 'hello-world'])
+        self.assertEqual(f.app, 'docker')
+        self.assertEqual(f.command, 'remove')
+        self.assertEqual(f.version, '1.0')
+        self.assertEqual(f.containertag, 'hello-world') 
+
     def test_aota_docker_compose_pull_manifest_pass(self):
         f = self.arg_parser.parse_args(
             ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz',  '-a', 'compose', '-c', 'pull', '-v', '1.0', '-ct', 'compose'])
