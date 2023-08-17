@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
+- RTC 532848 - Add AOTA docker pull, import, load and remove commands to INBC
 
 ### Fixed
  - Changed golang builds to not depend on glibc.
