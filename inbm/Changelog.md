@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
+- RTC 531799 - Add docker-compose version of inbm in docker-compose-inbm subdirectory. This version does not yet support connecting to clouds and is intended to be controlled by running inbc commands. Also renamed manageability-docker repo directory to docker-inbm.
 
 ### Fixed
  - Changed golang builds to not depend on glibc.

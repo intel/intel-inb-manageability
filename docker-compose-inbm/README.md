@@ -1,4 +1,4 @@
-This is a docker-compose directory that can launch INBM in containers.
+This is a docker-compose directory that can launch INBM in containers. Cloud is not yet supported--control via the inbc container (see below).
 
 Containers:
 - certgen generates mqtt certs for each service, inbc, and the mqtt broker
@@ -12,6 +12,11 @@ Prerequisites:
 - Install docker and docker-compose
 - Set proxy variables for your system.
 - Set up docker to use proxy correctly. Test with docker pull hello-world && docker run hello-world.
-- Copy Intel-Manageability.preview.tar.gz from an INBM native build into this directory.
-- Run docker-compose build to build the docker containers.
-- Run docker-compose up -d to bring up the INBM docker-compose stack in the background (daemon mode).
+
+Build:
+- Copy `Intel-Manageability.preview.tar.gz` from an INBM native build into this directory.
+- Run `docker-compose build` to build the docker containers.
+
+Run:
+- Run `docker-compose up -d` to bring up the INBM docker-compose stack in the background (daemon mode).
+- To run an inbc command, run `docker-compose exec inbc inbc query` (or substitute whichever command is needed).
