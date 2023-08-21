@@ -8,10 +8,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
  - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
  - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
+ - RTC [533020] - Fix SOTA to  handle dpkg interactive prompt
 
 ### Added
 - RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
 - RTC 531799 - Add docker-compose version of inbm in docker-compose-inbm subdirectory. This version does not yet support connecting to clouds and is intended to be controlled by running inbc commands. Also renamed manageability-docker repo directory to docker-inbm.
+- RTC 532848 - Add AOTA docker pull, import, load and remove commands to INBC
 
 ### Fixed
  - Changed golang builds to not depend on glibc.
