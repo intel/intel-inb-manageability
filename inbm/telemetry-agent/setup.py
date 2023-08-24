@@ -12,7 +12,7 @@ setup(
     license='Apache 2.0',
     packages=find_packages(exclude=('tests', 'doc')),
     include_package_data=True,
-    install_requires=['nose', 'packaging', 'future', 'paho-mqtt', 'psutil'],
+    install_requires=['pynose', 'packaging', 'future', 'paho-mqtt', 'psutil'],
     test_suite='nose.collector',
-    tests_require=['nose']
+    tests_require=['pynose']
 )

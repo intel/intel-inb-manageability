@@ -238,9 +238,9 @@ class CustomCmd():
         signal.signal(signal.SIGINT, _sig_handler)
         signal.signal(signal.SIGTERM, _sig_handler)
 
-        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
+        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 11:
             print(
-                "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
         print('Command program is running.')
 
