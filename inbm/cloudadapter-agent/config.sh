@@ -52,12 +52,9 @@ function configure_cloud {
   echo "Please choose a cloud service to use:"
   echo
 
-  select cloud in "Telit Device Cloud" "Azure IoT Central" "ThingsBoard" "Custom"
+  select cloud in "Azure IoT Central" "ThingsBoard" "Custom"
   do
     case $cloud in
-      "Telit Device Cloud")
-        configure_telit
-        break;;
       "Azure IoT Central")
         configure_azure
         break;;
@@ -76,58 +73,6 @@ function configure_cloud {
   echo
   echo "Successfully configured cloud service!"
   echo
-}
-
-### Create Telit Configuration Files
-function configure_telit {
-  echo
-  echo "Configuring to use Telit..."
-
-  # Choose environment
-  local TELIT_HOST="x"
-  local TELIT_PORT="8883"
-  local DEV_TELIT="api-dev.devicewise.com"
-  local PRODUCTION_TELIT="api.devicewise.com"
-
-  echo
-  echo "Please select the Telit host to use:"
-
-  select env in "Production  (${PRODUCTION_TELIT})" "Development (${DEV_TELIT})"
-  do
-    case $env in
-      "Production  (${PRODUCTION_TELIT})")
-        TELIT_HOST=$PRODUCTION_TELIT
-        break;;
-      "Development (${DEV_TELIT})")
-        TELIT_HOST=$DEV_TELIT
-        break;;
-      *) echo "Invalid option!";;
-    esac
-  done
-
-  # Get the Telit Token
-  get_input "Provide Telit token:"\
-            "Hint: https://wiki.ith.intel.com/display/TRTLCRK/Connecting+to+Helix+Device+Cloud"
-  local TOKEN=$INPUT
-
-  # Get the device id
-  INPUT_DEFAULT="$(uuidgen)"
-  get_input "Provide Telit Thing Key (leave blank to autogenerate):"
-  local KEY=$INPUT
-
-  # Let users know what key the device shows up as
-  echo
-  echo "Thing Key: $KEY"
-
-  cloud_config="{
-    \"cloud\": \"telit\",
-    \"config\": {
-      \"hostname\": \"$TELIT_HOST\",
-      \"port\": $TELIT_PORT,
-      \"key\": \"$KEY\",
-      \"token\": \"$TOKEN\"
-    }
-  }"
 }
 
 ### Azure IoT Central Configuration

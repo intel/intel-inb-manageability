@@ -56,7 +56,7 @@ grep dbs /etc/intel_manageability.conf | grep OFF
 echo Confirmed dbs set to OFF in /etc/intel_manageability.conf.
 
 
-NO_CLOUD=1 PROVISION_TPM=auto NO_OTA_CERT=1 TELIT_HOST="localhost" bash -x /usr/bin/provision-tc
+NO_CLOUD=1 PROVISION_TPM=auto NO_OTA_CERT=1 bash -x /usr/bin/provision-tc
 
 # give agents a few seconds to stabilize
 sleep 15
