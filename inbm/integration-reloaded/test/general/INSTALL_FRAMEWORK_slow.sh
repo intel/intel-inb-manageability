@@ -60,7 +60,7 @@ done
 cp /scripts/iotg_inb_developer.conf /etc/intel_manageability.conf
 cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 touch /etc/intel-manageability/public/cloudadapter-agent/iot-dispatcher.cfg
-# don't connect to Telit in Integration Reloaded
+# don't connect to cloud in Integration Reloaded
 if [ "$SIMULATOR" == "1"] ; then
   sudo -H NO_CLOUD=x PROVISION_TPM=enable NO_OTA_CERT=1 LOCAL_MQTT_PORT=9999 bash -x /usr/bin/provision-tc
 else
@@ -72,8 +72,8 @@ cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 touch /etc/intel-manageability/public/cloudadapter-agent/iot-dispatcher.cfg
 /usr/bin/tc-get-secret-passphrase 2>/dev/null | md5sum
 
-# we don't connect to Telit in Integration Reloaded so we don't expect
-# cloudadapter-agent to function (it primarily connects to Telit)
+# we don't connect to cloud in Integration Reloaded so we don't expect
+# cloudadapter-agent to function (it primarily connects to cloud)
 sleep 5
 ps -G dispatcher-agent | grep dispatcher
 ps -G telemetry-agent | grep telemetry
