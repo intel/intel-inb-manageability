@@ -8,7 +8,7 @@ block_cipher = None
 site_packages = next(p for p in sys.path if 'site-packages' in p)
 
 a = Analysis(['configuration/configuration.py'],
-             pathex=['/src/configuration-agent'],
+             pathex=['/src/configuration-agent', '/src/inbm-lib'],
              binaries=[],
              datas=[(path.join(site_packages,'xmlschema'), './xmlschema')],
              hiddenimports=['inbm_lib.mqttclient', 'inbm_lib'],

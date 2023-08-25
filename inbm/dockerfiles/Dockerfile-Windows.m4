@@ -94,7 +94,7 @@ FROM base-windows as windows-cloudadapter-py3
 COPY inbm/cloudadapter-agent/requirements.txt /src/cloudadapter-agent/requirements.txt
 COPY inbm/cloudadapter-agent/test-requirements.txt /src/cloudadapter-agent/test-requirements.txt
 WORKDIR /src/cloudadapter-agent
-RUN cp -r /src/inbm-lib/inbm_* /src/cloudadapter-agent/
+# RUN cp -r /src/inbm-lib/inbm_* /src/cloudadapter-agent/
 RUN pip3 install --prefer-binary -r requirements.txt && \    
     pip3 uninstall -y chardet # license issue
 
