@@ -3,8 +3,8 @@ from telemetry.dynamic_attributes import get_percent_disk_used, get_available_me
 from mock import patch
 from unittest import TestCase
 from collections import namedtuple
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 
 svmem = namedtuple(

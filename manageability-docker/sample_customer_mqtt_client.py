@@ -14,9 +14,9 @@ import paho.mqtt.client as mqtt
 from typing import Dict, Optional, Callable
 
 import json
-from future import standard_library
 
-standard_library.install_aliases()
+
+
 
 CUSTOM_CMD_CHANNEL = "manageability/cmd/custom"
 DEFAULT_MQTT_HOST = 'localhost'

@@ -16,11 +16,11 @@ from . import pms_notification
 from .software_bom_list import *
 from threading import Thread
 import logging
-from future import standard_library
+
 from typing import List, Any
 from .ipoller import IPoller
 
-standard_library.install_aliases()
+
 
 
 logger = logging.getLogger(__name__)
