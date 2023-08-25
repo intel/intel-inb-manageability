@@ -23,7 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - Updated golang runtime from 1.20.5 to 1.20.6
  - (533039) Added Intel standard compiler flags and settings to golang builds
  - (533037) CT72 - Secure Configuration Guidance: remove all remaining Telit references
- - Update to Python 3.11 to remove OpenSSL 1.1.1 dependency
+ - Update to Python 3.11 to address some CVEs.
 
 ## 4.1.2 - 2023-06-29
 
