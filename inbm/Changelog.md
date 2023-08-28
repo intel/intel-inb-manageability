@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - Changed golang builds to not depend on glibc.
+ - Updated OpenSSL download path in Windows installer.
 
 ### Security
  - (dependabot) - Updated cryptography from 41.0.0 to 41.0.2

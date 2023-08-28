@@ -63,10 +63,10 @@ foreach ($folder in $folders) {
 Copy-Item -Path C:\inb-files\intel-manageability\* -Destination "\intel-manageability\" -Recurse
 Copy-Item -Path C:\inb-files\broker\* -Destination "\intel-manageability\broker\" -Recurse
 
-Download-FileIfNotExist -URL "https://slproweb.com/download/Win32OpenSSL_Light-3_1_1.msi" -DestinationPath "C:\inb-files"
+Download-FileIfNotExist -URL "https://slproweb.com/download/Win32OpenSSL_Light-3_1_2.msi" -DestinationPath "C:\inb-files"
 Download-FileIfNotExist -URL "https://mosquitto.org/files/binary/win32/mosquitto-2.0.15-install-windows-x86.exe" -DestinationPath "C:\inb-files"
 
-C:\inb-files\Win32OpenSSL_Light-3_1_1.msi /qn
+C:\inb-files\Win32OpenSSL_Light-3_1_2.msi /qn
 C:\inb-files\mosquitto-2.0.15-install-windows-x86.exe /S /D=C:\intel-manageability\mosquitto
 start-sleep -seconds 1
 Copy-Item -path C:\inb-files\intel-manageability\mosquitto.conf -destination c:\intel-manageability\mosquitto\mosquitto.conf
