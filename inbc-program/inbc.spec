@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['inbc/inbc.py'],
-             pathex=['/src/inbc-program'],
+             pathex=['/src/inbc-program','/src/inbm-lib'],
              binaries=[],
              datas=[],
              hiddenimports=['inbm_lib.mqttclient', 'inbm_lib'],

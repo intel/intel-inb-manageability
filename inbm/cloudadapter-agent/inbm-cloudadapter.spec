@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['cloudadapter/cloudadapter.py'],
-             pathex=['/src/cloudadapter-agent'],
+             pathex=['/src/cloudadapter-agent', '/src/inbm-lib'],
              binaries=[],
              datas=[],
              hiddenimports=['inbm_lib.mqttclient', 'inbm_lib', 'inbm_common_lib', 'cloudadapter.cloud.adapters'],

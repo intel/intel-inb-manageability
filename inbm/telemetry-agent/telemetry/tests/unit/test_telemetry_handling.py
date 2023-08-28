@@ -4,8 +4,8 @@ from telemetry.telemetry_handling import (
 from mock import patch, Mock
 from unittest import TestCase
 import time
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 info = {'timestamp': 1637019250.2020352, 'type': 'static_telemetry',
         'values': {'totalPhysicalMemory': '8209653760', 'cpuId': 'Intel(R) Core(TM) i5-8259U CPU @ 2.30GHz',

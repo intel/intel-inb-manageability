@@ -90,7 +90,7 @@ For example:
 ```
 
 ## Install from Source
-❗ Use a Python version greater than 3.8 is installed
+❗ Use a Python version greater than 3.11 is installed
 
 - [Build INBM](#../../README.md#build-instructions)
 - [Install INBM](#../../docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)

@@ -10,8 +10,8 @@ setup(
     license='Intel Proprietary (see \'licenses\' directory)',
     packages=find_packages(exclude=['tests.*', '*.tests.*', 'tests', '*.tests', 'test_*']),
     include_package_data=True,
-    install_requires=['mock', 'nose', 'packaging',
+    install_requires=['mock', 'pynose', 'packaging',
                       'future', 'paho-mqtt', 'jsonschema', 'cryptography'],
     test_suite='nose.collector',
-    tests_require=['nose']
+    tests_require=['pynose']
 )

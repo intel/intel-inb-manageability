@@ -7,14 +7,14 @@
 from dispatcher.common.result_constants import *
 from typing import Any
 import logging
-from future import standard_library
+
 
 from dispatcher.config_dbs import ConfigDbs
 from .dbs_checker import DbsChecker
 from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
 
-standard_library.install_aliases()
+
 
 logger = logging.getLogger(__name__)
 
