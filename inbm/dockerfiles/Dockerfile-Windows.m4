@@ -6,7 +6,7 @@ FROM registry.hub.docker.com/library/ubuntu:22.04 as base-windows
 ENV DEBIAN_FRONTEND noninteractive
 
 ARG WINE_VERSION=winehq-stable
-ARG PYTHON_VERSION=3.11.4
+ARG PYTHON_VERSION=3.11.5
 ARG PYINSTALLER_VERSION=5.13.0
 
 # we need wine for this all to work, so we'll use the PPA
