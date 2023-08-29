@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (533039) Added Intel standard compiler flags and settings to golang builds
  - (533037) CT72 - Secure Configuration Guidance: remove all remaining Telit references
  - Update to Python 3.11 to address some CVEs.
+ - Update Windows Dockerfile to pull in Python 3.11.5 to address some CVEs.
 
 ## 4.1.2 - 2023-06-29
 
