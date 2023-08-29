@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## NEXT - ? (post-4.1.3)
+
+### Fixed
+ - RTC 532663 - [INBM][UCC][Bug] During every windows reboot there will be a temporary folder created
+
 ## NEXT - ?
 
 ### Fixed
