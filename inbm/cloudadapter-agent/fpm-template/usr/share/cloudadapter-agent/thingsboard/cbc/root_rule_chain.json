@@ -125,7 +125,7 @@
         "name": "Trigger Attestation Report",
         "debugMode": true,
         "configuration": {
-          "ruleChainId": "00e99b70-0664-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "a4a2a660-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -139,7 +139,7 @@
         "name": "Update Flavor",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "c949a5c0-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "6a22c240-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -153,7 +153,7 @@
         "name": "Register Host",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "df6bd8a0-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "7ec07800-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -167,7 +167,7 @@
         "name": "Register TCaaS",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "ecdd2930-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "89f7de20-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -181,7 +181,7 @@
         "name": "Create Golden Template",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "cf2d8560-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "704139e0-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -195,7 +195,7 @@
         "name": "Query Pods stats",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "d944ae70-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "78f74c50-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -209,7 +209,7 @@
         "name": "Register with SGX",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "e5ccb070-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "83929980-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -223,7 +223,7 @@
         "name": "Trigger Software update",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "fa6b2980-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "9fe5e1a0-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -237,7 +237,7 @@
         "name": "Trigger SGX Attestation",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "f4b9f2a0-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "98ebfe20-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       },
@@ -251,7 +251,7 @@
         "name": "Authorize SW Update SGX",
         "debugMode": false,
         "configuration": {
-          "ruleChainId": "c28180a0-0663-11ee-8594-494c3fcbed2b"
+          "ruleChainId": "6476bb80-3be0-11ee-aa79-6987a84db3d5"
         },
         "externalId": null
       }
