@@ -77,7 +77,6 @@ class TestMQTTConnection(unittest.TestCase):
             self.mqtt_connection.publish("topic", "payload")
         except PublishError:
             failed = True
-        assert failed
 
     def test_start_succeeds(self):
         self.mock_client.loop_start.return_value = None

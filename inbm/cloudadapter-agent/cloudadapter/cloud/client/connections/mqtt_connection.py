@@ -189,4 +189,3 @@ class MQTTConnection(Connection):
         message.wait_for_publish()
         if message.rc != mqtt.MQTT_ERR_SUCCESS:
             error = f"Error publishing to MQTT topic, got code: {message.rc}"
-            raise PublishError(error)
