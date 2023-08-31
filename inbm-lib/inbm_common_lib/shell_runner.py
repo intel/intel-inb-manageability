@@ -165,10 +165,10 @@ class PseudoShellRunner:
         @return: array suitable for Popen with shell=False
         """
 
-        def which(program):
+        def which(program: str) -> Optional[str]:
             import os
 
-            def is_exe(fpath):
+            def is_exe(fpath: str) -> bool:
                 return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
             fpath, fname = os.path.split(program)

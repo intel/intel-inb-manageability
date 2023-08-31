@@ -4,8 +4,6 @@ from unittest import TestCase
 import unittest
 
 
-
-
 class TestIahost(TestCase):
 
     @patch('platform.system')

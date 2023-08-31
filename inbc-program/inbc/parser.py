@@ -61,8 +61,8 @@ class ArgsParser(object):
                             help='Remote URI from where to retrieve package')
         parser.add_argument('--app', '-a', required=True, choices=['application', 'compose', 'docker'],
                             help='Type of information [ application, compose, docker]')
-        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down', 'import', 'load', 'remove'], 
-                            help='Type of information [ update , pull, up, down, import, load, remove]') 
+        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down', 'import', 'load', 'remove'],
+                            help='Type of information [ update , pull, up, down, import, load, remove]')
         parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
                             help='Type of information [ yes | no ]')
         parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
@@ -72,8 +72,10 @@ class ArgsParser(object):
                             help='Container Tag name')
         parser.add_argument('--file', '-f', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'FILE', 100),
                             help='File name')
-        parser.add_argument('--dockerusername', '-du', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50), help='docker username')
-        parser.add_argument('--dockerregistry', '-dr', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Registry', 500), help='docker registry')
+        parser.add_argument('--dockerusername', '-du', required=False,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50), help='docker username')
+        parser.add_argument('--dockerregistry', '-dr', required=False,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'Docker Registry', 500), help='docker registry')
         parser.set_defaults(func=aota)
 
     def parse_fota_args(self) -> None:
@@ -211,13 +213,14 @@ class ArgsParser(object):
         parser_query.set_defaults(func=query)
 
 
-def _get_password(username, password_prompt) -> Optional[str]:
-        password = None
-        if username:
-           password = getpass.getpass(password_prompt)
-        return password
+def _get_password(username: str, password_prompt: str) -> Optional[str]:
+    password = None
+    if username:
+        password = getpass.getpass(password_prompt)
+    return password
 
-def aota(args) -> str:
+
+def aota(args: argparse.Namespace) -> str:  
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -264,11 +267,11 @@ def aota(args) -> str:
                        "dockerUsername",
                        "dockerPassword",
                        "dockerRegistry")
-    ) 
+    )
     return manifest
 
 
-def sota(args) -> str:
+def sota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -342,7 +345,7 @@ def _gather_system_details() -> PlatformInformation:
     return get_device_tree_system_info()
 
 
-def fota(args) -> str:
+def fota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -395,7 +398,7 @@ def fota(args) -> str:
     return manifest
 
 
-def pota(args) -> str:
+def pota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -457,7 +460,7 @@ def pota(args) -> str:
     return manifest
 
 
-def load(args) -> str:
+def load(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -493,7 +496,7 @@ def load(args) -> str:
     return manifest
 
 
-def get(args) -> str:
+def get(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -522,7 +525,7 @@ def get(args) -> str:
     return manifest
 
 
-def set(args) -> str:
+def set(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -551,7 +554,7 @@ def set(args) -> str:
     return manifest
 
 
-def append(args) -> str:
+def append(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
@@ -581,7 +584,7 @@ def append(args) -> str:
     return manifest
 
 
-def remove(args) -> str:
+def remove(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
@@ -611,7 +614,7 @@ def remove(args) -> str:
     return manifest
 
 
-def restart(args) -> str:
+def restart(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -630,7 +633,7 @@ def restart(args) -> str:
     return manifest
 
 
-def query(args) -> str:
+def query(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line

@@ -13,7 +13,7 @@ import logging
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Union
+from typing import Iterable, List, Optional, Union
 
 from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -187,7 +187,7 @@ def is_within_directory(directory: str, target: str) -> bool:
 
     return prefix == abs_directory
 
-def safe_extract(tarball: tarfile.TarFile, path=".", members=None, *, numeric_owner=False):
+def safe_extract(tarball: tarfile.TarFile, path: str = ".", members: Optional[Iterable[tarfile.TarInfo]] = None, *, numeric_owner: bool = False) -> None:
     """Avoid path traversal when extracting tarball
 
     @param tarball: tarball to extract

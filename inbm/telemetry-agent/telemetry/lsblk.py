@@ -9,8 +9,6 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 import platform
 
 
-
-
 def parse_lsblk(lsblk_output) -> Optional[List]:
     """Parse output of lsblk command with name, size, and ssd status of attached disks.
     @param lsblk_output: text output of lsblk command

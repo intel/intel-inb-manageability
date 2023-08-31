@@ -10,7 +10,8 @@ import os
 import ssl
 
 import paho.mqtt.client as mqtt
-from typing import Dict, Optional, Callable
+from paho.mqtt.client import Client, MQTTMessage
+from typing import Any, Dict, Optional, Callable
 
 from inbm_lib.security_masker import mask_security_info
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_CERTS
@@ -135,7 +136,7 @@ class MQTT:
                     mask_security_info(payload), topic, retain)
         self._mqttc.publish(topic, payload.encode('utf-8'), qos, retain)
 
-    def subscribe(self, topic: str, callback: Callable[[str, str, int], None], qos=0) -> None:
+    def subscribe(self, topic: str, callback: Callable[[str, str, int], None], qos: int = 0) -> None:
         """Subscribe to an MQTT topic
 
         @param topic: MQTT topic to publish message on
@@ -147,7 +148,7 @@ class MQTT:
             logger.info('Topic: %s has already been subscribed to')
             return
 
-        def _message_callback(client, userdata, message):
+        def _message_callback(client: Client, userdata: Any, message: MQTTMessage) -> None:
             """Add callback to callback list"""
             callback(message.topic, message.payload.decode(encoding='utf-8', errors='strict'),
                      message.qos)
