@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
  - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
  - RTC [533020] - Fix SOTA to  handle dpkg interactive prompt
+ - RTC 532662 - [INBM][UCC][Bug] INBM fails to send telemetry when IP is changed manually
 
 ### Added
 - RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
