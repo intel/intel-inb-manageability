@@ -1,7 +1,7 @@
 $ErrorActionPreference = "Stop"
 set-psdebug -trace 1
 
-\intel-manageability\inbm\usr\bin\inbm-cloudadapter.exe install
+\intel-manageability\inbm\usr\bin\inbm-cloudadapter\inbm-cloudadapter.exe install
 
 if (-not $env:NO_CLOUD) {
     C:\intel-manageability\broker\usr\bin\inb-provision-cloud.exe `

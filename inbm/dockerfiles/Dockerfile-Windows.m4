@@ -102,9 +102,9 @@ COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 COPY inbm/packaging /src/packaging
 RUN mkdir -p /output && \
     pip3 install -r requirements.txt
-RUN pyinstaller inbm-cloudadapter.spec && \
-    wine ../cloudadapter-agent/dist/inbm-cloudadapter.exe install && \
-    cp -r ../cloudadapter-agent/dist/"inbm-cloudadapter.exe" /output
+RUN pyinstaller inbm-cloudadapter-windows.spec && \
+    wine ../cloudadapter-agent/dist/inbm-cloudadapter/inbm-cloudadapter.exe install && \
+    cp -r ../cloudadapter-agent/dist/inbm-cloudadapter /output
 
 FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-certs-windows
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
@@ -135,12 +135,12 @@ RUN mkdir -p /output/windows
 COPY third-party-programs.txt /output/windows
 WORKDIR /output/windows
 
-# Copy our built Windows .exe files to our bin directories
+# Copy our built Windows .exe files/directories to our bin directories
 RUN \
     set -ex && \
     mkdir -p intel-manageability/inbm/usr/bin/ && \
     mkdir -p broker/usr/bin/ && \
-    cp -v /windows-cloudadapter-py3/inbm-cloudadapter.exe intel-manageability/inbm/usr/bin/ && \    
+    cp -vr /windows-cloudadapter-py3/inbm-cloudadapter/ intel-manageability/inbm/usr/bin/inbm-cloudadapter/ && \    
     cp -v /windows-inb-provision-certs/inb-provision-certs.exe broker/usr/bin/ && \
     cp -v /windows-inb-provision-cloud/inb-provision-cloud.exe broker/usr/bin/ && \
     cp -v /windows-inb-provision-ota-cert/inb-provision-ota-cert.exe broker/usr/bin/
