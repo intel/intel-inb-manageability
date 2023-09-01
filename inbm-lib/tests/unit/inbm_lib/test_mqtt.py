@@ -36,7 +36,7 @@ class TestMQTT(TestCase):
     def test_client_subscribe(self, m_subscribe, m_connect):
         mqtt = MQTT('id', 'broker', 1, 1, tls=False)
 
-        def callback(topic: str, msg: str, qos: int) -> None:
+        def callback(topic: str, msg: bytes, qos: int) -> None:
             pass
         mqtt.subscribe('test', callback)
         m_subscribe.assert_called_with('test', ANY)

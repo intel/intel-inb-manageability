@@ -67,7 +67,7 @@ class ReceiveRespondHandler(Handler):
         payload = self._payload_formatter.format(message=response, **symbols)
         self._connection.publish(topic, payload)
 
-    def _on_method(self, topic: str, payload: bytes) -> None:
+    def _on_method(self, topic: str, payload: Any) -> None:
         """Callback for subscribed cloud messages
 
         @param topic:   Specific topic

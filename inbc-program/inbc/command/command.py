@@ -56,7 +56,7 @@ class Command(ABC):
         self._update_timer.start()
 
     @abstractmethod
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -68,7 +68,7 @@ class Command(ABC):
                 self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
 
     @abstractmethod
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -80,7 +80,7 @@ class Command(ABC):
         if search_keyword(payload, ["/usr/bin/mender -install"]):
             print("\n Flashing mender file. This will take several minutes...")
 
-    def _search_for_busy(self, payload: str) -> None:
+    def _search_for_busy(self, payload: Any) -> None:
         if search_keyword(payload, [OTA_IN_PROGRESS]):
             self.terminate_operation(COMMAND_FAIL, InbcCode.HOST_BUSY.value)
 
@@ -121,7 +121,7 @@ class RestartCommand(Command):
         """
         super().trigger_manifest(args, RESTART_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -135,7 +135,7 @@ class RestartCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -161,7 +161,7 @@ class QueryCommand(Command):
         """
         super().trigger_manifest(args, HOST_QUERY_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -174,7 +174,7 @@ class QueryCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_host_response(self, payload: str) -> None:
+    def search_host_response(self, payload: Any) -> None:
         """INBC will not exit immediately, it will wait for query result.
 
         @param payload: payload received in which to search
@@ -187,7 +187,7 @@ class QueryCommand(Command):
             self._success_code = InbcCode.FAIL.value
             self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search

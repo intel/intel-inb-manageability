@@ -12,6 +12,7 @@ import fileinput
 import logging
 import sys
 import os
+from typing import Any
 
 from .constants import GET_UBUNTU_PKG_REPO, APT_SOURCES_LIST_PATH, MENDER_FILE_PATH
 from ..common import dispatcher_state
@@ -72,9 +73,9 @@ class DebianBasedSetupHelper(SetupHelper):
             self.update_sources(self._dispatcher_callbacks.sota_repos)
         return True  # FIXME why do we always return True?
 
-    def update_sources(self, payload: str, filename: str = APT_SOURCES_LIST_PATH) -> None:
+    def update_sources(self, payload: Any, filename: str = APT_SOURCES_LIST_PATH) -> None:
         """Update the apt sources.list file with payload if needed
-        @param payload: String, http url value retrieved from config manager
+        @param payload: Anying, http url value retrieved from config manager
         @param filename: file name for sources
         """
         temp_payload = payload.strip()

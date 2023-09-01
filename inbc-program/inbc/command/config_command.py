@@ -34,7 +34,7 @@ class ConfigCommand(Command):
         """
         super().trigger_manifest(args, topic)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -47,7 +47,7 @@ class ConfigCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -72,14 +72,14 @@ class GetConfigCommand(ConfigCommand):
         """
         super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -104,14 +104,14 @@ class SetConfigCommand(ConfigCommand):
         """
         super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -136,14 +136,14 @@ class LoadConfigCommand(ConfigCommand):
         """
         super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -167,13 +167,13 @@ class AppendConfigCommand(ConfigCommand):
         channel = INBM_INSTALL_CHANNEL
         super().trigger_manifest(args, channel)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
         @param payload: payload received in which to search
         @param topic: topic from which message was received
@@ -195,13 +195,13 @@ class RemoveConfigCommand(ConfigCommand):
         """
         super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
         @param payload: payload received in which to search
         @param topic: topic from which message was received

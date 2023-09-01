@@ -22,7 +22,7 @@ from ..constants import (
 from ..utilities import make_threaded
 from inbm_lib.mqttclient.mqtt import MQTT
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL, DEFAULT_MQTT_CERTS
-from typing import Tuple, Callable
+from typing import Any, Tuple, Callable
 import os
 import logging
 logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ class Broker:
                           client_certs=str(CLIENT_CERTS),
                           client_keys=str(CLIENT_KEYS))
 
-    def bind_callback(self, topic: Tuple[str, ...], callback: Callable):
+    def bind_callback(self, topic: Tuple[str, ...], callback: Callable[[str, str], None]) -> None:
         """Bind a callback to process messages from certain topics
         The callback must be a function with the signature: (str, str) -> None
             (str): The specific topic that triggered the callback
@@ -64,7 +64,7 @@ class Broker:
             logger.error("Attempted to subscribe to unsupported topic: %s", topic)
             return
 
-        def threaded(topic: str, payload: str, _):
+        def threaded(topic: str, payload: Any, _: int) -> None:
             make_threaded(callback)(topic, payload)
 
         for t in topic:

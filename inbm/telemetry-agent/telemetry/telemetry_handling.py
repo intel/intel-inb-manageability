@@ -38,7 +38,7 @@ from telemetry import software_bom_list
 logger = logging.getLogger(__name__)
 
 
-def _set_timestamp(telemetry, telemetry_type):
+def _set_timestamp(telemetry: dict[str, Optional[Any]], telemetry_type: str) -> dict[str, Any]:
     return {'timestamp': time.time(), 'type': telemetry_type, 'values': telemetry}
 
 
@@ -350,8 +350,8 @@ def get_static_telemetry_info() -> Dict:
                  'osInformation': get_os_information(),
                  'diskInformation': get_disk_information()}
 
-    clean_telemetry = {k: (UNKNOWN if v == [] else v)
-                       for k, v in telemetry.items()}
+    clean_telemetry: dict[str, Optional[Any]] = {k: (UNKNOWN if v == [] else v)
+                                                 for k, v in telemetry.items()}
     telemetry = _set_timestamp(clean_telemetry, telemetry_type="static_telemetry")
     return telemetry
 

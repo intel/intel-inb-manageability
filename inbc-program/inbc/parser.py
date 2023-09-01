@@ -220,7 +220,7 @@ def _get_password(username: str, password_prompt: str) -> Optional[str]:
     return password
 
 
-def aota(args: argparse.Namespace) -> str:  
+def aota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line

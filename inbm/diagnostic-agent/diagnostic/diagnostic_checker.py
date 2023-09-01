@@ -62,7 +62,7 @@ class DiagnosticChecker:
         self.dbs_timer: Optional[RepeatingTimer] = None
         self.event_watcher: Optional[EventWatcher] = None
 
-    def stop_timer(self):
+    def stop_timer(self) -> None:
         """Stops the DBS timer when the diagnostic-agent is stopped."""
         if self.dbs_timer:
             self.dbs_timer.stop()

@@ -5,7 +5,7 @@ Abstract base class used by all cloud connection objects.
 """
 
 import abc
-from typing import Optional
+from typing import Callable, Optional
 
 
 class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
@@ -42,7 +42,7 @@ class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
         pass
 
     @abc.abstractmethod
-    def subscribe(self, topic, callback):
+    def subscribe(self, topic: str, callback: Callable) -> None:
         """Subscribe to a topic on the connection
 
         @param topic: (str) Connection topic

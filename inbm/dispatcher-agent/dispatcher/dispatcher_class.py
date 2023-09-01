@@ -640,7 +640,7 @@ class Dispatcher(WindowsService):
         latch = CountDownLatch(1)
         logger.debug(" ")
 
-        def on_command(topic: str, payload: str, qos: int) -> None:
+        def on_command(topic: str, payload: Any, qos: int) -> None:
             logger.info('Message received: %s on topic: %s', payload, topic)
 
             try:
@@ -713,7 +713,7 @@ class Dispatcher(WindowsService):
                             .format(cmd.command, cmd.response['message']))
             raise DispatcherException('Install check failed')
 
-    def _on_cloud_request(self, topic: str, payload: str, qos: int) -> None:
+    def _on_cloud_request(self, topic: str, payload: Any, qos: int) -> None:
         """Called when a message is received from cloud
 
         @param topic: incoming topic
@@ -730,7 +730,7 @@ class Dispatcher(WindowsService):
             self._send_result(
                 str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
 
-    def _on_message(self, topic: str, payload: str, qos: int) -> None:
+    def _on_message(self, topic: str, payload: Any, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
 
         @param topic: incoming topic
@@ -747,7 +747,7 @@ class Dispatcher(WindowsService):
         c.) override_defaults: called when config agent sends updates value
         """
 
-        def override_defaults(topic: str, payload: str, qos: int) -> None:
+        def override_defaults(topic: str, payload: Any, qos: int) -> None:
             """Called when config agent sends updates value
 
             @param topic: incoming topic

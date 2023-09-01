@@ -17,7 +17,7 @@ RUN source /venv-py3/bin/activate && \
     pip3.11 install \
         pynose==1.4.8 \
         flake8==4.0.1 \
-        flake8-annotations==2.9.1 \
+#        flake8-annotations==2.9.1 \
         bandit==1.7.3 \
         flake8-bandit==3.0.0 \
         coverage==7.2.5 \

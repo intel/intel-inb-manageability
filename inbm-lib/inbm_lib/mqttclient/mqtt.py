@@ -123,7 +123,7 @@ class MQTT:
 
         self._mqttc.loop_stop()
 
-    def publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:
+    def publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
         """Publish a MQTT message to the specified topic, encoded as utf-8
 
         @param topic: MQTT topic to publish message on
@@ -136,7 +136,7 @@ class MQTT:
                     mask_security_info(payload), topic, retain)
         self._mqttc.publish(topic, payload.encode('utf-8'), qos, retain)
 
-    def subscribe(self, topic: str, callback: Callable[[str, str, int], None], qos: int = 0) -> None:
+    def subscribe(self, topic: str, callback: Callable[[str, Any, int], None], qos: int = 0) -> None:
         """Subscribe to an MQTT topic
 
         @param topic: MQTT topic to publish message on

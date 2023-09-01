@@ -1,3 +1,4 @@
+from typing import Any, Optional
 from telemetry.telemetry_handling import (
     _set_timestamp, TelemetryTimer, send_initial_telemetry, publish_telemetry_update, get_query_related_info,
     get_docker_stats)
@@ -36,7 +37,7 @@ class TestTelemetryHandling(TestCase):
         self.assertTrue(handler.time_to_publish())
 
     def test_telemetry_timestamp(self):
-        telem = {"item1": "foo", "item2": "bar"}
+        telem: dict[str, Optional[Any]] = {"item1": "foo", "item2": "bar"}
 
         the_time = time.time()
 

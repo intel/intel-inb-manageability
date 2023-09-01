@@ -18,7 +18,7 @@ from .exceptions import (
 from .utilities import make_threaded, is_ucc_mode
 
 from time import sleep
-from typing import Callable
+from typing import Any, Callable
 import logging
 
 logger = logging.getLogger(__name__)
@@ -63,12 +63,12 @@ class Client:
         logger.debug("Binding cloud to Command")
 
         callback = self._publisher.publish_ucc
-        loggers = [logger.info]
+        loggers: list[Any] = [logger.info]
         callback = self._with_log(callback, *loggers)
         self._adapter.bind_callback(METHOD.RAW, callback)
 
     def _bind_cloud_to_agent(self) -> None:
-        adapter_bindings = {
+        adapter_bindings: dict[str, Callable[..., Any]] = {
             METHOD.MANIFEST: self._publisher.publish_manifest,
             METHOD.AOTA: self._publisher.publish_aota,
             METHOD.FOTA: self._publisher.publish_fota,
@@ -80,13 +80,13 @@ class Client:
             METHOD.DECOMMISSION: self._device_manager.decommission_device
         }
 
-        loggers = [self._cloud_publisher.publish_event, logger.info]
+        loggers: list[Any] = [self._cloud_publisher.publish_event, logger.info]
 
         for name, callback in adapter_bindings.items():
-            callback = self._with_log(callback, *loggers)
-            self._adapter.bind_callback(name, callback)
+            callback_with_log = self._with_log(callback, *loggers)
+            self._adapter.bind_callback(name, callback_with_log)
 
-    def _with_log(self, f, *loggers) -> Callable:
+    def _with_log(self, f: Callable, *loggers: Any) -> Callable:
         """Decorator function to log a message via one or more logging functions
         The logging functions should have the signature: (str) -> None
             (str): The message to log

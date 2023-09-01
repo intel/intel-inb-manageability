@@ -27,7 +27,7 @@ class PseudoShellRunner:
 
     @staticmethod
     # should be Popen[bytes] but not yet supported in this Python version
-    def get_process(cmd: Union[str, List[str]]) -> Any:
+    def get_process(cmd: Union[str, List[str]]) -> subprocess.Popen:
         """Returns a shell to process a command
 
         @param cmd: command to execute

@@ -35,7 +35,7 @@ class PotaCommand(Command):
         """
         super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -47,7 +47,7 @@ class PotaCommand(Command):
             self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -72,7 +72,7 @@ class AotaCommand(Command):
         """
         super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -85,7 +85,7 @@ class AotaCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -110,7 +110,7 @@ class SotaCommand(Command):
         """
         super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -123,7 +123,7 @@ class SotaCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -152,7 +152,7 @@ class FotaCommand(Command):
         """
         super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -168,7 +168,7 @@ class FotaCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
