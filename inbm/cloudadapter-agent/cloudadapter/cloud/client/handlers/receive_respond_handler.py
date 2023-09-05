@@ -46,10 +46,10 @@ class ReceiveRespondHandler(Handler):
 
         self._methods: Dict = {}
 
-    def bind(self, name: str, callback: Callable):
+    def bind(self, name: str, callback: Callable) -> None:
         self._methods[name] = callback
 
-    def _fire_method(self, method: str, args: Dict[str, Any], symbols: Dict[str, Any]):
+    def _fire_method(self, method: str, args: Dict[str, Any], symbols: Dict[str, Any]) -> None:
         """Fire an individual method and provide response to cloud
 
         @param method:  Method to fire

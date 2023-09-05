@@ -76,7 +76,7 @@ class TLSConfig:
         self._context = self._make_tls_context(ca_certs, device_cert, device_key)
 
     @property
-    def context(self):
+    def context(self) -> SSLContext:
         """Read-only TLS context
 
         @return: (SSLContext) The TLS context
@@ -84,7 +84,7 @@ class TLSConfig:
         return self._context
 
     def _make_tls_context(self, ca_certs: Optional[str] = None, device_cert: Optional[str] = None,
-                          device_key: Optional[str] = None):
+                          device_key: Optional[str] = None) -> SSLContext:
         """Create a TLS context from the given arguments"""
         context = SSLContext(protocol=PROTOCOL_TLS)
         # List from Vincent
@@ -150,7 +150,7 @@ class Formatter:
         for f in fields:
             self._fields.add(f.group(1))
 
-    def _escape(self, string):
+    def _escape(self, string: str) -> str:
         """Escape quotes and control characters in the given string
 
         @param string: (str) String to escape
@@ -167,7 +167,7 @@ class Formatter:
             string = string.replace(target, escape)
         return string
 
-    def format(self, time=None, **fields):
+    def format(self, time: Optional[datetime] = None, **fields) -> None:
         """Format a string with the given mapping
 
         @param time: (datetime) Override default time
@@ -261,7 +261,7 @@ class MethodParser:
         self._parse_info = parse_info
         self._aggregate_info = aggregate_info
 
-    def _parse_by_path(self, obj, path):
+    def _parse_by_path(self, obj: dict, path: str) -> Optional[Any]:
         """Parse a value from an object via a path
         Paths are in the form: root/child/...
 
@@ -279,13 +279,13 @@ class MethodParser:
 
         return value
 
-    def _parse_by_regex(self, raw, regex, group):
+    def _parse_by_regex(self, raw: str, regex: str, group: int) -> Optional[str]:
         """Parse a value from a raw string via a regex
 
         @param raw:   (str) Raw string input to parse
         @param regex: (str) Uncompiled regular expression to use
         @param group: (int) Group number of the match to return
-        @return: (Any) The value parsed, or None if not found
+        @return: The value parsed, or None if not found
         """
         match = re.search(regex, raw)
         return match.group(group) if match else None
@@ -323,7 +323,7 @@ class MethodParser:
 
         return MethodParsed(**parsed)
 
-    def parse(self, topic, payload):
+    def parse(self, topic: str, payload: Any) -> list[MethodParsed]:
         """Parse a given topic and payload
 
         @param topic:   (str) Raw topic

@@ -58,7 +58,7 @@ class Publisher:
         if error_message:
             raise ValueError(error_message)
 
-    def _require_values(self, arguments: Dict[str, str], *required: str):
+    def _require_values(self, arguments: Dict[str, str], *required: str) -> None:
         """Checks arguments for the required values
 
         @param arguments: The arguments to check

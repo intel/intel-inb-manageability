@@ -129,7 +129,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     }
 
     # Build messengers
-    def build_messenger_with_config(config: Dict[str, Any]):
+    def build_messenger_with_config(config: Dict[str, Any]) -> OneWayMessenger:
         """Create OneWayMessenger instance from a config object"""
         return OneWayMessenger(
             topic_formatter=Formatter(
