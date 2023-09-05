@@ -8,7 +8,6 @@ Copyright (C) 2017-2023 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
-
 from ...exceptions import AdapterConfigureError, ClientBuildError
 from ...constants import (AZURE_MQTT_PORT,
                           AZURE_DPS_ENDPOINT,
@@ -25,6 +24,7 @@ from typing import Optional, Any, Dict, Callable, Tuple
 import requests
 import json
 import logging
+
 logger = logging.getLogger(__name__)
 
 
@@ -57,7 +57,11 @@ class AzureAdapter(Adapter):
 
         device_auth_set = {"certs": certs, "sas_key": device_sas_key}
 
-        hostname = self._retrieve_hostname(scope_id, device_id, device_auth_set, template_urn)
+        try:
+            hostname = self._retrieve_hostname(scope_id, device_id, device_auth_set, template_urn)
+        except json.JSONDecodeError as e:
+            raise AdapterConfigureError(f"Error retrieving hostname: {e}")
+
         if device_sas_key:
             device_sas_key = self._generate_sas_token(hostname, device_sas_key)
 
@@ -119,7 +123,8 @@ class AzureAdapter(Adapter):
         except ClientBuildError as e:
             raise AdapterConfigureError from e
 
-    def _retrieve_hostname(self, scope_id: str, device_id: str, device_auth_set: Dict[str, Any], template_urn: Optional[str]) -> str:
+    def _retrieve_hostname(self, scope_id: str, device_id: str, device_auth_set: Dict[str, Any],
+                           template_urn: Optional[str]) -> str:
         """Retrieve the IoT Central hostname associated to the device
 
         @param scope_id:  The device's Scope ID
@@ -160,9 +165,14 @@ class AzureAdapter(Adapter):
             }
 
         sleep(1)  # Pause for a bit
-        # Place a registration request for the device (it should already be registered)
-        result = requests.put(endpoint + registration, data=json.dumps(data),
-                              headers=headers, cert=device_auth_set.get('certs', None))
+
+        try:
+            # Place a registration request for the device (it should already be registered)
+            result = requests.put(endpoint + registration, data=json.dumps(data),
+                                  headers=headers, cert=device_auth_set.get('certs', None))
+        except requests.exceptions.ProxyError as e:
+            raise AdapterConfigureError(f"Error registering the device: {str(e)}")
+
         result_data = json.loads(result.text)
 
         # Continue checking device's registration status until it resolves
@@ -178,7 +188,7 @@ class AzureAdapter(Adapter):
 
         # Get the device's assigned hub
         if not result.ok:
-            error = "Ran into an error retrieving hostname: {} {}".format(
+            error = "Error retrieving hostname: {} {}".format(
                 result.status_code, result.text)
             raise AdapterConfigureError(error)
         else:
@@ -192,7 +202,7 @@ class AzureAdapter(Adapter):
     def _generate_sas_token(self,
                             resource: str,
                             device_key: str,
-                            expiration: int = None) -> str:
+                            expiration: Optional[int] = None) -> str:
         """Create a SAS token for authentication. More information:
         https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-security
 
@@ -205,8 +215,11 @@ class AzureAdapter(Adapter):
             expiration = int(time() + AZURE_TOKEN_EXPIRATION)
 
         sign_key = f"{resource}\n{expiration}".encode('utf-8')
-        signature = b64encode(HMAC(b64decode(device_key), sign_key,  # type: ignore
-                                   sha256).digest())
+        try:
+            signature = b64encode(HMAC(b64decode(device_key), sign_key,  # type: ignore
+                                       sha256).digest())
+        except ValueError as e:
+            raise AdapterConfigureError(f"Error generating SAS Token: {str(e)}")
         signature = quote(signature)
 
         return "SharedAccessSignature sr={!s}&sig={!s}&se={}".format(

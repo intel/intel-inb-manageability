@@ -6,11 +6,12 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
+import abc
 import logging
 import re
 import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 from abc import ABC, abstractmethod
 
 from inbm_common_lib.utility import CanonicalUri
@@ -33,6 +34,7 @@ MENDER_COMMAND = MENDER_FILE_PATH
 MENDER_MINIMIZE_LOGS_ARGUMENT = "-log-level panic"
 MENDER_UPDATE_SCRIPT_EHL = "/etc/mender/scripts/ArtifactInstall_Leave_00_relabel_ext4"
 MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
+
 
 def mender_install_argument():
     (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
@@ -68,7 +70,8 @@ class OsUpdater(ABC):  # pragma: no cover
         pass
 
     @staticmethod
-    def get_estimated_size() -> int:
+    @abstractmethod
+    def get_estimated_size() -> Union[float, int]:
         """Gets the size of the update
         @return: 0 if size is freed. Returns in bytes of size consumed
         """
@@ -79,6 +82,14 @@ class OsUpdater(ABC):  # pragma: no cover
         commands = [" " + MENDER_COMMAND + " " + mender_install_argument() + " " +
                     file_path + " " + MENDER_MINIMIZE_LOGS_ARGUMENT]
         return CommandList(commands).cmd_list
+
+    @abstractmethod
+    def no_download(self):
+        pass
+
+    @abstractmethod
+    def download_only(self):
+        pass
 
 
 class DebianBasedUpdater(OsUpdater):
@@ -103,18 +114,18 @@ class DebianBasedUpdater(OsUpdater):
             # not require host PID/DOCKER_CHROOT_PREFIX), then run the install locally
             # (does not require network but does require host PID/DOCKER_CHROOT_PREFIX)
             cmds = [CHROOT_PREFIX + "/usr/bin/apt-get update",  # needs network
-                    CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only -f install",  # needs network
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f install",  # local
+                    CHROOT_PREFIX + "/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -f -yq --download-only install",  # needs network
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",  # local 
                     CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",
-                    CHROOT_PREFIX + "/usr/bin/dpkg --configure -a",
-                    CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only upgrade",  # needs network
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq upgrade"]  # local
+                    CHROOT_PREFIX + "/usr/bin/dpkg --configure -a --force-confdef --force-confold",
+                    CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade",  # needs network
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade"]  # local 
         else:
             cmds = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
-                    "dpkg --configure -a",
-                    "apt-get -yq -f install",
-                    "apt-get -yq upgrade"]
+                    "dpkg --configure -a --force-confdef --force-confold",
+                    "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
+                    "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade"]
         return CommandList(cmds).cmd_list
 
     def update_local_source(self, file_path: str) -> List[str]:
@@ -127,14 +138,14 @@ class DebianBasedUpdater(OsUpdater):
         return CommandList([]).cmd_list
 
     @staticmethod
-    def get_estimated_size() -> int:
+    def get_estimated_size() -> Union[float, int]:
         """Gets the size of the update
 
         @return: Returns 0 if size is freed. Returns in bytes of size consumed
         """
         logger.debug("")
         is_docker_app = os.environ.get("container", False)
-        cmd = "/usr/bin/apt-get -u upgrade --assume-no"
+        cmd = "/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -u upgrade --assume-no"
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
 
@@ -144,7 +155,7 @@ class DebianBasedUpdater(OsUpdater):
         return DebianBasedUpdater._get_estimated_size_from_apt_get_upgrade(upgrade)
 
     @staticmethod
-    def _get_estimated_size_from_apt_get_upgrade(upgrade_output: str) -> int:
+    def _get_estimated_size_from_apt_get_upgrade(upgrade_output: str) -> Union[float, int]:
         logger.debug("")
         output = "\n".join([k for k in upgrade_output.splitlines() if 'After this operation' in k])
 
@@ -165,6 +176,30 @@ class DebianBasedUpdater(OsUpdater):
         except AttributeError:  # TODO(gblewis1): return/process an error--size could be > than 0
             logger.info('Update size could not be extracted!')
             return 0
+
+    def no_download(self):
+        """Update command overridden from factory. It builds the commands for Ubuntu update
+        of no-download command
+
+        @return: returns commands
+        """
+
+        cmds = ["dpkg --configure -a --force-confdef --force-confold",
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -yq -f install",
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  upgrade --no-download --fix-missing -yq"]
+        return CommandList(cmds).cmd_list
+
+    def download_only(self):
+        """Update command overridden from factory. It builds the commands for Ubuntu update
+        of download-only command
+
+        @return: returns commands
+        """
+
+        cmds = ["apt-get update",
+                "dpkg-query -f '${binary:Package}\\n' -W",
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade --download-only --fix-missing -yq"]
+        return CommandList(cmds).cmd_list
 
 
 class YoctoX86_64Updater(OsUpdater):
@@ -208,6 +243,12 @@ class YoctoX86_64Updater(OsUpdater):
         """
         return 0
 
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
 
 class YoctoARMUpdater(OsUpdater):
     """YoctoARMUpdater class, child of OsUpdater"""
@@ -249,6 +290,12 @@ class YoctoARMUpdater(OsUpdater):
         """
         return 0
 
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass
+
 
 class WindowsUpdater(OsUpdater):
     """WindowsUpdater class, child of OsUpdater"""
@@ -263,7 +310,7 @@ class WindowsUpdater(OsUpdater):
         @param repo: Directory on disk where update has been downloaded, if given in manifest.
         @return: Command list to execute to perform update.
         """
-        pass
+        raise NotImplementedError()
 
     def update_local_source(self, file_path: str) -> List[str]:
         """Concrete class method to create command list to update from a remote source for Windows OS.
@@ -271,7 +318,7 @@ class WindowsUpdater(OsUpdater):
         @param file_path: path to local file
         @return: Command list to execute to perform update.
         """
-        pass
+        raise NotImplementedError()
 
     @staticmethod
     def get_estimated_size() -> int:
@@ -279,3 +326,9 @@ class WindowsUpdater(OsUpdater):
         @return: Returns 0 if size is freed. Returns in bytes of size consumed
         """
         return 0
+
+    def no_download(self):
+        pass
+
+    def download_only(self):
+        pass

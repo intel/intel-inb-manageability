@@ -23,6 +23,7 @@ from ..utilities import make_threaded
 from inbm_lib.mqttclient.mqtt import MQTT
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL, DEFAULT_MQTT_CERTS
 from typing import Tuple, Callable
+import os
 import logging
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,10 @@ class Broker:
     """
 
     def __init__(self, tls: bool = True) -> None:
+        if os.path.islink(CLIENT_CERTS) or os.path.islink(CLIENT_KEYS):
+            raise ValueError(
+                f"CLIENT_CERTS ({CLIENT_CERTS}) and CLIENT_KEYS ({CLIENT_KEYS}) should not be symbolic links.")
+
         logger.debug("Initializing connection to MQTT broker. MQTT host: {}. MQTT port: {}. tls: {}."
                      " client certs: {}. client keys: {}.".
                      format(DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, tls, CLIENT_CERTS, CLIENT_KEYS))
@@ -107,7 +112,7 @@ class Broker:
         @param command: (str) The command to send
         """
         logger.info("Sending command...")
-        self.mqttc.publish(TC_REQUEST_CHANNEL + COMMAND, command, retain=True)
+        self.mqttc.publish(TC_REQUEST_CHANNEL + COMMAND, command, retain=False)
 
     def publish_ucc(self, message: str) -> None:
         """Publishes a received command message to UCC
@@ -118,4 +123,4 @@ class Broker:
         topic = TC_REQUEST_CHANNEL + COMMAND
         logger.debug(f"details: topic = {topic}; message = {message}")
 
-        self.mqttc.publish(topic, message, retain=True)
+        self.mqttc.publish(topic, message, retain=False)

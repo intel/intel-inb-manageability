@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class ProxyConfig:
 
-    def __init__(self, hostname: str = None, port: int = None) -> None:
+    def __init__(self, hostname: Optional[str] = None, port: Optional[int] = None) -> None:
         """Construct a proxy configuration object
 
         @param hostname: (str) Hostname for proxy without http://
@@ -72,7 +72,7 @@ class TLSConfig:
 
         @param ca_certs: (str) File path to CA certificates to use
         @exception IOError: If CA certificates path is invalid
-        """        
+        """
         self._context = self._make_tls_context(ca_certs, device_cert, device_key)
 
     @property
@@ -98,9 +98,17 @@ class TLSConfig:
         context.verify_mode = CERT_REQUIRED
         context.check_hostname = True
 
+        # NOTE: only device_cert is required, assuming the device_cert file contains both a
+        # device cert and a device key inside it. Normally with ThingsBoard this is the case,
+        # and here device_key will be None. load_cert_chain allows None for device_key and will
+        # try to load both key/cert from device_cert.
         if device_cert:
-            logger.debug(f'Loading cert chain. device_cert = {device_cert}, device_key = {device_key}')
-            context.load_cert_chain(device_cert, device_key)
+            logger.debug(
+                f'Loading cert chain. device_cert = {device_cert}, device_key = {device_key}')
+            try:
+                context.load_cert_chain(device_cert, device_key)
+            except OSError:
+                raise OSError(f"Invalid device cert/key path")
         if ca_certs:
             try:
                 context.load_verify_locations(ca_certs)
@@ -122,7 +130,8 @@ class Formatter:
         """Create a formatter for a given string formatting.
         Placeholder fields are surrounded with brackets,
         and there are no spaces in the bracketed placeholder field.
-        For instance: "Hello {name}!"
+        Add the raw_ prefix to any variable name to avoid escaping the string.
+        For instance: "Hello {name}!" or "Hello {raw_name}!"
         The following placeholders will be given a value by default:
         - {ts}: Integer epoch timestamp in milliseconds
         - {timestamp}: UTC string timestamp
@@ -175,18 +184,23 @@ class Formatter:
             timestamp=time.strftime("%Y-%m-%d %H:%M:%S UTC"))
 
         for f in self._fields:
-            if f in fields:
-                output = output.replace("{" + f + "}", self._escape(str(fields[f])))
-            elif f in self._defaults:
-                output = output.replace("{" + f + "}", str(self._defaults[f]))
+            replacement = None
+            field_name = f[4:] if f.startswith("raw_") else f
+
+            if field_name in fields:
+                replacement = str(fields[field_name])
+                if not f.startswith("raw_"):
+                    replacement = self._escape(replacement)
+            elif field_name in self._defaults:
+                replacement = str(self._defaults[field_name])
             elif "timestamp" in f.split("="):
-                # Use special timestamp formatting
                 time_format = f.split("=")[1]
-                timestamp = time.strftime(time_format)
-                output = output.replace("{" + f + "}", timestamp)
+                replacement = time.strftime(time_format)
             else:
-                logger.error(
-                    "Field {%s} not supplied in: %s", f, self._formatting)
+                logger.error("Field {%s} not supplied in: %s", f, self._formatting)
+                continue
+
+            output = output.replace("{" + f + "}", replacement)
 
         return output
 
@@ -317,7 +331,10 @@ class MethodParser:
         @return: (List[MethodParsed]) All parsed method information
         @exception ValueError: If the input payload was malformed
         """
-        payload = json.loads(payload)
+        try:
+            payload = json.loads(payload)
+        except (json.JSONDecodeError, TypeError) as e:
+            raise ValueError(str(e))
 
         if self._aggregate_info:
             parsed = []

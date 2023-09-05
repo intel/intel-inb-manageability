@@ -55,6 +55,7 @@
 12. [Issues and Troubleshooting](#issues-and-troubleshooting)
     1. [OTA Error Status](#ota-error-status)
     2. [Dispatcher-Agent Not Receiving Messages](#dispatcher-agent-not-receiving-messages)
+    3. [OTA Status Log File](#ota-status-log-file)
 </details>
 
 ## Introduction
@@ -167,7 +168,7 @@ TRTL is a binary executable developed in Golang.  It is a command-line tool whic
      - Snapshot
      - Rollback
      - List
- - [List of Commands](https://github.com/intel/intel-inb-manageability/blob/develop/inbm/trtl/README.md)
+ - [List of Commands](../inbm/trtl/README.md)
 
    #### TRTL High Level Class Diagram
    TRTL parses the incoming command and then creates the concrete class based on the type of command (docker, compose, btrfs).  It will then activate the designated command.  
@@ -246,7 +247,7 @@ to accommodate this health check tag with a certain value by following these ste
 ~/inbm/configuration-agent/fpm-template/usr/share/configuration-agent/iotg_inb_schema.xsd
 ```
 
-3. (a) Test the changes by creating a new build using the [build instructions](https://github.com/intel/intel-inb-manageability/blob/develop/README.md). Uninstall and reinstall INBM from the output folder after the build is complete.
+3. (a) Test the changes by creating a new build using the [build instructions](../README.md). Uninstall and reinstall INBM from the output folder after the build is complete.
 
 (Or)
 
@@ -768,4 +769,13 @@ sudo rm /var/lib/mosquitto/mosquitto.db
 Step 3:
 ```shell
 sudo systemctl start mqtt
+```
+
+### OTA Status Log File
+During the OTA, the OTA status will be recorded and saved at /var/cache/manageability/inbm-update-status.log.
+The log file contains the information such as the status, OTA type, time, metadata, error message and format version.
+
+#### Log File Sample
+```text
+"{'Status': 'SUCCESS', 'Type': 'sota', 'Time': '2023-06-07 05:06:43', 'Metadata': '<?xml version=\"1.0\" encoding=\"utf-8\"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile=\"y\">update</cmd></sota></type></ota></manifest>', 'Error': None, 'Version': 'v1'}"
 ```

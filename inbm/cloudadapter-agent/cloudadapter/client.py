@@ -48,7 +48,7 @@ class Client:
             self._broker.bind_callback(
                 TC_TOPIC.TELEMETRY,
                 lambda _, payload: self._cloud_publisher.publish_event(payload)
-            )        
+            )
         else:
             self._broker.bind_callback(
                 TC_TOPIC.TELEMETRY,

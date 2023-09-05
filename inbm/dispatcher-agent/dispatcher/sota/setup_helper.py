@@ -7,6 +7,7 @@
 """
 
 
+import abc
 import fileinput
 import logging
 import sys
@@ -32,12 +33,14 @@ class SetupHelper:
         self._dispatcher_callbacks = dispatcher_callbacks
         self.list_path = list_path
 
+    @abc.abstractmethod
     def pre_processing(self):
         """Perform checks immediately before applying an OS update or upgrade.
         @return: True if OK to proceed; False otherwise
         """
         pass
 
+    @abc.abstractmethod
     def get_snapper_snapshot_number(self) -> str:
         """
         @return: snapshot number from dispatcher state file (FIXME this is not OS generic)

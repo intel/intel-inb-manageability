@@ -9,7 +9,7 @@ site_packages = next(p for p in sys.path if 'site-packages' in p)
 
 
 a = Analysis(['dispatcher/dispatcher.py'],
-             pathex=['/src/dispatcher-agent'],
+             pathex=['/src/dispatcher-agent', '/src/inbm-lib'],
              binaries=[],
              datas=[(path.join(site_packages,'xmlschema'), './xmlschema')],
              hiddenimports=['inbm_lib.mqttclient', 'inbm_lib', 'UserList', 'UserString', 'commands', 'future.backports.urllib', 'jsonschema'],
@@ -24,7 +24,10 @@ a.binaries = a.binaries - TOC([('libdb-5.3.so', None, None),
                                ('libgcrypt.so.20', None, None),
                                ('libgpg-error.so.0', None, None),
                                ('liblzma.so.5', None, None),
-                               ('libreadline.so.7', None, None)])
+                               ('libreadline.so.7', None, None),
+                               ('libuuid.so.1', None, None),
+                               ('libncursesw.so.6', None, None),
+                               ('libtinfo.so.6', None, None)])
 
 
 pyz = PYZ(a.pure, a.zipped_data,

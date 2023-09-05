@@ -12,14 +12,15 @@ from typing import Any, List, Optional, Union, Mapping
 
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
+from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
-from inbm_common_lib.request_message_constants import SOTA_COMMAND_STATUS_SUCCESSFUL, SOTA_COMMAND_FAILURE
 from inbm_lib.detect_os import detect_os
+from inbm_lib.constants import OTA_PENDING, OTA_FAIL, OTA_SUCCESS
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_exception import DispatcherException
 from .command_handler import run_commands, print_execution_summary, get_command_status
-from .constants import SOTA_FAILED_RESULT, SUCCESS, SOTA_STATE, SOTA_CACHE, PROCEED_WITHOUT_ROLLBACK_DEFAULT
+from .constants import SUCCESS, SOTA_STATE, SOTA_CACHE, PROCEED_WITHOUT_ROLLBACK_DEFAULT
 from .downloader import Downloader
 from .log_helper import get_log_destination
 from .os_factory import ISotaOs, SotaOsFactory
@@ -35,7 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 class SOTAUtil:  # FIXME intermediate step in refactor
-    def check_diagnostic_disk(self, estimated_size: int, dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def check_diagnostic_disk(self, estimated_size: Union[float, int], dispatcher_callbacks: DispatcherCallbacks) -> None:
         """Checks if there is sufficient size for an update with diagnostic agent
 
         @param estimated_size: estimated install size
@@ -96,6 +97,8 @@ class SOTA:
         self.installer: Union[None, OsUpdater, OsUpgrader] = None
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
+        self.sota_mode = parsed_manifest['sota_mode']
+        self._device_reboot = parsed_manifest['deviceReboot']
 
         if self._repo_type == LOCAL_SOURCE:
             if self._ota_element is None:
@@ -124,7 +127,7 @@ class SOTA:
         logger.debug("")
 
         cmd_list: List = []
-        if self.sota_cmd == 'update':
+        if (self.sota_cmd == 'update' and self.sota_mode is None) or (self.sota_mode == 'full'):
             # the following line will be optimized out in byte code and only used in unit testing
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
@@ -141,6 +144,15 @@ class SOTA:
                 cmd_list = self.installer.update_local_source(self._local_file_path)
         elif self.sota_cmd == 'upgrade':
             raise SotaError('SOTA upgrade is no longer supported')
+        elif self.sota_mode == 'no-download':
+            assert self.factory  # noqa: S101
+            self.installer = self.factory.create_os_updater()
+            cmd_list = self.installer.no_download()
+        elif self.sota_mode == 'download-only':
+            assert self.factory  # noqa: S101
+            self.installer = self.factory.create_os_updater()
+            cmd_list = self.installer.download_only()
+
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
         run_commands(log_destination=log_destination,
                      cmd_list=cmd_list,
@@ -195,7 +207,9 @@ class SOTA:
         snapshot = self.factory.create_snapshotter(
             self.sota_cmd, self.snap_num, self.proceed_without_rollback)
         rebooter = self.factory.create_rebooter()
+
         if self.sota_state == 'diagnostic_system_unhealthy':
+            self._dispatcher_callbacks.logger.update_log(OTA_FAIL)
             snapshot.revert(rebooter, time_to_wait_before_reboot)
         elif self.sota_state == 'diagnostic_system_healthy':
             try:
@@ -208,6 +222,7 @@ class SOTA:
                 msg = "FAILED INSTALL: System has not been properly updated; reverting."
                 logger.debug(str(e))
                 self._dispatcher_callbacks.broker_core.send_result(msg)
+                self._dispatcher_callbacks.logger.update_log(OTA_FAIL)
                 snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:
             self.execute_from_manifest(setup_helper=setup_helper,
@@ -216,6 +231,32 @@ class SOTA:
                                        rebooter=rebooter,
                                        time_to_wait_before_reboot=time_to_wait_before_reboot,
                                        release_date=release_date)
+
+    def _download_sota_files(self, sota_cache_repo: IRepo, release_date: Optional[str]) -> None:
+        """Download SOTA files from either a remote source or use a local source, and clean the cache directory.
+
+        This method is responsible for downloading the necessary SOTA files from the specified remote source or
+        using the local source. It also cleans the cache directory before the download process.
+
+        @param sota_cache_repo: Repo object to store the downloaded files, and to delete all files from cache directory.
+        @param release_date: The release date of the SOTA manifest, used for filtering downloads from the remote source.
+        """
+
+        sota_cache_repo.delete_all()  # clean cache directory
+        # the following line will be optimized out in byte code and only used in unit testing
+        assert self.factory  # noqa: S101
+        if self._repo_type.lower() == REMOTE_SOURCE:
+            downloader: Downloader = self.factory.create_downloader()
+            logger.debug(f"SOTA Download URI: {self._uri}")
+            if self._uri is None:
+                downloader.download(
+                    self._dispatcher_callbacks, None, sota_cache_repo,
+                    self._username, self._password, release_date)
+            else:
+                downloader.download(
+                    self._dispatcher_callbacks, canonicalize_uri(
+                        self._uri), sota_cache_repo,
+                    self._username, self._password, release_date)
 
     def execute_from_manifest(self,
                               setup_helper: SetupHelper,
@@ -242,21 +283,7 @@ class SOTA:
 
         try:
             if setup_helper.pre_processing():
-                sota_cache_repo.delete_all()  # clean cache directory
-                # the following line will be optimized out in byte code and only used in unit testing
-                assert self.factory  # noqa: S101
-                if self._repo_type.lower() == REMOTE_SOURCE:
-                    downloader: Downloader = self.factory.create_downloader()
-                    logger.debug(f"SOTA Download URI: {self._uri}")
-                    if self._uri is None:
-                        downloader.download(
-                            self._dispatcher_callbacks, None, sota_cache_repo,
-                            self._username, self._password, release_date)
-                    else:
-                        downloader.download(
-                            self._dispatcher_callbacks, canonicalize_uri(
-                                self._uri), sota_cache_repo,
-                            self._username, self._password, release_date)
+                self._download_sota_files(sota_cache_repo, release_date)
                 download_success = True
                 snapshotter.take_snapshot()
                 cmd_list = self.calculate_and_execute_sota_upgrade(sota_cache_repo)
@@ -268,28 +295,48 @@ class SOTA:
                 else:
                     self._dispatcher_callbacks.broker_core.telemetry(
                         '{"status": 400, "message": "SOTA command status: FAILURE"}')
-                    snapshotter.recover(rebooter, time_to_wait_before_reboot)
+                    if self.sota_mode != 'download-only':
+                        snapshotter.recover(rebooter, time_to_wait_before_reboot)
         except (DispatcherException, SotaError, UrlSecurityException) as e:
             msg = "Caught exception during SOTA: " + str(e)
             logger.debug(msg)
             self._dispatcher_callbacks.broker_core.telemetry(str(e))
             self._dispatcher_callbacks.broker_core.send_result(
                 '{"status": 400, "message": "SOTA command status: FAILURE"}')
-            if download_success:
+            if download_success and self.sota_mode != 'download-only':
                 snapshotter.recover(rebooter, time_to_wait_before_reboot)
+            self._dispatcher_callbacks.logger.status = OTA_FAIL
+            self._dispatcher_callbacks.logger.error = ""
+            self._dispatcher_callbacks.logger.save_log()
             raise SotaError(str(msg))
         finally:
             if self._repo_type == LOCAL_SOURCE:
                 self._clean_local_repo_file()
             print_execution_summary(cmd_list, self._dispatcher_callbacks)
             if success:
-                self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")
-                time.sleep(time_to_wait_before_reboot)
-                rebooter.reboot()
+                # Save the log before reboot
+                if self.sota_mode == 'download-only':
+                    self._dispatcher_callbacks.logger.status = OTA_SUCCESS
+                    self._dispatcher_callbacks.logger.error = ""
+                else:
+                    self._dispatcher_callbacks.logger.status = OTA_PENDING
+                    self._dispatcher_callbacks.logger.error = ""
+                self._dispatcher_callbacks.logger.save_log()
+                if self.sota_mode == 'download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]:  # pragma: no cover
+                    self._dispatcher_callbacks.broker_core.telemetry("No reboot (SOTA pass)")
+                else:
+                    self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")
+                    time.sleep(time_to_wait_before_reboot)
+                    rebooter.reboot()
+
             else:
-                self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILED_RESULT)
-                self._dispatcher_callbacks.broker_core.send_result(SOTA_FAILED_RESULT)
-                raise SotaError(SOTA_FAILED_RESULT)
+                # Save the log before reboot
+                self._dispatcher_callbacks.logger.status = OTA_FAIL
+                self._dispatcher_callbacks.logger.error = ""
+                self._dispatcher_callbacks.logger.save_log()
+                self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILURE)
+                self._dispatcher_callbacks.broker_core.send_result(SOTA_FAILURE)
+                raise SotaError(SOTA_FAILURE)
 
     def check(self) -> None:
         """Perform manifest checking before SOTA"""

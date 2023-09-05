@@ -34,12 +34,13 @@ class TestOsUpdater(unittest.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url, 'repo': TestOsUpdater._build_mock_repo(0), 'username': username,
-                           'password': password}
+                           'password': password, 'sota_mode': 'full', 'deviceReboot': "no"}
         cls.sota_instance = SOTA(parsed_manifest, "remote",
                                  DispatcherCallbacks(install_check=cls.mock_disp_obj.install_check,
                                                      broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
                                                      sota_repos=cls.mock_disp_obj.sota_repos,
-                                                     proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback),
+                                                     proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
+                                                     logger=cls.mock_disp_obj.update_logger),
                                  snapshot=1)
 
     def test_Ubuntu_update(self):
@@ -53,9 +54,9 @@ class TestOsUpdater(unittest.TestCase):
 
         cmd_list = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
-                    "dpkg --configure -a",
-                    "apt-get -yq -f install",
-                    "apt-get -yq upgrade"]
+                    "dpkg --configure -a --force-confdef --force-confold",
+                    "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
+                    "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade"]
         x_cmd_list = installer.update_remote_source(  # type: ignore
             mock_url, TestOsUpdater._build_mock_repo(0))
 

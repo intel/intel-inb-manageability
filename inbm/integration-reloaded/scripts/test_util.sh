@@ -6,6 +6,7 @@ AMI_BIOSUPDATE_TAR=U1170000F60X043.tar
 VAGRANT_INPUT_PATH=/vagrant/input
 CONFIG_FILE=intel_manageability.txt
 LOCAL_MQTT_PORT=$(cat /etc/intel-manageability/local-mqtt-port.txt)
+OTA_LOG_FILE=/var/log/inbm-update-status.log
 
 
 cleanup_after_test() {
@@ -13,6 +14,7 @@ cleanup_after_test() {
     rm -rf /var/log/sota_test/*
     rm -rf /boot/efi/*
     rm -rf /etc/intel-manageability/public/dispatcher-agent/ota_signature_cert.pem
+    rm -rf /var/log/inbm-update-status.log
 }
 
 trigger_ota() {
@@ -44,7 +46,6 @@ listen_event() {
     TOPIC=manageability/event
     timeout 120 mosquitto_sub -h localhost -p "$LOCAL_MQTT_PORT" --cafile ${CA_FILE} --cert ${CERT_FILE} --key ${KEY} -i ${ID} -t ${TOPIC} -C 13 --keepalive 10| tee /tmp/listen_event_last_log
 }
-
 
 clean_up_subscribe() {
 if pgrep mosquitto_sub ; then

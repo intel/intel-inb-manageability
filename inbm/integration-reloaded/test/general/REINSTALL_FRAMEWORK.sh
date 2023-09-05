@@ -20,11 +20,11 @@ cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 
 touch /etc/intel-manageability/public/cloudadapter-agent/iot-dispatcher.cfg
 
-# don't connect to Telit in Integration Reloaded
-NO_CLOUD=1 PROVISION_TPM=disable NO_OTA_CERT=1 TELIT_HOST="localhost" bash -x /usr/bin/provision-tc
+# don't connect to cloud in Integration Reloaded
+NO_CLOUD=1 PROVISION_TPM=disable NO_OTA_CERT=1 bash -x /usr/bin/provision-tc
 
-# we don't connect to Telit in Integration Reloaded so we don't expect
-# cloudadapter-agent to function (it primarily connects to Telit)
+# we don't connect to cloud in Integration Reloaded so we don't expect
+# cloudadapter-agent to function (it primarily connects to cloud)
 systemctl disable inbm-cloudadapter
 systemctl stop inbm-cloudadapter
 

@@ -13,8 +13,6 @@ from inbm_common_lib.platform_info import PlatformInformation
 import os
 import logging
 from datetime import datetime
-from future import standard_library  # type: ignore
-standard_library.install_aliases()
 
 
 logger = logging.getLogger(__name__)

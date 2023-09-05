@@ -47,7 +47,7 @@ class TestWaiter(unittest.TestCase):
         thread.start()
         thread.join(0.5)
 
-        assert thread.isAlive()
+        assert thread.is_alive()
 
     def test_reset_succeeds(self):
         waiter = utilities.Waiter()
@@ -64,7 +64,7 @@ class TestWaiter(unittest.TestCase):
         thread.start()
         thread.join(0.5)
 
-        assert thread.isAlive()
+        assert thread.is_alive()
 
     def test_finish_with_synchronize_succeeds(self):
         waiter = utilities.Waiter()
@@ -76,7 +76,7 @@ class TestWaiter(unittest.TestCase):
         waiter.finish()
         thread.join(1)
 
-        assert not thread.isAlive()
+        assert not thread.is_alive()
 
     def test_finish_with_value_succeeds(self):
         waiter = utilities.Waiter()
@@ -113,4 +113,4 @@ class TestMakeThreaded(unittest.TestCase):
 
         thread.join(1)
 
-        assert not thread.isAlive()
+        assert not thread.is_alive()

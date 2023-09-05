@@ -206,26 +206,34 @@ devices and set up the dashboard, an account with the privileges of a
 
 #### Generating Device Keys and Certificates
 
-Prior to having the device authentication done using X509 mechanism, it
-is mandatory to have TLS set on the ThingsBoard&reg; server. Refer section
-[**Setting up ThingsBoard&reg; TLS**](#setting-up-thingsboard-tls) on how to setup ThingsBoard&reg; TLS.
+Once the TLS is set up on the server, you may generate the client-side certificate using OpenSSL directly on the command line.
 
-Once the TLS is set up on the server, the instructions on how to
-generate a client-side certificate can be found in the following link:
+Here are the steps to create a self-signed certificate and key:
 
-<https://thingsboard.io/docs/user-guide/certificates/>
+1. Open the terminal and run the following command:
 
-- Enter and save the *keygen.properties* accordingly and download the
-    *client.keygen.sh* script from the below link:
+```bash
+openssl req -x509 -newkey rsa:4096 -keyout device-key.pem -out device-cert.pem -days 365 -nodes
+```
 
-<https://github.com/thingsboard/thingsboard/tree/master/tools/src/main/shell>
+- `-x509` option tells openssl to create a self-signed cert.
+- `-newkey rsa:4096` generates a new RSA key of 4096 bit size.
+- `-keyout device-key.pem` specifies the output filename of the key file.
+- `-out device-cert.pem` specifies the output filename of the certificate.
+- `-days 365` specifies the validity of the certificate, which is set to one year in this example.
+- `-nodes` specifies that the private key should not be encrypted.
 
-- Running the script will generate *.jks*, *.nopass.pem*, *.pub.pem*
-    files.
+The command might prompt you for additional information and a passphrase; you can simply press the "enter" key to skip these.
 
-- The *.nopass.pem* file is used during provisioning in [Provisioning a Device](#provisioning-a-device).
+2. Generate `device-combined.pem` with this command:
 
-- The *.pub.pem* file content is used during the creation of a device
+```sh
+cat device-cert.pem device-key.pem > device-combined.pem
+```
+
+- The `device-combined.pem` file is used during provisioning in [Provisioning a Device](#provisioning-a-device).
+
+- The `device-cert.pem` file content is used during the creation of a device
     on the ThingsBoard&reg; portal.
 
 #### Enrolling Device Created with X509 Public Key
@@ -238,7 +246,7 @@ generate a client-side certificate can be found in the following link:
 
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image11.png" style="width:2.4375in;height:4.32292in" />
 
-3. Copy and paste the content of the client public key generated in the
+3. Copy and paste the content of the client public key `device-cert.pem` generated in the
 **RSA public key** field and click **Save**. 
 
 ### Provisioning a Device
@@ -300,7 +308,7 @@ Please choose provision type:
 
 7. Choosing option **2. X509 Authentication** requires user to have
     device certificate and key generated as mention in [Generating Device Keys and Certificates](#generating-device-keys-and-certificates).
-    The file path of the file with extension *nopass.pem* is entered in
+    The file path of the file `device-combined.pem` is entered in
     the prompt.
 ```
 Configuring device to use X509 auth requires device certificate verification.
@@ -312,7 +320,7 @@ Input Device certificate from file? [Y/N] y
 Please enter a filename to import 
 
 Input path to Device certificate file (*nopass.pem):
-/home/abc/device_cert_nopass.pem
+/home/abc/device-combined.pem
 ```
 
 8. If user selects Token based authentication in step 6, an option for
@@ -487,7 +495,7 @@ Manageability Batch` entry:
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image16.png" style="width:5.78333in;height:2.34975in" />
 
 A dashboard similar to the one below should appear:  
-<img src="https://github.com/intel/intel-inb-manageability/blob/RTC_Fixed_Branch_516194/docs/media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image17.PNG" style="width:5.78333in;height:3.0in" />
+<img src="media/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard/media/image17.PNG" style="width:5.78333in;height:3.0in" />
 
 A. Change the dashboard (i.e. to the Intel Manageability Devices; refer
     [Setting up the Dashboards](#setting-up-the-dashboards))
@@ -1212,7 +1220,7 @@ Populate the **Trigger Query** pop-up window with the required parameters and cl
 </p>
 
 For the details on **Query options**
-Refer to [Query options ](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)							 
+Refer to [Query options ](../docs/Query.md)							 
 	
 The query command capabilities are also supported via manifest.
 

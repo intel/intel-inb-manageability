@@ -28,8 +28,9 @@ class ArgsParser(object):
         self.parser = argparse.ArgumentParser(
             description='INBC Command-line tool to trigger updates')
         self.subparsers = self.parser.add_subparsers(
-            help='valid commands: [fota, sota, pota, load, get, set, restart, query]')
+            help='valid commands: [aota, fota, sota, pota, load, get, set, restart, query]')
 
+        self.parse_aota_args()
         self.parse_fota_args()
         self.parse_sota_args()
         self.parse_pota_args()
@@ -51,33 +52,49 @@ class ArgsParser(object):
     def _create_subparser(self, subparser_name: str) -> argparse.ArgumentParser:
         return self.subparsers.add_parser(subparser_name)
 
+    def parse_aota_args(self) -> None:
+        """Method to parse AOTA arguments"""
+        parser = self._create_subparser('aota')
+
+        parser.add_argument('--uri', '-u', required=False,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                            help='Remote URI from where to retrieve package')
+        parser.add_argument('--app', '-a', required=True, choices=['application', 'compose', 'docker'],
+                            help='Type of information [ application, compose, docker]')
+        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down', 'import', 'load', 'remove'], 
+                            help='Type of information [ update , pull, up, down, import, load, remove]') 
+        parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
+                            help='Type of information [ yes | no ]')
+        parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
+                            type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser.add_argument('--version', '-v', required=False)
+        parser.add_argument('--containertag', '-ct', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'TAG', 50),
+                            help='Container Tag name')
+        parser.add_argument('--file', '-f', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'FILE', 100),
+                            help='File name')
+        parser.add_argument('--dockerusername', '-du', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50), help='docker username')
+        parser.add_argument('--dockerregistry', '-dr', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Registry', 500), help='docker registry')
+        parser.set_defaults(func=aota)
+
     def parse_fota_args(self) -> None:
         """Method to parse FOTA arguments"""
         # Create the parser for the "fota" command
         parser_fota = self._create_subparser('fota')
 
         parser_fota.add_argument('--uri', '-u', required=True,
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
         parser_fota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        parser_fota.add_argument('--vendor', '-v', default='Intel Corporation', required=False, help='Platform vendor',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Vendor', 50))
-        parser_fota.add_argument('--biosversion', '-b', default='ADLSFWI1.R00', required=False,
-                                 help='Platform BIOS version',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'BIOS Version', 50))
-        parser_fota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False,
-                                 help='Platform manufacturer',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Manufacturer', 50))
-        parser_fota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
-                                 help='Platform product name',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Product', 50))
         parser_fota.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         parser_fota.add_argument('--tooloptions', '-to', required=False, help='Firmware tool options',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Tool Options', 10))
         parser_fota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser_fota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
         parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
                                  type=validate_guid)
         parser_fota.set_defaults(func=fota)
@@ -94,6 +111,10 @@ class ArgsParser(object):
                                  help='Release date of the applying package - format YYYY-MM-DD')
         parser_sota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser_sota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
+        parser_sota.add_argument('--mode', '-m', default='full',
+                                 required=False, choices=['full', 'download-only', 'no-download'])
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
@@ -106,20 +127,6 @@ class ArgsParser(object):
                                  help='Remote URI from where to retrieve FOTA package')
         parser_pota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        parser_pota.add_argument('--vendor', '-v', default='Intel Corporation', required=False,
-                                 help='Platform vendor')
-        parser_pota.add_argument('--biosversion', '-b', default='ADLSFWI1.R00', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'BIOS Version', 50),
-                                 help='Platform BIOS version')
-        parser_pota.add_argument('--manufacturer', '-m', default='Intel Corporation', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'Manufacturer', 50),
-                                 help='Platform manufacturer')
-        parser_pota.add_argument('--product', '-pr', default='Alder Lake Client Platform', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(
-                                     x, 'Product', 50),
-                                 help='Platform product name')
         parser_pota.add_argument('--sotauri', '-su', default=None, required=True,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'SOTA path', 500),
@@ -132,6 +139,8 @@ class ArgsParser(object):
                                  help='FOTA Signature string')
         parser_pota.add_argument('--guid', '-gu', required=False, help='Firmware GUID update',
                                  type=validate_guid)
+        parser_pota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+                                 help='Type of information [ yes | no ]')
         parser_pota.set_defaults(func=pota)
 
     def parse_load_args(self) -> None:
@@ -202,11 +211,61 @@ class ArgsParser(object):
         parser_query.set_defaults(func=query)
 
 
-def _get_password(args) -> Optional[str]:
-    password = None
-    if args.username:
-        password = getpass.getpass("Please provide the password: ")
-    return password
+def _get_password(username, password_prompt) -> Optional[str]:
+        password = None
+        if username:
+           password = getpass.getpass(password_prompt)
+        return password
+
+def aota(args) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest string
+    """
+    arguments = {
+        'cmd': args.command,
+        'app': args.app,
+        'fetch': args.uri,
+        'deviceReboot': args.reboot,
+        'username': args.username,
+        'password': _get_password(args.username, "Please provide the password: "),
+        'version': args.version,
+        'containerTag': args.containertag,
+        'file': args.file,
+        'dockerUsername': args.dockerusername,
+        'dockerRegistry': args.dockerregistry,
+        'dockerPassword': _get_password(args.dockerusername, "Please provide the docker password: ")
+    }
+
+    manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
+                '<manifest>' +
+                '<type>ota</type>' +
+                '<ota>' +
+                '<header>' +
+                '<type>aota</type>' +
+                '<repo>remote</repo>' +
+                '</header>' +
+                '<type><aota>' +
+                '{0}' +
+                '</aota></type>' +
+                '</ota>' +
+                '</manifest>').format(
+        create_xml_tag(arguments,
+                       "cmd",
+                       "app",
+                       "fetch",
+                       "deviceReboot",
+                       "username",
+                       "password",
+                       "version",
+                       "containerTag",
+                       "file",
+                       "dockerUsername",
+                       "dockerPassword",
+                       "dockerRegistry")
+    ) 
+    return manifest
 
 
 def sota(args) -> str:
@@ -224,7 +283,7 @@ def sota(args) -> str:
     # if source_location is None, then update is local Ubuntu and does not need a release date.
     release_date = args.releasedate if source_location else None
 
-    # This if clause is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd schema.
+    # This is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd schema.
     if source_tag == PATH_STRING:
         path_location = source_location
         fetch_location = None
@@ -233,10 +292,12 @@ def sota(args) -> str:
         path_location = None
 
     arguments = {
+        'mode': args.mode,
         'release_date': release_date,
         'fetch': fetch_location,
         'username': args.username,
-        'password': _get_password(args),
+        'password': _get_password(args.username, "Please provide the password: "),
+        'deviceReboot': "no" if args.mode == "download-only" else args.reboot,
         'path': path_location
     }
 
@@ -254,21 +315,23 @@ def sota(args) -> str:
                 '</sota></type>' +
                 '</ota>' +
                 '</manifest>').format(
-        create_xml_tag(arguments,
-                       "fetch",
-                       "username",
-                       "password",
-                       "release_date",
-                       "path"
-                       )
+        (create_xml_tag(arguments,
+                        "mode",
+                        "fetch",
+                        "username",
+                        "password",
+                        "release_date",
+                        "path",
+                        "deviceReboot"
+                        ))
     )
     print("manifest {0}".format(manifest))
     return manifest
 
 
 def _gather_system_details() -> PlatformInformation:
-    print("BIOS version, Vendor, Manufacturer and Product information not provided via command-line."
-          " So gathering the firmware info using dmi path/deviceTree")
+    print("BIOS version, Vendor, Manufacturer and Product information will be automatically "
+          "gathered using DMI path/deviceTree.")
 
     if is_dmi_path_exists():
         print("DMI path exists. Getting BIOS information from DMI path")
@@ -285,6 +348,7 @@ def fota(args) -> str:
     @param args: Arguments provided by the user from command line
     @return: Generated XML manifest string
     """
+
     p = _gather_system_details()
 
     arguments = {
@@ -297,8 +361,9 @@ def fota(args) -> str:
         'tooloptions': args.tooloptions,
         'fetch': args.uri,
         'username': args.username,
-        'password': _get_password(args),
-        'guid': args.guid
+        'password': _get_password(args.username, "Please provide the password: "),
+        'guid': args.guid,
+        'deviceReboot': args.reboot
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -323,7 +388,8 @@ def fota(args) -> str:
                        "username",
                        "password",
                        "guid",
-                       'fetch')
+                       'fetch',
+                       "deviceReboot")
     )
     print("manifest {0}".format(manifest))
     return manifest
@@ -336,6 +402,7 @@ def pota(args) -> str:
     @return: Generated xml manifest string
     """
     os_type = detect_os()
+    p = _gather_system_details()
 
     if args.fotauri:
         if os_type != LinuxDistType.Ubuntu.name and not args.sotauri:
@@ -344,17 +411,19 @@ def pota(args) -> str:
 
     arguments = {
         'releasedate': args.releasedate,
-        'vendor': args.vendor,
-        'biosversion': args.biosversion,
-        'manufacturer': args.manufacturer,
-        'product': args.product,
+        'vendor': p.bios_vendor,
+        'biosversion': p.bios_version,
+        'manufacturer': p.platform_mfg,
+        'product': p.platform_product,
         'release_date': args.release_date,
         FOTA_SIGNATURE: args.fotasignature,
-        'guid': args.guid
+        'guid': args.guid,
+        'deviceReboot': args.reboot
     }
 
     fota_tag = f'<fetch>{args.fotauri}</fetch>'
-    sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>'
+    sota_tag = '' if os_type == LinuxDistType.Ubuntu.name else f'<fetch>{args.sotauri}</fetch>' \
+                                                               f'<deviceReboot>{args.reboot}</deviceReboot>'
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
@@ -374,7 +443,8 @@ def pota(args) -> str:
                        "product",
                        "vendor",
                        "releasedate",
-                       "guid"
+                       "guid",
+                       'deviceReboot'
                        ),
         fota_tag,
         create_xml_tag(arguments,
@@ -398,7 +468,7 @@ def load(args) -> str:
         'fetch': args.uri,
         'signature': args.signature,
         'username': args.username,
-        'password': _get_password(args)
+        'password': _get_password(args.username, "Please provide the password: ")
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +

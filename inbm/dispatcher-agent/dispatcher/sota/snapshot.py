@@ -22,13 +22,13 @@ from ..dispatcher_exception import DispatcherException
 
 logger = logging.getLogger(__name__)
 
+
 def mender_commit_command():  # pragma: no cover
     (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
     if "-commit" in out or ((err is not None) and "-commit" in err):
         return "mender -commit"
     else:
         return "mender commit"
-
 
 
 class Snapshot(ABC):  # pragma: no cover
@@ -120,6 +120,7 @@ class DebianBasedSnapshot(Snapshot):
         logger.debug("")
         self._dispatcher_callbacks.broker_core.telemetry(
             f"SOTA Attempting snapshot of system before SOTA {self.sota_cmd}")
+
         try:
             temp_snapshot_num, err = self.trtl.single_snapshot("sota_" + self.sota_cmd)
             if err:
@@ -140,6 +141,12 @@ class DebianBasedSnapshot(Snapshot):
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
             if self.proceed_without_rollback:
+                # Even if we can't take a snapshot, on a subsequent boot we still
+                # need dispatcher_state to reflect that we ran a SOTA so we can update
+                # logs, perform health check, etc.
+                initial_state = {'restart_reason': "sota_" +
+                                 self.sota_cmd, 'snapshot_num': 0}
+                dispatcher_state.write_dispatcher_state_to_state_file(initial_state)
                 self._dispatcher_callbacks.broker_core.telemetry(
                     "SOTA snapshot of system failed, will proceed "
                     "without snapshot/rollback feature")
@@ -183,6 +190,8 @@ class DebianBasedSnapshot(Snapshot):
         err: Optional[str]
         if self.snap_num is None:
             rc, err = 1, 'snap_num is None'
+        elif self.snap_num == 0:
+            rc, err = 0, 'snap_num is 0 (dummy snapshot); no need to delete'
         else:
             rc, err = self.trtl.delete_snapshot(self.snap_num)
         if err is None:
@@ -217,6 +226,7 @@ class DebianBasedSnapshot(Snapshot):
         """Revert after second system SOTA boot when we see a problem with startup.
 
         On Debian-based OSes, we need to rollback, delete snapshot, and reboot.
+        If there is no snapshot, the system will not reboot.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
         """
@@ -224,8 +234,10 @@ class DebianBasedSnapshot(Snapshot):
         dispatcher_state.clear_dispatcher_state()
         if self.snap_num:
             self._rollback_and_delete_snap()
-        time.sleep(time_to_wait_before_reboot)
-        rebooter.reboot()
+            time.sleep(time_to_wait_before_reboot)
+            rebooter.reboot()
+        else:
+            logger.info("No snapshot. Cancel reboot.")
 
     def update_system(self) -> None:
         """If the system supports it, check whether the system was updated, after rebooting.

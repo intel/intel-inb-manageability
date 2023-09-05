@@ -3,6 +3,89 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## 4.1.3 - 2023-09-05
+
+### Fixed
+ - RTC 532663 - [INBM][UCC][Bug] During every windows reboot there will be a temporary folder created
+ - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
+ - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
+ - RTC [533020] - Fix SOTA to  handle dpkg interactive prompt
+ - RTC 532662 - [INBM][UCC][Bug] INBM fails to send telemetry when IP is changed manually
+ - Changed golang builds to not depend on glibc.
+ - Updated OpenSSL download path in Windows installer.
+
+### Added
+- RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
+- RTC 532848 - Add AOTA docker pull, import, load and remove commands to INBC
+
+### Security
+ - (dependabot) - Updated cryptography from 41.0.0 to 41.0.2
+ - (dependabot) - Updated cryptography from 41.0.2 to 41.0.3
+ - Updated golang runtime from 1.20.5 to 1.20.6
+ - (533039) Added Intel standard compiler flags and settings to golang builds
+ - (533037) CT72 - Secure Configuration Guidance: remove all remaining Telit references
+ - Update to Python 3.11 to address some CVEs.
+ - Update Windows Dockerfile to pull in Python 3.11.5 to address some CVEs.
+
+## 4.1.2 - 2023-06-29
+
+### Fixed
+ - RTC 531066 - [TC Base] [Bug] Cloud Adapter disconnected upon provisioned
+ - RTC 532217 - [TC Base] [Bug] Cloud Adapter cannot connect to Azure
+
+### Security
+ - Updated Windows Python version to pull in security updates
+
+## 4.1.1 - 2023-06-23
+
+NOTE: update log path has changed to /var/log/inbm-update-status.log
+
+### Fixed
+ - RTC 530729 - Fix AOTA update log file show Reboot Failed although platform already rebooted and application updated
+ - RTC 530881 - Fix JSON update log/access
+ - RTC 530960 - Fix INBC SOTA observe post-install check and rollback on EXT4
+ - RTC 530992 - [TC Base] [Bug] Cloudadapter Agent failed to start - TypeError: object of type 'int' has no len()
+
+## 4.1.0 - 2023-06-13
+
+### Added
+ - RTC 530033 - Add AOTA Applicaiton Update command to INBC
+ - RTC 530032 - Add INBC SOTA update, download-only and no-download modes 
+ - RTC 529914 - Implement OTA logger
+ - RTC 529912 - Add a reboot option (optional) in OTA manifest for FOTA, SOTA and POTA
+ - RTC 529913 - Update INBC to take in the optional reboot option in an OTA cmd
+
+### Fixed
+ - RTC 530482 - Remove 'force' option in OTA's
+ - RTC 530846 - INBC AOTA Application update command to check package fetch from trusted repo
+
+## 4.0.1 - 2023-05-26
+
+### Security
+ - RTC 529956 - [UCC Win] Bug: C:\intel-manageability\ directory can be written by non-admin user
+ - RTC 529951 - Cloudadapter does not check if certain files are symlinks
+ - Increased bit size when generating TLS keys
+ - Updated pypi requests to fix dependabot security alert
+
+### Changed
+ - Added recommendation to use BitLocker when installing in Windows.
+
+
+## 4.0.0 - 2023-05-16
+
+### Added
+ - Added Windows output (UCC only) from main build
+
+### Fixed
+ - RTC 528514 - [Defect] [UCC] Send telemetry value as-is rather than quoting
+ - RTC 528654 - [Defect] Remove parameters from INBC for version, manufacturer, product, and vendor for both POTA and FOTA commands
+ - RTC 529947 - Fix UCC bitsize 
+
+### Security
+ - RTC 528652 Mask Confidential data (Username & Password) of OTA is exposed in logs
+ - RTC 529258 Adjust Windows build to address 3rd party vulnerabilities
+ - Removed some unneeded libraries with vulnerabilities
+
 ## 3.0.15 - 2023-04-14
 
 ### Added

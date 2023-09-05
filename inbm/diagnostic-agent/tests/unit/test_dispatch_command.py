@@ -5,12 +5,8 @@ import psutil
 from diagnostic.dispatch_command import dispatch_command
 from mock import Mock, patch
 
-TELIT_CLOUD_IS_DOWN = 'Telit cloud is down. '
 UNKNOWN_CLOUD_CONNECTOR_SENT = 'Unknown cloud connector sent'
-TELIT_SERVICES_AND_BROKER_HEALTHY = 'Telit services and broker running healthy. '
-TELIT_NOT_AS_EXPECTED = 'Telit services/broker not running as expected. '
 ARBITRARY_STRING_1 = 'abcdefg'
-TELIT_CLOUD_HEALTHY = 'Telit cloud webservice running healthy. '
 NO_BATTERY_INSTALLED = 'Device has no battery installed. '
 NETWORK_INTERFACE_DOWN = 'Network interfaces down.  Cannot find network interface with a default route.'
 NETWORK_INTERFACE_HEALTHY = 'At least one network interface is healthy (has a default route).'

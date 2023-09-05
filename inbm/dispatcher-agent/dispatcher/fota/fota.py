@@ -12,6 +12,7 @@ from threading import Timer
 from typing import Any, Optional, Mapping
 
 from future.moves.urllib.parse import urlparse
+from inbm_lib.constants import OTA_PENDING
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.constants import REMOTE_SOURCE
@@ -48,9 +49,7 @@ class FOTA:
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: DispatcherCallbacks instance
         """
-        logger.debug(f"parsed_manifest: {parsed_manifest}")
         self._ota_element = parsed_manifest.get('resource')
-        logger.debug(f"ota_element: {self._ota_element}")
         self._dispatcher_callbacks = dispatcher_callbacks
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
@@ -80,6 +79,8 @@ class FOTA:
 
         self._username = parsed_manifest['username']
         self._password = parsed_manifest['password']
+        self._password = parsed_manifest['password']
+        self._device_reboot = parsed_manifest['deviceReboot']
         if self._dispatcher_callbacks is None:
             raise FotaError("dispatcher_callbacks not specified in FOTA constructor")
         self._dispatcher_callbacks.broker_core.telemetry("Firmware Update Tool launched")
@@ -141,12 +142,19 @@ class FOTA:
             def trigger_reboot() -> None:
                 """This method triggers a reboot."""
                 factory.create_rebooter().reboot()
+
+            # Save the log before reboot
+            self._dispatcher_callbacks.logger.status = OTA_PENDING
+            self._dispatcher_callbacks.logger.error = ""
+            self._dispatcher_callbacks.logger.save_log()
+
             if not hold_reboot:
                 logger.debug("")
                 state = {'restart_reason': "fota"}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
-                time_to_trigger_reboot = Timer(0.1, trigger_reboot)
-                time_to_trigger_reboot.start()
+                if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
+                    time_to_trigger_reboot = Timer(0.1, trigger_reboot)
+                    time_to_trigger_reboot.start()
                 return_message = COMMAND_SUCCESS
             else:
                 status = 'Reboot on hold after Firmware update...'

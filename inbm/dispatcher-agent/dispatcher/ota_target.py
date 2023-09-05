@@ -182,7 +182,7 @@ class OtaTarget:
         except XmlException as e:
             raise DispatcherException(f"ERROR : {e}")
 
-    def _modify_manifest_helper(self, parsed: Any, package_name: str, ota_key: str = None) -> bytes:
+    def _modify_manifest_helper(self, parsed: Any, package_name: str, ota_key: Optional[str] = None) -> bytes:
         logger.debug("")
         if ota_key is None:
             ota_key = ''

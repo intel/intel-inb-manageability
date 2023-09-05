@@ -7,8 +7,8 @@
 from typing import List, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
 import platform
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 
 def parse_lsblk(lsblk_output) -> Optional[List]:

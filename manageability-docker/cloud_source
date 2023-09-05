@@ -11,3 +11,6 @@ cp /src/adapter.cfg /etc/intel-manageability/secret/cloudadapter-agent/adapter.c
 # Uncomment the line when using the TLS for Thingsboard server
 # cp /src/thingsboard.pub.pem /etc/intel-manageability/secret/cloudadapter-agent/thingsboard.pub.pem
 
+# Uncomment the line when x509 based device authentication is enabled
+# cp /src/client.nopass.pem /etc/intel-manageability/secret/cloudadapter-agent/client.nopass.pem
+

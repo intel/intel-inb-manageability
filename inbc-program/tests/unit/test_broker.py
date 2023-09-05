@@ -1,7 +1,7 @@
 from unittest import TestCase
 from mock import patch, Mock
 from inbc.broker import Broker
-from inbc.parser import ArgsParser
+from inbc.parser import ArgsParser, _get_password
 from inbm_common_lib.request_message_constants import *
 
 
@@ -11,6 +11,8 @@ class TestINBC(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     def setUp(self, mock_subscribe, mock_publish, mock_connect):
         self.arg_parser = ArgsParser()
+        self._aota_args = self.arg_parser.parse_args(
+            ['aota', '-a', 'application', '-c', 'update', '-u', 'https://abc.com/test.deb'])
         self._fota_args = self.arg_parser.parse_args(
             ['fota', '-u', 'https://abc.com/BIOS.img'])
         self._sota_args = self.arg_parser.parse_args(
@@ -43,6 +45,35 @@ class TestINBC(TestCase):
     def test_on_event(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
         b = Broker('fota', self._fota_args, False)
         b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
+
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.command.Command.terminate_operation')
+    def test_on_event(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
+        b = Broker('aota', self._aota_args, False)
+        b._on_event('manageability/event', 'Overall AOTA status : SUCCESS', 1)
+
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.AotaCommand.trigger_manifest')
+    @patch('inbc.command.command.Command.terminate_operation')
+    def test_on_message_response_aota_success(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
+        b = Broker('aota', self._aota_args, False)
+        b._on_response('manageability/response', SUCCESSFUL_INSTALL, 1)
+        mock_terminate.assert_called_once()
+
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.command.ota_command.AotaCommand.trigger_manifest')
+    @patch('inbc.command.command.Command.terminate_operation')
+    def test_on_message_response_aota_failed(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
+        b = Broker('aota', self._fota_args, False)
+        b._on_response('manageability/response', FAILED_TO_INSTALL, 1)
+        mock_terminate.assert_called_once()
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
@@ -82,16 +113,6 @@ class TestINBC(TestCase):
         b = Broker('pota', self._pota_args, False)
         b._on_response('manageability/response', FAILED_TO_INSTALL, 1)
         #mock_terminate.assert_called_once()
-
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('inbc.command.ota_command.SotaCommand.trigger_manifest')
-    @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_message_response_sota_success(self, mock_terminate, mock_trigger, mock_sub, mock_pub, mock_con):
-        b = Broker('sota', self._sota_args, False)
-        b._on_response('manageability/response', SOTA_COMMAND_STATUS_SUCCESS, 1)
-        mock_terminate.assert_called_once()
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')

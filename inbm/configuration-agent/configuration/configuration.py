@@ -13,8 +13,9 @@ import signal
 import sys
 from logging.config import fileConfig
 from time import sleep
+from types import FrameType
 
-from typing import Callable, Any, Optional, List
+from typing import Callable, Any, Optional, List, Union
 
 from configuration.broker import Broker
 from configuration.constants import DEFAULT_LOGGING_PATH, XML_LOCATION, SCHEMA_LOCATION
@@ -49,7 +50,7 @@ class Configuration(WindowsService):
 
         super().__init__(args)
 
-    def _set_up_signal_handlers(self, handler: Callable[[signal.Signals, Any], None]) -> None:
+    def _set_up_signal_handlers(self, handler: Union[Callable[[int, Optional[FrameType]], Any], int, signal.Handlers, None]) -> None:
         # Register with systemd for termination.
         signal.signal(signal.SIGTERM, handler)
         # Terminate on control-c from user."""
@@ -63,9 +64,9 @@ class Configuration(WindowsService):
         return logging.getLogger(__name__)
 
     def _quit_if_wrong_python(self, logger: logging.Logger) -> None:
-        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
+        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 11:
             logger.error(
-                "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
 
     def svc_stop(self) -> None:

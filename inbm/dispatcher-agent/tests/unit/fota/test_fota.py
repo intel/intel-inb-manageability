@@ -35,7 +35,8 @@ class TestFota(unittest.TestCase):
     mock_disp_callbacks = DispatcherCallbacks(install_check=mock_disp_obj.install_check,
                                               sota_repos=mock_disp_obj.sota_repos,
                                               proceed_without_rollback=mock_disp_obj.proceed_without_rollback,
-                                              broker_core=MockDispatcherBroker.build_mock_dispatcher_broker())
+                                              broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
+                                              logger=mock_disp_obj.update_logger)
 
     @classmethod
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
@@ -45,7 +46,7 @@ class TestFota(unittest.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': "/cache/", 'username': username,
-                           'password': password}
+                           'password': password, 'deviceReboot': 'yes'}
         TestFota._fota_instance = FOTA(parsed_manifest, "remote", cls.mock_disp_callbacks)
         TestFota._fota_local_instance = FOTA(parsed_manifest, "local", cls.mock_disp_callbacks)
         parsed_manifest.update({'resource': cls.resource_2})

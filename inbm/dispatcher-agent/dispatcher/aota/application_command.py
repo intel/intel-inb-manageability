@@ -13,7 +13,7 @@ from typing import Optional, Any, Mapping
 from inbm_lib.detect_os import is_inside_container
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
-from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
+from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX, OTA_SUCCESS
 
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
@@ -22,9 +22,9 @@ from dispatcher.common.result_constants import CODE_OK
 from dispatcher.constants import UMASK_OTA, REPO_CACHE
 from dispatcher.packagemanager.package_manager import get
 
-from .checker import check_application_command_supported, check_url
+from .checker import check_application_command_supported, check_url, check_resource
 from .aota_command import AotaCommand
-from .constants import CENTOS_DRIVER_PATH, SupportedDriver
+from .constants import CENTOS_DRIVER_PATH, SupportedDriver, CMD_SUCCESS, CMD_TERMINATED_BY_SIGTERM
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 
@@ -68,6 +68,8 @@ class Application(AotaCommand):
         if self._uri is None:
             raise AotaError("missing URI.")
 
+        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+
         logger.debug("AOTA to download a package")
         self._dispatcher_callbacks.broker_core.telemetry(
             f'OTA Trigger Install command invoked for package: {self._uri}')
@@ -86,10 +88,15 @@ class Application(AotaCommand):
 
     def _reboot(self, cmd: str) -> None:
         if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
+            # Save the log before reboot
+            self._dispatcher_callbacks.logger.status = OTA_SUCCESS
+            self._dispatcher_callbacks.logger.error = ""
+            self._dispatcher_callbacks.logger.save_log()
+
             logger.debug(f" Application {self.resource} installed. Rebooting...")
             self._dispatcher_callbacks.broker_core.telemetry('Rebooting...')
             (output, err, code) = PseudoShellRunner.run(cmd)
-            if code != 0:
+            if code != CMD_SUCCESS and code != CMD_TERMINATED_BY_SIGTERM:
                 raise AotaError(f'Reboot Failed {err}')
 
     def update(self) -> None:
@@ -116,7 +123,7 @@ class CentOsApplication(Application):
         for file in os.listdir(CENTOS_DRIVER_PATH):
             remove_file(os.path.join(CENTOS_DRIVER_PATH, file))
 
-    def _is_rpm_file_type(self, file_path:str) -> bool:
+    def _is_rpm_file_type(self, file_path: str) -> bool:
         """Check the driver file is rpm type or not
 
         @return: return False if file is not rpm type
@@ -131,7 +138,7 @@ class CentOsApplication(Application):
         # Check if it's CentOS and inside container. In CentOS inb container, chroot is used to switch to CentOS
         # rootfs and install the driver.
         driver_path = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
-        
+
         logger.debug(f"driver path = {driver_path}")
         try:
             if not self._is_rpm_file_type(driver_path):
@@ -153,7 +160,7 @@ class CentOsApplication(Application):
             uninstall_driver_cmd = CHROOT_PREFIX + \
                 f'/usr/bin/rpm -e --nodeps {old_driver_name}'
             out, err, code = PseudoShellRunner().run(uninstall_driver_cmd)
-           
+
             # If old packages wasn't install on system, it will return error too.
             if code != 0 and "is not installed" not in str(err):
                 raise AotaError(err)
@@ -213,7 +220,7 @@ class UbuntuApplication(Application):
         if code != 0:
             raise AotaError(err)
 
-        reboot_base_command = "/sbin/reboot -f"
+        reboot_base_command = "/sbin/reboot"
         if is_docker_app:
             reboot_command = DOCKER_CHROOT_PREFIX + reboot_base_command
         else:

@@ -8,7 +8,7 @@
 import logging
 
 from typing import List
-
+from abc import ABC, abstractmethod
 from .command_list import CommandList
 
 logger = logging.getLogger(__name__)
@@ -68,6 +68,12 @@ class WindowsUpgrader(OsUpgrader):
         @return: returns file to log the upgrade to
         """
         logger.debug("")
+        pass
+
+    def no_download(self):
+        pass
+
+    def download_only(self):
         pass
 
 

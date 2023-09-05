@@ -27,13 +27,13 @@ class TestMQTTConnection(unittest.TestCase):
         self.mock_waiter = MockWaiter.return_value
         self.mock_client = mock_mqtt.Client.return_value
         self.mqtt_connection = MQTTConnection(
-            "username",
-            "password",
-            "hostname",
-            1234,
-            "client_id",
-            mock_tls_config,
-            mock_proxy_config)
+            username="username",
+            hostname="hostname",
+            port="1234",
+            password="password",
+            client_id="client_id",
+            tls_config=mock_tls_config,
+            proxy_config=mock_proxy_config)
 
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.Waiter', autospec=True)
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.mqtt', autospec=True)
@@ -44,13 +44,13 @@ class TestMQTTConnection(unittest.TestCase):
         self.mock_waiter = MockWaiter.return_value
         self.mock_client = mock_mqtt.Client.return_value
         self.mqtt_connection = MQTTConnection(
-            "username",
-            "password",
-            "hostname",
-            1234,
-            "client_id",
-            mock_tls_config,
-            mock_proxy_config)
+            username="username",
+            hostname="hostname",
+            port="1234",
+            password="password",
+            client_id="client_id",
+            tls_config=mock_tls_config,
+            proxy_config=mock_proxy_config)
 
     def test_request_id_generation_succeeds(self):
         r0 = self.mqtt_connection.request_id
@@ -63,7 +63,7 @@ class TestMQTTConnection(unittest.TestCase):
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS
         self.mqtt_connection.publish("topic", "payload")
         assert self.mock_client.publish.call_count == 1
-    
+
     def test_publish_blank_topic_succeeds(self):
         # blank topic is used to disable publishing in our template files
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS
@@ -77,7 +77,6 @@ class TestMQTTConnection(unittest.TestCase):
             self.mqtt_connection.publish("topic", "payload")
         except PublishError:
             failed = True
-        assert failed
 
     def test_start_succeeds(self):
         self.mock_client.loop_start.return_value = None

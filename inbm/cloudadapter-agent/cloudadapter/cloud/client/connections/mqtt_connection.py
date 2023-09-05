@@ -20,6 +20,10 @@ import socks
 import logging
 logger = logging.getLogger(__name__)
 
+MAX_STRING_CHARS = 2048
+MAX_PORT_LENGTH = 7
+MAX_CLIENT_ID_LENGTH = 500
+
 
 class MQTTConnection(Connection):
 
@@ -27,7 +31,7 @@ class MQTTConnection(Connection):
             self,
             username: str,
             hostname: str,
-            port: str,
+            port: int,
             password: Optional[str] = None,
             client_id: Optional[str] = None,
             tls_config: Optional[TLSConfig] = None,
@@ -37,7 +41,7 @@ class MQTTConnection(Connection):
         @param username:  (str) MQTT username
         @param password:  (str) MQTT password
         @param hostname:  (str) Target broker hostname
-        @param port:      (str) Target broker port
+        @param port:      (int) Target broker port
         @param client_id: (str) Client ID to use when connecting to broker
         @param tls_config: (TLSConfig) TLS configuration to use
         @param proxy_config: (ProxyConfig) Proxy configuration to use
@@ -48,9 +52,27 @@ class MQTTConnection(Connection):
         self._subscribe_lock = RLock()
         self._subscriptions: Dict = {}
 
+        if len(username) > MAX_STRING_CHARS:
+            raise ValueError(
+                f"username {username} is too long.  Must be less than {MAX_STRING_CHARS} in length.")
+        if password and len(password) > MAX_STRING_CHARS:
+            raise ValueError(
+                f"password is too long.  Must be less than {MAX_STRING_CHARS} in length")
+        if len(hostname) > MAX_STRING_CHARS:
+            raise ValueError(
+                f"hostname {hostname} is too long.  Must be less than {MAX_STRING_CHARS} in length")
+        if client_id and len(client_id) > MAX_CLIENT_ID_LENGTH:
+            raise ValueError(
+                f"client_id {client_id} is too long.  Must be less than {MAX_CLIENT_ID_LENGTH} in length")
+
+        self._username = username
+        self._password = password
+        self._hostname = hostname
+        self._port = port
+
         self._client_id = client_id
         self._connect_waiter = Waiter()
-        self._client = self._create_mqtt_client(username, password, hostname, port, client_id)
+        self._client = self._create_mqtt_client(client_id)
 
         if tls_config:
             self._client.tls_set_context(tls_config.context)
@@ -76,15 +98,17 @@ class MQTTConnection(Connection):
             socks.set_default_proxy(socks.PROXY_TYPE_HTTP, *config.endpoint)
             socket.socket = socks.socksocket  # type: ignore
 
-    def _create_mqtt_client(self, username: str, password: Optional[str], hostname: str, port: str,
-                            client_id: Optional[str] = "") -> Client:
+    def _create_mqtt_client(self, client_id: Optional[str] = "") -> Client:
         """Create an MQTT client"""
-        client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
-        client.username_pw_set(username, password)
-        client.connect = partial(client.connect, host=hostname, port=port)
-        client.on_connect = self._on_connect
-        client.on_disconnect = self._on_disconnect
-        return client
+        try:
+            client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
+            client.username_pw_set(self._username, self._password)
+            client.connect = partial(client.connect, host=self._hostname, port=self._port)
+            client.on_connect = self._on_connect
+            client.on_disconnect = self._on_disconnect
+            return client
+        except ValueError as e:
+            raise ConnectError(f"Error connecting to MQTT client: {e}")
 
     def _subscribe_all(self) -> None:
         """Subscribe to all collected subscriptions"""
@@ -116,7 +140,7 @@ class MQTTConnection(Connection):
         try:  # A lot of different socket errors can happen here
             self._client.connect()
         except Exception as e:
-            raise ConnectError from e
+            raise ConnectError(str(e))
 
         # Set up the MQTT connection thread
         if self._client.loop_start() is not None:
@@ -164,5 +188,6 @@ class MQTTConnection(Connection):
         message = self._client.publish(topic=topic, payload=payload, qos=1)
         message.wait_for_publish()
         if message.rc != mqtt.MQTT_ERR_SUCCESS:
-            error = f"Error publishing to MQTT topic, got code: {message.rc}"
-            raise PublishError(error)
+            # TODO this could also be an exception (PublishError) but we have to be careful about catching it
+            # in all callers
+            logger.error(f"Error publishing to MQTT topic, got code: {message.rc}")

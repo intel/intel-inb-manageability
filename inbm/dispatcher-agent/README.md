@@ -30,7 +30,6 @@
 - Talks to the `diagnostic-agent` for pre/post install checks to confirm gateway/device health before performing OTA.  
   - Before install OTA check is done for all scenarios.  
   - After install OTA check is done only for successful installations.
-- Relay requests to the `vision-agent` for HDDL related OTA, restart, and configuration requests.
 
 ## Agent Communication 
 
@@ -42,8 +41,6 @@ The agent publishes to the following topics:
   - Request response: `manageability/response`
   - Perform pre and post diagnostic checks: `diagnostic/command/{command}`
   - Dynamic telemetry updates: `telemetry/update`
-  - Pass on HDDL OTA requests to vision-agent: `ma/request/{command}`
-  - Pass on HDDL configuration requests to vision-agent: `ma/configuration/update/{command}`
   - Informs diagnostic-agent remediation manager to remove a specific container: `remediation/container`
   - Informs diagnostic-agent remediation manager to remove a specific image:`remediation/image`
   - dispatcher-agent state: dispatcher/state` when dead/running
@@ -56,7 +53,6 @@ The agent subscribes to the following topics:
   - Receive configuration changes: `configuration/update/dispatcher/+`
   - Receive DBS configuration setting changes: `configuration/update/all/+`
   - Receive SOTA configuration changes: `configuration/update/sota/+`
-  - HDDL requests from cloud: `ma/request/{command}`  command=install, provision, restart, query
   - Agent states: `+/state`
  
 ❗`+` is a wild-card indicating single level thus matching `dispatcher/state` or `<another-agent>/state`
@@ -65,7 +61,7 @@ The agent subscribes to the following topics:
 ## MQTT Client Module
 
 - Provides an abstraction to the Paho MQTT Client APIs
-- Any other microservice/agent can setup async broker communication through these. For example:
+- Any other microservice/agent can set up an async broker communication through these. For example:
 ```
 import mqttclient
 
@@ -83,7 +79,7 @@ client.stop()
 ```
 ## OTA/Config Manifest
 
-- Dispatcher expects a `Manifest`.  [Manifest parameters and examples](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/Manifest%20Parameters.md)
+- Dispatcher expects a `Manifest`.  [Manifest parameters and examples](#../../docs/Manifest%20Parameters.md)
 - The manifest schema with the current format: `inbm/dispatcher-agent/fpm-template/usr/share/manifest_schema.xsd`
 - The contents of this file (without the spaces, indent etc.) is sent through the `Trigger OTA` custom action
 - If a file needs to be pulled from a remote repository it checks whether the repository is a secured/trusted.  The secured repositories list is stored in the config file in configuration manager.  If the remote repository is not in the trusted list, the request will be rejected. 
@@ -118,10 +114,10 @@ The shutdown or restart command can be sent using the manifest to trigger a syst
 Query system information.
 
 ## Install from Source
-❗ Use a Python version greater than 3.8 is installed
+❗ Use a Python version greater than 3.11 is installed
 
-1. [Build INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/README.md#build-instructions)
-2. [Install INBM](#https://github.com/intel/intel-inb-manageability/blob/develop/docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
+1. [Build INBM](#../../README.md#build-instructions)
+2. [Install INBM](#../../docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
 ## Usage
 

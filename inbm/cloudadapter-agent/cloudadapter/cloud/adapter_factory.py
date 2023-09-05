@@ -6,12 +6,12 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 from .adapters.azure_adapter import AzureAdapter
-from .adapters.telit_adapter import TelitAdapter
 from .adapters.generic_adapter import GenericAdapter
 from ..constants import ADAPTER_CONFIG_PATH
 from ..exceptions import BadConfigError
 from typing import Dict, List
 from .adapters.adapter import Adapter
+import os
 import json
 
 
@@ -19,6 +19,10 @@ def load_adapter_config() -> Dict:
     """Loads and parses the adapter configuration file
     @exception BadConfigError: If there was an issue loading the configuration file
     """
+    if os.path.islink(ADAPTER_CONFIG_PATH):
+        raise BadConfigError(
+            f"Configuration file ({ADAPTER_CONFIG_PATH}) is a symbolic link, which is not allowed.")
+
     try:
         with open(ADAPTER_CONFIG_PATH) as config_file:
             config_contents = config_file.read()
@@ -54,8 +58,6 @@ def get_adapter() -> Adapter:
 
     if cloud == "azure":
         return AzureAdapter(config)
-    elif cloud == "telit":
-        return TelitAdapter(config)
     elif cloud is not None:
         return GenericAdapter(config)
     else:

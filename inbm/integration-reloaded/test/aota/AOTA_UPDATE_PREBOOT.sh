@@ -17,9 +17,10 @@ GOOD_XML='<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><
 
 test_echo AOTA UPDATE
 
+inbc aota --uri http://127.0.0.1:80/U1170000F60X043.bin -a "application" -c "update"
 
-test_echo Application Update preboot test via manifest.
-trigger_ota "${GOOD_XML}"
+test_echo Application Update preboot test via INBC.
+#trigger_ota "${GOOD_XML}"
 if listen_event | grep Rebooting... ; then
   echo AOTA UPDATE preboot test good so far.
 else

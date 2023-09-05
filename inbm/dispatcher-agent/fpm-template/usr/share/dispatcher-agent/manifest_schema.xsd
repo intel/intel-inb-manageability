@@ -364,6 +364,7 @@
                 <xs:element name="tooloptions" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="username" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="password" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="deviceReboot" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
             </xs:all>
             <xs:attribute name="name" type="xs:string" use="required"/>
         </xs:complexType>
@@ -390,9 +391,17 @@
 
     <xs:simpleType name="sotacmd">
         <xs:restriction base="xs:string">
-            <xs:enumeration value="update"/>
+            <xs:enumeration value="update"/>		
             <xs:enumeration value="upgrade"/>
-        </xs:restriction>
+    	</xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="sotamode">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="full"/>
+            <xs:enumeration value="no-download"/>
+            <xs:enumeration value="download-only"/>
+    	</xs:restriction>
     </xs:simpleType>
 
     <xs:element name="sota">
@@ -407,7 +416,15 @@
                         </xs:simpleContent>
                     </xs:complexType>
                 </xs:element>
-                <xs:element name="targetType" minOccurs="0" maxOccurs="1">
+	 	<xs:element name="mode" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:simpleContent>
+                            <xs:extension base="sotamode">
+                            </xs:extension>
+                        </xs:simpleContent>
+                    </xs:complexType>
+                </xs:element>
+		<xs:element name="targetType" minOccurs="0" maxOccurs="1">
                     <xs:simpleType>
                         <xs:restriction base="xs:string">
                             <xs:enumeration value="host"/>
@@ -428,6 +445,7 @@
                 <xs:element name="password" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name ="release_date" type ="xs:date" minOccurs="0" maxOccurs="1"/>
                 <xs:element name ="path" type ="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="deviceReboot" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
             </xs:all>
         </xs:complexType>
     </xs:element>

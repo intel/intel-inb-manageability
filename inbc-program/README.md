@@ -13,11 +13,12 @@
    1. [FOTA](#fota)
    2. [SOTA](#sota)
    3. [POTA](#pota)
-   4. [Configuration Load](#load)
-   5. [Configuration Get](#get)
-   6. [Configuration Set](#set)
-   7. [Restart](#restart)
-   8. [Query](#query)
+   4. [AOTA](#aota)
+   5. [Configuration Load](#load)
+   6. [Configuration Get](#get)
+   7. [Configuration Set](#set)
+   8. [Restart](#restart)
+   9. [Query](#query)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -26,7 +27,7 @@
 
 # Introduction
 
-Intel® In-Band Manageability command-line utility, INBC, is a software utility running either on a host managing HDDL plugin cards via PCIe or an Edge IoT Device.  It allows the user to perform Device Management operations like firmware update or system update from the command-line. This may be used in lieu of using the cloud update mechanism.
+Intel® In-Band Manageability command-line utility, INBC, is a software utility running on a host managing an Edge IoT Device.  It allows the user to perform Device Management operations like firmware update or system update from the command-line. This may be used in lieu of using the cloud update mechanism.
 
 # Prerequisites
 Intel® In-Band Manageability needs to be installed and running. INBC can be working even without provisioning to the cloud by running the following command:
@@ -65,14 +66,11 @@ Ensure trusted repository in intel_manageability.conf is to be configured with t
 ### Usage
 ```
 inbc fota {--uri, -u=URI}  
-   [--releasedate, -r RELEASE_DATE; default="2026-12-31"] 
-   [--vendor, -v VENDOR; default="Intel Corporation"] 
-   [--biosversion, -b BIOS_VERSION; default="ADLSFWI1.R00"] 
-   [--manufacturer, -m MANUFACTURER; default="Intel Corporation"] 
-   [--product, -pr PRODUCT; default="Alder Lake Client Platform"] 
+   [--releasedate, -r RELEASE_DATE; default="2026-12-31"]   
    [--signature, -s SIGNATURE_STRING; default=None] 
    [--tooloptions, -to TOOL_OPTIONS]
    [--username, -un USERNAME] 
+   [--reboot, -rb; default=yes] 
 ```
 
 ### Examples
@@ -103,11 +101,19 @@ System update flow can be broken into two parts:
 1.  Pre-reboot: The pre-boot part is when a system update is triggered.
 2.  Post-reboot: The post-boot checks the health of critical manageability services and takes corrective action.
 
+SOTA on Ubuntu is supported in 3 modes:
+1. Update/Full - Performs the software update.
+2. No download - Retrieves and installs packages.
+3. Download only - Retrieve packages (will not unpack or install).
+
+
 ### Usage
 ```
 inbc sota {--uri, -u=URI} 
-   [--releasedata, -r RELEASE_DATE; default="2026-12-31"] 
-   [--username, -un USERNAME] 
+   [--releasedate, -r RELEASE_DATE; default="2026-12-31"] 
+   [--username, -un USERNAME]
+   [--mode, -m MODE; default="full", choices=["full","no-download", "download-only"] ]
+   [--reboot, -rb; default=yes]
 ```
 ### Examples
 #### Edge Device on Yocto OS requiring username/password
@@ -117,9 +123,19 @@ inbc sota
      --releasedate 2022-02-22 
      --username <username>
 ```
-#### Edge Device on Ubuntu
+#### Edge Device on Ubuntu in Update/Full mode
 ```
 inbc sota
+```
+
+#### Edge Device on Ubuntu in download-only mode
+```
+inbc sota --mode download-only
+```
+
+#### Edge Device on Ubuntu in no-download mode
+```
+inbc sota --mode no-download
 ```
 
 ## POTA
@@ -133,13 +149,10 @@ A platform update is the equivalent of performing both a SOTA and FOTA with the 
 inbc pota {--fotauri, -fu=FOTA_URI}
    [--sotauri, -su=SOTA_URI] - N/A for Ubuntu based 
    [--releasedate, -r FOTA_RELEASE_DATE; default="2026-12-31"] 
-   [--vendor, -v VENDOR; default="Intel Corporation"] 
-   [--biosversion, -b BIOS_VERSION; default="ADLSFWI1.R00"] 
-   [--manufacturer, -m MANUFACTURER; default="Intel Corporation"] 
-   [--product, -pr PRODUCT; default="Alder Lake Client Platform"] 
    [--release_date, -sr SOTA_RELEASE_DATE; default="2026-12-31"] 
    [--fotasignature, -fs SIGNATURE_STRING] 
    [--username, -u USERNAME] 
+   [--reboot, -rb; default=yes] 
 ```
 ### Examples
 #### Edge Device on Yocto OS
@@ -156,6 +169,89 @@ inbc pota
      --fotauri <remote URI to FOTA file>/bios.bin 
      -r 2021-02-22 
  ```
+
+## AOTA
+### Description
+Performs an Application Over The Air update (AOTA)
+
+INBC is only supporting the application update portion of AOTA.
+
+### Usage
+```
+inbc aota {--app, -a APP_TYPE} {--command, -c COMMAND}
+   [--uri, -u URI]
+   [--version, -v VERSION]
+   [--containertag, -ct CONTAINERTAG]
+   [--file, -f FILE]
+   [--reboot, -rb REBOOT; default="no"]
+   [--username, -un USERNAME]
+   [--dockerusername, -du DOCKERUSERNAME]
+   [--dockerregistry, -dr DOCKERREGISTRY]
+```
+
+Note: when the arguments --username/--dockerusername are used, passwords need to be entered after the prompt "Enter Password".
+
+### Examples
+#### Application Update
+```
+inbc aota
+     --uri <remote URI to AOTA file>/update.deb
+```
+
+#### Docker pull
+
+```
+inbc aota --app docker --command pull --version 1.0 --containertag name
+```
+
+#### Docker load
+
+```
+inbc aota --app docker --command load --uri <remote URI to AOTA file>/name.tgz --version 1.0 --containertag name
+```
+
+#### Docker import
+
+```
+inbc aota --app docker --command import --uri <remote URI to AOTA file>/name.tgz --version 1.0 --containertag name
+```
+
+#### Docker remove
+
+```
+inbc aota --app docker --command remove --version 1.0 --containertag name
+```
+
+
+#### Docker-compose Up
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-up.tar.gz --version 1.0 --containertag compose-up --dockerusername xxx --dockerregistry xxxxx
+```
+
+#### Docker-compose Up with custom file
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-up-multiple-yml.tar.gz --version 1.0 --containertag compose-up-multiple-yml --file docker-compose-2.yml
+```
+
+#### Docker-compose Pull
+
+```
+inbc aota --app compose --command pull --uri <remote URI to AOTA file>/compose-pull.tar.gz --version 1.0 --containertag compose-pull
+```
+
+#### Docker-compose Pull with custom file
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-pull-multiple-yml.tar.gz --version 1.0 --containertag compose-pull-multiple-yml --file docker-compose-2.yml
+```
+
+#### Docker-compose Down
+
+```
+inbc aota --app compose --command down --version 1.0 --containertag compose-up
+```
 
 ## LOAD
 ### Description
@@ -264,7 +360,7 @@ inbc query
 ```
 
 ### Option Results
-[Allowed Options and Results](https://github.com/intel/intel-inb-manageability/blob/develop/docs/Query.md)
+[Allowed Options and Results](../docs/Query.md)
 
 ### Examples
 #### Return all attributes
@@ -297,4 +393,3 @@ inbc query --option sw
 |     -2      |     2     | COMMAND TIMED OUT            |
 |     -3      |     3     | HOST UNAVAILABLE             |
 |     -6      |     6     | HOST BUSY                    |
-

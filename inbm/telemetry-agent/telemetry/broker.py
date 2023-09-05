@@ -21,9 +21,9 @@ from .telemetry_handling import publish_telemetry_update, publish_static_telemet
 from .poller import Poller
 import logging
 import json
-from future import standard_library
 
-standard_library.install_aliases()
+
+
 
 logger = logging.getLogger(__name__)
 

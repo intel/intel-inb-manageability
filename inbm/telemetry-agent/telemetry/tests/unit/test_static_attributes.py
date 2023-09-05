@@ -3,8 +3,8 @@ from telemetry.static_attributes import get_total_physical_memory, get_disk_info
 from mock import patch
 from unittest import TestCase
 from collections import namedtuple
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 
 svmem = namedtuple(

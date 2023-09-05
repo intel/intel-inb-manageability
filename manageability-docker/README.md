@@ -1,15 +1,25 @@
 # Manageability Docker
-This folder contains the build instructions for creating mangeability docker container packages for Azure and Thingsboard cloud service providers.
+This folder contains the build instructions for creating Manageability docker container packages for Azure and Thingsboard cloud service providers.
 
-PLEASE NOTE: You must have 'btrfs-progs' and 'snapper' installed on the host machine for Ubuntu or Debian based OSes, for btrfs-based snapshot/rollback functionality to work with system updates.
+PLEASE NOTE: If you want btrfs-based snapshot/rollback functionality on Ubuntu or Debian based OSes, 'btrfs-progs' and 'snapper' must be installed on the host machine.
 
-## BUILD INSTRUCTIONS
+## BUILD INSTRUCTIONS (From Source)
 
 * Prepare a Linux machine with git and Docker installed.  Ensure the 'm4' and 'bash' packages are also installed (these are available in all major Linux distributions).
 * If you are behind a proxy, ensure your http_proxy, https_proxy, and no_proxy variables are set correctly and exported.  E.g., in bash, you could run: "http_proxy=http://foo.com:1234/ && export http_proxy"
 * Optional but recommended for better build speed and caching: export DOCKER_BUILDKIT=1
-* Run: ./build-azure-container.sh for Azure (or) ./build-thingsboard-container.sh for Thingsboard. 
+* Run: ./build-azure-container.sh for Azure (or) ./build-thingsboard-container-from-source.sh for Thingsboard. 
 * When build is complete, build output will be in the output folder. For Azure, use package named inb_azure_container.zip, for Thingsboard use inb_thingsboard_container.zip
+
+## BUILD INSTRUCTIONS (From Artifact-Thingsboard only)
+
+* Place the Intel-Manageability.preview.tar.gz package in the /manageability-docker directory.
+* Prepare a Linux machine with git and Docker installed.  Ensure the 'm4' and 'bash' packages are also installed (these are available in all major Linux distributions).
+* If you are behind a proxy, ensure your http_proxy, https_proxy, and no_proxy variables are set correctly and exported.  E.g., in bash, you could run: "http_proxy=http://foo.com:1234/ && export http_proxy"
+* Optional but recommended for better build speed and caching: export DOCKER_BUILDKIT=1
+* Run: ./build-thingsboard-container-from-artifact.sh for Thingsboard. 
+* When build is complete, build output will be in the output folder. For Azure, use package named inb_azure_container.zip, for Thingsboard use inb_thingsboard_container.zip
+
 
 ## HOW TO BUILD INB IMAGE AND START THE CONTAINER
 
@@ -31,7 +41,7 @@ If an error such as 'unable to resolve' or a DNS error or 'unable to look up' is
 ```
 -v <your_directory>:/var/certs
 ```
-* Edit the thingsboard_conf_file file with your configuration
+* Edit the following file with your configuration: thingsboard_conf_file
 * Run the following command
 ```shell
  sudo ./run.sh
@@ -41,4 +51,4 @@ If an error such as 'unable to resolve' or a DNS error or 'unable to look up' is
 ```shell
 sudo python3 mqtt_client.py
 ```
-* Trigger the manifest(refer email below) from the TB server and you should be able to see the move command received on the console that is running the mqtt_client.py.
+* Trigger the manifest(refer email below) from the TB server, and you should be able to see the move command received on the console that is running the mqtt_client.py.

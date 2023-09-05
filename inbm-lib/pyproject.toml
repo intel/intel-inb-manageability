@@ -1,6 +1,6 @@
-[tool.flakehell]
+[tool.flakeheaven]
 baseline = ".flakehell_baseline"
-format = "grouped"
+format = "default"
 show_source = true
 statistics = false
 doctests = false
@@ -40,7 +40,8 @@ max_decorators = 5
 max_annotation_complexity = 5
 
 
-[tool.flakehell.plugins]
+[tool.flakeheaven.plugins]
 "flake8-annotations" = ["-*", "+ANN001", "+ANN2??", "+ANN301"]
 "flake8-bandit" = ["+*", "-S404", "-S603", "-S101"]
-"wemake-python-styleguide" = ["-*", "+WPS2??", "-WPS220", "-WPS222", "-WPS223", "-WPS202"]
+"wemake-python-styleguide" = ["-*", "+WPS2??", "-WPS202", "-WPS220", "-WPS223", "-WPS222", "-WPS236", "-WPS237", "-WPS238"] # WPS2?? is complexity; WPS202 is module members; 220 is deep nesting; 223 is elifs; 222 is logic; 236 is # of variables unpacked in a tuple; 237 is complex format string; 238 is # of raises in a function
+

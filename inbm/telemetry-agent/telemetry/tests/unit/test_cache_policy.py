@@ -1,8 +1,8 @@
 from telemetry.cache_policy import trim_cache
 from unittest import TestCase
 import unittest
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 
 class TestCachePolicy(TestCase):
