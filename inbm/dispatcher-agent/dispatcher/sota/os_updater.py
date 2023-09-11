@@ -186,7 +186,7 @@ class DebianBasedUpdater(OsUpdater):
 
         cmds = ["dpkg --configure -a --force-confdef --force-confold",
                 "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -yq -f install",
-                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --force-confdef upgrade --no-download --fix-missing -yq"]
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade --no-download --fix-missing -yq"]
         return CommandList(cmds).cmd_list
 
     def download_only(self):
@@ -198,7 +198,7 @@ class DebianBasedUpdater(OsUpdater):
 
         cmds = ["apt-get update",
                 "dpkg-query -f '${binary:Package}\\n' -W",
-                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --force-confdef upgrade --download-only --fix-missing -yq"]
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade --download-only --fix-missing -yq"]
         return CommandList(cmds).cmd_list
 
 
