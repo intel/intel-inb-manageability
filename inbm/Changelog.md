@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Fixed
+- RTC 533936 - [INBM] Fix sota Kernel upgrade failure
+
 ### Added
 ### Security
 
