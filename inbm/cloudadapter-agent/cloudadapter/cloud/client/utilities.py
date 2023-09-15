@@ -67,7 +67,7 @@ class ProxyConfig:
 class TLSConfig:
 
     def __init__(self, ca_certs: Optional[str] = None, device_cert: Optional[str] = None,
-                 device_key: Optional[str] = None):
+                 device_key: Optional[str] = None) -> None:
         """Construct a TLS configuration
 
         @param ca_certs: (str) File path to CA certificates to use
@@ -126,7 +126,7 @@ class TLSConfig:
 
 class Formatter:
 
-    def __init__(self, formatting, defaults={}):
+    def __init__(self, formatting: str, defaults: dict = {}) -> None:
         """Create a formatter for a given string formatting.
         Placeholder fields are surrounded with brackets,
         and there are no spaces in the bracketed placeholder field.
@@ -167,7 +167,7 @@ class Formatter:
             string = string.replace(target, escape)
         return string
 
-    def format(self, time: Optional[datetime] = None, **fields) -> None:
+    def format(self, time: Optional[datetime] = None, **fields) -> str:
         """Format a string with the given mapping
 
         @param time: (datetime) Override default time
@@ -210,7 +210,7 @@ class Formatter:
 
 class MethodParsed:
 
-    def __init__(self, method: str = "", args: Dict[str, Any] = {}, **symbols: str):
+    def __init__(self, method: str = "", args: dict = {}, **symbols: str) -> None:
         """Construct readonly parsed method information
         @param method:    (str) Method name
         @param args:   (dict) Method arguments
@@ -238,7 +238,7 @@ class MethodParsed:
 
 class MethodParser:
 
-    def __init__(self, parse_info, aggregate_info=None):
+    def __init__(self, parse_info: dict, aggregate_info: Optional[dict] = None) -> None:
         """Create a parser to process method information from
         the raw string the topic and payload.
         parse_info is a dict with the following format:
@@ -269,10 +269,10 @@ class MethodParser:
         @param obj: (dict) Object to traverse
         @return: (Any) The value parsed, or None if not found
         """
-        path = [p for p in path.split("/") if p.strip()]
-        value = obj
+        path_list = [p for p in path.split("/") if p.strip()]
+        value: Optional[Any] = obj
 
-        for p in path:
+        for p in path_list:
             if not isinstance(value, dict):
                 return None
             value = value.get(p)
@@ -290,7 +290,7 @@ class MethodParser:
         match = re.search(regex, raw)
         return match.group(group) if match else None
 
-    def _parse_single(self, topic, payload):
+    def _parse_single(self, topic: str, payload: dict) -> MethodParsed:
         """Parse a single method
 
         @param topic:    (str) Raw topic
