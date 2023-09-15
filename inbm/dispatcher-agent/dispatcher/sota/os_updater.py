@@ -115,17 +115,17 @@ class DebianBasedUpdater(OsUpdater):
             # (does not require network but does require host PID/DOCKER_CHROOT_PREFIX)
             cmds = [CHROOT_PREFIX + "/usr/bin/apt-get update",  # needs network
                     CHROOT_PREFIX + "/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -f -yq --download-only install",  # needs network
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",  # local
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",  # local 
                     CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",
                     CHROOT_PREFIX + "/usr/bin/dpkg --configure -a --force-confdef --force-confold",
-                    CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade",  # needs network
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade"]  # local
+                    CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade",  # needs network
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]  # local 
         else:
             cmds = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
                     "dpkg --configure -a --force-confdef --force-confold",
                     "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
-                    "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade"]
+                    "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]
         return CommandList(cmds).cmd_list
 
     def update_local_source(self, file_path: str) -> List[str]:
@@ -145,7 +145,7 @@ class DebianBasedUpdater(OsUpdater):
         """
         logger.debug("")
         is_docker_app = os.environ.get("container", False)
-        cmd = "/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -u upgrade --assume-no"
+        cmd = "/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  --with-new-pkgs -u upgrade --assume-no"
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
 
@@ -186,7 +186,7 @@ class DebianBasedUpdater(OsUpdater):
 
         cmds = ["dpkg --configure -a --force-confdef --force-confold",
                 "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -yq -f install",
-                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  upgrade --no-download --fix-missing -yq"]
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade --no-download --fix-missing -yq"]
         return CommandList(cmds).cmd_list
 
     def download_only(self):
@@ -198,7 +198,7 @@ class DebianBasedUpdater(OsUpdater):
 
         cmds = ["apt-get update",
                 "dpkg-query -f '${binary:Package}\\n' -W",
-                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade --download-only --fix-missing -yq"]
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade --download-only --fix-missing -yq"]
         return CommandList(cmds).cmd_list
 
 

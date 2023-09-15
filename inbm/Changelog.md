@@ -3,25 +3,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - ? (post-4.1.3)
-
-### Fixed
- - RTC 532663 - [INBM][UCC][Bug] During every windows reboot there will be a temporary folder created
-
 ## NEXT - ?
 
 ### Fixed
+- RTC 533936 - [INBM] Fix sota Kernel upgrade failure
+
+### Added
+### Security
+
+## 4.1.3 - 2023-09-05
+
+### Fixed
+ - RTC 532663 - [INBM][UCC][Bug] During every windows reboot there will be a temporary folder created
  - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
  - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
  - RTC [533020] - Fix SOTA to  handle dpkg interactive prompt
+ - RTC 532662 - [INBM][UCC][Bug] INBM fails to send telemetry when IP is changed manually
+ - Changed golang builds to not depend on glibc.
+ - Updated OpenSSL download path in Windows installer.
 
 ### Added
 - RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
 - RTC 532848 - Add AOTA docker pull, import, load and remove commands to INBC
-
-### Fixed
- - Changed golang builds to not depend on glibc.
- - Updated OpenSSL download path in Windows installer.
 
 ### Security
  - (dependabot) - Updated cryptography from 41.0.0 to 41.0.2

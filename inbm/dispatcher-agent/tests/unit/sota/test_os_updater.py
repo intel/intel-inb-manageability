@@ -56,7 +56,7 @@ class TestOsUpdater(unittest.TestCase):
                     "dpkg-query -f '${binary:Package}\\n' -W",
                     "dpkg --configure -a --force-confdef --force-confold",
                     "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
-                    "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' upgrade"]
+                    "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]
         x_cmd_list = installer.update_remote_source(  # type: ignore
             mock_url, TestOsUpdater._build_mock_repo(0))
 
