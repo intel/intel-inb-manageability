@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 ### Security
+- dependabot: update cryptography from 41.0.3 to 41.0.4
 
 ## 4.1.3 - 2023-09-05
 
