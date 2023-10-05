@@ -6,11 +6,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?
 
 ### Fixed
-- RTC 533936 - [INBM] Fix sota Kernel upgrade failure
+ - RTC 533936 - [INBM] Fix sota Kernel upgrade failure
 
 ### Added
+ - Add firmware update database entry for NUC12WSHv5 using /usr/bin/iFlashVLnx64. This tool can be downloaded from https://www.intel.com/content/www/us/en/download/19504/intel-aptio-v-uefi-firmware-integrator-tools-for-intel-nuc.html
+
 ### Security
-- dependabot: update cryptography from 41.0.3 to 41.0.4
+ - dependabot: update cryptography from 41.0.3 to 41.0.4
 
 ## 4.1.3 - 2023-09-05
 
