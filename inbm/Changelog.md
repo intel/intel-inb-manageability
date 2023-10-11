@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## 4.1.4-rc1 - 2023-10-09
+## 4.1.4 - 2023-10-11
 
 ### Fixed
  - RTC 533936 - [INBM] Fix sota Kernel upgrade failure
