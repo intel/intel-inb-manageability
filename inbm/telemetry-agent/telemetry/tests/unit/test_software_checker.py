@@ -1,8 +1,8 @@
 from mock import patch
 import telemetry.software_checker
 from unittest import TestCase
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 
 class TestSoftwareChecker(TestCase):

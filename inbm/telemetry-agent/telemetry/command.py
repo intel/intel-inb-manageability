@@ -8,10 +8,10 @@
 from .constants import *
 import shortuuid
 import json
-from future import standard_library
+
 from typing import Optional
 
-standard_library.install_aliases()
+
 
 
 class Command:

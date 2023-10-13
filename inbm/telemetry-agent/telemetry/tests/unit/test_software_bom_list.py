@@ -6,8 +6,8 @@ from telemetry.software_bom_list import get_sw_bom_list, read_mender_file, publi
 from telemetry.constants import UNKNOWN
 from inbm_lib.constants import SYSTEM_IS_YOCTO_PATH, MENDER_FILE_PATH
 
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 
 logger = logging.getLogger(__name__)

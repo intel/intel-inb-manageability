@@ -181,9 +181,9 @@ class Dispatcher(WindowsService):
         @param tls: Transport level security;  Default=True
         """
 
-        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
+        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 11:
             logger.error(
-                "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
         self.RUNNING = True
         logger.info("Dispatcher agent starting. Version info: " +

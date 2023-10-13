@@ -2,8 +2,8 @@ from mock import patch
 from telemetry.lsblk import parse_lsblk, get_lsblk_output
 from unittest import TestCase
 import unittest
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 
 class TestLsblk(TestCase):

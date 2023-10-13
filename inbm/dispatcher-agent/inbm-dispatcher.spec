@@ -9,7 +9,7 @@ site_packages = next(p for p in sys.path if 'site-packages' in p)
 
 
 a = Analysis(['dispatcher/dispatcher.py'],
-             pathex=['/src/dispatcher-agent'],
+             pathex=['/src/dispatcher-agent', '/src/inbm-lib'],
              binaries=[],
              datas=[(path.join(site_packages,'xmlschema'), './xmlschema')],
              hiddenimports=['inbm_lib.mqttclient', 'inbm_lib', 'UserList', 'UserString', 'commands', 'future.backports.urllib', 'jsonschema'],

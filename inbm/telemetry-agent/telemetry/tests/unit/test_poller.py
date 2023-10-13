@@ -5,8 +5,8 @@ from mock import patch
 from unittest import TestCase
 from telemetry.software_checker import *
 from telemetry.shared import *
-from future import standard_library
-standard_library.install_aliases()
+
+
 
 
 class TestTelemetry(TestCase):

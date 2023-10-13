@@ -5,23 +5,42 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## 4.1.4 - 2023-10-11
+
 ### Fixed
+ - RTC 533936 - [INBM] Fix sota Kernel upgrade failure
+
+### Added
+ - Add firmware update database entry for NUC12WSHv5 using /usr/bin/iFlashVLnx64. This tool can be downloaded from https://www.intel.com/content/www/us/en/download/19504/intel-aptio-v-uefi-firmware-integrator-tools-for-intel-nuc.html
+
+### Security
+ - dependabot: update cryptography from 41.0.3 to 41.0.4
+ - update urllib3 from 1.26.16 to 1.26.17 (addresses CVE-2023-43804 in urllib3)
+
+## 4.1.3 - 2023-09-05
+
+### Fixed
+ - RTC 532663 - [INBM][UCC][Bug] During every windows reboot there will be a temporary folder created
  - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
  - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
  - RTC [533020] - Fix SOTA to  handle dpkg interactive prompt
+ - RTC 532662 - [INBM][UCC][Bug] INBM fails to send telemetry when IP is changed manually
+ - Changed golang builds to not depend on glibc.
+ - Updated OpenSSL download path in Windows installer.
 
 ### Added
 - RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
 - RTC 531799 - Add docker-compose version of inbm in docker-compose-inbm subdirectory. This version does not yet support connecting to clouds and is intended to be controlled by running inbc commands. Also renamed manageability-docker repo directory to docker-inbm.
 - RTC 532848 - Add AOTA docker pull, import, load and remove commands to INBC
 
-### Fixed
- - Changed golang builds to not depend on glibc.
-
 ### Security
  - (dependabot) - Updated cryptography from 41.0.0 to 41.0.2
  - (dependabot) - Updated cryptography from 41.0.2 to 41.0.3
  - Updated golang runtime from 1.20.5 to 1.20.6
+ - (533039) Added Intel standard compiler flags and settings to golang builds
+ - (533037) CT72 - Secure Configuration Guidance: remove all remaining Telit references
+ - Update to Python 3.11 to address some CVEs.
+ - Update Windows Dockerfile to pull in Python 3.11.5 to address some CVEs.
 
 ## 4.1.2 - 2023-06-29
 

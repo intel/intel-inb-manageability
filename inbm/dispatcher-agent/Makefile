@@ -32,7 +32,7 @@ run:
 	PYTHONDONTWRITEBYTECODE=x PYTHONPATH=$(LOCAL_PIP_PATH) python3 -m $(AGENT).$(AGENT)
 
 tests:
-	PYTHONDONTWRITEBYTECODE=x nosetests --with-coverage --cover-erase --cover-inclusive --cover-html --cover-package=$(AGENT)
+	PYTHONDONTWRITEBYTECODE=x pynose --with-coverage --cover-erase --cover-inclusive --cover-html --cover-package=$(AGENT)
 
 deb-eval-py3:
 	./package-py3.sh deb EVAL

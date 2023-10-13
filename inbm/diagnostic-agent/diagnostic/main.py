@@ -83,9 +83,9 @@ class Diagnostic(WindowsService):  # pragma: no cover
             _register_stop_callbacks()
         logger = self._set_up_logging()
         logger.info('Diagnostic agent is running')
-        if sys.version_info[0] <= 3 and sys.version_info[1] < 8:
+        if sys.version_info[0] <= 3 and sys.version_info[1] < 11:
             logger.error(
-                "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
 
         self.running = True

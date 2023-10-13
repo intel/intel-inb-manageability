@@ -1,13 +1,13 @@
 import sys
 import os
 import logging
-from future import standard_library
+
 from mock import patch, Mock, MagicMock
 from telemetry.pms_notification import PMSNotification, PmsException
 from telemetry.telemetry_handling import publish_telemetry_update
 from inbm_lib.mqttclient.mqtt import MQTT
 from unittest import TestCase
-standard_library.install_aliases()
+
 
 logger = logging.getLogger(__name__)
 

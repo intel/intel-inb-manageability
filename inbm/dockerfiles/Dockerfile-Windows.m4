@@ -6,7 +6,7 @@ FROM registry.hub.docker.com/library/ubuntu:22.04 as base-windows
 ENV DEBIAN_FRONTEND noninteractive
 
 ARG WINE_VERSION=winehq-stable
-ARG PYTHON_VERSION=3.11.4
+ARG PYTHON_VERSION=3.11.5
 ARG PYINSTALLER_VERSION=5.13.0
 
 # we need wine for this all to work, so we'll use the PPA
@@ -94,7 +94,7 @@ FROM base-windows as windows-cloudadapter-py3
 COPY inbm/cloudadapter-agent/requirements.txt /src/cloudadapter-agent/requirements.txt
 COPY inbm/cloudadapter-agent/test-requirements.txt /src/cloudadapter-agent/test-requirements.txt
 WORKDIR /src/cloudadapter-agent
-RUN cp -r /src/inbm-lib/inbm_* /src/cloudadapter-agent/
+# RUN cp -r /src/inbm-lib/inbm_* /src/cloudadapter-agent/
 RUN pip3 install --prefer-binary -r requirements.txt && \    
     pip3 uninstall -y chardet # license issue
 
@@ -102,9 +102,9 @@ COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 COPY inbm/packaging /src/packaging
 RUN mkdir -p /output && \
     pip3 install -r requirements.txt
-RUN pyinstaller inbm-cloudadapter.spec && \
-    wine ../cloudadapter-agent/dist/inbm-cloudadapter.exe install && \
-    cp -r ../cloudadapter-agent/dist/"inbm-cloudadapter.exe" /output
+RUN pyinstaller inbm-cloudadapter-windows.spec && \
+    wine ../cloudadapter-agent/dist/inbm-cloudadapter/inbm-cloudadapter.exe install && \
+    cp -r ../cloudadapter-agent/dist/inbm-cloudadapter /output
 
 FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-certs-windows
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
@@ -135,12 +135,12 @@ RUN mkdir -p /output/windows
 COPY third-party-programs.txt /output/windows
 WORKDIR /output/windows
 
-# Copy our built Windows .exe files to our bin directories
+# Copy our built Windows .exe files/directories to our bin directories
 RUN \
     set -ex && \
     mkdir -p intel-manageability/inbm/usr/bin/ && \
     mkdir -p broker/usr/bin/ && \
-    cp -v /windows-cloudadapter-py3/inbm-cloudadapter.exe intel-manageability/inbm/usr/bin/ && \    
+    cp -vr /windows-cloudadapter-py3/inbm-cloudadapter/ intel-manageability/inbm/usr/bin/inbm-cloudadapter/ && \    
     cp -v /windows-inb-provision-certs/inb-provision-certs.exe broker/usr/bin/ && \
     cp -v /windows-inb-provision-cloud/inb-provision-cloud.exe broker/usr/bin/ && \
     cp -v /windows-inb-provision-ota-cert/inb-provision-ota-cert.exe broker/usr/bin/
