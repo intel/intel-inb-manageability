@@ -8,14 +8,17 @@
 import logging
 import os
 import platform
+import argparse
 from threading import Timer
 from typing import Any, Optional, Mapping
 
 from future.moves.urllib.parse import urlparse
 from inbm_lib.constants import OTA_PENDING
+from inbm_lib.validater import validate_guid
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.constants import REMOTE_SOURCE
+
 
 from .constants import *
 from .fota_error import FotaError
@@ -127,6 +130,7 @@ class FOTA:
             tool_options = parse_tool_options(self._ota_element)
             logger.debug(f"tool_options: {tool_options}")
             guid = parse_guid(self._ota_element)
+            validate_guid(guid)
             logger.debug(f"guid: {guid}")
             hold_reboot = parse_hold_reboot_flag(self._ota_element)
             logger.debug(f"holdReboot: {hold_reboot}; pkg_filename: {self._pkg_filename}")
@@ -163,7 +167,8 @@ class FOTA:
                 logger.debug(status)
                 return_message = COMMAND_SUCCESS
                 self._dispatcher_callbacks.broker_core.telemetry(status)
-        except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError) as e:
+        except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError,
+                argparse.ArgumentTypeError) as e:
             error = 'Firmware Update Aborted: ' + str(e)
             logger.error(error)
             self._dispatcher_callbacks.broker_core.telemetry(error)

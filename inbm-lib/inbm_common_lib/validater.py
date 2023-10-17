@@ -36,6 +36,7 @@ def validate_date(date: str) -> str:
     except ValueError:
         raise argparse.ArgumentTypeError(f"Not a valid date - format YYYY-MM-DD: '{date}")
 
+
 def validate_guid(value: str) -> str:
     """Validates that the user inputted string does not exceed the maximum allowed
         @param value: string entered by user
