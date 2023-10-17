@@ -14,7 +14,7 @@ from typing import Any, Optional, Mapping
 
 from future.moves.urllib.parse import urlparse
 from inbm_lib.constants import OTA_PENDING
-from inbm_lib.validater import validate_guid
+from inbm_common_lib.validater import validate_guid
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.constants import REMOTE_SOURCE
