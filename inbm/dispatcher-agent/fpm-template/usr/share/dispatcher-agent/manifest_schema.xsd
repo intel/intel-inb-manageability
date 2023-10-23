@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-    <xs:simpleType name="guid">
+    <xs:simpleType name="ValidGuidFormat">
         <xs:annotation>
             <xs:documentation xml:lang="en">
                 The representation of a GUID, generally the id of an element.
@@ -369,7 +369,7 @@
                 <xs:element name="releasedate" type="xs:date"/>
                 <xs:element name="path" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="boot" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="guid" type="guid" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="guid" type="ValidGuidFormat" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="size" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="tooloptions" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="username" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
