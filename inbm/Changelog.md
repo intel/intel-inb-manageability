@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Security
+ - RTC 533615 - Validate GUID format in manifest using XML Schema
+
 ## 4.1.4 - 2023-10-11
 
 ### Fixed
