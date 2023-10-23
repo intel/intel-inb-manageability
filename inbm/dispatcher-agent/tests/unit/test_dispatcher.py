@@ -189,7 +189,7 @@ class TestDispatcher(TestCase):
               '<biosversion>5.12</biosversion><sigversion>384</sigversion><signature>signature</signature>' \
               '<manufacturer>Default string</manufacturer><product>Default string</product>' \
               '<productversion>1</productversion><vendor>American Megatrends Inc.</vendor><releasedate>2018-02-08</releasedate>' \
-              '<boot>boot</boot><guid>guid</guid><size>size</size><tooloptions>/p /b</tooloptions>' \
+              '<boot>boot</boot><guid>6B29FC40-CA47-1067-B31D-00DD010662DA</guid><size>size</size><tooloptions>/p /b</tooloptions>' \
               '<username>user1</username><password>pwd</password></fota>' \
               ' <sota><cmd logtofile="y">update</cmd><fetch>http://nat-ubuntu.jf.intel.com:8000/file.mender</fetch>' \
               '<signature>signature</signature><username>user</username><password>pwd</password>' \
