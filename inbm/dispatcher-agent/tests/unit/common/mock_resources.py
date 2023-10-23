@@ -50,7 +50,7 @@ fake_fota_guid = """<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</t
                       <type><fota name="sample-rpm"><fetch>http://localhost:8080</fetch>
                       <biosversion>A.B.D.E.F</biosversion><vendor>test</vendor>
                       <signature>testsig</signature><manufacturer>testmanufacturer</manufacturer><product>testproduct</product>
-                      <releasedate>2017-06-12</releasedate><path>fakepath</path><guid>1234</guid>
+                      <releasedate>2017-06-12</releasedate><path>fakepath</path><guid>6B29FC40-CA47-1067-B31D-00DD010662DA</guid>
                       </fota></type></ota></manifest>
                    """
 
