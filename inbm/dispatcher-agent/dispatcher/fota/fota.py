@@ -17,7 +17,6 @@ from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.constants import REMOTE_SOURCE
 
-
 from .constants import *
 from .fota_error import FotaError
 from .manifest import parse_tool_options, parse_guid, parse_hold_reboot_flag
