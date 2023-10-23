@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Security
  - RTC 533615 - Validate GUID format in manifest using XML Schema
+ - dependabot: update golang.org/x/net from 0.14.0 to 0.17.0 in /inbm/trtl (addresses CVE-2023-39325, CVE-2023-44487)
 
 ## 4.1.4 - 2023-10-11
 
