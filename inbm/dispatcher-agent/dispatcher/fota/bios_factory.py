@@ -22,6 +22,7 @@ from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 from . import constants
 from typing import Tuple, Optional, Dict
 
+from .guid import extract_guid
 from .constants import WINDOWS_NUC_PLATFORM
 from .fota_error import FotaError
 from ..dispatcher_callbacks import DispatcherCallbacks
@@ -146,7 +147,7 @@ class BiosFactory(ABC):
         """Extract the tar file
 
         @param repo_name: path to the downloaded package
-        @param pkg_filename: downloaded package
+        @param pkg_filename: downloaded package name
         @raises: FotaError
         """
         logger.debug(f"repo_name:{repo_name}, pkg_filename:{pkg_filename}")
@@ -188,33 +189,6 @@ class LinuxToolFirmware(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
-    def _parse_guid(self, output: str) -> Optional[str]:
-        """Method to parse the shell command output to retrieve the value of system firmware type
-
-        @param output: shell command output of ehl firmware tool
-        @return: string value if system firmware type is present if not return None
-        """
-        for line in output.splitlines():
-            if "System Firmware type" in line or "system-firmware type" in line:
-                return line.split(',')[1].split()[0].strip('{').strip('}')
-        return None
-
-    def _extract_guid(self, runner: PseudoShellRunner) -> Optional[str]:
-        """Method to get system firmware type
-
-        @param runner: To run shell commands
-        @return: None or guid
-        """
-        cmd = self._fw_tool + " -l"
-        (out, err, code) = runner.run(cmd)
-        if code != 0:
-            raise FotaError("Firmware Update Aborted: failed to list GUIDs: {}".format(str(err)))
-        guid = self._parse_guid(out)
-        logger.debug("GUID : " + str(guid))
-        if not guid:
-            raise FotaError("Firmware Update Aborted: No System Firmware type GUID found")
-        return guid
-
     def _apply_firmware(self, repo_name: str, fw_file: Optional[str], guid: Optional[str], tool_options: Optional[str], runner: PseudoShellRunner) -> None:
         """Updates firmware on the platform by calling the firmware update tool
 
@@ -227,7 +201,7 @@ class LinuxToolFirmware(BiosFactory):
         """
         if self._guid_required:
             if not guid:
-                guid = self._extract_guid(runner)
+                guid = extract_guid(self._fw_tool, runner)
         else:
             guid = ''
 

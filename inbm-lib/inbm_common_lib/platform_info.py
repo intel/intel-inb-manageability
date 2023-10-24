@@ -6,7 +6,7 @@
 """
 from datetime import datetime
 from dataclasses import dataclass, field
-from typing import Union
+from typing import Union, Optional
 
 from inbm_common_lib.constants import UNKNOWN
 
@@ -18,3 +18,5 @@ class PlatformInformation:
     bios_version: str = field(default=UNKNOWN)
     platform_mfg: str = field(default="")
     platform_product: str = field(default="")
+    guid: Optional[str] = field(default=None)
+    fw_tool: Optional[str] = field(default=None)

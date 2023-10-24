@@ -223,3 +223,6 @@ class TestOsFactory(TestCase):
         self.assertEqual(platform_product, 'testproduct')
         self.check_bios_success(factory)
         self.check_manifest_success(factory)
+
+    def test_guid_matches(self):
+        

@@ -16,6 +16,7 @@ from dispatcher.common import dispatcher_state
 from inbm_lib.wmi_exception import WmiException
 from .manifest import parse
 from .fota_error import FotaError
+from .guid import extract_guid
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info, manufacturer_check
 from inbm_common_lib.platform_info import PlatformInformation
@@ -115,11 +116,18 @@ class LinuxUpgradeChecker(UpgradeChecker):
         @return: bios vendor string, product string
         """
         logger.debug("")
+        if self._manifest_platform_info.guid:
+            self.check_guid_matches_system()
         if is_dmi_path_exists(self._dispatcher_callbacks):
             self.check_with_dmi()
         else:
             self.check_with_device_tree()
         return self._platform_info.bios_vendor, self._platform_info.platform_product
+
+    def check_guid_match_system_guid(self):
+        system_guid = extract_guid(self._manifest_platform_info.fw_tool)
+        if system_guid != self._manifest_platform_info.guid:
+            raise FotaError(f"GUID in manifest does not match the GUID on the system")
 
     def check_with_dmi(self) -> None:
         """The method checks for current firmware vs the one in manifest file.
