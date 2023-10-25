@@ -32,7 +32,7 @@ def extract_guid(fw_tool: str) -> Optional[str]:
     return guid
 
 
-def _parse_guid(self, output: str) -> Optional[str]:
+def _parse_guid(output: str) -> Optional[str]:
     """Method to parse the shell command output to retrieve the value of system firmware type
 
     @param output: shell command output from the firmware tool

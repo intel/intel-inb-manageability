@@ -189,6 +189,13 @@ class LinuxToolFirmware(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
+    def _check_guid_matches_system_guid(self, fw_tool: Optional[str], guid: str):
+        if not fw_tool:
+            raise FotaError(f"GUID provided in manifest, but FW tool was not set.")
+        system_guid = extract_guid(fw_tool)
+        if system_guid != guid:
+            raise FotaError(f"GUID in manifest does not match the GUID on the system")
+
     def _apply_firmware(self, repo_name: str, fw_file: Optional[str], guid: Optional[str], tool_options: Optional[str], runner: PseudoShellRunner) -> None:
         """Updates firmware on the platform by calling the firmware update tool
 
@@ -200,8 +207,10 @@ class LinuxToolFirmware(BiosFactory):
         @raises FotaError: on failed firmware attempt
         """
         if self._guid_required:
-            if not guid:
-                guid = extract_guid(self._fw_tool, runner)
+            if guid:
+                self._check_guid_matches_system_guid(self._fw_tool, guid)
+            else:
+                guid = extract_guid(self._fw_tool)
         else:
             guid = ''
 

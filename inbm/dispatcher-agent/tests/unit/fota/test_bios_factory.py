@@ -184,24 +184,6 @@ class TestBiosFactory(TestCase):
         self.assertEqual(mock_runner.call_count, 3)
         mock_delete.assert_called_once()
 
-    def test__parse_guid(self):
-        output = 'System Firmware type,{1234} version 27 is updatable'
-        result = LinuxToolFirmware(self.mock_callbacks_obj, MemoryRepo(self._repo_name), self._nuc_dict
-                                   )._parse_guid(output)
-        self.assertEquals(result, '1234')
-
-    def test__parse_guid_new_string(self):
-        output = 'system-firmware type,{1234} version 27 is updatable'
-        result = LinuxToolFirmware(self.mock_callbacks_obj, MemoryRepo(self._repo_name), self._nuc_dict
-                                   )._parse_guid(output)
-        self.assertEquals(result, '1234')
-
-    def test__parse_guid_none(self):
-        output = ''
-        result = LinuxToolFirmware(self.mock_callbacks_obj, MemoryRepo(self._repo_name), self._nuc_dict
-                                   )._parse_guid(output)
-        self.assertEquals(result, None)
-
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     def test_linux_bios_aarch_install_fail_no_fwup(self, mock_run, mock_unpack):

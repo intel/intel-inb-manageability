@@ -27,12 +27,6 @@ def parse(ota_element: Dict[str, str]) -> PlatformInformation:
     manifest_info.bios_vendor = ota_element['vendor']
     manifest_info.platform_mfg = ota_element['manufacturer']
     manifest_info.platform_product = ota_element['product']
-    fw_tool = ota_element['firmware_tool']
-    if fw_tool:
-        manifest_info.fw_tool = fw_tool
-    guid = ota_element['guid']
-    if guid:
-        manifest_info.guid = guid
     return manifest_info
 
 

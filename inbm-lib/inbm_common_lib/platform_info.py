@@ -19,4 +19,3 @@ class PlatformInformation:
     platform_mfg: str = field(default="")
     platform_product: str = field(default="")
     guid: Optional[str] = field(default=None)
-    fw_tool: Optional[str] = field(default=None)

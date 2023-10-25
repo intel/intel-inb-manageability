@@ -202,5 +202,5 @@ class FOTA:
         """validate the manifest before FOTA"""
         logger.debug("")
         factory = OsFactory.get_factory(
-            self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
+            self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks, )
         factory.create_upgrade_checker().check()
