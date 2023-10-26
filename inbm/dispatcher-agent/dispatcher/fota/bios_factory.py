@@ -30,7 +30,6 @@ from ..packagemanager.irepo import IRepo
 from abc import ABC
 from inbm_common_lib.utility import get_canonical_representation_of_path
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -88,7 +87,8 @@ class BiosFactory(ABC):
         self._fw_dest = params.get('firmware_dest_path', None)
         self._fw_tool_check_args = params.get('firmware_tool_check_args', None)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename
@@ -99,7 +99,8 @@ class BiosFactory(ABC):
         pass
 
     @staticmethod
-    def get_factory(platform_product: Optional[str], params: Dict, callback: DispatcherCallbacks, repo: IRepo) -> "BiosFactory":
+    def get_factory(platform_product: Optional[str], params: Dict, callback: DispatcherCallbacks,
+                    repo: IRepo) -> "BiosFactory":
         """Checks if the current platform is supported or not
 
         @param platform_product: platform product name
@@ -152,7 +153,7 @@ class BiosFactory(ABC):
         """
         logger.debug(f"repo_name:{repo_name}, pkg_filename:{pkg_filename}")
         cmd = "tar -xvf " + str(Path(repo_name) / pkg_filename) + \
-            " --no-same-owner -C " + repo_name
+              " --no-same-owner -C " + repo_name
         (out, err, code) = PseudoShellRunner.run(cmd)
         fw_file, cert_file = BiosFactory.get_files(out)
         if code == 0 and not err:
@@ -161,7 +162,8 @@ class BiosFactory(ABC):
             e = f"Firmware Update Aborted: Invalid File sent. error: {err}"
             raise FotaError(e)
 
-    def delete_files(self, pkg_filename: Optional[str], fw_filename: Optional[str], cert_filename: Optional[str]) -> None:
+    def delete_files(self, pkg_filename: Optional[str], fw_filename: Optional[str],
+                     cert_filename: Optional[str]) -> None:
         """Deletes the downloaded and extracted files
 
         @param pkg_filename: downloaded package filename
@@ -189,28 +191,22 @@ class LinuxToolFirmware(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
-    def _check_guid_matches_system_guid(self, fw_tool: Optional[str], guid: str):
-        if not fw_tool:
-            raise FotaError(f"GUID provided in manifest, but FW tool was not set.")
-        system_guid = extract_guid(fw_tool)
-        if system_guid != guid:
-            raise FotaError(f"GUID in manifest does not match the GUID on the system")
-
-    def _apply_firmware(self, repo_name: str, fw_file: Optional[str], guid: Optional[str], tool_options: Optional[str], runner: PseudoShellRunner) -> None:
+    def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
+                        tool_options: Optional[str], runner: PseudoShellRunner) -> None:
         """Updates firmware on the platform by calling the firmware update tool
 
         @param repo_name: path to downloaded package
         @param fw_file: firmware file name
-        @param guid: system fw type
+        @param manifest_guid: GUID provided by the user in the manifest
         @param tool_options: tool_options used along with fw tool
         @param runner: To run shell commands
         @raises FotaError: on failed firmware attempt
         """
         if self._guid_required:
-            if guid:
-                self._check_guid_matches_system_guid(self._fw_tool, guid)
-            else:
-                guid = extract_guid(self._fw_tool)
+            guid = extract_guid(self._fw_tool)  # get the GUID from the system using FW tool
+            if manifest_guid:
+                if guid != manifest_guid:
+                    raise FotaError(f"GUID in manifest does not match the GUID on the system")
         else:
             guid = ''
 
@@ -221,7 +217,7 @@ class LinuxToolFirmware(BiosFactory):
             fw_file = ''
 
         cmd = self._fw_tool + " " + self._fw_tool_args + " " + \
-            str(guid) + " " + str(Path(repo_name) / fw_file) + " " + tool_options
+              str(guid) + " " + str(Path(repo_name) / fw_file) + " " + tool_options
         logger.debug(f"Using fw tool: {self._fw_tool}")
         logger.debug("Applying Firmware...")
         if self._fw_tool == AFULNX_64:
@@ -242,7 +238,8 @@ class LinuxToolFirmware(BiosFactory):
                 err = "Firmware command failed"
             raise FotaError(f"Error: {err}")
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename
@@ -288,7 +285,8 @@ class LinuxFileFirmware(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and applies firmware update and deletes the
         files after the update
 
@@ -324,7 +322,8 @@ class WindowsBiosNUC(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename
