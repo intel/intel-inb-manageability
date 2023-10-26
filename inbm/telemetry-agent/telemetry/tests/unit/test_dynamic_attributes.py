@@ -5,8 +5,6 @@ from unittest import TestCase
 from collections import namedtuple
 
 
-
-
 svmem = namedtuple(
     'svmem', ['total', 'available', 'percent', 'used', 'free',
               'active', 'inactive', 'buffers', 'cached', 'shared'])

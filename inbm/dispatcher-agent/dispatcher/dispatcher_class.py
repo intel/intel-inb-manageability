@@ -247,9 +247,12 @@ class Dispatcher(WindowsService):
             detected_os = detect_os()
             if detected_os in [LinuxDistType.YoctoARM.name, LinuxDistType.YoctoX86_64.name]:
                 try:
-                    SotaOsFactory(self._make_callbacks_object()).get_os(detected_os).create_snapshotter('update',
-                                                                                                        snap_num='1',
-                                                                                                        proceed_without_rollback=True).commit()
+                    if SotaOsFactory(self._make_callbacks_object()).get_os(detected_os).delete_snapshot() == 0:
+                        SotaOsFactory(self._make_callbacks_object()).get_os(detected_os).create_snapshotter('update',
+                                                                                                            snap_num='1',
+                                                                                                            proceed_without_rollback=True).commit()
+                    else:
+                        logger.error('Error cleaning previous snapshot')
                 except OSError:
                     # harmless here--mender commit is speculative
                     pass

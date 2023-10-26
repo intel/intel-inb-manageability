@@ -59,6 +59,7 @@
   /etc/apt/sources.list.bak rw,
   /etc/dispatcher_state rw,
   /etc/lsb-release r,
+  /etc/snapper/configs/* rix, 
   /etc/magic r,
   /etc/mime.types r,
   /etc/tc_config.conf r,

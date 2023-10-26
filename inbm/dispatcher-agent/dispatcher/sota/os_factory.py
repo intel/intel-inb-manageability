@@ -115,6 +115,11 @@ class ISotaOs(ABC):
         """Create a downloader object"""
         pass
 
+    @abstractmethod
+    def delete_snapshot(self) -> int:
+        """Deletes snapshot"""
+        pass
+
 
 class YoctoX86_64(ISotaOs):
     """YoctoX86_64 class, child of ISotaOs"""
@@ -146,6 +151,11 @@ class YoctoX86_64(ISotaOs):
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
         return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_callbacks, snap_num, proceed_without_rollback)
+
+    def delete_snapshot(self) -> int:
+        logger.debug("")
+        trtl = Trtl(PseudoShellRunner(), BTRFS)
+        return YoctoSnapshot(trtl, "", self._dispatcher_callbacks, "", True).delete_snapshot()
 
     def create_downloader(self) -> Downloader:
         logger.debug("")
@@ -183,6 +193,11 @@ class YoctoARM(ISotaOs):
         logger.debug("")
         return YoctoDownloader()
 
+    def delete_snapshot(self) -> int:
+        logger.debug("")
+        trtl = Trtl(PseudoShellRunner(), BTRFS)
+        return YoctoSnapshot(trtl, "", self.callback, "", True).delete_snapshot()
+
 
 class DebianBasedSotaOs(ISotaOs):
     """DebianBasedSotaOs class, child of ISotaOs"""
@@ -213,6 +228,11 @@ class DebianBasedSotaOs(ISotaOs):
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
         return DebianBasedSnapshot(trtl, sota_cmd, self._dispatcher_callbacks, snap_num, proceed_without_rollback)
+
+    def delete_snapshot(self) -> int:
+        logger.debug("")
+        trtl = Trtl(PseudoShellRunner(), BTRFS)
+        return YoctoSnapshot(trtl, "", self._dispatcher_callbacks, "", True).delete_snapshot()
 
     def create_downloader(self) -> Downloader:
         return DebianBasedDownloader()
@@ -247,6 +267,10 @@ class Windows(ISotaOs):
         logger.debug("")
         trtl = Trtl(PseudoShellRunner())
         return WindowsSnapshot(trtl, sota_cmd, self.callback, snap_num, proceed_without_rollback)
+
+    def delete_snapshot(self) -> int:
+        logger.debug("")
+        return 0
 
     def create_downloader(self) -> Downloader:
         return WindowsDownloader()

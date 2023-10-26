@@ -170,7 +170,6 @@ class SOTA:
         skip_sleeps shall be set to True to skip sleeps in this method (for unit testing)
         """
         logger.debug("")
-
         self.proceed_without_rollback = proceed_without_rollback
         self.log_to_file = self._parsed_manifest['log_to_file']
         self.sota_cmd = self._parsed_manifest['sota_cmd']
@@ -204,8 +203,11 @@ class SOTA:
         setup_helper = self.factory.create_setup_helper()
         if self.sota_cmd == 'rollback':
             self.snap_num = setup_helper.get_snapper_snapshot_number()
-        snapshot = self.factory.create_snapshotter(
-            self.sota_cmd, self.snap_num, self.proceed_without_rollback)
+        if self.factory.delete_snapshot() == 0:
+            snapshot = self.factory.create_snapshotter(
+                self.sota_cmd, self.snap_num, self.proceed_without_rollback)
+        else:
+            raise SotaError("Aborting: Unable to delete previous snapshot")
         rebooter = self.factory.create_rebooter()
 
         if self.sota_state == 'diagnostic_system_unhealthy':

@@ -3,8 +3,6 @@ from unittest import TestCase
 import unittest
 
 
-
-
 class TestCachePolicy(TestCase):
 
     def test_trim_collection_five_elements_to_three_elements(self):
