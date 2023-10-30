@@ -21,18 +21,19 @@ class TestBiosFactory(TestCase):
         self._ami_dict = {'bios_vendor': 'American Megatrends Inc.', 'operating_system': 'linux',
                           'firmware_tool': 'tool', 'firmware_tool_args': '-a', 'firmware_file_type': 'xx'}
         self._ami_dict_tool = {'bios_vendor': 'American Megatrends Inc.', 'operating_system': 'linux',
-                               'firmware_tool': '/opt/afulnx/afulnx_64', 'firmware_tool_args': '-a', 'firmware_file_type': 'xx'}
-
+                               'firmware_tool': '/opt/afulnx/afulnx_64', 'firmware_tool_args': '-a',
+                               'firmware_file_type': 'xx'}
         self._apl_dict = {'bios_vendor': 'Intel Corp.', 'operating_system': 'linux', 'firmware_tool': 'tool',
                           'firmware_tool_args': '-a', 'firmware_file_type': 'xx', 'firmware_dest_path': '/boot/efi/'}
         self._lake_dict = {'bios_vendor': 'Intel Corp.', 'operating_system': 'linux', 'firmware_tool': 'fwupdate',
-                           'firmware_tool_args': '--apply', 'firmware_tool_check_args': '-a', 'firmware_file_type': 'xx', 'guid': 'true'}
+                           'firmware_tool_args': '--apply', 'firmware_tool_check_args': '-a',
+                           'firmware_file_type': 'xx', 'guid': 'true'}
         self._nuc_dict = {'bios_vendor': 'Intel Corp.', 'operating_system': 'linux',
                           'firmware_tool': 'UpdateBIOS.sh', 'firmware_file_type': 'bio'}
 
     def test_get_factory_linux_tool_type(self):
         assert type(BiosFactory.get_factory("test", self._arm_dict, self.mock_callbacks_obj, MemoryRepo("test"))) \
-            is LinuxToolFirmware
+               is LinuxToolFirmware
 
     def test_get_factory_linux_file_type(self):
         assert type(
@@ -117,39 +118,47 @@ class TestBiosFactory(TestCase):
         mock_shutil.assert_called_once()
         mock_delete_pkg.assert_has_calls([mock.call(self._uri)])
 
+    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_elh_install_success(self, mock_delete, mock_unpack, mock_runner):
+    def test_linux_bios_elh_install_success(self, mock_delete, mock_unpack, mock_runner, mock_guid):
         mock_runner.return_value = ('', '', 0)
         mock_unpack.return_value = ('capsule.efi', None)
 
         try:
-            BiosFactory.get_factory("Elkhart Lake Embedded Platform", self._lake_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name, None, "c")
+            BiosFactory.get_factory("Elkhart Lake Embedded Platform",
+                                    self._lake_dict,
+                                    self.mock_callbacks_obj,
+                                    MemoryRepo(self._repo_name)).install(self._uri,
+                                                                         self._repo_name, None,
+                                                                         "6B29FC40-CA47-1067-B31D-00DD010662D")
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))
 
         mock_delete.assert_called_once()
 
+    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    @patch('dispatcher.fota.bios_factory.LinuxToolFirmware._parse_guid')
-    def test_linux_bios_lake_install_success_guid(self, mock_get_guid, mock_delete, mock_unpack, mock_runner):
+    def test_linux_bios_lake_install_success_guid(self, mock_delete, mock_unpack, mock_runner,
+                                                  mock_get_guid):
         mock_runner.return_value = ('', '', 0)
         mock_unpack.return_value = ('capsule.efi', None)
-        mock_get_guid.return_value = '1234'
 
         try:
             BiosFactory.get_factory("Elkhart Lake Embedded Platform", self._lake_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name, "c")
+                                    self.mock_callbacks_obj,
+                                    MemoryRepo(self._repo_name)).install(self._uri,
+                                                                         self._repo_name,
+                                                                         "6B29FC40-CA47-1067-B31D-00DD010662D")
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))
 
         mock_delete.assert_called_once()
         mock_get_guid.assert_called_once()
-        self.assertEqual(mock_runner.call_count, 3)
+        self.assertEqual(mock_runner.call_count, 2)
 
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
@@ -157,50 +166,39 @@ class TestBiosFactory(TestCase):
         mock_runner.return_value = ('', 'firmware update not supported', 1)
 
         try:
-            BiosFactory.get_factory("Tiger Lake Client Platform", self._lake_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name, "c")
+            BiosFactory.get_factory(
+                "Tiger Lake Client Platform",
+                self._lake_dict,
+                self.mock_callbacks_obj,
+                MemoryRepo(self._repo_name)).install(self._uri,
+                                                     self._repo_name,
+                                                     "6B29FC40-CA47-1067-B31D-00DD010662D")
         except FotaError as e:
             self.assertRaises(FotaError)
             self.assertEqual(
                 str(e), "Firmware Update Aborted: Firmware tool: firmware update not supported")
 
+    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    @patch('dispatcher.fota.bios_factory.LinuxToolFirmware._parse_guid')
-    def test_linux_bios_elh_install_fail(self, mock_get_guid, mock_delete, mock_unpack, mock_runner):
+    def test_linux_bios_elh_install_fail(self, mock_delete, mock_unpack, mock_runner, mock_get_guid):
         mock_runner.side_effect = [('', '', 0), ('', '', 0), ('firmware update failed', '', 1)]
         mock_unpack.return_value = ('capsule.efi', None)
-        mock_get_guid.return_value = '1234'
 
         try:
             BiosFactory.get_factory("Elkhart Lake Embedded Platform", self._lake_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name, "c")
+                                    self.mock_callbacks_obj,
+                                    MemoryRepo(self._repo_name)).install(self._uri,
+                                                                         self._repo_name,
+                                                                         "6B29FC40-CA47-1067-B31D-00DD010662D")
         except FotaError as e:
             self.assertRaises(FotaError)
             self.assertEqual(
                 str(e), "Error: Firmware command failed")
 
-        self.assertEqual(mock_runner.call_count, 3)
+        self.assertEqual(mock_runner.call_count, 2)
         mock_delete.assert_called_once()
-
-    def test__parse_guid(self):
-        output = 'System Firmware type,{1234} version 27 is updatable'
-        result = LinuxToolFirmware(self.mock_callbacks_obj, MemoryRepo(self._repo_name), self._nuc_dict
-                                   )._parse_guid(output)
-        self.assertEquals(result, '1234')
-
-    def test__parse_guid_new_string(self):
-        output = 'system-firmware type,{1234} version 27 is updatable'
-        result = LinuxToolFirmware(self.mock_callbacks_obj, MemoryRepo(self._repo_name), self._nuc_dict
-                                   )._parse_guid(output)
-        self.assertEquals(result, '1234')
-
-    def test__parse_guid_none(self):
-        output = ''
-        result = LinuxToolFirmware(self.mock_callbacks_obj, MemoryRepo(self._repo_name), self._nuc_dict
-                                   )._parse_guid(output)
-        self.assertEquals(result, None)
 
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
@@ -223,7 +221,8 @@ class TestBiosFactory(TestCase):
 
         try:
             BiosFactory.get_factory("tes", self._arm_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name)
+                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri,
+                                                                                                  self._repo_name)
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))
 
@@ -237,7 +236,8 @@ class TestBiosFactory(TestCase):
         mock_unpack.return_value = ('capsule.bin', None)
         try:
             BiosFactory.get_factory("tes", self._arm_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name)
+                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri,
+                                                                                                  self._repo_name)
         except FotaError as e:
             self.assertEqual("Firmware Update Aborted, failed to run apply cmd: error: ", str(e))
         mock_delete.assert_called_once()
@@ -252,7 +252,8 @@ class TestBiosFactory(TestCase):
 
         try:
             BiosFactory.get_factory("tes", self._arm_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name)
+                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri,
+                                                                                                  self._repo_name)
         except FotaError as e:
             self.assertEqual(
                 "Firmware Update Aborted: Invalid File sent. error: some error", str(e))
@@ -336,35 +337,37 @@ class TestBiosFactory(TestCase):
         mock_runner.side_effect = [('', '', 0), ('', '', 0)]
         mock_ext.return_value = 'bios'
         BiosFactory.get_factory("tes", self._arm_dict,
-                                self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install('abc.bin', self._repo_name)
+                                self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install('abc.bin',
+                                                                                              self._repo_name)
         mock_ext.assert_called_once()
 
+    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    @patch('dispatcher.fota.bios_factory.LinuxToolFirmware._parse_guid')
-    def test_linux_bios_tgl_install_fail(self, mock_get_guid, mock_delete, mock_unpack, mock_runner):
+    def test_linux_bios_tgl_install_fail(self, mock_delete, mock_unpack, mock_runner, mock_get_guid):
         mock_runner.side_effect = [('', '', 0), ('', '', 0), ('firmware update failed', '', 1)]
         mock_unpack.return_value = ('capsule.efi', None)
-        mock_get_guid.return_value = '1234'
         try:
             BiosFactory.get_factory("Tiger Lake Client Platform", self._lake_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name, "c")
+                                    self.mock_callbacks_obj,
+                                    MemoryRepo(self._repo_name)).install(self._uri,
+                                                                         self._repo_name,
+                                                                         "6B29FC40-CA47-1067-B31D-00DD010662D")
         except FotaError as e:
             self.assertRaises(FotaError)
             self.assertEqual(
                 str(e), "Error: Firmware command failed")
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
+    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=('', '', 0))
+    @patch('dispatcher.fota.bios_factory.BiosFactory.unpack', return_value=('capsule.efi', None))
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_tgl_install_success(self, mock_delete, mock_unpack, mock_runner):
-        mock_runner.return_value = ('', '', 0)
-        mock_unpack.return_value = ('capsule.efi', None)
-
+    def test_linux_bios_tgl_install_success(self, mock_delete, mock_unpack, mock_runner, mock_guid):
         try:
             BiosFactory.get_factory("Tiger Lake Client Platform", self._lake_dict,
-                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)).install(self._uri, self._repo_name, None, "c")
+                                    self.mock_callbacks_obj, MemoryRepo(self._repo_name)) \
+                .install(self._uri, self._repo_name, None, guid="6B29FC40-CA47-1067-B31D-00DD010662D")
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))
         mock_delete.assert_called_once()
