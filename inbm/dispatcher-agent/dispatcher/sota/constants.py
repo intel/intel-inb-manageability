@@ -27,6 +27,9 @@ PROCEED_WITHOUT_ROLLBACK_DEFAULT = False
 # Device local cache for SOTA
 SOTA_CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool' / 'sota')
 
+#SNAPSHOT PATHS
+SNAPSHOT_DIRECTORY_PATH = '/etc/snapper/configs/'
+SNAPSHOT_FILENAME = '/etc/snapper/configs/rootConfig'
 
 FAILED = "Failed"
 SUCCESS = "Success"

@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 from inbm_lib.trtl import Trtl
 from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from .constants import MENDER_FILE_PATH
+from .constants import MENDER_FILE_PATH, SNAPSHOT_DIRECTORY_PATH, SNAPSHOT_FILENAME_
 from .mender_util import read_current_mender_version
 from .rebooter import Rebooter
 from ..common import dispatcher_state
@@ -165,14 +165,12 @@ class DebianBasedSnapshot(Snapshot):
 
     def delete_snapshot(self) -> int:
         """Deletes snapshots from the directory"""
-        SNAPSHOT_DIRECTORY_PATH = '/etc/snapper/configs'
-
         # Check if the specified path is a directory
         if os.path.isdir(SNAPSHOT_DIRECTORY_PATH):
             # Get a list of files in the directory
             # delete
             filename = 'rootConfig' 
-            rc, err = self.trtl.delete_config(filename)
+            rc, err = self.trtl.delete_config(SNAPSHOT_FILENAME)
             if rc == 0:
                  self._dispatcher_callbacks.broker_core.telemetry("Snapshot cleanup succeeded")
                  return rc
