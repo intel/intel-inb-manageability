@@ -29,7 +29,7 @@ SOTA_CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool' / 'so
 
 #SNAPSHOT PATHS
 SNAPSHOT_DIRECTORY_PATH = '/etc/snapper/configs/'
-SNAPSHOT_FILENAME = '/etc/snapper/configs/rootConfig'
+SNAPSHOT_FILENAME = 'rootConfig'
 
 FAILED = "Failed"
 SUCCESS = "Success"
