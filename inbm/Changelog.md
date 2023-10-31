@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - RTC 534426 - Could not write to /var/log/inbm-update-status.log on Yocto due to /var/log being a symlink to /var/volatile/log.
+ - RTC 534998 - Fix SOTA failure due to snapshot error 
 
 ### Security
  - RTC 533615 - Validate GUID format in manifest using XML schema.  
