@@ -165,21 +165,19 @@ class DebianBasedSnapshot(Snapshot):
 
     def delete_snapshot(self) -> int:
         """Deletes snapshots from the directory"""
-        SNAPSHOT_DIRECTORY_PATH = '/etc/snapper/configs/'
+        SNAPSHOT_DIRECTORY_PATH = '/etc/snapper/configs'
 
         # Check if the specified path is a directory
         if os.path.isdir(SNAPSHOT_DIRECTORY_PATH):
             # Get a list of files in the directory
-            file_list = os.listdir(SNAPSHOT_DIRECTORY_PATH)
-            # Loop through the list of configuration files and print their names
-            for filename in file_list:
-                # delete
-                rc, err = self.trtl.delete_config(filename)
-                if rc == 0:
-                    self._dispatcher_callbacks.broker_core.telemetry("Snapshot cleanup succeeded")
-                    return rc
-                else:
-                    self._dispatcher_callbacks.broker_core.telemetry(
+            # delete
+            filename = 'rootConfig' 
+            rc, err = self.trtl.delete_config(filename)
+            if rc == 0:
+                 self._dispatcher_callbacks.broker_core.telemetry("Snapshot cleanup succeeded")
+                 return rc
+            else:
+                 self._dispatcher_callbacks.broker_core.telemetry(
                         f"SOTA snapshot delete failed: {err}")
                     return rc
             return 0

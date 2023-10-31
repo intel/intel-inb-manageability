@@ -33,7 +33,7 @@ const (
 	DeleteSnapshot = "deletesnapshot"
 
 	// DeleteConfig is a string declaration for DeleteConfig command.
-	DeleteConfig = "deleteConfig"
+	DeleteConfig = "deleteconfig"
 
 	// DockerBenchSecurity is a string declaration for DockerBenchSecurity command.
 	DockerBenchSecurity = "dockerbenchsecurity"
@@ -160,7 +160,7 @@ func ValidateCommandType(c string, b string) (string, error) {
 		ImageRemove, ImageRemoveAll, ImageRemoveById, Import, List, Load, Login, Logs, Rollback, Snapshot, Start, Stats,
 		Stop, StopAll, StopByID}
 
-	nativeCommandTypes := []string{DeleteSnapshot, List, SingleSnapshot, UndoChange}
+	nativeCommandTypes := []string{DeleteSnapshot, List, SingleSnapshot, UndoChange, DeleteConfig}
 
 	composeCommandTypes := []string{Down, Up, List, Logs, Login, Pull, ImageRemoveAll}
 

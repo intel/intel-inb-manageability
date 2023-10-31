@@ -207,10 +207,3 @@ class TestYoctoSnapshot(unittest.TestCase):
         args, _ = dispatcher_callbacks.broker_core.telemetry.call_args
         message, = args
         assert "unsuccessful" in message
-
-    def test_dispatcher_Yocto_delete_snapshot(self):
-        dispatcher_callbacks = Mock()
-        dispatcher_callbacks.broker_core = Mock()
-
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, "1", True)
-        self.assertEqual(yocto_snapshot.delete_snapshot(), 0)

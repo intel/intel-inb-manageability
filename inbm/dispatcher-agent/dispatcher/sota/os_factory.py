@@ -154,8 +154,7 @@ class YoctoX86_64(ISotaOs):
 
     def delete_snapshot(self) -> int:
         logger.debug("")
-        trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return YoctoSnapshot(trtl, "", self._dispatcher_callbacks, "", True).delete_snapshot()
+        return 0 
 
     def create_downloader(self) -> Downloader:
         logger.debug("")
@@ -195,9 +194,7 @@ class YoctoARM(ISotaOs):
 
     def delete_snapshot(self) -> int:
         logger.debug("")
-        trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return YoctoSnapshot(trtl, "", self.callback, "", True).delete_snapshot()
-
+        return 0
 
 class DebianBasedSotaOs(ISotaOs):
     """DebianBasedSotaOs class, child of ISotaOs"""
