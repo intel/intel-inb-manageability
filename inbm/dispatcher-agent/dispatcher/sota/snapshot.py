@@ -177,7 +177,7 @@ class DebianBasedSnapshot(Snapshot):
             else:
                  self._dispatcher_callbacks.broker_core.telemetry(
                         f"SOTA snapshot delete failed: {err}")
-                    return rc
+                 return rc
             return 0
         else:
             logger.debug(f"{SNAPSHOT_DIRECTORY_PATH} not present.")
