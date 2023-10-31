@@ -18,6 +18,7 @@ type Boxer interface {
 type Snapper interface {
 	Boxer
 	DeleteSnapshot(configName string, snapshotNumber int)
+	DeleteConfig(configName string)
 	SingleSnapshot(configName string, desc string)
 	UndoChange(configName string, snapshotVersion int)
 }
