@@ -232,7 +232,7 @@ class DebianBasedSotaOs(ISotaOs):
     def delete_snapshot(self) -> int:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return YoctoSnapshot(trtl, "", self._dispatcher_callbacks, "", True).delete_snapshot()
+        return DebianBasedSnapshot(trtl, "", self._dispatcher_callbacks, "", True).delete_snapshot()
 
     def create_downloader(self) -> Downloader:
         return DebianBasedDownloader()
