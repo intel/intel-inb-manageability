@@ -13,7 +13,7 @@ from abc import ABC, abstractmethod
 from inbm_lib.trtl import Trtl
 from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from .constants import MENDER_FILE_PATH, SNAPSHOT_DIRECTORY_PATH, SNAPSHOT_FILENAME_
+from .constants import MENDER_FILE_PATH, SNAPSHOT_DIRECTORY_PATH, SNAPSHOT_FILENAME
 from .mender_util import read_current_mender_version
 from .rebooter import Rebooter
 from ..common import dispatcher_state
