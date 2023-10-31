@@ -165,13 +165,27 @@ class DebianBasedSnapshot(Snapshot):
 
     def delete_snapshot(self) -> int:
         """Deletes snapshots from the directory"""
-        SNAPSHOT_CONFIG_PATH = '/etc/snapper/configs/rootConfig'
-        if os.path.isfile(SNAPSHOT_CONFIG_PATH):
-            logger.debug(f"Removing file at {SNAPSHOT_CONFIG_PATH}.")
-            os.remove(SNAPSHOT_CONFIG_PATH)
+        SNAPSHOT_DIRECTORY_PATH = '/etc/snapper/configs/'
+
+        # Check if the specified path is a directory
+        if os.path.isdir(SNAPSHOT_DIRECTORY_PATH):
+            # Get a list of files in the directory
+            file_list = os.listdir(SNAPSHOT_DIRECTORY_PATH)
+            # Loop through the list of configuration files and print their names
+            for filename in file_list:
+                # delete
+                rc, err = self.trtl.delete_config(filename)
+                if rc == 0:
+                    self._dispatcher_callbacks.broker_core.telemetry("Snapshot cleanup succeeded")
+                    return rc
+                else:
+                    self._dispatcher_callbacks.broker_core.telemetry(
+                        f"SOTA snapshot delete failed: {err}")
+                    return rc
+            return 0
         else:
-            logger.debug(f"No file found at {SNAPSHOT_CONFIG_PATH}.")
-        return 0
+            logger.debug(f"{SNAPSHOT_DIRECTORY_PATH} not present.")
+            return 0
 
     def _rollback_and_delete_snap(self) -> None:
         """Invokes Trtl to rollback to the snapshot in these conditions:
@@ -373,29 +387,8 @@ class YoctoSnapshot(Snapshot):
             "Dispatcher state file creation successful.")
 
     def delete_snapshot(self) -> int:
-        """Deletes snapshots from the directory"""
-
-        SNAPSHOT_DIRECTORY_PATH = '/etc/snapper/configs/'
-
-        # Check if the specified path is a directory
-        if os.path.isdir(SNAPSHOT_DIRECTORY_PATH):
-            # Get a list of files in the directory
-            file_list = os.listdir(SNAPSHOT_DIRECTORY_PATH)
-            # Loop through the list of files and print their names
-            for filename in file_list:
-                # delete
-                rc, err = self.trtl.delete_snapshot(filename)
-                if rc == 0:
-                    self._dispatcher_callbacks.broker_core.telemetry("Snapshot cleanup succeeded")
-                    return rc
-                else:
-                    self._dispatcher_callbacks.broker_core.telemetry(
-                        f"SOTA snapshot delete failed: {err}")
-                    return rc
-            return 0
-        else:
-            logger.debug(f"{SNAPSHOT_DIRECTORY_PATH} not present.")
-            return 0
+        """Deletes snapshots from the directory."""
+        return 0
 
     def commit(self) -> None:
         """On Yocto, this method runs a Mender commit

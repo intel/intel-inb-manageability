@@ -538,6 +538,19 @@ class Trtl:
                 out, err, code))
         return code, err
 
+    def delete_config(self, config_filename: str) -> Tuple[int, Optional[str]]:
+        """Trtl wrapper to delete the configuration for a filesystem .
+
+        @return: code and error if any
+        """
+        logger.debug("Trtl.delete_config()")
+        (out, err, code) = self.runner.run(
+            self._boilerplate("deleteConfig", config=str(config_filename)))
+        logging.debug(
+            "Trtl.delete_config results: output={}, err={}, exitcode={}".format(
+                out, err, code))
+        return code, err
+
     def sota_rollback(self, snapshot: str) -> Tuple[int, Optional[str]]:
         """Trtl wrapper to perform rollback to a given snapshot.
 

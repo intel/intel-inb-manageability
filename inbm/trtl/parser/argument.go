@@ -32,6 +32,9 @@ const (
 	// DeleteSnapshot is a string declaration for DeleteSnapshot command.
 	DeleteSnapshot = "deletesnapshot"
 
+	// DeleteConfig is a string declaration for DeleteConfig command.
+	DeleteConfig = "deleteConfig"
+
 	// DockerBenchSecurity is a string declaration for DockerBenchSecurity command.
 	DockerBenchSecurity = "dockerbenchsecurity"
 

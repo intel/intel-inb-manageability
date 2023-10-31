@@ -23,3 +23,16 @@ func DeleteSnapshot(cw util.ExecCommandWrapper, configName string, snapshotNumbe
 
 	return nil
 }
+
+// DeleteConfig will use Snapper to delete the configuration for a filesystem and subvolume.
+func DeleteConfig(cw util.ExecCommandWrapper, configName string) error {
+	args := []string{"-c", configName, "delete-config"}
+
+	if cmdOut, err := cw.CombinedOutput(snapper, "", args, isDockerApp()); err != nil {
+		fmt.Fprintf(os.Stderr, "%s", cmdOut)
+		fmt.Fprintf(os.Stderr, "Error deleting configuration using Snapper: %s", err)
+		return err
+	}
+
+	return nil
+}

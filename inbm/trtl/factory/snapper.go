@@ -18,6 +18,7 @@ type SnapperInfo struct{}
 var single = btrfs.SingleSnapshot
 var undo = btrfs.UndoChange
 var delete = btrfs.DeleteSnapshot
+var deleteConfig = btrfs.DeleteConfig
 var osExit = os.Exit
 
 // SingleSnapshot will use snapper to create a single snapshot using the provided configName
@@ -47,6 +48,14 @@ func (snap *SnapperInfo) List(instanceName string) {
 func (snap *SnapperInfo) DeleteSnapshot(configName string, snapshotNumber int) {
 	if err := delete(util.ExecCommandWrap{}, configName, snapshotNumber); err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating undoChange: %s", err)
+		osExit(1)
+	}
+}
+
+// DeleteConfig will use Snapper to delete the configuration for a filesystem and subvolume.
+func (snap *SnapperInfo) DeleteConfig(configName string) {
+	if err := deleteConfig(util.ExecCommandWrap{}, configName); err != nil {
+		fmt.Fprintf(os.Stderr, "Error deleting configuration: %s", err)
 		osExit(1)
 	}
 }

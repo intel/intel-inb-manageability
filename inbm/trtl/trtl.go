@@ -89,6 +89,7 @@ func usage(exitCode int) {
 		"{-sv=SNAPSHOT_VERSION} [config=CONFIG NAME]")
 	fmt.Println("    up                       runs the docker-compose Up command {-in=NAME} [-cf=FILENAME]")
 	fmt.Println("    pull                     runs the docker-compose Pull command {-in=NAME} [-cf=FILENAME]")
+	fmt.Println("    deleteConfig             delete the config and subvolume with snapper. Only used with BTRFS. {-config=CONFIG NAME}")
 	osExit(exitCode)
 }
 
@@ -166,6 +167,10 @@ func main() {
 		{
 			validateIntFlag("InstanceVersion", *instanceVersionPtr)
 			box.(factory.Snapper).DeleteSnapshot(*configNamePtr, *instanceVersionPtr)
+		}
+	case parser.DeleteConfig:
+		{
+			box.(factory.Snapper).DeleteConfig(*configNamePtr)
 		}
 	case parser.DockerBenchSecurity:
 		{
