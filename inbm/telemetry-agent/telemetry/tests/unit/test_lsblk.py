@@ -4,8 +4,6 @@ from unittest import TestCase
 import unittest
 
 
-
-
 class TestLsblk(TestCase):
 
     def test_no_lines(self):

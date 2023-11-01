@@ -61,8 +61,8 @@ class ArgsParser(object):
                             help='Remote URI from where to retrieve package')
         parser.add_argument('--app', '-a', required=True, choices=['application', 'compose', 'docker'],
                             help='Type of information [ application, compose, docker]')
-        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down', 'import', 'load', 'remove'], 
-                            help='Type of information [ update , pull, up, down, import, load, remove]') 
+        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down', 'import', 'load', 'remove'],
+                            help='Type of information [ update , pull, up, down, import, load, remove]')
         parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
                             help='Type of information [ yes | no ]')
         parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
@@ -72,8 +72,10 @@ class ArgsParser(object):
                             help='Container Tag name')
         parser.add_argument('--file', '-f', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'FILE', 100),
                             help='File name')
-        parser.add_argument('--dockerusername', '-du', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50), help='docker username')
-        parser.add_argument('--dockerregistry', '-dr', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'Docker Registry', 500), help='docker registry')
+        parser.add_argument('--dockerusername', '-du', required=False,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50), help='docker username')
+        parser.add_argument('--dockerregistry', '-dr', required=False,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'Docker Registry', 500), help='docker registry')
         parser.set_defaults(func=aota)
 
     def parse_fota_args(self) -> None:
@@ -212,10 +214,11 @@ class ArgsParser(object):
 
 
 def _get_password(username, password_prompt) -> Optional[str]:
-        password = None
-        if username:
-           password = getpass.getpass(password_prompt)
-        return password
+    password = None
+    if username:
+        password = getpass.getpass(password_prompt)
+    return password
+
 
 def aota(args) -> str:
     """Creates manifest in XML format.
@@ -264,7 +267,7 @@ def aota(args) -> str:
                        "dockerUsername",
                        "dockerPassword",
                        "dockerRegistry")
-    ) 
+    )
     return manifest
 
 

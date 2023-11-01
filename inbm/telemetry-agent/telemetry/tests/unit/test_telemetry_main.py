@@ -5,8 +5,6 @@ from unittest import TestCase
 import os
 
 
-
-
 class TestTelemetry(TestCase):
 
     @patch('telemetry.telemetry.fileConfig', autospec=True)

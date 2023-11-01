@@ -3,8 +3,6 @@ from mock import patch
 from unittest import TestCase
 
 
-
-
 proc_cpuinfo_expected_blank = "Unknown"
 proc_cpuinfo_input_blank = ""
 

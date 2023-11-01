@@ -7,8 +7,6 @@ from telemetry.software_checker import *
 from telemetry.shared import *
 
 
-
-
 class TestTelemetry(TestCase):
 
     def test_return_false_when_outside_lower_bound(self):

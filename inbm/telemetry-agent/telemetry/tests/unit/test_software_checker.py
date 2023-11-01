@@ -3,8 +3,6 @@ import telemetry.software_checker
 from unittest import TestCase
 
 
-
-
 class TestSoftwareChecker(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
