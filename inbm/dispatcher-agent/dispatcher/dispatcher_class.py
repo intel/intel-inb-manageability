@@ -306,7 +306,7 @@ class Dispatcher(WindowsService):
             except DispatcherException as error:
                 remove_file(new_file_loc)
                 logger.error(error)
-                return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED')
+                return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED. Error: ' + str(error))
         else:
             if xml is None:
                 return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED. No XML to publish to targets')
@@ -421,7 +421,7 @@ class Dispatcher(WindowsService):
         """
         self._broker.send_result(message)
 
-    def do_install(self, xml: str, schema_location: Optional[str] = None) -> int:
+    def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:
         """Delegates the installation to either
         . call a DeviceManager command
         . do_ota_install
@@ -516,7 +516,7 @@ class Dispatcher(WindowsService):
                 self._update_logger.status = OTA_SUCCESS
                 self._update_logger.error = ""
             self._update_logger.save_log()
-            return result.status
+            return result
 
     def _do_ota_update(self, xml: str, ota_type: str, repo_type: str, target_type: Optional[str], resource: Dict,
                        kwargs: Dict, parsed_head: XmlHandler) -> Result:
