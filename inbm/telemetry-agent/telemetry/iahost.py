@@ -11,7 +11,6 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 from telemetry.constants import RM_PATH
 
 
-
 def is_iahost() -> bool:
     """Method to check if it is an IAHost.
 

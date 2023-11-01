@@ -217,7 +217,7 @@ class LinuxToolFirmware(BiosFactory):
             fw_file = ''
 
         cmd = self._fw_tool + " " + self._fw_tool_args + " " + \
-              str(guid) + " " + str(Path(repo_name) / fw_file) + " " + tool_options
+            str(guid) + " " + str(Path(repo_name) / fw_file) + " " + tool_options
         logger.debug(f"Using fw tool: {self._fw_tool}")
         logger.debug("Applying Firmware...")
         if self._fw_tool == AFULNX_64:

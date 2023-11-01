@@ -21,8 +21,6 @@ from typing import List, Any
 from .ipoller import IPoller
 
 
-
-
 logger = logging.getLogger(__name__)
 
 

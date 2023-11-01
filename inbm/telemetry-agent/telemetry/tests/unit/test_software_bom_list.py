@@ -7,9 +7,6 @@ from telemetry.constants import UNKNOWN
 from inbm_lib.constants import SYSTEM_IS_YOCTO_PATH, MENDER_FILE_PATH
 
 
-
-
-
 logger = logging.getLogger(__name__)
 
 
