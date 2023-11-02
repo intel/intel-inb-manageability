@@ -6,7 +6,6 @@ from unittest import TestCase
 import time
 
 
-
 info = {'timestamp': 1637019250.2020352, 'type': 'static_telemetry',
         'values': {'totalPhysicalMemory': '8209653760', 'cpuId': 'Intel(R) Core(TM) i5-8259U CPU @ 2.30GHz',
                    'biosVendor': 'Intel Corp.', 'biosVersion': 'BECFL357.86A.0051.2018.1015.1513',

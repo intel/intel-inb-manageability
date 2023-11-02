@@ -12,8 +12,6 @@ import json
 from typing import Optional
 
 
-
-
 class Command:
     """Basic command class for storing response and creating req/resp topics
 

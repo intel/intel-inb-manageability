@@ -33,7 +33,7 @@ class TestBiosFactory(TestCase):
 
     def test_get_factory_linux_tool_type(self):
         assert type(BiosFactory.get_factory("test", self._arm_dict, self.mock_callbacks_obj, MemoryRepo("test"))) \
-               is LinuxToolFirmware
+            is LinuxToolFirmware
 
     def test_get_factory_linux_file_type(self):
         assert type(
