@@ -32,7 +32,7 @@ class Broker(IBroker):  # pragma: no cover
 
         self._initialize_broker()
 
-    def publish(self, channel: str, message: str):
+    def publish(self, channel: str, message: str) -> None:
         """Publish message on MQTT channel
 
         @param channel: channel to publish upon

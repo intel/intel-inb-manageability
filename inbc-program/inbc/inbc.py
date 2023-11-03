@@ -33,11 +33,11 @@ class Inbc(object):
         self._broker = Broker(cmd_type, parsed_args, tls)
         print("INBC command-line utility tool")
 
-    def stop(self):
+    def stop(self) -> None:
         self._broker.stop_broker()
 
 
-def _sig_handler(signo, _) -> None:
+def _sig_handler(signo: int, _: Any) -> None:
     if signo in (signal.SIGINT, signal.SIGTERM):
         shared.running = False
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
     try:
         catch_ctrl_c_from_user()
         catch_termination_via_systemd()
-        args_parse = ArgsParser()
+        args_parse: ArgsParser = ArgsParser()
         args = args_parse.parse_args(sys.argv[1:])
         if not len(vars(args)):
             args = args_parse.parse_args(["None"])

@@ -26,7 +26,7 @@ class ConfigCommand(Command):
         """
         super().__init__(MAX_TIME_LIMIT, broker, command)
 
-    def trigger_manifest(self, args: Any, topic: str):
+    def trigger_manifest(self, args: Any, topic: str) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments from user
@@ -128,7 +128,7 @@ class LoadConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_LOAD)
 
-    def trigger_manifest(self, args: Any, topic: str = CONFIG_CHANNEL + CONFIG_LOAD):
+    def trigger_manifest(self, args: Any, topic: str = CONFIG_CHANNEL + CONFIG_LOAD) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments from user
@@ -159,7 +159,7 @@ class AppendConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_APPEND)
 
-    def trigger_manifest(self, args: Any, topic: str):
+    def trigger_manifest(self, args: Any, topic: str) -> None:
         """Trigger the command-line utility tool to invoke config Append.
         @param args: arguments from user
         @param topic: MQTT topic
@@ -188,7 +188,7 @@ class RemoveConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_REMOVE)
 
-    def trigger_manifest(self, args: Any, topic: str):
+    def trigger_manifest(self, args: Any, topic: str) -> None:
         """Trigger the command-line utility tool to invoke config Remove.
         @param args: arguments from user
         @param topic: MQTT topic

@@ -86,7 +86,7 @@ class Client:
             callback = self._with_log(callback, *loggers)
             self._adapter.bind_callback(name, callback)
 
-    def _with_log(self, f, *loggers) -> Callable:
+    def _with_log(self, f: Callable, *loggers) -> Callable:
         """Decorator function to log a message via one or more logging functions
         The logging functions should have the signature: (str) -> None
             (str): The message to log

@@ -9,7 +9,7 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 import platform
 
 
-def parse_lsblk(lsblk_output) -> Optional[List]:
+def parse_lsblk(lsblk_output: str) -> Optional[List]:
     """Parse output of lsblk command with name, size, and ssd status of attached disks.
     @param lsblk_output: text output of lsblk command
 
@@ -33,7 +33,7 @@ def parse_lsblk(lsblk_output) -> Optional[List]:
 
 
 def get_lsblk_output() -> Optional[str]:
-    """Run an lsblk command to get name, size, and ssd status of attached disks.
+    """Run the lsblk command to get name, size, and ssd status of attached disks.
 
     @return: Command output or None if anything printed on stderr
     """

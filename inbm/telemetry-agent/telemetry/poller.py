@@ -8,6 +8,7 @@ from .constants import *
 from .cache_policy import trim_cache
 
 from inbm_common_lib.constants import TELEMETRY_CHANNEL
+from inbm_lib.mqttclient.mqtt import MQTT
 
 from . import iahost
 from . import software_checker
@@ -55,7 +56,7 @@ class Poller(IPoller):
                                                         self._with_docker)
 
     @staticmethod
-    def is_between_bounds(value_desc, actual_value, lower_bound, upper_bound) -> bool:
+    def is_between_bounds(value_desc: str, actual_value: Any, lower_bound: int, upper_bound: int) -> bool:
         """Checks if value is between the upper and lower boundaries.
 
         @return True if between bounds; otherwise, false.
@@ -71,7 +72,7 @@ class Poller(IPoller):
             logger.error(value_desc + " value needs to be an integer.")
             return False
 
-    def set_configuration_value(self, val, path) -> None:
+    def set_configuration_value(self, val: Any, path: str) -> None:
         """Sets the class variables with the values retrieved from the configuration agent."""
 
         if path == COLLECTION_INTERVAL_SECONDS:
@@ -115,7 +116,7 @@ class Poller(IPoller):
         else:
             logger.error('Received path that is not configured: ' + path)
 
-    def loop_telemetry(self, client) -> None:
+    def loop_telemetry(self, client: MQTT) -> None:
         """Repeatedly wait collection_interval and collect telemetry.  Whenever publish_interval
         is exceeded, publish telemetry. Verify if Resource Monitor is active and 
         publish PMS telemetry and RAS errors whenever encountered.

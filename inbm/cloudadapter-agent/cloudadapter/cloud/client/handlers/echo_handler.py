@@ -32,13 +32,13 @@ class EchoHandler(Handler):
         self._connection = connection
         self._connection.subscribe(subscribe_topic, make_threaded(self._on_message))
 
-    def bind(self, key: str, callback: Callable):
+    def bind(self, key: str, callback: Callable) -> None:
         """This is currently unused, but would be useful to allow side effects on messages
         @exception NotImplementedError: If called
         """
         raise NotImplementedError("Callbacks for echo handler not implemented")
 
-    def _on_message(self, topic: str, payload: str):
+    def _on_message(self, topic: str, payload: str) -> None:
         """Callback for subscribed messages
 
         @param topic:   (str) Specific topic

@@ -12,7 +12,6 @@ import logging
 # following line is only used for type checking; we used defusedxml for
 # actual processing
 from xml.etree.ElementTree import Element  # noqa: S405
-import defusedxml.ElementTree as element_tree
 from defusedxml.ElementTree import XMLParser, parse, ParseError, tostring
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from .security_masker import mask_security_info
@@ -109,7 +108,7 @@ class XmlHandler:
                                'path: {}'.format(xpath))
         return element
 
-    def get_children(self, xpath) -> Dict[str, Any]:
+    def get_children(self, xpath: str) -> Dict[str, Any]:
         """Find all elements matching XPath from parsed XML
 
         @param xpath: Valid XPath expression
@@ -144,7 +143,7 @@ class XmlHandler:
         """Get attribute value for the given path and key.
 
         @param xpath: path to key
-        @param attribute_name: name of attribute
+        @param attribute_name: attribute name
         @return: attribute str if found else None
         """
         logger.debug("XML get attr")
@@ -154,13 +153,13 @@ class XmlHandler:
         else:
             raise XmlException("Could not find element in get_attribute")
 
-    def add_attribute(self, xpath, attribute_name, attribute_value) -> bytes:
+    def add_attribute(self, xpath: str, attribute_name: str, attribute_value: Any) -> bytes:
         """Add a new key value to the given path.
 
         @param xpath: path to key
         @param attribute_name: name of attribute
         @param attribute_value: value of attribute
-        @return: Xml in bytes
+        @return: XML in bytes
         @raises: XmlException when failed to update XML
         """
         try:
@@ -182,12 +181,12 @@ class XmlHandler:
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while add : {e}")
 
-    def set_attribute(self, xpath, attribute_value) -> bytes:
+    def set_attribute(self, xpath: str, attribute_value: Any) -> bytes:
         """Set a new value to the given path.
 
         @param xpath: path to key
         @param attribute_value: value of attribute to set
-        @return: Xml in bytes
+        @return: XML in bytes
         @raises: XmlException when failed to update
         """
         try:
@@ -201,11 +200,11 @@ class XmlHandler:
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while set : {e}")
 
-    def remove_attribute(self, xpath) -> bytes:
+    def remove_attribute(self, xpath: str) -> bytes:
         """Remove the attribute from xml if found.
 
         @param xpath: path to key
-        @return: Xml in bytes
+        @return: XML in bytes
         @raises: XmlException when failed to update
         """
         try:
@@ -223,7 +222,7 @@ class XmlHandler:
 
     def get_root_elements(self, key: str, attr: str) -> list:
         """This function retrieves all the elements matching
-        the specified element and it's attribute
+        the specified element, and it's attribute
         @param key: element name
         @param attr: element's attribute name
         @return: list
@@ -239,8 +238,8 @@ class XmlHandler:
             raise XmlException(f"ERROR while fetching elements from root : {e}")
 
     def _getroot(self, xml: str) -> Any:
-        """This function validates and returns the root of the xml
-        @param xml: xml contents
+        """This function validates and returns the root of the XML
+        @param xml: XML contents
         @return: root path
         """
         logger.debug(f"XML : {mask_security_info(xml)}")

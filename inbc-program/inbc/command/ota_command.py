@@ -27,7 +27,7 @@ class PotaCommand(Command):
         """
         super().__init__(POTA_TIME_LIMIT, broker, POTA)
 
-    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL):
+    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
@@ -64,7 +64,7 @@ class AotaCommand(Command):
         """
         super().__init__(AOTA_TIME_LIMIT, broker, AOTA)
 
-    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL):
+    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
@@ -102,7 +102,7 @@ class SotaCommand(Command):
         """
         super().__init__(SOTA_TIME_LIMIT, broker, SOTA)
 
-    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL):
+    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
@@ -144,7 +144,7 @@ class FotaCommand(Command):
         """
         super().__init__(FOTA_TIME_LIMIT, broker, FOTA)
 
-    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL):
+    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.

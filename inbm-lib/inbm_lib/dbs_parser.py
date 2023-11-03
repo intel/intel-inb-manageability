@@ -67,7 +67,7 @@ def _add_test_in_fails(line: str, fails: str) -> str:
 DBS_CONTAINER_REGEX = "^.*\\[WARN\\].*: ([^[]*)$"
 
 
-def _append_container_name(line, failed_containers):
+def _append_container_name(line: str, failed_containers: List[str]) -> None:
     matches = re.findall(DBS_CONTAINER_REGEX, line)
     if len(matches) == 1:
         name = matches[len(matches) - 1]
@@ -78,7 +78,7 @@ def _append_container_name(line, failed_containers):
 DBS_IMAGE_REGEX = "^.*\\[WARN\\].*: \\[([^[\\]]*)\\]$"
 
 
-def _append_image_name(line, failed_images):
+def _append_image_name(line: str, failed_images: List[str]) -> None:
     matches = re.findall(DBS_IMAGE_REGEX, line)
     if len(matches) == 1:
         name = matches[len(matches) - 1]

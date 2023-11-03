@@ -6,7 +6,7 @@
 """
 import json
 import logging
-from typing import Optional
+from typing import Optional, Any
 
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
@@ -53,11 +53,11 @@ class Broker:  # pragma: no cover
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
 
-    def _on_message(self, topic, payload, qos):
+    def _on_message(self, topic: str, payload: str, qos: int) -> None:
         """Callback for STATE_CHANNEL"""
         logger.info('Message received: %s on topic: %s', payload, topic)
 
-    def _on_command(self, topic, payload, qos):
+    def _on_command(self, topic: str, payload: str, qos: int) -> None:
         """Callback for COMMAND_CHANNEL"""
         try:
             if payload is not None:
@@ -70,7 +70,7 @@ class Broker:  # pragma: no cover
                          'request is in the correct format. {}'
                          .format(error))
 
-    def _execute(self, request):
+    def _execute(self, request: Any) -> None:
         """Execute MQTT command received on command channel
 
         @param request: Incoming JSON request
@@ -211,9 +211,9 @@ class Broker:  # pragma: no cover
         else:
             raise ConfigurationException("Invalid parameters sent")
 
-    def _get_element_name(self, headers: Optional[str], path: Optional[str], value_string: Optional[str]):
-        """Gets the required value of an element from XML file only if the element is orchestrator return the
-        attribute value otherwise element value
+    def _get_element_name(self, headers: Optional[str], path: Optional[str], value_string: Optional[str]) -> Any:
+        """Gets the required value of an element from XML file only if the element value=orchestrator. Otherwise, return
+         the attribute or element value
 
          @headers: header xml element tag
          @param path: xml element path
@@ -230,7 +230,7 @@ class Broker:  # pragma: no cover
             return self.key_value_store.get_element(headers, value_string)
         raise ConfigurationException("Invalid request: no path or header")
 
-    def _publish_agent_values(self, agent) -> None:
+    def _publish_agent_values(self, agent: str) -> None:
         children = self.key_value_store.get_children(agent)
         for child in children:
             value = children[child]

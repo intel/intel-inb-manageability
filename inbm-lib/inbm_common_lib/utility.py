@@ -11,6 +11,7 @@ import shutil
 import tarfile
 import logging
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Union
@@ -189,7 +190,7 @@ def is_within_directory(directory: str, target: str) -> bool:
     return prefix == abs_directory
 
 
-def safe_extract(tarball: tarfile.TarFile, path=".", members=None, *, numeric_owner=False):
+def safe_extract(tarball: tarfile.TarFile, path: str = ".", members: Iterable[tarfile.TarInfo] | None = None, *, numeric_owner: bool = False) -> None:
     """Avoid path traversal when extracting tarball
 
     @param tarball: tarball to extract

@@ -18,7 +18,7 @@ from inbm_lib.mqttclient.config import (
     DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL, DEFAULT_MQTT_CERTS)
 from inbm_common_lib.constants import TELEMETRY_CHANNEL
 from .telemetry_handling import publish_telemetry_update, publish_static_telemetry
-from .poller import Poller
+from .ipoller import IPoller
 import logging
 import json
 
@@ -36,7 +36,7 @@ def broker_stop(client: MQTT) -> None:
     client.stop()
 
 
-def broker_init(poller: Poller, tls: bool = True, with_docker: bool = False) -> MQTT:
+def broker_init(poller: IPoller, tls: bool = True, with_docker: bool = False) -> MQTT:
     """Set up generic action for message received; subscribe to state channel; publish
     'running' state
 
@@ -52,17 +52,17 @@ def broker_init(poller: Poller, tls: bool = True, with_docker: bool = False) -> 
                   client_keys=str(CLIENT_KEYS))
     client.start()
 
-    def on_message(topic, payload, qos) -> None:
+    def on_message(topic: str, payload: str, qos: int) -> None:
         logger.info('Message received: %s on topic: %s', payload, topic)
         if topic == CLOUDADAPTER_STATE_CHANNEL and 'running' in payload:
             publish_static_telemetry(client, TELEMETRY_CHANNEL)
 
-    def on_telemetry_update(topic, payload, qos) -> None:
+    def on_telemetry_update(topic: str, payload: str, qos: int) -> None:
         logger.info('Received telemetry update request for: %s', payload)
         publish_telemetry_update(
             client, TELEMETRY_CHANNEL, with_docker, payload)
 
-    def on_update(topic, payload, qos) -> None:
+    def on_update(topic: str, payload: str, qos: int) -> None:
         logger.info('Message received: %s on topic: %s', payload, topic)
         poller.set_configuration_value(json.loads(
             payload), 'telemetry/' + topic.split('/')[-1])

@@ -5,6 +5,9 @@
     SPDX-License-Identifier: Apache-2.0
 """
 from abc import ABC, abstractmethod
+from typing import Any
+
+from inbm_lib.mqttclient.mqtt import MQTT
 
 
 class IPoller(ABC):
@@ -14,12 +17,12 @@ class IPoller(ABC):
         self.pms_notification_registered: bool
 
     @abstractmethod
-    def set_configuration_value(self, val, path) -> None:
+    def set_configuration_value(self, val: Any, path: str) -> None:
         """Sets the class variables with the values retrieved from the configuration agent."""
         pass
 
     @abstractmethod
-    def loop_telemetry(self, client) -> None:
+    def loop_telemetry(self, client: MQTT) -> None:
         """Repeatedly wait collection_interval and collect telemetry.  Whenever publish_interval
         is exceeded, publish telemetry. Verify if Resource Monitor is active and
         publish PMS telemetry and RAS errors whenever encountered.

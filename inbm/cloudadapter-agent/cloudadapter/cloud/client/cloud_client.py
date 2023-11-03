@@ -43,7 +43,7 @@ class CloudClient:
         @param time: timestamp for this telemetry publish
         @exception PublishError: If publish fails
         """
-        return self._telemetry.publish(key, value, time)
+        self._telemetry.publish(key, value, time)
 
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
@@ -52,7 +52,7 @@ class CloudClient:
         @param value: event to publish
         @exception PublishError: If publish fails
         """
-        return self._event.publish(key, value)
+        self._event.publish(key, value)
 
     def publish_attribute(self, key: str, value: str) -> None:
         """Publishes a device attribute to the cloud
@@ -61,7 +61,7 @@ class CloudClient:
         @param value: value to set for the attribute
         @exception PublishError: If publish fails
         """
-        return self._attribute.publish(key, value)
+        self._attribute.publish(key, value)
 
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud
@@ -76,8 +76,8 @@ class CloudClient:
 
     def connect(self) -> None:
         """Establish a connection to the cloud service"""
-        return self._connection.start()
+        self._connection.start()
 
     def disconnect(self) -> None:
         """Disconnect from the cloud service"""
-        return self._connection.stop()
+        self._connection.stop()

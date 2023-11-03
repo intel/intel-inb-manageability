@@ -19,6 +19,7 @@ RUN source /venv-py3/bin/activate && \
         flake8==4.0.1 \
         bandit==1.7.3 \
         flake8-bandit==3.0.0 \
+        flake8-annotations==2.9.1 \
         coverage==7.2.5 \
         flakeheaven==3.3.0 \
         wemake-python-styleguide==0.17.0 \

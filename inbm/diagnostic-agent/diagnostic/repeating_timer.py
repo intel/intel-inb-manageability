@@ -8,6 +8,7 @@
 
 import logging
 from threading import Timer
+from typing import Callable, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -19,10 +20,10 @@ class RepeatingTimer:
     @param f: callback function
     """
 
-    def __init__(self, interval_time, f):
+    def __init__(self, interval_time: int, f: Callable) -> None:
         self._interval_time = interval_time
         self.f = f
-        self._timer = None
+        self._timer: Optional[Timer] = None
 
     def _callback(self) -> None:
         """Runs the callback method and restarts the timer"""

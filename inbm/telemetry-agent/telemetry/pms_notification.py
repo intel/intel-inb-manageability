@@ -12,8 +12,8 @@ from typing import Union
 from .constants import *
 from . import telemetry_handling
 from inbm_common_lib.constants import TELEMETRY_CHANNEL
-from inbm_lib.mqttclient.mqtt import MQTT
 from telemetry.ipoller import IPoller
+from inbm_lib.mqttclient.mqtt import MQTT
 
 logger = logging.getLogger(__name__)
 
@@ -23,10 +23,10 @@ class PmsException(Exception):
     pass
 
 
-class PMSNotification():
+class PMSNotification:
     client = MQTT
 
-    def __init__(self, client) -> None:
+    def __init__(self, client: MQTT) -> None:
         PMSNotification.client = client
         self.running = True
 

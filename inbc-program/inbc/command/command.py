@@ -40,7 +40,7 @@ class Command(ABC):
         self._broker = broker
         self._cmd_type = cmd_type
 
-    def stop_timer(self):
+    def stop_timer(self) -> None:
         """Stops the timer which is waiting for the command to execute."""
         self._update_timer.stop()
 
