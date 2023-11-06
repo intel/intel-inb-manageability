@@ -36,6 +36,7 @@ def validate_date(date: str) -> str:
     except ValueError:
         raise argparse.ArgumentTypeError(f"Not a valid date - format YYYY-MM-DD: '{date}")
 
+
 def validate_guid(value: str) -> str:
     """Validates that the user inputted string does not exceed the maximum allowed
         @param value: string entered by user
@@ -44,6 +45,7 @@ def validate_guid(value: str) -> str:
     if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
         raise argparse.ArgumentTypeError(f"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed")
     return value
+
 
 @dataclass
 class ConfigurationItem:

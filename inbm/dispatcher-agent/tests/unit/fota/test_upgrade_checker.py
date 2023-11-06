@@ -3,9 +3,7 @@ from unittest import TestCase
 from ddt import data, ddt, unpack
 
 from ..common import mock_resources
-from inbm_common_lib.platform_info import PlatformInformation
 from inbm_lib.xmlhandler import XmlHandler
-from dispatcher.fota.fota_error import FotaError
 from dispatcher.fota.os_factory import LinuxFactory
 from dispatcher.fota.fota_error import FotaError
 from mock import patch

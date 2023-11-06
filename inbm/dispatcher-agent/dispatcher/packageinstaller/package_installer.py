@@ -15,7 +15,6 @@ from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
 
 
-
 logger = logging.getLogger(__name__)
 
 

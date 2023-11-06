@@ -11,8 +11,6 @@ import platform
 import json
 
 
-
-
 def get_os_information() -> str:
     """Get Operating System information
 

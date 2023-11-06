@@ -4,9 +4,7 @@
 """
 
 
-
 from typing import List, Any
-
 
 
 def trim_cache(input_collection: List[Any], max_cache_size: int) -> List[Any]:

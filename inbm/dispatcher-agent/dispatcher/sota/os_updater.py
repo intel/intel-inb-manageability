@@ -115,11 +115,11 @@ class DebianBasedUpdater(OsUpdater):
             # (does not require network but does require host PID/DOCKER_CHROOT_PREFIX)
             cmds = [CHROOT_PREFIX + "/usr/bin/apt-get update",  # needs network
                     CHROOT_PREFIX + "/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -f -yq --download-only install",  # needs network
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",  # local 
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",  # local
                     CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",
                     CHROOT_PREFIX + "/usr/bin/dpkg --configure -a --force-confdef --force-confold",
                     CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade",  # needs network
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]  # local 
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]  # local
         else:
             cmds = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
