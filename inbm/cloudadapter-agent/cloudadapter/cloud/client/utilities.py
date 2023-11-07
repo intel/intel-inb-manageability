@@ -167,7 +167,7 @@ class Formatter:
             s = s.replace(target, escape)
         return s
 
-    def format(self, time=None, **fields) -> str:
+    def format(self, time: Optional[datetime] = None, **fields) -> str:
         """Format a string with the given mapping
 
         @param time: (datetime) Override default time

@@ -62,7 +62,7 @@ class DebianBasedSetupHelper(SetupHelper):
 
     def pre_processing(self):
         """Perform checks immediately before applying an OS update or upgrade.
-        Debian-based: This is a on-disk operation done after taking a snapshot
+        Debian-based: This is an on-disk operation done after taking a snapshot
         It proceeds only if the APT store url was successfully retrieved
 
         @return: True

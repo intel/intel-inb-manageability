@@ -73,12 +73,12 @@ class EventWatcher(Thread):
         thread.daemon = True
         thread.start()
 
-    def _check_failed_containers(self, failed_containers: str) -> None:
+    def _check_failed_containers(self, failed_containers: Optional[str]) -> None:
         logger.debug("Passing failed containers on REMEDIATION_CONTAINER_CHANNEL")
         if failed_containers and len(failed_containers) > 0:
             self._broker.publish(REMEDIATION_CONTAINER_CHANNEL, str(failed_containers))
 
-    def _check_failed_images(self, failed_images: str) -> None:
+    def _check_failed_images(self, failed_images: Optional[str]) -> None:
         logger.debug("Passing failed images on REMEDIATION_IMAGE_CHANNEL")
         if failed_images and len(failed_images) > 0:
             self._broker.publish(REMEDIATION_IMAGE_CHANNEL,
@@ -91,8 +91,9 @@ class EventWatcher(Thread):
             result_string = dbs.result_string
             self._check_failed_containers(failed_containers)
             self._check_failed_images(failed_images)
-            self._broker.publish(
-                EVENTS_CHANNEL, "Docker Bench Security results: " + result_string)
+            if result_string:
+                self._broker.publish(
+                    EVENTS_CHANNEL, "Docker Bench Security results: " + result_string)
         else:
             self._broker.publish(EVENTS_CHANNEL, "Unable to run Docker Bench Security")
 
