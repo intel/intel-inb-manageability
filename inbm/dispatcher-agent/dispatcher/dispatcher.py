@@ -6,10 +6,10 @@
 """
 import platform
 import sys
-from typing import List, Optional
+from typing import List
 
-from .dispatcher_class import Dispatcher
-from .dispatcher_broker import DispatcherBroker
+from dispatcher.dispatcher_class import Dispatcher
+from dispatcher.dispatcher_broker import DispatcherBroker
 from inbm_lib.windows_service import WindowsService
 
 class WindowsDispatcherService(WindowsService):
