@@ -345,11 +345,6 @@ class Dispatcher(WindowsService):
         @param parsed_head: The root parsed xml. It determines config_cmd_type
         @return (dict): returns success or failure dict from child methods
         """
-        try:
-            self.install_check(check_type='check_network')
-        except DispatcherException:
-            return Result(CODE_MULTIPLE, 'Network and Cloud check failed')
-
         config_cmd_type, value_object = _get_config_value(parsed_head)
         if config_cmd_type == 'load':
             return self._do_config_install_load(parsed_head=parsed_head)
