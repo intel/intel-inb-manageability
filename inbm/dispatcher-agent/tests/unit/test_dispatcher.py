@@ -355,7 +355,6 @@ class TestDispatcher(TestCase):
         d.check_dispatcher_state_info()
         mock_send_result.assert_called()
 
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation_on_target')
     @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -369,7 +368,6 @@ class TestDispatcher(TestCase):
                                      m_sub: Any,
                                      m_connect: Any,
                                      mock_config_func: Any,
-                                     mock_target_config_func: Any,
                                      mock_logging: Any) -> None:
         m_pre.return_value = True
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
@@ -380,37 +378,7 @@ class TestDispatcher(TestCase):
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
         mock_workload_orchestration_func.assert_called()
         mock_config_func.assert_called_once()
-        mock_target_config_func.assert_not_called()
         mock_config_func.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
-
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation_on_target')
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    def test_config_operation_target_called(self,
-                                            mock_workload_orchestration_func: Any,
-                                            mock_send_result: Any,
-                                            m_pre: Any,
-                                            m_sub: Any,
-                                            m_connect: Any,
-                                            mock_config_func: Any,
-                                            mock_target_config_func: Any,
-                                            mock_logging: Any) -> None:
-        m_pre.return_value = True
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
-              '<cmd>get_element</cmd><targetType>node</targetType><configtype><get><path>maxCacheSize</path></get></configtype> ' \
-              '</config></manifest> '
-
-        d = TestDispatcher._build_dispatcher()
-        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-        mock_workload_orchestration_func.assert_called()
-        mock_config_func.assert_not_called()
-        mock_target_config_func.assert_called_once()
-        mock_target_config_func.return_value = PUBLISH_SUCCESS
         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('dispatcher.dispatcher_class.Dispatcher._do_config_install_load')
@@ -463,37 +431,6 @@ class TestDispatcher(TestCase):
             xml=xml, schema_location=TEST_SCHEMA_LOCATION).message)
 
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
-    @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
-    @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
-    @patch('dispatcher.configuration_helper.ConfigurationHelper.download_config')
-    @patch('inbm_lib.xmlhandler.XmlHandler.__init__')
-    @patch('inbm_lib.xmlhandler.XmlHandler.add_attribute')
-    @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
-    @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
-    def test_config_load_operation_on_target_vision_called(self,
-                                                           mock_rmv: Any,
-                                                           mock_set: Any,
-                                                           mock_add: Any,
-                                                           mock_xml_init: Any,
-                                                           mock_download: Any,
-                                                           mock_url: Any,
-                                                           mock_xml: Any,
-                                                           mock_req_conf_func: Any,
-                                                           mock_logging: Any) -> None:
-
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
-              '<cmd>load</cmd><targetType>node</targetType><configtype><load><fetch>maxCacheSize</fetch></load></configtype> ' \
-              '</config></manifest> '
-
-        d = TestDispatcher._build_dispatcher()
-        mock_xml_init.return_value = None
-        mock_url.return_value = "http://example.tar"
-        mock_download.return_value = "conf_file"
-        mock_req_conf_func.assert_not_called()
-        self.assertEquals(PUBLISH_SUCCESS, d._do_config_install_load(
-            parsed_head=mock_xml.return_value, target_type=TargetType.vision.name, xml=xml))
-
-    @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
     @patch('dispatcher.configuration_helper.ConfigurationHelper.download_config')
     def test_config_load_operation_on_local_path_pass(self,
@@ -512,7 +449,7 @@ class TestDispatcher(TestCase):
         mock_download.return_value = False, None
         mock_req_conf_func.assert_not_called()
         self.assertEquals(CONFIG_LOAD_SUCCESS, d._do_config_install_load(
-            parsed_head=parsed_head, target_type=TargetType.none.name, xml=xml))
+            parsed_head=parsed_head, xml=xml))
 
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
@@ -533,7 +470,7 @@ class TestDispatcher(TestCase):
         mock_download.return_value = False, None
         mock_req_conf_func.assert_not_called()
         self.assertEquals(CONFIG_LOAD_FAIL_WRONG_PATH, d._do_config_install_load(
-            parsed_head=parsed_head, target_type=TargetType.none.name, xml=xml))
+            parsed_head=parsed_head, xml=xml))
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
