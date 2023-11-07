@@ -19,7 +19,8 @@ class ConfigCommand:
     @ivar command: Command to be executed
     """
 
-    def __init__(self, command: str, path: Optional[str] = None, value: Optional[str] = None, header_string: Optional[str] = None, value_string: Optional[str] = None) -> None:  # noqa: WPS221
+    def __init__(self, command: str, path: Optional[str] = None, value: Optional[str] = None,
+                 header_string: Optional[str] = None, value_string: Optional[str] = None) -> None:  # noqa: WPS221
         self.command = command
         self._id = self._create_request_id()
         self._path = path

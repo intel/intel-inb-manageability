@@ -256,13 +256,11 @@ class Dispatcher(WindowsService):
         self.create_workload_orchestration_instance()
         self.invoke_workload_orchestration_check(True)
 
-    def _do_config_install_load(self, parsed_head: XmlHandler, target_type: str,
-                                xml: Optional[str] = None) -> Result:
+    def _do_config_install_load(self, parsed_head: XmlHandler, xml: Optional[str] = None) -> Result:
         """Invoked by do_config_operation to perform config file load. It replaces the existing
         TC conf file with a new file.
 
         @param parsed_head: The root parsed xml
-        @param target_type: Target type (vision/node), None for inb
         @param xml: Manifest to be published for Accelerator Manageability Framework agents, None for inb
         @return Result: {'status': 400, 'message': 'Configuration load: FAILED'}
         or {'status': 200, 'message': 'Configuration load: successful'}
@@ -272,17 +270,14 @@ class Dispatcher(WindowsService):
         configuration_helper = ConfigurationHelper(self._make_callbacks_object())
         uri = configuration_helper.parse_url(parsed_head)
         if not is_valid_uri(uri):
-            if target_type is TargetType.none.name:
-                logger.debug("Config load operation using local path.")
-                path_header = parsed_head.get_children('config/configtype/load')
-                new_file_loc = path_header.get('path', None)
-                if CACHE not in new_file_loc.rsplit('/', 1):
-                    return CONFIG_LOAD_FAIL_WRONG_PATH
-                if new_file_loc is None:
-                    return Result(CODE_BAD_REQUEST,
-                                  'Configuration load: Invalid configuration load manifest without <path> tag')
-            else:
-                return Result(CODE_BAD_REQUEST, 'Configuration load: unable to download configuration (bad URI)')
+            logger.debug("Config load operation using local path.")
+            path_header = parsed_head.get_children('config/configtype/load')
+            new_file_loc = path_header.get('path', None)
+            if CACHE not in new_file_loc.rsplit('/', 1):
+                return CONFIG_LOAD_FAIL_WRONG_PATH
+            if new_file_loc is None:
+                return Result(CODE_BAD_REQUEST,
+                              'Configuration load: Invalid configuration load manifest without <path> tag')
 
         if uri:
             try:
@@ -297,23 +292,15 @@ class Dispatcher(WindowsService):
 
         logger.debug(f"new_file_loc = {new_file_loc}")
 
-        if target_type is TargetType.none.name:
-            try:
-                self._request_config_agent(CONFIG_LOAD, file_path=new_file_loc)
-                if new_file_loc:
-                    remove_file(new_file_loc)
-                return Result(CODE_OK, 'Configuration load: SUCCESSFUL')
-            except DispatcherException as error:
+        try:
+            self._request_config_agent(CONFIG_LOAD, file_path=new_file_loc)
+            if new_file_loc:
                 remove_file(new_file_loc)
-                logger.error(error)
-                return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED. Error: ' + str(error))
-        else:
-            if xml is None:
-                return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED. No XML to publish to targets')
-
-            target_config_load_operation(
-                xml=xml, file_path=new_file_loc, broker_core=self._broker)
-            return PUBLISH_SUCCESS
+            return Result(CODE_OK, 'Configuration load: SUCCESSFUL')
+        except DispatcherException as error:
+            remove_file(new_file_loc)
+            logger.error(error)
+            return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED. Error: ' + str(error))
 
     def _do_config_install_update_config_items(self, config_cmd_type: str, value_object: Optional[str]) -> Result:
         """Invoked by do_config_operation to perform update of configuration values
@@ -350,7 +337,7 @@ class Dispatcher(WindowsService):
         except (ValueError, IndexError) as error:
             raise DispatcherException(f'Invalid values for payload {error}')
 
-    def _do_config_operation(self, parsed_head: XmlHandler, target_type: str) -> Result:
+    def _do_config_operation(self, parsed_head: XmlHandler) -> Result:
         """Performs either a config load or update of config items.  Delegates to either
         do_config_install_update_config_items or do_config_install_load method depending on type
         of operation invoked
@@ -365,7 +352,7 @@ class Dispatcher(WindowsService):
 
         config_cmd_type, value_object = _get_config_value(parsed_head)
         if config_cmd_type == 'load':
-            return self._do_config_install_load(parsed_head=parsed_head, target_type=target_type)
+            return self._do_config_install_load(parsed_head=parsed_head)
         else:
             return self._do_config_install_update_config_items(config_cmd_type, value_object)
 
@@ -476,17 +463,7 @@ class Dispatcher(WindowsService):
 
             elif type_of_manifest == 'config':
                 logger.debug('Running configuration command sent down ')
-                target_type = parsed_head.find_element('config/targetType')
-                if target_type is None:
-                    target_type = TargetType.none.name
-                logger.debug(f"target_type : {target_type}")
-                if target_type is TargetType.none.name:
-                    result = self._do_config_operation(parsed_head, target_type)
-                else:
-                    config_cmd_type = parsed_head.get_element('config/cmd')
-                    logger.debug(f"cmd_type : {config_cmd_type}")
-                    result = self._do_config_operation_on_target(
-                        config_cmd_type, parsed_head, xml, target_type, self._broker)
+                result = self._do_config_operation(parsed_head)
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
@@ -607,25 +584,6 @@ class Dispatcher(WindowsService):
             raise DispatcherException(f'No Password sent in manifest for {ota}')
         elif (usr is None) and pwd:
             raise DispatcherException(f'No Username sent in manifest for {ota}')
-
-    def _do_config_operation_on_target(self, config_cmd: str, parsed_head: XmlHandler, xml: str, target_type: str,
-                                       broker_core: DispatcherBroker) -> Result:
-        """Performs config operations on Accelerator Manageability Framework agents
-
-        @param config_cmd: Config cmd to be performed on targets
-        @param parsed_head: Parsed head of the manifest xml
-        @param xml: manifest in XML format
-        @param target_type: Target on which the config operation needs to be performed
-        @param broker_core: Dispatcher Broker object
-        @return Result: PUBLISH_SUCCESS if success
-        @raises DispatcherException: if unsuccessful or if MQTT object is None
-        """
-        logger.debug("")
-        if config_cmd == CONFIG_LOAD:
-            return self._do_config_install_load(parsed_head=parsed_head, target_type=target_type, xml=xml)
-        else:
-            broker_core.mqtt_publish(CONFIG_CHANNEL + config_cmd, xml)
-            return PUBLISH_SUCCESS
 
     def _do_install_on_target(self, ota_type: str, xml: str, repo_type: str, parsed_manifest: Mapping[str, Optional[Any]]):
         logger.debug("")
