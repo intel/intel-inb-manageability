@@ -5,6 +5,7 @@ from typing import Any
 from unittest import TestCase
 
 from mock import patch, Mock
+from dispatcher.dispatcher import WindowsDispatcherService
 from unit.common.mock_resources import *
 
 from dispatcher.aota.aota_error import AotaError
@@ -543,12 +544,12 @@ class TestDispatcher(TestCase):
                                         m_connect: Any,
                                         mock_logging: Any) -> None:
 
-        d = TestDispatcher._build_dispatcher()
+        d = WindowsDispatcherService([])
         self.assertFalse(' ' in d._svc_name_)
         self.assertEquals(d._svc_name_.split('-')[0], 'inbm')
 
     @staticmethod
     def _build_dispatcher() -> Dispatcher:
-        d = Dispatcher(None, MockDispatcherBroker.build_mock_dispatcher_broker())
+        d = Dispatcher([], MockDispatcherBroker.build_mock_dispatcher_broker())
         d._update_logger = Mock()  # type: ignore
         return d
