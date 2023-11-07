@@ -115,22 +115,8 @@ def _get_config_value(parsed: XmlHandler) -> Tuple[str, Optional[str]]:
     return config_cmd_type, value_object
 
 
-class Dispatcher(WindowsService):
-    """An instance of this class will be the callback to
-    L{TestAdapter} and L{HdcAdapter} to enable the cloud connectors to
-    call the OTA tools
-    """
-
-    _svc_name_ = 'inbm-dispatcher'
-    _svc_display_name_ = 'Dispatcher Agent'
-    _svc_description_ = 'Intel Manageability coordinating agent'
-
-    def __init__(self, args: Optional[List] = None, broker_core: Optional[DispatcherBroker] = None) -> None:
-        if args is None:
-            args = []
-
-        super().__init__(args)
-
+class Dispatcher:
+    def __init__(self, args: List[str], broker_core: DispatcherBroker) -> None:
         log_config_path = get_log_config_path()
         msg = f"Looking for logging configuration file at {log_config_path}"
         print(msg)
@@ -165,11 +151,8 @@ class Dispatcher(WindowsService):
                                    broker_core=self._broker,
                                    logger=self._update_logger)
 
-    def svc_stop(self) -> None:
+    def stop(self) -> None:
         self.RUNNING = False
-
-    def svc_main(self) -> None:
-        self.start()
 
     def start(self, tls: bool = True) -> None:
         """Start the Dispatcher service.
