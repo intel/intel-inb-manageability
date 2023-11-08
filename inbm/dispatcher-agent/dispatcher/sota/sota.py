@@ -31,21 +31,26 @@ from .setup_helper import SetupHelper
 from .snapshot import Snapshot
 from .sota_error import SotaError
 from ..packagemanager.local_repo import DirectoryRepo, IRepo
+from ..install_check_service import InstallCheckService
 
 logger = logging.getLogger(__name__)
 
 
 class SOTAUtil:  # FIXME intermediate step in refactor
-    def check_diagnostic_disk(self, estimated_size: Union[float, int], dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def check_diagnostic_disk(self,
+                              estimated_size: Union[float, int],
+                              dispatcher_callbacks: DispatcherCallbacks,
+                              install_check_service: InstallCheckService) -> None:
         """Checks if there is sufficient size for an update with diagnostic agent
 
         @param estimated_size: estimated install size
         @param dispatcher_callbacks: DispatcherCallbacks
+        @param install_check_service: provides an install check
         """
         logger.debug("")
         logger.info(f'Estimate reports we need additional {estimated_size} Bytes for update')
         try:
-            dispatcher_callbacks.install_check(size=estimated_size, check_type='check_storage')
+            install_check_service.install_check(size=estimated_size, check_type='check_storage')
         except DispatcherException:
             dispatcher_callbacks.broker_core.telemetry(
                 "System Update aborted: insufficient disk space")
@@ -74,7 +79,9 @@ class SOTA:
     def __init__(self,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks, **kwargs: Any) -> None:
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService,
+                 **kwargs: Any) -> None:
         """SOTA thread instance
 
         @param parsed_manifest: Parsed parameters from manifest
@@ -99,6 +106,7 @@ class SOTA:
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.sota_mode = parsed_manifest['sota_mode']
         self._device_reboot = parsed_manifest['deviceReboot']
+        self._install_check_service = install_check_service
 
         if self._repo_type == LOCAL_SOURCE:
             if self._ota_element is None:
@@ -132,7 +140,7 @@ class SOTA:
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
             estimated_size = self.installer.get_estimated_size()
-            SOTAUtil().check_diagnostic_disk(estimated_size, self._dispatcher_callbacks)
+            SOTAUtil().check_diagnostic_disk(estimated_size, self._dispatcher_callbacks, self._install_check_service)
             if self._repo_type == REMOTE_SOURCE:
                 logger.debug(f"Remote repo URI: {self._uri}")
                 if self._uri is None:
