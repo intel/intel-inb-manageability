@@ -331,6 +331,7 @@ class MockDispatcher(Dispatcher):
         self.dbs_remove_image_on_failed_container = True
         self.sota_repos = None
         self.proceed_without_rollback = False
+        self.broker_core = MockDispatcherBroker.build_mock_dispatcher_broker()
         self.update_logger = UpdateLogger("", "")
 
     def clear_dispatcher_state(self):

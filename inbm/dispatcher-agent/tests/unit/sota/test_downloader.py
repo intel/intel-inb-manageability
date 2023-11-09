@@ -50,7 +50,7 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            TestDownloader.mock_disp_callbacks_obj).get_os('YoctoX86_64')  # type: ignore
+            TestDownloader.mock_disp_callbacks_obj, None).get_os('YoctoX86_64')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
@@ -71,7 +71,7 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            TestDownloader.mock_disp_callbacks_obj).get_os('YoctoX86_64')  # type: ignore
+            TestDownloader.mock_disp_callbacks_obj, None).get_os('YoctoX86_64')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
@@ -89,8 +89,8 @@ class TestDownloader(unittest.TestCase):
     def test_return_false_when_is_valid_release_date_fails(self) -> None:
         self.release_date = self.username = self.password = None
         assert TestDownloader.sota_instance
-        TestDownloader.sota_instance.factory = SotaOsFactory(  # type: ignore
-            TestDownloader.mock_disp_callbacks_obj).get_os('YoctoX86_64')  # type: ignore
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            TestDownloader.mock_disp_callbacks_obj, None).get_os('YoctoX86_64')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()

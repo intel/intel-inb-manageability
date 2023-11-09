@@ -46,7 +46,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_Ubuntu_update(self):
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_obj).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_obj, None).get_os('Ubuntu')  # type: ignore
 
         factory = TestOsUpdater.sota_instance.factory
         assert factory
@@ -66,7 +66,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_33_2_kB_used(self):
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_obj).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_obj, None).get_os('Ubuntu')  # type: ignore
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -78,7 +78,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_33_2_kB_freed(self):
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_obj).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_obj, None).get_os('Ubuntu')  # type: ignore
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -90,7 +90,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_1_mB_used(self):
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_obj).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_obj, None).get_os('Ubuntu')  # type: ignore
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -102,7 +102,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_42_gB_used(self):
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_obj).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_obj, None).get_os('Ubuntu')  # type: ignore
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -114,7 +114,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_234_3_B_used(self):
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_obj).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_obj, None).get_os('Ubuntu')  # type: ignore
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -126,7 +126,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_bad_input(self):
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_obj).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_obj, None).get_os('Ubuntu')  # type: ignore
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -139,7 +139,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_Yocto_update(self, mock_yocto_os_update):
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_obj).get_os('YoctoX86_64')  # type: ignore
+            TestOsUpdater.mock_disp_obj, None).get_os('YoctoX86_64')  # type: ignore
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
