@@ -36,16 +36,16 @@ class TestDownloader(unittest.TestCase):
                            'password': password, 'sota_mode': 'no-download', 'deviceReboot': "no"}
         cls.sota_instance = SOTA(parsed_manifest, "remote",
                                  DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                     sota_repos=cls.mock_disp_callbacks_obj.sota_repos,
                                                      proceed_without_rollback=cls.mock_disp_callbacks_obj.proceed_without_rollback,
                                                      logger=cls.mock_disp_callbacks_obj.logger),
+                                 None,
                                  install_check_service=MockInstallCheckService())
         cls.sota_instance.factory = SotaOsFactory(
-            cls.mock_disp_callbacks_obj).get_os('YoctoX86_64')
+            cls.mock_disp_callbacks_obj, None).get_os('YoctoX86_64')
 
     @patch('dispatcher.sota.downloader.Downloader.is_valid_release_date', return_value=True)
     @patch('dispatcher.sota.downloader.YoctoDownloader.download')
-    def test_download_successful(self, mock_download, mock_date):
+    def test_download_successful(self, mock_download, mock_date) -> None:
         self.release_date = self.username = self.password = None
 
         assert TestDownloader.sota_instance
@@ -66,7 +66,7 @@ class TestDownloader(unittest.TestCase):
 
     @patch('dispatcher.sota.downloader.Downloader.is_valid_release_date', return_value=True)
     @patch('dispatcher.sota.downloader.YoctoDownloader.download', side_effect=DispatcherException('foo'))
-    def test_download_raises(self, mock_download, mock_date):
+    def test_download_raises(self, mock_download, mock_date) -> None:
         self.release_date = self.username = self.password = None
 
         assert TestDownloader.sota_instance
@@ -86,7 +86,7 @@ class TestDownloader(unittest.TestCase):
 
         mock_download.assert_called_once()
 
-    def test_return_false_when_is_valid_release_date_fails(self):
+    def test_return_false_when_is_valid_release_date_fails(self) -> None:
         self.release_date = self.username = self.password = None
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(  # type: ignore

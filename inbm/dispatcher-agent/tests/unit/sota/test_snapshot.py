@@ -23,7 +23,7 @@ class TestSnapshot(unittest.TestCase):
     @patch("inbm_lib.trtl.Trtl.delete_snapshot")
     def test_ubuntu_delete_snap(self, order, rc, err, mock_del_snap):
         factory = SotaOsFactory(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks()).get_os('Ubuntu')
+            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
         mock_del_snap.return_value = (rc, err)
         val = snapshot.commit()
@@ -39,7 +39,7 @@ class TestSnapshot(unittest.TestCase):
     @patch("pickle.dump")
     def test_ubuntu_snapshot(self, order, rc, err, mock_pickle_dump, mock_trtl_single_snapshot):
         factory = SotaOsFactory(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks()).get_os('Ubuntu')
+            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
         with patch('builtins.open', new_callable=mock_open()) as m:
             if order == 1:
@@ -55,7 +55,7 @@ class TestSnapshot(unittest.TestCase):
     @patch("pickle.dump", side_effect=Exception('foo'))
     def test_Ubuntu_snapshot_raises1(self, rc, err, mock_pickle_dump, mock_trtl_single_snapshot):
         factory = SotaOsFactory(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks()).get_os('Ubuntu')
+            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
         with patch('builtins.open', new_callable=mock_open()) as m:
             mock_trtl_single_snapshot.return_value = (rc, err)
@@ -69,7 +69,7 @@ class TestSnapshot(unittest.TestCase):
     def test_Ubuntu_snapshot_raises2(self, rc, err, mock_trtl_single_snapshot):
         with patch('builtins.open', new_callable=mock_open()) as m:
             factory = SotaOsFactory(
-                MockDispatcherCallbacks.build_mock_dispatcher_callbacks()).get_os('Ubuntu')
+                MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None).get_os('Ubuntu')
             snapshot = factory.create_snapshotter("update", '1', False)
             mock_trtl_single_snapshot.return_value = (rc, err)
             try:

@@ -37,9 +37,9 @@ class TestOsUpdater(unittest.TestCase):
                            'password': password, 'sota_mode': 'full', 'deviceReboot': "no"}
         cls.sota_instance = SOTA(parsed_manifest, "remote",
                                  DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                     sota_repos=cls.mock_disp_obj.sota_repos,
                                                      proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
                                                      logger=cls.mock_disp_obj.update_logger),
+                                 None,
                                  MockInstallCheckService(),
                                  snapshot=1)
 

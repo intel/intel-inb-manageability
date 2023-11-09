@@ -39,8 +39,7 @@ class TestSetupHelper(unittest.TestCase):
         fixture.setUp()
         payload = "dispatcher: http://testsuccess \n\t"
 
-        setup_helper = DebianBasedSetupHelper(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks())
+        setup_helper = DebianBasedSetupHelper(None)
         setup_helper.update_sources(payload, filename=fixture.fn_result)
 
         c = ""
@@ -66,8 +65,7 @@ class TestSetupHelper(unittest.TestCase):
         fixture.setUp()
         payload = "dispatcher: testdontupdate \n\t"
 
-        setup_helper = DebianBasedSetupHelper(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks())
+        setup_helper = DebianBasedSetupHelper(None)
         setup_helper.update_sources(payload, filename=fixture.fn_result)
 
         c = ""

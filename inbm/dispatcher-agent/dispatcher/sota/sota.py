@@ -80,6 +80,7 @@ class SOTA:
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
                  snapshot: Optional[Any] = None,
                  action: Optional[Any] = None) -> None:
@@ -88,6 +89,7 @@ class SOTA:
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: A reference to the main Dispatcher object
+        @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param kwargs:
         """
 
@@ -102,6 +104,7 @@ class SOTA:
         self.snap_num: Optional[str] = None
         self.log_to_file: Optional[str] = None
         self._dispatcher_callbacks = dispatcher_callbacks
+        self._sota_repos = sota_repos
         self.installer: Union[None, OsUpdater, OsUpgrader] = None
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
@@ -201,7 +204,7 @@ class SOTA:
 
         time_to_wait_before_reboot = 2 if not skip_sleeps else 0
 
-        os_factory = SotaOsFactory(self._dispatcher_callbacks)
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos)
         try:
             os_type = detect_os()
         except ValueError as e:
@@ -350,7 +353,7 @@ class SOTA:
     def check(self) -> None:
         """Perform manifest checking before SOTA"""
         logger.debug("")
-        os_factory = SotaOsFactory(self._dispatcher_callbacks)
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos)
         try:
             os_type = detect_os()
         except ValueError as e:

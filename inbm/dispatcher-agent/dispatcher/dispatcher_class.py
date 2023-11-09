@@ -127,7 +127,7 @@ class Dispatcher:
         self._install_check_service = install_check_service
         self.update_queue: Queue[Tuple[str, str]] = Queue(1)
         self._thread_count = 1
-        self.sota_repos = None
+        self._sota_repos = None
         self.sota_mode = None
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
@@ -143,8 +143,7 @@ class Dispatcher:
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
-        return DispatcherCallbacks(sota_repos=self.sota_repos,
-                                   proceed_without_rollback=self.proceed_without_rollback,
+        return DispatcherCallbacks(proceed_without_rollback=self.proceed_without_rollback,
                                    broker_core=self._broker,
                                    logger=self._update_logger)
 
@@ -227,9 +226,12 @@ class Dispatcher:
             detected_os = detect_os()
             if detected_os in [LinuxDistType.YoctoARM.name, LinuxDistType.YoctoX86_64.name]:
                 try:
-                    SotaOsFactory(self._make_callbacks_object()).get_os(detected_os).create_snapshotter('update',
-                                                                                                        snap_num='1',
-                                                                                                        proceed_without_rollback=True).commit()
+                    SotaOsFactory(self._make_callbacks_object(), self._sota_repos).\
+                        get_os(detected_os).\
+                        create_snapshotter('update',
+                                           snap_num='1',
+                                           proceed_without_rollback=True,
+                                           ).commit()
                 except OSError:
                     # harmless here--mender commit is speculative
                     pass
@@ -484,6 +486,7 @@ class Dispatcher:
             ota_type.upper(),
             repo_type,
             self._make_callbacks_object(),
+            self._sota_repos,
             self._install_check_service,
             self.config_dbs)
 
@@ -514,6 +517,7 @@ class Dispatcher:
                     ota.upper(),
                     repo_type,
                     self._make_callbacks_object(),
+                    self._sota_repos,
                     self._install_check_service,
                     self.config_dbs)
                 p = factory.create_parser()
@@ -739,7 +743,11 @@ class Dispatcher:
                            'sota_repos': self.sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
-        sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(), self._install_check_service,
+        sota_instance = SOTA(parsed_manifest,
+                             REMOTE_SOURCE,
+                             self._make_callbacks_object(),
+                             self._sota_repos,
+                             self._install_check_service,
                              snapshot, action)
 
         sota_instance.execute(self.proceed_without_rollback)

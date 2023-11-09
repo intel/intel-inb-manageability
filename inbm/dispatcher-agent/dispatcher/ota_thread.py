@@ -128,16 +128,18 @@ class SotaThread(OtaThread):
 
     @param repo_type: source location -> local or remote
     @param dispatcher_callbacks callback to the main Dispatcher object
+    @param sota_repos: new Ubuntu/Debian mirror (or None)
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     @return (dict): dict representation of COMMAND_SUCCESS or OTA_FAILURE/OTA_FAILURE_IN_PROGRESS
     """
 
-    def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks,
+    def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
-                 parsed_manifest: Mapping[str, Optional[Any]]) -> None:
+                 parsed_manifest: Mapping[str, Optional[Any]],) -> None:
         super().__init__(repo_type, dispatcher_callbacks, parsed_manifest,
                          install_check_service=install_check_service)
+        self._sota_repos = sota_repos
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the SOTA thread and which checks for existing locks before delegating to
@@ -154,6 +156,7 @@ class SotaThread(OtaThread):
                 sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                      repo_type=self._repo_type,
                                      dispatcher_callbacks=self._dispatcher_callbacks,
+                                     sota_repos=self._sota_repos,
                                      install_check_service=self._install_check_service)
                 try:
                     sota_instance.execute(self._dispatcher_callbacks.proceed_without_rollback)
@@ -175,6 +178,7 @@ class SotaThread(OtaThread):
             sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
                                  dispatcher_callbacks=self._dispatcher_callbacks,
+                                 sota_repos=self._sota_repos,
                                  install_check_service=self._install_check_service)
             sota_instance.check()
         except SotaError as e:
