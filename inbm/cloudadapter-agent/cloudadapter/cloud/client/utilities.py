@@ -321,7 +321,7 @@ class MethodParser:
         if not method or not isinstance(method, str):
             parsed.update(method="")
 
-        return MethodParsed(**parsed)
+        return MethodParsed(**parsed)  # type: ignore
 
     def parse(self, topic: str, payload: Any) -> list[MethodParsed]:
         """Parse a given topic and payload
@@ -340,6 +340,8 @@ class MethodParser:
             parsed = []
 
             path = self._aggregate_info.get("path")
+            if not isinstance(path, str):
+                raise ValueError(f"The variable 'path' (= {path}) must be of type 'str'")
             payloads = self._parse_by_path(payload, path)
             if payloads:
                 for p in payloads:

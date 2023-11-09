@@ -5,6 +5,7 @@ from telemetry.telemetry_handling import (
 from mock import patch, Mock
 from unittest import TestCase
 import time
+from inbm_lib.mqttclient.mqtt import MQTT
 
 
 info = {'timestamp': 1637019250.2020352, 'type': 'static_telemetry',
@@ -15,6 +16,9 @@ info = {'timestamp': 1637019250.2020352, 'type': 'static_telemetry',
                    'osInformation': 'Linux 5.4.0-72-generic UTC 2021 x86_64 x86_64',
                    'diskInformation': '[{"NAME": "loop0", "SIZE": "38400000", "SSD": "True"}]'}}
 
+class MockMQTT(MQTT):
+    def __init__(self):
+        pass
 
 class TestTelemetryHandling(TestCase):
 
@@ -97,7 +101,7 @@ class TestTelemetryHandling(TestCase):
     @patch('telemetry.telemetry_handling.publish_dynamic_telemetry')
     @patch('telemetry.telemetry_handling.publish_static_telemetry')
     def test_publish_initial_telemetry(self, mock_static, mock_publish):
-        send_initial_telemetry(None, None)
+        send_initial_telemetry(MockMQTT(), False)
         mock_static.assert_called_once()
         mock_publish.assert_called()
 

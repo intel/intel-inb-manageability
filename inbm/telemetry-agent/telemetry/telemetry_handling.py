@@ -59,13 +59,13 @@ class TelemetryTimer:
     """Handles waiting for collection and publishing."""
 
     def __init__(self, collect_time: float, publish_time: float, with_docker: bool = True) -> None:
-        self.__publish_slept_counter = 0
-        self.__collect_slept_counter = 0
+        self.__publish_slept_counter = 0.0
+        self.__collect_slept_counter = 0.0
         self.__collect_time = collect_time
-        self.__collect_counter = 0
+        self.__collect_counter = 0.0
         self.__publish_time = publish_time
         self.__with_docker = with_docker
-        self.__publish_counter = 0
+        self.__publish_counter = 0.0
         # this lock is intended to protect config items:
         # collect_time and publish_time
         self._config_lock = threading.Lock()

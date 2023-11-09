@@ -21,6 +21,17 @@ import os
 
 logger = logging.getLogger(__name__)
 
+def getFromDictOrRaise(dictionary: Dict[str, Any], key: str) -> str:
+    """Get a key from a dict and validate value is type str or raise ValueError.
+    
+    Guaranteed to return a str."""
+
+    val = dictionary.get(key)
+    if not isinstance(val, str):
+        raise ValueError(f"The variable '{key}' (= {val}) must be of type 'str'")
+    
+    return val
+
 
 def validate_config(config: Dict[str, Any]) -> None:
     """Validate the given config
@@ -131,12 +142,13 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     # Build messengers
     def build_messenger_with_config(config: Dict[str, Any]) -> OneWayMessenger:
         """Create OneWayMessenger instance from a config object"""
+
         return OneWayMessenger(
             topic_formatter=Formatter(
-                formatting=config.get("pub"),
+                formatting=getFromDictOrRaise(config, "pub"),
                 defaults=defaults),
             payload_formatter=Formatter(
-                formatting=config.get("format"),
+                formatting=getFromDictOrRaise(config, "format"),
                 defaults=defaults),
             connection=connection)
 
@@ -169,16 +181,16 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
             parser = None
         else:
             parser = MethodParser(
-                parse_info=parser_config.get("single"),
-                aggregate_info=parser_config.get("aggregate"))
+                parse_info=parser_config["single"],
+                aggregate_info=parser_config["aggregate"])
         handler = ReceiveRespondHandler(
             topic_formatter=Formatter(
-                formatting=handler_config.get("pub"),
+                formatting=getFromDictOrRaise(handler_config, "pub"),
                 defaults=defaults),
             payload_formatter=Formatter(
-                formatting=handler_config.get("format"),
+                formatting=getFromDictOrRaise(handler_config, "format"),
                 defaults=defaults),
-            subscribe_topic=handler_config.get("sub"),
+            subscribe_topic=getFromDictOrRaise(handler_config, "sub"),
             parser=parser,
             connection=connection)
 
@@ -187,12 +199,12 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     for config in echoer_configs:
         EchoHandler(
             topic_formatter=Formatter(
-                formatting=config.get("pub"),
+                formatting=getFromDictOrRaise(config, "pub"),
                 defaults=defaults),
             payload_formatter=Formatter(
-                formatting=config.get("format"),
+                formatting=getFromDictOrRaise(config, "format"),
                 defaults=defaults),
-            subscribe_topic=config.get("sub"),
+            subscribe_topic=getFromDictOrRaise(config, "sub"),
             connection=connection)
 
     # Build CloudClient
