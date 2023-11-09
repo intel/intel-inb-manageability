@@ -67,7 +67,7 @@ class ProxyConfig:
 class TLSConfig:
 
     def __init__(self, ca_certs: Optional[str] = None, device_cert: Optional[str] = None,
-                 device_key: Optional[str] = None) -> None:
+                 device_key: Optional[str] = None):
         """Construct a TLS configuration
 
         @param ca_certs: (str) File path to CA certificates to use
@@ -76,7 +76,7 @@ class TLSConfig:
         self._context = self._make_tls_context(ca_certs, device_cert, device_key)
 
     @property
-    def context(self) -> SSLContext:
+    def context(self):
         """Read-only TLS context
 
         @return: (SSLContext) The TLS context
@@ -84,7 +84,7 @@ class TLSConfig:
         return self._context
 
     def _make_tls_context(self, ca_certs: Optional[str] = None, device_cert: Optional[str] = None,
-                          device_key: Optional[str] = None) -> SSLContext:
+                          device_key: Optional[str] = None):
         """Create a TLS context from the given arguments"""
         context = SSLContext(protocol=PROTOCOL_TLS)
         # List from Vincent
@@ -126,7 +126,7 @@ class TLSConfig:
 
 class Formatter:
 
-    def __init__(self, formatting: str, defaults: dict = {}) -> None:
+    def __init__(self, formatting, defaults={}):
         """Create a formatter for a given string formatting.
         Placeholder fields are surrounded with brackets,
         and there are no spaces in the bracketed placeholder field.
@@ -150,7 +150,7 @@ class Formatter:
         for f in fields:
             self._fields.add(f.group(1))
 
-    def _escape(self, string: str) -> str:
+    def _escape(self, string):
         """Escape quotes and control characters in the given string
 
         @param string: (str) String to escape
@@ -167,7 +167,7 @@ class Formatter:
             string = string.replace(target, escape)
         return string
 
-    def format(self, time: Optional[datetime] = None, **fields) -> str:
+    def format(self, time=None, **fields):
         """Format a string with the given mapping
 
         @param time: (datetime) Override default time
@@ -210,7 +210,7 @@ class Formatter:
 
 class MethodParsed:
 
-    def __init__(self, method: str = "", args: dict = {}, **symbols: str) -> None:
+    def __init__(self, method: str = "", args: Dict[str, Any] = {}, **symbols: str):
         """Construct readonly parsed method information
         @param method:    (str) Method name
         @param args:   (dict) Method arguments
@@ -238,7 +238,7 @@ class MethodParsed:
 
 class MethodParser:
 
-    def __init__(self, parse_info: dict, aggregate_info: Optional[dict] = None) -> None:
+    def __init__(self, parse_info, aggregate_info=None):
         """Create a parser to process method information from
         the raw string the topic and payload.
         parse_info is a dict with the following format:
@@ -261,7 +261,7 @@ class MethodParser:
         self._parse_info = parse_info
         self._aggregate_info = aggregate_info
 
-    def _parse_by_path(self, obj: dict, path: str) -> Optional[Any]:
+    def _parse_by_path(self, obj, path):
         """Parse a value from an object via a path
         Paths are in the form: root/child/...
 
@@ -269,28 +269,28 @@ class MethodParser:
         @param obj: (dict) Object to traverse
         @return: (Any) The value parsed, or None if not found
         """
-        path_list = [p for p in path.split("/") if p.strip()]
-        value: Optional[Any] = obj
+        path = [p for p in path.split("/") if p.strip()]
+        value = obj
 
-        for p in path_list:
+        for p in path:
             if not isinstance(value, dict):
                 return None
             value = value.get(p)
 
         return value
 
-    def _parse_by_regex(self, raw: str, regex: str, group: int) -> Optional[str]:
+    def _parse_by_regex(self, raw, regex, group):
         """Parse a value from a raw string via a regex
 
         @param raw:   (str) Raw string input to parse
         @param regex: (str) Uncompiled regular expression to use
         @param group: (int) Group number of the match to return
-        @return: The value parsed, or None if not found
+        @return: (Any) The value parsed, or None if not found
         """
         match = re.search(regex, raw)
         return match.group(group) if match else None
 
-    def _parse_single(self, topic: str, payload: dict) -> MethodParsed:
+    def _parse_single(self, topic, payload):
         """Parse a single method
 
         @param topic:    (str) Raw topic
@@ -321,9 +321,9 @@ class MethodParser:
         if not method or not isinstance(method, str):
             parsed.update(method="")
 
-        return MethodParsed(**parsed)  # type: ignore
+        return MethodParsed(**parsed)
 
-    def parse(self, topic: str, payload: Any) -> list[MethodParsed]:
+    def parse(self, topic, payload):
         """Parse a given topic and payload
 
         @param topic:   (str) Raw topic
@@ -340,8 +340,6 @@ class MethodParser:
             parsed = []
 
             path = self._aggregate_info.get("path")
-            if not isinstance(path, str):
-                raise ValueError(f"The variable 'path' (= {path}) must be of type 'str'")
             payloads = self._parse_by_path(payload, path)
             if payloads:
                 for p in payloads:

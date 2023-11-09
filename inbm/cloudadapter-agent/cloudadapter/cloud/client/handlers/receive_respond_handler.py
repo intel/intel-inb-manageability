@@ -46,10 +46,10 @@ class ReceiveRespondHandler(Handler):
 
         self._methods: Dict = {}
 
-    def bind(self, name: str, callback: Callable) -> None:
+    def bind(self, name: str, callback: Callable):
         self._methods[name] = callback
 
-    def _fire_method(self, method: str, args: Dict[str, Any], symbols: Dict[str, Any]) -> None:
+    def _fire_method(self, method: str, args: Dict[str, Any], symbols: Dict[str, Any]):
         """Fire an individual method and provide response to cloud
 
         @param method:  Method to fire
@@ -67,7 +67,7 @@ class ReceiveRespondHandler(Handler):
         payload = self._payload_formatter.format(message=response, **symbols)
         self._connection.publish(topic, payload)
 
-    def _on_method(self, topic: str, payload: Any) -> None:
+    def _on_method(self, topic: str, payload: bytes) -> None:
         """Callback for subscribed cloud messages
 
         @param topic:   Specific topic

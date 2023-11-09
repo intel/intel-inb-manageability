@@ -5,13 +5,13 @@ Abstract base class used by all cloud connection objects.
 """
 
 import abc
-from typing import Any, Callable, Optional
+from typing import Optional
 
 
 class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
 
     @abc.abstractproperty
-    def request_id(self) -> int:
+    def request_id(self):
         """A readonly property
 
         @return: (int) Current request ID
@@ -26,7 +26,7 @@ class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
         pass
 
     @abc.abstractmethod
-    def start(self) -> None:
+    def start(self):
         """Start the connection
 
         @exception ConnectError: If connecting failed
@@ -34,7 +34,7 @@ class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
         pass
 
     @abc.abstractmethod
-    def stop(self) -> None:
+    def stop(self):
         """Stop the connection
 
         @exception DisconnectError: If disconnecting failed
@@ -42,7 +42,7 @@ class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
         pass
 
     @abc.abstractmethod
-    def subscribe(self, topic: str, callback: Callable) -> None:
+    def subscribe(self, topic, callback):
         """Subscribe to a topic on the connection
 
         @param topic: (str) Connection topic
@@ -51,7 +51,7 @@ class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
         pass
 
     @abc.abstractmethod
-    def publish(self, topic: str, payload: Any) -> None:
+    def publish(self, topic, payload):
         """Publish to a topic on the connection
 
         @param topic: (str) Connection topic

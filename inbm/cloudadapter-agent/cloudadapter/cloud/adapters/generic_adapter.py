@@ -15,7 +15,7 @@ from .adapter import Adapter
 
 
 class GenericAdapter(Adapter):
-    def __init__(self, config: dict) -> None:
+    def __init__(self, config: dict):
         super().__init__(config)
 
     def configure(self, config: dict) -> CloudClient:

@@ -176,7 +176,7 @@ class MQTTConnection(Connection):
             # Add to subscriptions for potential resubscribing
             self._subscriptions[topic] = callback
 
-    def publish(self, topic: str, payload: Any) -> None:
+    def publish(self, topic: str, payload: str) -> None:
         if topic == "":
             logger.info("(disabled) not publishing: %s", payload if payload else "[Empty string]")
             return
