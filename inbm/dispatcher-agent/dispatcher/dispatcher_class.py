@@ -727,7 +727,7 @@ class Dispatcher:
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
 
-    def invoke_sota(self, **kwargs) -> None:
+    def invoke_sota(self, snapshot: Optional[Any] = None, action: Optional[Any] = None) -> None:
         """Invokes SOTA in either snapshot_revert or snapshot_delete mode along with snapshot_num
 
         @param kwargs: dict value containing action='snapshot_revert' or 'snapshot_delete',
@@ -739,8 +739,8 @@ class Dispatcher:
                            'sota_repos': self.sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
-        sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(),
-                             **kwargs)
+        sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(), self._install_check_service,
+                             snapshot, action)
 
         sota_instance.execute(self.proceed_without_rollback)
 

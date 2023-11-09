@@ -81,7 +81,8 @@ class SOTA:
                  repo_type: str,
                  dispatcher_callbacks: DispatcherCallbacks,
                  install_check_service: InstallCheckService,
-                 **kwargs: Any) -> None:
+                 snapshot: Optional[Any] = None,
+                 action: Optional[Any] = None) -> None:
         """SOTA thread instance
 
         @param parsed_manifest: Parsed parameters from manifest
@@ -113,11 +114,11 @@ class SOTA:
                 raise SotaError("ota_element is missing for SOTA")
             self._local_file_path = self._ota_element['path']
 
-        for k, v in kwargs.items():
-            if k == 'snapshot':
-                self.snap_num = v
-            elif k == 'action':
-                self.sota_state = v
+        if snapshot is not None:
+            self.snap_num = snapshot
+        if action is not None:
+            self.sota_state = action
+
         logger.debug(f"SOTA Tool launched in {self.sota_state} mode")
 
     def _clean_local_repo_file(self):

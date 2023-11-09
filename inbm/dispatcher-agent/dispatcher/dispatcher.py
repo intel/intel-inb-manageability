@@ -17,7 +17,7 @@ from inbm_lib.windows_service import WindowsService
 def make_dispatcher(args: List[str]) -> Dispatcher:
     """Make a dispatcher with the given args.
 
-    Handle dependency injection in one"""
+    Handle dependency injection in one place"""
     broker = DispatcherBroker()
     return Dispatcher(args=args, broker=broker, install_check_service=InstallCheckService(broker))
 
