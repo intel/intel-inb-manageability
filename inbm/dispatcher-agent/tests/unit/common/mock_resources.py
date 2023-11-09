@@ -4,13 +4,15 @@
 import logging
 from threading import Lock
 import datetime
-from typing import Any
+from typing import Optional, Union, Any
 
 from dispatcher.common.result_constants import *
+from dispatcher.install_check_service import InstallCheckService
 
 # case 1: success case
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.dispatcher_broker import DispatcherBroker
+from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.update_logger import UpdateLogger
@@ -51,7 +53,7 @@ fake_fota_guid = """<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</t
                       <type><fota name="sample-rpm"><fetch>http://localhost:8080</fetch>
                       <biosversion>A.B.D.E.F</biosversion><vendor>test</vendor>
                       <signature>testsig</signature><manufacturer>testmanufacturer</manufacturer><product>testproduct</product>
-                      <releasedate>2017-06-12</releasedate><path>fakepath</path><guid>1234</guid>
+                      <releasedate>2017-06-12</releasedate><path>fakepath</path><guid>6B29FC40-CA47-1067-B31D-00DD010662DA</guid>
                       </fota></type></ota></manifest>
                    """
 
@@ -282,9 +284,6 @@ class MockDispatcherCallbacks(DispatcherCallbacks):
         self.proceed_without_rollback = False
         self.logger = UpdateLogger("", "")
 
-    def install_check(self, size: int, check_type: str) -> None:
-        pass
-
     @staticmethod
     def build_mock_dispatcher_callbacks() -> DispatcherCallbacks:
         return MockDispatcherCallbacks()
@@ -334,12 +333,23 @@ class MockDispatcher(Dispatcher):
         self.proceed_without_rollback = False
         self.update_logger = UpdateLogger("", "")
 
-    def install_check(self, size=None, check_type=None) -> None:
-        pass
-
     def clear_dispatcher_state(self):
         pass
 
     @staticmethod
     def build_mock_dispatcher():
         return MockDispatcher(logging.getLogger(__name__))
+
+
+class MockInstallCheckService(InstallCheckService):
+    def __init__(self, install_check: bool = True):
+        self._install_check = install_check
+        self._install_check_called = False
+
+    def install_check(self, size: Union[float, int], check_type: Optional[str] = None) -> None:
+        self._install_check_called = True
+        if not self._install_check:
+            raise DispatcherException('MockInstallCheckService set to fail install check')
+    
+    def install_check_called(self) -> bool:
+        return self._install_check_called

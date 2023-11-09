@@ -172,6 +172,7 @@ def canonicalize_uri(url: str) -> CanonicalUri:
 
     return CanonicalUri(value=url_normalize.url_normalize(url))
 
+
 def is_within_directory(directory: str, target: str) -> bool:
     """Check if target is within directory
     
@@ -200,6 +201,7 @@ def safe_extract(tarball: tarfile.TarFile, path: str = ".", members: Optional[It
         if not is_within_directory(path, member_path):
             raise IOError("Attempted Path Traversal in Tar File")
     tarball.extractall(path, members, numeric_owner=numeric_owner) 
+
 
 def validate_file_type(path: List[str]) -> None:
     """ Method to check target file's type. Example of supported file list:

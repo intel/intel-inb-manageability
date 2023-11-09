@@ -1,10 +1,10 @@
 import datetime
 import os
-import unittest
 from typing import Any
 from unittest import TestCase
 
 from mock import patch, Mock
+from dispatcher.dispatcher import WindowsDispatcherService
 from unit.common.mock_resources import *
 
 from dispatcher.aota.aota_error import AotaError
@@ -14,6 +14,7 @@ from dispatcher.constants import TargetType
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.ota_thread import AotaThread
+from dispatcher.install_check_service import InstallCheckService
 from inbm_lib.xmlhandler import XmlHandler
 from dispatcher.ota_util import create_ota_resource_list
 
@@ -52,17 +53,13 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.ota_thread.AotaThread.start')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     def test_invalid_command(self,
                              mock_send_result: Any,
-                             m_pre: Any,
                              m_sub: Any,
                              m_connect: Any,
                              m_thread_start: Any,
-                             mock_logging: Any) -> None:
-        m_pre.return_value = False
-
+                             mock_logging: Any) -> None:        
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \
               'Sample FOTA manifest file</description><type>aota</type><repository>remote</repository>' \
@@ -70,7 +67,7 @@ class TestDispatcher(TestCase):
               '<version>1.0</version><signature>abcd</signature><containerTag>defg</containerTag>' \
               '</aota></type></ota></manifest>'
         d = TestDispatcher._build_dispatcher()
-        result_code = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        result_code = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
         self.assertEquals(result_code, 300)
         assert not m_thread_start.called
 
@@ -78,20 +75,16 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_pre_check_pass(self,
                             mock_workload_orchestration_func: Any,
                             mock_send_result: Any,
-                            m_pre: Any,
                             m_sub: Any,
                             m_connect: Any,
                             m_do_ota_update: Any,
                             m_thread_start: Any,
                             mock_logging: Any) -> None:
-        m_pre.return_value = True
-
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample AOTA</name><description>' \
               'Sample AOTA manifest file</description><type>aota</type><repo>remote</repo>' \
@@ -107,19 +100,15 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.ota_thread.AotaThread.start')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_aota_thread_start_called(self,
                                       mock_workload_orchestration_func: Any,
                                       mock_send_result: Any,
-                                      m_pre: Any,
                                       m_sub: Any,
                                       m_connect: Any,
                                       m_thread_start: Any,
                                       mock_logging: Any) -> None:
-        m_pre.return_value = True
-
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample AOTA</name><description>' \
               'Sample AOTA manifest file</description><type>aota</type><repo>remote</repo>' \
@@ -142,7 +131,8 @@ class TestDispatcher(TestCase):
         mock_parsed_manifest = Mock()
         mock_dbs = Mock()
         mock_callback = Mock()
-        aota = AotaThread('remote', mock_callback, mock_parsed_manifest, mock_dbs)
+        aota = AotaThread('remote', mock_callback, MockInstallCheckService(),
+                          mock_parsed_manifest, mock_dbs)
         with self.assertRaisesRegex(AotaError, 'Cannot proceed with the AOTA '):
             aota.start()
 
@@ -189,7 +179,7 @@ class TestDispatcher(TestCase):
               '<biosversion>5.12</biosversion><sigversion>384</sigversion><signature>signature</signature>' \
               '<manufacturer>Default string</manufacturer><product>Default string</product>' \
               '<productversion>1</productversion><vendor>American Megatrends Inc.</vendor><releasedate>2018-02-08</releasedate>' \
-              '<boot>boot</boot><guid>guid</guid><size>size</size><tooloptions>/p /b</tooloptions>' \
+              '<boot>boot</boot><guid>6B29FC40-CA47-1067-B31D-00DD010662DA</guid><size>size</size><tooloptions>/p /b</tooloptions>' \
               '<username>user1</username><password>pwd</password></fota>' \
               ' <sota><cmd logtofile="y">update</cmd><fetch>http://nat-ubuntu.jf.intel.com:8000/file.mender</fetch>' \
               '<signature>signature</signature><username>user</username><password>pwd</password>' \
@@ -215,7 +205,6 @@ class TestDispatcher(TestCase):
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
@@ -223,19 +212,17 @@ class TestDispatcher(TestCase):
                                    mock_workload_orchestration_func: Any,
                                    mock_request_config_agent: Any,
                                    mock_send_result: Any,
-                                   mock_install: Any,
                                    m_sub: Any,
                                    m_connect: Any,
                                    mock_logging: Any) -> None:
 
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>maxCacheSize:149</path></set></configtype></config></manifest>'
-        d = TestDispatcher._build_dispatcher()
+        d = TestDispatcher._build_dispatcher(install_check=MockInstallCheckService(install_check=True))
         mock_request_config_agent.return_value = True
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
@@ -243,26 +230,25 @@ class TestDispatcher(TestCase):
                                    mock_workload_orchestration_func: Any,
                                    mock_request_config_agent: Any,
                                    mock_send_result: Any,
-                                   mock_install: Any,
                                    m_sub: Any,
                                    m_connect: Any,
                                    mock_logging: Any) -> None:
 
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>"maxCacheSize":"149"</path></set></configtype></config></manifest>'
-        d = TestDispatcher._build_dispatcher()
+        d = TestDispatcher._build_dispatcher(install_check=MockInstallCheckService(install_check=False))
         mock_request_config_agent.return_value = True
-        self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'sota_upgrade'})
     def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
-                                             mock_install_check, mock_logging):
-        d = TestDispatcher._build_dispatcher()
+                                             mock_logging):
+        mock_install = MockInstallCheckService()
+        d = TestDispatcher._build_dispatcher(install_check=mock_install)
         d.check_dispatcher_state_info()
-        mock_install_check.assert_called()
+        self.assertTrue(mock_install.install_check_called())
         mock_invoke_sota.assert_called_once()
 
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
@@ -275,17 +261,17 @@ class TestDispatcher(TestCase):
         except DispatcherException as e:
             self.assertTrue("state file doesn't contain 'restart_reason'" in str(e))
 
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'mender-version': 'abcvdk'})
     def test_dispatcher_state_file_info_sota_without_restart_reason(self, mock_disp_state_file_exist,
                                                                     mock_consume_disp_file, mock_invoke_sota,
-                                                                    mock_install_check, mock_logging):
-        d = TestDispatcher._build_dispatcher()
+                                                                    mock_logging):
+        mock_install = MockInstallCheckService()
+        d = TestDispatcher._build_dispatcher(install_check=mock_install)
         d.check_dispatcher_state_info()
-        mock_install_check.assert_called()
+        self.assertTrue(mock_install.install_check_called())
         mock_invoke_sota.assert_called_once()
 
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
@@ -317,19 +303,15 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_fota_for_target_pass(self,
                                   mock_workload_orchestration_func: Any,
                                   mock_send_result: Any,
-                                  m_pre: Any,
                                   m_sub: Any,
                                   m_connect: Any,
                                   mock_install_target: Any,
                                   mock_logging: Any) -> None:
-        m_pre.return_value = True
-
         xml = '<?xml version="1.0" encoding="utf-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleID</id><name>Sample FOTA</name><description>' \
               'Sample</description><type>fota</type><repo>remote</repo></header><type><fota name="sample">' \
@@ -340,7 +322,7 @@ class TestDispatcher(TestCase):
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
         mock_install_target.assert_called_once()
         mock_install_target.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('inbm_common_lib.dmi.is_dmi_path_exists', return_value=False)
@@ -355,23 +337,18 @@ class TestDispatcher(TestCase):
         d.check_dispatcher_state_info()
         mock_send_result.assert_called()
 
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation_on_target')
     @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_config_operation_called(self,
                                      mock_workload_orchestration_func: Any,
                                      mock_send_result: Any,
-                                     m_pre: Any,
                                      m_sub: Any,
                                      m_connect: Any,
                                      mock_config_func: Any,
-                                     mock_target_config_func: Any,
                                      mock_logging: Any) -> None:
-        m_pre.return_value = True
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
               '<cmd>get_element</cmd><configtype><get><path>maxCacheSize</path></get></configtype> ' \
               '</config></manifest> '
@@ -380,54 +357,21 @@ class TestDispatcher(TestCase):
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
         mock_workload_orchestration_func.assert_called()
         mock_config_func.assert_called_once()
-        mock_target_config_func.assert_not_called()
         mock_config_func.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
-
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation_on_target')
-    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_operation')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
-    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    def test_config_operation_target_called(self,
-                                            mock_workload_orchestration_func: Any,
-                                            mock_send_result: Any,
-                                            m_pre: Any,
-                                            m_sub: Any,
-                                            m_connect: Any,
-                                            mock_config_func: Any,
-                                            mock_target_config_func: Any,
-                                            mock_logging: Any) -> None:
-        m_pre.return_value = True
-        xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
-              '<cmd>get_element</cmd><targetType>node</targetType><configtype><get><path>maxCacheSize</path></get></configtype> ' \
-              '</config></manifest> '
-
-        d = TestDispatcher._build_dispatcher()
-        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-        mock_workload_orchestration_func.assert_called()
-        mock_config_func.assert_not_called()
-        mock_target_config_func.assert_called_once()
-        mock_target_config_func.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('dispatcher.dispatcher_class.Dispatcher._do_config_install_load')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_config_load_operation_called(self,
                                           mock_workload_orchestration: Any,
                                           mock_send_result: Any,
-                                          m_pre: Any,
                                           m_sub: Any,
                                           m_connect: Any,
                                           mock_install_func: Any,
                                           mock_logging: Any) -> None:
-        m_pre.return_value = True
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
               '<cmd>load</cmd><targetType>node</targetType><configtype><load><fetch>maxCacheSize</fetch></load></configtype> ' \
               '</config></manifest> '
@@ -437,38 +381,27 @@ class TestDispatcher(TestCase):
         mock_workload_orchestration.assert_called()
         mock_install_func.assert_called_once()
         mock_install_func.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
-    @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
-    @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
-    @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
-    @patch('dispatcher.configuration_helper.ConfigurationHelper.download_config')
-    @patch('inbm_lib.xmlhandler.XmlHandler.__init__')
-    @patch('inbm_lib.xmlhandler.XmlHandler.add_attribute')
-    @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
-    @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
-    def test_config_load_operation_on_target_vision_called(self,
-                                                           mock_rmv: Any,
-                                                           mock_set: Any,
-                                                           mock_add: Any,
-                                                           mock_xml_init: Any,
-                                                           mock_download: Any,
-                                                           mock_url: Any,
-                                                           mock_xml: Any,
-                                                           mock_req_conf_func: Any,
-                                                           mock_logging: Any) -> None:
-
+    @patch('dispatcher.dispatcher_class.Dispatcher._do_config_install_load')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+    def test_config_load_operation_called_bad(self,
+                                              mock_workload_orchestration: Any,
+                                              mock_send_result: Any,
+                                              m_sub: Any,
+                                              m_connect: Any,
+                                              mock_install_func: Any,
+                                              mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
-              '<cmd>load</cmd><targetType>node</targetType><configtype><load><fetch>maxCacheSize</fetch></load></configtype> ' \
+              '<cmd>load</cmd><bad>bad</bad><targetType>node</targetType><configtype><load><fetch>maxCacheSize</fetch></load></configtype> ' \
               '</config></manifest> '
 
         d = TestDispatcher._build_dispatcher()
-        mock_xml_init.return_value = None
-        mock_url.return_value = "http://example.tar"
-        mock_download.return_value = "conf_file"
-        mock_req_conf_func.assert_not_called()
-        self.assertEquals(PUBLISH_SUCCESS, d._do_config_install_load(
-            parsed_head=mock_xml.return_value, target_type=TargetType.vision.name, xml=xml))
+        self.assertIn("Error parsing/validating manifest: XML va", d.do_install(
+            xml=xml, schema_location=TEST_SCHEMA_LOCATION).message)
 
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
@@ -489,7 +422,7 @@ class TestDispatcher(TestCase):
         mock_download.return_value = False, None
         mock_req_conf_func.assert_not_called()
         self.assertEquals(CONFIG_LOAD_SUCCESS, d._do_config_install_load(
-            parsed_head=parsed_head, target_type=TargetType.none.name, xml=xml))
+            parsed_head=parsed_head, xml=xml))
 
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
@@ -510,7 +443,7 @@ class TestDispatcher(TestCase):
         mock_download.return_value = False, None
         mock_req_conf_func.assert_not_called()
         self.assertEquals(CONFIG_LOAD_FAIL_WRONG_PATH, d._do_config_install_load(
-            parsed_head=parsed_head, target_type=TargetType.none.name, xml=xml))
+            parsed_head=parsed_head, xml=xml))
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
@@ -526,19 +459,18 @@ class TestDispatcher(TestCase):
     def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>query</cmd><query><option>status</option><targetType>node</targetType></query></manifest>'
         d = TestDispatcher._build_dispatcher()
-        status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
         mock_workload_orchestration.assert_called()
         mock_perform_cmd_type_operation.assert_called_once()
 
     def test_parse_error_invalid_command(self, mock_logging):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange><targetType>node</targetType></orange></manifest>'
         d = TestDispatcher._build_dispatcher()
-        status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
         self.assertEquals(300, status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
@@ -546,7 +478,6 @@ class TestDispatcher(TestCase):
                                      mock_workload_orchestration: Any,
                                      mock_request_config_agent: Any,
                                      mock_send_result: Any,
-                                     mock_install: Any,
                                      m_sub: Any,
                                      m_connect: Any,
                                      mock_logging: Any) -> None:
@@ -554,11 +485,10 @@ class TestDispatcher(TestCase):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercen</path></get></configtype></config></manifest>'
         d = TestDispatcher._build_dispatcher()
         mock_request_config_agent.side_effect = DispatcherException
-        self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    @patch('dispatcher.dispatcher_class.Dispatcher.install_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
@@ -566,7 +496,6 @@ class TestDispatcher(TestCase):
                                      mock_workload_orchestration: Any,
                                      mock_request_config_agent: Any,
                                      mock_send_result: Any,
-                                     mock_install: Any,
                                      m_sub: Any,
                                      m_connect: Any,
                                      mock_logging: Any) -> None:
@@ -574,7 +503,7 @@ class TestDispatcher(TestCase):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercent</path></get></configtype></config></manifest>'
         d = TestDispatcher._build_dispatcher()
         mock_request_config_agent.return_value = True
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION))
+        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -583,12 +512,13 @@ class TestDispatcher(TestCase):
                                         m_connect: Any,
                                         mock_logging: Any) -> None:
 
-        d = TestDispatcher._build_dispatcher()
+        d = WindowsDispatcherService([])
         self.assertFalse(' ' in d._svc_name_)
         self.assertEquals(d._svc_name_.split('-')[0], 'inbm')
 
     @staticmethod
-    def _build_dispatcher() -> Dispatcher:
-        d = Dispatcher(None, MockDispatcherBroker.build_mock_dispatcher_broker())
+    def _build_dispatcher(install_check: InstallCheckService = MockInstallCheckService()) -> Dispatcher:
+        d = Dispatcher([], MockDispatcherBroker.build_mock_dispatcher_broker(),
+                       install_check)
         d._update_logger = Mock()  # type: ignore
         return d

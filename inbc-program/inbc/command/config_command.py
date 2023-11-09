@@ -128,7 +128,7 @@ class LoadConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_LOAD)
 
-    def trigger_manifest(self, args: Any, topic: str = CONFIG_CHANNEL + CONFIG_LOAD) -> None:
+    def trigger_manifest(self, args: Any, topic: str):
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments from user
@@ -164,8 +164,7 @@ class AppendConfigCommand(ConfigCommand):
         @param args: arguments from user
         @param topic: MQTT topic
         """
-        channel = INBM_INSTALL_CHANNEL
-        super().trigger_manifest(args, channel)
+        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
 
     def search_response(self, payload: Any) -> None:
         """Search for keywords in response message

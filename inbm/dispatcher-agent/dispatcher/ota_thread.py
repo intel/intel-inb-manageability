@@ -10,6 +10,8 @@ import os
 from threading import Lock
 from typing import Optional, Any, Mapping
 
+from .install_check_service import InstallCheckService
+
 from inbm_lib.constants import TRTL_PATH
 from inbm_common_lib.exceptions import UrlSecurityException
 
@@ -38,28 +40,31 @@ class OtaThread(metaclass=abc.ABCMeta):
     @param repo_type: source location -> local or remote
     @param dispatcher_callbacks: callback to Dispatcher object
     @param parsed_manifest: parameters from OTA manifest
+    @param install_check_service: provides install check
     """
 
     def __init__(self,
                  repo_type: str,
                  dispatcher_callbacks: DispatcherCallbacks,
-                 parsed_manifest: Mapping[str, Optional[Any]]) -> None:
+                 parsed_manifest: Mapping[str, Optional[Any]],
+                 install_check_service: InstallCheckService) -> None:
 
         self._repo_type = repo_type
         self._dispatcher_callbacks = dispatcher_callbacks
         self._parsed_manifest = parsed_manifest
+        self._install_check_service = install_check_service
 
     def start(self):
         logger.debug('Performing pre install check')
         try:
-            self._dispatcher_callbacks.install_check()
+            self._install_check_service.install_check(size=0)
             logger.info('Manifest has been parsed successfully')
         except DispatcherException:
             raise DispatcherException('Pre OTA check failed')
 
     def post_install_check(self) -> None:
         logger.debug('Performing post install check')
-        self._dispatcher_callbacks.install_check()
+        self._install_check_service.install_check(size=0)
 
     def check(self) -> None:
         pass
@@ -70,12 +75,15 @@ class FotaThread(OtaThread):
 
     @param repo_type: source location -> local or remote
     @param dispatcher_callbacks: reference to the main Dispatcher object
+    @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     """
 
     def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]]) -> None:
-        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest)
+        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest,
+                         install_check_service=install_check_service)
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the FOTA thread and which checks for existing locks before delegating to
@@ -120,13 +128,16 @@ class SotaThread(OtaThread):
 
     @param repo_type: source location -> local or remote
     @param dispatcher_callbacks callback to the main Dispatcher object
+    @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     @return (dict): dict representation of COMMAND_SUCCESS or OTA_FAILURE/OTA_FAILURE_IN_PROGRESS
     """
 
     def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]]) -> None:
-        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest)
+        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest,
+                         install_check_service=install_check_service)
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the SOTA thread and which checks for existing locks before delegating to
@@ -142,7 +153,8 @@ class SotaThread(OtaThread):
             try:
                 sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                      repo_type=self._repo_type,
-                                     dispatcher_callbacks=self._dispatcher_callbacks)
+                                     dispatcher_callbacks=self._dispatcher_callbacks,
+                                     install_check_service=self._install_check_service)
                 try:
                     sota_instance.execute(self._dispatcher_callbacks.proceed_without_rollback)
                     return COMMAND_SUCCESS
@@ -162,7 +174,8 @@ class SotaThread(OtaThread):
         try:
             sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
-                                 dispatcher_callbacks=self._dispatcher_callbacks)
+                                 dispatcher_callbacks=self._dispatcher_callbacks,
+                                 install_check_service=self._install_check_service)
             sota_instance.check()
         except SotaError as e:
             self._dispatcher_callbacks.broker_core.telemetry(
@@ -175,6 +188,7 @@ class AotaThread(OtaThread):
 
     @param repo_type: source location -> local or remote
     @param dispatcher_callbacks: reference to the main Dispatcher object
+    @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: ConfigDbs.ON, ConfigDbs.OFF, or ConfigDbs.WARN
     @return (dict): dict representation of INSTALL_SUCCESS or INSTALL_FAILURE
@@ -183,9 +197,10 @@ class AotaThread(OtaThread):
     def __init__(self,
                  repo_type: str,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs) -> None:
-        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest)
+        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest, install_check_service)
         self._dbs = dbs
 
     def _check_trtl_binary(self) -> None:

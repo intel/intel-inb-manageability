@@ -22,13 +22,13 @@ from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 from . import constants
 from typing import Tuple, Optional, Dict
 
+from .guid import extract_guid
 from .constants import WINDOWS_NUC_PLATFORM
 from .fota_error import FotaError
 from ..dispatcher_callbacks import DispatcherCallbacks
 from ..packagemanager.irepo import IRepo
 from abc import ABC
 from inbm_common_lib.utility import get_canonical_representation_of_path
-
 
 logger = logging.getLogger(__name__)
 
@@ -87,7 +87,8 @@ class BiosFactory(ABC):
         self._fw_dest = params.get('firmware_dest_path', None)
         self._fw_tool_check_args = params.get('firmware_tool_check_args', None)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename
@@ -98,7 +99,8 @@ class BiosFactory(ABC):
         pass
 
     @staticmethod
-    def get_factory(platform_product: Optional[str], params: Dict, callback: DispatcherCallbacks, repo: IRepo) -> "BiosFactory":
+    def get_factory(platform_product: Optional[str], params: Dict, callback: DispatcherCallbacks,
+                    repo: IRepo) -> "BiosFactory":
         """Checks if the current platform is supported or not
 
         @param platform_product: platform product name
@@ -146,12 +148,12 @@ class BiosFactory(ABC):
         """Extract the tar file
 
         @param repo_name: path to the downloaded package
-        @param pkg_filename: downloaded package
+        @param pkg_filename: downloaded package name
         @raises: FotaError
         """
         logger.debug(f"repo_name:{repo_name}, pkg_filename:{pkg_filename}")
         cmd = "tar -xvf " + str(Path(repo_name) / pkg_filename) + \
-            " --no-same-owner -C " + repo_name
+              " --no-same-owner -C " + repo_name
         (out, err, code) = PseudoShellRunner.run(cmd)
         fw_file, cert_file = BiosFactory.get_files(out)
         if code == 0 and not err:
@@ -160,7 +162,8 @@ class BiosFactory(ABC):
             e = f"Firmware Update Aborted: Invalid File sent. error: {err}"
             raise FotaError(e)
 
-    def delete_files(self, pkg_filename: Optional[str], fw_filename: Optional[str], cert_filename: Optional[str]) -> None:
+    def delete_files(self, pkg_filename: Optional[str], fw_filename: Optional[str],
+                     cert_filename: Optional[str]) -> None:
         """Deletes the downloaded and extracted files
 
         @param pkg_filename: downloaded package filename
@@ -188,46 +191,22 @@ class LinuxToolFirmware(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
-    def _parse_guid(self, output: str) -> Optional[str]:
-        """Method to parse the shell command output to retrieve the value of system firmware type
-
-        @param output: shell command output of ehl firmware tool
-        @return: string value if system firmware type is present if not return None
-        """
-        for line in output.splitlines():
-            if "System Firmware type" in line or "system-firmware type" in line:
-                return line.split(',')[1].split()[0].strip('{').strip('}')
-        return None
-
-    def _extract_guid(self, runner: PseudoShellRunner) -> Optional[str]:
-        """Method to get system firmware type
-
-        @param runner: To run shell commands
-        @return: None or guid
-        """
-        cmd = self._fw_tool + " -l"
-        (out, err, code) = runner.run(cmd)
-        if code != 0:
-            raise FotaError("Firmware Update Aborted: failed to list GUIDs: {}".format(str(err)))
-        guid = self._parse_guid(out)
-        logger.debug("GUID : " + str(guid))
-        if not guid:
-            raise FotaError("Firmware Update Aborted: No System Firmware type GUID found")
-        return guid
-
-    def _apply_firmware(self, repo_name: str, fw_file: Optional[str], guid: Optional[str], tool_options: Optional[str], runner: PseudoShellRunner) -> None:
+    def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
+                        tool_options: Optional[str], runner: PseudoShellRunner) -> None:
         """Updates firmware on the platform by calling the firmware update tool
 
         @param repo_name: path to downloaded package
         @param fw_file: firmware file name
-        @param guid: system fw type
+        @param manifest_guid: GUID provided by the user in the manifest
         @param tool_options: tool_options used along with fw tool
         @param runner: To run shell commands
         @raises FotaError: on failed firmware attempt
         """
         if self._guid_required:
-            if not guid:
-                guid = self._extract_guid(runner)
+            guid = extract_guid(self._fw_tool)  # get the GUID from the system using FW tool
+            if manifest_guid:
+                if guid != manifest_guid:
+                    raise FotaError(f"GUID in manifest does not match the GUID on the system")
         else:
             guid = ''
 
@@ -259,7 +238,8 @@ class LinuxToolFirmware(BiosFactory):
                 err = "Firmware command failed"
             raise FotaError(f"Error: {err}")
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename
@@ -305,7 +285,8 @@ class LinuxFileFirmware(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and applies firmware update and deletes the
         files after the update
 
@@ -341,7 +322,8 @@ class WindowsBiosNUC(BiosFactory):
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
         super().__init__(dispatcher_callbacks, repo, params)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename

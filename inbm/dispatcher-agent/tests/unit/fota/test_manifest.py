@@ -45,7 +45,7 @@ class TestManifest(TestCase):
         resource = parsed.get_children('ota/type/fota')
 
         guid = parse_guid(resource)
-        self.assertEqual('1234', guid)
+        self.assertEqual('6B29FC40-CA47-1067-B31D-00DD010662DA', guid)
 
     def test_parses_without_guid(self):
         parsed = XmlHandler(fake_fota_no_guid, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
