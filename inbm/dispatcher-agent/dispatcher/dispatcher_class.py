@@ -18,10 +18,11 @@ from threading import Thread, active_count
 from time import sleep
 from typing import Tuple
 
+from .install_check_service import InstallCheckService
+
 from inbm_lib import wmi
 from inbm_lib.count_down_latch import CountDownLatch
 from inbm_lib.detect_os import detect_os, LinuxDistType, OsType
-from inbm_lib.windows_service import WindowsService
 from inbm_lib.wmi_exception import WmiException
 from inbm_common_lib.constants import REMOTE_SOURCE, UNKNOWN, UNKNOWN_DATETIME, CONFIG_LOAD
 from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info
@@ -31,7 +32,6 @@ from inbm_common_lib.utility import remove_file
 from inbm_lib.constants import QUERY_CMD_CHANNEL, OTA_SUCCESS, OTA_FAIL
 
 from .aota.aota_error import AotaError
-from .command import Command
 from .common import dispatcher_state
 from .common.result_constants import CODE_OK, CODE_BAD_REQUEST, CODE_MULTIPLE, \
     CONFIG_LOAD_FAIL_WRONG_PATH, CODE_FOUND
@@ -116,17 +116,15 @@ def _get_config_value(parsed: XmlHandler) -> Tuple[str, Optional[str]]:
 
 
 class Dispatcher:
-    def __init__(self, args: List[str], broker_core: DispatcherBroker) -> None:
+    def __init__(self, args: List[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
         log_config_path = get_log_config_path()
         msg = f"Looking for logging configuration file at {log_config_path}"
         print(msg)
         fileConfig(log_config_path,
                    disable_existing_loggers=False)
 
-        if broker_core is not None:
-            self._broker = broker_core
-        else:
-            self._broker = DispatcherBroker()
+        self._broker = broker
+        self._install_check_service = install_check_service
         self.update_queue: Queue[Tuple[str, str]] = Queue(1)
         self._thread_count = 1
         self.sota_repos = None
@@ -145,8 +143,7 @@ class Dispatcher:
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
-        return DispatcherCallbacks(install_check=self.install_check,
-                                   sota_repos=self.sota_repos,
+        return DispatcherCallbacks(sota_repos=self.sota_repos,
                                    proceed_without_rollback=self.proceed_without_rollback,
                                    broker_core=self._broker,
                                    logger=self._update_logger)
@@ -487,6 +484,7 @@ class Dispatcher:
             ota_type.upper(),
             repo_type,
             self._make_callbacks_object(),
+            self._install_check_service,
             self.config_dbs)
 
         p = factory.create_parser()
@@ -516,6 +514,7 @@ class Dispatcher:
                     ota.upper(),
                     repo_type,
                     self._make_callbacks_object(),
+                    self._install_check_service,
                     self.config_dbs)
                 p = factory.create_parser()
                 # NOTE: p.parse can raise one of the *otaError exceptions
@@ -604,41 +603,6 @@ class Dispatcher:
         if type(cmd.response) is dict:
             if cmd.response is not None and 'rc' in cmd.response.keys() and cmd.response['rc'] == 1:
                 raise DispatcherException(cmd.response['message'])
-
-    def install_check(self, size: Optional[int] = None, check_type: Optional[str] = None) -> None:
-        """Perform pre install checks via the diagnostic agent. Send a command <pre_ota_check> to
-        diagnostic agent which checks [cloud agent, cloud, memory, storage, battery]
-
-        @param size: size of the install package; default=None
-        @param check_type : String representation of checks
-        eg: check_type='check_storage'..could later be extended to other types
-        """
-
-        # Create command object for pre install check
-        cmd = Command(check_type, self._broker) if check_type else Command(
-            'install_check', self._broker)
-
-        cmd.execute()
-
-        if cmd.log_info != "":
-            logger.info(cmd.log_info)
-        if cmd.log_error != "":
-            logger.error(cmd.log_error)
-
-        if cmd.response is None:
-            self._telemetry('Install check timed out. Please '
-                            'check health of the diagnostic agent')
-            raise DispatcherException('Install check timed out')
-
-        if cmd.response['rc'] == 0:
-            self._telemetry('Command: {} passed. Message: {}'
-                            .format(cmd.command, cmd.response['message']))
-            logger.info('Install check passed')
-
-        else:
-            self._telemetry('Command: {} failed. Message: {}'
-                            .format(cmd.command, cmd.response['message']))
-            raise DispatcherException('Install check failed')
 
     def _on_cloud_request(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from cloud
@@ -763,7 +727,7 @@ class Dispatcher:
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
 
-    def invoke_sota(self, **kwargs) -> None:
+    def invoke_sota(self, snapshot: Optional[Any] = None, action: Optional[Any] = None) -> None:
         """Invokes SOTA in either snapshot_revert or snapshot_delete mode along with snapshot_num
 
         @param kwargs: dict value containing action='snapshot_revert' or 'snapshot_delete',
@@ -775,8 +739,8 @@ class Dispatcher:
                            'sota_repos': self.sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
-        sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(),
-                             **kwargs)
+        sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(), self._install_check_service,
+                             snapshot, action)
 
         sota_instance.execute(self.proceed_without_rollback)
 
@@ -806,8 +770,8 @@ class Dispatcher:
         times-outs or in case of bad health report, it performs a SOTA rollback
         In case of a good health report, it just deletes the snapshot."""
         try:
-            self.install_check(check_type='swCheck')
-            self.install_check(check_type='check_network')
+            self._install_check_service.install_check(check_type='swCheck', size=0)
+            self._install_check_service.install_check(check_type='check_network', size=0)
             self._telemetry('On Boot, Diagnostics reports healthy system')
             self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
             self._update_logger.update_log(OTA_SUCCESS)

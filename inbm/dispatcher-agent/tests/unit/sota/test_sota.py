@@ -2,11 +2,11 @@ import testtools
 import os
 from ..common.mock_resources import *
 from ddt import data, ddt, unpack
-from mock import mock, patch  # type: ignore
+from mock import patch  # type: ignore
 
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from dispatcher.sota.command_list import CommandList
-from dispatcher.sota.os_factory import ISotaOs, SotaError, SotaOsFactory
+from dispatcher.sota.os_factory import SotaError, SotaOsFactory
 from dispatcher.sota.sota import SOTA
 from dispatcher.sota.sota import SOTAUtil
 from dispatcher.sota.constants import *
@@ -41,16 +41,21 @@ class TestSota(testtools.TestCase):
                            'uri': mock_url.value, 'repo': TestSota._build_mock_repo(0), 'username': username,
                            'password': password, 'sota_mode': 'full', 'deviceReboot': 'yes'}
         cls.sota_instance = SOTA(parsed_manifest, 'remote',
-                                 cls.mock_disp_callbacks_obj, snapshot=1)
+                                 cls.mock_disp_callbacks_obj,
+                                 install_check_service=MockInstallCheckService(),
+                                 snapshot=1)
         cls.sota_local_instance = SOTA(parsed_manifest, 'local',
-                                       cls.mock_disp_callbacks_obj, snapshot=1)
+                                       cls.mock_disp_callbacks_obj,
+                                       install_check_service=MockInstallCheckService(),
+                                       snapshot=1)
         cls.sota_util_instance = SOTAUtil()
 
     @data(0, 510000, 6500000)
     def test_check_diagnostic_disk(self, size_value):
         try:
             TestSota.sota_util_instance.check_diagnostic_disk(size_value,
-                                                              MockDispatcherCallbacks.build_mock_dispatcher_callbacks())
+                                                              MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+                                                              install_check_service=MockInstallCheckService())
         except SotaError:
             self.assertfail("SotaError raised when not expected.")
 
@@ -111,7 +116,8 @@ class TestSota(testtools.TestCase):
                            'deviceReboot': "no"}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
-            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, snapshot=1)
+            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj,
+                                 MockInstallCheckService(), snapshot=1)
             sota_instance.execute(proceed_without_rollback=False, skip_sleeps=True)
             mock_print.assert_called_once()
             if TestSota.sota_instance.proceed_without_rollback:
@@ -134,7 +140,8 @@ class TestSota(testtools.TestCase):
                            'deviceReboot': "no"}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
-            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, snapshot=1)
+            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj,
+                                 MockInstallCheckService(), snapshot=1)
             sota_instance.execute(proceed_without_rollback=False, skip_sleeps=True)
             mock_print.assert_called_once()
             if TestSota.sota_instance.proceed_without_rollback:
