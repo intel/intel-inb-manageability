@@ -20,6 +20,7 @@ from .ota_thread import AotaThread
 from .ota_thread import FotaThread
 from .ota_thread import OtaThread
 from .ota_thread import SotaThread
+from .install_check_service import InstallCheckService
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +31,12 @@ class OtaFactory(metaclass=abc.ABCMeta):
     @param dispatcher_callbacks: Callbacks in Dispatcher object
     """
 
-    def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def __init__(self,
+                 repo_type: str,
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
+        self._install_check_service = install_check_service
         self._repo_type = repo_type
 
     @abc.abstractmethod
@@ -46,25 +51,27 @@ class OtaFactory(metaclass=abc.ABCMeta):
     def get_factory(ota_type,
                     repo_type: Any,
                     dispatcher_callbacks: DispatcherCallbacks,
+                    install_check_service: InstallCheckService,
                     dbs: ConfigDbs) -> Any:
         """Create an OTA factory of a specified OTA type
 
         @param ota_type: The OTA type
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: reference to a DispatcherCallbacks object
+        @param install_check_service: provides install_check
         @param dbs: ConfigDbs.ON or ConfigDbs.WARN or ConfigDbs.OFF
         @raise ValueError: Unsupported OTA type
         """
 
         logger.debug(f"ota_type: {ota_type}")
         if ota_type == OtaType.FOTA.name:
-            return FotaFactory(repo_type, dispatcher_callbacks)
+            return FotaFactory(repo_type, dispatcher_callbacks, install_check_service)
         if ota_type == OtaType.SOTA.name:
-            return SotaFactory(repo_type, dispatcher_callbacks)
+            return SotaFactory(repo_type, dispatcher_callbacks, install_check_service)
         if ota_type == OtaType.AOTA.name:
-            return AotaFactory(repo_type, dispatcher_callbacks, dbs=dbs)
+            return AotaFactory(repo_type, dispatcher_callbacks, install_check_service, dbs=dbs)
         if ota_type == OtaType.POTA.name:
-            return PotaFactory(repo_type, dispatcher_callbacks)
+            return PotaFactory(repo_type, dispatcher_callbacks, install_check_service)
         raise ValueError('Unsupported OTA type: {}'.format(str(ota_type)))
 
 
@@ -72,10 +79,15 @@ class FotaFactory(OtaFactory):
     """FOTA concrete class
 
     @param dispatcher_callbacks: Callbacks in Dispatcher object
+    @param install_check_service: provides install_check
     """
 
-    def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks) -> None:
-        super().__init__(repo_type, dispatcher_callbacks)
+    def __init__(self,
+                 repo_type: str,
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService) -> None:
+
+        super().__init__(repo_type, dispatcher_callbacks, install_check_service)
 
     def create_parser(self) -> OtaParser:
         logger.debug(" ")
@@ -83,17 +95,22 @@ class FotaFactory(OtaFactory):
 
     def create_thread(self, parsed_manifest: Mapping[str, Optional[Any]]) -> OtaThread:
         logger.debug(" ")
-        return FotaThread(self._repo_type, self._dispatcher_callbacks, parsed_manifest)
+        return FotaThread(self._repo_type, self._dispatcher_callbacks, self._install_check_service, parsed_manifest)
 
 
 class SotaFactory(OtaFactory):
     """SOTA concrete class
 
     @param dispatcher_callbacks: Callbacks in Dispatcher object
+    @param install_check_service: provides InstallCheckService
     """
 
-    def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks) -> None:
-        super().__init__(repo_type, dispatcher_callbacks)
+    def __init__(self,
+                 repo_type: str,
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService) -> None:
+
+        super().__init__(repo_type, dispatcher_callbacks, install_check_service)
 
     def create_parser(self) -> OtaParser:
         logger.debug(" ")
@@ -101,19 +118,24 @@ class SotaFactory(OtaFactory):
 
     def create_thread(self, parsed_manifest: Mapping[str, Optional[Any]]) -> OtaThread:
         logger.debug(" ")
-        return SotaThread(self._repo_type, self._dispatcher_callbacks, parsed_manifest)
+        return SotaThread(self._repo_type, self._dispatcher_callbacks, self._install_check_service, parsed_manifest)
 
 
 class AotaFactory(OtaFactory):
     """AOTA concrete class
 
     @param dispatcher_callbacks: Callbacks in Dispatcher object
+    @param install_check_service: provides install_check
     @param dbs: ConfigDbs.{ON, OFF, WARN}
     """
 
-    def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks, dbs: ConfigDbs) -> None:
+    def __init__(self,
+                 repo_type: str,
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService,
+                 dbs: ConfigDbs) -> None:
 
-        super().__init__(repo_type, dispatcher_callbacks)
+        super().__init__(repo_type, dispatcher_callbacks, install_check_service)
         self._dbs = dbs
 
     def create_parser(self) -> OtaParser:
@@ -122,18 +144,25 @@ class AotaFactory(OtaFactory):
 
     def create_thread(self, parsed_manifest: Mapping[str, Optional[Any]]) -> OtaThread:
         logger.debug(" ")
-        return AotaThread(self._repo_type, self._dispatcher_callbacks, parsed_manifest, self._dbs)
+        return AotaThread(self._repo_type,
+                          self._dispatcher_callbacks,
+                          self._install_check_service,
+                          parsed_manifest, self._dbs)
 
 
 class PotaFactory(OtaFactory):
     """POTA concrete class
 
     @param dispatcher_callbacks: Callbacks in Dispatcher object
+    @param install_check_service: provides install_check
     """
 
-    def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def __init__(self,
+                 repo_type: str,
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 install_check_service: InstallCheckService) -> None:
 
-        super().__init__(repo_type, dispatcher_callbacks)
+        super().__init__(repo_type, dispatcher_callbacks, install_check_service)
 
     def create_parser(self) -> OtaParser:
         logger.debug(" ")

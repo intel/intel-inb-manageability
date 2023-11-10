@@ -4,12 +4,15 @@
 import logging
 from threading import Lock
 import datetime
+from typing import Optional, Union
 
 from dispatcher.common.result_constants import *
+from dispatcher.install_check_service import InstallCheckService
 
 # case 1: success case
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.dispatcher_broker import DispatcherBroker
+from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.update_logger import UpdateLogger
@@ -281,9 +284,6 @@ class MockDispatcherCallbacks(DispatcherCallbacks):
         self.proceed_without_rollback = False
         self.logger = UpdateLogger("", "")
 
-    def install_check(self, size: int, check_type: str) -> None:
-        pass
-
     @staticmethod
     def build_mock_dispatcher_callbacks() -> DispatcherCallbacks:
         return MockDispatcherCallbacks()
@@ -333,12 +333,23 @@ class MockDispatcher(Dispatcher):
         self.proceed_without_rollback = False
         self.update_logger = UpdateLogger("", "")
 
-    def install_check(self, size=None, check_type=None) -> None:
-        pass
-
     def clear_dispatcher_state(self):
         pass
 
     @staticmethod
     def build_mock_dispatcher():
         return MockDispatcher(logging.getLogger(__name__))
+
+
+class MockInstallCheckService(InstallCheckService):
+    def __init__(self, install_check: bool = True):
+        self._install_check = install_check
+        self._install_check_called = False
+
+    def install_check(self, size: Union[float, int], check_type: Optional[str] = None) -> None:
+        self._install_check_called = True
+        if not self._install_check:
+            raise DispatcherException('MockInstallCheckService set to fail install check')
+    
+    def install_check_called(self) -> bool:
+        return self._install_check_called
