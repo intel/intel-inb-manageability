@@ -28,7 +28,7 @@ run:
 	PYTHONDONTWRITEBYTECODE=x PYTHONPATH=$(LOCAL_PIP_PATH) python3 -m $(AGENT).$(AGENT)
 
 tests:
-	PYTHONDONTWRITEBYTECODE=x pynose --with-coverage --cover-erase --cover-inclusive --cover-tests --cover-package=$(AGENT)
+	PYTHONPATH="${PYTHONPATH}:$(shell pwd):$(shell pwd)/../../inbm-lib" PYTHONDONTWRITEBYTECODE=x pytest --cov=$(AGENT) --cov-report=term-missing telemetry/tests/unit
 
 deb-eval-py3:
 	./package-py3.sh deb EVAL
