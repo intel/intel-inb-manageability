@@ -170,12 +170,9 @@ class TestINBC(TestCase):
         self.assertRegexpMatches(mock_stderr.getvalue(
         ), r"Signature is greater than allowed string size")
 
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.inbc.Broker')
     @patch('inbm_lib.timer.Timer.start')
-    def test_create_query_manifest(self, t_start, m_sub, m_pub, m_connect, mock_reconnect):
+    def test_create_query_manifest(self, t_start, m_broker):
         p = self.arg_parser.parse_args(['query', '-o', 'all'])
         Inbc(p, 'query', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>cmd</type><cmd>query</cmd><query>' \
@@ -205,12 +202,9 @@ class TestINBC(TestCase):
            return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',
                                             'Intel Corporation', 'Alder Lake Client Platform'))
     @patch('inbc.parser.getpass.getpass', return_value='123abc')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.inbc.Broker')
     @patch('inbm_lib.timer.Timer.start')
-    def test_create_fota_manifest_clean_input(self, mock_start, m_sub, m_pub,
-                                  m_connect, m_pass, m_dmi, mock_reconnect, mock_thread):
+    def test_create_fota_manifest_clean_input(self, mock_start, m_broker, m_pass, m_dmi, mock_reconnect, mock_thread):
         f = self.arg_parser.parse_args(
             ['fota', '-u', 'https://abc.com/\x00package.bin', '-r', '2024-12-31'])
         Inbc(f, 'fota', False)
