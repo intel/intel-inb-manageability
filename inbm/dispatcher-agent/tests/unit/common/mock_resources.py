@@ -350,6 +350,6 @@ class MockInstallCheckService(InstallCheckService):
         self._install_check_called = True
         if not self._install_check:
             raise DispatcherException('MockInstallCheckService set to fail install check')
-    
+
     def install_check_called(self) -> bool:
         return self._install_check_called

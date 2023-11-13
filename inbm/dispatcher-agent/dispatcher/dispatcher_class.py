@@ -773,10 +773,10 @@ class Dispatcher:
             self._install_check_service.install_check(check_type='swCheck', size=0)
             self._install_check_service.install_check(check_type='check_network', size=0)
             self._telemetry('On Boot, Diagnostics reports healthy system')
-            logger.info("On Boot, Diagnostics reports healthy system") 
+            logger.info("On Boot, Diagnostics reports healthy system")
             self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
             self._update_logger.update_log(OTA_SUCCESS)
-            logger.info(OTA_SUCCESS) 
+            logger.info(OTA_SUCCESS)
         except DispatcherException:
             self._telemetry(
                 'On Boot, Diagnostics reports some services not up after previous SOTA')
