@@ -106,6 +106,8 @@ SOTA on Ubuntu is supported in 3 modes:
 2. No download - Retrieves and installs packages.
 3. Download only - Retrieve packages (will not unpack or install).
 
+By default when SOTA is performaing an install, it will upgrade all eligible packages. The user can optionally specify a list of packages to upgrade (or install if not present) via the [--package-list, -p=PACKAGES] option.
+
 
 ### Usage
 ```
@@ -114,6 +116,7 @@ inbc sota {--uri, -u=URI}
    [--username, -un USERNAME]
    [--mode, -m MODE; default="full", choices=["full","no-download", "download-only"] ]
    [--reboot, -rb; default=yes]
+   [--package-list, -p=PACKAGES]
 ```
 ### Examples
 #### Edge Device on Yocto OS requiring username/password
@@ -128,15 +131,40 @@ inbc sota
 inbc sota
 ```
 
+#### Edge Device on Ubuntu in Update/Full mode with package list
+```
+inbc sota --package-list less,git
+```
+
+This will install (or upgrade) the less and git packages and any necessary
+dependencies.
+
 #### Edge Device on Ubuntu in download-only mode
 ```
 inbc sota --mode download-only
 ```
 
+#### Edge Device on Ubuntu in download-only mode with package list
+```
+inbc sota --mode download-only --package-list less,git
+```
+
+This will download the latest versions of less and git and any necessary
+dependencies.
+
 #### Edge Device on Ubuntu in no-download mode
 ```
 inbc sota --mode no-download
 ```
+
+#### Edge Device on Ubuntu in no-download mode with package list
+```
+inbc sota --mode no-download --package-list less,git
+```
+
+This will upgrade or install the packages less and git and any necessary
+dependencies, as long as all packages needed to do this have already been
+downloaded. (see download-only mode)
 
 ## POTA
 ### Description
