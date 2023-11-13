@@ -247,10 +247,10 @@ class TestINBC(TestCase):
         self.assertEqual(s.func(s), expected)
     
     def test_create_ubuntu_update_manifest_with_package_list(self):
-        s = self.arg_parser.parse_args(['sota', '--package-list', 'package1,package2'])
+        s = self.arg_parser.parse_args(['sota', '--package-list', 'hello,cowsay', '--reboot', 'no', '--mode', 'download-only'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
-                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode>' \
-                   '<package_list>package1,package2</package_list><deviceReboot>yes</deviceReboot></sota></type>' \
+                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>download-only</mode>' \
+                   '<package_list>hello,cowsay</package_list><deviceReboot>no</deviceReboot></sota></type>' \
                    '</ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
