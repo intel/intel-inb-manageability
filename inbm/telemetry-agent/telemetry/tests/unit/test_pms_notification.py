@@ -11,9 +11,11 @@ from unittest import TestCase
 
 logger = logging.getLogger(__name__)
 
+
 class MockMQTT(MQTT):
     def __init__(self):
         pass
+
 
 class TestPMSNotification(TestCase):
     def setUp(self):

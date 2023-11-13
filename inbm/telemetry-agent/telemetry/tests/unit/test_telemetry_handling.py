@@ -16,9 +16,11 @@ info = {'timestamp': 1637019250.2020352, 'type': 'static_telemetry',
                    'osInformation': 'Linux 5.4.0-72-generic UTC 2021 x86_64 x86_64',
                    'diskInformation': '[{"NAME": "loop0", "SIZE": "38400000", "SSD": "True"}]'}}
 
+
 class MockMQTT(MQTT):
     def __init__(self):
         pass
+
 
 class TestTelemetryHandling(TestCase):
 

@@ -7,9 +7,11 @@ from telemetry.software_checker import *
 from telemetry.shared import *
 from inbm_lib.mqttclient.mqtt import MQTT
 
+
 class MockMQTT(MQTT):
     def __init__(self):
         pass
+
 
 class TestTelemetry(TestCase):
 

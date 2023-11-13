@@ -608,7 +608,6 @@ class Dispatcher:
             if cmd.response is not None and 'rc' in cmd.response.keys() and cmd.response['rc'] == 1:
                 raise DispatcherException(cmd.response['message'])
 
-
     def _on_cloud_request(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from cloud
 
