@@ -74,7 +74,7 @@ class DebianBasedSetupHelper(SetupHelper):
 
     def update_sources(self, payload: Any, filename: str = APT_SOURCES_LIST_PATH) -> None:
         """Update the apt sources.list file with payload if needed
-        @param payload: Anying, http url value retrieved from config manager
+        @param payload: Any, http url value retrieved from config manager
         @param filename: file name for sources
         """
         temp_payload = payload.strip()
