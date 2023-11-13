@@ -39,8 +39,7 @@ class TestSetupHelper(unittest.TestCase):
         fixture.setUp()
         payload = "dispatcher: http://testsuccess \n\t"
 
-        setup_helper = DebianBasedSetupHelper(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks())
+        setup_helper = DebianBasedSetupHelper(None)
         setup_helper.update_sources(payload, filename=fixture.fn_result)
 
         c = ""
@@ -66,8 +65,7 @@ class TestSetupHelper(unittest.TestCase):
         fixture.setUp()
         payload = "dispatcher: testdontupdate \n\t"
 
-        setup_helper = DebianBasedSetupHelper(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks())
+        setup_helper = DebianBasedSetupHelper(None)
         setup_helper.update_sources(payload, filename=fixture.fn_result)
 
         c = ""
@@ -80,7 +78,7 @@ class TestSetupHelper(unittest.TestCase):
 
     @patch('dispatcher.sota.setup_helper.YoctoSetupHelper._is_mender_file_exists')
     def test_yocto_pre_processing(self, mock_is_mender_file_exists):
-        factory = SotaOsFactory(None).get_os('YoctoX86_64')  # type: ignore
-        setup_helper = factory.create_setup_helper()  # type: ignore
+        factory = SotaOsFactory(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None).get_os('YoctoX86_64')
+        setup_helper = factory.create_setup_helper()
         setup_helper.pre_processing()
         mock_is_mender_file_exists.assert_called_once()
