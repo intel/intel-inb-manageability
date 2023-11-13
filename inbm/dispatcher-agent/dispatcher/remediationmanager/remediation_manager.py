@@ -47,7 +47,7 @@ class RemediationManager:
         except Exception as exception:  # TODO (Nat): Should catch specific exception
             logger.exception('Subscribe failed: %s', exception)
 
-    def _on_stop_container(self, topic: str, payload: str, qos: int) -> None:
+    def _on_stop_container(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for REMEDIATION_CONTAINER_CMD_CHANNEL"""
         try:
             if payload is not None:
@@ -57,7 +57,7 @@ class RemediationManager:
             logger.error('Unable to parse container message . Verify container remove request '
                          'is in the correct format "abc,def,123". {}'.format(error))
 
-    def _on_remove_image(self, topic: str, payload: str, qos: int) -> None:
+    def _on_remove_image(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for REMEDIATION_IMAGE_CMD_CHANNEL"""
         try:
             if payload is not None:

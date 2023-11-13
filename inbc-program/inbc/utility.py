@@ -4,10 +4,10 @@
     Copyright (C) 2020-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
-from typing import List
+from typing import Any, List
 
 
-def search_keyword(payload: str, words: List[str]) -> bool:
+def search_keyword(payload: Any, words: List[str]) -> bool:
     """Stop INBC after receiving expected response
 
     @param payload: MQTT message received from vision-agent

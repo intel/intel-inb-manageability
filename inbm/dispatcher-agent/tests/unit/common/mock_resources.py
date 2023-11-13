@@ -4,7 +4,7 @@
 import logging
 from threading import Lock
 import datetime
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 from dispatcher.common.result_constants import *
 from dispatcher.install_check_service import InstallCheckService
@@ -300,7 +300,7 @@ class MockDispatcherBroker(DispatcherBroker):
     def send_result(self, message: str) -> None:
         pass
 
-    def mqtt_publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:
+    def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
         pass
 
     def mqtt_subscribe(self, topic, callback, qos=0) -> None:

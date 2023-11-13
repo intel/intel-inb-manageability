@@ -6,6 +6,7 @@
 """
 
 import json
+from typing import Any
 
 import shortuuid
 from inbm_lib.count_down_latch import CountDownLatch
@@ -36,7 +37,7 @@ class Command:
         latch = CountDownLatch(1)
 
         # Callback to update the command response
-        def on_command(topic: str, payload: str, qos: int) -> None:
+        def on_command(topic: str, payload: Any, qos: int) -> None:
             self.log_info += f'Message received: {payload} on topic: {topic}'
 
             try:

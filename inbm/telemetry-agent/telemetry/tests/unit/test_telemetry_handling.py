@@ -1,9 +1,11 @@
+from typing import Any, Optional
 from telemetry.telemetry_handling import (
     _set_timestamp, TelemetryTimer, send_initial_telemetry, publish_telemetry_update, get_query_related_info,
     get_docker_stats)
 from mock import patch, Mock
 from unittest import TestCase
 import time
+from inbm_lib.mqttclient.mqtt import MQTT
 
 
 info = {'timestamp': 1637019250.2020352, 'type': 'static_telemetry',
@@ -13,6 +15,11 @@ info = {'timestamp': 1637019250.2020352, 'type': 'static_telemetry',
                    'systemProductName': 'NUC8i5BEK',
                    'osInformation': 'Linux 5.4.0-72-generic UTC 2021 x86_64 x86_64',
                    'diskInformation': '[{"NAME": "loop0", "SIZE": "38400000", "SSD": "True"}]'}}
+
+
+class MockMQTT(MQTT):
+    def __init__(self):
+        pass
 
 
 class TestTelemetryHandling(TestCase):
@@ -36,7 +43,7 @@ class TestTelemetryHandling(TestCase):
         self.assertTrue(handler.time_to_publish())
 
     def test_telemetry_timestamp(self):
-        telem = {"item1": "foo", "item2": "bar"}
+        telem: dict[str, Optional[Any]] = {"item1": "foo", "item2": "bar"}
 
         the_time = time.time()
 
@@ -96,7 +103,7 @@ class TestTelemetryHandling(TestCase):
     @patch('telemetry.telemetry_handling.publish_dynamic_telemetry')
     @patch('telemetry.telemetry_handling.publish_static_telemetry')
     def test_publish_initial_telemetry(self, mock_static, mock_publish):
-        send_initial_telemetry(None, None)
+        send_initial_telemetry(MockMQTT(), False)
         mock_static.assert_called_once()
         mock_publish.assert_called()
 

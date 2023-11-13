@@ -114,7 +114,7 @@ class MQTT:
 
         self._mqttc.loop_stop()
 
-    def publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:
+    def publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
         """Publish a MQTT message to the specified topic, encoded as utf-8
 
         @param topic: MQTT topic to publish message on

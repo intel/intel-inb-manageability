@@ -4,6 +4,7 @@
     Copyright (C) 2017-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
+from typing import Any
 from .constants import (
     STATE_CHANNEL,
     CLOUDADAPTER_STATE_CHANNEL,
@@ -52,17 +53,17 @@ def broker_init(poller: Poller, tls: bool = True, with_docker: bool = False) -> 
                   client_keys=str(CLIENT_KEYS))
     client.start()
 
-    def on_message(topic, payload, qos) -> None:
+    def on_message(topic: str, payload: Any, qos: int) -> None:
         logger.info('Message received: %s on topic: %s', payload, topic)
         if topic == CLOUDADAPTER_STATE_CHANNEL and 'running' in payload:
             publish_static_telemetry(client, TELEMETRY_CHANNEL)
 
-    def on_telemetry_update(topic, payload, qos) -> None:
+    def on_telemetry_update(topic: str, payload: Any, qos: int) -> None:
         logger.info('Received telemetry update request for: %s', payload)
         publish_telemetry_update(
             client, TELEMETRY_CHANNEL, with_docker, payload)
 
-    def on_update(topic, payload, qos) -> None:
+    def on_update(topic: str, payload: Any, qos: int) -> None:
         logger.info('Message received: %s on topic: %s', payload, topic)
         poller.set_configuration_value(json.loads(
             payload), 'telemetry/' + topic.split('/')[-1])

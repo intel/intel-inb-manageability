@@ -109,7 +109,7 @@ class XmlHandler:
                                'path: {}'.format(xpath))
         return element
 
-    def get_children(self, xpath) -> Dict[str, Any]:
+    def get_children(self, xpath: str) -> Dict[str, Any]:
         """Find all elements matching XPath from parsed XML
 
         @param xpath: Valid XPath expression
@@ -154,7 +154,7 @@ class XmlHandler:
         else:
             raise XmlException("Could not find element in get_attribute")
 
-    def add_attribute(self, xpath, attribute_name, attribute_value) -> bytes:
+    def add_attribute(self, xpath: str, attribute_name: str, attribute_value: str) -> bytes:
         """Add a new key value to the given path.
 
         @param xpath: path to key
@@ -182,7 +182,7 @@ class XmlHandler:
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while add : {e}")
 
-    def set_attribute(self, xpath, attribute_value) -> bytes:
+    def set_attribute(self, xpath: str, attribute_value: str) -> bytes:
         """Set a new value to the given path.
 
         @param xpath: path to key
@@ -201,7 +201,7 @@ class XmlHandler:
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while set : {e}")
 
-    def remove_attribute(self, xpath) -> bytes:
+    def remove_attribute(self, xpath: str) -> bytes:
         """Remove the attribute from xml if found.
 
         @param xpath: path to key
