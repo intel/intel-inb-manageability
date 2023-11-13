@@ -49,7 +49,6 @@ class Command(ABC):
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic to publish the manifest.
         """
         manifest = args.func(args)
         self._broker.publish(topic, manifest)

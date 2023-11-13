@@ -46,7 +46,7 @@ def validate_guid(value: str) -> str:
         raise argparse.ArgumentTypeError(f"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed")
     return value
 
-def validate_package_list(package_list: str) -> list[str]:
+def validate_package_list(package_list: str) -> str:
     """Function to validate the comma-separated package list and return it as a list.
     @param package_list: A comma-separated string of package names
     @return: A list containing the validated package names
@@ -62,7 +62,7 @@ def validate_package_list(package_list: str) -> list[str]:
             raise argparse.ArgumentTypeError(f"Invalid package name: {package}. Package names must "
                                              f"consist only of lowercase letters, digits, and delimiters (., +, -)")
 
-    return packages
+    return package_list
 
 
 @dataclass

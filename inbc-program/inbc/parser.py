@@ -274,7 +274,7 @@ def aota(args) -> str:
     return manifest
 
 
-def sota(args) -> str:
+def sota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -288,6 +288,9 @@ def sota(args) -> str:
 
     # if source_location is None, then update is local Ubuntu and does not need a release date.
     release_date = args.releasedate if source_location else None
+
+    # pass comma-separated package list as is in manifest
+    package_list = args.package_list if args.package_list else ""
 
     # This is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd schema.
     if source_tag == PATH_STRING:
@@ -304,7 +307,8 @@ def sota(args) -> str:
         'username': args.username,
         'password': _get_password(args.username, "Please provide the password: "),
         'deviceReboot': "no" if args.mode == "download-only" else args.reboot,
-        'path': path_location
+        'path': path_location,
+        'package_list': package_list,
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -323,6 +327,7 @@ def sota(args) -> str:
                 '</manifest>').format(
         (create_xml_tag(arguments,
                         "mode",
+                        "package_list",
                         "fetch",
                         "username",
                         "password",

@@ -242,7 +242,15 @@ class TestINBC(TestCase):
         s = self.arg_parser.parse_args(['sota'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode>' \
-                   '<deviceReboot>yes</deviceReboot></sota></type>' \
+                   '<package_list></package_list><deviceReboot>yes</deviceReboot></sota></type>' \
+                   '</ota></manifest>'
+        self.assertEqual(s.func(s), expected)
+    
+    def test_create_ubuntu_update_manifest_with_package_list(self):
+        s = self.arg_parser.parse_args(['sota', '--package-list', 'package1,package2'])
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
+                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode>' \
+                   '<package_list>package1,package2</package_list><deviceReboot>yes</deviceReboot></sota></type>' \
                    '</ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
@@ -253,7 +261,7 @@ class TestINBC(TestCase):
             ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd ' \
-                   'logtofile="y">update</cmd><mode>full</mode>' \
+                   'logtofile="y">update</cmd><mode>full</mode><package_list></package_list>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
                    '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot>' \
                    '</sota></type></ota></manifest>'
@@ -267,7 +275,7 @@ class TestINBC(TestCase):
             ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank', '-m', 'full'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd ' \
-                   'logtofile="y">update</cmd><mode>full</mode>' \
+                   'logtofile="y">update</cmd><mode>full</mode><package_list></package_list>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
                    '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)

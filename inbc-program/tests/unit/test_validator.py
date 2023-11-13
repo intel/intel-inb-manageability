@@ -65,7 +65,7 @@ invalid_packages = [
 # Test valid package names
 @pytest.mark.parametrize("package", valid_packages)
 def test_validate_package_list_valid_packages(package):
-    assert validate_package_list(package) == [package]
+    assert validate_package_list(package) == package
 
 # Test invalid package names
 @pytest.mark.parametrize("package", invalid_packages)
@@ -76,7 +76,7 @@ def test_validate_package_list_invalid_packages(package):
 # Test multiple valid package names combined in a comma-separated string
 def test_validate_package_list_multiple_valid_packages():
     package_list = ','.join(valid_packages)
-    assert validate_package_list(package_list) == valid_packages
+    assert validate_package_list(package_list) == ",".join(valid_packages)
 
 # Test multiple invalid package names combined in a comma-separated string
 @pytest.mark.parametrize("package", invalid_packages)
