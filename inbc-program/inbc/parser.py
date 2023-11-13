@@ -12,7 +12,7 @@ from inbc.xml_tag import create_xml_tag
 from inbm_common_lib.dmi import get_dmi_system_info, is_dmi_path_exists
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters, validate_guid
+from .validator import validate_date, validate_string_less_than_n_characters, validate_guid, validate_package_list
 from inbm_lib.detect_os import detect_os, LinuxDistType
 
 from .inbc_exception import InbcException
@@ -117,6 +117,9 @@ class ArgsParser(object):
                                  help='Type of information [ yes | no ]')
         parser_sota.add_argument('--mode', '-m', default='full',
                                  required=False, choices=['full', 'download-only', 'no-download'])
+        parser_sota.add_argument('--packagelist', '-p', required=False,
+                                 type=lambda x: validate_package_list(x),
+                                 help='Comma-separated list of package namess to install')
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:

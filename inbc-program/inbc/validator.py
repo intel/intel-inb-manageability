@@ -39,12 +39,30 @@ def validate_date(date: str) -> str:
 
 def validate_guid(value: str) -> str:
     """Validates that the user inputted string does not exceed the maximum allowed
-        @param value: string entered by user
-        @raise argparse.ArgumentTypeError: Invalid guid format
-        """
+    @param value: string entered by user
+    @raise argparse.ArgumentTypeError: Invalid guid format
+    """
     if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
         raise argparse.ArgumentTypeError(f"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed")
     return value
+
+def validate_package_list(package_list: str) -> list[str]:
+    """Function to validate the comma-separated package list and return it as a list.
+    @param package_list: A comma-separated string of package names
+    @return: A list containing the validated package names
+    """
+    package_name_regex = re.compile(r'^[a-z0-9][a-z0-9.+-]*$')
+
+    packages = package_list.split(',')
+
+    for package in packages:
+        if not package.strip():
+            raise argparse.ArgumentTypeError(f"Invalid package name: {package}. Package names should not be empty.")
+        if not package_name_regex.match(package):
+            raise argparse.ArgumentTypeError(f"Invalid package name: {package}. Package names must "
+                                             f"consist only of lowercase letters, digits, and delimiters (., +, -)")
+
+    return packages
 
 
 @dataclass
