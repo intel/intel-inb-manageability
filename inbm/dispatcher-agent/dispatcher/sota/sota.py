@@ -7,6 +7,7 @@
 
 import logging
 import os
+import re
 import time
 from typing import Any, List, Optional, Union, Mapping
 
@@ -109,6 +110,7 @@ class SOTA:
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.sota_mode = parsed_manifest['sota_mode']
+        self._package_list = self._validate_package_list(parsed_manifest['package_list'])
         self._device_reboot = parsed_manifest['deviceReboot']
         self._install_check_service = install_check_service
 
@@ -204,7 +206,7 @@ class SOTA:
 
         time_to_wait_before_reboot = 2 if not skip_sleeps else 0
 
-        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos)
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos, self._package_list)
         try:
             os_type = detect_os()
         except ValueError as e:

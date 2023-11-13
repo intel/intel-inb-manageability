@@ -129,6 +129,7 @@ class Dispatcher:
         self._thread_count = 1
         self._sota_repos = None
         self.sota_mode = None
+        self._package_list: list[str] = []
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
         self.dbs_remove_image_on_failed_container = True
@@ -226,7 +227,7 @@ class Dispatcher:
             detected_os = detect_os()
             if detected_os in [LinuxDistType.YoctoARM.name, LinuxDistType.YoctoX86_64.name]:
                 try:
-                    SotaOsFactory(self._make_callbacks_object(), self._sota_repos).\
+                    SotaOsFactory(self._make_callbacks_object(), self._sota_repos, self._package_list).\
                         get_os(detected_os).\
                         create_snapshotter('update',
                                            snap_num='1',
@@ -739,7 +740,8 @@ class Dispatcher:
         """
         logger.debug('Invoking SOTA')
 
-        parsed_manifest = {'sota_mode': self.sota_mode, 'sota_cmd': 'rollback', 'log_to_file': None,
+        parsed_manifest = {'sota_mode': self.sota_mode, 'package_list': self.package_list,
+                           'sota_cmd': 'rollback', 'log_to_file': None,
                            'sota_repos': self.sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}

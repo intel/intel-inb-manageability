@@ -119,6 +119,7 @@ class SotaParser(OtaParser):
         release_date = resource.get('release_date', None)
         header = parsed.get_children('ota/header')
         sota_mode = resource.get('mode', None)
+        package_list = resource.get('package_list', '')
         main_ota = header['type']
         device_reboot = resource.get('deviceReboot', "yes")
         try:
@@ -129,7 +130,8 @@ class SotaParser(OtaParser):
         except (KeyError, DispatcherException):
             log_to_file = 'N'
 
-        resource_dict = {'sota_mode': sota_mode, 'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri,
+        resource_dict = {'sota_mode': sota_mode, 'package_list': package_list, 
+                         'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri,
                          'signature': self._signature,
                          'hash_algorithm': self._hash_algorithm, 'resource': resource, 'username': self._username,
                          'password': self._password, 'release_date': release_date, 'deviceReboot': device_reboot}

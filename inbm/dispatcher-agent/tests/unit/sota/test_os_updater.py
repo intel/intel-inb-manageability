@@ -34,8 +34,20 @@ class TestOsUpdater(unittest.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url, 'repo': TestOsUpdater._build_mock_repo(0), 'username': username,
-                           'password': password, 'sota_mode': 'full', 'deviceReboot': "no"}
+                           'password': password, 'sota_mode': 'full', 'package_list': '', 'deviceReboot': "no"}
         cls.sota_instance = SOTA(parsed_manifest, "remote",
+                                 DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
+                                                     proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
+                                                     logger=cls.mock_disp_obj.update_logger),
+                                 None,
+                                 MockInstallCheckService(),
+                                 snapshot=1)
+        
+        parsed_manifest_packages = {'resource': cls.resource,
+                           'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
+                           'uri': mock_url, 'repo': TestOsUpdater._build_mock_repo(0), 'username': username,
+                           'password': password, 'sota_mode': 'full', 'package_list': 'package1,package2', 'deviceReboot': "no"}
+        cls.sota_instance_packages = SOTA(parsed_manifest_packages, "remote",
                                  DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
                                                      proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
                                                      logger=cls.mock_disp_obj.update_logger),
@@ -62,6 +74,26 @@ class TestOsUpdater(unittest.TestCase):
 
         for (each, expected) in zip(x_cmd_list, cmd_list):
             self.assertEqual(str(each), str(expected))
+
+    def test_Ubuntu_install(self):
+        assert TestOsUpdater.sota_instance_packages
+        TestOsUpdater.sota_instance_packages.factory = SotaOsFactory(
+            TestOsUpdater.mock_disp_obj, None).get_os('Ubuntu')  # type: ignore
+
+        factory = TestOsUpdater.sota_instance_packages.factory
+        assert factory
+        installer = factory.create_os_updater()
+
+        cmd_list = ["apt-get update",
+                    "dpkg-query -f '${binary:Package}\\n' -W",
+                    "dpkg --configure -a --force-confdef --force-confold",
+                    "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
+                    "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs install package1 package2"]
+        x_cmd_list = installer.update_remote_source(  # type: ignore
+            mock_url, TestOsUpdater._build_mock_repo(0))
+
+        for (each, expected) in zip(x_cmd_list, cmd_list):
+            assert str(each) == str(expected)
 
     def test_33_2_kB_used(self):
         assert TestOsUpdater.sota_instance

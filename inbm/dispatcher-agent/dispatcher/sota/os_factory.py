@@ -36,14 +36,16 @@ class SotaOsFactory:
     """Creates instances of OsFactory based on detected platform
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str]) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str], package_list: list[str]) -> None:
         """Initializes OsFactory.
 
         @param dispatcher_callbacks: DispatcherCallbacks
         @param sota_repos: new Ubuntu/Debian mirror (or None)
+        @param package_list: list of packages to install/update (or empty for all--general upgrade)
         """
         self._dispatcher_callbacks = dispatcher_callbacks
         self._sota_repos = sota_repos
+        self._package_list = package_list
 
     @staticmethod
     def verify_os_supported() -> str:
@@ -61,13 +63,13 @@ class SotaOsFactory:
         """
         if os_type == LinuxDistType.Ubuntu.name:
             logger.debug("Ubuntu returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos, self._package_list)
         elif os_type == LinuxDistType.Deby.name:
             logger.debug("Deby returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos, self._package_list)
         elif os_type == LinuxDistType.Debian.name:
             logger.debug("Debian returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos, self._package_list)
         elif os_type == LinuxDistType.YoctoX86_64.name:
             logger.debug("YoctoX86_64 returned")
             return YoctoX86_64(self._dispatcher_callbacks)
@@ -189,14 +191,16 @@ class YoctoARM(ISotaOs):
 class DebianBasedSotaOs(ISotaOs):
     """DebianBasedSotaOs class, child of ISotaOs"""
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str]) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str], package_list: list[str]) -> None:
         """Constructor.
 
         @param dispatcher_callbacks: DispatcherCallbacks instance
         @param sota_repos: new Ubuntu/Debian mirror (or None)
+        @param package_list: list of packages to install/update (empty list for all/general upgrade)
         """
         self._dispatcher_callbacks = dispatcher_callbacks
         self._sota_repos = sota_repos
+        self._package_list = package_list
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
@@ -207,7 +211,7 @@ class DebianBasedSotaOs(ISotaOs):
 
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
-        return DebianBasedUpdater()
+        return DebianBasedUpdater(self._package_list)
 
     def create_os_upgrader(self) -> OsUpgrader:
         logger.debug("")

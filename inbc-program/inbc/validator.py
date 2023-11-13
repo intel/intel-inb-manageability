@@ -6,6 +6,7 @@
 import logging
 import datetime
 import argparse
+import inbm_lib
 from dataclasses import dataclass
 import re
 logger = logging.getLogger(__name__)
@@ -47,20 +48,14 @@ def validate_guid(value: str) -> str:
     return value
 
 def validate_package_list(package_list: str) -> str:
-    """Function to validate the comma-separated package list and return it as a list.
+    """Function to validate the comma-separated package list.
     @param package_list: A comma-separated string of package names
-    @return: A list containing the validated package names
+    @return: Same parameter (if valid)
     """
-    package_name_regex = re.compile(r'^[a-z0-9][a-z0-9.+-]*$')
-
-    packages = package_list.split(',')
-
-    for package in packages:
-        if not package.strip():
-            raise argparse.ArgumentTypeError(f"Invalid package name: {package}. Package names should not be empty.")
-        if not package_name_regex.match(package):
-            raise argparse.ArgumentTypeError(f"Invalid package name: {package}. Package names must "
-                                             f"consist only of lowercase letters, digits, and delimiters (., +, -)")
+    v = inbm_lib.validate_package_list(package_list)
+    if v is None:
+        raise argparse.ArgumentTypeError(f"Invalid package list: {package_list}. Package names must "
+                                        f"consist only of lowercase letters, digits, and delimiters (., +, -)")
 
     return package_list
 
