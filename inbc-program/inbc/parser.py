@@ -117,7 +117,7 @@ class ArgsParser(object):
                                  help='Type of information [ yes | no ]')
         parser_sota.add_argument('--mode', '-m', default='full',
                                  required=False, choices=['full', 'download-only', 'no-download'])
-        parser_sota.add_argument('--packagelist', '-p', required=False,
+        parser_sota.add_argument('--package-list', '-p', required=False,
                                  type=lambda x: validate_package_list(x),
                                  help='Comma-separated list of package namess to install')
         parser_sota.set_defaults(func=sota)
