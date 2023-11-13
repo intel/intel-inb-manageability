@@ -15,6 +15,7 @@ from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
+from inbm_lib.validate_package_list import parse_and_validate_package_list
 from inbm_lib.detect_os import detect_os
 from inbm_lib.constants import OTA_PENDING, OTA_FAIL, OTA_SUCCESS
 
@@ -26,7 +27,6 @@ from .downloader import Downloader
 from .log_helper import get_log_destination
 from .os_factory import ISotaOs, SotaOsFactory
 from .os_updater import OsUpdater
-from .os_upgrader import OsUpgrader
 from .rebooter import Rebooter
 from .setup_helper import SetupHelper
 from .snapshot import Snapshot
@@ -106,11 +106,22 @@ class SOTA:
         self.log_to_file: Optional[str] = None
         self._dispatcher_callbacks = dispatcher_callbacks
         self._sota_repos = sota_repos
-        self.installer: Union[None, OsUpdater, OsUpgrader] = None
+        self.installer: Union[None, OsUpdater] = None
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.sota_mode = parsed_manifest['sota_mode']
-        self._package_list = self._validate_package_list(parsed_manifest['package_list'])
+
+        try:
+            manifest_package_list = parsed_manifest['package_list']
+        except KeyError:
+            manifest_package_list = ''
+        try:
+            # If manifest_package_list is None, treat it as an empty string, otherwise, convert to string
+            self._package_list: str = "" if manifest_package_list is None else str(manifest_package_list)
+        except (ValueError, TypeError) as e:
+            # If an exception occurs during string conversion, raise that exception
+            raise SotaError('package_list is not a string in manifest') from e
+
         self._device_reboot = parsed_manifest['deviceReboot']
         self._install_check_service = install_check_service
 
@@ -206,7 +217,11 @@ class SOTA:
 
         time_to_wait_before_reboot = 2 if not skip_sleeps else 0
 
-        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos, self._package_list)
+        validated_package_list = parse_and_validate_package_list(self._package_list)
+        if validated_package_list is None:
+            raise SotaError(F'parsing and validating package list: {self._package_list} failed')
+
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()
         except ValueError as e:
@@ -355,7 +370,10 @@ class SOTA:
     def check(self) -> None:
         """Perform manifest checking before SOTA"""
         logger.debug("")
-        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos)
+        validated_package_list = parse_and_validate_package_list(self._package_list)
+        if validated_package_list is None:
+            raise SotaError(F'parsing and validating package list: {self._package_list} failed')
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()
         except ValueError as e:

@@ -14,7 +14,6 @@ from inbm_lib.detect_os import OsType
 from .constants import BTRFS
 from .downloader import *
 from .os_updater import DebianBasedUpdater, WindowsUpdater, YoctoX86_64Updater, OsUpdater, YoctoARMUpdater
-from .os_upgrader import OsUpgrader, UbuntuUpgrader, WindowsUpgrader, YoctoUpgrader
 from .rebooter import *
 from .setup_helper import *
 from .setup_helper import SetupHelper
@@ -99,11 +98,6 @@ class ISotaOs(ABC):
         pass
 
     @abstractmethod
-    def create_os_upgrader(self) -> OsUpgrader:
-        """Create an upgrader object"""
-        pass
-
-    @abstractmethod
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         """Create a snapshotter object
 
@@ -142,10 +136,6 @@ class YoctoX86_64(ISotaOs):
         logger.debug("")
         return YoctoX86_64Updater()
 
-    def create_os_upgrader(self) -> OsUpgrader:
-        logger.debug("")
-        return YoctoUpgrader()
-
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
@@ -173,10 +163,6 @@ class YoctoARM(ISotaOs):
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
         return YoctoARMUpdater()
-
-    def create_os_upgrader(self) -> OsUpgrader:
-        logger.debug("")
-        return YoctoUpgrader()
 
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")
@@ -213,10 +199,6 @@ class DebianBasedSotaOs(ISotaOs):
         logger.debug("")
         return DebianBasedUpdater(self._package_list)
 
-    def create_os_upgrader(self) -> OsUpgrader:
-        logger.debug("")
-        return UbuntuUpgrader()  # TODO: remove--we don't support upgrade
-
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
@@ -246,10 +228,6 @@ class Windows(ISotaOs):
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
         return WindowsUpdater()
-
-    def create_os_upgrader(self) -> OsUpgrader:
-        logger.debug("")
-        return WindowsUpgrader()
 
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")

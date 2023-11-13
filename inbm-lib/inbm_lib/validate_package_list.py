@@ -2,8 +2,8 @@ import re
 from typing import Optional
 
 
-def validate_package_list(package_list: str) -> Optional[list[str]]:
-    """Function to validate the comma-separated package list and return it as a list.
+def parse_and_validate_package_list(package_list: str) -> Optional[list[str]]:
+    """Function to parse and validate the comma-separated package list and return it as a list.
     @param package_list: A comma-separated string of package names (or "")
     @return: A list containing the validated package names ([] if input is ""), or None if validation error
     """

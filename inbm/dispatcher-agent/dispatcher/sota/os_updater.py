@@ -112,7 +112,7 @@ class DebianBasedUpdater(OsUpdater):
 
         if is_docker_app:
             # if any packages are specified, use 'install' instead of 'upgrade' and include packages
-            if self._package_list == "":
+            if self._package_list == []:
                 install_cmd_docker = \
                     "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"
             else:
@@ -133,7 +133,7 @@ class DebianBasedUpdater(OsUpdater):
                     DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]  # local
         else:
             # if any packages are specified, use 'install' instead of 'upgrade' and include packages
-            if self._package_list == "":
+            if self._package_list == []:
                 install_cmd = "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"
             else:
                 install_cmd = "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs install " \
@@ -203,7 +203,7 @@ class DebianBasedUpdater(OsUpdater):
         """
 
         # if any packages are specified, use 'install' instead of 'upgrade' and include packages
-        if self._package_list == "":
+        if self._package_list == []:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --no-download --fix-missing -yq upgrade"
         else:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --no-download --fix-missing -yq install " \
@@ -221,7 +221,7 @@ class DebianBasedUpdater(OsUpdater):
         @return: returns commands
         """
 
-        if self._package_list == "":
+        if self._package_list == []:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --download-only --fix-missing -yq upgrade"
         else:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --download-only --fix-missing -yq install " \

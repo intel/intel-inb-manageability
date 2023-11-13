@@ -24,7 +24,8 @@ from inbm_lib import wmi
 from inbm_lib.count_down_latch import CountDownLatch
 from inbm_lib.detect_os import detect_os, LinuxDistType, OsType
 from inbm_lib.wmi_exception import WmiException
-from inbm_common_lib.constants import REMOTE_SOURCE, UNKNOWN, UNKNOWN_DATETIME, CONFIG_LOAD
+from inbm_lib.validate_package_list import parse_and_validate_package_list
+from inbm_common_lib.constants import REMOTE_SOURCE, UNKNOWN, CONFIG_LOAD
 from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
@@ -129,7 +130,8 @@ class Dispatcher:
         self._thread_count = 1
         self._sota_repos = None
         self.sota_mode = None
-        self._package_list: list[str] = []
+        self._package_list: str = ""
+
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
         self.dbs_remove_image_on_failed_container = True
@@ -227,7 +229,10 @@ class Dispatcher:
             detected_os = detect_os()
             if detected_os in [LinuxDistType.YoctoARM.name, LinuxDistType.YoctoX86_64.name]:
                 try:
-                    SotaOsFactory(self._make_callbacks_object(), self._sota_repos, self._package_list).\
+                    validated_package_list = parse_and_validate_package_list(self._package_list)
+                    if validated_package_list is None:
+                        raise DispatcherException(F'parsing and validating package list: {self._package_list} failed')
+                    SotaOsFactory(self._make_callbacks_object(), self._sota_repos, validated_package_list).\
                         get_os(detected_os).\
                         create_snapshotter('update',
                                            snap_num='1',
@@ -740,7 +745,7 @@ class Dispatcher:
         """
         logger.debug('Invoking SOTA')
 
-        parsed_manifest = {'sota_mode': self.sota_mode, 'package_list': self.package_list,
+        parsed_manifest = {'sota_mode': self.sota_mode, 'package_list': self._package_list,
                            'sota_cmd': 'rollback', 'log_to_file': None,
                            'sota_repos': self.sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,

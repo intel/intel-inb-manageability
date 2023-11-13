@@ -6,7 +6,7 @@
 import logging
 import datetime
 import argparse
-import inbm_lib
+from inbm_lib.validate_package_list import parse_and_validate_package_list
 from dataclasses import dataclass
 import re
 logger = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ def validate_package_list(package_list: str) -> str:
     @param package_list: A comma-separated string of package names
     @return: Same parameter (if valid)
     """
-    v = inbm_lib.validate_package_list(package_list)
+    v = parse_and_validate_package_list(package_list)
     if v is None:
         raise argparse.ArgumentTypeError(f"Invalid package list: {package_list}. Package names must "
                                         f"consist only of lowercase letters, digits, and delimiters (., +, -)")
