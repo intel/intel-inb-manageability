@@ -331,6 +331,7 @@ class MockDispatcher(Dispatcher):
         self.dbs_remove_image_on_failed_container = True
         self.sota_repos = None
         self.proceed_without_rollback = False
+        self.broker_core = MockDispatcherBroker.build_mock_dispatcher_broker()
         self.update_logger = UpdateLogger("", "")
 
     def clear_dispatcher_state(self):
@@ -350,6 +351,6 @@ class MockInstallCheckService(InstallCheckService):
         self._install_check_called = True
         if not self._install_check:
             raise DispatcherException('MockInstallCheckService set to fail install check')
-    
+
     def install_check_called(self) -> bool:
         return self._install_check_called

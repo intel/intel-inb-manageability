@@ -59,7 +59,7 @@ class TestDispatcher(TestCase):
                              m_sub: Any,
                              m_connect: Any,
                              m_thread_start: Any,
-                             mock_logging: Any) -> None:        
+                             mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \
               'Sample FOTA manifest file</description><type>aota</type><repository>remote</repository>' \
@@ -217,7 +217,8 @@ class TestDispatcher(TestCase):
                                    mock_logging: Any) -> None:
 
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>maxCacheSize:149</path></set></configtype></config></manifest>'
-        d = TestDispatcher._build_dispatcher(install_check=MockInstallCheckService(install_check=True))
+        d = TestDispatcher._build_dispatcher(
+            install_check=MockInstallCheckService(install_check=True))
         mock_request_config_agent.return_value = True
         self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
@@ -235,7 +236,8 @@ class TestDispatcher(TestCase):
                                    mock_logging: Any) -> None:
 
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>"maxCacheSize":"149"</path></set></configtype></config></manifest>'
-        d = TestDispatcher._build_dispatcher(install_check=MockInstallCheckService(install_check=False))
+        d = TestDispatcher._build_dispatcher(
+            install_check=MockInstallCheckService(install_check=False))
         mock_request_config_agent.return_value = True
         self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 

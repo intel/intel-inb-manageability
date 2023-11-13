@@ -3,7 +3,6 @@ pyproject.toml
 # Unit test / coverage reports
 .coverage
 .coverage.*
-nosetests.xml
 coverage.xml
 *.cover
 **/cover/

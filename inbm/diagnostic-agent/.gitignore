@@ -40,7 +40,6 @@ htmlcov/
 .coverage.*
 .coveragerc
 .cache
-nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
