@@ -42,7 +42,7 @@
     </xs:simpleType>
     <xs:simpleType name="PackageList">
         <xs:restriction base="xs:string">
-            <xs:pattern value="([a-zA-Z0-9][a-zA-Z0-9+.-]*(:[a-zA-Z0-9][a-zA-Z0-9+.-]*)?)(,[a-zA-Z0-9][a-zA-Z0-9+.-]*(:[a-zA-Z0-9][a-zA-Z0-9+.-]*)?)*"/>
+            <xs:pattern value="(([a-zA-Z0-9][a-zA-Z0-9+.-]*(:[a-zA-Z0-9][a-zA-Z0-9+.-]*)?)(,[a-zA-Z0-9][a-zA-Z0-9+.-]*(:[a-zA-Z0-9][a-zA-Z0-9+.-]*)?)*)?"/>
         </xs:restriction>
     </xs:simpleType>
     <xs:element name="manifest">
