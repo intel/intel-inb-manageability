@@ -36,12 +36,14 @@ class SotaOsFactory:
     """Creates instances of OsFactory based on detected platform
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str]) -> None:
         """Initializes OsFactory.
 
         @param dispatcher_callbacks: DispatcherCallbacks
+        @param sota_repos: new Ubuntu/Debian mirror (or None)
         """
         self._dispatcher_callbacks = dispatcher_callbacks
+        self._sota_repos = sota_repos
 
     @staticmethod
     def verify_os_supported() -> str:
@@ -59,13 +61,13 @@ class SotaOsFactory:
         """
         if os_type == LinuxDistType.Ubuntu.name:
             logger.debug("Ubuntu returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
         elif os_type == LinuxDistType.Deby.name:
             logger.debug("Deby returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
         elif os_type == LinuxDistType.Debian.name:
             logger.debug("Debian returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
         elif os_type == LinuxDistType.YoctoX86_64.name:
             logger.debug("YoctoX86_64 returned")
             return YoctoX86_64(self._dispatcher_callbacks)
@@ -128,7 +130,7 @@ class YoctoX86_64(ISotaOs):
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
-        return YoctoSetupHelper(self._dispatcher_callbacks)
+        return YoctoSetupHelper(self._dispatcher_callbacks.broker_core)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug("")
@@ -160,7 +162,7 @@ class YoctoARM(ISotaOs):
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
-        return YoctoSetupHelper(self.callback)
+        return YoctoSetupHelper(self.callback.broker_core)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug("")
@@ -187,16 +189,18 @@ class YoctoARM(ISotaOs):
 class DebianBasedSotaOs(ISotaOs):
     """DebianBasedSotaOs class, child of ISotaOs"""
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str]) -> None:
         """Constructor.
 
         @param dispatcher_callbacks: DispatcherCallbacks instance
+        @param sota_repos: new Ubuntu/Debian mirror (or None)
         """
         self._dispatcher_callbacks = dispatcher_callbacks
+        self._sota_repos = sota_repos
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
-        return DebianBasedSetupHelper(self._dispatcher_callbacks)
+        return DebianBasedSetupHelper(self._sota_repos)
 
     def create_rebooter(self) -> Rebooter:
         return LinuxRebooter(self._dispatcher_callbacks)
@@ -230,7 +234,7 @@ class Windows(ISotaOs):
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
-        return WindowsSetupHelper(self.callback)
+        return WindowsSetupHelper()
 
     def create_rebooter(self) -> Rebooter:
         return WindowsRebooter(self.callback)

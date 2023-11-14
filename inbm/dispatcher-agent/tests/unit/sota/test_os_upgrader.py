@@ -30,14 +30,16 @@ class TestOsUpgrader(unittest.TestCase):
                            'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url, 'repo': TestOsUpgrader._build_mock_repo(0), 'username': username,
                            'password': password, 'sota_mode': 'download-only', 'deviceReboot': "no"}
-        sota_instance = SOTA(parsed_manifest, "remote", DispatcherCallbacks(install_check=cls.mock_disp_callbacks_obj.install_check,
-                                                                            broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                                            sota_repos=cls.mock_disp_callbacks_obj.sota_repos,
-                                                                            proceed_without_rollback=cls.mock_disp_callbacks_obj.proceed_without_rollback,
-                                                                            logger=cls.mock_disp_callbacks_obj.logger),
+        sota_instance = SOTA(parsed_manifest,
+                             "remote",
+                             DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
+                                                 proceed_without_rollback=cls.mock_disp_callbacks_obj.proceed_without_rollback,
+                                                 logger=cls.mock_disp_callbacks_obj.logger),
+                             None,
+                             MockInstallCheckService(),
                              snapshot=1)
 
-        sota_instance.factory = SotaOsFactory(cls.mock_disp_callbacks_obj).get_os('Ubuntu')
+        sota_instance.factory = SotaOsFactory(cls.mock_disp_callbacks_obj, None).get_os('Ubuntu')
         assert sota_instance.factory
         sota_instance.installer = sota_instance.factory.create_os_upgrader()
         cls.sota_instance = sota_instance

@@ -11,7 +11,7 @@ setup(
     license='Intel Proprietary (see \'licenses\' directory)',
     packages=find_packages(exclude=['*.*', 'mqttclient']),
     include_package_data=True,
-    install_requires=['mock', 'pynose', 'packaging', 'future'],
-    test_suite='nose.collector',
-    tests_require=['pynose']
+    install_requires=['mock', 'pytest', 'pytest-cov' 'packaging', 'future'],
+    test_suite='pytest',
+    tests_require=['pytest', 'pytest-cov']
 )

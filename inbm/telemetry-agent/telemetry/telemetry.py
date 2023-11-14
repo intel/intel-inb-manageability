@@ -8,7 +8,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 import platform
-from typing import Optional, List, Union
+from typing import Any, Optional, List, Union
 
 from inbm_lib.windows_service import WindowsService
 from telemetry.constants import DEFAULT_LOGGING_PATH, SCHEMA_LOCATION, EVENTS_CHANNEL
@@ -107,7 +107,7 @@ class Telemetry(WindowsService):
             try:
                 self.logger.debug(f'Subscribing to {QUERY_CMD_CHANNEL}')
 
-                def on_query(topic: str, payload: str, qos: int) -> None:
+                def on_query(topic: str, payload: Any, qos: int) -> None:
                     try:
                         parsed = XmlHandler(xml=payload,
                                             is_file=False,

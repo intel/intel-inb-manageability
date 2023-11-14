@@ -83,7 +83,7 @@ class Broker(IBroker):
             logger.exception('Subscribe failed: %s', exception)
             logger.debug('Setting up broker fail.')
 
-    def _on_response(self, topic: str, payload: str, qos: int) -> None:
+    def _on_response(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for RESPONSE_CHANNEL
 
         @param topic: topic on which message was published
@@ -93,7 +93,7 @@ class Broker(IBroker):
         logger.info('Message received: %s on topic: %s', payload, topic)
         self._command.search_response(payload)
 
-    def _on_event(self, topic: str, payload: str, qos: int) -> None:
+    def _on_event(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for EVENT_CHANNEL
         @param topic: topic on which message was published
         @param payload: message payload

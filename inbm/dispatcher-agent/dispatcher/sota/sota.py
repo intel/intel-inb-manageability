@@ -31,21 +31,26 @@ from .setup_helper import SetupHelper
 from .snapshot import Snapshot
 from .sota_error import SotaError
 from ..packagemanager.local_repo import DirectoryRepo, IRepo
+from ..install_check_service import InstallCheckService
 
 logger = logging.getLogger(__name__)
 
 
 class SOTAUtil:  # FIXME intermediate step in refactor
-    def check_diagnostic_disk(self, estimated_size: Union[float, int], dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def check_diagnostic_disk(self,
+                              estimated_size: Union[float, int],
+                              dispatcher_callbacks: DispatcherCallbacks,
+                              install_check_service: InstallCheckService) -> None:
         """Checks if there is sufficient size for an update with diagnostic agent
 
         @param estimated_size: estimated install size
         @param dispatcher_callbacks: DispatcherCallbacks
+        @param install_check_service: provides an install check
         """
         logger.debug("")
         logger.info(f'Estimate reports we need additional {estimated_size} Bytes for update')
         try:
-            dispatcher_callbacks.install_check(size=estimated_size, check_type='check_storage')
+            install_check_service.install_check(size=estimated_size, check_type='check_storage')
         except DispatcherException:
             dispatcher_callbacks.broker_core.telemetry(
                 "System Update aborted: insufficient disk space")
@@ -74,12 +79,17 @@ class SOTA:
     def __init__(self,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks, **kwargs: Any) -> None:
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 sota_repos: Optional[str],
+                 install_check_service: InstallCheckService,
+                 snapshot: Optional[Any] = None,
+                 action: Optional[Any] = None) -> None:
         """SOTA thread instance
 
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: A reference to the main Dispatcher object
+        @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param kwargs:
         """
 
@@ -94,22 +104,24 @@ class SOTA:
         self.snap_num: Optional[str] = None
         self.log_to_file: Optional[str] = None
         self._dispatcher_callbacks = dispatcher_callbacks
+        self._sota_repos = sota_repos
         self.installer: Union[None, OsUpdater, OsUpgrader] = None
         self.factory: Optional[ISotaOs] = None
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.sota_mode = parsed_manifest['sota_mode']
         self._device_reboot = parsed_manifest['deviceReboot']
+        self._install_check_service = install_check_service
 
         if self._repo_type == LOCAL_SOURCE:
             if self._ota_element is None:
                 raise SotaError("ota_element is missing for SOTA")
             self._local_file_path = self._ota_element['path']
 
-        for k, v in kwargs.items():
-            if k == 'snapshot':
-                self.snap_num = v
-            elif k == 'action':
-                self.sota_state = v
+        if snapshot is not None:
+            self.snap_num = snapshot
+        if action is not None:
+            self.sota_state = action
+
         logger.debug(f"SOTA Tool launched in {self.sota_state} mode")
 
     def _clean_local_repo_file(self):
@@ -132,7 +144,7 @@ class SOTA:
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
             estimated_size = self.installer.get_estimated_size()
-            SOTAUtil().check_diagnostic_disk(estimated_size, self._dispatcher_callbacks)
+            SOTAUtil().check_diagnostic_disk(estimated_size, self._dispatcher_callbacks, self._install_check_service)
             if self._repo_type == REMOTE_SOURCE:
                 logger.debug(f"Remote repo URI: {self._uri}")
                 if self._uri is None:
@@ -192,7 +204,7 @@ class SOTA:
 
         time_to_wait_before_reboot = 2 if not skip_sleeps else 0
 
-        os_factory = SotaOsFactory(self._dispatcher_callbacks)
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos)
         try:
             os_type = detect_os()
         except ValueError as e:
@@ -341,7 +353,7 @@ class SOTA:
     def check(self) -> None:
         """Perform manifest checking before SOTA"""
         logger.debug("")
-        os_factory = SotaOsFactory(self._dispatcher_callbacks)
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos)
         try:
             os_type = detect_os()
         except ValueError as e:

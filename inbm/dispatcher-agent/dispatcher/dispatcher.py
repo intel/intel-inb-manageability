@@ -8,9 +8,19 @@ import platform
 import sys
 from typing import List
 
+from dispatcher.install_check_service import InstallCheckService
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.dispatcher_broker import DispatcherBroker
 from inbm_lib.windows_service import WindowsService
+
+
+def make_dispatcher(args: List[str]) -> Dispatcher:
+    """Make a dispatcher with the given args.
+
+    Handle dependency injection in one place"""
+    broker = DispatcherBroker()
+    return Dispatcher(args=args, broker=broker, install_check_service=InstallCheckService(broker))
+
 
 class WindowsDispatcherService(WindowsService):
     _svc_name_ = 'inbm-dispatcher'
@@ -21,7 +31,7 @@ class WindowsDispatcherService(WindowsService):
         if args is None:
             args = []
 
-        self.dispatcher = Dispatcher(args, DispatcherBroker())
+        self.dispatcher = make_dispatcher(args)
 
         super().__init__(args)
 
@@ -46,7 +56,7 @@ def main() -> None:
         else:
             win32serviceutil.HandleCommandLine(WindowsDispatcherService)
     else:
-        dispatcher = Dispatcher(sys.argv, DispatcherBroker())
+        dispatcher = make_dispatcher(sys.argv)
         dispatcher.start()
 
 

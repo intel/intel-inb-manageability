@@ -304,7 +304,7 @@ inbc set --path  maxCacheSize:100
 
 ## Append
 ### Description
-Append is only applicable to three config tags, which are trustedRepositories, sotaSW and ubuntuAptSource
+Append is only applicable to two config tags, which are trustedRepositories and sotaSW
 
 ### Usage
 ```
@@ -320,7 +320,7 @@ inbc append --path  trustedRepositories:https://abc.com/
 
 ## Remove
 ### Description
-Remove is only applicable to three config tags, which are trustedRepositories, sotaSW and ubuntuAptSource
+Remove is only applicable to two config tags, which are trustedRepositories and sotaSW
 
 ### Usage
 ```
