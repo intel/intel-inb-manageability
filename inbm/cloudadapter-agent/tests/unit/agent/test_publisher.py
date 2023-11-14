@@ -95,7 +95,7 @@ class TestPublisher(unittest.TestCase):
                             '</ota>'
                          '</manifest>')  # noqa: E127
 
-        self.SOTA_ARGUMENTS = {
+        self.SOTA_ARGUMENTS_NO_PACKAGES = {
             "log_to_file": "N",
             "cmd": "update",
             "fetch": "3",
@@ -104,7 +104,28 @@ class TestPublisher(unittest.TestCase):
             "password": "6"
         }
 
-        self.SOTA_XML = ('<?xml version="1.0" encoding="utf-8"?>'
+        self.SOTA_ARGUMENTS_BLANK_PACKAGES = {
+            "log_to_file": "N",
+            "cmd": "update",
+            "package_list": "",
+            "fetch": "3",
+            "signature": "4",
+            "username": "5",
+            "password": "6"
+        }        
+
+        self.SOTA_ARGUMENTS_WITH_PACKAGES = {
+            "log_to_file": "N",
+            "cmd": "install",
+            "package_list": "foo,bar",
+            "fetch": "3",
+            "signature": "4",
+            "username": "5",
+            "password": "6"
+        }
+
+
+        self.SOTA_XML_BLANK_PACKAGES = ('<?xml version="1.0" encoding="utf-8"?>'
                          '<manifest>'
                             '<type>ota</type>'
                             '<ota>'
@@ -114,6 +135,7 @@ class TestPublisher(unittest.TestCase):
                                 '</header>'
                                 '<type><sota>'
                                     '<cmd logtofile="N">update</cmd>'
+                                    '<package_list></package_list>'
                                     '<fetch>3</fetch>'
                                     '<signature>4</signature>'
                                     '<username>5</username>'
@@ -122,6 +144,26 @@ class TestPublisher(unittest.TestCase):
                             '</ota>'
                          '</manifest>'
                          )  # noqa: E127
+        
+        self.SOTA_XML_WITH_PACKAGES = ('<?xml version="1.0" encoding="utf-8"?>'
+                    '<manifest>'
+                    '<type>ota</type>'
+                    '<ota>'
+                        '<header>'
+                            '<type>sota</type>'
+                            '<repo>remote</repo>'
+                        '</header>'
+                        '<type><sota>'
+                            '<cmd logtofile="N">update</cmd>'
+                            '<package_list>foo,bar</package_list>'
+                            '<fetch>3</fetch>'
+                            '<signature>4</signature>'
+                            '<username>5</username>'
+                            '<password>6</password>'
+                        '</sota></type>'
+                    '</ota>'
+                    '</manifest>'
+                    )  # noqa: E127
 
         self.CONFIG_ARGUMENTS = {
             "cmd": "get",
@@ -400,14 +442,33 @@ class TestPublisher(unittest.TestCase):
 
         self.assertRaises(ValueError, self.publisher.publish_sota, **arguments)
 
-    def test_publish_sota_succeed(self):
-        arguments = self.SOTA_ARGUMENTS
+    def test_publish_sota_succeed_no_packages(self):
+        arguments = self.SOTA_ARGUMENTS_NO_PACKAGES
 
         message = self.publisher.publish_sota(**arguments)
 
         assert message == MESSAGE.SOTA
         mocked = self.MockBroker.return_value
-        mocked.publish_install.assert_called_once_with(self.SOTA_XML)
+        # BLANK_PACKAGES is intentional here
+        mocked.publish_install.assert_called_once_with(self.SOTA_XML_BLANK_PACKAGES)
+    
+    def test_publish_sota_succeed_blank_packages(self):
+        arguments = self.SOTA_ARGUMENTS_BLANK_PACKAGES
+
+        message = self.publisher.publish_sota(**arguments)
+
+        assert message == MESSAGE.SOTA
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.SOTA_XML_BLANK_PACKAGES)  
+
+    def test_publish_sota_succeed_with_packages(self):
+        arguments = self.SOTA_ARGUMENTS_WITH_PACKAGES
+
+        message = self.publisher.publish_sota(**arguments)
+
+        assert message == MESSAGE.SOTA
+        mocked = self.MockBroker.return_value
+        mocked.publish_install.assert_called_once_with(self.SOTA_XML_WITH_PACKAGES)      
 
     def test_publish_config_succeed(self):
         arguments = self.CONFIG_ARGUMENTS
