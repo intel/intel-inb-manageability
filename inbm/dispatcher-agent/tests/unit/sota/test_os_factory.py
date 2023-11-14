@@ -77,7 +77,7 @@ class TestOsFactory(TestCase):
     def test_verify_os_supported_success(self, mock_func):
         mock_func.return_value = 'Linux'
         ret = SotaOsFactory.verify_os_supported()
-        self.assertEquals(ret, 'Linux')
+        self.assertEqual(ret, 'Linux')
 
     @patch('platform.system')
     def test_verify_os_supported_fail(self, mock_func):

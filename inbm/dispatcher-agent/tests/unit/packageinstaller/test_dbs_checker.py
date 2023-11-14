@@ -42,4 +42,4 @@ class TestDbsChecker(TestCase):
         container = DbsChecker(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), mock_trtl_container,
                                mock_trtl, "sample-container", 0, ConfigDbs.ON). \
             _find_current_container()
-        self.assertEquals(container, None)
+        self.assertEqual(container, None)

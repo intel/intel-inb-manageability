@@ -88,7 +88,7 @@ class TestManager(TestCase):
         given_str, b64_str = self.__check_str_type("usrnameString", "passwordString")
         decode_str = b64decode(b64_str).decode('utf-8', errors='strict')
         assert type(b64decode(b64_str)) is bytes
-        self.assertEquals(given_str, decode_str)
+        self.assertEqual(given_str, decode_str)
 
     def test_check_invalid_file(self):
         result, _ = extract_files_from_tar(
@@ -97,14 +97,14 @@ class TestManager(TestCase):
 
     def test_get_file_type_success(self):
         result = get_file_type('abc.rpm')
-        self.assertEquals(result, 'package')
+        self.assertEqual(result, 'package')
 
         result = get_file_type('rpm.deb')
-        self.assertEquals(result, 'package')
+        self.assertEqual(result, 'package')
 
     def test_get_file_type_fail(self) -> None:
         result = get_file_type('abc.abc')
-        self.assertEquals(result, None)
+        self.assertEqual(result, None)
 
     def test_verify_source_empty_source_fail(self) -> None:
         with self.assertRaisesRegex(DispatcherException, 'Source verification failed.  Download aborted.'):
@@ -168,10 +168,10 @@ class TestManager(TestCase):
             response_data = b'data'
             m.get(url.value, content=response_data)
             repo = MemoryRepo(filename)
-            self.assertEquals(package_manager.get(
+            self.assertEqual(package_manager.get(
                 url, repo, 0, "user", "pass"), success_result)
             self.assertEqual(response_data, repo.get(filename))
-            self.assertEquals(package_manager.get(url, MemoryRepo("test"), 0), success_result)
+            self.assertEqual(package_manager.get(url, MemoryRepo("test"), 0), success_result)
 
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.add_from_requests_response',
            side_effect=OSError('Out of Space'))
@@ -184,21 +184,21 @@ class TestManager(TestCase):
             response_data = 'data'
             m.get(url.value, text=response_data)
             repo = MemoryRepo(filename)
-            self.assertEquals(package_manager.get(url, repo, 0), fail_dict)
+            self.assertEqual(package_manager.get(url, repo, 0), fail_dict)
 
     def test_get_ext_success(self):
-        self.assertEquals(_get_ext("abc.tar"), 'tar')
+        self.assertEqual(_get_ext("abc.tar"), 'tar')
 
     def test_get_ext_empty(self):
-        self.assertEquals(_get_ext(""), "")
+        self.assertEqual(_get_ext(""), "")
 
     def test_get_checksum_256(self):
         res = _get_checksum(b'abc', 256)
-        self.assertEquals(res, hashlib.sha256(b'abc').hexdigest())
+        self.assertEqual(res, hashlib.sha256(b'abc').hexdigest())
 
     def test_get_checksum_384(self):
         res = _get_checksum(b'abc', 384)
-        self.assertEquals(res, hashlib.sha384(b'abc').hexdigest())
+        self.assertEqual(res, hashlib.sha384(b'abc').hexdigest())
 
     def test_get_checksum_invalid(self):
         with self.assertRaisesRegex(DispatcherException, 'Signature check failed. Unable to get checksum for package.'):

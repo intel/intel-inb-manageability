@@ -68,7 +68,7 @@ class TestPublishTargetOta(TestCase):
         status = t.install()
         mock_modify.assert_called_once()
         mock_download.assert_called_once()
-        self.assertEquals(status, PUBLISH_SUCCESS)
+        self.assertEqual(status, PUBLISH_SUCCESS)
 
     @patch('inbm_lib.xmlhandler.XmlHandler.__init__')
     @patch('inbm_lib.xmlhandler.XmlHandler.add_attribute')

@@ -68,7 +68,7 @@ class TestDispatcher(TestCase):
               '</aota></type></ota></manifest>'
         d = TestDispatcher._build_dispatcher()
         result_code = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
-        self.assertEquals(result_code, 300)
+        self.assertEqual(result_code, 300)
         assert not m_thread_start.called
 
     @patch('dispatcher.ota_thread.AotaThread.start')
@@ -201,7 +201,7 @@ class TestDispatcher(TestCase):
             d.send_result = Mock()  # type: ignore
             d.do_install("<xml></xml>")
             res = create_ota_resource_list(parsed_head, resource)
-            self.assertEquals(list(res.keys()), ['fota', 'sota'])
+            self.assertEqual(list(res.keys()), ['fota', 'sota'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -220,7 +220,7 @@ class TestDispatcher(TestCase):
         d = TestDispatcher._build_dispatcher(
             install_check=MockInstallCheckService(install_check=True))
         mock_request_config_agent.return_value = True
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
+        self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -239,7 +239,7 @@ class TestDispatcher(TestCase):
         d = TestDispatcher._build_dispatcher(
             install_check=MockInstallCheckService(install_check=False))
         mock_request_config_agent.return_value = True
-        self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
+        self.assertEqual(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_sota')
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
@@ -324,7 +324,7 @@ class TestDispatcher(TestCase):
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
         mock_install_target.assert_called_once()
         mock_install_target.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
+        self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('inbm_common_lib.dmi.is_dmi_path_exists', return_value=False)
@@ -360,7 +360,7 @@ class TestDispatcher(TestCase):
         mock_workload_orchestration_func.assert_called()
         mock_config_func.assert_called_once()
         mock_config_func.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
+        self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('dispatcher.dispatcher_class.Dispatcher._do_config_install_load')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -383,7 +383,7 @@ class TestDispatcher(TestCase):
         mock_workload_orchestration.assert_called()
         mock_install_func.assert_called_once()
         mock_install_func.return_value = PUBLISH_SUCCESS
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
+        self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('dispatcher.dispatcher_class.Dispatcher._do_config_install_load')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -423,7 +423,7 @@ class TestDispatcher(TestCase):
         mock_url.return_value = None
         mock_download.return_value = False, None
         mock_req_conf_func.assert_not_called()
-        self.assertEquals(CONFIG_LOAD_SUCCESS, d._do_config_install_load(
+        self.assertEqual(CONFIG_LOAD_SUCCESS, d._do_config_install_load(
             parsed_head=parsed_head, xml=xml))
 
     @patch('dispatcher.dispatcher_class.Dispatcher._request_config_agent')
@@ -444,7 +444,7 @@ class TestDispatcher(TestCase):
         mock_url.return_value = None
         mock_download.return_value = False, None
         mock_req_conf_func.assert_not_called()
-        self.assertEquals(CONFIG_LOAD_FAIL_WRONG_PATH, d._do_config_install_load(
+        self.assertEqual(CONFIG_LOAD_FAIL_WRONG_PATH, d._do_config_install_load(
             parsed_head=parsed_head, xml=xml))
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
@@ -469,7 +469,7 @@ class TestDispatcher(TestCase):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange><targetType>node</targetType></orange></manifest>'
         d = TestDispatcher._build_dispatcher()
         status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
-        self.assertEquals(300, status)
+        self.assertEqual(300, status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -487,7 +487,7 @@ class TestDispatcher(TestCase):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercen</path></get></configtype></config></manifest>'
         d = TestDispatcher._build_dispatcher()
         mock_request_config_agent.side_effect = DispatcherException
-        self.assertEquals(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
+        self.assertEqual(400, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -505,7 +505,7 @@ class TestDispatcher(TestCase):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercent</path></get></configtype></config></manifest>'
         d = TestDispatcher._build_dispatcher()
         mock_request_config_agent.return_value = True
-        self.assertEquals(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
+        self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -516,7 +516,7 @@ class TestDispatcher(TestCase):
 
         d = WindowsDispatcherService([])
         self.assertFalse(' ' in d._svc_name_)
-        self.assertEquals(d._svc_name_.split('-')[0], 'inbm')
+        self.assertEqual(d._svc_name_.split('-')[0], 'inbm')
 
     @staticmethod
     def _build_dispatcher(install_check: InstallCheckService = MockInstallCheckService()) -> Dispatcher:

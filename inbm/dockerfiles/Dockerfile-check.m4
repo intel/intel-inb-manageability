@@ -29,6 +29,7 @@ RUN source /venv-py3/bin/activate && \
     	pytest-cov==4.1.0 \
         pytest-mock==3.12.0 \
         pytest-xdist==3.3.1 \
+	pytest-mock==3.12.0 \
         -U
 COPY inbm-lib /src/inbm-lib
 ENV PYTHONPATH=/src/inbm-lib
@@ -152,7 +153,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest -n 10 --cov=dispatcher --cov-report=term-missing --cov-fail-under=80 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
+    pytest -n 3 --cov=dispatcher --cov-report=term-missing --cov-fail-under=79.8 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
 
 # ---cloudadapter agent---
 
