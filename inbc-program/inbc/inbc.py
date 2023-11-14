@@ -33,11 +33,11 @@ class Inbc(object):
         self._broker = Broker(cmd_type, parsed_args, tls)
         print("INBC command-line utility tool")
 
-    def stop(self):
+    def stop(self) -> None:
         self._broker.stop_broker()
 
 
-def _sig_handler(signo, _) -> None:
+def _sig_handler(signo: int, _: Any) -> None:
     if signo in (signal.SIGINT, signal.SIGTERM):
         shared.running = False
 
