@@ -1,1 +1,3 @@
-https://apps.azureiotcentral.com/build/new/d6e7abf7-c2aa-4c0f-97c5-05c56cc3e464
+https://intel-inband-manageability.azureiotcentral.com/device-templates/b0T46ezPPqFMV5zCu9bw6/dcm/85XafvRAP2Y1V3rwBkX8h
+
+NEEDS UPDATE
