@@ -31,7 +31,7 @@ class TestSnapshot(unittest.TestCase):
         if order == 2:
             self.assertNotEquals(val, 0)
         if order == 1:
-            self.assertEquals(val, 0)
+            self.assertEqual(val, 0)
 
     @unpack
     @data((1, "0", ""), (2, "1", "err"))

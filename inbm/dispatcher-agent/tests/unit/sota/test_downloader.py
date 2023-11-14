@@ -101,7 +101,7 @@ class TestDownloader(unittest.TestCase):
                                    0),
                                self.username, self.password, self.release_date)
         except SotaError as e:
-            self.assertEquals(str(e), 'Missing manifest Release date field')
+            self.assertEqual(str(e), 'Missing manifest Release date field')
 
     @staticmethod
     def _build_mock_repo(num_files=0):

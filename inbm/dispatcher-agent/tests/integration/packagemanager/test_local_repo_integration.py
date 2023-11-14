@@ -16,7 +16,7 @@ class TestLocalRepo(TestCase):
 
         with open(os.path.join(directory, "hello.txt"), "rb") as hello:
             text = hello.read()
-        self.assertEquals(b"hello world", text)
+        self.assertEqual(b"hello world", text)
 
     def test_filesystem_repo_get_integration(self):
         directory = tempfile.mkdtemp()
@@ -24,7 +24,7 @@ class TestLocalRepo(TestCase):
 
         repo.add("hello.txt", b"hello world")
 
-        self.assertEquals(b"hello world", repo.get("hello.txt"))
+        self.assertEqual(b"hello world", repo.get("hello.txt"))
 
     def test_filesystem_repo_list_integration(self):
         directory = tempfile.mkdtemp()
@@ -34,7 +34,7 @@ class TestLocalRepo(TestCase):
         repo.add("hello2.txt", b"hello world 2")
         repo2 = DirectoryRepo(directory)
 
-        self.assertEquals({"hello.txt", "hello2.txt"}, set(repo2.list()))
+        self.assertEqual({"hello.txt", "hello2.txt"}, set(repo2.list()))
 
     def test_filesystem_repo_exists_integration(self):
         directory = tempfile.mkdtemp()

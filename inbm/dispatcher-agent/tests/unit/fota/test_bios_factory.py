@@ -67,7 +67,7 @@ class TestBiosFactory(TestCase):
             self.assertEqual(
                 str(e), "Firmware Update Aborted: Invalid File sent. error: some error")
         mock_runner.assert_called_once()
-        self.assertEquals(mock_delete_pkg.call_count, 1)
+        self.assertEqual(mock_delete_pkg.call_count, 1)
 
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
@@ -83,7 +83,7 @@ class TestBiosFactory(TestCase):
             self.assertEqual(
                 str(e), "Firmware Update Aborted: Invalid File sent. error: some error")
 
-        self.assertEquals(mock_delete_pkg.call_count, 1)
+        self.assertEqual(mock_delete_pkg.call_count, 1)
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
@@ -99,7 +99,7 @@ class TestBiosFactory(TestCase):
             self.assertRaises(FotaError)
             self.assertEqual(
                 str(e), "Error: some error")
-        self.assertEquals(mock_runner.call_count, 1)
+        self.assertEqual(mock_runner.call_count, 1)
         mock_delete_pkg.assert_has_calls([mock.call(self._uri)])
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')

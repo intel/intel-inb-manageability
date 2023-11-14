@@ -100,11 +100,11 @@ class TestContainerManagement(TestCase):
             self.assertEqual(result, INSTALL_SUCCESS)
 
     def test_extract_ext_success(self):
-        self.assertEquals(_is_valid_extension("abc.deb"), True)
-        self.assertEquals(_is_valid_extension("abc.rpm"), True)
+        self.assertEqual(_is_valid_extension("abc.deb"), True)
+        self.assertEqual(_is_valid_extension("abc.rpm"), True)
 
     def test_extract_ext_fail(self):
-        self.assertEquals(_is_valid_extension("abc.abc"), False)
+        self.assertEqual(_is_valid_extension("abc.abc"), False)
 
 
 if __name__ == '__main__':

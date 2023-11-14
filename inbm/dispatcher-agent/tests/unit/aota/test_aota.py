@@ -29,6 +29,9 @@ SCHEMA_LOCATION = './packaging/config/manifest_schema.xsd'
 
 
 class TestAOTA(TestCase):
+    mock_detect_os: Any
+    mock_verify: Any
+
     @classmethod
     def setUpClass(cls):
         # Patch is started and will apply to all tests in this class
@@ -106,7 +109,7 @@ class TestAOTA(TestCase):
         aota = TestAOTA._build_aota(uri='file://sample/test.tar', app_type='docker',
                                     container_tag='abc', cmd='load', instance='docker')
         try:
-            self.assertEquals(None, aota.load())
+            self.assertEqual(None, aota.load())
         except AotaError:
             self.fail("Exception raised when not expected.")
 
@@ -526,7 +529,7 @@ class TestAOTA(TestCase):
         try:
             aota.run()
         except AotaError as e:
-            self.assertEquals('AOTA compose down FAILED: missing container tag.', str(e))
+            self.assertEqual('AOTA compose down FAILED: missing container tag.', str(e))
 
     @patch('inbm_lib.trtl.Trtl.remove_old_images', return_value=None)
     @patch('dispatcher.aota.checker.verify_source')
@@ -551,7 +554,7 @@ class TestAOTA(TestCase):
             aota.import_image()
             mock_delete.assert_called_once()
         except AotaError as e:
-            self.assertEquals('Fail', str(e))
+            self.assertEqual('Fail', str(e))
 
     @patch('os.rmdir')
     @patch('dispatcher.aota.aota_command.TrtlContainer.image_import')
@@ -568,7 +571,7 @@ class TestAOTA(TestCase):
         try:
             aota.pull()
         except AotaError as e:
-            self.assertEquals("missing container tag.", str(e))
+            self.assertEqual("missing container tag.", str(e))
 
     @patch('dispatcher.aota.aota_command.DockerCompose.list')
     def test_run_command_list_success(self, mock_cmd_list):
@@ -581,7 +584,7 @@ class TestAOTA(TestCase):
         try:
             aota.run()
         except AotaError as e:
-            self.assertEquals(
+            self.assertEqual(
                 "AOTA docker remove FAILED: missing container tag.", str(e))
 
     @patch('dispatcher.aota.aota_command.Docker.down', return_value=COMMAND_SUCCESS)
@@ -600,7 +603,7 @@ class TestAOTA(TestCase):
     #     try:
     #         aota._perform_docker_authentication_field_check()
     #     except AotaError as e:
-    #         self.assertEquals("No spaces allowed in Docker Username/Registry", str(e))
+    #         self.assertEqual("No spaces allowed in Docker Username/Registry", str(e))
 
     @patch('dispatcher.aota.application_command.is_inside_container', return_value=False)
     @patch('dispatcher.aota.checker.check_url')
