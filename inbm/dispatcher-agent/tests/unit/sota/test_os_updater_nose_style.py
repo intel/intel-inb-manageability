@@ -4,7 +4,7 @@ import os
 
 from ..common.mock_resources import *
 from dispatcher.dispatcher_callbacks import DispatcherCallbacks
-from dispatcher.sota.os_factory import ISotaOs, SotaOsFactory
+from dispatcher.sota.os_factory import SotaOsFactory
 from dispatcher.sota.os_updater import DebianBasedUpdater
 from dispatcher.sota.sota import SOTA
 from dispatcher.packagemanager.memory_repo import MemoryRepo
@@ -18,6 +18,7 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../../fpm-template/usr/share/dispatcher-agent/'
                                     'manifest_schema.xsd')
 
+## OLD NOSE STYLE TESTS
 
 class TestOsUpdater(unittest.TestCase):
     sota_instance: Optional[SOTA] = None
@@ -70,8 +71,7 @@ class TestOsUpdater(unittest.TestCase):
                     "dpkg --configure -a --force-confdef --force-confold",
                     "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
                     "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]
-        x_cmd_list = installer.update_remote_source(  # type: ignore
-            mock_url, TestOsUpdater._build_mock_repo(0))
+        x_cmd_list = installer.update_remote_source(mock_url, TestOsUpdater._build_mock_repo(0))
 
         for (each, expected) in zip(x_cmd_list, cmd_list):
             assert str(each) == str(expected)

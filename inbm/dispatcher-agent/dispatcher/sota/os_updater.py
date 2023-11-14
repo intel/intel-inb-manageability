@@ -37,6 +37,14 @@ MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
 
 
 def mender_install_argument():
+    """Determine the correct command-line argument to trigger an installation in the Mender utility.
+
+    This function executes a shell command to retrieve the help text of the Mender utility and
+    searches for the existence of a '-install' argument. Depending on the output, it returns
+    the appropriate argument for initiating an installation.
+
+    @return: '-install' if the Mender utility help text mentions this argument, otherwise 'install'.
+    """
     (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
     if "-install" in out or ((err is not None) and "-install" in err):
         return "-install"
