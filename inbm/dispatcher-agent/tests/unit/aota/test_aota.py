@@ -29,6 +29,18 @@ SCHEMA_LOCATION = './packaging/config/manifest_schema.xsd'
 
 
 class TestAOTA(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # Patch is started and will apply to all tests in this class
+        cls.mock_detect_os = patch('dispatcher.aota.factory.detect_os').start()
+        cls.mock_detect_os.return_value = 'Ubuntu'
+
+        cls.mock_verify = patch('dispatcher.aota.checker.verify_source').start()
+
+    @classmethod
+    def tearDownClass(cls):
+        # Patch is stopped, no longer in effect after all tests in this class
+        patch.stopall()  # This will stop all active patches
 
     @patch('os.rmdir')
     @patch('dispatcher.aota.aota_command.get', return_value=Result(400, "Unable to download application package."))
@@ -597,24 +609,26 @@ class TestAOTA(TestCase):
                                 uri="http://example.com", device_reboot="Yes")
         self.assertRaises(AotaError, aota.run)
 
+    @patch('dispatcher.aota.application_command.CentOsApplication.cleanup')
     @patch('dispatcher.aota.aota_command.get', return_value=Result(200, "OK"))
     @patch('dispatcher.aota.checker.verify_source')
     @patch('dispatcher.aota.application_command.AotaCommand.create_repository_cache_repo')
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True)
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
     def test_application_centos_driver_update_raise_error_if_inb_driver_folder_not_found(self, detect_os,
-                                                                                         is_inside_container, create_repo, verify_source, get):
+                                                                                         is_inside_container, create_repo, verify_source, get, mock_cleanup):
         aota = self._build_aota(cmd='update', app_type='application',
                                 uri="http://example.com", device_reboot="Yes")
         self.assertRaises(AotaError, aota.run)
 
+    @patch('dispatcher.aota.application_command.CentOsApplication.cleanup')
     @patch('dispatcher.aota.checker.check_resource')
     @patch('dispatcher.aota.checker.verify_source')
     @patch('dispatcher.aota.application_command.get', return_value=Result(200, "ok"))
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True)
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
-    def test_application_centos_driver_update_raise_error_if_file_is_not_rpm_type(self, detect_os, is_inside_container, run, get, mock_verify, mock_resource):
+    def test_application_centos_driver_update_raise_error_if_file_is_not_rpm_type(self, detect_os, is_inside_container, run, get, mock_verify, mock_resource, mock_cleanup):
         aota = self._build_aota(cmd='update', app_type='application',
                                 uri="https://example.com/sample/sample.deb")
         with self.assertRaisesRegex(AotaError, "Invalid file type"):
