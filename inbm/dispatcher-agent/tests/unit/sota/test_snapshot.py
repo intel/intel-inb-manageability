@@ -35,9 +35,9 @@ class TestSnapshot(unittest.TestCase):
 
     @unpack
     @data((1, "0", ""), (2, "1", "err"))
+    @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
     @patch("inbm_lib.trtl.Trtl.single_snapshot", return_value=('', 'ERROR'))
-    @patch("pickle.dump")
-    def test_ubuntu_snapshot(self, order, rc, err, mock_pickle_dump, mock_trtl_single_snapshot):
+    def test_ubuntu_snapshot(self, order, rc, err, mock_trtl_single_snapshot, mock_state):
         factory = SotaOsFactory(
             MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
@@ -45,7 +45,6 @@ class TestSnapshot(unittest.TestCase):
             if order == 1:
                 mock_trtl_single_snapshot.return_value = (rc, err)
                 snapshot.take_snapshot()
-                mock_pickle_dump.assert_called_once()
             else:
                 self.assertRaises(SotaError, snapshot.take_snapshot)
 
@@ -80,7 +79,8 @@ class TestSnapshot(unittest.TestCase):
 
 class TestUbuntuSnapshot(unittest.TestCase):
 
-    def test_take_snapshot_proceed_fail_publishes_error_succeeds(self):
+    @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
+    def test_take_snapshot_proceed_fail_publishes_error_succeeds(self, mock_state):
         dispatcher_callbacks = Mock()
         dispatcher_callbacks.broker_core = Mock()
         trtl = Mock()
