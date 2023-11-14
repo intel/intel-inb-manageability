@@ -28,13 +28,13 @@ def debian_updater():
                                        "dpkg-query -f '${binary:Package}\\n' -W",
                                        "dpkg --configure -a --force-confdef --force-confold",
                                        "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
-                                       "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs install package1 package2"]),
+                                       "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install package1 package2"]),
     (True, ['package1', 'package2'], [f"{CHROOT_PREFIX}/usr/bin/apt-get update",
                                       f"{CHROOT_PREFIX}/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -f -yq --download-only install",
                                       f"{DOCKER_CHROOT_PREFIX}/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",
                                       f"{DOCKER_CHROOT_PREFIX}/usr/bin/dpkg-query -f '${{binary:Package}}\\n' -W",
                                       f"{CHROOT_PREFIX}/usr/bin/dpkg --configure -a --force-confdef --force-confold",
-                                      f"{DOCKER_CHROOT_PREFIX}/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs install package1 package2",
+                                      f"{DOCKER_CHROOT_PREFIX}/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install package1 package2",
                                       f"{DOCKER_CHROOT_PREFIX}/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"])
 ])
 

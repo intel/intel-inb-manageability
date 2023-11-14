@@ -125,7 +125,7 @@ class DebianBasedUpdater(OsUpdater):
                     "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"
             else:
                 install_cmd_docker = \
-                    "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs install " + \
+                    "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install " + \
                     ' '.join(self._package_list)
             logger.debug("APP ENV : {}".format(is_docker_app))
             # get all packages ready for install (requires network and does
@@ -144,7 +144,7 @@ class DebianBasedUpdater(OsUpdater):
             if self._package_list == []:
                 install_cmd = "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"
             else:
-                install_cmd = "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs install " \
+                install_cmd = "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install " \
                     + ' '.join(self._package_list)
 
             cmds = ["apt-get update",
@@ -214,7 +214,7 @@ class DebianBasedUpdater(OsUpdater):
         if self._package_list == []:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --no-download --fix-missing -yq upgrade"
         else:
-            install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --no-download --fix-missing -yq install " \
+            install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --no-download --fix-missing -yq install " \
                 + ' '.join(self._package_list)
 
         cmds = ["dpkg --configure -a --force-confdef --force-confold",
@@ -232,7 +232,7 @@ class DebianBasedUpdater(OsUpdater):
         if self._package_list == []:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --download-only --fix-missing -yq upgrade"
         else:
-            install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --download-only --fix-missing -yq install " \
+            install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --download-only --fix-missing -yq install " \
                 + ' '.join(self._package_list)
 
         cmds = ["apt-get update",
