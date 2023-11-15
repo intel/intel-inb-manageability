@@ -11,7 +11,7 @@ class TestTelemetry(TestCase):
     def test_service_name_prefixed_inbm(self, fileconfig):
         t = Telemetry()
         self.assertFalse(' ' in t._svc_name_)
-        self.assertEquals(t._svc_name_.split('-')[0], 'inbm')
+        self.assertEqual(t._svc_name_.split('-')[0], 'inbm')
 
 
 class TestLoggingPath(TestCase):

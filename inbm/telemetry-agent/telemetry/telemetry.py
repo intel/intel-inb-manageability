@@ -74,7 +74,7 @@ class Telemetry(WindowsService):
 
         shared.running = True
 
-        def _sig_handler(signo, _):
+        def _sig_handler(signo: int, _: Any) -> None:
             if signo in (signal.SIGINT, signal.SIGTERM):
                 shared.running = False
                 # Following line will only execute in testing

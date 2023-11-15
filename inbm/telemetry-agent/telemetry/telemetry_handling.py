@@ -154,7 +154,7 @@ def get_container_health(client: MQTT, send_topic: str) -> None:  # pragma: no c
     cmd_lock = threading.Lock()
     latch = CountDownLatch(1)
 
-    def on_command(topic, payload, qos):
+    def on_command(topic: str, payload: Any, qos: int) -> None:
         logger.info('Message received: %s on topic: %s', payload, topic)
 
         if not cmd_lock.acquire(False):

@@ -23,7 +23,7 @@ class TestDynamicAttributes(TestCase):
         mock_virtual_memory.return_value = svmem
         res = get_available_memory()
         mock_virtual_memory.assert_called_once()
-        self.assertEquals(res, svmem.available)
+        self.assertEqual(res, svmem.available)
 
     @patch('psutil.cpu_percent')
     def test_cpu_percent(self, mock_cpu_percent):
@@ -34,7 +34,7 @@ class TestDynamicAttributes(TestCase):
     def test_get_core_temp_celsius_unknown(self, mock_temp):
         mock_temp.return_value = {}
         res = get_core_temp_celsius()
-        self.assertEquals(res, 'Unknown')
+        self.assertEqual(res, 'Unknown')
 
     @patch('psutil.sensors_temperatures')
     def test_get_core_temp_celsius_success(self, mock_temp):
@@ -43,7 +43,7 @@ class TestDynamicAttributes(TestCase):
         mock_temp.return_value = {'coretemp': [
             shwtemp(label='Package id 0', current=44.0, high=80.0, critical=98.0)]}
         res = get_core_temp_celsius()
-        self.assertEquals(res, 44.0)
+        self.assertEqual(res, 44.0)
 
     @patch('psutil.sensors_temperatures')
     def test_get_core_temp_celsius_TBH_success(self, mock_temp):
@@ -53,7 +53,7 @@ class TestDynamicAttributes(TestCase):
             shwtemp(label='Package id 0', current=44.0, high=80.0, critical=98.0)], 'cpu_n': [
             shwtemp(label='Package id 0', current=45.0, high=80.0, critical=98.0)]}
         res = get_core_temp_celsius()
-        self.assertEquals(res, 45.0)
+        self.assertEqual(res, 45.0)
 
     @patch('psutil.sensors_temperatures')
     def test_get_core_temp_celsius_kmb_success(self, mock_temp):
@@ -62,7 +62,7 @@ class TestDynamicAttributes(TestCase):
         mock_temp.return_value = {'soc': [
             shwtemp(label='Package id 0', current=44.0, high=80.0, critical=98.0)]}
         res = get_core_temp_celsius()
-        self.assertEquals(res, 44.0)
+        self.assertEqual(res, 44.0)
 
     @patch('psutil.sensors_temperatures')
     def test_get_core_temp_celsius_fail(self, mock_temp):
@@ -70,8 +70,8 @@ class TestDynamicAttributes(TestCase):
             'shwtemp', ['label', 'current', 'high', 'critical'])
         mock_temp.return_value = {'abc': [
             shwtemp(label='Package id 0', current=44.0, high=80.0, critical=98.0)]}
-        self.assertEquals(get_core_temp_celsius(), 'Unknown')
+        self.assertEqual(get_core_temp_celsius(), 'Unknown')
 
     @patch('platform.system', return_value="Windows")
     def test_return_unknown_for_windows(self, mock_os):
-        self.assertEquals(get_core_temp_celsius(), 'Unknown')
+        self.assertEqual(get_core_temp_celsius(), 'Unknown')
