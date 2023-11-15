@@ -32,13 +32,13 @@ class TestIahost(TestCase):
     def test_rm_service_active(self, mock_path):
         mock_path.return_value = True
         res = rm_service_active()
-        self.assertEquals(res, True)
+        self.assertEqual(res, True)
 
     @patch('os.path.exists')
     def test_rm_service_active_failure(self, mock_path):
         mock_path.return_value = False
         res = rm_service_active()
-        self.assertEquals(res, False)
+        self.assertEqual(res, False)
 
 
 if __name__ == '__main__':

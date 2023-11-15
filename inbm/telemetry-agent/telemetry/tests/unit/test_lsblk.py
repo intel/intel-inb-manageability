@@ -62,7 +62,7 @@ sda   123456    1
         mock_runner.return_value = (lsblk_output, "", 0)
         mock_platform.return_value = 'Linux'
         res = get_lsblk_output()
-        self.assertEquals(lsblk_output, res)
+        self.assertEqual(lsblk_output, res)
 
 
 if __name__ == '__main__':

@@ -190,7 +190,8 @@ COPY inbm/telemetry-agent/test-requirements.txt /src/telemetry-agent/test-requir
 WORKDIR /src/telemetry-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt
+    pip3.11 install -r test-requirements.txt && \
+    pip3.11 install flake8-annotations==2.9.1
 COPY inbm/common-python-config /common-python-config
 COPY inbm/telemetry-agent /src/telemetry-agent
 COPY inbm/packaging /src/packaging
