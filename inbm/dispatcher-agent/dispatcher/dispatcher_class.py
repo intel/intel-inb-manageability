@@ -231,7 +231,8 @@ class Dispatcher:
                 try:
                     validated_package_list = parse_and_validate_package_list(self._package_list)
                     if validated_package_list is None:
-                        raise DispatcherException(F'parsing and validating package list: {self._package_list} failed')
+                        raise DispatcherException(
+                            F'parsing and validating package list: {self._package_list} failed')
                     SotaOsFactory(self._make_callbacks_object(), self._sota_repos, validated_package_list).\
                         get_os(detected_os).\
                         create_snapshotter('update',

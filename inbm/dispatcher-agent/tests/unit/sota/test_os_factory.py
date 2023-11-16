@@ -17,10 +17,12 @@ class TestOsFactory(TestCase):
         self.mock_disp_obj = MockDispatcher.build_mock_dispatcher()
 
     def test_get_factory_ubuntu(self):
-        assert type(SotaOsFactory(self.mock_disp_obj, None, []).get_os('Ubuntu')) is DebianBasedSotaOs
+        assert type(SotaOsFactory(self.mock_disp_obj, None, []
+                                  ).get_os('Ubuntu')) is DebianBasedSotaOs
 
     def test_get_factory_yocto(self):
-        assert type(SotaOsFactory(self.mock_disp_obj, None, []).get_os('YoctoX86_64')) is YoctoX86_64
+        assert type(SotaOsFactory(self.mock_disp_obj, None,
+                    []).get_os('YoctoX86_64')) is YoctoX86_64
 
     def test_get_factory_windows(self):
         assert type(SotaOsFactory(self.mock_disp_obj, None, []).get_os('Windows')) is Windows

@@ -112,7 +112,7 @@ class TestPublisher(unittest.TestCase):
             "signature": "4",
             "username": "5",
             "password": "6"
-        }        
+        }
 
         self.SOTA_ARGUMENTS_WITH_PACKAGES = {
             "log_to_file": "N",
@@ -123,7 +123,6 @@ class TestPublisher(unittest.TestCase):
             "username": "5",
             "password": "6"
         }
-
 
         self.SOTA_XML_BLANK_PACKAGES = ('<?xml version="1.0" encoding="utf-8"?>'
                          '<manifest>'
@@ -144,7 +143,7 @@ class TestPublisher(unittest.TestCase):
                             '</ota>'
                          '</manifest>'
                          )  # noqa: E127
-        
+
         self.SOTA_XML_WITH_PACKAGES = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
                     '<type>ota</type>'
@@ -451,7 +450,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         # BLANK_PACKAGES is intentional here
         mocked.publish_install.assert_called_once_with(self.SOTA_XML_BLANK_PACKAGES)
-    
+
     def test_publish_sota_succeed_blank_packages(self):
         arguments = self.SOTA_ARGUMENTS_BLANK_PACKAGES
 
@@ -459,7 +458,7 @@ class TestPublisher(unittest.TestCase):
 
         assert message == MESSAGE.SOTA
         mocked = self.MockBroker.return_value
-        mocked.publish_install.assert_called_once_with(self.SOTA_XML_BLANK_PACKAGES)  
+        mocked.publish_install.assert_called_once_with(self.SOTA_XML_BLANK_PACKAGES)
 
     def test_publish_sota_succeed_with_packages(self):
         arguments = self.SOTA_ARGUMENTS_WITH_PACKAGES
@@ -468,7 +467,7 @@ class TestPublisher(unittest.TestCase):
 
         assert message == MESSAGE.SOTA
         mocked = self.MockBroker.return_value
-        mocked.publish_install.assert_called_once_with(self.SOTA_XML_WITH_PACKAGES)      
+        mocked.publish_install.assert_called_once_with(self.SOTA_XML_WITH_PACKAGES)
 
     def test_publish_config_succeed(self):
         arguments = self.CONFIG_ARGUMENTS

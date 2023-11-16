@@ -224,7 +224,7 @@ class Publisher:
         # manifest uses 'update' for both update and install; currently they are equivalent
         if arguments.get("cmd") == "install":
             arguments["cmd"] = "update"
-        
+
         # package_list should always be sent even if it's not included
         if arguments.get("package_list") is None:
             arguments["package_list"] = ""
@@ -237,7 +237,7 @@ class Publisher:
                     '<type>sota</type>'
                     '<repo>remote</repo>'
                     '</header>'
-                    '<type><sota>'                    
+                    '<type><sota>'
                     '<cmd logtofile="{}">{}</cmd>'
                     '{}'
                     '</sota></type>'

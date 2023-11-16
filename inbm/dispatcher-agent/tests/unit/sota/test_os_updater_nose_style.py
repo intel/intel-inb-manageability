@@ -18,7 +18,8 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../../fpm-template/usr/share/dispatcher-agent/'
                                     'manifest_schema.xsd')
 
-## OLD NOSE STYLE TESTS
+# OLD NOSE STYLE TESTS
+
 
 class TestOsUpdater(unittest.TestCase):
     sota_instance: Optional[SOTA] = None
@@ -44,18 +45,18 @@ class TestOsUpdater(unittest.TestCase):
                                  None,
                                  MockInstallCheckService(),
                                  snapshot=1)
-        
+
         parsed_manifest_packages = {'resource': cls.resource,
-                           'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
-                           'uri': mock_url, 'repo': TestOsUpdater._build_mock_repo(0), 'username': username,
-                           'password': password, 'sota_mode': 'full', 'package_list': 'package1,package2', 'deviceReboot': "no"}
+                                    'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
+                                    'uri': mock_url, 'repo': TestOsUpdater._build_mock_repo(0), 'username': username,
+                                    'password': password, 'sota_mode': 'full', 'package_list': 'package1,package2', 'deviceReboot': "no"}
         cls.sota_instance_packages = SOTA(parsed_manifest_packages, "remote",
-                                 DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                     proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
-                                                     logger=cls.mock_disp_obj.update_logger),
-                                 None,
-                                 MockInstallCheckService(),
-                                 snapshot=1)
+                                          DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
+                                                              proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
+                                                              logger=cls.mock_disp_obj.update_logger),
+                                          None,
+                                          MockInstallCheckService(),
+                                          snapshot=1)
 
     def test_Ubuntu_update(self):
         assert TestOsUpdater.sota_instance

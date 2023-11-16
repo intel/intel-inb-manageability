@@ -117,7 +117,8 @@ class SOTA:
             manifest_package_list = ''
         try:
             # If manifest_package_list is None, treat it as an empty string, otherwise, convert to string
-            self._package_list: str = "" if manifest_package_list is None else str(manifest_package_list)
+            self._package_list: str = "" if manifest_package_list is None else str(
+                manifest_package_list)
         except (ValueError, TypeError) as e:
             # If an exception occurs during string conversion, raise that exception
             raise SotaError('package_list is not a string in manifest') from e
@@ -221,7 +222,8 @@ class SOTA:
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
 
-        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos, validated_package_list)
+        os_factory = SotaOsFactory(self._dispatcher_callbacks,
+                                   self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()
         except ValueError as e:
@@ -373,7 +375,8 @@ class SOTA:
         validated_package_list = parse_and_validate_package_list(self._package_list)
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
-        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._sota_repos, validated_package_list)
+        os_factory = SotaOsFactory(self._dispatcher_callbacks,
+                                   self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()
         except ValueError as e:

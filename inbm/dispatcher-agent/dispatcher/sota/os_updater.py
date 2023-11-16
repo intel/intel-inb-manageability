@@ -135,9 +135,10 @@ class DebianBasedUpdater(OsUpdater):
             cmds = [CHROOT_PREFIX + "/usr/bin/apt-get update",  # needs network
                     CHROOT_PREFIX + "/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -f -yq --download-only install",  # needs network
                     DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",  # local
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W", # local
-                    CHROOT_PREFIX + "/usr/bin/dpkg --configure -a --force-confdef --force-confold", # needs network
-                    DOCKER_CHROOT_PREFIX + install_cmd_docker, # local
+                    DOCKER_CHROOT_PREFIX + \
+                    "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",  # local
+                    CHROOT_PREFIX + "/usr/bin/dpkg --configure -a --force-confdef --force-confold",  # needs network
+                    DOCKER_CHROOT_PREFIX + install_cmd_docker,  # local
                     DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]  # local
         else:
             # if any packages are specified, use 'install' instead of 'upgrade' and include packages
