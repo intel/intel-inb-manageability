@@ -27,51 +27,46 @@ docker_bench_fail_image_output = "[WARN] 4.5  - Ensure Content trust for Docker 
 
 
 class TestDockerBenchSecurityRunner(TestCase):
-
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
-    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
+    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test', return_value=docker_bench_pass_output)
     def test_success_dbs_run(self, mocked_trtl, mock_shellrunner):
-        mocked_trtl.return_value = docker_bench_pass_output
         dbs = DockerBenchRunner()
         dbs.start()
         dbs.join()
-        self.assertTrue(dbs.dbs_result.success_flag)
+        self.assertTrue(dbs.dbs_result.is_success)
         self.assertEqual("Test results: All Passed", dbs.dbs_result.result)
         self.assertEqual([], dbs.dbs_result.failed_containers)
         self.assertEqual([], dbs.dbs_result.failed_images)
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
-    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
+    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test', return_value=docker_bench_fail_container_output)
     def test_fail_dbs_container_run(self, mocked_trtl, mock_shellrunner):
-        mocked_trtl.return_value = docker_bench_fail_container_output
         dbs = DockerBenchRunner()
         dbs.start()
         dbs.join()
-        self.assertFalse(dbs.dbs_result.success_flag)
+        self.assertFalse(dbs.dbs_result.is_success)
         self.assertEqual(dbs.dbs_result.result, "Test results: Failures in: 5.25,,5.26,,5.28")
         self.assertEqual(dbs.dbs_result.failed_containers, ['abc'])
         self.assertEqual(dbs.dbs_result.failed_images, [])
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
-    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
+    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test', return_value=docker_bench_fail_image_output)
     def test_fail_dbs_image_run(self, mocked_trtl, mock_shellrunner):
-        mocked_trtl.return_value = docker_bench_fail_image_output
         dbs = DockerBenchRunner()
         dbs.start()
         dbs.join()
-        self.assertFalse(dbs.dbs_result.success_flag)
+        self.assertFalse(dbs.dbs_result.is_success)
         self.assertEqual(dbs.dbs_result.result, "Test results: Failures in: 4.5,4.6")
         self.assertEqual(dbs.dbs_result.failed_containers, [])
         self.assertEqual(dbs.dbs_result.failed_images, ['a1', 'a2', 'a3'])
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
-    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
+    @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test', return_value='')
     def test_fail_dbs_not_run(self, mocked_trtl, mock_shellrunner):
-        mocked_trtl.return_value = ''
         dbs = DockerBenchRunner()
         dbs.start()
         dbs.join()
-        self.assertFalse(dbs.dbs_result.success_flag)
-        self.assertEqual(dbs.result, "")
+        self.assertFalse(dbs.dbs_result.is_success)
+        self.assertEqual(dbs.dbs_result.result, "")
         self.assertFalse(dbs.dbs_result.failed_containers)
         self.assertFalse(dbs.dbs_result.failed_images)

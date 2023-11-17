@@ -87,12 +87,11 @@ class EventWatcher(Thread):
 
     def _parse_dbs_result(self, result: Optional[Any], dbs: DockerBenchRunner) -> None:
         if result is not None:
-            result_string = dbs.dbs_result.result.strip(',')
             self._check_failed_containers(dbs.dbs_result.failed_containers)
             self._check_failed_images(dbs.dbs_result.failed_images)
-            if result_string:
+            if dbs.dbs_result.result:
                 self._broker.publish(
-                    EVENTS_CHANNEL, "Docker Bench Security results: " + result_string)
+                    EVENTS_CHANNEL, "Docker Bench Security results: " + dbs.dbs_result.result)
         else:
             self._broker.publish(EVENTS_CHANNEL, "Unable to run Docker Bench Security")
 

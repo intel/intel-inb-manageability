@@ -7,7 +7,6 @@
 
 import logging
 from threading import Thread
-from typing import List, Tuple, Optional, Union, Any
 
 from inbm_lib.dbs_parser import parse_docker_bench_security_results, DBSResult
 from inbm_lib.trtl import Trtl
@@ -34,13 +33,13 @@ class DockerBenchRunner(Thread):
     @staticmethod
     def _handle_docker_security_test_results(output: str) -> DBSResult:
         dbs_result = parse_docker_bench_security_results(output)
-        if dbs_result.success_flag:
+        if dbs_result.is_success:
             dbs_result.result += "All Passed"
             dbs_result.failed_containers = []
             dbs_result.failed_images = []
-            return dbs_result
         else:
             dbs_result.result += dbs_result.fails
             logger.debug("Failed Images:" + str(dbs_result.failed_images))
             logger.debug("Failed Containers:" + str(dbs_result.failed_containers))
-            return dbs_result
+        dbs_result.result = dbs_result.result.strip(',')
+        return dbs_result

@@ -8,14 +8,14 @@ import logging
 import re
 
 from dataclasses import dataclass, field
-from typing import List, Dict, Union
+from typing import List
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass(init=True)
 class DBSResult:
-    success_flag: bool = field(default=True)
+    is_success: bool = field(default=True)
     failed_images: List[str] = field(default_factory=lambda: [])
     failed_containers: List[str] = field(default_factory=lambda: [])
     result: str = field(default="Test results: ")
@@ -39,7 +39,7 @@ def parse_docker_bench_security_results(dbs_output: str) -> DBSResult:
             _fetch_names_for_warn_test(line, dbs_result.failed_containers, dbs_result.failed_images)
         if _is_test_warn(line):
             dbs_result.fails = _add_test_in_fails(line, dbs_result.fails)
-            dbs_result.success_flag = False
+            dbs_result.is_success = False
             prev_warn = True
             continue
         prev_warn = False
