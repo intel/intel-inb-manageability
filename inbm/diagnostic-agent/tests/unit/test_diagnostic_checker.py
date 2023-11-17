@@ -1,4 +1,3 @@
-import unittest
 from unittest import TestCase
 
 from ddt import data, ddt, unpack
@@ -58,15 +57,15 @@ class TestDiagnosticChecker(TestCase):
     def test_set_configuration_value_fail_lower(self, path, val, mock_subscribe, mock_connect):
         self.dc.set_configuration_value(val, path)
         if path == MIN_MEMORY_MB:
-            self.assertEquals(self.dc._min_memory_MB.config_value, 10)
+            self.assertEqual(self.dc._min_memory_MB.config_value, 10)
         elif path == MIN_STORAGE_MB:
-            self.assertEquals(self.dc._min_storage_MB.config_value, 100)
+            self.assertEqual(self.dc._min_storage_MB.config_value, 100)
         elif path == DOCKER_BENCH_SECURITY_INTERVAL_SEC:
-            self.assertEquals(self.dc.docker_bench_security_interval_sec.config_value, 900)
+            self.assertEqual(self.dc.docker_bench_security_interval_sec.config_value, 900)
         elif path == MIN_POWER_PERCENT:
-            self.assertEquals(self.dc._min_power_percent.config_value, 20)
+            self.assertEqual(self.dc._min_power_percent.config_value, 20)
         elif path == NETWORK_CHECK:
-            self.assertEquals(self.dc._network_check, 'false')
+            self.assertEqual(self.dc._network_check, 'false')
 
     @unpack
     @data((MIN_MEMORY_MB, 350), (MIN_STORAGE_MB, 200), (DOCKER_BENCH_SECURITY_INTERVAL_SEC, 18001),
@@ -76,14 +75,14 @@ class TestDiagnosticChecker(TestCase):
     def test_set_configuration_value_fail_higher(self,  path, val, mock_subscribe, mock_connect):
         self.dc.set_configuration_value(val, path)
         if path == MIN_MEMORY_MB:
-            self.assertEquals(self.dc._min_memory_MB.config_value, DEFAULT_MIN_MEMORY_MB)
+            self.assertEqual(self.dc._min_memory_MB.config_value, DEFAULT_MIN_MEMORY_MB)
         elif path == MIN_STORAGE_MB:
-            self.assertEquals(self.dc._min_storage_MB.config_value, DEFAULT_MIN_STORAGE_MB)
+            self.assertEqual(self.dc._min_storage_MB.config_value, DEFAULT_MIN_STORAGE_MB)
         elif path == DOCKER_BENCH_SECURITY_INTERVAL_SEC:
-            self.assertEquals(self.dc.docker_bench_security_interval_sec.config_value,
+            self.assertEqual(self.dc.docker_bench_security_interval_sec.config_value,
                               DEFAULT_DOCKER_BENCH_SECURITY_INTERVAL_SEC)
         elif path == MIN_POWER_PERCENT:
-            self.assertEquals(self.dc._min_power_percent.config_value, DEFAULT_MIN_POWER_PERCENT)
+            self.assertEqual(self.dc._min_power_percent.config_value, DEFAULT_MIN_POWER_PERCENT)
 
     @unpack
     @data((MIN_MEMORY_MB, 150), (MIN_STORAGE_MB, 120), (DOCKER_BENCH_SECURITY_INTERVAL_SEC, 1000),
@@ -93,14 +92,14 @@ class TestDiagnosticChecker(TestCase):
     def test_set_configuration_value_success(self, path, val, mock_subscribe, mock_connect):
         self.dc.set_configuration_value(val, path)
         if path == MIN_MEMORY_MB:
-            self.assertEquals(self.dc._min_memory_MB.config_value, 150)
+            self.assertEqual(self.dc._min_memory_MB.config_value, 150)
         elif path == MIN_STORAGE_MB:
-            self.assertEquals(self.dc._min_storage_MB.config_value, 120)
+            self.assertEqual(self.dc._min_storage_MB.config_value, 120)
         elif path == DOCKER_BENCH_SECURITY_INTERVAL_SEC:
-            self.assertEquals(self.dc.docker_bench_security_interval_sec.config_value,
+            self.assertEqual(self.dc.docker_bench_security_interval_sec.config_value,
                               1000)
         elif path == MIN_POWER_PERCENT:
-            self.assertEquals(self.dc._min_power_percent.config_value, 17)
+            self.assertEqual(self.dc._min_power_percent.config_value, 17)
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run",
            return_value=('eth0', "", 0))

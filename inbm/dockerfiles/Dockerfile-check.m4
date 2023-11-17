@@ -101,7 +101,8 @@ COPY inbm/diagnostic-agent/test-requirements.txt /src/diagnostic-agent/test-requ
 WORKDIR /src/diagnostic-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt
+    pip3.11 install -r test-requirements.txt && \
+    pip3.11 install flake8-annotations==2.9.1
 COPY inbm/common-python-config /common-python-config
 COPY inbm/diagnostic-agent /src/diagnostic-agent
 COPY inbm/packaging /src/packaging
