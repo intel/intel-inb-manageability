@@ -32,7 +32,7 @@ run:
 	PYTHONDONTWRITEBYTECODE=x PYTHONPATH=$(LOCAL_PIP_PATH) python3 -m $(AGENT).$(AGENT)
 
 tests:
-	PYTHONPATH="${PYTHONPATH}:$(shell pwd):$(shell pwd)/../../inbm-lib" PYTHONDONTWRITEBYTECODE=x pytest --cov=$(AGENT) --cov-report=term-missing tests/unit
+	PYTHONPATH="${PYTHONPATH}:$(shell pwd):$(shell pwd)/../../inbm-lib" PYTHONDONTWRITEBYTECODE=x pytest -n 3 --cov=$(AGENT) --cov-report=term-missing tests/unit
 
 deb-eval-py3:
 	./package-py3.sh deb EVAL

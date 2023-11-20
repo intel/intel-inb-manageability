@@ -17,4 +17,4 @@ class TestMenderUtil(unittest.TestCase):
         expected_version = mock_file.return_value = "1.2"
         actual_version = "1.2"
 
-        self.assertEquals(expected_version, actual_version)
+        self.assertEqual(expected_version, actual_version)

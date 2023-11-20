@@ -126,7 +126,7 @@ class TestSota(testtools.TestCase):
                 mock_rollback_and_delete_snap.assert_called_once()
             mock_reboot.assert_called_once()
         except SotaError as e:
-            self.assertEquals(str(e), "SOTA cache directory cannot be created")
+            self.assertEqual(str(e), "SOTA cache directory cannot be created")
 
     @patch("inbm_lib.detect_os.detect_os")
     @patch("dispatcher.sota.sota.print_execution_summary")
@@ -150,7 +150,7 @@ class TestSota(testtools.TestCase):
                 mock_rollback_and_delete_snap.assert_called_once()
             mock_run.assert_called_once()
         except SotaError as e:
-            self.assertEquals(str(e), "SOTA cache directory cannot be created")
+            self.assertEqual(str(e), "SOTA cache directory cannot be created")
 
     @patch("dispatcher.sota.downloader.Downloader.is_valid_release_date")
     @patch("dispatcher.sota.snapshot.YoctoSnapshot.recover")
@@ -167,7 +167,7 @@ class TestSota(testtools.TestCase):
                                                          rebooter=None,
                                                          time_to_wait_before_reboot=1, release_date="2008-11-11")
         except SotaError as e:
-            self.assertEquals(str(e), 'Final result in SOTA execution: SOTA fail')
+            self.assertEqual(str(e), 'Final result in SOTA execution: SOTA fail')
             mock_recover.assert_not_called()
 
     @unpack
@@ -194,7 +194,7 @@ class TestSota(testtools.TestCase):
                                                          time_to_wait_before_reboot=1, release_date="2008-11-11")
             mock_cleanup.assert_called_once()
         except SotaError as e:
-            self.assertEquals(str(e), 'Final result in SOTA execution: SOTA fail')
+            self.assertEqual(str(e), 'Final result in SOTA execution: SOTA fail')
 
     def tearDown(self):
         super().tearDown()
@@ -211,7 +211,7 @@ class TestSota(testtools.TestCase):
                 mem_repo.add("test" + str(i + 1) + ".rpm", b"0123456789")
         return mem_repo
 
-    @patch("inbm_lib.detect_os.detect_os")
+    @patch("dispatcher.sota.sota.detect_os")
     def test_check_do_not_raise_exception(self, mock_detect_os):
         parsed_manifest = {'release_date': "1970-01-01"}
         mock_detect_os.return_value = 'Ubuntu'

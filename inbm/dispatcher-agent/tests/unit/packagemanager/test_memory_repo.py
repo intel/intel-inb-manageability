@@ -57,10 +57,10 @@ class TestMemoryRepo(TestCase):
 
     def test_id(self):
         repo = MemoryRepo("bar")
-        self.assertEquals("bar", repo.name())
+        self.assertEqual("bar", repo.name())
 
         repo2 = MemoryRepo("test")
-        self.assertEquals("test", repo2.name())
+        self.assertEqual("test", repo2.name())
 
 
 if __name__ == '__main__':

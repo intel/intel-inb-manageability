@@ -19,7 +19,7 @@ from inbm_lib.mqttclient.config import (
     DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL, DEFAULT_MQTT_CERTS)
 from inbm_common_lib.constants import TELEMETRY_CHANNEL
 from .telemetry_handling import publish_telemetry_update, publish_static_telemetry
-from .poller import Poller
+from .ipoller import IPoller
 import logging
 import json
 
@@ -37,7 +37,7 @@ def broker_stop(client: MQTT) -> None:
     client.stop()
 
 
-def broker_init(poller: Poller, tls: bool = True, with_docker: bool = False) -> MQTT:
+def broker_init(poller: IPoller, tls: bool = True, with_docker: bool = False) -> MQTT:
     """Set up generic action for message received; subscribe to state channel; publish
     'running' state
 

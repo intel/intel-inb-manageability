@@ -18,13 +18,13 @@ class TestStaticAttributes(TestCase):
         mock_virtual_memory.return_value = svmem
         res = get_total_physical_memory()
         mock_virtual_memory.assert_called_once()
-        self.assertEquals(res, svmem.total)
+        self.assertEqual(res, svmem.total)
 
     @patch('telemetry.lsblk.get_lsblk_output')
     def test_disk_information_fail(self, mock_lsblk):
         mock_lsblk.return_value = None
         res = get_disk_information()
-        self.assertEquals(res, 'Unknown')
+        self.assertEqual(res, 'Unknown')
         mock_lsblk.assert_called_once()
 
     @patch('telemetry.lsblk.get_lsblk_output')
@@ -34,7 +34,7 @@ class TestStaticAttributes(TestCase):
         res = get_disk_information()
 
         # normalize JSON representation
-        self.assertEquals(json.dumps(json.loads(res)),
+        self.assertEqual(json.dumps(json.loads(res)),
                           json.dumps(json.loads('[{"NAME": "loop1", "SIZE": "33554432", "SSD": "False"}, {"NAME": "sr0", "SIZE": "1073741312", "SSD": "False"}, {"NAME": "loop2", "SIZE": "33554432", "SSD": "False"}, {"NAME": "loop0", "SIZE": "33554432", "SSD": "False"}, {"NAME": "sda", "SIZE": "250059350016", "SSD": "False"}]')))
         mock_lsblk.assert_called_once()
 
@@ -44,7 +44,7 @@ class TestStaticAttributes(TestCase):
         mock_lsblk.return_value = "abc"
         mock_parse.return_value = None
         res = get_disk_information()
-        self.assertEquals(res, 'Unknown')
+        self.assertEqual(res, 'Unknown')
         mock_lsblk.assert_called_once()
         mock_parse.assert_called_once()
 
@@ -52,4 +52,4 @@ class TestStaticAttributes(TestCase):
     def test_os_information(self, mock_platform):
         mock_platform.return_value = ('Linux', '16.04')
         res = get_os_information()
-        self.assertEquals(res, "Linux 16.04")
+        self.assertEqual(res, "Linux 16.04")
