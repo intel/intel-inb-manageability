@@ -1,3 +1,11 @@
+"""
+    Function to parse and validate CSV package list (e.g. for Ubuntu).
+
+    Copyright (C) 2017-2023 Intel Corporation
+    SPDX-License-Identifier: Apache-2.0 
+"""
+
+
 import re
 from typing import Optional
 
