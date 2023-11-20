@@ -14,7 +14,6 @@ from inbm_lib.detect_os import OsType
 from .constants import BTRFS
 from .downloader import *
 from .os_updater import DebianBasedUpdater, WindowsUpdater, YoctoX86_64Updater, OsUpdater, YoctoARMUpdater
-from .os_upgrader import OsUpgrader, UbuntuUpgrader, WindowsUpgrader, YoctoUpgrader
 from .rebooter import *
 from .setup_helper import *
 from .setup_helper import SetupHelper
@@ -36,14 +35,16 @@ class SotaOsFactory:
     """Creates instances of OsFactory based on detected platform
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str]) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str], package_list: list[str]) -> None:
         """Initializes OsFactory.
 
         @param dispatcher_callbacks: DispatcherCallbacks
         @param sota_repos: new Ubuntu/Debian mirror (or None)
+        @param package_list: list of packages to install/update (or empty for all--general upgrade)
         """
         self._dispatcher_callbacks = dispatcher_callbacks
         self._sota_repos = sota_repos
+        self._package_list = package_list
 
     @staticmethod
     def verify_os_supported() -> str:
@@ -61,13 +62,13 @@ class SotaOsFactory:
         """
         if os_type == LinuxDistType.Ubuntu.name:
             logger.debug("Ubuntu returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos, self._package_list)
         elif os_type == LinuxDistType.Deby.name:
             logger.debug("Deby returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos, self._package_list)
         elif os_type == LinuxDistType.Debian.name:
             logger.debug("Debian returned")
-            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos)
+            return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos, self._package_list)
         elif os_type == LinuxDistType.YoctoX86_64.name:
             logger.debug("YoctoX86_64 returned")
             return YoctoX86_64(self._dispatcher_callbacks)
@@ -94,11 +95,6 @@ class ISotaOs(ABC):
     @abstractmethod
     def create_os_updater(self) -> OsUpdater:
         """Create an updater object"""
-        pass
-
-    @abstractmethod
-    def create_os_upgrader(self) -> OsUpgrader:
-        """Create an upgrader object"""
         pass
 
     @abstractmethod
@@ -140,10 +136,6 @@ class YoctoX86_64(ISotaOs):
         logger.debug("")
         return YoctoX86_64Updater()
 
-    def create_os_upgrader(self) -> OsUpgrader:
-        logger.debug("")
-        return YoctoUpgrader()
-
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
@@ -172,10 +164,6 @@ class YoctoARM(ISotaOs):
         logger.debug("")
         return YoctoARMUpdater()
 
-    def create_os_upgrader(self) -> OsUpgrader:
-        logger.debug("")
-        return YoctoUpgrader()
-
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
@@ -189,14 +177,16 @@ class YoctoARM(ISotaOs):
 class DebianBasedSotaOs(ISotaOs):
     """DebianBasedSotaOs class, child of ISotaOs"""
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str]) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str], package_list: list[str]) -> None:
         """Constructor.
 
         @param dispatcher_callbacks: DispatcherCallbacks instance
         @param sota_repos: new Ubuntu/Debian mirror (or None)
+        @param package_list: list of packages to install/update (empty list for all/general upgrade)
         """
         self._dispatcher_callbacks = dispatcher_callbacks
         self._sota_repos = sota_repos
+        self._package_list = package_list
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
@@ -207,11 +197,7 @@ class DebianBasedSotaOs(ISotaOs):
 
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
-        return DebianBasedUpdater()
-
-    def create_os_upgrader(self) -> OsUpgrader:
-        logger.debug("")
-        return UbuntuUpgrader()  # TODO: remove--we don't support upgrade
+        return DebianBasedUpdater(self._package_list)
 
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")
@@ -242,10 +228,6 @@ class Windows(ISotaOs):
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
         return WindowsUpdater()
-
-    def create_os_upgrader(self) -> OsUpgrader:
-        logger.debug("")
-        return WindowsUpgrader()
 
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")

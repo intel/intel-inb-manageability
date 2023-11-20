@@ -37,7 +37,7 @@ class TestSoftwareBomList(TestCase):
             get_sw_bom_list()
         except SoftwareBomError as e:
             self.assertEqual(['Error gathering software BOM information. Error'],
-                              ['Error gathering software BOM information. ' + str(e)])
+                             ['Error gathering software BOM information. ' + str(e)])
 
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
@@ -52,7 +52,7 @@ class TestSoftwareBomList(TestCase):
             get_sw_bom_list()
         except SoftwareBomError as e:
             self.assertEqual(['Error gathering software BOM information. Error'],
-                              ['Error gathering software BOM information. ' + str(e)])
+                             ['Error gathering software BOM information. ' + str(e)])
 
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
@@ -66,7 +66,7 @@ class TestSoftwareBomList(TestCase):
                                    '4.14.22-yocto', 'aarch64')
         mock_read_file.return_value = "Error on reading mender version file /etc/mender/artifact_info "
         self.assertEqual(get_sw_bom_list(), [
-                          ' mender version: Error on reading mender version file /etc/mender/artifact_info '])
+            ' mender version: Error on reading mender version file /etc/mender/artifact_info '])
 
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
@@ -80,7 +80,7 @@ class TestSoftwareBomList(TestCase):
                                    '4.14.22-yocto', 'aarch64')
         mock_read_file.return_value = "artifact_name=Release-20200227142947"
         self.assertEqual(get_sw_bom_list(), [
-                          ' mender version: artifact_name=Release-20200227142947'])
+            ' mender version: artifact_name=Release-20200227142947'])
 
     def test_read_mender_file_fail(self):
         self.assertEqual(read_mender_file('/etc/test_info', UNKNOWN), UNKNOWN)

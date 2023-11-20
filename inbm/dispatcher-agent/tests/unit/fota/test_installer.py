@@ -105,7 +105,7 @@ class TestInstaller(TestCase):
             val = LinuxInstaller(self.mock_disp_callbacks_obj, TestInstaller._build_mock_repo(
             ), FW_CONF_PATH, FW_SCHEMA_LOCATION).get_product_params(platform_product="Elkhart Lake Embedded Platform")
             self.assertEqual(val, {'bios_vendor': 'Intel Corporation', 'operating_system': 'linux', 'firmware_tool': 'fwupdate', 'firmware_tool_args': '--apply',
-                                    'firmware_tool_check_args': '-s', 'firmware_file_type': 'xx', 'guid': 'true', 'firmware_product': 'Elkhart Lake Embedded Platform'})
+                                   'firmware_tool_check_args': '-s', 'firmware_file_type': 'xx', 'guid': 'true', 'firmware_product': 'Elkhart Lake Embedded Platform'})
         except FotaError as e:
             self.fail(f"raised FotaError unexpectedly! {e}")
 

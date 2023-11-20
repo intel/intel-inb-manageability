@@ -7,9 +7,9 @@ class TestUtility(TestCase):
     def test_search_keyword_true(self):
         payload = 'Status message FAILED'
         output = search_keyword(payload, ["Configuration", "command", "FAILED"])
-        self.assertEquals(output, True)
+        assert output ==  True
 
     def test_search_keyword_false(self):
         payload = 'Status message SUCCESSFUL'
         output = search_keyword(payload, ["Commands"])
-        self.assertEquals(output, False)
+        assert output ==  False

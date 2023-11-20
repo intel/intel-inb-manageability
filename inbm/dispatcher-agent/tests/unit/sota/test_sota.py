@@ -39,7 +39,7 @@ class TestSota(testtools.TestCase):
         parsed_manifest = {'resource': cls.resource,
                            'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': TestSota._build_mock_repo(0), 'username': username,
-                           'password': password, 'sota_mode': 'full', 'deviceReboot': 'yes'}
+                           'password': password, 'sota_mode': 'full', 'deviceReboot': 'yes', 'package_list': ''}
         cls.sota_instance = SOTA(parsed_manifest, 'remote',
                                  cls.mock_disp_callbacks_obj,
                                  None,
@@ -81,7 +81,7 @@ class TestSota(testtools.TestCase):
         TestSota.sota_instance.sota_cmd = sota_cmd
         TestSota.sota_instance.log_to_file = sota_logto
         TestSota.sota_instance.factory = SotaOsFactory(
-            TestSota.mock_disp_callbacks_obj, None).get_os('Ubuntu')
+            TestSota.mock_disp_callbacks_obj, None, []).get_os('Ubuntu')
         TestSota.sota_instance.calculate_and_execute_sota_upgrade(SOTA_CACHE)
 
         if sota_cmd != "update":
@@ -100,7 +100,7 @@ class TestSota(testtools.TestCase):
         TestSota.sota_instance.sota_cmd = sota_cmd
         TestSota.sota_instance.logtofile = sota_logto
         TestSota.sota_instance.factory = SotaOsFactory(
-            TestSota.mock_disp_callbacks_obj, None).get_os('Ubuntu')
+            TestSota.mock_disp_callbacks_obj, None, []).get_os('Ubuntu')
         self.assertRaises(BaseException, TestSota.sota_instance.calculate_and_execute_sota_upgrade)
         mock_update.assert_not_called()
 
@@ -115,7 +115,7 @@ class TestSota(testtools.TestCase):
                            'sota_repos': None,
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, 'sota_mode': 'full',
-                           'deviceReboot': "no"}
+                           'deviceReboot': "no", 'package_list': ''}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, None,
@@ -160,7 +160,7 @@ class TestSota(testtools.TestCase):
         mock_release_date.return_value = False
         mock_helper.return_value = True
         TestSota.sota_instance.factory = SotaOsFactory(
-            TestSota.mock_disp_callbacks_obj, None).get_os('YoctoX86_64')
+            TestSota.mock_disp_callbacks_obj, None, []).get_os('YoctoX86_64')
         try:
             TestSota.sota_instance.execute_from_manifest(setup_helper=mock_create_helper,
                                                          sota_cache_repo=MemoryRepo("test"), snapshotter=None,
@@ -186,7 +186,7 @@ class TestSota(testtools.TestCase):
         TestSota.sota_local_instance.sota_cmd = sota_cmd
         TestSota.sota_local_instance.logtofile = sota_logto
         TestSota.sota_local_instance.factory = SotaOsFactory(
-            TestSota.mock_disp_callbacks_obj, None).get_os('YoctoX86_64')
+            TestSota.mock_disp_callbacks_obj, None, []).get_os('YoctoX86_64')
         try:
             TestSota.sota_instance.execute_from_manifest(setup_helper=mock_create_helper,
                                                          sota_cache_repo=MemoryRepo("test"), snapshotter=None,

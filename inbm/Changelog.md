@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Changed
+ - RTC 536078 - Added package list option to inbc, cloud, and internal manifest. This allows SOTA to run an install/upgrade command on a set of individual packages rather than all installed packages.
+
 ### Fixed
  - RTC 534426 - Could not write to /var/log/inbm-update-status.log on Yocto due to /var/log being a symlink to /var/volatile/log.
  - RTC 523677 - Improve INBC error logging - invalid child tag not printed

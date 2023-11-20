@@ -35,7 +35,7 @@ class TestStaticAttributes(TestCase):
 
         # normalize JSON representation
         self.assertEqual(json.dumps(json.loads(res)),
-                          json.dumps(json.loads('[{"NAME": "loop1", "SIZE": "33554432", "SSD": "False"}, {"NAME": "sr0", "SIZE": "1073741312", "SSD": "False"}, {"NAME": "loop2", "SIZE": "33554432", "SSD": "False"}, {"NAME": "loop0", "SIZE": "33554432", "SSD": "False"}, {"NAME": "sda", "SIZE": "250059350016", "SSD": "False"}]')))
+                         json.dumps(json.loads('[{"NAME": "loop1", "SIZE": "33554432", "SSD": "False"}, {"NAME": "sr0", "SIZE": "1073741312", "SSD": "False"}, {"NAME": "loop2", "SIZE": "33554432", "SSD": "False"}, {"NAME": "loop0", "SIZE": "33554432", "SSD": "False"}, {"NAME": "sda", "SIZE": "250059350016", "SSD": "False"}]')))
         mock_lsblk.assert_called_once()
 
     @patch('telemetry.lsblk.get_lsblk_output')
