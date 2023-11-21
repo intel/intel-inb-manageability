@@ -32,7 +32,9 @@ class TestFota(unittest.TestCase):
     _fota_local_instance: Optional[FOTA] = None
     invalid_parsed: Optional[XmlHandler] = None
     invalid_resource: Optional[Dict] = None
-    mock_disp_callbacks = DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker())
+    mock_disp_callbacks = DispatcherCallbacks(
+        broker_core=MockDispatcherBroker.build_mock_dispatcher_broker())
+    mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @classmethod
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
@@ -43,13 +45,16 @@ class TestFota(unittest.TestCase):
                            'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': "/cache/", 'username': username,
                            'password': password, 'deviceReboot': 'yes'}
-        TestFota._fota_instance = FOTA(parsed_manifest, "remote", cls.mock_disp_callbacks, UpdateLogger("FOTA", "metadata"))
+        TestFota._fota_instance = FOTA(parsed_manifest, "remote", cls.mock_disp_callbacks,
+                                       cls.mock_disp_broker, UpdateLogger("FOTA", "metadata"))
         TestFota._fota_local_instance = FOTA(parsed_manifest,
                                              "local",
                                              cls.mock_disp_callbacks,
+                                             cls.mock_disp_broker,
                                              cls.mock_disp_obj.update_logger)
         parsed_manifest.update({'resource': cls.resource_2})
-        TestFota._fota_instance_1 = FOTA(parsed_manifest, "remote", cls.mock_disp_callbacks, UpdateLogger("FOTA", "metadata"))
+        TestFota._fota_instance_1 = FOTA(
+            parsed_manifest, "remote", cls.mock_disp_callbacks, cls.mock_disp_broker, UpdateLogger("FOTA", "metadata"))
         cls.invalid_parsed = XmlHandler(
             fake_ota_invalid, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         cls.invalid_resource = cls.invalid_parsed.get_children('ota/type/fota')
@@ -64,6 +69,7 @@ class TestFota(unittest.TestCase):
         mock_upgrade_check.return_value = 'abc', 'def'
         mock_dispatcher_state.return_value = True
         mock_create_installer.return_value = LinuxInstaller(self.mock_disp_callbacks,
+                                                            self.mock_disp_broker,
                                                             TestFota._build_mock_repo(0), FW_CONF_PATH, FW_SCHEMA_LOCATION)
         assert TestFota._fota_local_instance
         TestFota._fota_local_instance.install()
@@ -117,6 +123,7 @@ class TestFota(unittest.TestCase):
         mock_dispatcher_state.return_value = True
         mock_upgrade_check.return_value = 'abc', 'def'
         mock_create_installer.return_value = LinuxInstaller(self.mock_disp_callbacks,
+                                                            self.mock_disp_broker,
                                                             TestFota._build_mock_repo(0), FW_CONF_PATH, FW_SCHEMA_LOCATION)
         assert TestFota._fota_instance
         TestFota._fota_instance.install()
@@ -137,6 +144,7 @@ class TestFota(unittest.TestCase):
         mock_dispatcher_state.return_value = True
         mock_upgrade_check.return_value = False, '', 'abc', 'def'
         mock_create_installer.return_value = LinuxInstaller(self.mock_disp_callbacks,
+                                                            self.mock_disp_broker,
                                                             TestFota._build_mock_repo(0), FW_CONF_PATH, FW_SCHEMA_LOCATION)
         assert TestFota._fota_instance
         TestFota._fota_instance.install()
@@ -157,6 +165,7 @@ class TestFota(unittest.TestCase):
         mock_upgrade_check.return_value = 'abc', 'def'
         mock_dispatcher_state.return_value = True
         mock_create_installer.return_value = LinuxInstaller(self.mock_disp_callbacks,
+                                                            self.mock_disp_broker,
                                                             TestFota._build_mock_repo(0), FW_CONF_PATH, FW_SCHEMA_LOCATION)
         assert TestFota._fota_instance_1
         TestFota._fota_instance_1.install()

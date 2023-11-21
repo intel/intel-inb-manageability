@@ -68,16 +68,19 @@ class TestAotaCommand(TestCase):
 
         if app_type == 'compose':
             return DockerCompose(disp_callbacks,
+                                 MockDispatcherBroker.build_mock_dispatcher_broker(),
                                  parsed_manifest=parsed_manifest,
                                  dbs=ConfigDbs.ON)
         elif app_type == 'docker':
             return Docker(disp_callbacks,
+                          MockDispatcherBroker.build_mock_dispatcher_broker(),
                           parsed_manifest=parsed_manifest,
                           dbs=ConfigDbs.ON)
-        elif app_type == 'application':            
+        elif app_type == 'application':
             return Application(disp_callbacks,
+                               MockDispatcherBroker.build_mock_dispatcher_broker(),
                                parsed_manifest=parsed_manifest,
                                dbs=ConfigDbs.ON,
-                               update_logger=UpdateLogger('',''))
+                               update_logger=UpdateLogger('', ''))
         else:
             raise ValueError(f"test does not know about app_type = {app_type}")

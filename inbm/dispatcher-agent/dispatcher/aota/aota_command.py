@@ -263,7 +263,7 @@ class Docker(AotaCommand):
         if self._uri is None:
             raise AotaError("Fetch URI is required for Docker Load command.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+        check_resource(self.resource, self._uri, self._dispatcher_callbacks, self._broker_core)
 
         if self.resource:
             ext = self.resource[-4:]
@@ -307,7 +307,7 @@ class Docker(AotaCommand):
         if self._uri is None:
             raise AotaError("Fetch URI is required for Docker Import command.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+        check_resource(self.resource, self._uri, self._dispatcher_callbacks, self._broker_core)
 
         container = TrtlContainer(
             self._trtl,
@@ -365,7 +365,7 @@ class DockerCompose(AotaCommand):
         if self._uri is None:
             raise AotaError("fetch URI is required.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+        check_resource(self.resource, self._uri, self._dispatcher_callbacks, self._broker_core)
 
         if self._docker_registry and self._docker_username and self._docker_password:
             self.docker_login()

@@ -112,7 +112,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
                     if chunk:
                         content_length += len(chunk)
     except HTTPError as e:
-        if e.response:            
+        if e.response:
             status_code = e.response.status_code
         else:
             status_code = 0
@@ -398,7 +398,7 @@ def get(url: CanonicalUri,
     except HTTPError as e:
         if e.response:
             status_code = e.response.status_code
-            reason = e.response.reason            
+            reason = e.response.reason
         else:
             status_code = 0
             reason = "(no response--unable to look up reason)"

@@ -134,8 +134,8 @@ fake_sota_success = """<?xml version="1.0" encoding="utf-8"?><manifest><type>ota
 dummy_success = INSTALL_SUCCESS
 dummy_failure = INSTALL_FAILURE
 mock_url = canonicalize_uri("http://www.example.com:8976/capsule.tar")
-username = None
-password = None
+username: Optional[str] = None
+password: Optional[str] = None
 
 
 parsed_dmi_current = PlatformInformation(datetime.datetime(

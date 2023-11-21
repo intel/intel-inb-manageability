@@ -74,7 +74,6 @@ class SOTA:
 
     @param dispatcher: callback to dispatcher
     """
-    __sota_instance = None
 
     def __enter__(self):
         return self
@@ -230,7 +229,7 @@ class SOTA:
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
 
-        os_factory = SotaOsFactory(self._dispatcher_callbacks,
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._broker_core,
                                    self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()
@@ -383,7 +382,7 @@ class SOTA:
         validated_package_list = parse_and_validate_package_list(self._package_list)
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
-        os_factory = SotaOsFactory(self._dispatcher_callbacks,
+        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._broker_core,
                                    self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()

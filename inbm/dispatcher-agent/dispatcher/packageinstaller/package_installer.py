@@ -50,8 +50,8 @@ class TrtlContainer:  # pragma: no cover
         if self._dbs == ConfigDbs.ON or self._dbs == ConfigDbs.WARN:
             logger.debug("dbs is ON or WARN")
             try:
-                message = DbsChecker(self._dispatcher_callbacks, self, self.__trtl, self.__name,
-                                     self.__last_version, self._dbs, broker_core=self._broker_core) \
+                message = DbsChecker(self._dispatcher_callbacks, self._broker_core, self, self.__trtl, self.__name,
+                                     self.__last_version, self._dbs) \
                     .run_docker_security_test()
             except DispatcherException as e:
                 logger.error(f'DBS check failed: {str(e)}')
@@ -105,8 +105,8 @@ class TrtlContainer:  # pragma: no cover
                 message = "DBS is OFF"
             else:
                 try:
-                    message = DbsChecker(self._dispatcher_callbacks, self, self.__trtl, self.__name,
-                                         self.__last_version, self._dbs, broker_core=self._broker_core) \
+                    message = DbsChecker(self._dispatcher_callbacks, self._broker_core, self, self.__trtl, self.__name,
+                                         self.__last_version, self._dbs) \
                         .run_docker_security_test()
                 except DispatcherException:
                     return INSTALL_FAILURE

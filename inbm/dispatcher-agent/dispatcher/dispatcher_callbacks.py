@@ -6,11 +6,6 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-from dispatcher.dispatcher_broker import DispatcherBroker
-
-
 class DispatcherCallbacks:
-    def __init__(self,
-                 broker_core: DispatcherBroker,
-                 ) -> None:
-        self.broker_core = broker_core
+    def __init__(self) -> None:
+        pass

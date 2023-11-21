@@ -33,7 +33,7 @@ def get_app_instance(app_type: str, dispatcher_callbacks: DispatcherCallbacks, b
     raise AotaError(f"Invalid application type: {app_type}")
 
 
-def get_app_os(dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, 
+def get_app_os(dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker,
                parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs,
                update_logger: UpdateLogger) -> Application:
     """Factory method to get the concrete Application based on OS"""

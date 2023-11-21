@@ -70,12 +70,13 @@ class BiosFactory(ABC):
     on the platform.
 
     @param dispatcher_callbacks: callback to dispatcher
+    @param broker_core: MQTT broker to other INBM services
     @param repo: string representation of dispatcher's repository path
     @param params: platform product parameters
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict, broker_core: DispatcherBroker) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, repo: IRepo, params: Dict) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
         self._repo = repo
         self._runner = PseudoShellRunner()
@@ -117,7 +118,7 @@ class BiosFactory(ABC):
         fw_dest = params.get('firmware_dest_path', None)
         if platform.system() == "Linux":
             if fw_dest:
-                return LinuxFileFirmware(callback, repo, params, broker_core)
+                return LinuxFileFirmware(callback, broker_core, repo, params)
             else:
                 return LinuxToolFirmware(callback, broker_core, repo, params)
         elif platform.system() == 'Windows':
@@ -198,7 +199,7 @@ class LinuxToolFirmware(BiosFactory):
                  broker_core: DispatcherBroker,
                  repo: IRepo,
                  params: Dict) -> None:
-        super().__init__(dispatcher_callbacks, repo, params, broker_core=broker_core)
+        super().__init__(dispatcher_callbacks, broker_core, repo, params)
 
     def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
                         tool_options: Optional[str], runner: PseudoShellRunner) -> None:
@@ -292,8 +293,8 @@ class LinuxFileFirmware(BiosFactory):
         @param params: platform product parameters from the FOTA conf file
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict, broker_core: DispatcherBroker) -> None:
-        super().__init__(dispatcher_callbacks, repo, params, broker_core)
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, repo: IRepo, params: Dict) -> None:
+        super().__init__(dispatcher_callbacks, broker_core, repo, params)
 
     def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
                 guid: Optional[str] = None) -> None:
@@ -331,7 +332,7 @@ class WindowsBiosNUC(BiosFactory):
     """
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict, broker_core: DispatcherBroker) -> None:
-        super().__init__(dispatcher_callbacks, repo, params, broker_core)
+        super().__init__(dispatcher_callbacks, broker_core, repo, params)
 
     def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
                 guid: Optional[str] = None) -> None:

@@ -25,21 +25,21 @@ class DbsChecker:
     """Checks the DBS report for containers/images that need remediation
 
     @param dispatcher_callbacks: DispatcherCallbacks instance
+    @param broker_core: MQTT broker to other INBM services
     @param container_callback:  Callback to TrtlContainer object
     @param trtl: TRTL object
     @param name: container name
     @param last_version: container version
-    @param broker_core: MQTT broker to other INBM services
     """
 
     def __init__(self,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 broker_core: DispatcherBroker,
                  container_callback: Any,
                  trtl: Trtl,
                  name: str,
                  last_version: int,
-                 config_dbs: ConfigDbs,
-                 broker_core: DispatcherBroker
+                 config_dbs: ConfigDbs
                  ) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
         self._container_callback = container_callback

@@ -142,11 +142,12 @@ class Dispatcher:
                                    'message': 'No health report from diagnostic'}
         self.RUNNING = False
         self._update_logger = UpdateLogger(ota_type="", data="")
-        self.remediation_instance = RemediationManager(self._make_callbacks_object(), self._broker_core)
+        self.remediation_instance = RemediationManager(
+            self._make_callbacks_object(), self._broker_core)
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
-        return DispatcherCallbacks(broker_core=self._broker_core)
+        return DispatcherCallbacks()
 
     def stop(self) -> None:
         self.RUNNING = False
@@ -254,7 +255,8 @@ class Dispatcher:
         """
         if not self._broker_core.is_started():
             return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED (mqttc not initialized)')
-        configuration_helper = ConfigurationHelper(self._make_callbacks_object(), self._broker_core)
+        configuration_helper = ConfigurationHelper(
+            self._make_callbacks_object(), self._broker_core)
         uri = configuration_helper.parse_url(parsed_head)
         if not is_valid_uri(uri):
             logger.debug("Config load operation using local path.")
@@ -363,7 +365,8 @@ class Dispatcher:
             self._broker_core.mqtt_publish(CUSTOM_CMD_CHANNEL, json_data)
             return PUBLISH_SUCCESS
         elif cmd == "provisionNode":
-            ProvisionTarget(xml, self._make_callbacks_object(), self._broker_core).install(parsed_head)
+            ProvisionTarget(xml, self._make_callbacks_object(),
+                            self._broker_core).install(parsed_head)
             return PUBLISH_SUCCESS
         elif cmd == "decommission":
             message = self.device_manager.decommission()

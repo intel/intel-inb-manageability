@@ -82,7 +82,7 @@ class TestContainerManagement(TestCase):
     def __test_import(self, image_name, smart_fail_stderr=False):
         mock_trtl = MockTrtl(smart_error=smart_fail_stderr)
         container = TrtlContainer(mock_trtl, image_name, MockDispatcher.build_mock_dispatcher(),
-                                  ConfigDbs.ON)
+                                  MockDispatcherBroker.build_mock_dispatcher_broker(), ConfigDbs.ON)
         result = container.image_import("repo")
         if smart_fail_stderr:
             self.assertEqual(result, INSTALL_FAILURE)
@@ -92,7 +92,7 @@ class TestContainerManagement(TestCase):
     def __test_load(self, image_name, smart_fail_stderr=False):
         mock_trtl = MockTrtl(smart_error=smart_fail_stderr)
         container = TrtlContainer(mock_trtl, image_name, MockDispatcher.build_mock_dispatcher(),
-                                  ConfigDbs.ON)
+                                  MockDispatcherBroker.build_mock_dispatcher_broker(), ConfigDbs.ON)
         result = container.image_load("repo")
         if smart_fail_stderr:
             self.assertEqual(result, INSTALL_FAILURE)

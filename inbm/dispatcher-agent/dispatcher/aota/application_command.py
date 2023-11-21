@@ -77,7 +77,7 @@ class Application(AotaCommand):
         if self._uri is None:
             raise AotaError("missing URI.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+        check_resource(self.resource, self._uri, self._dispatcher_callbacks, self._broker_core)
 
         logger.debug("AOTA to download a package")
         self._broker_core.telemetry(

@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 
-from ..common.mock_resources import mock_url, MockDispatcherCallbacks
+from ..common.mock_resources import mock_url, MockDispatcherCallbacks, MockDispatcherBroker
 from dispatcher.fota.installer import Installer, LinuxInstaller
 from mock import patch
 from dispatcher.packagemanager.memory_repo import MemoryRepo
@@ -19,13 +19,14 @@ class TestInstaller(TestCase):
 
     def setUp(self):
         self.mock_disp_callbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
+        self.mock_disp_broker_obj = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @patch('dispatcher.fota.bios_factory.LinuxFileFirmware.install')
     def test_linux_install_successful(self, mock_install):
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
-            LinuxInstaller(self.mock_disp_callbacks_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
+            LinuxInstaller(self.mock_disp_callbacks_obj, self.mock_disp_broker_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
                                                                                                                                      tool_options=None,
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
@@ -40,7 +41,8 @@ class TestInstaller(TestCase):
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
-            LinuxInstaller(self.mock_disp_callbacks_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
+            LinuxInstaller(self.mock_disp_callbacks_obj, self.mock_disp_broker_obj, 
+                           TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
                                                                                                                                      tool_options='/b /p',
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
@@ -55,7 +57,7 @@ class TestInstaller(TestCase):
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
-            LinuxInstaller(self.mock_disp_callbacks_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
+            LinuxInstaller(self.mock_disp_callbacks_obj, self.mock_disp_broker_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
                                                                                                                                      tool_options=None,
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
@@ -70,7 +72,7 @@ class TestInstaller(TestCase):
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
-            LinuxInstaller(self.mock_disp_callbacks_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
+            LinuxInstaller(self.mock_disp_callbacks_obj, self.mock_disp_broker_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
                                                                                                                                      tool_options='123',
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
@@ -87,7 +89,7 @@ class TestInstaller(TestCase):
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
-            LinuxInstaller(self.mock_disp_callbacks_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
+            LinuxInstaller(self.mock_disp_callbacks_obj, self.mock_disp_broker_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
                                                                                                                                      tool_options='1234',
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",
@@ -102,7 +104,7 @@ class TestInstaller(TestCase):
     def test_linux_check_install_params(self, mock_install):
         mock_install.return_value = True
         try:
-            val = LinuxInstaller(self.mock_disp_callbacks_obj, TestInstaller._build_mock_repo(
+            val = LinuxInstaller(self.mock_disp_callbacks_obj, self.mock_disp_broker_obj, TestInstaller._build_mock_repo(
             ), FW_CONF_PATH, FW_SCHEMA_LOCATION).get_product_params(platform_product="Elkhart Lake Embedded Platform")
             self.assertEqual(val, {'bios_vendor': 'Intel Corporation', 'operating_system': 'linux', 'firmware_tool': 'fwupdate', 'firmware_tool_args': '--apply',
                                    'firmware_tool_check_args': '-s', 'firmware_file_type': 'xx', 'guid': 'true', 'firmware_product': 'Elkhart Lake Embedded Platform'})
@@ -114,7 +116,7 @@ class TestInstaller(TestCase):
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
-            LinuxInstaller(self.mock_disp_callbacks_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
+            LinuxInstaller(self.mock_disp_callbacks_obj, self.mock_disp_broker_obj, TestInstaller._build_mock_repo(), FW_CONF_PATH, FW_SCHEMA_LOCATION).install(guid=None,
                                                                                                                                      tool_options=None,
                                                                                                                                      pkg_filename=uri,
                                                                                                                                      signature="testsig",

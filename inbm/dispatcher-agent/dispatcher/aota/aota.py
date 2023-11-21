@@ -32,14 +32,14 @@ class AOTA:
     @param dbs: ConfigDbs.{ON, OFF, WARN}
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, 
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs,
                  update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
         self._dispatcher_callbacks = dispatcher_callbacks
         self._broker_core = broker_core
         self._cmd = parsed_manifest['cmd']
-        self._app_type = parsed_manifest['app_type']        
+        self._app_type = parsed_manifest['app_type']
 
         if self._app_type is None:
             raise AotaError("missing application type for AOTA")
