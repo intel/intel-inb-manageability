@@ -68,18 +68,16 @@ class TestAotaCommand(TestCase):
 
         if app_type == 'compose':
             return DockerCompose(disp_callbacks,
-                                 disp_callbacks.logger,
                                  parsed_manifest=parsed_manifest,
                                  dbs=ConfigDbs.ON)
         elif app_type == 'docker':
             return Docker(disp_callbacks,
-                          disp_callbacks.logger,
                           parsed_manifest=parsed_manifest,
                           dbs=ConfigDbs.ON)
         elif app_type == 'application':            
             return Application(disp_callbacks,
-                               disp_callbacks.logger,
                                parsed_manifest=parsed_manifest,
-                               dbs=ConfigDbs.ON)
+                               dbs=ConfigDbs.ON,
+                               update_logger=UpdateLogger('',''))
         else:
             raise ValueError(f"test does not know about app_type = {app_type}")

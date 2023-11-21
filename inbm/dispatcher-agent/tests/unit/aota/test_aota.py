@@ -328,7 +328,8 @@ class TestAOTA(TestCase):
         else:
             return AOTA(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
                         parsed_manifest=parsed_manifest,
-                        dbs=ConfigDbs.ON)
+                        dbs=ConfigDbs.ON,
+                        update_logger=UpdateLogger('AOTA', 'metadata'))
 
     @patch('inbm_lib.trtl.Trtl.login', return_value=("", "", 0))
     def test_docker_login_success(self, mock_login) -> Any:
