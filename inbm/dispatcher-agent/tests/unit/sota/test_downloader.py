@@ -35,9 +35,10 @@ class TestDownloader(unittest.TestCase):
                            'uri': mock_url, 'repo': TestDownloader._build_mock_repo(0), 'username': username,
                            'password': password, 'sota_mode': 'no-download', 'package_list': '',
                            'deviceReboot': "no"}
-        cls.sota_instance = SOTA(parsed_manifest, "remote",
-                                 DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                     logger=cls.mock_disp_callbacks_obj.logger),
+        cls.sota_instance = SOTA(parsed_manifest,
+                                 "remote",
+                                 DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker()),
+                                 UpdateLogger("SOTA", "metadata"),
                                  None,
                                  install_check_service=MockInstallCheckService())
         cls.sota_instance.factory = SotaOsFactory(

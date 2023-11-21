@@ -29,6 +29,7 @@ from .fota.fota import FOTA
 from .fota.fota_error import FotaError
 from .sota.sota import SOTA
 from .sota.sota_error import SotaError
+from .update_logger import UpdateLogger
 
 logger = logging.getLogger(__name__)
 ota_lock = Lock()
@@ -81,9 +82,11 @@ class FotaThread(OtaThread):
 
     def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks,
                  install_check_service: InstallCheckService,
-                 parsed_manifest: Mapping[str, Optional[Any]]) -> None:
+                 parsed_manifest: Mapping[str, Optional[Any]],
+                 update_logger: UpdateLogger) -> None:
         super().__init__(repo_type, dispatcher_callbacks, parsed_manifest,
                          install_check_service=install_check_service)
+        self._update_logger = update_logger
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the FOTA thread and which checks for existing locks before delegating to
@@ -98,7 +101,7 @@ class FotaThread(OtaThread):
         if ota_lock.acquire(False):
             try:
                 fota_instance = FOTA(parsed_manifest=self._parsed_manifest, repo_type=self._repo_type,
-                                     dispatcher_callbacks=self._dispatcher_callbacks)
+                                     dispatcher_callbacks=self._dispatcher_callbacks, update_logger=self._update_logger)
                 return fota_instance.install()
             except FotaError as e:
                 self._dispatcher_callbacks.broker_core.telemetry(
@@ -114,8 +117,10 @@ class FotaThread(OtaThread):
     def check(self) -> None:
         """ Perform FOTA manifest checking"""
         try:
-            fota_instance = FOTA(parsed_manifest=self._parsed_manifest, repo_type=self._repo_type,
-                                 dispatcher_callbacks=self._dispatcher_callbacks)
+            fota_instance = FOTA(parsed_manifest=self._parsed_manifest,
+                                 repo_type=self._repo_type,
+                                 dispatcher_callbacks=self._dispatcher_callbacks,
+                                 update_logger=self._update_logger)
             fota_instance.check()
         except FotaError as e:
             self._dispatcher_callbacks.broker_core.telemetry(
@@ -132,6 +137,7 @@ class SotaThread(OtaThread):
     @param sota_repos: new Ubuntu/Debian mirror (or None)
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
+    @param update_logger: UpdateLogger instance; expected to update when done with OTA
     @return (dict): dict representation of COMMAND_SUCCESS or OTA_FAILURE/OTA_FAILURE_IN_PROGRESS
     """
 
@@ -141,11 +147,13 @@ class SotaThread(OtaThread):
                  proceed_without_rollback: bool,
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
-                 parsed_manifest: Mapping[str, Optional[Any]],) -> None:
+                 parsed_manifest: Mapping[str, Optional[Any]],
+                 update_logger: UpdateLogger) -> None:
         super().__init__(repo_type, dispatcher_callbacks, parsed_manifest,
                          install_check_service=install_check_service)
         self._sota_repos = sota_repos
         self._proceed_without_rollback = proceed_without_rollback
+        self._update_logger = update_logger
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the SOTA thread and which checks for existing locks before delegating to
@@ -162,6 +170,7 @@ class SotaThread(OtaThread):
                 sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                      repo_type=self._repo_type,
                                      dispatcher_callbacks=self._dispatcher_callbacks,
+                                     update_logger=self._update_logger,
                                      sota_repos=self._sota_repos,
                                      install_check_service=self._install_check_service)
                 try:
@@ -184,6 +193,7 @@ class SotaThread(OtaThread):
             sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
                                  dispatcher_callbacks=self._dispatcher_callbacks,
+                                 update_logger=self._update_logger,
                                  sota_repos=self._sota_repos,
                                  install_check_service=self._install_check_service)
             sota_instance.check()
@@ -198,6 +208,7 @@ class AotaThread(OtaThread):
 
     @param repo_type: source location -> local or remote
     @param dispatcher_callbacks: reference to the main Dispatcher object
+    @param update_logger: UpdateLogger reference (needs to be updated after OTA)
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: ConfigDbs.ON, ConfigDbs.OFF, or ConfigDbs.WARN
@@ -207,11 +218,13 @@ class AotaThread(OtaThread):
     def __init__(self,
                  repo_type: str,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 update_logger: UpdateLogger,
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs) -> None:
         super().__init__(repo_type, dispatcher_callbacks, parsed_manifest, install_check_service)
         self._dbs = dbs
+        self._update_logger = update_logger
 
     def _check_trtl_binary(self) -> None:
         if not os.path.isfile(TRTL_PATH):
@@ -234,7 +247,8 @@ class AotaThread(OtaThread):
                 # Passing dispatcher instance to AOTA and spawn a thread for AOTA
                 aota.AOTA(dispatcher_callbacks=self._dispatcher_callbacks,
                           parsed_manifest=self._parsed_manifest,
-                          dbs=self._dbs).run()
+                          dbs=self._dbs,
+                          update_logger=self._update_logger).run()
                 return COMMAND_SUCCESS
             except (AotaError, UrlSecurityException) as e:
                 self._dispatcher_callbacks.broker_core.telemetry(str(e))

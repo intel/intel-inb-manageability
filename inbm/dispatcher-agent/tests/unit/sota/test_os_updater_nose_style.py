@@ -38,9 +38,10 @@ class TestOsUpdater(unittest.TestCase):
                            'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url, 'repo': TestOsUpdater._build_mock_repo(0), 'username': username,
                            'password': password, 'sota_mode': 'full', 'package_list': '', 'deviceReboot': "no"}
-        cls.sota_instance = SOTA(parsed_manifest, "remote",
-                                 DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                     logger=cls.mock_disp_obj.update_logger),
+        cls.sota_instance = SOTA(parsed_manifest,
+                                 "remote",
+                                 DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker()),
+                                 cls.mock_disp_obj.update_logger,
                                  None,
                                  MockInstallCheckService(),
                                  snapshot=1)
@@ -49,9 +50,10 @@ class TestOsUpdater(unittest.TestCase):
                                     'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
                                     'uri': mock_url, 'repo': TestOsUpdater._build_mock_repo(0), 'username': username,
                                     'password': password, 'sota_mode': 'full', 'package_list': 'package1,package2', 'deviceReboot': "no"}
-        cls.sota_instance_packages = SOTA(parsed_manifest_packages, "remote",
-                                          DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),                                                              
-                                                              logger=cls.mock_disp_obj.update_logger),
+        cls.sota_instance_packages = SOTA(parsed_manifest_packages,
+                                          "remote",
+                                          DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker()),
+                                          cls.mock_disp_obj.update_logger,
                                           None,
                                           MockInstallCheckService(),
                                           snapshot=1)

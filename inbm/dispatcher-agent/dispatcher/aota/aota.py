@@ -17,6 +17,7 @@ from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from .factory import get_app_instance
 from .aota_error import AotaError
 from .cleaner import cleanup_repo
+from ..update_logger import UpdateLogger
 
 logger = logging.getLogger(__name__)
 
@@ -30,7 +31,7 @@ class AOTA:
     """
 
     def __init__(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]],
-                 dbs: ConfigDbs) -> None:
+                 dbs: ConfigDbs, update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
         self._dispatcher_callbacks = dispatcher_callbacks
         self._cmd = parsed_manifest['cmd']
@@ -42,7 +43,8 @@ class AOTA:
             app_type=self._app_type,
             dispatcher_callbacks=self._dispatcher_callbacks,
             parsed_manifest=parsed_manifest,
-            dbs=dbs)
+            dbs=dbs,
+            update_logger=update_logger)
 
     def run(self) -> None:
         """Run command checks the type of command triggered and then installs the file

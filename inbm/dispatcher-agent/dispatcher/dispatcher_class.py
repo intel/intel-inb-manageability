@@ -146,8 +146,7 @@ class Dispatcher:
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
-        return DispatcherCallbacks(broker_core=self._broker,
-                                   logger=self._update_logger)
+        return DispatcherCallbacks(broker_core=self._broker)
 
     def stop(self) -> None:
         self.RUNNING = False
@@ -495,6 +494,7 @@ class Dispatcher:
             self.proceed_without_rollback,
             self._sota_repos,
             self._install_check_service,
+            self._update_logger,
             self.config_dbs)
 
         p = factory.create_parser()
@@ -527,6 +527,7 @@ class Dispatcher:
                     self.proceed_without_rollback,
                     self._sota_repos,
                     self._install_check_service,
+                    self._update_logger,
                     self.config_dbs)
                 p = factory.create_parser()
                 # NOTE: p.parse can raise one of the *otaError exceptions
@@ -755,6 +756,7 @@ class Dispatcher:
         sota_instance = SOTA(parsed_manifest,
                              REMOTE_SOURCE,
                              self._make_callbacks_object(),
+                             self._update_logger,
                              self._sota_repos,
                              self._install_check_service,
                              snapshot, action)

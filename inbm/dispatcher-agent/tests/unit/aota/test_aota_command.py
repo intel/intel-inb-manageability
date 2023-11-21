@@ -4,6 +4,7 @@ from unit.common.mock_resources import *
 
 from dispatcher.aota.aota_command import Docker, DockerCompose
 from dispatcher.aota.application_command import Application
+from dispatcher.aota.application_command import AotaCommand
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 
 
@@ -53,7 +54,7 @@ class TestAotaCommand(TestCase):
     def _build_aota(num_files=0, signature=None, container_tag=None, uri=None, cmd=None,
                     app_type=None, need_repo=True, file=None,
                     username=None, password=None, docker_registry=None, docker_username=None,
-                    docker_password=None):
+                    docker_password=None) -> AotaCommand:
 
         parsed_manifest = TestAotaCommand._build_parsed_manifest(num_files=num_files, signature=signature,
                                                                  container_tag=container_tag,
@@ -63,15 +64,22 @@ class TestAotaCommand(TestCase):
                                                                  docker_registry=docker_registry,
                                                                  docker_username=docker_username,
                                                                  docker_password=docker_password)
+        disp_callbacks = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
+
         if app_type == 'compose':
-            return DockerCompose(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+            return DockerCompose(disp_callbacks,
+                                 disp_callbacks.logger,
                                  parsed_manifest=parsed_manifest,
                                  dbs=ConfigDbs.ON)
         elif app_type == 'docker':
-            return Docker(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+            return Docker(disp_callbacks,
+                          disp_callbacks.logger,
                           parsed_manifest=parsed_manifest,
                           dbs=ConfigDbs.ON)
-        elif app_type == 'application':
-            return Application(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+        elif app_type == 'application':            
+            return Application(disp_callbacks,
+                               disp_callbacks.logger,
                                parsed_manifest=parsed_manifest,
                                dbs=ConfigDbs.ON)
+        else:
+            raise ValueError(f"test does not know about app_type = {app_type}")

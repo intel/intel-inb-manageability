@@ -12,6 +12,7 @@ from threading import Timer
 from typing import Any, Optional, Mapping
 
 from future.moves.urllib.parse import urlparse
+from dispatcher.update_logger import UpdateLogger
 from inbm_lib.constants import OTA_PENDING
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
@@ -41,16 +42,19 @@ class FOTA:
     def __init__(self,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks) -> None:
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 update_logger: UpdateLogger) -> None:
         """Base class constructor for variable assignment, to send telemetry info and create a new
         directory if no repo is present
 
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: DispatcherCallbacks instance
+        @param update_logger: UpdateLogger instance. Needs to be updated with status of OTA command.
         """
         self._ota_element = parsed_manifest.get('resource')
         self._dispatcher_callbacks = dispatcher_callbacks
+        self._update_logger = update_logger
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
 
@@ -144,9 +148,9 @@ class FOTA:
                 factory.create_rebooter().reboot()
 
             # Save the log before reboot
-            self._dispatcher_callbacks.logger.status = OTA_PENDING
-            self._dispatcher_callbacks.logger.error = ""
-            self._dispatcher_callbacks.logger.save_log()
+            self._update_logger.status = OTA_PENDING
+            self._update_logger.error = ""
+            self._update_logger.save_log()
 
             if not hold_reboot:
                 logger.debug("")

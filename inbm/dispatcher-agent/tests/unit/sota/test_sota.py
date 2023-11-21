@@ -42,11 +42,13 @@ class TestSota(testtools.TestCase):
                            'password': password, 'sota_mode': 'full', 'deviceReboot': 'yes', 'package_list': ''}
         cls.sota_instance = SOTA(parsed_manifest, 'remote',
                                  cls.mock_disp_callbacks_obj,
+                                 UpdateLogger("SOTA", "metadata"),
                                  None,
                                  install_check_service=MockInstallCheckService(),
                                  snapshot=1)
         cls.sota_local_instance = SOTA(parsed_manifest, 'local',
                                        cls.mock_disp_callbacks_obj,
+                                       UpdateLogger("SOTA", "metadata"),
                                        None,
                                        install_check_service=MockInstallCheckService(),
                                        snapshot=1)
@@ -118,7 +120,7 @@ class TestSota(testtools.TestCase):
                            'deviceReboot': "no", 'package_list': ''}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
-            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, None,
+            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, UpdateLogger("SOTA", "metadata"), None,
                                  MockInstallCheckService(), snapshot=1)
             sota_instance.execute(proceed_without_rollback=False, skip_sleeps=True)
             mock_print.assert_called_once()
@@ -142,7 +144,7 @@ class TestSota(testtools.TestCase):
                            'deviceReboot': "no"}
         mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         try:
-            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, None,
+            sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_calbacks_obj, UpdateLogger("SOTA", "metadata"), None,
                                  MockInstallCheckService(), snapshot=1)
             sota_instance.execute(proceed_without_rollback=False, skip_sleeps=True)
             mock_print.assert_called_once()
