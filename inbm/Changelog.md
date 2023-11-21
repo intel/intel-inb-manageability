@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Changed
+ - RTC 536078 - Added package list option to inbc, cloud, and internal manifest. This allows SOTA to run an install/upgrade command on a set of individual packages rather than all installed packages.
+
 ### Fixed
  - RTC 534426 - Could not write to /var/log/inbm-update-status.log on Yocto due to /var/log being a symlink to /var/volatile/log.
  - RTC 523677 - Improve INBC error logging - invalid child tag not printed
@@ -16,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  -              Ensure the GUID in the manifest if provided matches the GUID on the system before performing a FOTA.
  - dependabot: update golang.org/x/net from 0.14.0 to 0.17.0 in /inbm/trtl (addresses CVE-2023-39325, CVE-2023-44487)
  - update pypi urllib3 from 1.26.17 to 1.26.18 (addresses CVE-2023-45803 in urllib3)
+ - depandabot: bump github.com/docker/docker from 24.0.5+incompatible to 24.0.7+incompatible in /inbm/trtl (addresses GHSA-jq35-85cj-fj4p)
 
 ## 4.1.4 - 2023-10-11
 

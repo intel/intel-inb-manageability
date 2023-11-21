@@ -170,12 +170,9 @@ class TestINBC(TestCase):
         self.assertRegexpMatches(mock_stderr.getvalue(
         ), r"Signature is greater than allowed string size")
 
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.inbc.Broker')
     @patch('inbm_lib.timer.Timer.start')
-    def test_create_query_manifest(self, t_start, m_sub, m_pub, m_connect, mock_reconnect):
+    def test_create_query_manifest(self, t_start, m_broker):
         p = self.arg_parser.parse_args(['query', '-o', 'all'])
         Inbc(p, 'query', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>cmd</type><cmd>query</cmd><query>' \
@@ -205,12 +202,9 @@ class TestINBC(TestCase):
            return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',
                                             'Intel Corporation', 'Alder Lake Client Platform'))
     @patch('inbc.parser.getpass.getpass', return_value='123abc')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('inbc.inbc.Broker')
     @patch('inbm_lib.timer.Timer.start')
-    def test_create_fota_manifest_clean_input(self, mock_start, m_sub, m_pub,
-                                  m_connect, m_pass, m_dmi, mock_reconnect, mock_thread):
+    def test_create_fota_manifest_clean_input(self, mock_start, m_broker, m_pass, m_dmi, mock_reconnect, mock_thread):
         f = self.arg_parser.parse_args(
             ['fota', '-u', 'https://abc.com/\x00package.bin', '-r', '2024-12-31'])
         Inbc(f, 'fota', False)
@@ -242,7 +236,15 @@ class TestINBC(TestCase):
         s = self.arg_parser.parse_args(['sota'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode>' \
-                   '<deviceReboot>yes</deviceReboot></sota></type>' \
+                   '<package_list></package_list><deviceReboot>yes</deviceReboot></sota></type>' \
+                   '</ota></manifest>'
+        self.assertEqual(s.func(s), expected)
+    
+    def test_create_ubuntu_update_manifest_with_package_list(self):
+        s = self.arg_parser.parse_args(['sota', '--package-list', 'hello,cowsay', '--reboot', 'no', '--mode', 'download-only'])
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
+                   '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>download-only</mode>' \
+                   '<package_list>hello,cowsay</package_list><deviceReboot>no</deviceReboot></sota></type>' \
                    '</ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
@@ -253,7 +255,7 @@ class TestINBC(TestCase):
             ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd ' \
-                   'logtofile="y">update</cmd><mode>full</mode>' \
+                   'logtofile="y">update</cmd><mode>full</mode><package_list></package_list>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
                    '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot>' \
                    '</sota></type></ota></manifest>'
@@ -267,7 +269,7 @@ class TestINBC(TestCase):
             ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank', '-m', 'full'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd ' \
-                   'logtofile="y">update</cmd><mode>full</mode>' \
+                   'logtofile="y">update</cmd><mode>full</mode><package_list></package_list>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
                    '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)

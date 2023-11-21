@@ -27,11 +27,11 @@ class TestCommand(TestCase):
 
     def test_request_topic_set(self):
         self.assertEqual(self.obj.create_request_topic(),
-                          'diagnostic/command/Test_Command')
+                         'diagnostic/command/Test_Command')
 
     def test_response_topic_set(self):
         self.assertEqual(self.obj.create_response_topic(),
-                          'diagnostic/response/12345')
+                         'diagnostic/response/12345')
 
     def test_create_payload(self):
         payload = json.loads(self.obj.create_payload())

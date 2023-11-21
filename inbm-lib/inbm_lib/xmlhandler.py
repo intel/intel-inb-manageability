@@ -128,7 +128,10 @@ class XmlHandler:
                 children[each.tag] = str(each.tag)
                 logger.debug(f'The element {each.tag} has {len(each)} children.')
             else:
-                raise XmlException('Empty tag encountered. XML rejected')
+                # empty tags are OK. for example, <package_list></package_list> in a SOTA
+                # command just means 'upgrade all packages'
+                children[each.tag] = ''
+                logger.debug(f'Empty tag {each.tag} encountered, but allowed.')
 
         return children
 

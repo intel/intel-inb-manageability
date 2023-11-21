@@ -1,0 +1,719 @@
+{
+  "@id": "urn:intelInbandManageability:IntelManageability:2",
+  "@type": "Interface",
+  "contents": [
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:percentdiskused:1",
+      "@type": [
+        "Telemetry",
+        "NumberValue"
+      ],
+      "displayName": {
+        "en": "Disk Usage"
+      },
+      "name": "percentDiskUsed",
+      "schema": "double",
+      "displayUnit": {
+        "en": "%"
+      }
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:systemcpupercent:1",
+      "@type": [
+        "Telemetry",
+        "NumberValue"
+      ],
+      "displayName": {
+        "en": "System CPU"
+      },
+      "name": "systemCpuPercent",
+      "schema": "double",
+      "displayUnit": {
+        "en": "%"
+      }
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:systemproductname:1",
+      "@type": [
+        "Property",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "System Product Name"
+      },
+      "name": "systemProductName",
+      "schema": "string",
+      "writable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:osinformation:1",
+      "@type": [
+        "Property",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "OS Information"
+      },
+      "name": "osInformation",
+      "schema": "string",
+      "writable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:totalphysicalmemory:1",
+      "@type": [
+        "Property",
+        "NumberValue"
+      ],
+      "displayName": {
+        "en": "Total Memory"
+      },
+      "name": "totalPhysicalMemory",
+      "schema": "integer",
+      "writable": false,
+      "displayUnit": {
+        "en": "bytes"
+      }
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:biosvendor:1",
+      "@type": [
+        "Property",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "BIOS Vendor"
+      },
+      "name": "biosVendor",
+      "schema": "string",
+      "writable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:biosreleasedate:1",
+      "@type": [
+        "Property",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "BIOS Release Date"
+      },
+      "name": "biosReleaseDate",
+      "schema": "string",
+      "writable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:systemmanufacturer:1",
+      "@type": [
+        "Property",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "System Manufacturer "
+      },
+      "name": "systemManufacturer",
+      "schema": "string",
+      "writable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:cpuid:1",
+      "@type": [
+        "Property",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "CPU"
+      },
+      "name": "cpuId",
+      "schema": "string",
+      "writable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:diskinformation:1",
+      "@type": [
+        "Property",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "Disk Information"
+      },
+      "name": "diskInformation",
+      "schema": "string",
+      "writable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:biosversion:1",
+      "@type": [
+        "Property",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "BIOS Version"
+      },
+      "name": "biosVersion",
+      "schema": "string",
+      "writable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:triggerota:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Trigger a raw over the air manifest update"
+      },
+      "displayName": {
+        "en": "Manifest Update"
+      },
+      "name": "triggerota",
+      "request": {
+        "@type": "CommandPayload",
+        "name": "manifest",
+        "schema": {
+          "@id": "urn:intelInbandManageability:IntelManageability:triggerota:manifest:0rusqd1zz:1",
+          "@type": "Object",
+          "displayName": {
+            "en": "Object"
+          },
+          "fields": [
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerota:manifest:0rusqd1zz:manifest:1",
+              "displayName": {
+                "en": "XML Manifest"
+              },
+              "name": "manifest",
+              "schema": "string"
+            }
+          ]
+        }
+      },
+      "durable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:availablememory:1",
+      "@type": [
+        "Telemetry",
+        "NumberValue"
+      ],
+      "displayName": {
+        "en": "Available Memory"
+      },
+      "name": "availableMemory",
+      "schema": "long",
+      "displayUnit": {
+        "en": "Bytes"
+      }
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:containerscpupercent:1",
+      "@type": [
+        "Telemetry",
+        "NumberValue"
+      ],
+      "displayName": {
+        "en": "Container CPU"
+      },
+      "name": "containersCpuPercent",
+      "schema": "double",
+      "unit": "percent"
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:coretempcelsius:1",
+      "@type": [
+        "Telemetry",
+        "NumberValue"
+      ],
+      "displayName": {
+        "en": "Core Temperature"
+      },
+      "name": "coreTempCelsius",
+      "schema": "double",
+      "displayUnit": {
+        "en": "degC"
+      }
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:reboot_device:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Triggers Reboot on the device"
+      },
+      "displayName": {
+        "en": "Reboot"
+      },
+      "name": "reboot_device",
+      "durable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:shutdown_device:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Triggers shutdown on a device"
+      },
+      "displayName": {
+        "en": "Shutdown"
+      },
+      "name": "shutdown_device",
+      "durable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:decommission_device:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Decommissions a device"
+      },
+      "displayName": {
+        "en": "Decommission"
+      },
+      "name": "decommission_device",
+      "durable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Trigger an application over the air update."
+      },
+      "displayName": {
+        "en": "Trigger AOTA"
+      },
+      "name": "triggeraota",
+      "request": {
+        "@type": "CommandPayload",
+        "name": "triggeraota",
+        "schema": {
+          "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:1",
+          "@type": "Object",
+          "displayName": {
+            "en": "Object"
+          },
+          "fields": [
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:app:1",
+              "displayName": {
+                "en": "App (docker, compose, application)"
+              },
+              "name": "app",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:cmd:1",
+              "displayName": {
+                "en": "Command (down, import, load, pull, up, list, stats, remove, update)"
+              },
+              "name": "cmd",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:containerTag:1",
+              "displayName": {
+                "en": "Container Tag"
+              },
+              "name": "containerTag",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:deviceReboot:1",
+              "displayName": {
+                "en": "Device Reboot"
+              },
+              "name": "deviceReboot",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:fetch:1",
+              "displayName": {
+                "en": "Fetch"
+              },
+              "name": "fetch",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:signature:1",
+              "displayName": {
+                "en": "Signature"
+              },
+              "name": "signature",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:version:1",
+              "displayName": {
+                "en": "Version"
+              },
+              "name": "version",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:username:1",
+              "displayName": {
+                "en": "Server Username"
+              },
+              "name": "username",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:password:1",
+              "displayName": {
+                "en": "Server Password"
+              },
+              "name": "password",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:dockerRegistry:1",
+              "displayName": {
+                "en": "Docker Registry"
+              },
+              "name": "dockerRegistry",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:dockerUsername:1",
+              "displayName": {
+                "en": "Docker Username"
+              },
+              "name": "dockerUsername",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:dockerPassword:1",
+              "displayName": {
+                "en": "Docker Password"
+              },
+              "name": "dockerPassword",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggeraota:triggeraota:0uinycwr_:file:1",
+              "displayName": {
+                "en": "Docker Compose File"
+              },
+              "name": "file",
+              "schema": "string"
+            }
+          ]
+        }
+      },
+      "durable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Trigger a firmware over the air update"
+      },
+      "displayName": {
+        "en": "Trigger FOTA"
+      },
+      "name": "triggerfota",
+      "request": {
+        "@type": "CommandPayload",
+        "name": "triggerfota",
+        "schema": {
+          "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:1",
+          "@type": "Object",
+          "displayName": {
+            "en": "Object"
+          },
+          "fields": [
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:biosversion:1",
+              "displayName": {
+                "en": "BIOS Version"
+              },
+              "name": "biosversion",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:fetch:1",
+              "displayName": {
+                "en": "Fetch"
+              },
+              "name": "fetch",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:manufacturer:1",
+              "displayName": {
+                "en": "Manufacturer"
+              },
+              "name": "manufacturer",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:path:1",
+              "displayName": {
+                "en": "Path"
+              },
+              "name": "path",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:product:1",
+              "displayName": {
+                "en": "Product"
+              },
+              "name": "product",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:releasedate:1",
+              "displayName": {
+                "en": "Release Date"
+              },
+              "name": "releasedate",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:signature:1",
+              "displayName": {
+                "en": "Signature"
+              },
+              "name": "signature",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:tooloptions:1",
+              "displayName": {
+                "en": "Tool Options"
+              },
+              "name": "tooloptions",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:vendor:1",
+              "displayName": {
+                "en": "Vendor"
+              },
+              "name": "vendor",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:username:1",
+              "displayName": {
+                "en": "Server Username"
+              },
+              "name": "username",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerfota:triggerfota:p8thauznz:password:1",
+              "displayName": {
+                "en": "Server Password"
+              },
+              "name": "password",
+              "schema": "string"
+            }
+          ]
+        }
+      },
+      "durable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:triggersota:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Trigger a software over the air update."
+      },
+      "displayName": {
+        "en": "Trigger SOTA"
+      },
+      "name": "triggersota",
+      "request": {
+        "@type": "CommandPayload",
+        "name": "triggersota",
+        "schema": {
+          "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:1",
+          "@type": "Object",
+          "displayName": {
+            "en": "Object"
+          },
+          "fields": [
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:cmd:1",
+              "displayName": {
+                "en": "Command (update only)"
+              },
+              "name": "cmd",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:package_list:1",
+              "displayName": {
+                "en": "Package List (comma separated)"
+              },
+              "name": "package_list",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:fetch:1",
+              "displayName": {
+                "en": "Fetch"
+              },
+              "name": "fetch",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:release_date:1",
+              "displayName": {
+                "en": "Release Date"
+              },
+              "name": "release_date",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:log_to_file:1",
+              "displayName": {
+                "en": "Log to File (N, Y)"
+              },
+              "name": "log_to_file",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:username:1",
+              "displayName": {
+                "en": "Username"
+              },
+              "name": "username",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:password:1",
+              "displayName": {
+                "en": "Password"
+              },
+              "name": "password",
+              "schema": "string"
+            }
+          ]
+        }
+      },
+      "durable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:triggerconfig:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Trigger a configuration update"
+      },
+      "displayName": {
+        "en": "Trigger Configuration Update"
+      },
+      "name": "triggerconfig",
+      "request": {
+        "@type": "CommandPayload",
+        "name": "triggerconfig",
+        "schema": {
+          "@id": "urn:intelInbandManageability:IntelManageability:triggerconfig:triggerconfig:rpajdnyym8:1",
+          "@type": "Object",
+          "displayName": {
+            "en": "Object"
+          },
+          "fields": [
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerconfig:triggerconfig:rpajdnyym8:cmd:1",
+              "displayName": {
+                "en": "Command (get, load, set, append, remove)"
+              },
+              "name": "cmd",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerconfig:triggerconfig:rpajdnyym8:fetch:1",
+              "displayName": {
+                "en": "Fetch"
+              },
+              "name": "fetch",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerconfig:triggerconfig:rpajdnyym8:path:1",
+              "displayName": {
+                "en": "Path"
+              },
+              "name": "path",
+              "schema": "string"
+            },
+            {
+              "@id": "urn:intelInbandManageability:IntelManageability:triggerconfig:triggerconfig:rpajdnyym8:signature:1",
+              "displayName": {
+                "en": "Signature"
+              },
+              "name": "signature",
+              "schema": "string"
+            }
+          ]
+        }
+      },
+      "durable": false
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:eventgeneric:1",
+      "@type": [
+        "Telemetry",
+        "Event",
+        "EventValue"
+      ],
+      "displayName": {
+        "en": "Event"
+      },
+      "name": "eventGeneric",
+      "schema": "string"
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:networkInformation:1",
+      "@type": [
+        "Telemetry",
+        "StringValue"
+      ],
+      "displayName": {
+        "en": "Network Information"
+      },
+      "name": "networkInformation",
+      "schema": "string"
+    },
+    {
+      "@id": "urn:intelInbandManageability:IntelManageability:triggerquery:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "description": {
+        "en": "Trigger a Query Update"
+      },
+      "displayName": {
+        "en": "Trigger Query"
+      },
+      "name": "triggerquery",
+      "request": {
+        "@type": "CommandPayload",
+        "name": "triggerquery",
+        "schema": {
+          "@type": "Object",
+          "displayName": {
+            "en": "Object"
+          },
+          "fields": [
+            {
+              "displayName": {
+                "en": "Options(all, hw, fw, guid, os, security, status, swbom, version)"
+              },
+              "name": "option",
+              "schema": "string"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "displayName": {
+    "en": "Device Interface"
+  },
+  "@context": [
+    "dtmi:iotcentral:context;2",
+    "dtmi:dtdl:context;2"
+  ]
+}

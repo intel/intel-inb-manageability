@@ -13,28 +13,27 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
 class TestOtaParser(TestCase):
 
     def setUp(self):
-        self.mock_disp_obj = MockDispatcher.build_mock_dispatcher()
         self.resource = {'username': 'tj', 'password': 'tj123'}
         self.parsed = MockXmlFunctions(fake_ota_invalid, is_file=False,
                                        schema_location=TEST_SCHEMA_LOCATION)
 
     def test_parse_aota_a(self):
-        result = AotaParser('remote', self.mock_disp_obj).parse(
+        result = AotaParser('remote').parse(
             {'cmd': '', 'app': '', 'fetch': 'https://www.google.com/'}, {}, self.parsed)
         self.assertTrue('signature' in result)
 
     def test_parse_aota_b(self):
-        result = AotaParser('remote', self.mock_disp_obj).parse(
+        result = AotaParser('remote').parse(
             {'cmd': 'cmd_1', 'app': 'app_1', 'fetch': 'http://www.google.com/'}, {}, self.parsed)
         self.assertTrue('google' in str(result))
 
     def test_parse_sota_a(self):
-        result = SotaParser('remote', self.mock_disp_obj).parse(
+        result = SotaParser('remote').parse(
             {'cmd': '', 'signature': '', 'release_date': '', 'fetch': 'https://www.google.com/'}, {}, self.parsed)
         self.assertTrue('hash_algorithm' in result)
 
     def test_parse_pota_a(self):
-        p = PotaParser('remote', self.mock_disp_obj)
+        p = PotaParser('remote')
         result = p.parse(
             {'fota': '', 'sota': '', 'targetType': 'node', 'targets': ' ', 'fetch': 'https://www.google.com/'}, {}, self.parsed)
         self.assertTrue('fota' in result)

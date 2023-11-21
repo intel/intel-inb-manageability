@@ -12,7 +12,7 @@ from inbc.xml_tag import create_xml_tag
 from inbm_common_lib.dmi import get_dmi_system_info, is_dmi_path_exists
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters, validate_guid
+from .validator import validate_date, validate_string_less_than_n_characters, validate_guid, validate_package_list
 from inbm_lib.detect_os import detect_os, LinuxDistType
 
 from .inbc_exception import InbcException
@@ -117,6 +117,9 @@ class ArgsParser(object):
                                  help='Type of information [ yes | no ]')
         parser_sota.add_argument('--mode', '-m', default='full',
                                  required=False, choices=['full', 'download-only', 'no-download'])
+        parser_sota.add_argument('--package-list', '-p', required=False,
+                                 type=lambda x: validate_package_list(x),
+                                 help='Comma-separated list of package namess to install')
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
@@ -286,6 +289,9 @@ def sota(args: argparse.Namespace) -> str:
     # if source_location is None, then update is local Ubuntu and does not need a release date.
     release_date = args.releasedate if source_location else None
 
+    # pass comma-separated package list as is in manifest
+    package_list = args.package_list if args.package_list else ""
+
     # This is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd schema.
     if source_tag == PATH_STRING:
         path_location = source_location
@@ -301,7 +307,8 @@ def sota(args: argparse.Namespace) -> str:
         'username': args.username,
         'password': _get_password(args.username, "Please provide the password: "),
         'deviceReboot': "no" if args.mode == "download-only" else args.reboot,
-        'path': path_location
+        'path': path_location,
+        'package_list': package_list,
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -320,6 +327,7 @@ def sota(args: argparse.Namespace) -> str:
                 '</manifest>').format(
         (create_xml_tag(arguments,
                         "mode",
+                        "package_list",
                         "fetch",
                         "username",
                         "password",
