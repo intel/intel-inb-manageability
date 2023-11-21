@@ -133,6 +133,7 @@ class OtaTarget:
         if repo is None:
             raise DispatcherException("attempted to download with uninitialized repo")
         download(dispatcher_callbacks=disp_callbacks,
+                 broker_core=self._broker_core,
                  uri=canonicalize_uri(uri),
                  repo=repo,
                  umask=UMASK_OTA,
@@ -141,7 +142,7 @@ class OtaTarget:
         if ota_type != OtaType.SOTA.name:
             self._validate_signature(canonicalize_uri(uri), repo, download_info.get(
                 'signature', None), download_info.get('hash_algorithm', None))
-        disp_callbacks.broker_core.telemetry('Proceeding to publish OTA manifest...')
+        self._broker_core.telemetry('Proceeding to publish OTA manifest...')
 
     def _validate_signature(self, uri: CanonicalUri, repo: DirectoryRepo,
                             signature: Optional[str], hash_algo: Optional[int]):
@@ -150,7 +151,7 @@ class OtaTarget:
         file_path = os.path.join(repo.get_repo_path(), file_name)
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if signature:
-                verify_signature(signature, file_path, self._dispatcher_callbacks, hash_algo)
+                verify_signature(signature, file_path, self._dispatcher_callbacks, self._broker_core, hash_algo)
             else:
                 raise DispatcherException(
                     'OTA update aborted. Signature is required to validate the package and proceed with the update.')

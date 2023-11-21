@@ -123,6 +123,7 @@ class FOTA:
 
                 uri = canonicalize_uri(self._uri)
                 download(dispatcher_callbacks=self._dispatcher_callbacks,
+                         broker_core=self._broker_core,
                          uri=uri,
                          repo=self._repo,
                          umask=UMASK_OTA,

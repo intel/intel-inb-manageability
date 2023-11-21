@@ -65,6 +65,7 @@ class ProvisionTarget:
         canonicalized_url = canonicalize_uri(uri)
         repo = DirectoryRepo(REPO_CACHE)
         download(dispatcher_callbacks=self._dispatcher_callbacks,
+                 broker_core=self._broker_core,
                  uri=canonicalized_url,
                  repo=repo,
                  umask=UMASK_PROVISION_FILE,
@@ -74,7 +75,7 @@ class ProvisionTarget:
         tar_file_path = os.path.join(REPO_CACHE, tar_file_name)
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if signature:
-                verify_signature(signature, tar_file_path, self._dispatcher_callbacks, hash_algo)
+                verify_signature(signature, tar_file_path, self._dispatcher_callbacks, self._broker_core, hash_algo)
             else:
                 raise DispatcherException(
                     'Provision Target install aborted. Signature is required to validate the package and proceed with the update.')

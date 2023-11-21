@@ -15,6 +15,7 @@ from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.downloader import download
 from dispatcher.packagemanager.local_repo import DirectoryRepo
+from .dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -50,13 +51,16 @@ class FotaDownloader(OtaDownloader):
     """Performs OTA download.
 
     @param dispatcher_callbacks: callbacks in dispatcher
+    @param broker_core: MQTT broker to other INBM services
     @param parsed_manifest:
     """
 
     def __init__(self,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]]) -> None:
         super().__init__(dispatcher_callbacks, parsed_manifest)
+        self._broker_core = broker_core
 
     def download(self) -> None:
         """Starts the FOTA download.  Used when in a host/node scenario.  If not, download will be performed by
@@ -64,6 +68,7 @@ class FotaDownloader(OtaDownloader):
         """
         logger.debug("")
         download(dispatcher_callbacks=self._dispatcher_callbacks,
+                 broker_core=self._broker_core,
                  uri=self._uri,
                  umask=UMASK_OTA,
                  repo=self._repo,

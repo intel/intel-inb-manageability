@@ -43,11 +43,13 @@ class SOTAUtil:  # FIXME intermediate step in refactor
     def check_diagnostic_disk(self,
                               estimated_size: Union[float, int],
                               dispatcher_callbacks: DispatcherCallbacks,
+                              broker_core: DispatcherBroker,
                               install_check_service: InstallCheckService) -> None:
         """Checks if there is sufficient size for an update with diagnostic agent
 
         @param estimated_size: estimated install size
         @param dispatcher_callbacks: DispatcherCallbacks
+        @param broker_core: MQTT broker to other INBM services
         @param install_check_service: provides an install check
         """
         logger.debug("")
@@ -55,7 +57,7 @@ class SOTAUtil:  # FIXME intermediate step in refactor
         try:
             install_check_service.install_check(size=estimated_size, check_type='check_storage')
         except DispatcherException:
-            dispatcher_callbacks.broker_core.telemetry(
+            broker_core.telemetry(
                 "System Update aborted: insufficient disk space")
             raise SotaError('Insufficient disk space for update')
 
@@ -165,7 +167,8 @@ class SOTA:
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
             estimated_size = self.installer.get_estimated_size()
-            SOTAUtil().check_diagnostic_disk(estimated_size, self._dispatcher_callbacks, self._install_check_service)
+            SOTAUtil().check_diagnostic_disk(estimated_size, self._dispatcher_callbacks, self._broker_core,
+                                             self._install_check_service)
             if self._repo_type == REMOTE_SOURCE:
                 logger.debug(f"Remote repo URI: {self._uri}")
                 if self._uri is None:
@@ -189,7 +192,8 @@ class SOTA:
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
         run_commands(log_destination=log_destination,
                      cmd_list=cmd_list,
-                     dispatcher_callbacks=self._dispatcher_callbacks)
+                     dispatcher_callbacks=self._dispatcher_callbacks,
+                     broker_core=self._broker_core)
         return cmd_list
 
     def execute(self, proceed_without_rollback: bool, skip_sleeps: bool = False) -> None:  # pragma: no cover
@@ -288,11 +292,11 @@ class SOTA:
             logger.debug(f"SOTA Download URI: {self._uri}")
             if self._uri is None:
                 downloader.download(
-                    self._dispatcher_callbacks, None, sota_cache_repo,
+                    self._dispatcher_callbacks, self._broker_core, None, sota_cache_repo,
                     self._username, self._password, release_date)
             else:
                 downloader.download(
-                    self._dispatcher_callbacks, canonicalize_uri(
+                    self._dispatcher_callbacks, self._broker_core, canonicalize_uri(
                         self._uri), sota_cache_repo,
                     self._username, self._password, release_date)
 
@@ -350,7 +354,7 @@ class SOTA:
         finally:
             if self._repo_type == LOCAL_SOURCE:
                 self._clean_local_repo_file()
-            print_execution_summary(cmd_list, self._dispatcher_callbacks)
+            print_execution_summary(cmd_list, self._dispatcher_callbacks, self._broker_core)
             if success:
                 # Save the log before reboot
                 if self.sota_mode == 'download-only':

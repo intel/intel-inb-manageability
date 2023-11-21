@@ -40,6 +40,7 @@ from ..config.config_command import ConfigCommand
 from ..config.constants import *
 from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
+from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -142,6 +143,7 @@ def is_enough_space_to_download(uri: CanonicalUri,
 def verify_signature(signature: str,
                      path_to_file: str,
                      dispatcher_callbacks: DispatcherCallbacks,
+                     broker_core: DispatcherBroker,
                      hash_algorithm: Optional[int]) -> None:
     """Verifies that the signed checksum of the package matches the package received by fetching the
     package and cert from tar ball and fetching the public key from the cert which is used in
@@ -150,6 +152,7 @@ def verify_signature(signature: str,
     @param signature: Signed checksum of the package retrieved from manifest
     @param path_to_file: Path to the package to be installed
     @param dispatcher_callbacks: DispatcherCallbacks instance
+    @param broker_core: MQTT broker to other INBM services
     @param hash_algorithm: version of checksum i.e. 256 or 384 or 512
     """
     logger.debug(f"tar_file_path: {path_to_file}")
@@ -187,8 +190,8 @@ def verify_signature(signature: str,
             cert_content = package_cert.read()
             cert_obj = load_pem_x509_certificate(cert_content, default_backend())
             pub_key = cert_obj.public_key()
-        _verify_checksum_with_key(pub_key, signature, checksum, dispatcher_callbacks)
-        dispatcher_callbacks.broker_core.telemetry('Signature check passed.')
+        _verify_checksum_with_key(pub_key, signature, checksum, dispatcher_callbacks, broker_core)
+        broker_core.telemetry('Signature check passed.')
     except (OSError, ValueError) as e:
         raise DispatcherException(f"Signature check failed.  "
                                   f"Could not load certificate content to validate signature: {str(e)}")
@@ -243,13 +246,15 @@ def _is_valid_file(files: List) -> bool:
 def _verify_checksum_with_key(pub_key: Any,
                               signature: Optional[str],
                               checksum: Optional[bytes],
-                              dispatcher_callbacks: DispatcherCallbacks) -> None:
+                              dispatcher_callbacks: DispatcherCallbacks,
+                              broker_core: DispatcherBroker) -> None:
     """Verifies that the signed checksum of the package matches the package received.
 
     @param pub_key: Public Key fetched from the package
     @param signature: signature received from the manifest of the package
     @param checksum: checksum calculated of the package to be installed
     @param dispatcher_callbacks: DispatcherCallbacks instance
+    @param broker_core: MQTT broker to other INBM services
     """
     if not checksum:
         raise DispatcherException('Signature check failed. Invalid checksum.')
@@ -266,7 +271,7 @@ def _verify_checksum_with_key(pub_key: Any,
             raise DispatcherException(
                 'Signature check failed. Checksum of data does not match signature in manifest.')
 
-        dispatcher_callbacks.broker_core.telemetry(
+        broker_core.telemetry(
             "Signature check passed. Checksum of data matches signature in manifest")
     else:
         raise DispatcherException('Invalid key size send.  Update rejected.')
@@ -303,7 +308,7 @@ def _parse_config_result(response, source) -> None:
         'Source verification failed.  Source is not in the trusted repository.')
 
 
-def verify_source(source: Optional[str], dispatcher_callbacks: DispatcherCallbacks,
+def verify_source(source: Optional[str], dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker,
                   source_file: bool = False) -> None:  # pragma: no cover
     """Checks if the source received is in the trusted repository list by fetching the trusted
     repository list from config agent and then comparing it with the source received
@@ -340,10 +345,10 @@ def verify_source(source: Optional[str], dispatcher_callbacks: DispatcherCallbac
 
     cmd = ConfigCommand('get_element', TRUSTED_REPOSITORIES_LIST)
     # Subscribe to response channel using the same request ID
-    dispatcher_callbacks.broker_core.mqtt_subscribe(cmd.create_response_topic(), on_command)
+    broker_core.mqtt_subscribe(cmd.create_response_topic(), on_command)
 
     # Publish command request
-    dispatcher_callbacks.broker_core.mqtt_publish(
+    broker_core.mqtt_publish(
         cmd.create_request_topic(), cmd.create_payload())
 
     latch.await_()

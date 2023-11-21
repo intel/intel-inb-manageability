@@ -32,8 +32,7 @@ class TestFota(unittest.TestCase):
     _fota_local_instance: Optional[FOTA] = None
     invalid_parsed: Optional[XmlHandler] = None
     invalid_resource: Optional[Dict] = None
-    mock_disp_callbacks = DispatcherCallbacks(
-        broker_core=MockDispatcherBroker.build_mock_dispatcher_broker())
+    mock_disp_callbacks = DispatcherCallbacks()
     mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @classmethod

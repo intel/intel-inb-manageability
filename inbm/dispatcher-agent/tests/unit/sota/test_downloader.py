@@ -43,7 +43,7 @@ class TestDownloader(unittest.TestCase):
                                  None,
                                  install_check_service=MockInstallCheckService())
         cls.sota_instance.factory = SotaOsFactory(
-            cls.mock_disp_callbacks_obj, MockDisptacherBroker(), None, []).get_os('YoctoX86_64')
+            cls.mock_disp_callbacks_obj, MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
 
     @patch('dispatcher.sota.downloader.Downloader.is_valid_release_date', return_value=True)
     @patch('dispatcher.sota.downloader.YoctoDownloader.download')

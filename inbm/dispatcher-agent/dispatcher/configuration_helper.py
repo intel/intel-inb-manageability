@@ -109,7 +109,7 @@ class ConfigurationHelper:
         source = url[:-(len(url.split('/')[-1]) + 1)]
         logger.debug(f"source: {source}")
 
-        verify_source(source=source, dispatcher_callbacks=self._dispatcher_callbacks)
+        verify_source(source=source, dispatcher_callbacks=self._dispatcher_callbacks, broker_core=self._broker_core)
         self._broker_core.telemetry('Source Verification check passed')
         self._broker_core.telemetry(
             f'Fetching configuration file from {url}')
@@ -129,7 +129,7 @@ class ConfigurationHelper:
                 if signature:
                     try:
                         verify_signature(signature, tar_file_path,
-                                         self._dispatcher_callbacks, hash_algorithm)
+                                         self._dispatcher_callbacks, self._broker_core, hash_algorithm)
                     except DispatcherException as err:
                         self._repo.delete(tar_file_name)
                         raise DispatcherException(f'Configuration Load Aborted. {str(err)}')

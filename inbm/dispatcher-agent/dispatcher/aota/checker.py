@@ -41,10 +41,10 @@ def check_resource(resource: Optional[str], uri: Optional[str], dispatcher_callb
 
     try:
         if is_local_file(uri):
-            verify_source(source=uri, dispatcher_callbacks=dispatcher_callbacks, source_file=True)
+            verify_source(source=uri, dispatcher_callbacks=dispatcher_callbacks, broker_core=broker_core, source_file=True)
         else:
             source = uri_utilities.get_uri_prefix(uri)
-            verify_source(source=source, dispatcher_callbacks=dispatcher_callbacks)
+            verify_source(source=source, dispatcher_callbacks=dispatcher_callbacks, broker_core=broker_core)
     except DispatcherException as err:
         broker_core.telemetry(str(err))
         raise AotaError('Source verification check failed')

@@ -66,7 +66,7 @@ class LinuxFactory(OsFactory):
 
     def create_upgrade_checker(self) -> UpgradeChecker:
         logger.debug(" ")
-        return LinuxUpgradeChecker(self._ota_element, self._dispatcher_callbacks)
+        return LinuxUpgradeChecker(self._ota_element, self._dispatcher_callbacks, self._broker_core)
 
     def create_installer(self, repo: IRepo, fw_conf: str, fw_conf_schema: str) -> Installer:
         logger.debug(" ")
@@ -88,7 +88,7 @@ class WindowsFactory(OsFactory):
 
     def create_upgrade_checker(self) -> UpgradeChecker:
         logger.debug(" ")
-        return WindowsUpgradeChecker(self._ota_element, self._dispatcher_callbacks)
+        return WindowsUpgradeChecker(self._ota_element, self._dispatcher_callbacks, self._broker_core)
 
     def create_installer(self, repo: IRepo, fw_conf: str, fw_conf_schema: str) -> Installer:
         logger.debug(" ")

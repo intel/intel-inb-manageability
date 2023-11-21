@@ -110,7 +110,7 @@ class Installer(ABC):
             if checksum and hash_algorithm:
                 file_path = str(Path(str(self._repo.get_repo_path())) / pkg_filename)
                 verify_signature(checksum, file_path,
-                                 self._dispatcher_callbacks, hash_algorithm)
+                                 self._dispatcher_callbacks, self._broker_core, hash_algorithm)
                 self._broker_core.telemetry('Attempting Firmware Update')
             else:
                 logger.error("Signature required to proceed with OTA update.")
