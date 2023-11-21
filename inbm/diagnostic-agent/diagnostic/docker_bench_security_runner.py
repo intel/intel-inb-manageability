@@ -29,10 +29,15 @@ class DockerBenchRunner(Thread):
         logger.debug(out)
         if out:
             self.dbs_result = DockerBenchRunner._handle_docker_security_test_results(out)
+        else:
+            self.dbs_result.is_success = False
+            self.dbs_result.result = ""
+
 
     @staticmethod
     def _handle_docker_security_test_results(output: str) -> DBSResult:
         dbs_result = parse_docker_bench_security_results(output)
+        logger.info(f"is_success={dbs_result.is_success}")
         if dbs_result.is_success:
             dbs_result.result += "All Passed"
             dbs_result.failed_containers = []

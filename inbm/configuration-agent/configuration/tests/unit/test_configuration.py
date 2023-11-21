@@ -12,7 +12,7 @@ class TestConfiguration(TestCase):
     def test_service_name_prefixed_inbm(self, MockClient):
         c = Configuration()
         self.assertFalse(' ' in c._svc_name_)
-        self.assertEquals(c._svc_name_.split('-')[0], 'inbm')
+        self.assertEqual(c._svc_name_.split('-')[0], 'inbm')
 
 
 class TestLoggingPath(TestCase):

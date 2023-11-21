@@ -78,13 +78,9 @@ class DbsChecker:
     def _handle_docker_security_test_results(self, output: str) -> str:
         dbs_result = parse_docker_bench_security_results(output)
         if dbs_result.is_success:
-            logger.debug("IS_SUCCESS = TRUE")
-            logger.debug(f"RESULT={dbs_result.result}")
             dbs_result.result += "All Passed"
-            logger.debug(f"RESULT={dbs_result.result}")
             return dbs_result.result.strip(',')
         else:
-            logger.debug("IS_SUCCESS = FALSE")
             dbs_result.result += dbs_result.fails
             logger.debug("Failed Images:" + str(dbs_result.failed_images))
             logger.debug("Failed Containers:" + str(dbs_result.failed_containers))
