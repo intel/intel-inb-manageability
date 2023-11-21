@@ -112,8 +112,12 @@ def is_enough_space_to_download(uri: CanonicalUri,
                     if chunk:
                         content_length += len(chunk)
     except HTTPError as e:
+        if e.response:            
+            status_code = e.response.status_code
+        else:
+            status_code = 0
         raise DispatcherException('Invalid URI:' 'Status code for ' + uri.value +
-                                  ' is ' + str(e.response.status_code))
+                                  ' is ' + str(status_code))
     except (ProxyError, ChunkedEncodingError, ContentDecodingError, ConnectionError) as e:
         raise DispatcherException(str(e))
 
@@ -392,8 +396,14 @@ def get(url: CanonicalUri,
             repo.add_from_requests_response(
                 urlparse(url.value).path.split('/')[-1], response, umask=umask)
     except HTTPError as e:
-        logger.error('Status code for ' + url.value + ' is ' + str(e.response.status_code))
-        return Result(status=e.response.status_code, message=e.response.reason)
+        if e.response:
+            status_code = e.response.status_code
+            reason = e.response.reason            
+        else:
+            status_code = 0
+            reason = "(no response--unable to look up reason)"
+        logger.error('Status code for ' + url.value + ' is ' + str(status_code))
+        return Result(status=status_code, message=reason)
     except (shutil.Error, OSError) as e:
         logger.error(f"error occurred while adding file to repository. {e}")
         return Result(status=code, message=message)
