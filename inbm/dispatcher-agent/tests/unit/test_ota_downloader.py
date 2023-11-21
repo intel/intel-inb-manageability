@@ -19,6 +19,7 @@ class TestOtaDownloader(TestCase):
 
     def setUp(self):
         self.mock_disp_obj = MockDispatcher.build_mock_dispatcher()
+        self.mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     def test_download_aota(self):
         try:
@@ -35,6 +36,6 @@ class TestOtaDownloader(TestCase):
     @patch('dispatcher.ota_downloader.download')
     def test_download_fota(self, mock_download):
         try:
-            FotaDownloader(self.mock_disp_obj, parsed_manifest).download()
+            FotaDownloader(self.mock_disp_obj, self.mock_disp_broker, parsed_manifest).download()
         except (DispatcherException, AotaError):
             self.fail("Raised expected when not expected.")

@@ -8,17 +8,22 @@ from dispatcher.ota_factory import *
 def mock_disp_obj():
     return MockDispatcher.build_mock_dispatcher()
 
+@pytest.fixture
+def mock_disp_broker():
+    return MockDispatcherBroker.build_mock_dispatcher_broker()
+
 
 @pytest.mark.parametrize("ota_type, expected_factory", [
     ("FOTA", FotaFactory),
     ("SOTA", SotaFactory),
     ("AOTA", AotaFactory),
 ])
-def test_get_factory(ota_type, expected_factory, mock_disp_obj):
+def test_get_factory(ota_type, expected_factory, mock_disp_obj, mock_disp_broker):
     factory = OtaFactory.get_factory(
         ota_type,
         "remote",
         mock_disp_obj,
+        mock_disp_broker,
         True,
         None,
         MockInstallCheckService(),
@@ -28,12 +33,13 @@ def test_get_factory(ota_type, expected_factory, mock_disp_obj):
     assert isinstance(factory, expected_factory)
 
 
-def test_raise_error_unsupported_ota(mock_disp_obj):
+def test_raise_error_unsupported_ota(mock_disp_obj, mock_disp_broker):
     with pytest.raises(ValueError):
         OtaFactory.get_factory(
             "IOTA",
             "remote",
             mock_disp_obj,
+            mock_disp_broker,
             True,
             None,
             MockInstallCheckService(),
@@ -47,11 +53,12 @@ def test_raise_error_unsupported_ota(mock_disp_obj):
     ("SOTA", SotaParser),
     ("AOTA", AotaParser),
 ])
-def test_create_parser(ota_type, expected_parser, mock_disp_obj):
+def test_create_parser(ota_type, expected_parser, mock_disp_obj, mock_disp_broker):
     parser = OtaFactory.get_factory(
         ota_type,
         "remote",
         mock_disp_obj,
+        mock_disp_broker,
         True,
         None,
         MockInstallCheckService(),
@@ -66,11 +73,12 @@ def test_create_parser(ota_type, expected_parser, mock_disp_obj):
     ("SOTA", SotaThread),
     ("AOTA", AotaThread),
 ])
-def test_create_thread(ota_type, expected_thread, mock_disp_obj):
+def test_create_thread(ota_type, expected_thread, mock_disp_obj, mock_disp_broker):
     thread = OtaFactory.get_factory(
         ota_type,
         "remote",
         mock_disp_obj,
+        mock_disp_broker,
         True,
         None,
         MockInstallCheckService(),

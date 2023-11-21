@@ -6,7 +6,7 @@ from mock import mock_open, patch, Mock
 
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.sota.sota_error import SotaError
-from dispatcher.sota.os_factory import ISotaOs, DebianBasedSnapshot, YoctoSnapshot, SotaOsFactory
+from dispatcher.sota.os_factory import DebianBasedSnapshot, YoctoSnapshot, SotaOsFactory
 
 
 @ddt
@@ -23,7 +23,8 @@ class TestSnapshot(unittest.TestCase):
     @patch("inbm_lib.trtl.Trtl.delete_snapshot")
     def test_ubuntu_delete_snap(self, order, rc, err, mock_del_snap):
         factory = SotaOsFactory(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None, []).get_os('Ubuntu')
+            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
         mock_del_snap.return_value = (rc, err)
         val = snapshot.commit()
@@ -39,7 +40,8 @@ class TestSnapshot(unittest.TestCase):
     @patch("inbm_lib.trtl.Trtl.single_snapshot", return_value=('', 'ERROR'))
     def test_ubuntu_snapshot(self, order, rc, err, mock_trtl_single_snapshot, mock_state):
         factory = SotaOsFactory(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None, []).get_os('Ubuntu')
+            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
         with patch('builtins.open', new_callable=mock_open()) as m:
             if order == 1:
@@ -54,7 +56,7 @@ class TestSnapshot(unittest.TestCase):
     @patch("pickle.dump", side_effect=Exception('foo'))
     def test_Ubuntu_snapshot_raises1(self, rc, err, mock_pickle_dump, mock_trtl_single_snapshot):
         factory = SotaOsFactory(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None, []).get_os('Ubuntu')
+            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
         with patch('builtins.open', new_callable=mock_open()) as m:
             mock_trtl_single_snapshot.return_value = (rc, err)
@@ -68,7 +70,7 @@ class TestSnapshot(unittest.TestCase):
     def test_Ubuntu_snapshot_raises2(self, rc, err, mock_trtl_single_snapshot):
         with patch('builtins.open', new_callable=mock_open()) as m:
             factory = SotaOsFactory(
-                MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), None, []).get_os('Ubuntu')
+                MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
             snapshot = factory.create_snapshotter("update", '1', False)
             mock_trtl_single_snapshot.return_value = (rc, err)
             try:
@@ -82,49 +84,49 @@ class TestUbuntuSnapshot(unittest.TestCase):
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
     def test_take_snapshot_proceed_fail_publishes_error_succeeds(self, mock_state):
         dispatcher_callbacks = Mock()
-        dispatcher_callbacks.broker_core = Mock()
+        broker_core = Mock()
         trtl = Mock()
         trtl.single_snapshot.return_value = "1", "Error!"
 
-        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_callbacks, "1", True)
+        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_callbacks, broker_core, "1", True)
         ubuntu_snapshot.take_snapshot()
-        assert dispatcher_callbacks.broker_core.telemetry.call_count > 0
+        assert broker_core.telemetry.call_count > 0
 
-        args, _ = dispatcher_callbacks.broker_core.telemetry.call_args
+        args, _ = broker_core.telemetry.call_args
         message, = args
         self.assertIn("will proceed without", message)
 
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
     def test_take_snapshot_proceed_cannot_write_publishes_error_succeeds(self, mock_dispatcher_state):
         dispatcher_callbacks = Mock()
-        dispatcher_callbacks.broker_core = Mock()
+        broker_core = Mock()
         trtl = Mock()
         trtl.single_snapshot.return_value = "1", None
 
-        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_callbacks, "1", True)
+        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_callbacks, broker_core, "1", True)
         ubuntu_snapshot.take_snapshot()
 
-        assert dispatcher_callbacks.broker_core.telemetry.call_count > 0
-        (message,), _ = dispatcher_callbacks.broker_core.telemetry.call_args
+        assert broker_core.telemetry.call_count > 0
+        (message,), _ = broker_core.telemetry.call_args
         self.assertIn("succeeded", message)
 
     def test_rollback_and_delete_snap_skipped_succeeds(self):
         dispatcher_callbacks = Mock()
-        dispatcher_callbacks.broker_core = Mock()
+        broker_core = Mock()
         trtl = Mock()
 
-        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_callbacks, "", True)
+        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_callbacks, broker_core, "", True)
         ubuntu_snapshot._rollback_and_delete_snap()
 
-        assert dispatcher_callbacks.broker_core.telemetry.call_count > 0
-        args, _ = dispatcher_callbacks.broker_core.telemetry.call_args
+        assert broker_core.telemetry.call_count > 0
+        args, _ = broker_core.telemetry.call_args
         message, = args
         assert "skipped" in message
 
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
     def test_revert_succeeds(self, mock_dispatcher_state):
         rebooter = Mock()
-        ubuntu_snapshot = DebianBasedSnapshot(Mock(), "command", Mock(), "", True)
+        ubuntu_snapshot = DebianBasedSnapshot(Mock(), "command", Mock(), Mock(), "", True)
         ubuntu_snapshot._rollback_and_delete_snap = Mock()  # type: ignore
         ubuntu_snapshot.snap_num = "1"
         ubuntu_snapshot.revert(rebooter, 0)  # type: ignore
@@ -141,13 +143,13 @@ class TestYoctoSnapshot(unittest.TestCase):
         mock_mender_version.return_value = "foo"
         mock_dispatcher_state.write_dispatcher_state_to_state_file.return_value = True
         dispatcher_callbacks = Mock()
-        dispatcher_callbacks.broker_core = Mock()
+        broker_core = Mock()
 
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, "1", True)
+        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, broker_core, "1", True)
         yocto_snapshot.take_snapshot()
 
-        assert dispatcher_callbacks.broker_core.telemetry.call_count > 0
-        args, _ = dispatcher_callbacks.broker_core.telemetry.call_args
+        assert broker_core.telemetry.call_count > 0
+        args, _ = broker_core.telemetry.call_args
         message, = args
         assert "unsuccessful" not in message
 
@@ -158,9 +160,9 @@ class TestYoctoSnapshot(unittest.TestCase):
     @patch('dispatcher.common.dispatcher_state.write_dispatcher_state_to_state_file')
     def test_dispatcher_state_file_exist_consume_called_sota(self, mock_write_state_file, mock_disp_state_file_exist, mock_consume_disp_file, mock_read_mender):
         dispatcher_callbacks = Mock()
-        dispatcher_callbacks.broker_core = Mock()
+        broker_core = Mock()
 
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, "1", True)
+        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, Mock(), "1", True)
         yocto_snapshot.take_snapshot()
         mock_consume_disp_file.assert_called_once()
         mock_write_state_file.assert_called_once()
@@ -172,9 +174,9 @@ class TestYoctoSnapshot(unittest.TestCase):
     @patch('dispatcher.common.dispatcher_state.write_dispatcher_state_to_state_file')
     def test_dispatcher_state_file_not_exist_consume_not_called_sota(self, mock_write_state_file, mock_consume_disp_file, mock_disp_state_file_exist, mock_read_mender):
         dispatcher_callbacks = Mock()
-        dispatcher_callbacks.broker_core = Mock()
+        broker_core = Mock()
 
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, "1", True)
+        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, Mock(), "1", True)
         yocto_snapshot.take_snapshot()
         mock_consume_disp_file.assert_not_called()
         mock_write_state_file.assert_called_once()
@@ -186,9 +188,9 @@ class TestYoctoSnapshot(unittest.TestCase):
         mock_dispatcher_state.write_dispatcher_state_to_state_file.side_effect = DispatcherException(
             'Error')
         dispatcher_callbacks = Mock()
-        dispatcher_callbacks.broker_core = Mock()
+        broker_core = Mock()
 
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, "1", True)
+        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_callbacks, broker_core, "1", True)
         failed = False
         try:
             yocto_snapshot.take_snapshot()
@@ -196,7 +198,7 @@ class TestYoctoSnapshot(unittest.TestCase):
             failed = True
 
         assert failed
-        assert dispatcher_callbacks.broker_core.telemetry.call_count > 0
-        args, _ = dispatcher_callbacks.broker_core.telemetry.call_args
+        assert broker_core.telemetry.call_count > 0
+        args, _ = broker_core.telemetry.call_args
         message, = args
         assert "unsuccessful" in message
