@@ -150,6 +150,7 @@ class YoctoSetupHelper(SetupHelper):
 
     def __init__(self, broker: DispatcherBroker):
         """ Initializes YoctoSetupHelper
+        @param broker: DispatcherBroker instance used to communicate with other INBM agents
         """
         self._broker = broker
         super().__init__()
