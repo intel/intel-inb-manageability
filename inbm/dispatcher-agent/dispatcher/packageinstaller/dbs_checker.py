@@ -14,8 +14,8 @@ from .constants import EVENTS_CHANNEL, REMEDIATION_CONTAINER_CMD_CHANNEL, \
 from inbm_lib.trtl import Trtl
 from ..common.result_constants import Result
 from ..config_dbs import ConfigDbs
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
+from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class DbsChecker:
     """Checks the DBS report for containers/images that need remediation
 
-    @param dispatcher_callbacks: DispatcherCallbacks instance
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param container_callback:  Callback to TrtlContainer object
     @param trtl: TRTL object
     @param name: container name
@@ -31,19 +31,19 @@ class DbsChecker:
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
+                 dispatcher_broker: DispatcherBroker,
                  container_callback: Any,
                  trtl: Trtl,
                  name: str,
                  last_version: int,
                  config_dbs: ConfigDbs
                  ) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._container_callback = container_callback
         self._trtl = trtl
         self._name = name
         self._last_version = last_version
         self._config_dbs = config_dbs
+        self._dispatcher_broker = dispatcher_broker
 
     def check(self) -> Result:
         """Checks DBS status when an AOTA is initiated.
@@ -99,7 +99,7 @@ class DbsChecker:
             logger.debug("Failed Images:" + str(failed_images))
             logger.debug("Failed Containers:" + str(failed_containers))
             self._publish_remediation_request(failed_containers, failed_images)
-            self._dispatcher_callbacks.broker_core.mqtt_publish(
+            self._dispatcher_broker.mqtt_publish(
                 EVENTS_CHANNEL, "Docker Bench Security results: " + result.strip(','))
 
             if self._config_dbs == ConfigDbs.WARN:
@@ -109,10 +109,10 @@ class DbsChecker:
 
     def _publish_remediation_request(self, failed_containers: Any, failed_images: Any) -> None:
         if failed_containers and len(failed_containers) > 0:
-            self._dispatcher_callbacks.broker_core.mqtt_publish(
+            self._dispatcher_broker.mqtt_publish(
                 REMEDIATION_CONTAINER_CMD_CHANNEL, str(failed_containers))
         if failed_images and len(failed_images) > 0:
-            self._dispatcher_callbacks.broker_core.mqtt_publish(
+            self._dispatcher_broker.mqtt_publish(
                 REMEDIATION_IMAGE_CMD_CHANNEL, str(failed_images))
 
     def _find_current_container(self) -> Optional[str]:
