@@ -11,7 +11,6 @@ from typing import Optional, Any, Mapping
 from inbm_common_lib.utility import canonicalize_uri, CanonicalUri
 
 from dispatcher.constants import UMASK_OTA, REPO_CACHE
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.downloader import download
 from dispatcher.packagemanager.local_repo import DirectoryRepo
@@ -47,22 +46,22 @@ class OtaDownloader(metaclass=abc.ABCMeta):
 class FotaDownloader(OtaDownloader):
     """Performs OTA download.
 
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     @param parsed_manifest:
     """
 
     def __init__(self,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]]) -> None:
         super().__init__(parsed_manifest)
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def download(self) -> None:
         """Starts the FOTA download.  Used when in a host/node scenario.  If not, download will be performed by
         the FOTA thread.
         """
         logger.debug("")
-        download(broker_core=self._broker_core,
+        download(dispatcher_broker=self._dispatcher_broker,
                  uri=self._uri,
                  umask=UMASK_OTA,
                  repo=self._repo,

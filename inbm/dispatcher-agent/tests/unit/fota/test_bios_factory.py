@@ -14,7 +14,6 @@ class TestBiosFactory(TestCase):
         self._path = 'fakepath/'
         self._repo_name = 'fakerepo/'
         self._uri = mock_url.value.split('/')[-1]
-        self.mock_callbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         self.mock_dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         self._dummy_dict = {'abc': 'abc'}
         self._arm_dict = {'bios_vendor': 'Intel Corp.', 'operating_system': 'linux',

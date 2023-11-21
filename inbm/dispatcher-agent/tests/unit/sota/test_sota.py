@@ -33,7 +33,6 @@ class TestSota(testtools.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.mock_disp_callbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         cls.mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         parsed = XmlHandler(fake_sota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         cls.resource = parsed.get_children('ota/type/sota')
@@ -119,7 +118,6 @@ class TestSota(testtools.TestCase):
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, 'sota_mode': 'full',
                            'deviceReboot': "no", 'package_list': ''}
-        mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote',
@@ -146,7 +144,6 @@ class TestSota(testtools.TestCase):
                            'uri': 'https://www.example.com/', 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, 'sota_mode': 'download-only',
                            'deviceReboot': "no"}
-        mock_disp_calbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_broker,

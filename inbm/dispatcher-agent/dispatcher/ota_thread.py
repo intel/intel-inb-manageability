@@ -24,7 +24,6 @@ from .common.result_constants import (
     OTA_FAILURE_IN_PROGRESS)
 from .config_dbs import ConfigDbs
 from .dispatcher_exception import DispatcherException
-from .dispatcher_callbacks import DispatcherCallbacks
 from .fota.fota import FOTA
 from .fota.fota_error import FotaError
 from .sota.sota import SOTA
@@ -73,20 +72,20 @@ class FotaThread(OtaThread):
     """Performs thread synchronization, FOTA and returns the result.
 
     @param repo_type: source location -> local or remote
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     """
 
     def __init__(self, repo_type: str,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  update_logger: UpdateLogger) -> None:
         super().__init__(repo_type, parsed_manifest,
                          install_check_service=install_check_service)
         self._update_logger = update_logger
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the FOTA thread and which checks for existing locks before delegating to
@@ -101,17 +100,17 @@ class FotaThread(OtaThread):
         if ota_lock.acquire(False):
             try:
                 fota_instance = FOTA(parsed_manifest=self._parsed_manifest, repo_type=self._repo_type,
-                                     broker_core=self._broker_core,
+                                     dispatcher_broker=self._dispatcher_broker,
                                      update_logger=self._update_logger)
                 return fota_instance.install()
             except FotaError as e:
-                self._broker_core.telemetry(
+                self._dispatcher_broker.telemetry(
                     "Error during FOTA: " + str(e))
                 return OTA_FAILURE
             finally:
                 ota_lock.release()
         else:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "Another OTA in progress, Try Later")
             return OTA_FAILURE_IN_PROGRESS
 
@@ -120,11 +119,11 @@ class FotaThread(OtaThread):
         try:
             fota_instance = FOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
-                                 broker_core=self._broker_core,
+                                 dispatcher_broker=self._dispatcher_broker,
                                  update_logger=self._update_logger)
             fota_instance.check()
         except FotaError as e:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "Error during FOTA: " + str(e))
             raise FotaError(str(e))
 
@@ -133,7 +132,7 @@ class SotaThread(OtaThread):
     """"Performs thread synchronization, SOTA and returns the result.
 
     @param repo_type: source location -> local or remote
-    @param broker_core: MQTT broker to other INBM service
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param proceed_without_rollback: Is it OK to run SOTA without rollback ability?
     @param sota_repos: new Ubuntu/Debian mirror (or None)
     @param install_check_service: provides install_check
@@ -144,7 +143,7 @@ class SotaThread(OtaThread):
 
     def __init__(self,
                  repo_type: str,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  proceed_without_rollback: bool,
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
@@ -155,7 +154,7 @@ class SotaThread(OtaThread):
         self._sota_repos = sota_repos
         self._proceed_without_rollback = proceed_without_rollback
         self._update_logger = update_logger
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the SOTA thread and which checks for existing locks before delegating to
@@ -171,7 +170,7 @@ class SotaThread(OtaThread):
             try:
                 sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                      repo_type=self._repo_type,
-                                     broker_core=self._broker_core,
+                                     dispatcher_broker=self._dispatcher_broker,
                                      update_logger=self._update_logger,
                                      sota_repos=self._sota_repos,
                                      install_check_service=self._install_check_service)
@@ -179,13 +178,13 @@ class SotaThread(OtaThread):
                     sota_instance.execute(self._proceed_without_rollback)
                     return COMMAND_SUCCESS
                 except SotaError as e:
-                    self._broker_core.telemetry(
+                    self._dispatcher_broker.telemetry(
                         "Error executing SOTA: " + str(e))
                     return OTA_FAILURE
             finally:
                 ota_lock.release()
         else:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "Another OTA in progress, Try Later")
             return OTA_FAILURE_IN_PROGRESS
 
@@ -194,13 +193,13 @@ class SotaThread(OtaThread):
         try:
             sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
-                                 broker_core=self._broker_core,
+                                 dispatcher_broker=self._dispatcher_broker,
                                  update_logger=self._update_logger,
                                  sota_repos=self._sota_repos,
                                  install_check_service=self._install_check_service)
             sota_instance.check()
         except SotaError as e:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "Error executing SOTA: " + str(e))
             raise SotaError(str(e))
 
@@ -209,7 +208,7 @@ class AotaThread(OtaThread):
     """"Performs thread synchronization, AOTA and returns the result.
 
     @param repo_type: source location -> local or remote
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     @param update_logger: UpdateLogger reference (needs to be updated after OTA)
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
@@ -219,7 +218,7 @@ class AotaThread(OtaThread):
 
     def __init__(self,
                  repo_type: str,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  update_logger: UpdateLogger,
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
@@ -227,7 +226,7 @@ class AotaThread(OtaThread):
         super().__init__(repo_type, parsed_manifest, install_check_service)
         self._dbs = dbs
         self._update_logger = update_logger
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def _check_trtl_binary(self) -> None:
         if not os.path.isfile(TRTL_PATH):
@@ -248,18 +247,18 @@ class AotaThread(OtaThread):
             try:
                 self._check_trtl_binary()
                 # Passing dispatcher instance to AOTA and spawn a thread for AOTA
-                aota.AOTA(broker_core=self._broker_core,
+                aota.AOTA(dispatcher_broker=self._dispatcher_broker,
                           parsed_manifest=self._parsed_manifest,
                           dbs=self._dbs,
                           update_logger=self._update_logger).run()
                 return COMMAND_SUCCESS
             except (AotaError, UrlSecurityException) as e:
-                self._broker_core.telemetry(str(e))
+                self._dispatcher_broker.telemetry(str(e))
                 logger.error('Error during install: %s', str(e))
                 raise AotaError(str(e))
             finally:
                 ota_lock.release()
         else:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "Another OTA in progress, Try Later")
             return OTA_FAILURE_IN_PROGRESS

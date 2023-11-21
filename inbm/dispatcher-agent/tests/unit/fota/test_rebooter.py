@@ -8,7 +8,6 @@ from mock import patch
 class TestRebooter(TestCase):
 
     def setUp(self):
-        self.mock_disp_callbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         self.mock_disp_broker_obj = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @patch('time.sleep', return_value=None)

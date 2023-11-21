@@ -14,7 +14,6 @@ from .constants import OtaType
 from .common.uri_utilities import is_valid_uri
 from .validators import is_valid_config_params
 from .dispatcher_exception import DispatcherException
-from .dispatcher_callbacks import DispatcherCallbacks
 from inbm_lib.xmlhandler import XmlException
 from inbm_lib.xmlhandler import XmlHandler
 from inbm_lib.security_masker import mask_security_info

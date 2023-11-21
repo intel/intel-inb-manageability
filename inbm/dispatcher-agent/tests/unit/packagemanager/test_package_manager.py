@@ -3,7 +3,6 @@ import unittest
 from binascii import hexlify
 from unittest import TestCase
 
-from ..common.mock_resources import MockDispatcherCallbacks
 from ..common.mock_resources import MockDispatcherBroker
 from cryptography.hazmat.backends import default_backend  # type: ignore
 from cryptography.hazmat.primitives import hashes  # type: ignore

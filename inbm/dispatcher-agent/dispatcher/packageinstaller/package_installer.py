@@ -11,7 +11,6 @@ import logging
 
 from dispatcher.config_dbs import ConfigDbs
 from .dbs_checker import DbsChecker
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
 from ..dispatcher_broker import DispatcherBroker
 
@@ -25,21 +24,21 @@ class TrtlContainer:  # pragma: no cover
 
     @param trtl: TRTL object
     @param name: resource name to be installed
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     @param dbs: ConfigDbs.{ON, OFF, WARN}
     """
 
     def __init__(self,
                  trtl: Any,
                  name: str,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  dbs: ConfigDbs) -> None:
 
         self.__name = name
         self.__trtl = trtl
         self.__last_version = 0
         self._dbs = dbs
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
         logger.debug("dbs = " + str(dbs))
 
     def _start_container(self) -> Result:
@@ -47,7 +46,7 @@ class TrtlContainer:  # pragma: no cover
         if self._dbs == ConfigDbs.ON or self._dbs == ConfigDbs.WARN:
             logger.debug("dbs is ON or WARN")
             try:
-                message = DbsChecker(self._broker_core, self, self.__trtl, self.__name,
+                message = DbsChecker(self._dispatcher_broker, self, self.__trtl, self.__name,
                                      self.__last_version, self._dbs) \
                     .run_docker_security_test()
             except DispatcherException as e:
@@ -102,7 +101,7 @@ class TrtlContainer:  # pragma: no cover
                 message = "DBS is OFF"
             else:
                 try:
-                    message = DbsChecker(self._broker_core, self, self.__trtl, self.__name,
+                    message = DbsChecker(self._dispatcher_broker, self, self.__trtl, self.__name,
                                          self.__last_version, self._dbs) \
                         .run_docker_security_test()
                 except DispatcherException:

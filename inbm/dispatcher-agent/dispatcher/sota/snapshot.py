@@ -17,7 +17,6 @@ from .mender_util import read_current_mender_version
 from .rebooter import Rebooter
 from ..common import dispatcher_state
 from .sota_error import SotaError
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
 from ..dispatcher_broker import DispatcherBroker
 
@@ -99,16 +98,16 @@ class DebianBasedSnapshot(Snapshot):
 
         @param trtl: TRTL instance
         @param sota_cmd: SOTA command (update)
-        @param broker_core: MQTT broker to other INBM services
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
         @param snap_num: snapshot number
         @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
         """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,
-                 broker_core: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
+                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
         super().__init__(trtl, sota_cmd,
                          snap_num, proceed_without_rollback)
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
         """Takes a Snapshot through Trtl before running commands.
@@ -118,7 +117,7 @@ class DebianBasedSnapshot(Snapshot):
         or not. If snapshot succeeds, then it sets an instance variable 'snap_num' to proceed.
         """
         logger.debug("")
-        self._broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f"SOTA Attempting snapshot of system before SOTA {self.sota_cmd}")
 
         try:
@@ -147,14 +146,14 @@ class DebianBasedSnapshot(Snapshot):
                 initial_state = {'restart_reason': "sota_" +
                                  self.sota_cmd, 'snapshot_num': 0}
                 dispatcher_state.write_dispatcher_state_to_state_file(initial_state)
-                self._broker_core.telemetry(
+                self._dispatcher_broker.telemetry(
                     "SOTA snapshot of system failed, will proceed "
                     "without snapshot/rollback feature")
             else:
                 raise SotaError(
                     'SOTA will not proceed without snapshot/rollback support')
         else:
-            self._broker_core.telemetry("SOTA snapshot succeeded")
+            self._dispatcher_broker.telemetry("SOTA snapshot succeeded")
             self.snap_num = snapshot_num
 
     def _rollback_and_delete_snap(self) -> None:
@@ -164,17 +163,17 @@ class DebianBasedSnapshot(Snapshot):
         """
         logger.debug("")
         if self.snap_num:
-            self._broker_core.telemetry("SOTA attempting rollback")
+            self._dispatcher_broker.telemetry("SOTA attempting rollback")
             rc, err = self.trtl.sota_rollback(self.snap_num)
         else:
-            self._broker_core.telemetry("SOTA rollback skipped")
+            self._dispatcher_broker.telemetry("SOTA rollback skipped")
             return
 
         if rc == 0:
-            self._broker_core.telemetry("Rollback succeeded")
+            self._dispatcher_broker.telemetry("Rollback succeeded")
             self.commit()
         else:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 f"SOTA rollback failed: {err}")
 
     def commit(self) -> int:
@@ -198,10 +197,10 @@ class DebianBasedSnapshot(Snapshot):
             err = ''
 
         if rc == 0:
-            self._broker_core.telemetry("Snapshot cleanup succeeded")
+            self._dispatcher_broker.telemetry("Snapshot cleanup succeeded")
             return rc
         else:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 f"SOTA snapshot delete failed: {err}")
             return rc
 
@@ -312,16 +311,16 @@ class YoctoSnapshot(Snapshot):
 
     @param trtl: TRTL instance
     @param sota_cmd: SOTA command (update)
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     @param snap_num: snapshot number
     @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
    """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,
-                 broker_core: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
+                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
         super().__init__(trtl, sota_cmd,
                          snap_num, proceed_without_rollback)
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
         """This method saves the current mender artifact version info in a dispatcher state file
@@ -329,7 +328,7 @@ class YoctoSnapshot(Snapshot):
         @raises SotaError: When failed to create a dispatcher state file
         """
         logger.debug("Yocto take_snapshot")
-        self._broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             "SOTA attempting to create a dispatcher state file before SOTA {}...".
             format(self.sota_cmd))
         try:
@@ -345,11 +344,11 @@ class YoctoSnapshot(Snapshot):
                 state = {'restart_reason': "sota", 'mender-version': content}
             dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "...state file creation unsuccessful.")
             raise SotaError('Failed to create a dispatcher state file')
 
-        self._broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             "Dispatcher state file creation successful.")
 
     def commit(self) -> None:

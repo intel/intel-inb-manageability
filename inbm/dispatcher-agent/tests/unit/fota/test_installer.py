@@ -1,7 +1,7 @@
 import os
 from unittest import TestCase
 
-from ..common.mock_resources import mock_url, MockDispatcherCallbacks, MockDispatcherBroker
+from ..common.mock_resources import mock_url, MockDispatcherBroker
 from dispatcher.fota.installer import Installer, LinuxInstaller
 from mock import patch
 from dispatcher.packagemanager.memory_repo import MemoryRepo
@@ -18,7 +18,6 @@ FW_CONF_PATH = os.path.join(os.path.dirname(__file__),
 class TestInstaller(TestCase):
 
     def setUp(self):
-        self.mock_disp_callbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         self.mock_disp_broker_obj = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @patch('dispatcher.fota.bios_factory.LinuxFileFirmware.install')

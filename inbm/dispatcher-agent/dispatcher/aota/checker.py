@@ -11,7 +11,6 @@ from typing import Optional
 from urllib.parse import urlparse
 
 from dispatcher.dispatcher_exception import DispatcherException
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.packagemanager.package_manager import verify_source
 from ..dispatcher_broker import DispatcherBroker
 from .constants import DockerCommands, ComposeCommands, ApplicationCommands
@@ -32,7 +31,7 @@ def check_url(url: Optional[str]) -> None:
 
 
 def check_resource(resource: Optional[str], uri: Optional[str],
-                   broker_core: DispatcherBroker) -> None:
+                   dispatcher_broker: DispatcherBroker) -> None:
     if resource is None or resource == '':
         raise AotaError('Invalid resource URL.')
 
@@ -41,12 +40,12 @@ def check_resource(resource: Optional[str], uri: Optional[str],
 
     try:
         if is_local_file(uri):
-            verify_source(source=uri, broker_core=broker_core, source_file=True)
+            verify_source(source=uri, dispatcher_broker=dispatcher_broker, source_file=True)
         else:
             source = uri_utilities.get_uri_prefix(uri)
-            verify_source(source=source, broker_core=broker_core)
+            verify_source(source=source, dispatcher_broker=dispatcher_broker)
     except DispatcherException as err:
-        broker_core.telemetry(str(err))
+        dispatcher_broker.telemetry(str(err))
         raise AotaError('Source verification check failed')
 
 

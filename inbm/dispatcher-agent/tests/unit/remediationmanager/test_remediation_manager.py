@@ -8,7 +8,6 @@ from unit.common.mock_resources import *
 class TestRemediationManager(TestCase):
 
     def setUp(self):
-        self.mock_disp_callbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         self.mock_disp_broker_obj = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @patch('dispatcher.remediationmanager.remediation_manager.RemediationManager._remove_container')

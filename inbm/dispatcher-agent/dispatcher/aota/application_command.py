@@ -15,7 +15,6 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX, OTA_SUCCESS
 
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.common.result_constants import CODE_OK
@@ -36,20 +35,20 @@ logger = logging.getLogger(__name__)
 class Application(AotaCommand):
     """Performs Application updates triggered via AOTA
 
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
     def __init__(self,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs,
                  update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
         super().__init__(parsed_manifest, dbs)
         self._update_logger = update_logger
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def verify_command(self, cmd: str) -> None:
         check_application_command_supported(cmd)
@@ -75,10 +74,10 @@ class Application(AotaCommand):
         if self._uri is None:
             raise AotaError("missing URI.")
 
-        check_resource(self.resource, self._uri, self._broker_core)
+        check_resource(self.resource, self._uri, self._dispatcher_broker)
 
         logger.debug("AOTA to download a package")
-        self._broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f'OTA Trigger Install command invoked for package: {self._uri}')
         application_repo = AotaCommand.create_repository_cache_repo()
         get_result = get(url=canonicalize_uri(self._uri),
@@ -86,7 +85,7 @@ class Application(AotaCommand):
                          umask=UMASK_OTA,
                          username=self._username,
                          password=self._password)
-        self._broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f'Package: {self._uri} Fetch Result: {get_result}')
 
         if get_result.status != CODE_OK:
@@ -101,7 +100,7 @@ class Application(AotaCommand):
             self._update_logger.save_log()
 
             logger.debug(f" Application {self.resource} installed. Rebooting...")
-            self._broker_core.telemetry('Rebooting...')
+            self._dispatcher_broker.telemetry('Rebooting...')
             (output, err, code) = PseudoShellRunner.run(cmd)
             if code != CMD_SUCCESS and code != CMD_TERMINATED_BY_SIGTERM:
                 raise AotaError(f'Reboot Failed {err}')
@@ -117,12 +116,12 @@ class Application(AotaCommand):
 
 class CentOsApplication(Application):
     def __init__(self,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs,
                  update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(broker_core, parsed_manifest, dbs, update_logger)
+        super().__init__(dispatcher_broker, parsed_manifest, dbs, update_logger)
 
     def cleanup(self) -> None:
         """Clean up AOTA temporary file and the driver file after use"""
@@ -201,16 +200,16 @@ class UbuntuApplication(Application):
     Capable of detecting whether running in container (update Ubuntu host)
     and escaping container if needed.
 
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
-    def __init__(self,  broker_core: DispatcherBroker,
+    def __init__(self,  dispatcher_broker: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs,
                  update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(broker_core, parsed_manifest, dbs, update_logger=update_logger)
+        super().__init__(dispatcher_broker, parsed_manifest, dbs, update_logger=update_logger)
 
     def update(self):  # pragma: no cover
         super().update()

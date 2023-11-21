@@ -31,7 +31,7 @@ class TestLogHelper(unittest.TestCase):
         mock_open.return_value = File('FILE CONTENTS')
         log_command_error(cmd=mock.Mock(), cmd_index=1, err='err', output='output',
                           log_file='file.log', log_destination=FILE,
-                          broker_core=mock.Mock())
+                          dispatcher_broker=mock.Mock())
         assert mock_open.call_count == 1
 
     @mock.patch('dispatcher.sota.log_helper.open')
@@ -39,5 +39,5 @@ class TestLogHelper(unittest.TestCase):
         mock_open.return_value = File('FILE CONTENTS')
         log_command_error(cmd=mock.Mock(), cmd_index=1, err='err', output='output',
                           log_file='file.log', log_destination=CLOUD,
-                          broker_core=mock.Mock())
+                          dispatcher_broker=mock.Mock())
         assert mock_open.call_count == 0

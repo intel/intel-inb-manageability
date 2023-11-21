@@ -10,7 +10,6 @@ import os
 from abc import ABC, abstractmethod
 
 from ..device_manager.constants import WIN_POWER, WIN_RESTART, LINUX_POWER, LINUX_RESTART
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_broker import DispatcherBroker
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX
@@ -34,17 +33,17 @@ class Rebooter(ABC):
 class LinuxRebooter(Rebooter):
     """Derived class. Reboots the system on a Linux OS
 
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
 
-    def __init__(self, broker_core: DispatcherBroker) -> None:
+    def __init__(self, dispatcher_broker: DispatcherBroker) -> None:
         super().__init__()
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def reboot(self) -> None:
         """reboots the gateway"""
         logger.debug("")
-        self._broker_core.telemetry('Rebooting platform in 2 seconds......')
+        self._dispatcher_broker.telemetry('Rebooting platform in 2 seconds......')
         time.sleep(2)
         is_docker_app = os.environ.get("container", False)
         if is_docker_app:
@@ -55,27 +54,27 @@ class LinuxRebooter(Rebooter):
             (output, err, code) = PseudoShellRunner.run(LINUX_POWER + LINUX_RESTART)
 
         if code != 0:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 f"Firmware Update Aborted: Reboot Failed: {err}")  # pragma: no cover
 
 
 class WindowsRebooter(Rebooter):
     """Derived class. Reboots the system on a Windows OS
 
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
 
-    def __init__(self,  broker_core: DispatcherBroker) -> None:
+    def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:
         super().__init__()
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def reboot(self) -> None:  # pragma: no cover
         """reboots the gateway"""
         logger.debug("")
-        self._broker_core.telemetry('Rebooting platform in 2 seconds......')
+        self._dispatcher_broker.telemetry('Rebooting platform in 2 seconds......')
         time.sleep(2)
         (output, err, code) = PseudoShellRunner.run(WIN_POWER + WIN_RESTART)
 
         if code != 0:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 f"Firmware Update Aborted: Reboot Failed: {err}")  # pragma: no cover

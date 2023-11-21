@@ -13,19 +13,18 @@ from typing import List, Optional, Tuple
 from .command_list import CommandList
 from .log_helper import log_command_error
 from .constants import FAILED, LOGPATH, SUCCESS
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
 
 def run_commands(log_destination: str, cmd_list: List[CommandList.CommandObject],
-                 broker_core: DispatcherBroker) -> None:
+                 dispatcher_broker: DispatcherBroker) -> None:
     """Runs all commands to perform SOTA operation.
 
     @param log_destination: log file destination 
     @param cmd_list: list of commands to run
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
     logger.debug("")
 
@@ -33,7 +32,7 @@ def run_commands(log_destination: str, cmd_list: List[CommandList.CommandObject]
         for cmd in cmd_list:
             cmd_index = cmd_list.index(cmd)
             msg = "{}. SOTA Internally Running command: {}".format(cmd_index + 1, str(cmd))
-            broker_core.telemetry(msg)
+            dispatcher_broker.telemetry(msg)
             logger.debug(msg)
 
             output, err, code, abs_log_path = \
@@ -47,15 +46,15 @@ def run_commands(log_destination: str, cmd_list: List[CommandList.CommandObject]
                     output=output,
                     log_file=abs_log_path,
                     log_destination=log_destination,
-                    broker_core=broker_core)
-                _skip_remaining_commands(cmd_list, cmd_index, broker_core)
+                    dispatcher_broker=dispatcher_broker)
+                _skip_remaining_commands(cmd_list, cmd_index, dispatcher_broker)
                 break
 
             if log_destination == 'CLOUD':
-                broker_core.telemetry(
+                dispatcher_broker.telemetry(
                     "{}. Command {} completed with Log: {}".format(cmd_index + 1, cmd, output))
             elif log_destination == 'FILE':
-                broker_core.telemetry("{}. Command {} completed, but will log instead to file: "
+                dispatcher_broker.telemetry("{}. Command {} completed, but will log instead to file: "
                                       "{}".format(cmd_index + 1, cmd, abs_log_path))
             cmd.status = SUCCESS
 
@@ -78,11 +77,11 @@ def get_command_status(cmd_list: List) -> str:
         return FAILED
 
 
-def print_execution_summary(cmd_list: List,  broker_core: DispatcherBroker) -> None:
+def print_execution_summary(cmd_list: List,  dispatcher_broker: DispatcherBroker) -> None:
     """Prints a summary of the commands executed at the end of the SOTA process
 
     @param cmd_list: Array of commands to run.
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
     logger.debug("")
 
@@ -93,7 +92,7 @@ def print_execution_summary(cmd_list: List,  broker_core: DispatcherBroker) -> N
         summary. \
             append("Command: {}  status: {}  errors: {}".
                    format(str(cmd), cmd.get_status(), ','.join(cmd.get_errors())))
-    broker_core.telemetry(','.join(summary))
+    dispatcher_broker.telemetry(','.join(summary))
 
 
 def _run_command(cmd: CommandList.CommandObject, log_destination: str) -> Tuple[str, Optional[str], int, Optional[str]]:
@@ -103,13 +102,13 @@ def _run_command(cmd: CommandList.CommandObject, log_destination: str) -> Tuple[
 
 
 def _skip_remaining_commands(cmd_list: List, current_failed_index: int,
-                             broker_core: DispatcherBroker) -> None:
+                             dispatcher_broker: DispatcherBroker) -> None:
     """This will skip other processes in the queue if the current one fails"""
     logger.debug("")
     if current_failed_index == (len(cmd_list) - 1):
-        broker_core.telemetry("No processes to skip")
+        dispatcher_broker.telemetry("No processes to skip")
     else:
-        broker_core.telemetry(
+        dispatcher_broker.telemetry(
             "All other processes in the SOTA queue will be skipped")
         for cmd in cmd_list[current_failed_index + 1:]:
             cmd.status = "Skipped"

@@ -13,7 +13,6 @@ from inbm_common_lib.utility import get_canonical_representation_of_path, canoni
 from inbm_common_lib.constants import DEFAULT_HASH_ALGORITHM
 
 from .constants import UMASK_PROVISION_FILE, REPO_CACHE, SCHEMA_LOCATION, TARGET_PROVISION, OTA_PACKAGE_CERT_PATH
-from .dispatcher_callbacks import DispatcherCallbacks
 from .dispatcher_exception import DispatcherException
 from .downloader import download
 from .packagemanager.package_manager import extract_files_from_tar
@@ -32,16 +31,16 @@ CERT_FILE_EXT = ".crt"
 class ProvisionTarget:
     """Install provision files for SOCs to the host.  Modify the manifest and publish to the vision-agent.
     @param xml: incoming XML file
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     @param schema_location: location of schema file
     """
 
     def __init__(self, xml: str,
-                 broker_core: DispatcherBroker, schema_location: str = SCHEMA_LOCATION) -> None:
+                 dispatcher_broker: DispatcherBroker, schema_location: str = SCHEMA_LOCATION) -> None:
         logger.debug("")
         self._xml = xml
         self._schema_location = schema_location
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def install(self, parsed_head: XmlHandler) -> None:
         """Manages the installation sequence to support the Accelerator Manageability Framework
@@ -62,7 +61,7 @@ class ProvisionTarget:
                 hash_algo = DEFAULT_HASH_ALGORITHM
         canonicalized_url = canonicalize_uri(uri)
         repo = DirectoryRepo(REPO_CACHE)
-        download(broker_core=self._broker_core,
+        download(dispatcher_broker=self._dispatcher_broker,
                  uri=canonicalized_url,
                  repo=repo,
                  umask=UMASK_PROVISION_FILE,
@@ -72,12 +71,12 @@ class ProvisionTarget:
         tar_file_path = os.path.join(REPO_CACHE, tar_file_name)
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if signature:
-                verify_signature(signature, tar_file_path, self._broker_core, hash_algo)
+                verify_signature(signature, tar_file_path, self._dispatcher_broker, hash_algo)
             else:
                 raise DispatcherException(
                     'Provision Target install aborted. Signature is required to validate the package and proceed with the update.')
         else:
-            self._broker_core.telemetry('Skipping signature check.')
+            self._dispatcher_broker.telemetry('Skipping signature check.')
 
         files, tar = extract_files_from_tar(tar_file_path)
         if not files or len(files) != NUM_EXPECTED_FILES_IN_TAR:
@@ -86,7 +85,7 @@ class ProvisionTarget:
         if tar:
             tar.extractall(path=REPO_CACHE)
             xml_to_publish = self._modify_manifest(blob_file, cert_file)
-            self._broker_core.mqtt_publish(
+            self._dispatcher_broker.mqtt_publish(
                 TARGET_PROVISION, xml_to_publish)
         remove_file(tar_file_path)
 

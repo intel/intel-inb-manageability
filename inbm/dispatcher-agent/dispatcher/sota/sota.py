@@ -19,7 +19,6 @@ from inbm_lib.validate_package_list import parse_and_validate_package_list
 from inbm_lib.detect_os import detect_os
 from inbm_lib.constants import OTA_PENDING, OTA_FAIL, OTA_SUCCESS
 
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_exception import DispatcherException
 from .command_handler import run_commands, print_execution_summary, get_command_status
 from .constants import SUCCESS, SOTA_STATE, SOTA_CACHE, PROCEED_WITHOUT_ROLLBACK_DEFAULT
@@ -42,12 +41,12 @@ logger = logging.getLogger(__name__)
 class SOTAUtil:  # FIXME intermediate step in refactor
     def check_diagnostic_disk(self,
                               estimated_size: Union[float, int],
-                              broker_core: DispatcherBroker,
+                              dispatcher_broker: DispatcherBroker,
                               install_check_service: InstallCheckService) -> None:
         """Checks if there is sufficient size for an update with diagnostic agent
 
         @param estimated_size: estimated install size
-        @param broker_core: MQTT broker to other INBM services
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
         @param install_check_service: provides an install check
         """
         logger.debug("")
@@ -55,7 +54,7 @@ class SOTAUtil:  # FIXME intermediate step in refactor
         try:
             install_check_service.install_check(size=estimated_size, check_type='check_storage')
         except DispatcherException:
-            broker_core.telemetry(
+            dispatcher_broker.telemetry(
                 "System Update aborted: insufficient disk space")
             raise SotaError('Insufficient disk space for update')
 
@@ -81,7 +80,7 @@ class SOTA:
     def __init__(self,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  update_logger: UpdateLogger,
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
@@ -91,7 +90,7 @@ class SOTA:
 
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
-        @param broker_core: MQTT broker to other INBM services
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param update_logger: UpdateLogger instance--expected to notify it with update status
         @param kwargs:
@@ -113,7 +112,7 @@ class SOTA:
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.sota_mode = parsed_manifest['sota_mode']
         self._update_logger = update_logger
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
         try:
             manifest_package_list = parsed_manifest['package_list']
@@ -162,7 +161,7 @@ class SOTA:
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
             estimated_size = self.installer.get_estimated_size()
-            SOTAUtil().check_diagnostic_disk(estimated_size, self._broker_core,
+            SOTAUtil().check_diagnostic_disk(estimated_size, self._dispatcher_broker,
                                              self._install_check_service)
             if self._repo_type == REMOTE_SOURCE:
                 logger.debug(f"Remote repo URI: {self._uri}")
@@ -187,7 +186,7 @@ class SOTA:
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
         run_commands(log_destination=log_destination,
                      cmd_list=cmd_list,
-                     broker_core=self._broker_core)
+                     dispatcher_broker=self._dispatcher_broker)
         return cmd_list
 
     def execute(self, proceed_without_rollback: bool, skip_sleeps: bool = False) -> None:  # pragma: no cover
@@ -227,7 +226,7 @@ class SOTA:
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
 
-        os_factory = SotaOsFactory(self._broker_core,
+        os_factory = SotaOsFactory(self._dispatcher_broker,
                                    self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()
@@ -252,12 +251,12 @@ class SOTA:
                 snapshot.update_system()
                 msg = "SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated."
                 logger.debug(msg)
-                self._broker_core.send_result(msg)
+                self._dispatcher_broker.send_result(msg)
                 snapshot.commit()
             except SotaError as e:
                 msg = "FAILED INSTALL: System has not been properly updated; reverting."
                 logger.debug(str(e))
-                self._broker_core.send_result(msg)
+                self._dispatcher_broker.send_result(msg)
                 self._update_logger.update_log(OTA_FAIL)
                 snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:
@@ -286,11 +285,11 @@ class SOTA:
             logger.debug(f"SOTA Download URI: {self._uri}")
             if self._uri is None:
                 downloader.download(
-                    self._broker_core, None, sota_cache_repo,
+                    self._dispatcher_broker, None, sota_cache_repo,
                     self._username, self._password, release_date)
             else:
                 downloader.download(
-                    self._broker_core, canonicalize_uri(
+                    self._dispatcher_broker, canonicalize_uri(
                         self._uri), sota_cache_repo,
                     self._username, self._password, release_date)
 
@@ -325,19 +324,19 @@ class SOTA:
                 cmd_list = self.calculate_and_execute_sota_upgrade(sota_cache_repo)
                 sota_cache_repo.delete_all()  # clean cache directory
                 if get_command_status(cmd_list) == SUCCESS:
-                    self._broker_core.send_result(
+                    self._dispatcher_broker.send_result(
                         '{"status": 200, "message": SOTA command status: SUCCESSFUL"}')
                     success = True
                 else:
-                    self._broker_core.telemetry(
+                    self._dispatcher_broker.telemetry(
                         '{"status": 400, "message": "SOTA command status: FAILURE"}')
                     if self.sota_mode != 'download-only':
                         snapshotter.recover(rebooter, time_to_wait_before_reboot)
         except (DispatcherException, SotaError, UrlSecurityException) as e:
             msg = "Caught exception during SOTA: " + str(e)
             logger.debug(msg)
-            self._broker_core.telemetry(str(e))
-            self._broker_core.send_result(
+            self._dispatcher_broker.telemetry(str(e))
+            self._dispatcher_broker.send_result(
                 '{"status": 400, "message": "SOTA command status: FAILURE"}')
             if download_success and self.sota_mode != 'download-only':
                 snapshotter.recover(rebooter, time_to_wait_before_reboot)
@@ -348,7 +347,7 @@ class SOTA:
         finally:
             if self._repo_type == LOCAL_SOURCE:
                 self._clean_local_repo_file()
-            print_execution_summary(cmd_list, self._broker_core)
+            print_execution_summary(cmd_list, self._dispatcher_broker)
             if success:
                 # Save the log before reboot
                 if self.sota_mode == 'download-only':
@@ -359,9 +358,9 @@ class SOTA:
                     self._update_logger.error = ""
                 self._update_logger.save_log()
                 if self.sota_mode == 'download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]:  # pragma: no cover
-                    self._broker_core.telemetry("No reboot (SOTA pass)")
+                    self._dispatcher_broker.telemetry("No reboot (SOTA pass)")
                 else:
-                    self._broker_core.telemetry("Going to reboot (SOTA pass)")
+                    self._dispatcher_broker.telemetry("Going to reboot (SOTA pass)")
                     time.sleep(time_to_wait_before_reboot)
                     rebooter.reboot()
 
@@ -370,8 +369,8 @@ class SOTA:
                 self._update_logger.status = OTA_FAIL
                 self._update_logger.error = ""
                 self._update_logger.save_log()
-                self._broker_core.telemetry(SOTA_FAILURE)
-                self._broker_core.send_result(SOTA_FAILURE)
+                self._dispatcher_broker.telemetry(SOTA_FAILURE)
+                self._dispatcher_broker.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)
 
     def check(self) -> None:
@@ -380,7 +379,7 @@ class SOTA:
         validated_package_list = parse_and_validate_package_list(self._package_list)
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
-        os_factory = SotaOsFactory(self._broker_core,
+        os_factory = SotaOsFactory(self._dispatcher_broker,
                                    self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()

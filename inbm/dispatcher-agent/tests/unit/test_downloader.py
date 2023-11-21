@@ -16,7 +16,6 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
 class TestDownloader(TestCase):
 
     def setUp(self):
-        self.mock_dispatcher_callbacks_obj = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         self.mock_dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         parsed = XmlHandler(fake_ota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         self.resource = parsed.get_children('ota/type/fota')

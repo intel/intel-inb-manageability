@@ -13,7 +13,6 @@ from inbm_common_lib.utility import get_canonical_representation_of_path
 
 from .constants import CLOUD, FILE, FAILED
 from .command_list import CommandList
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
@@ -34,7 +33,7 @@ def get_log_destination(manifest_log_to_file: Optional[str], manifest_sota_cmd: 
 
 
 def log_command_error(cmd: CommandList.CommandObject, cmd_index: int, err: Optional[str], output: str, log_file: Optional[str],
-                      log_destination: str,  broker_core: DispatcherBroker) -> None:
+                      log_destination: str,  dispatcher_broker: DispatcherBroker) -> None:
     """TODO figure out what this method does or split into multiple
 
     @param cmd: command object that failed
@@ -55,7 +54,7 @@ def log_command_error(cmd: CommandList.CommandObject, cmd_index: int, err: Optio
     msg = "{}. Command {} failed with Error: {}".format(
         cmd_index, cmd, err or output or file_err)
     logger.debug(msg)
-    broker_core.telemetry(msg)
+    dispatcher_broker.telemetry(msg)
     cmd.err.append(err or output or file_err)
     cmd.status = FAILED
 

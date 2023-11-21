@@ -22,7 +22,6 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 
 from .config.config_command import ConfigCommand
 from .constants import *
-from .dispatcher_callbacks import DispatcherCallbacks
 from .dispatcher_exception import DispatcherException
 from .dispatcher_broker import DispatcherBroker
 
@@ -33,12 +32,12 @@ logger = logging.getLogger(__name__)
 class WorkloadOrchestration:
     """Workload Orchestration class to switch device status to schedulable or unschedulable
 
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
 
     def __init__(self,
-                 broker_core: DispatcherBroker) -> None:
-        self._broker_core = broker_core
+                 dispatcher_broker: DispatcherBroker) -> None:
+        self._dispatcher_broker = dispatcher_broker
 
     def is_workload_service_file_present(self) -> bool:
         """Checks if workload orchestration files are present.
@@ -60,7 +59,7 @@ class WorkloadOrchestration:
         command = f"systemctl is-active {orchestrator_service}"
         (out, err, code) = PseudoShellRunner().run(command)
         if code == 0 and out.strip() == 'active':
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "Workload Orchestration Service Active")
             return True
         else:
@@ -84,7 +83,7 @@ class WorkloadOrchestration:
         The result of the rest call along with orchestrator response determine to proceed or not with OTA update.
         """
         try:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 'Switching Device Workload Orchestration status to Maintenance mode')
             orchestrator_response = self.get_orchestrator_value(ORCHESTRATOR_RESPONSE)
             (return_json, status_code) = self.switch_wo_status("true")
@@ -93,7 +92,7 @@ class WorkloadOrchestration:
                     raise DispatcherException(
                         "Can't proceed to OTA update ")
                 else:
-                    self._broker_core.telemetry(
+                    self._dispatcher_broker.telemetry(
                         'Failure in switching Device Workload Orchestration status to Maintenance mode')
             elif status_code == CSL_CMD_STATUS_CODE:
                 self._process_maintenance_mode_ok_status_result(orchestrator_response, return_json)
@@ -102,7 +101,7 @@ class WorkloadOrchestration:
                 raise DispatcherException(
                     "Failure in switching Device Workload Orchestration status to Maintenance mode: {}".format(str(e)))
             else:
-                self._broker_core.telemetry(
+                self._dispatcher_broker.telemetry(
                     'Failure in switching Device Workload Orchestration status to Maintenance mode: {}'.format(str(e)))
 
     def _process_maintenance_mode_ok_status_result(self, orchestrator_response: Optional[Any], return_json: Dict) -> None:
@@ -117,16 +116,16 @@ class WorkloadOrchestration:
         polling_flag = True
         polling_counter = 0
         if not len(return_json['Workloads']):
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 'Switched Device Workload Orchestration status to Maintenance mode.')
         elif len(return_json['Workloads']):
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 'Workloads present on the Device {}'.format(return_json['Workloads']))
             while polling_flag and len(return_json['Workloads']):
                 (return_json, status_code) = self.poll_wo_status()
                 if status_code != CSL_POLL_CMD_STATUS_CODE:
                     polling_counter = polling_counter + 1
-                    self._broker_core.telemetry(
+                    self._dispatcher_broker.telemetry(
                         'Unable to retrieve Device Workload Orchestration status. Retrying in 10 seconds...')
                     time.sleep(10)
                     if polling_counter == 3:
@@ -134,14 +133,14 @@ class WorkloadOrchestration:
                         if orchestrator_response == 'true':
                             raise DispatcherException("Can't proceed to OTA update ")
                         else:
-                            self._broker_core.telemetry(
+                            self._dispatcher_broker.telemetry(
                                 'Failed to retrieve Device Workload Orchestration status')
                 elif status_code == CSL_POLL_CMD_STATUS_CODE:
                     if len(return_json['Workloads']):
-                        self._broker_core.telemetry(
+                        self._dispatcher_broker.telemetry(
                             'Switching Device Workload Orchestration status to Maintenance mode: Shifting Workloads {}'.format(return_json['Workloads']))
                     else:
-                        self._broker_core.telemetry(
+                        self._dispatcher_broker.telemetry(
                             'Switched Device Workload Orchestration status to Maintenance mode.')
                         break
 
@@ -162,12 +161,12 @@ class WorkloadOrchestration:
                     online_flag = False
                     (return_json, status_code) = self.poll_wo_status()
                     if status_code != CSL_POLL_CMD_STATUS_CODE:
-                        self._broker_core.telemetry(
+                        self._dispatcher_broker.telemetry(
                             'Failed to get Device Workload Orchestration status to verify and switch to online mode')
                     elif status_code == CSL_POLL_CMD_STATUS_CODE:
                         self._process_online_mode_ok_status_result(return_json)
         except DispatcherException as e:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "Failure in switching Device workload Orchestration status to Online mode: {}".format(str(e)))
 
     def _process_online_mode_ok_status_result(self, return_json: Dict) -> None:
@@ -177,14 +176,14 @@ class WorkloadOrchestration:
         @param return_json: Dict of device status mode and workload details
         """
         if return_json["Enabled"]:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 'Switching Device Workload Orchestration status to Online mode.')
             (return_json, status_code) = self.switch_wo_status("false")
             if status_code != CSL_CMD_STATUS_CODE:
-                self._broker_core.telemetry(
+                self._dispatcher_broker.telemetry(
                     'Failure in switching Device Workload Orchestration status to Online mode')
             elif status_code == CSL_CMD_STATUS_CODE:
-                self._broker_core.telemetry(
+                self._dispatcher_broker.telemetry(
                     'Switched Device Workload Orchestration status to Online mode')
 
     def _get_workload_orchestration_file_content(self, file: str) -> str:
@@ -283,11 +282,11 @@ class WorkloadOrchestration:
 
         cmd = ConfigCommand('get_element', child_tag)
         # Subscribe to response channel using the same request ID
-        self._broker_core.mqtt_subscribe(
+        self._dispatcher_broker.mqtt_subscribe(
             cmd.create_response_topic(), on_command)
 
         # Publish command request
-        self._broker_core.mqtt_publish(
+        self._dispatcher_broker.mqtt_publish(
             cmd.create_request_topic(), cmd.create_payload())
         latch.await_()
         if cmd.response is not None and type(cmd.response) is not dict:

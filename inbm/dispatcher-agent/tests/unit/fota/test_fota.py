@@ -3,7 +3,6 @@ import unittest
 from typing import Dict, Optional, List
 
 from ..common.mock_resources import *
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.fota.fota import FOTA
 from dispatcher.fota.fota_error import FotaError
 from dispatcher.packagemanager.memory_repo import MemoryRepo
@@ -32,7 +31,6 @@ class TestFota(unittest.TestCase):
     _fota_local_instance: Optional[FOTA] = None
     invalid_parsed: Optional[XmlHandler] = None
     invalid_resource: Optional[Dict] = None
-    mock_disp_callbacks = DispatcherCallbacks()
     mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @classmethod

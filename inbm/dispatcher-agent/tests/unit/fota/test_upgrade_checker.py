@@ -21,7 +21,6 @@ TEST_SCHEMA_LOCATION = os.path.join(
 class TestOsFactory(TestCase):
 
     def setUp(self):
-        self.mock_disp_callbacks_obj = mock_resources.MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
         self.mock_disp_broker_obj = mock_resources.MockDispatcherBroker.build_mock_dispatcher_broker()
         parsed = XmlHandler(
             mock_resources.fake_ota_success,

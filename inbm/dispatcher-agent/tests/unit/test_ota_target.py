@@ -75,8 +75,7 @@ class TestPublishTargetOta(TestCase):
     @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
     @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
     @patch('dispatcher.ota_target.download')
-    @patch('dispatcher.dispatcher_callbacks.DispatcherCallbacks')
-    def test_publish_fota(self, mock_callback, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
+    def test_publish_fota(self, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
         mock_xmlhandler.return_value = None
         t = OtaTarget(TEST_XML, parsed_manifest, "FOTA", Mock())
         t.install()
@@ -87,9 +86,8 @@ class TestPublishTargetOta(TestCase):
     @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
     @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
     @patch('dispatcher.ota_target.download')
-    @patch('dispatcher.dispatcher_callbacks.DispatcherCallbacks')
     @patch('dispatcher.ota_target.OtaTarget._modify_manifest')
-    def test_publish_pota(self, mock_modify_manifest, mock_callback, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
+    def test_publish_pota(self, mock_modify_manifest, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
         mock_xmlhandler.return_value = None
         t = OtaTarget(TEST_POTA_XML, pota_parsed_manifest, "POTA", Mock())
         t.install()

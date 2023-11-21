@@ -15,7 +15,6 @@ from inbm_common_lib.exceptions import UrlSecurityException
 from .common.result_constants import PUBLISH_SUCCESS, Result, OTA_FAILURE
 from .constants import TARGET_OTA_CMD_CHANNEL, SCHEMA_LOCATION, UMASK_OTA, OTA_PACKAGE_CERT_PATH, REPO_CACHE
 from .dispatcher_broker import DispatcherBroker
-from .dispatcher_callbacks import DispatcherCallbacks
 from .dispatcher_exception import DispatcherException
 from .downloader import download
 from .ota_factory import OtaType
@@ -32,13 +31,13 @@ class OtaTarget:
     @param xml: XML to be modified
     @param parsed_manifest: parsed_manifest values for ota
     @param ota_type: type of ota
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
 
     def __init__(self, xml: str, parsed_manifest: Mapping[str, Optional[Any]], ota_type: str,
-                 broker_core: DispatcherBroker) -> None:
+                 dispatcher_broker: DispatcherBroker) -> None:
         self._xml = xml
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
         self._uri: Optional[str] = parsed_manifest.get('uri', None)
         self._ota_element = parsed_manifest.get('resource')
         self._ota_type = ota_type
@@ -61,11 +60,11 @@ class OtaTarget:
         """
         logger.debug("")
 
-        self._broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             "Publishing manifest on targets initialized..")
-        if self._broker_core is None:
+        if self._dispatcher_broker is None:
             raise DispatcherException(
-                "broker_core not specified in Publish OTA for Targets constructor")
+                "dispatcher_broker not specified in Publish OTA for Targets constructor")
         valid_check = True
         repo_list: List[DirectoryRepo] = []
         if self._ota_type == OtaType.POTA.name:
@@ -92,7 +91,7 @@ class OtaTarget:
                 except (DispatcherException, UrlSecurityException) as err:
                     valid_check = False
                     ota_error = str(err)
-                    self._broker_core.telemetry(ota_error)
+                    self._dispatcher_broker.telemetry(ota_error)
                     break
 
         elif self._ota_type == OtaType.FOTA.name or self._ota_type == OtaType.SOTA.name:
@@ -105,7 +104,7 @@ class OtaTarget:
             except (DispatcherException, UrlSecurityException) as err:
                 valid_check = False
                 ota_error = str(err)
-                self._broker_core.telemetry(ota_error)
+                self._dispatcher_broker.telemetry(ota_error)
         else:
             raise DispatcherException(
                 f"The target OTA type is not supported: {self._ota_type}")
@@ -114,11 +113,11 @@ class OtaTarget:
             logger.error(ota_error)
             for repo in repo_list:
                 repo.delete_all()
-            self._broker_core.telemetry(ota_error)
+            self._dispatcher_broker.telemetry(ota_error)
             return OTA_FAILURE
 
         xml_to_publish = self._modify_manifest()
-        self._broker_core.mqtt_publish(
+        self._dispatcher_broker.mqtt_publish(
             TARGET_OTA_CMD_CHANNEL, xml_to_publish)
         return PUBLISH_SUCCESS
 
@@ -131,7 +130,7 @@ class OtaTarget:
         if repo is None:
             raise DispatcherException("attempted to download with uninitialized repo")
         download(
-            broker_core=self._broker_core,
+            dispatcher_broker=self._dispatcher_broker,
             uri=canonicalize_uri(uri),
             repo=repo,
             umask=UMASK_OTA,
@@ -140,7 +139,7 @@ class OtaTarget:
         if ota_type != OtaType.SOTA.name:
             self._validate_signature(canonicalize_uri(uri), repo, download_info.get(
                 'signature', None), download_info.get('hash_algorithm', None))
-        self._broker_core.telemetry('Proceeding to publish OTA manifest...')
+        self._dispatcher_broker.telemetry('Proceeding to publish OTA manifest...')
 
     def _validate_signature(self, uri: CanonicalUri, repo: DirectoryRepo,
                             signature: Optional[str], hash_algo: Optional[int]):
@@ -149,12 +148,12 @@ class OtaTarget:
         file_path = os.path.join(repo.get_repo_path(), file_name)
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if signature:
-                verify_signature(signature, file_path, self._broker_core, hash_algo)
+                verify_signature(signature, file_path, self._dispatcher_broker, hash_algo)
             else:
                 raise DispatcherException(
                     'OTA update aborted. Signature is required to validate the package and proceed with the update.')
         else:
-            self._broker_core.telemetry('Skipping signature check.')
+            self._dispatcher_broker.telemetry('Skipping signature check.')
 
     def _modify_manifest(self, schema_location: str = SCHEMA_LOCATION) -> str:
         logger.debug("")
@@ -202,19 +201,19 @@ class OtaTarget:
         return new_xml
 
 
-def target_config_load_operation(xml: str, broker_core: DispatcherBroker, file_path: str) -> None:
+def target_config_load_operation(xml: str, dispatcher_broker: DispatcherBroker, file_path: str) -> None:
     """This function handles the config operation on the targets by publishing
     the modified xml
 
     @param xml: xml to be modified
-    @param broker_core: DispatcherBroker
+    @param dispatcher_broker: DispatcherBroker
     @param file_path: File location to load a conf file, used only for load operation
     @return Result: PUBLISH_SUCCESS
     @raises DispatcherException: if invalid cmd is sent. Expected is 'load'.
     """
     logger.debug("")
     xml_to_publish = _modify_xml_config_load(xml, file_path)
-    broker_core.mqtt_publish(CONFIG_CHANNEL + CONFIG_LOAD, xml_to_publish)
+    dispatcher_broker.mqtt_publish(CONFIG_CHANNEL + CONFIG_LOAD, xml_to_publish)
 
 
 def _modify_xml_config_load(xml: str, file_path: str) -> str:

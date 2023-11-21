@@ -19,7 +19,6 @@ from .fota_error import FotaError
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info, manufacturer_check
 from inbm_common_lib.platform_info import PlatformInformation
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
@@ -27,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def check_upgrade_allowed(manifest_info: PlatformInformation,
                           platform_info: PlatformInformation,
-                          broker_core: DispatcherBroker) -> None:
+                          dispatcher_broker: DispatcherBroker) -> None:
     """Check if manifest vendor name matches platform bios vendor and
     manifest release date is higher than bios release date
 
@@ -50,8 +49,8 @@ def check_upgrade_allowed(manifest_info: PlatformInformation,
                                       Bios Vendor: {manifest_info.bios_vendor},
                                       Platform Manufacturer: {manifest_info.platform_mfg},
                                       Platform Product: {manifest_info.platform_product}"""
-        broker_core.telemetry(cf_message)
-        broker_core.telemetry(nf_message)
+        dispatcher_broker.telemetry(cf_message)
+        dispatcher_broker.telemetry(nf_message)
 
         state = {'bios_version': platform_info.bios_version,
                  'release_date': platform_info.bios_release_date}
@@ -62,10 +61,10 @@ def check_upgrade_allowed(manifest_info: PlatformInformation,
         raise FotaError('Firmware Update Aborted as this package has already been applied.')
     else:
         logger.debug("Capsule rel. date < platform OR manifest vendor != platform vendor")
-        broker_core.telemetry(
+        dispatcher_broker.telemetry(
             """Current Info: Bios Release Date: {}, Bios Version: {}, Bios Vendor: {}""".format(
                 platform_info.bios_release_date, platform_info.bios_version, platform_info.bios_vendor))
-        broker_core.telemetry(
+        dispatcher_broker.telemetry(
             f'Capsule Info: Bios Release Date: {manifest_info.bios_release_date}, '
             f'Bios Version: {manifest_info.bios_version}, Bios Vendor: {manifest_info.bios_vendor}')
         raise FotaError('Firmware Update Aborted: either capsule release date is lower than the one '
@@ -101,12 +100,12 @@ class LinuxUpgradeChecker(UpgradeChecker):
     """Checks if the system is upgradable to the new Firmware on a Linux OS.
 
     @param ota_element: resource portion of manifest
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
 
-    def __init__(self, ota_element,  broker_core: DispatcherBroker):
+    def __init__(self, ota_element,  dispatcher_broker: DispatcherBroker):
         super().__init__(ota_element)
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def check(self) -> Tuple[str, str]:
         """This method checks if dmi/device_tree information exist on the system.
@@ -114,7 +113,7 @@ class LinuxUpgradeChecker(UpgradeChecker):
         @return: bios vendor string, product string
         """
         logger.debug("")
-        if is_dmi_path_exists(self._broker_core):
+        if is_dmi_path_exists(self._dispatcher_broker):
             self.check_with_dmi()
         else:
             self.check_with_device_tree()
@@ -165,7 +164,7 @@ class LinuxUpgradeChecker(UpgradeChecker):
 
         check_upgrade_allowed(self._manifest_platform_info,
                               self._platform_info,
-                              broker_core=self._broker_core)
+                              dispatcher_broker=self._dispatcher_broker)
 
     def check_with_device_tree(self) -> None:
         """Uses device tree to retrieve the system information. This will be used if dmi path
@@ -189,7 +188,7 @@ class LinuxUpgradeChecker(UpgradeChecker):
 
         check_upgrade_allowed(self._manifest_platform_info,
                               self._platform_info,
-                              broker_core=self._broker_core)
+                              dispatcher_broker=self._dispatcher_broker)
 
 
 class WindowsUpgradeChecker(UpgradeChecker):  # pragma: no cover
@@ -197,12 +196,12 @@ class WindowsUpgradeChecker(UpgradeChecker):  # pragma: no cover
     new Firmware on a Windows OS.
 
     @param ota_element: resource portion of manifest
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
 
-    def __init__(self, ota_element, broker_core: DispatcherBroker) -> None:
+    def __init__(self, ota_element, dispatcher_broker: DispatcherBroker) -> None:
         super().__init__(ota_element)
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def check(self) -> Tuple[str, str]:
         """The method checks for current firmware vs the one in manifest file.
@@ -241,4 +240,4 @@ class WindowsUpgradeChecker(UpgradeChecker):  # pragma: no cover
 
         check_upgrade_allowed(self._manifest_platform_info,
                               self._platform_info,
-                              broker_core=self._broker_core)
+                              dispatcher_broker=self._dispatcher_broker)

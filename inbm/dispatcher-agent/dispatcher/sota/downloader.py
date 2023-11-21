@@ -15,7 +15,6 @@ from .sota_error import SotaError
 from ..constants import UMASK_OTA
 from ..downloader import download
 from ..packagemanager.irepo import IRepo
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_broker import DispatcherBroker
 from inbm_common_lib.utility import CanonicalUri
 
@@ -30,7 +29,7 @@ class Downloader:
         pass
 
     def download(self,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
                  username: Optional[str],
@@ -38,7 +37,7 @@ class Downloader:
                  release_date: Optional[str]) -> None:
         """Downloads update/upgrade and places capsule file in local cache.
 
-        @param broker_core: MQTT broker to other INBM services
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
         @param uri: URI of the source location
         @param repo: repository for holding the download
         @param username: username to use for download
@@ -79,7 +78,7 @@ class DebianBasedDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
                  username: Optional[str],
@@ -104,7 +103,7 @@ class WindowsDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
                  username: Optional[str],
@@ -133,7 +132,7 @@ class YoctoDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 broker_core: DispatcherBroker,
+                 dispatcher_broker: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
                  username: Optional[str],
@@ -141,7 +140,7 @@ class YoctoDownloader(Downloader):
                  release_date: Optional[str]) -> None:
         """Downloads files and places image in local cache
 
-        @param broker_core: MQTT broker to other INBM services
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
         @param uri: URI of the source location
         @param repo: repository for holding the download
         @param username: username to use for download
@@ -157,7 +156,7 @@ class YoctoDownloader(Downloader):
         if uri is None:
             raise SotaError("URI is None while performing Yocto download")
 
-        download(broker_core=broker_core,
+        download(dispatcher_broker=dispatcher_broker,
                  uri=uri,
                  repo=repo,
                  umask=UMASK_OTA,

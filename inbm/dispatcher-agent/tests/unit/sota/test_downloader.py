@@ -3,7 +3,6 @@ from typing import Optional
 import os
 
 from ..common.mock_resources import *
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from dispatcher.sota.os_factory import SotaOsFactory
@@ -20,15 +19,14 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
 class TestDownloader(unittest.TestCase):
     sota_instance: Optional[SOTA] = None
     resource = {'': ''}
-    mock_disp_callbacks_obj: DispatcherCallbacks = MockDispatcherCallbacks.build_mock_dispatcher_callbacks()
     mock_disp_broker: DispatcherBroker = MockDispatcherBroker.build_mock_dispatcher_broker()
     sotaerror_instance: Optional[SotaError] = None
 
     @classmethod
     def setUp(cls):
-        cls.sotaerror_instance = SotaError(cls.mock_disp_callbacks_obj)
+        cls.sotaerror_instance = SotaError(cls.mock_disp_broker)
 
-        assert cls.mock_disp_callbacks_obj is not None
+        assert cls.mock_disp_broker is not None
         parsed = XmlHandler(fake_sota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         cls.resource = parsed.get_children('ota/type/sota')
         parsed_manifest = {'resource': cls.resource,

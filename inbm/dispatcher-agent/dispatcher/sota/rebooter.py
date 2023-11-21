@@ -8,7 +8,6 @@ import logging
 import time
 import os
 
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_broker import DispatcherBroker
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX
@@ -19,29 +18,29 @@ logger = logging.getLogger(__name__)
 class Rebooter:
     """Base class for rebooting the system."""
 
-    def __init__(self,  broker_core: DispatcherBroker) -> None:
+    def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:
         """Initializes the Rebooter base class
 
-        @param broker_core: MQTT broker to other INBM services
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
         """
-        self._broker_core = broker_core
+        self._dispatcher_broker = dispatcher_broker
 
     def reboot(self) -> None:
         """Reboots the system."""
         logger.debug("")
-        self._broker_core.telemetry("Rebooting ")
+        self._dispatcher_broker.telemetry("Rebooting ")
         time.sleep(2)
 
 
 class LinuxRebooter(Rebooter):
     """Reboots the system on a Linux OS
 
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
 
-    def __init__(self,  broker_core: DispatcherBroker) -> None:
-        super().__init__(broker_core=broker_core)
-        self._broker_core = broker_core
+    def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:
+        super().__init__(dispatcher_broker=dispatcher_broker)
+        self._dispatcher_broker = dispatcher_broker
 
     def reboot(self) -> None:
         super().reboot()
@@ -56,18 +55,18 @@ class LinuxRebooter(Rebooter):
         # return code will be None if reboot is submitted but not yet executed.
         # In case of signal interruptions, it will be negative
         if code and code < 0:
-            self._broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 f"SOTA Aborted: Reboot Failed: {err}")
 
 
 class WindowsRebooter(Rebooter):
     """Reboots the system on a Windows OS
 
-    @param broker_core: MQTT broker to other INBM services
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
     """
 
-    def __init__(self,  broker_core: DispatcherBroker) -> None:
-        super().__init__(broker_core=broker_core)
+    def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:
+        super().__init__(dispatcher_broker=dispatcher_broker)
 
     def reboot(self) -> None:
         pass

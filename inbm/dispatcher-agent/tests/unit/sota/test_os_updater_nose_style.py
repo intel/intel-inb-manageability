@@ -3,7 +3,6 @@ from typing import Optional
 import os
 
 from ..common.mock_resources import *
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.sota.os_factory import SotaOsFactory
 from dispatcher.sota.os_updater import DebianBasedUpdater
 from dispatcher.sota.sota import SOTA
