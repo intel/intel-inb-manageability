@@ -58,8 +58,7 @@ class TestSota(testtools.TestCase):
     @data(0, 510000, 6500000)
     def test_check_diagnostic_disk(self, size_value):
         try:
-            TestSota.sota_util_instance.check_diagnostic_disk(size_value,
-                                                              MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+            TestSota.sota_util_instance.check_diagnostic_disk(size_value,                                                              
                                                               MockDispatcherBroker.build_mock_dispatcher_broker(),
                                                               install_check_service=MockInstallCheckService())
         except SotaError:
