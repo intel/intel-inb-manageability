@@ -34,6 +34,7 @@ from .sota_error import SotaError
 from ..packagemanager.local_repo import DirectoryRepo, IRepo
 from ..install_check_service import InstallCheckService
 from ..update_logger import UpdateLogger
+from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -82,6 +83,7 @@ class SOTA:
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 broker_core: DispatcherBroker,
                  update_logger: UpdateLogger,
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
@@ -92,6 +94,7 @@ class SOTA:
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: A reference to the main Dispatcher object
+        @param broker_core: MQTT broker to other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param update_logger: UpdateLogger instance--expected to notify it with update status
         @param kwargs:
@@ -114,6 +117,7 @@ class SOTA:
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.sota_mode = parsed_manifest['sota_mode']
         self._update_logger = update_logger
+        self._broker_core = broker_core
 
         try:
             manifest_package_list = parsed_manifest['package_list']
@@ -251,12 +255,12 @@ class SOTA:
                 snapshot.update_system()
                 msg = "SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated."
                 logger.debug(msg)
-                self._dispatcher_callbacks.broker_core.send_result(msg)
+                self._broker_core.send_result(msg)
                 snapshot.commit()
             except SotaError as e:
                 msg = "FAILED INSTALL: System has not been properly updated; reverting."
                 logger.debug(str(e))
-                self._dispatcher_callbacks.broker_core.send_result(msg)
+                self._broker_core.send_result(msg)
                 self._update_logger.update_log(OTA_FAIL)
                 snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:
@@ -324,19 +328,19 @@ class SOTA:
                 cmd_list = self.calculate_and_execute_sota_upgrade(sota_cache_repo)
                 sota_cache_repo.delete_all()  # clean cache directory
                 if get_command_status(cmd_list) == SUCCESS:
-                    self._dispatcher_callbacks.broker_core.send_result(
+                    self._broker_core.send_result(
                         '{"status": 200, "message": SOTA command status: SUCCESSFUL"}')
                     success = True
                 else:
-                    self._dispatcher_callbacks.broker_core.telemetry(
+                    self._broker_core.telemetry(
                         '{"status": 400, "message": "SOTA command status: FAILURE"}')
                     if self.sota_mode != 'download-only':
                         snapshotter.recover(rebooter, time_to_wait_before_reboot)
         except (DispatcherException, SotaError, UrlSecurityException) as e:
             msg = "Caught exception during SOTA: " + str(e)
             logger.debug(msg)
-            self._dispatcher_callbacks.broker_core.telemetry(str(e))
-            self._dispatcher_callbacks.broker_core.send_result(
+            self._broker_core.telemetry(str(e))
+            self._broker_core.send_result(
                 '{"status": 400, "message": "SOTA command status: FAILURE"}')
             if download_success and self.sota_mode != 'download-only':
                 snapshotter.recover(rebooter, time_to_wait_before_reboot)
@@ -358,9 +362,9 @@ class SOTA:
                     self._update_logger.error = ""
                 self._update_logger.save_log()
                 if self.sota_mode == 'download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]:  # pragma: no cover
-                    self._dispatcher_callbacks.broker_core.telemetry("No reboot (SOTA pass)")
+                    self._broker_core.telemetry("No reboot (SOTA pass)")
                 else:
-                    self._dispatcher_callbacks.broker_core.telemetry("Going to reboot (SOTA pass)")
+                    self._broker_core.telemetry("Going to reboot (SOTA pass)")
                     time.sleep(time_to_wait_before_reboot)
                     rebooter.reboot()
 
@@ -369,8 +373,8 @@ class SOTA:
                 self._update_logger.status = OTA_FAIL
                 self._update_logger.error = ""
                 self._update_logger.save_log()
-                self._dispatcher_callbacks.broker_core.telemetry(SOTA_FAILURE)
-                self._dispatcher_callbacks.broker_core.send_result(SOTA_FAILURE)
+                self._broker_core.telemetry(SOTA_FAILURE)
+                self._broker_core.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)
 
     def check(self) -> None:

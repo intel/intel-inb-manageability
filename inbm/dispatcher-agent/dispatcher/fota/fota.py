@@ -29,6 +29,7 @@ from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
 from ..downloader import download
 from ..packagemanager.local_repo import DirectoryRepo
+from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +44,7 @@ class FOTA:
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 broker_core: DispatcherBroker,
                  update_logger: UpdateLogger) -> None:
         """Base class constructor for variable assignment, to send telemetry info and create a new
         directory if no repo is present
@@ -50,6 +52,7 @@ class FOTA:
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: DispatcherCallbacks instance
+        @param broker_core: MQTT broker to other INBM services
         @param update_logger: UpdateLogger instance. Needs to be updated with status of OTA command.
         """
         self._ota_element = parsed_manifest.get('resource')
@@ -57,6 +60,7 @@ class FOTA:
         self._update_logger = update_logger
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
+        self._broker_core = broker_core
 
         repo_path: Optional[str]
         """If repo_type=local, then use path and not URI"""
@@ -87,7 +91,7 @@ class FOTA:
         self._device_reboot = parsed_manifest['deviceReboot']
         if self._dispatcher_callbacks is None:
             raise FotaError("dispatcher_callbacks not specified in FOTA constructor")
-        self._dispatcher_callbacks.broker_core.telemetry("Firmware Update Tool launched")
+        self._broker_core.telemetry("Firmware Update Tool launched")
         if repo_path:
             logger.debug("Using manifest specified repo path")
             self._repo = DirectoryRepo(repo_path)
@@ -166,11 +170,11 @@ class FOTA:
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
                 logger.debug(status)
                 return_message = COMMAND_SUCCESS
-                self._dispatcher_callbacks.broker_core.telemetry(status)
+                self._broker_core.telemetry(status)
         except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError) as e:
             error = 'Firmware Update Aborted: ' + str(e)
             logger.error(error)
-            self._dispatcher_callbacks.broker_core.telemetry(error)
+            self._broker_core.telemetry(error)
             return_message = INSTALL_FAILURE
             self._repo.delete(self._pkg_filename)
             # In POTA, mender file needs to be deleted also.
@@ -183,7 +187,7 @@ class FOTA:
                 status = 'Firmware Update Aborted'
                 dispatcher_state.clear_dispatcher_state()
             logger.debug('Firmware update status: ' + status)
-            self._dispatcher_callbacks.broker_core.telemetry(status)
+            self._broker_core.telemetry(status)
             return return_message
 
     @staticmethod

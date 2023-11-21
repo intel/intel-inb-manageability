@@ -61,12 +61,12 @@ class AOTA:
 
             app_method = getattr(self._app_instance, self._cmd)
             app_method()
-            self._dispatcher_callbacks.broker_core.telemetry(
+            self._broker_core.telemetry(
                 f'AOTA {self._app_type} {self._cmd} {COMMAND_SUCCESS}')
             self._app_instance.cleanup()
         except (AotaError, UrlSecurityException) as e:
             err = f"AOTA {self._app_type} {self._cmd} FAILED: {e}"
             if self._app_instance.repo_to_clean_up and self._app_instance.resource:
                 cleanup_repo(self._app_instance.repo_to_clean_up, self._app_instance.resource)
-            self._dispatcher_callbacks.broker_core.telemetry(err)
+            self._broker_core.telemetry(err)
             raise AotaError(err)

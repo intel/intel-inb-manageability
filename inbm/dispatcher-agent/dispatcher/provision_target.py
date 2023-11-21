@@ -76,7 +76,7 @@ class ProvisionTarget:
                 raise DispatcherException(
                     'Provision Target install aborted. Signature is required to validate the package and proceed with the update.')
         else:
-            self._dispatcher_callbacks.broker_core.telemetry('Skipping signature check.')
+            self._broker_core.telemetry('Skipping signature check.')
 
         files, tar = extract_files_from_tar(tar_file_path)
         if not files or len(files) != NUM_EXPECTED_FILES_IN_TAR:
@@ -85,7 +85,7 @@ class ProvisionTarget:
         if tar:
             tar.extractall(path=REPO_CACHE)
             xml_to_publish = self._modify_manifest(blob_file, cert_file)
-            self._dispatcher_callbacks.broker_core.mqtt_publish(
+            self._broker_core.mqtt_publish(
                 TARGET_PROVISION, xml_to_publish)
         remove_file(tar_file_path)
 

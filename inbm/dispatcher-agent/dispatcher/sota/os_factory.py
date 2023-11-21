@@ -117,16 +117,18 @@ class ISotaOs(ABC):
 class YoctoX86_64(ISotaOs):
     """YoctoX86_64 class, child of ISotaOs"""
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
         """Constructor.
 
         @param dispatcher_callbacks: DispatcherCallbacks instance
+        @param broker_core: MQTT broker to other INBM services
         """
         self._dispatcher_callbacks = dispatcher_callbacks
+        self._broker_core = broker_core
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
-        return YoctoSetupHelper(self._dispatcher_callbacks.broker_core)
+        return YoctoSetupHelper(self._broker_core)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug("")

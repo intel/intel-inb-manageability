@@ -28,6 +28,7 @@ from .constants import CENTOS_DRIVER_PATH, SupportedDriver, CMD_SUCCESS, CMD_TER
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
 from ..update_logger import UpdateLogger
+from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -36,18 +37,21 @@ class Application(AotaCommand):
     """Performs Application updates triggered via AOTA
 
     @param dispatcher_callbacks callback to the main Dispatcher object
+    @param broker_core: MQTT broker to other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
     def __init__(self,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs,
                  update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
         super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
         self._update_logger = update_logger
+        self._broker_core = broker_core
 
     def verify_command(self, cmd: str) -> None:
         check_application_command_supported(cmd)
@@ -76,7 +80,7 @@ class Application(AotaCommand):
         check_resource(self.resource, self._uri, self._dispatcher_callbacks)
 
         logger.debug("AOTA to download a package")
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._broker_core.telemetry(
             f'OTA Trigger Install command invoked for package: {self._uri}')
         application_repo = AotaCommand.create_repository_cache_repo()
         get_result = get(url=canonicalize_uri(self._uri),
@@ -84,7 +88,7 @@ class Application(AotaCommand):
                          umask=UMASK_OTA,
                          username=self._username,
                          password=self._password)
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._broker_core.telemetry(
             f'Package: {self._uri} Fetch Result: {get_result}')
 
         if get_result.status != CODE_OK:
@@ -99,7 +103,7 @@ class Application(AotaCommand):
             self._update_logger.save_log()
 
             logger.debug(f" Application {self.resource} installed. Rebooting...")
-            self._dispatcher_callbacks.broker_core.telemetry('Rebooting...')
+            self._broker_core.telemetry('Rebooting...')
             (output, err, code) = PseudoShellRunner.run(cmd)
             if code != CMD_SUCCESS and code != CMD_TERMINATED_BY_SIGTERM:
                 raise AotaError(f'Reboot Failed {err}')

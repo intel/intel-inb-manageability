@@ -13,6 +13,7 @@ from dispatcher.config_dbs import ConfigDbs
 from .dbs_checker import DbsChecker
 from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
+from ..dispatcher_broker import DispatcherBroker
 
 
 logger = logging.getLogger(__name__)
@@ -25,16 +26,23 @@ class TrtlContainer:  # pragma: no cover
     @param trtl: TRTL object
     @param name: resource name to be installed
     @param dispatcher_callbacks: DispatcherCallbacks instance
+    @param broker_core: MQTT broker to other INBM services
     @param dbs: ConfigDbs.{ON, OFF, WARN}
     """
 
-    def __init__(self, trtl: Any, name: str, dispatcher_callbacks: DispatcherCallbacks, dbs: ConfigDbs) -> None:
+    def __init__(self,
+                 trtl: Any,
+                 name: str,
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 broker_core: DispatcherBroker,
+                 dbs: ConfigDbs) -> None:
 
         self.__name = name
         self.__trtl = trtl
         self.__last_version = 0
         self._dispatcher_callbacks = dispatcher_callbacks
         self._dbs = dbs
+        self._broker_core = broker_core
         logger.debug("dbs = " + str(dbs))
 
     def _start_container(self) -> Result:
@@ -43,7 +51,7 @@ class TrtlContainer:  # pragma: no cover
             logger.debug("dbs is ON or WARN")
             try:
                 message = DbsChecker(self._dispatcher_callbacks, self, self.__trtl, self.__name,
-                                     self.__last_version, self._dbs) \
+                                     self.__last_version, self._dbs, broker_core=self._broker_core) \
                     .run_docker_security_test()
             except DispatcherException as e:
                 logger.error(f'DBS check failed: {str(e)}')
@@ -98,7 +106,7 @@ class TrtlContainer:  # pragma: no cover
             else:
                 try:
                     message = DbsChecker(self._dispatcher_callbacks, self, self.__trtl, self.__name,
-                                         self.__last_version, self._dbs) \
+                                         self.__last_version, self._dbs, broker_core=self._broker_core) \
                         .run_docker_security_test()
                 except DispatcherException:
                     return INSTALL_FAILURE

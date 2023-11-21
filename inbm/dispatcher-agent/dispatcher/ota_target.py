@@ -33,12 +33,14 @@ class OtaTarget:
     @param parsed_manifest: parsed_manifest values for ota
     @param ota_type: type of ota
     @param dispatcher_callbacks: callbacks
+    @param broker_core: MQTT broker to other INBM services
     """
 
     def __init__(self, xml: str, parsed_manifest: Mapping[str, Optional[Any]], ota_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks) -> None:
+                 dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
         self._xml = xml
         self._dispatcher_callbacks = dispatcher_callbacks
+        self._broker_core = broker_core
         self._uri: Optional[str] = parsed_manifest.get('uri', None)
         self._ota_element = parsed_manifest.get('resource')
         self._ota_type = ota_type
@@ -61,7 +63,7 @@ class OtaTarget:
         """
         logger.debug("")
 
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._broker_core.telemetry(
             "Publishing manifest on targets initialized..")
         if self._dispatcher_callbacks is None:
             raise DispatcherException(
@@ -92,7 +94,7 @@ class OtaTarget:
                 except (DispatcherException, UrlSecurityException) as err:
                     valid_check = False
                     ota_error = str(err)
-                    self._dispatcher_callbacks.broker_core.telemetry(ota_error)
+                    self._broker_core.telemetry(ota_error)
                     break
 
         elif self._ota_type == OtaType.FOTA.name or self._ota_type == OtaType.SOTA.name:
@@ -105,7 +107,7 @@ class OtaTarget:
             except (DispatcherException, UrlSecurityException) as err:
                 valid_check = False
                 ota_error = str(err)
-                self._dispatcher_callbacks.broker_core.telemetry(ota_error)
+                self._broker_core.telemetry(ota_error)
         else:
             raise DispatcherException(
                 f"The target OTA type is not supported: {self._ota_type}")
@@ -114,11 +116,11 @@ class OtaTarget:
             logger.error(ota_error)
             for repo in repo_list:
                 repo.delete_all()
-            self._dispatcher_callbacks.broker_core.telemetry(ota_error)
+            self._broker_core.telemetry(ota_error)
             return OTA_FAILURE
 
         xml_to_publish = self._modify_manifest()
-        self._dispatcher_callbacks.broker_core.mqtt_publish(
+        self._broker_core.mqtt_publish(
             TARGET_OTA_CMD_CHANNEL, xml_to_publish)
         return PUBLISH_SUCCESS
 
@@ -153,7 +155,7 @@ class OtaTarget:
                 raise DispatcherException(
                     'OTA update aborted. Signature is required to validate the package and proceed with the update.')
         else:
-            self._dispatcher_callbacks.broker_core.telemetry('Skipping signature check.')
+            self._broker_core.telemetry('Skipping signature check.')
 
     def _modify_manifest(self, schema_location: str = SCHEMA_LOCATION) -> str:
         logger.debug("")

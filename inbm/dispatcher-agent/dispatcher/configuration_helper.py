@@ -22,6 +22,7 @@ from .dispatcher_callbacks import DispatcherCallbacks
 from .packagemanager.irepo import IRepo
 from .dispatcher_exception import DispatcherException
 from .packagemanager.local_repo import DirectoryRepo
+from .dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -30,11 +31,13 @@ class ConfigurationHelper:
     """Helps manage interaction with configuration-agent messages
 
     @param dispatcher_callbacks: DispatcherCallbacks object
+    @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
         self._repo: Optional[IRepo] = None
+        self._broker_core = broker_core
 
     def _is_tar_file(self, tar_file_name: str) -> bool:
         extension = tar_file_name.rsplit('.', 1)[-1]
@@ -107,13 +110,13 @@ class ConfigurationHelper:
         logger.debug(f"source: {source}")
 
         verify_source(source=source, dispatcher_callbacks=self._dispatcher_callbacks)
-        self._dispatcher_callbacks.broker_core.telemetry('Source Verification check passed')
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._broker_core.telemetry('Source Verification check passed')
+        self._broker_core.telemetry(
             f'Fetching configuration file from {url}')
         result = get(canonical_url, repo, UMASK_CONFIGURATION_FILE)
 
         if result.status == 200:
-            self._dispatcher_callbacks.broker_core.telemetry(
+            self._broker_core.telemetry(
                 'Configuration File Download Successful')
             try:
                 logger.debug(
@@ -135,7 +138,7 @@ class ConfigurationHelper:
                     raise DispatcherException('Configuration Load Aborted: Signature is required to '
                                               'proceed with the update.')
             else:
-                self._dispatcher_callbacks.broker_core.telemetry(
+                self._broker_core.telemetry(
                     'Proceeding without signature check on package.')
             if not is_tar_file:
                 conf_file = tar_file_name

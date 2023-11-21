@@ -109,7 +109,7 @@ class Installer(ABC):
                 file_path = str(Path(str(self._repo.get_repo_path())) / pkg_filename)
                 verify_signature(checksum, file_path,
                                  self._dispatcher_callbacks, hash_algorithm)
-                self._dispatcher_callbacks.broker_core.telemetry('Attempting Firmware Update')
+                self._broker_core.telemetry('Attempting Firmware Update')
             else:
                 logger.error("Signature required to proceed with OTA update.")
                 raise FotaError(
@@ -117,7 +117,7 @@ class Installer(ABC):
         else:
             no_signature_warning = 'WARNING: Device not provisioned for signature check.  Skipping signature check.'
             logger.warning(no_signature_warning)
-            self._dispatcher_callbacks.broker_core.telemetry(no_signature_warning)
+            self._broker_core.telemetry(no_signature_warning)
 
 
 class LinuxInstaller(Installer):

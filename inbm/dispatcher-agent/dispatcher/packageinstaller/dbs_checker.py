@@ -16,6 +16,7 @@ from ..common.result_constants import Result
 from ..config_dbs import ConfigDbs
 from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
+from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,7 @@ class DbsChecker:
     @param trtl: TRTL object
     @param name: container name
     @param last_version: container version
+    @param broker_core: MQTT broker to other INBM services
     """
 
     def __init__(self,
@@ -36,7 +38,8 @@ class DbsChecker:
                  trtl: Trtl,
                  name: str,
                  last_version: int,
-                 config_dbs: ConfigDbs
+                 config_dbs: ConfigDbs,
+                 broker_core: DispatcherBroker
                  ) -> None:
         self._dispatcher_callbacks = dispatcher_callbacks
         self._container_callback = container_callback
@@ -44,6 +47,7 @@ class DbsChecker:
         self._name = name
         self._last_version = last_version
         self._config_dbs = config_dbs
+        self._broker_core = broker_core
 
     def check(self) -> Result:
         """Checks DBS status when an AOTA is initiated.
@@ -99,7 +103,7 @@ class DbsChecker:
             logger.debug("Failed Images:" + str(failed_images))
             logger.debug("Failed Containers:" + str(failed_containers))
             self._publish_remediation_request(failed_containers, failed_images)
-            self._dispatcher_callbacks.broker_core.mqtt_publish(
+            self._broker_core.mqtt_publish(
                 EVENTS_CHANNEL, "Docker Bench Security results: " + result.strip(','))
 
             if self._config_dbs == ConfigDbs.WARN:
@@ -109,10 +113,10 @@ class DbsChecker:
 
     def _publish_remediation_request(self, failed_containers: Any, failed_images: Any) -> None:
         if failed_containers and len(failed_containers) > 0:
-            self._dispatcher_callbacks.broker_core.mqtt_publish(
+            self._broker_core.mqtt_publish(
                 REMEDIATION_CONTAINER_CMD_CHANNEL, str(failed_containers))
         if failed_images and len(failed_images) > 0:
-            self._dispatcher_callbacks.broker_core.mqtt_publish(
+            self._broker_core.mqtt_publish(
                 REMEDIATION_IMAGE_CMD_CHANNEL, str(failed_images))
 
     def _find_current_container(self) -> Optional[str]:
