@@ -32,7 +32,7 @@ logger = logging.getLogger(__name__)
 class WorkloadOrchestration:
     """Workload Orchestration class to switch device status to schedulable or unschedulable
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self,

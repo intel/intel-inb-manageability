@@ -172,7 +172,7 @@ class AotaCommand(ABC):
 class Docker(AotaCommand):
     """Performs Docker operations based on the cmd triggered via AOTA
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
@@ -320,7 +320,7 @@ class Docker(AotaCommand):
 class DockerCompose(AotaCommand):
     """Performs Docker Compose operations based on the cmd triggered via AOTA
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """

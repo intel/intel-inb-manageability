@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 class ConfigurationHelper:
     """Helps manage interaction with configuration-agent messages
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:

@@ -31,7 +31,7 @@ CERT_FILE_EXT = ".crt"
 class ProvisionTarget:
     """Install provision files for SOCs to the host.  Modify the manifest and publish to the vision-agent.
     @param xml: incoming XML file
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param schema_location: location of schema file
     """
 

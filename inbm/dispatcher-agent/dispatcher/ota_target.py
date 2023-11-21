@@ -31,7 +31,7 @@ class OtaTarget:
     @param xml: XML to be modified
     @param parsed_manifest: parsed_manifest values for ota
     @param ota_type: type of ota
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self, xml: str, parsed_manifest: Mapping[str, Optional[Any]], ota_type: str,

@@ -24,7 +24,7 @@ class TrtlContainer:  # pragma: no cover
 
     @param trtl: TRTL object
     @param name: resource name to be installed
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param dbs: ConfigDbs.{ON, OFF, WARN}
     """
 

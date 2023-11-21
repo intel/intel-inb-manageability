@@ -123,7 +123,7 @@ class Installer(ABC):
 class LinuxInstaller(Installer):
     """Derived class. Installs new Firmware on a Linux OS.
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param repo: string representation of dispatcher's repository path
     @param xml_file: firmware xml file path
     @param xml_schema: firmware xml schema location
@@ -173,7 +173,7 @@ class LinuxInstaller(Installer):
 class WindowsInstaller(Installer):
     """Derived class. Installs new Firmware on a Windows OS.
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param repo: string representation of dispatcher's repository path
     @param xml_file: firmware xml file path
     @param xml_schema: firmware xml schema location

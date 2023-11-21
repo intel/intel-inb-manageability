@@ -68,10 +68,10 @@ class BiosFactory(ABC):
     """Abstract Factory for creating the concrete classes based on the BIOS
     on the platform.
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param repo: string representation of dispatcher's repository path
     @param params: platform product parameters
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self,  dispatcher_broker: DispatcherBroker, repo: IRepo, params: Dict) -> None:
@@ -106,7 +106,7 @@ class BiosFactory(ABC):
 
         @param platform_product: platform product name
         @param params: platform product parameters from the fota conf file 
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param repo: string representation of dispatcher's repository path
         @raises: FotaError
         """
@@ -184,7 +184,7 @@ class LinuxToolFirmware(BiosFactory):
     """Derived class constructor invoking base class constructor for 
     Linux devices that use Firmware tool to perform the update.
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param repo: string representation of dispatcher's repository path
     @param params: platform product parameters from the fota conf file 
     """
@@ -281,7 +281,7 @@ class LinuxFileFirmware(BiosFactory):
     """Derived class constructor invoking base class constructor for 
     Linux devices that use Firmware file to update firmware.
 
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param repo: string representation of dispatcher's repository path
         @param params: platform product parameters from the FOTA conf file
     """
@@ -320,7 +320,7 @@ class WindowsBiosNUC(BiosFactory):
     """Derived class constructor invoking base class constructor for variable assignment
 
     @param repo: string representation of dispatcher's repository path
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self,  repo: IRepo, params: Dict, dispatcher_broker: DispatcherBroker) -> None:

@@ -46,7 +46,7 @@ class SOTAUtil:  # FIXME intermediate step in refactor
         """Checks if there is sufficient size for an update with diagnostic agent
 
         @param estimated_size: estimated install size
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param install_check_service: provides an install check
         """
         logger.debug("")
@@ -90,7 +90,7 @@ class SOTA:
 
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param update_logger: UpdateLogger instance--expected to notify it with update status
         @param kwargs:

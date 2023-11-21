@@ -58,7 +58,7 @@ class OtaFactory(metaclass=abc.ABCMeta):
 
         @param ota_type: The OTA type
         @param repo_type: OTA source location -> local or remote
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param proceed_without_rollback: Is it OK to run SOTA without rollback ability?
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param install_check_service: provides install_check
@@ -83,7 +83,7 @@ class OtaFactory(metaclass=abc.ABCMeta):
 class FotaFactory(OtaFactory):
     """FOTA concrete class
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param install_check_service: provides install_check
     @param update_logger: UpdateLogger instance (expected to update after OTA)
     """
@@ -112,7 +112,7 @@ class FotaFactory(OtaFactory):
 class SotaFactory(OtaFactory):
     """SOTA concrete class
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param proceed_without_rollback: Is it OK to run SOTA without rollback ability?
     @param install_check_service: provides InstallCheckService
     @param sota_repos: new Ubuntu/Debian mirror (or None)
@@ -151,7 +151,7 @@ class SotaFactory(OtaFactory):
 class AotaFactory(OtaFactory):
     """AOTA concrete class
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param install_check_service: provides install_check
     @param update_logger: UpdateLogger (expected to update after OTA) 
     @param dbs: ConfigDbs.{ON, OFF, WARN}

@@ -39,7 +39,7 @@ class SotaOsFactory:
                  sota_repos: Optional[str], package_list: list[str]) -> None:
         """Initializes OsFactory.
 
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param package_list: list of packages to install/update (or empty for all--general upgrade)
         """
@@ -121,7 +121,7 @@ class YoctoX86_64(ISotaOs):
     def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:
         """Constructor.
 
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         """
         self._dispatcher_broker = dispatcher_broker
 
@@ -184,7 +184,7 @@ class DebianBasedSotaOs(ISotaOs):
                  package_list: list[str]) -> None:
         """Constructor.
 
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param package_list: list of packages to install/update (empty list for all/general upgrade)
         """

@@ -37,7 +37,7 @@ class Downloader:
                  release_date: Optional[str]) -> None:
         """Downloads update/upgrade and places capsule file in local cache.
 
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param uri: URI of the source location
         @param repo: repository for holding the download
         @param username: username to use for download
@@ -140,7 +140,7 @@ class YoctoDownloader(Downloader):
                  release_date: Optional[str]) -> None:
         """Downloads files and places image in local cache
 
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param uri: URI of the source location
         @param repo: repository for holding the download
         @param username: username to use for download

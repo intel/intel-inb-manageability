@@ -33,7 +33,7 @@ class Rebooter(ABC):
 class LinuxRebooter(Rebooter):
     """Derived class. Reboots the system on a Linux OS
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self, dispatcher_broker: DispatcherBroker) -> None:
@@ -61,7 +61,7 @@ class LinuxRebooter(Rebooter):
 class WindowsRebooter(Rebooter):
     """Derived class. Reboots the system on a Windows OS
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:

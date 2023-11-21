@@ -24,7 +24,7 @@ def run_commands(log_destination: str, cmd_list: List[CommandList.CommandObject]
 
     @param log_destination: log file destination 
     @param cmd_list: list of commands to run
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
     logger.debug("")
 
@@ -81,7 +81,7 @@ def print_execution_summary(cmd_list: List,  dispatcher_broker: DispatcherBroker
     """Prints a summary of the commands executed at the end of the SOTA process
 
     @param cmd_list: Array of commands to run.
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
     logger.debug("")
 

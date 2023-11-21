@@ -72,7 +72,7 @@ class FotaThread(OtaThread):
     """Performs thread synchronization, FOTA and returns the result.
 
     @param repo_type: source location -> local or remote
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     """
@@ -208,7 +208,7 @@ class AotaThread(OtaThread):
     """"Performs thread synchronization, AOTA and returns the result.
 
     @param repo_type: source location -> local or remote
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param update_logger: UpdateLogger reference (needs to be updated after OTA)
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest

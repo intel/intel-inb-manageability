@@ -25,7 +25,7 @@ class RemediationManager:
     """Receives notification from diagnostic to perform remediation management on
     containers/images via TRTL application
     @param container_image_list_to_be_removed: Container image list to be removed. Default it will be empty list. When containers are active, respective images will be added to this list.
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:

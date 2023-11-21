@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 class AOTA:
     """Thread which is responsible for AOTA updates
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: Parsed parameters from manifest
     @param dbs: ConfigDbs.{ON, OFF, WARN}
     """

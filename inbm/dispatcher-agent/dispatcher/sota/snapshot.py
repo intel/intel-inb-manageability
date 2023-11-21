@@ -98,7 +98,7 @@ class DebianBasedSnapshot(Snapshot):
 
         @param trtl: TRTL instance
         @param sota_cmd: SOTA command (update)
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param snap_num: snapshot number
         @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
         """
@@ -311,7 +311,7 @@ class YoctoSnapshot(Snapshot):
 
     @param trtl: TRTL instance
     @param sota_cmd: SOTA command (update)
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param snap_num: snapshot number
     @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
    """

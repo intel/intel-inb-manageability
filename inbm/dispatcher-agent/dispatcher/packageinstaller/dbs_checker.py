@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 class DbsChecker:
     """Checks the DBS report for containers/images that need remediation
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param container_callback:  Callback to TrtlContainer object
     @param trtl: TRTL object
     @param name: container name

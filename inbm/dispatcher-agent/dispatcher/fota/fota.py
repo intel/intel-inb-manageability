@@ -49,7 +49,7 @@ class FOTA:
 
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
-        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param update_logger: UpdateLogger instance. Needs to be updated with status of OTA command.
         """
         self._ota_element = parsed_manifest.get('resource')

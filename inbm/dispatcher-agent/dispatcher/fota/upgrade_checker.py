@@ -100,7 +100,7 @@ class LinuxUpgradeChecker(UpgradeChecker):
     """Checks if the system is upgradable to the new Firmware on a Linux OS.
 
     @param ota_element: resource portion of manifest
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self, ota_element,  dispatcher_broker: DispatcherBroker):
@@ -196,7 +196,7 @@ class WindowsUpgradeChecker(UpgradeChecker):  # pragma: no cover
     new Firmware on a Windows OS.
 
     @param ota_element: resource portion of manifest
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
     def __init__(self, ota_element, dispatcher_broker: DispatcherBroker) -> None:

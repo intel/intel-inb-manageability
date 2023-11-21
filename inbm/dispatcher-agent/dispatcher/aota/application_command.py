@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 class Application(AotaCommand):
     """Performs Application updates triggered via AOTA
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
@@ -200,7 +200,7 @@ class UbuntuApplication(Application):
     Capable of detecting whether running in container (update Ubuntu host)
     and escaping container if needed.
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """

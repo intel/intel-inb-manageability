@@ -46,7 +46,7 @@ class OtaDownloader(metaclass=abc.ABCMeta):
 class FotaDownloader(OtaDownloader):
     """Performs OTA download.
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest:
     """
 

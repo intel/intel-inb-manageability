@@ -35,7 +35,7 @@ def download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
              repo: IRepo, username: Optional[str], password: Optional[str], umask: int) -> None:
     """Downloads files and places capsule file in path mentioned by manifest file.
 
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param uri: URI of the source location
     @param repo: repository for holding the download
     @param username: username to use for download

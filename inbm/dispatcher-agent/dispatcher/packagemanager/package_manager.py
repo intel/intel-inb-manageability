@@ -149,7 +149,7 @@ def verify_signature(signature: str,
 
     @param signature: Signed checksum of the package retrieved from manifest
     @param path_to_file: Path to the package to be installed
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param hash_algorithm: version of checksum i.e. 256 or 384 or 512
     """
     logger.debug(f"tar_file_path: {path_to_file}")
@@ -249,7 +249,7 @@ def _verify_checksum_with_key(pub_key: Any,
     @param pub_key: Public Key fetched from the package
     @param signature: signature received from the manifest of the package
     @param checksum: checksum calculated of the package to be installed
-    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM servicess
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
     if not checksum:
         raise DispatcherException('Signature check failed. Invalid checksum.')
