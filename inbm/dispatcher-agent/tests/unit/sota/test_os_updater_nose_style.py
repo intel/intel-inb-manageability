@@ -40,7 +40,6 @@ class TestOsUpdater(unittest.TestCase):
                            'password': password, 'sota_mode': 'full', 'package_list': '', 'deviceReboot': "no"}
         cls.sota_instance = SOTA(parsed_manifest, "remote",
                                  DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                     proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
                                                      logger=cls.mock_disp_obj.update_logger),
                                  None,
                                  MockInstallCheckService(),
@@ -51,8 +50,7 @@ class TestOsUpdater(unittest.TestCase):
                                     'uri': mock_url, 'repo': TestOsUpdater._build_mock_repo(0), 'username': username,
                                     'password': password, 'sota_mode': 'full', 'package_list': 'package1,package2', 'deviceReboot': "no"}
         cls.sota_instance_packages = SOTA(parsed_manifest_packages, "remote",
-                                          DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                              proceed_without_rollback=cls.mock_disp_obj.proceed_without_rollback,
+                                          DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),                                                              
                                                               logger=cls.mock_disp_obj.update_logger),
                                           None,
                                           MockInstallCheckService(),

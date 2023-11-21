@@ -37,7 +37,6 @@ class TestDownloader(unittest.TestCase):
                            'deviceReboot': "no"}
         cls.sota_instance = SOTA(parsed_manifest, "remote",
                                  DispatcherCallbacks(broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                                     proceed_without_rollback=cls.mock_disp_callbacks_obj.proceed_without_rollback,
                                                      logger=cls.mock_disp_callbacks_obj.logger),
                                  None,
                                  install_check_service=MockInstallCheckService())

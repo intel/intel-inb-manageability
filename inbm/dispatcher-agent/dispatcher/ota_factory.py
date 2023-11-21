@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 class OtaFactory(metaclass=abc.ABCMeta):
     """Abstract Factory for creating the concrete classes based on the OTA request type
 
-    @param dispatcher_callbacks: Callbacks in Dispatcher object
+    @param dispatcher_callbacks: Callbacks in Dispatcher object    
     """
 
     def __init__(self,
@@ -51,6 +51,7 @@ class OtaFactory(metaclass=abc.ABCMeta):
     def get_factory(ota_type,
                     repo_type: Any,
                     dispatcher_callbacks: DispatcherCallbacks,
+                    proceed_without_rollback: bool,
                     sota_repos: Optional[str],
                     install_check_service: InstallCheckService,
                     dbs: ConfigDbs) -> Any:
@@ -59,6 +60,7 @@ class OtaFactory(metaclass=abc.ABCMeta):
         @param ota_type: The OTA type
         @param repo_type: OTA source location -> local or remote
         @param dispatcher_callbacks: reference to a DispatcherCallbacks object
+        @param proceed_without_rollback: Is it OK to run SOTA without rollback ability?
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param install_check_service: provides install_check
         @param dbs: ConfigDbs.ON or ConfigDbs.WARN or ConfigDbs.OFF
@@ -69,7 +71,7 @@ class OtaFactory(metaclass=abc.ABCMeta):
         if ota_type == OtaType.FOTA.name:
             return FotaFactory(repo_type, dispatcher_callbacks, install_check_service)
         if ota_type == OtaType.SOTA.name:
-            return SotaFactory(repo_type, dispatcher_callbacks, sota_repos, install_check_service)
+            return SotaFactory(repo_type, dispatcher_callbacks, proceed_without_rollback, sota_repos, install_check_service)
         if ota_type == OtaType.AOTA.name:
             return AotaFactory(repo_type, dispatcher_callbacks, install_check_service, dbs=dbs)
         if ota_type == OtaType.POTA.name:
@@ -104,6 +106,7 @@ class SotaFactory(OtaFactory):
     """SOTA concrete class
 
     @param dispatcher_callbacks: Callbacks in Dispatcher object
+    @param proceed_without_rollback: Is it OK to run SOTA without rollback ability?
     @param install_check_service: provides InstallCheckService
     @param sota_repos: new Ubuntu/Debian mirror (or None)
     """
@@ -111,11 +114,13 @@ class SotaFactory(OtaFactory):
     def __init__(self,
                  repo_type: str,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 proceed_without_rollback: bool,
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService) -> None:
 
         super().__init__(repo_type, dispatcher_callbacks, install_check_service)
         self._sota_repos = sota_repos
+        self._proceed_without_rollback = proceed_without_rollback
 
     def create_parser(self) -> OtaParser:
         logger.debug(" ")
@@ -125,6 +130,7 @@ class SotaFactory(OtaFactory):
         logger.debug(" ")
         return SotaThread(self._repo_type,
                           self._dispatcher_callbacks,
+                          self._proceed_without_rollback,
                           self._sota_repos,
                           self._install_check_service,
                           parsed_manifest)

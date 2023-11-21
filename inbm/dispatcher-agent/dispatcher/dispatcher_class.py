@@ -146,8 +146,7 @@ class Dispatcher:
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
-        return DispatcherCallbacks(proceed_without_rollback=self.proceed_without_rollback,
-                                   broker_core=self._broker,
+        return DispatcherCallbacks(broker_core=self._broker,
                                    logger=self._update_logger)
 
     def stop(self) -> None:
@@ -493,6 +492,7 @@ class Dispatcher:
             ota_type.upper(),
             repo_type,
             self._make_callbacks_object(),
+            self.proceed_without_rollback,
             self._sota_repos,
             self._install_check_service,
             self.config_dbs)
@@ -524,6 +524,7 @@ class Dispatcher:
                     ota.upper(),
                     repo_type,
                     self._make_callbacks_object(),
+                    self.proceed_without_rollback,
                     self._sota_repos,
                     self._install_check_service,
                     self.config_dbs)

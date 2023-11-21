@@ -18,9 +18,7 @@ SendResultFunctionType = Callable[[str], None]
 class DispatcherCallbacks:
     def __init__(self,
                  broker_core: DispatcherBroker,
-                 proceed_without_rollback: bool,
                  logger: UpdateLogger
                  ) -> None:
         self.broker_core = broker_core
-        self.proceed_without_rollback = proceed_without_rollback
         self.logger = logger

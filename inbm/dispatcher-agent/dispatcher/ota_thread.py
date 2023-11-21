@@ -128,18 +128,24 @@ class SotaThread(OtaThread):
 
     @param repo_type: source location -> local or remote
     @param dispatcher_callbacks callback to the main Dispatcher object
+    @param proceed_without_rollback: Is it OK to run SOTA without rollback ability?
     @param sota_repos: new Ubuntu/Debian mirror (or None)
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     @return (dict): dict representation of COMMAND_SUCCESS or OTA_FAILURE/OTA_FAILURE_IN_PROGRESS
     """
 
-    def __init__(self, repo_type: str, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str],
+    def __init__(self,
+                 repo_type: str,
+                 dispatcher_callbacks: DispatcherCallbacks,
+                 proceed_without_rollback: bool,
+                 sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],) -> None:
         super().__init__(repo_type, dispatcher_callbacks, parsed_manifest,
                          install_check_service=install_check_service)
         self._sota_repos = sota_repos
+        self._proceed_without_rollback = proceed_without_rollback
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the SOTA thread and which checks for existing locks before delegating to
@@ -159,7 +165,7 @@ class SotaThread(OtaThread):
                                      sota_repos=self._sota_repos,
                                      install_check_service=self._install_check_service)
                 try:
-                    sota_instance.execute(self._dispatcher_callbacks.proceed_without_rollback)
+                    sota_instance.execute(self._proceed_without_rollback)
                     return COMMAND_SUCCESS
                 except SotaError as e:
                     self._dispatcher_callbacks.broker_core.telemetry(
