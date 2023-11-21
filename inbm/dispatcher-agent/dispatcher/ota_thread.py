@@ -106,7 +106,9 @@ class FotaThread(OtaThread):
         if ota_lock.acquire(False):
             try:
                 fota_instance = FOTA(parsed_manifest=self._parsed_manifest, repo_type=self._repo_type,
-                                     dispatcher_callbacks=self._dispatcher_callbacks, update_logger=self._update_logger)
+                                     dispatcher_callbacks=self._dispatcher_callbacks,
+                                     broker_core=self._broker_core,
+                                     update_logger=self._update_logger)
                 return fota_instance.install()
             except FotaError as e:
                 self._broker_core.telemetry(
@@ -125,6 +127,7 @@ class FotaThread(OtaThread):
             fota_instance = FOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
                                  dispatcher_callbacks=self._dispatcher_callbacks,
+                                 broker_core=self._broker_core,
                                  update_logger=self._update_logger)
             fota_instance.check()
         except FotaError as e:
@@ -178,6 +181,7 @@ class SotaThread(OtaThread):
                 sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                      repo_type=self._repo_type,
                                      dispatcher_callbacks=self._dispatcher_callbacks,
+                                     broker_core=self._broker_core,
                                      update_logger=self._update_logger,
                                      sota_repos=self._sota_repos,
                                      install_check_service=self._install_check_service)
@@ -201,6 +205,7 @@ class SotaThread(OtaThread):
             sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
                                  dispatcher_callbacks=self._dispatcher_callbacks,
+                                 broker_core=self._broker_core,
                                  update_logger=self._update_logger,
                                  sota_repos=self._sota_repos,
                                  install_check_service=self._install_check_service)
@@ -257,6 +262,7 @@ class AotaThread(OtaThread):
                 self._check_trtl_binary()
                 # Passing dispatcher instance to AOTA and spawn a thread for AOTA
                 aota.AOTA(dispatcher_callbacks=self._dispatcher_callbacks,
+                          broker_core=self._broker_core,
                           parsed_manifest=self._parsed_manifest,
                           dbs=self._dbs,
                           update_logger=self._update_logger).run()

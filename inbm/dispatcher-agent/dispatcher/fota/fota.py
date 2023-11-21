@@ -110,7 +110,7 @@ class FOTA:
         hold_reboot = False
         try:
             factory = OsFactory.get_factory(
-                self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
+                self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks, self._broker_core)
 
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
 
@@ -210,5 +210,5 @@ class FOTA:
         """validate the manifest before FOTA"""
         logger.debug("")
         factory = OsFactory.get_factory(
-            self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
+            self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks, self._broker_core)
         factory.create_upgrade_checker().check()

@@ -189,6 +189,7 @@ class Docker(AotaCommand):
                  dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
         super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        self._broker_core = broker_core
 
     def verify_command(self, cmd: str) -> None:
         check_docker_command_supported(cmd)
@@ -286,6 +287,7 @@ class Docker(AotaCommand):
             self._trtl,
             self._container_tag,
             self._dispatcher_callbacks,
+            self._broker_core,
             self._dbs)
 
         result = container.image_load(
@@ -311,6 +313,7 @@ class Docker(AotaCommand):
             self._trtl,
             self._container_tag,
             self._dispatcher_callbacks,
+            self._broker_core,
             self._dbs)
 
         result = container.image_import(self._uri)
@@ -338,6 +341,7 @@ class DockerCompose(AotaCommand):
                  dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
         super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        self._broker_core = broker_core
 
     def verify_command(self, cmd: str) -> None:
         check_compose_command_supported(cmd)

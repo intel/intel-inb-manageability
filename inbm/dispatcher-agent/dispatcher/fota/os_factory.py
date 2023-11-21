@@ -46,12 +46,12 @@ class OsFactory(ABC):
     def create_rebooter(self) -> Rebooter: pass
 
     @staticmethod
-    def get_factory(os_type: str, ota_element: Any, callback: DispatcherCallbacks) -> "OsFactory":
+    def get_factory(os_type: str, ota_element: Any, callback: DispatcherCallbacks, broker_core: DispatcherBroker) -> "OsFactory":
         logger.debug("")
         if os_type == OsType.Linux.name:
-            return LinuxFactory(ota_element, callback)
+            return LinuxFactory(ota_element, callback, broker_core)
         if os_type == OsType.Windows.name:
-            return WindowsFactory(ota_element, callback)
+            return WindowsFactory(ota_element, callback, broker_core)
         raise ValueError(f'Unsupported OS type: {os_type}.')
 
 
@@ -60,8 +60,9 @@ class LinuxFactory(OsFactory):
     on the platform.  This instance is for Linux.
     """
 
-    def __init__(self, ota_element: Dict, dispatcher_callbacks: DispatcherCallbacks) -> None:
+    def __init__(self, ota_element: Dict, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
         super().__init__(ota_element, dispatcher_callbacks)
+        self._broker_core = broker_core
 
     def create_upgrade_checker(self) -> UpgradeChecker:
         logger.debug(" ")
@@ -69,11 +70,11 @@ class LinuxFactory(OsFactory):
 
     def create_installer(self, repo: IRepo, fw_conf: str, fw_conf_schema: str) -> Installer:
         logger.debug(" ")
-        return LinuxInstaller(self._dispatcher_callbacks, repo, fw_conf, fw_conf_schema)
+        return LinuxInstaller(self._dispatcher_callbacks, self._broker_core, repo, fw_conf, fw_conf_schema)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug(" ")
-        return LinuxRebooter(self._dispatcher_callbacks)
+        return LinuxRebooter(self._dispatcher_callbacks, self._broker_core)
 
 
 class WindowsFactory(OsFactory):
@@ -81,8 +82,9 @@ class WindowsFactory(OsFactory):
     on the platform.  This instance is for Windows.
     """
 
-    def __init__(self, ota_element: Dict, callback: DispatcherCallbacks) -> None:
+    def __init__(self, ota_element: Dict, callback: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
         super().__init__(ota_element, callback)
+        self._broker_core = broker_core
 
     def create_upgrade_checker(self) -> UpgradeChecker:
         logger.debug(" ")
@@ -90,8 +92,8 @@ class WindowsFactory(OsFactory):
 
     def create_installer(self, repo: IRepo, fw_conf: str, fw_conf_schema: str) -> Installer:
         logger.debug(" ")
-        return WindowsInstaller(self._dispatcher_callbacks, repo, fw_conf, fw_conf_schema)
+        return WindowsInstaller(self._dispatcher_callbacks, self._broker_core, repo, fw_conf, fw_conf_schema)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug(" ")
-        return WindowsRebooter(self._dispatcher_callbacks)
+        return WindowsRebooter(self._dispatcher_callbacks, self._broker_core)

@@ -124,7 +124,7 @@ class Dispatcher:
         fileConfig(log_config_path,
                    disable_existing_loggers=False)
 
-        self._broker = broker
+        self._broker_core = broker
         self._install_check_service = install_check_service
         self.update_queue: Queue[Tuple[str, str]] = Queue(1)
         self._thread_count = 1
@@ -142,11 +142,11 @@ class Dispatcher:
                                    'message': 'No health report from diagnostic'}
         self.RUNNING = False
         self._update_logger = UpdateLogger(ota_type="", data="")
-        self.remediation_instance = RemediationManager(self._make_callbacks_object())
+        self.remediation_instance = RemediationManager(self._make_callbacks_object(), self._broker_core)
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
-        return DispatcherCallbacks(broker_core=self._broker)
+        return DispatcherCallbacks(broker_core=self._broker_core)
 
     def stop(self) -> None:
         self.RUNNING = False
@@ -168,7 +168,7 @@ class Dispatcher:
         self.RUNNING = True
         logger.info("Dispatcher agent starting. Version info: " +
                     get_friendly_inbm_version_commit())
-        self._broker.start(tls)
+        self._broker_core.start(tls)
         self._initialize_broker()
 
         self.remediation_instance.run()
@@ -195,7 +195,7 @@ class Dispatcher:
             # Catch termination via systemd
             signal.signal(signal.SIGTERM, _sig_handler)
 
-        self._broker.mqtt_publish(f'{AGENT}/state', 'running', retain=True)
+        self._broker_core.mqtt_publish(f'{AGENT}/state', 'running', retain=True)
 
         active_start_count = active_count()
         while self.RUNNING:
@@ -206,8 +206,8 @@ class Dispatcher:
                     worker.start()
             sleep(1)
 
-        self._broker.mqtt_publish(f'{AGENT}/state', 'dead', retain=True)
-        self._broker.stop()
+        self._broker_core.mqtt_publish(f'{AGENT}/state', 'dead', retain=True)
+        self._broker_core.stop()
 
     def _perform_startup_tasks(self) -> None:
         """Perform one-time dispatcher startup tasks
@@ -231,7 +231,7 @@ class Dispatcher:
                     if validated_package_list is None:
                         raise DispatcherException(
                             F'parsing and validating package list: {self._package_list} failed')
-                    SotaOsFactory(self._make_callbacks_object(), self._sota_repos, validated_package_list).\
+                    SotaOsFactory(self._make_callbacks_object(), self._broker_core, self._sota_repos, validated_package_list).\
                         get_os(detected_os).\
                         create_snapshotter('update',
                                            snap_num='1',
@@ -252,9 +252,9 @@ class Dispatcher:
         @return Result: {'status': 400, 'message': 'Configuration load: FAILED'}
         or {'status': 200, 'message': 'Configuration load: successful'}
         """
-        if not self._broker.is_started():
+        if not self._broker_core.is_started():
             return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED (mqttc not initialized)')
-        configuration_helper = ConfigurationHelper(self._make_callbacks_object())
+        configuration_helper = ConfigurationHelper(self._make_callbacks_object(), self._broker_core)
         uri = configuration_helper.parse_url(parsed_head)
         if not is_valid_uri(uri):
             logger.debug("Config load operation using local path.")
@@ -355,15 +355,15 @@ class Dispatcher:
                 state = {'restart_reason': 'restart_cmd'}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
         elif cmd == "query":
-            self._broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
+            self._broker_core.mqtt_publish(QUERY_CMD_CHANNEL, xml)
             return PUBLISH_SUCCESS
         elif cmd == "custom":
             header = parsed_head.get_children('custom')
             json_data = header['data']
-            self._broker.mqtt_publish(CUSTOM_CMD_CHANNEL, json_data)
+            self._broker_core.mqtt_publish(CUSTOM_CMD_CHANNEL, json_data)
             return PUBLISH_SUCCESS
         elif cmd == "provisionNode":
-            ProvisionTarget(xml, self._make_callbacks_object()).install(parsed_head)
+            ProvisionTarget(xml, self._make_callbacks_object(), self._broker_core).install(parsed_head)
             return PUBLISH_SUCCESS
         elif cmd == "decommission":
             message = self.device_manager.decommission()
@@ -373,14 +373,14 @@ class Dispatcher:
         return Result(CODE_OK, message)
 
     def _telemetry(self, message: str) -> None:
-        self._broker.telemetry(message)
+        self._broker_core.telemetry(message)
 
     def _send_result(self, message: str) -> None:
         """Sends event messages to local MQTT channel
 
         @param message: message to be published to cloud
         """
-        self._broker.send_result(message)
+        self._broker_core.send_result(message)
 
     def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:
         """Delegates the installation to either
@@ -491,6 +491,7 @@ class Dispatcher:
             ota_type.upper(),
             repo_type,
             self._make_callbacks_object(),
+            self._broker_core,
             self.proceed_without_rollback,
             self._sota_repos,
             self._install_check_service,
@@ -524,6 +525,7 @@ class Dispatcher:
                     ota.upper(),
                     repo_type,
                     self._make_callbacks_object(),
+                    self._broker_core,
                     self.proceed_without_rollback,
                     self._sota_repos,
                     self._install_check_service,
@@ -569,7 +571,7 @@ class Dispatcher:
     def _do_install_on_target(self, ota_type: str, xml: str, repo_type: str, parsed_manifest: Mapping[str, Optional[Any]]):
         logger.debug("")
         t = OtaTarget(xml, parsed_manifest, ota_type,
-                      self._make_callbacks_object())
+                      self._make_callbacks_object(), self._broker_core)
         target_ota_status = t.install()
         logger.debug(f"Install on Target STATUS: {target_ota_status}")
         return target_ota_status
@@ -595,8 +597,8 @@ class Dispatcher:
         cmd = ConfigCommand(cmd_type, path=file_path,
                             value_string=value_string)
 
-        self._broker.mqtt_subscribe(cmd.create_response_topic(), on_command)
-        self._broker.mqtt_publish(cmd.create_request_topic(), cmd.create_payload())
+        self._broker_core.mqtt_subscribe(cmd.create_response_topic(), on_command)
+        self._broker_core.mqtt_publish(cmd.create_request_topic(), cmd.create_payload())
 
         latch.await_()
         if cmd.response is None and cmd_type != 'load':
@@ -721,21 +723,21 @@ class Dispatcher:
 
         try:
             logger.debug('Subscribing to: %s', STATE_CHANNEL)
-            self._broker.mqtt_subscribe(STATE_CHANNEL, self._on_message)
+            self._broker_core.mqtt_subscribe(STATE_CHANNEL, self._on_message)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_DISPATCHER_UPDATE_CHANNEL)
-            self._broker.mqtt_subscribe(
+            self._broker_core.mqtt_subscribe(
                 CONFIGURATION_DISPATCHER_UPDATE_CHANNEL, override_defaults)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_SOTA_UPDATE_CHANNEL)
-            self._broker.mqtt_subscribe(CONFIGURATION_SOTA_UPDATE_CHANNEL, override_defaults)
+            self._broker_core.mqtt_subscribe(CONFIGURATION_SOTA_UPDATE_CHANNEL, override_defaults)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_ALL_AGENTS_UPDATE_CHANNEL)
-            self._broker.mqtt_subscribe(
+            self._broker_core.mqtt_subscribe(
                 CONFIGURATION_ALL_AGENTS_UPDATE_CHANNEL, override_defaults)
 
             logger.debug('Subscribing to: %s', TC_REQUEST_CHANNEL)
-            self._broker.mqtt_subscribe(TC_REQUEST_CHANNEL, self._on_cloud_request)
+            self._broker_core.mqtt_subscribe(TC_REQUEST_CHANNEL, self._on_cloud_request)
 
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
@@ -756,6 +758,7 @@ class Dispatcher:
         sota_instance = SOTA(parsed_manifest,
                              REMOTE_SOURCE,
                              self._make_callbacks_object(),
+                             self._broker_core,
                              self._update_logger,
                              self._sota_repos,
                              self._install_check_service,
@@ -766,7 +769,7 @@ class Dispatcher:
     def create_workload_orchestration_instance(self) -> None:
         """This method used to create WorkloadOrchestration instance.
         """
-        self._wo = WorkloadOrchestration(self._make_callbacks_object())
+        self._wo = WorkloadOrchestration(self._make_callbacks_object(), self._broker_core)
 
     def invoke_workload_orchestration_check(self, online_mode: bool, type_of_manifest: Optional[str] = None, parsed_head: Optional[XmlHandler] = None) -> None:
         """This method is used to invoke workload orchestration checks at startup and before/after any OTA update that performs shutdown/reboot within.

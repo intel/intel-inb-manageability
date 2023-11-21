@@ -19,6 +19,7 @@ from .downloader import download
 from .packagemanager.package_manager import extract_files_from_tar
 from .packagemanager.package_manager import verify_signature
 from .packagemanager.local_repo import DirectoryRepo
+from .dispatcher_broker import DispatcherBroker
 from inbm_lib.xmlhandler import XmlException, XmlHandler
 
 logger = logging.getLogger(__name__)
@@ -32,15 +33,17 @@ class ProvisionTarget:
     """Install provision files for SOCs to the host.  Modify the manifest and publish to the vision-agent.
     @param xml: incoming XML file
     @param dispatcher_callbacks: Dispatcher objects
+    @param broker_core: MQTT broker to other INBM services
     @param schema_location: location of schema file
     """
 
     def __init__(self, xml: str, dispatcher_callbacks: DispatcherCallbacks,
-                 schema_location: str = SCHEMA_LOCATION) -> None:
+                 broker_core: DispatcherBroker, schema_location: str = SCHEMA_LOCATION) -> None:
         logger.debug("")
         self._xml = xml
         self._dispatcher_callbacks = dispatcher_callbacks
         self._schema_location = schema_location
+        self._broker_core = broker_core
 
     def install(self, parsed_head: XmlHandler) -> None:
         """Manages the installation sequence to support the Accelerator Manageability Framework

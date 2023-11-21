@@ -35,16 +35,19 @@ class SotaOsFactory:
     """Creates instances of OsFactory based on detected platform
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, sota_repos: Optional[str], package_list: list[str]) -> None:
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, 
+                 sota_repos: Optional[str], package_list: list[str]) -> None:
         """Initializes OsFactory.
 
         @param dispatcher_callbacks: DispatcherCallbacks
+        @param broker_core: MQTT broker to other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param package_list: list of packages to install/update (or empty for all--general upgrade)
         """
         self._dispatcher_callbacks = dispatcher_callbacks
         self._sota_repos = sota_repos
         self._package_list = package_list
+        self._broker_core = broker_core
 
     @staticmethod
     def verify_os_supported() -> str:
@@ -71,7 +74,7 @@ class SotaOsFactory:
             return DebianBasedSotaOs(self._dispatcher_callbacks, self._sota_repos, self._package_list)
         elif os_type == LinuxDistType.YoctoX86_64.name:
             logger.debug("YoctoX86_64 returned")
-            return YoctoX86_64(self._dispatcher_callbacks)
+            return YoctoX86_64(self._dispatcher_callbacks, self._broker_core)
         elif os_type == LinuxDistType.YoctoARM.name:
             logger.debug("YoctoARM returned")
             return YoctoARM(self._dispatcher_callbacks)
@@ -132,7 +135,7 @@ class YoctoX86_64(ISotaOs):
 
     def create_rebooter(self) -> Rebooter:
         logger.debug("")
-        return LinuxRebooter(self._dispatcher_callbacks)
+        return LinuxRebooter(self._dispatcher_callbacks, self._broker_core)
 
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
@@ -141,7 +144,7 @@ class YoctoX86_64(ISotaOs):
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_callbacks, snap_num, proceed_without_rollback)
+        return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_callbacks, self._broker_core, snap_num, proceed_without_rollback)
 
     def create_downloader(self) -> Downloader:
         logger.debug("")

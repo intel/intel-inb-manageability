@@ -317,13 +317,13 @@ class YoctoSnapshot(Snapshot):
     @param trtl: TRTL instance
     @param sota_cmd: SOTA command (update)
     @param dispatcher_callbacks: Callbacks from Dispatcher object
+    @param broker_core: MQTT broker to other INBM services
     @param snap_num: snapshot number
     @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
-    @param broker_core: MQTT broker to other INBM services
    """
 
-    def __init__(self, trtl: Trtl, sota_cmd: str, dispatcher_callbacks: DispatcherCallbacks, snap_num: Optional[str],
-                 proceed_without_rollback: bool, broker_core: DispatcherBroker) -> None:
+    def __init__(self, trtl: Trtl, sota_cmd: str, dispatcher_callbacks: DispatcherCallbacks, 
+                 broker_core: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
         super().__init__(trtl, sota_cmd,
                          dispatcher_callbacks, snap_num, proceed_without_rollback)
         self._broker_core = broker_core

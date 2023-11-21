@@ -109,6 +109,7 @@ class BiosFactory(ABC):
         @param platform_product: platform product name
         @param params: platform product parameters from the fota conf file 
         @param callback: callback to dispatcher
+        @param broker_core: MQTT broker to other INBM services
         @param repo: string representation of dispatcher's repository path
         @raises: FotaError
         """
@@ -122,7 +123,7 @@ class BiosFactory(ABC):
         elif platform.system() == 'Windows':
             if (platform_product is not None) and (WINDOWS_NUC_PLATFORM in platform_product):
                 logger.debug("Windows NUC product name detected")
-                return WindowsBiosNUC(callback, repo, params)
+                return WindowsBiosNUC(callback, repo, params, broker_core)
             else:
                 raise FotaError("The current Windows system is unsupported.")
         else:

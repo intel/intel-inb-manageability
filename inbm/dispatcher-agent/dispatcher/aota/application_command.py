@@ -120,11 +120,12 @@ class Application(AotaCommand):
 class CentOsApplication(Application):
     def __init__(self,
                  dispatcher_callbacks: DispatcherCallbacks,
+                 broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs,
                  update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs, update_logger)
+        super().__init__(dispatcher_callbacks, broker_core, parsed_manifest, dbs, update_logger)
 
     def cleanup(self) -> None:
         """Clean up AOTA temporary file and the driver file after use"""
@@ -204,15 +205,16 @@ class UbuntuApplication(Application):
     and escaping container if needed.
 
     @param dispatcher_callbacks callback to the main Dispatcher object
+    @param broker_core: MQTT broker to other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks,
+    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs,
                  update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs, update_logger=update_logger)
+        super().__init__(dispatcher_callbacks, broker_core, parsed_manifest, dbs, update_logger=update_logger)
 
     def update(self):  # pragma: no cover
         super().update()
