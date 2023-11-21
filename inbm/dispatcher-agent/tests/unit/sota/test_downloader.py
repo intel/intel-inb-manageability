@@ -32,19 +32,18 @@ class TestDownloader(unittest.TestCase):
         parsed = XmlHandler(fake_sota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         cls.resource = parsed.get_children('ota/type/sota')
         parsed_manifest = {'resource': cls.resource,
-                           'callback': cls.mock_disp_callbacks_obj, 'signature': None, 'hash_algorithm': None,
+                           'signature': None, 'hash_algorithm': None,
                            'uri': mock_url, 'repo': TestDownloader._build_mock_repo(0), 'username': username,
                            'password': password, 'sota_mode': 'no-download', 'package_list': '',
                            'deviceReboot': "no"}
         cls.sota_instance = SOTA(parsed_manifest,
                                  "remote",
-                                 DispatcherCallbacks(),
                                  MockDispatcherBroker.build_mock_dispatcher_broker(),
                                  UpdateLogger("SOTA", "metadata"),
                                  None,
                                  install_check_service=MockInstallCheckService())
         cls.sota_instance.factory = SotaOsFactory(
-            cls.mock_disp_callbacks_obj, MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
 
     @patch('dispatcher.sota.downloader.Downloader.is_valid_release_date', return_value=True)
     @patch('dispatcher.sota.downloader.YoctoDownloader.download')
@@ -53,13 +52,13 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            TestDownloader.mock_disp_callbacks_obj, MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
         assert installer
         try:
-            installer.download(self.mock_disp_callbacks_obj, self.mock_disp_broker,
+            installer.download(self.mock_disp_broker,
                                mock_url, TestDownloader._build_mock_repo(0),
                                self.username, self.password, self.release_date)
         except (SotaError, DispatcherException):
@@ -74,13 +73,13 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            TestDownloader.mock_disp_callbacks_obj, MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
         assert installer
         try:
-            installer.download(self.mock_disp_callbacks_obj, self.mock_disp_broker,
+            installer.download(self.mock_disp_broker,
                                mock_url, TestDownloader._build_mock_repo(0),
                                self.username, self.password, self.release_date)
         except DispatcherException as e:
@@ -93,13 +92,13 @@ class TestDownloader(unittest.TestCase):
         self.release_date = self.username = self.password = None
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            TestDownloader.mock_disp_callbacks_obj, MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
         assert installer
         try:
-            installer.download(self.mock_disp_callbacks_obj, self.mock_disp_broker, mock_url,
+            installer.download(self.mock_disp_broker, mock_url,
                                TestDownloader._build_mock_repo(
                                    0),
                                self.username, self.password, self.release_date)

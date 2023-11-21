@@ -30,7 +30,7 @@ class TestLogHelper(unittest.TestCase):
     def test_succeeds_log_command_error_with_file_destination_read(self, mock_open):
         mock_open.return_value = File('FILE CONTENTS')
         log_command_error(cmd=mock.Mock(), cmd_index=1, err='err', output='output',
-                          log_file='file.log', log_destination=FILE, dispatcher_callbacks=mock.Mock(),
+                          log_file='file.log', log_destination=FILE,
                           broker_core=mock.Mock())
         assert mock_open.call_count == 1
 
@@ -38,6 +38,6 @@ class TestLogHelper(unittest.TestCase):
     def test_succeeds_log_command_error_without_file_destination_read(self, mock_open):
         mock_open.return_value = File('FILE CONTENTS')
         log_command_error(cmd=mock.Mock(), cmd_index=1, err='err', output='output',
-                          log_file='file.log', log_destination=CLOUD, dispatcher_callbacks=mock.Mock(),
+                          log_file='file.log', log_destination=CLOUD,
                           broker_core=mock.Mock())
         assert mock_open.call_count == 0

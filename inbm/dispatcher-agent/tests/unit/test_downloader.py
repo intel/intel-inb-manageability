@@ -28,7 +28,7 @@ class TestDownloader(TestCase):
     def test_download_successful(self, mock_check_valid_file, mock_verify_source, mock_fetch, mock_space):
         mock_fetch.return_value = dummy_success
         try:
-            download(self.mock_dispatcher_callbacks_obj, self.mock_dispatcher_broker, mock_url,
+            download(self.mock_dispatcher_broker, mock_url,
                      TestDownloader._build_mock_repo(0), username, password, umask=0)
         except DispatcherException:
             self.fail("Dispatcher download raised DispatcherException unexpectedly!")
@@ -37,7 +37,7 @@ class TestDownloader(TestCase):
     @patch('dispatcher.downloader.is_enough_space_to_download', return_value=False)
     def test_raises_when_space_check_fails(self, mock_verify_source, mock_space):
         with self.assertRaises(DispatcherException):
-            download(self.mock_dispatcher_callbacks_obj, self.mock_dispatcher_broker, mock_url,
+            download(self.mock_dispatcher_broker, mock_url,
                      TestDownloader._build_mock_repo(0),
                      username, password, umask=0)
 
@@ -48,7 +48,7 @@ class TestDownloader(TestCase):
                                              mock_space):
         mock_fetch.return_value = dummy_success
         with self.assertRaises(DispatcherException):
-            download(self.mock_dispatcher_callbacks_obj, self.mock_dispatcher_broker, mock_url,
+            download(self.mock_dispatcher_broker, mock_url,
                      TestDownloader._build_mock_repo(0),
                      username, password, umask=0)
         mock_fetch.assert_not_called()
@@ -59,7 +59,7 @@ class TestDownloader(TestCase):
     def test_raises_when_get_fails(self, mock_verify_source, mock_fetch, mock_space):
         mock_fetch.return_value = dummy_failure
         with self.assertRaises(DispatcherException):
-            download(self.mock_dispatcher_callbacks_obj, self.mock_dispatcher_broker, mock_url,
+            download(self.mock_dispatcher_broker, mock_url,
                      TestDownloader._build_mock_repo(0),
                      username, password, umask=0)
         mock_fetch.assert_called_once()

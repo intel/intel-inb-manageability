@@ -41,7 +41,6 @@ class TestOsUpdater(unittest.TestCase):
                            'password': password, 'sota_mode': 'full', 'package_list': '', 'deviceReboot': "no"}
         cls.sota_instance = SOTA(parsed_manifest,
                                  "remote",
-                                 DispatcherCallbacks(),
                                  cls.mock_disp_broker,
                                  cls.mock_disp_obj.update_logger,
                                  None,
@@ -54,7 +53,6 @@ class TestOsUpdater(unittest.TestCase):
                                     'password': password, 'sota_mode': 'full', 'package_list': 'package1,package2', 'deviceReboot': "no"}
         cls.sota_instance_packages = SOTA(parsed_manifest_packages,
                                           "remote",
-                                          DispatcherCallbacks(),
                                           cls.mock_disp_broker,
                                           cls.mock_disp_obj.update_logger,
                                           None,

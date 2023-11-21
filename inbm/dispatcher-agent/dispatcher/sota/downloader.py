@@ -30,7 +30,6 @@ class Downloader:
         pass
 
     def download(self,
-                 callback: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
@@ -39,7 +38,6 @@ class Downloader:
                  release_date: Optional[str]) -> None:
         """Downloads update/upgrade and places capsule file in local cache.
 
-        @param callback: callback to dispatcher
         @param broker_core: MQTT broker to other INBM services
         @param uri: URI of the source location
         @param repo: repository for holding the download
@@ -81,7 +79,6 @@ class DebianBasedDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 callback: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
@@ -107,7 +104,6 @@ class WindowsDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 callback: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
@@ -116,7 +112,6 @@ class WindowsDownloader(Downloader):
                  release_date: Optional[str]) -> None:
         """STUB: downloads Windows update
 
-        @param callback: callback to dispatcher
         @param uri: URI of the source location
         @param repo: repository for holding the download
         @param username: username to use for download
@@ -138,7 +133,6 @@ class YoctoDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 callback: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
@@ -147,7 +141,6 @@ class YoctoDownloader(Downloader):
                  release_date: Optional[str]) -> None:
         """Downloads files and places image in local cache
 
-        @param callback: callback to dispatcher
         @param broker_core: MQTT broker to other INBM services
         @param uri: URI of the source location
         @param repo: repository for holding the download
@@ -164,8 +157,7 @@ class YoctoDownloader(Downloader):
         if uri is None:
             raise SotaError("URI is None while performing Yocto download")
 
-        download(dispatcher_callbacks=callback,
-                 broker_core=broker_core,
+        download(broker_core=broker_core,
                  uri=uri,
                  repo=repo,
                  umask=UMASK_OTA,

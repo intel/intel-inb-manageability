@@ -143,7 +143,7 @@ class Dispatcher:
         self.RUNNING = False
         self._update_logger = UpdateLogger(ota_type="", data="")
         self.remediation_instance = RemediationManager(
-            self._make_callbacks_object(), self._broker_core)
+            self._broker_core)
         self._wo: Optional[WorkloadOrchestration] = None
 
     def _make_callbacks_object(self) -> DispatcherCallbacks:
@@ -232,7 +232,7 @@ class Dispatcher:
                     if validated_package_list is None:
                         raise DispatcherException(
                             F'parsing and validating package list: {self._package_list} failed')
-                    SotaOsFactory(self._make_callbacks_object(), self._broker_core, self._sota_repos, validated_package_list).\
+                    SotaOsFactory(self._broker_core, self._sota_repos, validated_package_list).\
                         get_os(detected_os).\
                         create_snapshotter('update',
                                            snap_num='1',
@@ -256,7 +256,7 @@ class Dispatcher:
         if not self._broker_core.is_started():
             return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED (mqttc not initialized)')
         configuration_helper = ConfigurationHelper(
-            self._make_callbacks_object(), self._broker_core)
+            self._broker_core)
         uri = configuration_helper.parse_url(parsed_head)
         if not is_valid_uri(uri):
             logger.debug("Config load operation using local path.")
@@ -365,7 +365,7 @@ class Dispatcher:
             self._broker_core.mqtt_publish(CUSTOM_CMD_CHANNEL, json_data)
             return PUBLISH_SUCCESS
         elif cmd == "provisionNode":
-            ProvisionTarget(xml, self._make_callbacks_object(),
+            ProvisionTarget(xml,
                             self._broker_core).install(parsed_head)
             return PUBLISH_SUCCESS
         elif cmd == "decommission":
@@ -493,7 +493,6 @@ class Dispatcher:
         factory = OtaFactory.get_factory(
             ota_type.upper(),
             repo_type,
-            self._make_callbacks_object(),
             self._broker_core,
             self.proceed_without_rollback,
             self._sota_repos,
@@ -527,7 +526,6 @@ class Dispatcher:
                 factory = OtaFactory.get_factory(
                     ota.upper(),
                     repo_type,
-                    self._make_callbacks_object(),
                     self._broker_core,
                     self.proceed_without_rollback,
                     self._sota_repos,
@@ -574,7 +572,7 @@ class Dispatcher:
     def _do_install_on_target(self, ota_type: str, xml: str, repo_type: str, parsed_manifest: Mapping[str, Optional[Any]]):
         logger.debug("")
         t = OtaTarget(xml, parsed_manifest, ota_type,
-                      self._make_callbacks_object(), self._broker_core)
+                      self._broker_core)
         target_ota_status = t.install()
         logger.debug(f"Install on Target STATUS: {target_ota_status}")
         return target_ota_status
@@ -760,7 +758,6 @@ class Dispatcher:
                            'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
         sota_instance = SOTA(parsed_manifest,
                              REMOTE_SOURCE,
-                             self._make_callbacks_object(),
                              self._broker_core,
                              self._update_logger,
                              self._sota_repos,
@@ -772,7 +769,7 @@ class Dispatcher:
     def create_workload_orchestration_instance(self) -> None:
         """This method used to create WorkloadOrchestration instance.
         """
-        self._wo = WorkloadOrchestration(self._make_callbacks_object(), self._broker_core)
+        self._wo = WorkloadOrchestration(self._broker_core)
 
     def invoke_workload_orchestration_check(self, online_mode: bool, type_of_manifest: Optional[str] = None, parsed_head: Optional[XmlHandler] = None) -> None:
         """This method is used to invoke workload orchestration checks at startup and before/after any OTA update that performs shutdown/reboot within.

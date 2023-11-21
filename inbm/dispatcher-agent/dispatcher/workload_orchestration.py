@@ -33,14 +33,11 @@ logger = logging.getLogger(__name__)
 class WorkloadOrchestration:
     """Workload Orchestration class to switch device status to schedulable or unschedulable
 
-    @param dispatcher_callbacks: callbacks
     @param broker_core: MQTT broker to other INBM services
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._broker_core = broker_core
 
     def is_workload_service_file_present(self) -> bool:

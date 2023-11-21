@@ -32,16 +32,14 @@ CERT_FILE_EXT = ".crt"
 class ProvisionTarget:
     """Install provision files for SOCs to the host.  Modify the manifest and publish to the vision-agent.
     @param xml: incoming XML file
-    @param dispatcher_callbacks: Dispatcher objects
     @param broker_core: MQTT broker to other INBM services
     @param schema_location: location of schema file
     """
 
-    def __init__(self, xml: str, dispatcher_callbacks: DispatcherCallbacks,
+    def __init__(self, xml: str,
                  broker_core: DispatcherBroker, schema_location: str = SCHEMA_LOCATION) -> None:
         logger.debug("")
         self._xml = xml
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._schema_location = schema_location
         self._broker_core = broker_core
 
@@ -64,8 +62,7 @@ class ProvisionTarget:
                 hash_algo = DEFAULT_HASH_ALGORITHM
         canonicalized_url = canonicalize_uri(uri)
         repo = DirectoryRepo(REPO_CACHE)
-        download(dispatcher_callbacks=self._dispatcher_callbacks,
-                 broker_core=self._broker_core,
+        download(broker_core=self._broker_core,
                  uri=canonicalized_url,
                  repo=repo,
                  umask=UMASK_PROVISION_FILE,
@@ -75,7 +72,7 @@ class ProvisionTarget:
         tar_file_path = os.path.join(REPO_CACHE, tar_file_name)
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if signature:
-                verify_signature(signature, tar_file_path, self._dispatcher_callbacks, self._broker_core, hash_algo)
+                verify_signature(signature, tar_file_path, self._broker_core, hash_algo)
             else:
                 raise DispatcherException(
                     'Provision Target install aborted. Signature is required to validate the package and proceed with the update.')

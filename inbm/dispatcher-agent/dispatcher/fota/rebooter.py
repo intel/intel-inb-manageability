@@ -21,25 +21,24 @@ logger = logging.getLogger(__name__)
 class Rebooter(ABC):
     """Base class for rebooting the system.
 
-    @param callback: Callback to Dispatcher
     """
 
-    def __init__(self, callback: DispatcherCallbacks) -> None:
-        self._dispatcher_callbacks = callback
+    def __init__(self) -> None:
+        pass
 
     @abstractmethod
-    def reboot(self) -> None: pass
+    def reboot(self) -> None:
+        pass
 
 
 class LinuxRebooter(Rebooter):
     """Derived class. Reboots the system on a Linux OS
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
-        super().__init__(dispatcher_callbacks)
+    def __init__(self, broker_core: DispatcherBroker) -> None:
+        super().__init__()
         self._broker_core = broker_core
 
     def reboot(self) -> None:
@@ -63,12 +62,11 @@ class LinuxRebooter(Rebooter):
 class WindowsRebooter(Rebooter):
     """Derived class. Reboots the system on a Windows OS
 
-    @param callback: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, callback: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
-        super().__init__(callback)
+    def __init__(self,  broker_core: DispatcherBroker) -> None:
+        super().__init__()
         self._broker_core = broker_core
 
     def reboot(self) -> None:  # pragma: no cover

@@ -28,8 +28,7 @@ logger = logging.getLogger(__name__)
 class Installer(ABC):
     """Base class for installing the new Firmware."""
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, repo: IRepo, xml_file: str, xml_schema: str) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
+    def __init__(self,  broker_core: DispatcherBroker, repo: IRepo, xml_file: str, xml_schema: str) -> None:
         self._broker_core = broker_core
         self._repo: IRepo = repo
         logger.debug(f"_repo name is {self._repo.name()}")
@@ -110,7 +109,7 @@ class Installer(ABC):
             if checksum and hash_algorithm:
                 file_path = str(Path(str(self._repo.get_repo_path())) / pkg_filename)
                 verify_signature(checksum, file_path,
-                                 self._dispatcher_callbacks, self._broker_core, hash_algorithm)
+                                 self._broker_core, hash_algorithm)
                 self._broker_core.telemetry('Attempting Firmware Update')
             else:
                 logger.error("Signature required to proceed with OTA update.")
@@ -125,15 +124,14 @@ class Installer(ABC):
 class LinuxInstaller(Installer):
     """Derived class. Installs new Firmware on a Linux OS.
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     @param repo: string representation of dispatcher's repository path
     @param xml_file: firmware xml file path
     @param xml_schema: firmware xml schema location
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, repo: IRepo, xml_file: str, xml_schema: str) -> None:
-        super().__init__(dispatcher_callbacks, broker_core, repo, xml_file, xml_schema)
+    def __init__(self,  broker_core: DispatcherBroker, repo: IRepo, xml_file: str, xml_schema: str) -> None:
+        super().__init__(broker_core, repo, xml_file, xml_schema)
 
     def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
                 hash_algorithm: Optional[int], bios_vendor: Optional[str] = None, platform_product: Optional[str] = None) -> None:
@@ -169,14 +167,13 @@ class LinuxInstaller(Installer):
                     "Tool options are not supported by the platform. Please check the firmware configuration.")
 
         factory = BiosFactory.get_factory(platform_product, params,
-                                          self._dispatcher_callbacks, self._broker_core, self._repo)
+                                          self._broker_core, self._repo)
         factory.install(pkg_filename, self._repo.name(), tool_options, guid)
 
 
 class WindowsInstaller(Installer):
     """Derived class. Installs new Firmware on a Windows OS.
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     @param repo: string representation of dispatcher's repository path
     @param xml_file: firmware xml file path
@@ -184,12 +181,11 @@ class WindowsInstaller(Installer):
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  repo: IRepo,
                  xml_file: str,
                  xml_schema: str) -> None:
-        super().__init__(dispatcher_callbacks, broker_core, repo, xml_file, xml_schema)
+        super().__init__(broker_core, repo, xml_file, xml_schema)
 
     def install(self, guid: Any, tool_options: Any, pkg_filename: str, signature: Optional[str],
                 hash_algorithm: Optional[int], bios_vendor: Optional[str] = None, platform_product: Optional[str] = None) -> None:
@@ -201,7 +197,6 @@ class WindowsInstaller(Installer):
         params = super().get_product_params(platform_product)
         factory = BiosFactory.get_factory(platform_product=platform_product,
                                           params=params,
-                                          callback=self._dispatcher_callbacks,
                                           broker_core=self._broker_core,
                                           repo=self._repo)
         factory.install(pkg_filename, self._repo.name(), tool_options, guid)

@@ -27,14 +27,12 @@ logger = logging.getLogger(__name__)
 
 def check_upgrade_allowed(manifest_info: PlatformInformation,
                           platform_info: PlatformInformation,
-                          dispatcher_callbacks: DispatcherCallbacks,
                           broker_core: DispatcherBroker) -> None:
     """Check if manifest vendor name matches platform bios vendor and
     manifest release date is higher than bios release date
 
     @param manifest_info: Information parsed from manifest
     @param platform_info: Information retrieved from system
-    @param dispatcher_callbacks: Dispatcher objects
     """
     logger.debug(" ")
 
@@ -79,11 +77,9 @@ class UpgradeChecker(ABC):
     new Firmware.
 
     @param ota_element: resource portion of manifest
-    @param dispatcher_callbacks: callback to dispatcher
     """
 
-    def __init__(self, ota_element: Dict, dispatcher_callbacks: DispatcherCallbacks) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
+    def __init__(self, ota_element: Dict) -> None:
         self._ota_element = ota_element
 
         self._platform_info = PlatformInformation()
@@ -105,12 +101,11 @@ class LinuxUpgradeChecker(UpgradeChecker):
     """Checks if the system is upgradable to the new Firmware on a Linux OS.
 
     @param ota_element: resource portion of manifest
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, ota_element, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker):
-        super().__init__(ota_element, dispatcher_callbacks)
+    def __init__(self, ota_element,  broker_core: DispatcherBroker):
+        super().__init__(ota_element)
         self._broker_core = broker_core
 
     def check(self) -> Tuple[str, str]:
@@ -119,7 +114,7 @@ class LinuxUpgradeChecker(UpgradeChecker):
         @return: bios vendor string, product string
         """
         logger.debug("")
-        if is_dmi_path_exists(self._dispatcher_callbacks):
+        if is_dmi_path_exists(self._broker_core):
             self.check_with_dmi()
         else:
             self.check_with_device_tree()
@@ -170,7 +165,6 @@ class LinuxUpgradeChecker(UpgradeChecker):
 
         check_upgrade_allowed(self._manifest_platform_info,
                               self._platform_info,
-                              dispatcher_callbacks=self._dispatcher_callbacks,
                               broker_core=self._broker_core)
 
     def check_with_device_tree(self) -> None:
@@ -195,7 +189,6 @@ class LinuxUpgradeChecker(UpgradeChecker):
 
         check_upgrade_allowed(self._manifest_platform_info,
                               self._platform_info,
-                              dispatcher_callbacks=self._dispatcher_callbacks,
                               broker_core=self._broker_core)
 
 
@@ -204,12 +197,11 @@ class WindowsUpgradeChecker(UpgradeChecker):  # pragma: no cover
     new Firmware on a Windows OS.
 
     @param ota_element: resource portion of manifest
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, ota_element, dispatcher_callbacks, broker_core: DispatcherBroker) -> None:
-        super().__init__(ota_element, dispatcher_callbacks)
+    def __init__(self, ota_element, broker_core: DispatcherBroker) -> None:
+        super().__init__(ota_element)
         self._broker_core = broker_core
 
     def check(self) -> Tuple[str, str]:
@@ -249,5 +241,4 @@ class WindowsUpgradeChecker(UpgradeChecker):  # pragma: no cover
 
         check_upgrade_allowed(self._manifest_platform_info,
                               self._platform_info,
-                              dispatcher_callbacks=self._dispatcher_callbacks,
                               broker_core=self._broker_core)

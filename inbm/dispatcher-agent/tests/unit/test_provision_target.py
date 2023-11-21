@@ -64,31 +64,35 @@ class TestProvisionTarget(TestCase):
             _verify_files(files)
 
     def test_modifies_manifest(self):
-        p = ProvisionTarget(TEST_XML, self.mocked_dispatcher, self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
+        p = ProvisionTarget(TEST_XML,
+                            self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
         self.assertEqual(MODIFIED_XML, p._modify_manifest('blob.bin', 'test.crt'))
 
     def test_raise_invalid_xml_file(self):
-        p = ProvisionTarget(BAD_XML, self.mocked_dispatcher, self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
+        p = ProvisionTarget(BAD_XML,
+                            self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
         with self.assertRaises(DispatcherException):
             p._modify_manifest('blob.bin', 'test.crt')
 
     @patch('dispatcher.provision_target.extract_files_from_tar', return_value=([blob_files, cert_files], test_tar))
     @patch('dispatcher.provision_target.download')
     def test_successfully_install(self, mock_download, mock_extract):
-        p = ProvisionTarget(TEST_XML, self.mocked_dispatcher, self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
+        p = ProvisionTarget(TEST_XML,
+                            self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
         p.install(self.parsed)
 
     @patch('dispatcher.provision_target.extract_files_from_tar', return_value=([blob_files, cert_files], test_tar))
     @patch('dispatcher.provision_target.download')
     def test_raise_on_install_with_invalid_hash_algorithm(self, mock_download, mock_extract):
         p = ProvisionTarget(TEST_XML_INVALID_HASH_ALGO,
-                            self.mocked_dispatcher, self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
+                            self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
         with self.assertRaises(DispatcherException):
             p.install(self.parsed_hash_algo)
 
     @patch('dispatcher.provision_target.extract_files_from_tar', return_value=(None, 'test.tar'))
     @patch('dispatcher.provision_target.download')
     def test_raise_not_enough_files_in_package(self, mock_download, mock_extract):
-        p = ProvisionTarget(TEST_XML, self.mocked_dispatcher, self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
+        p = ProvisionTarget(TEST_XML,
+                            self.mocked_dispatcher_broker, TEST_SCHEMA_LOCATION)
         with self.assertRaises(DispatcherException):
             p.install(self.parsed)

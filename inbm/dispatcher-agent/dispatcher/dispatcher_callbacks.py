@@ -6,6 +6,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
+
 class DispatcherCallbacks:
     def __init__(self) -> None:
         pass

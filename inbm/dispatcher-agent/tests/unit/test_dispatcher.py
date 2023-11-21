@@ -130,8 +130,7 @@ class TestDispatcher(TestCase):
                                              mock_logging: Any) -> None:
         mock_parsed_manifest = Mock()
         mock_dbs = Mock()
-        mock_callback = Mock()
-        aota = AotaThread('remote', mock_callback, Mock(), UpdateLogger("AOTA", "metadata"), MockInstallCheckService(),
+        aota = AotaThread('remote', Mock(), UpdateLogger("AOTA", "metadata"), MockInstallCheckService(),
                           mock_parsed_manifest, mock_dbs)
         with self.assertRaisesRegex(AotaError, 'Cannot proceed with the AOTA '):
             aota.start()

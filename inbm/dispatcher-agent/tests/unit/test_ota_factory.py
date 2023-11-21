@@ -8,6 +8,7 @@ from dispatcher.ota_factory import *
 def mock_disp_obj():
     return MockDispatcher.build_mock_dispatcher()
 
+
 @pytest.fixture
 def mock_disp_broker():
     return MockDispatcherBroker.build_mock_dispatcher_broker()
@@ -22,7 +23,6 @@ def test_get_factory(ota_type, expected_factory, mock_disp_obj, mock_disp_broker
     factory = OtaFactory.get_factory(
         ota_type,
         "remote",
-        mock_disp_obj,
         mock_disp_broker,
         True,
         None,
@@ -38,7 +38,6 @@ def test_raise_error_unsupported_ota(mock_disp_obj, mock_disp_broker):
         OtaFactory.get_factory(
             "IOTA",
             "remote",
-            mock_disp_obj,
             mock_disp_broker,
             True,
             None,
@@ -57,7 +56,6 @@ def test_create_parser(ota_type, expected_parser, mock_disp_obj, mock_disp_broke
     parser = OtaFactory.get_factory(
         ota_type,
         "remote",
-        mock_disp_obj,
         mock_disp_broker,
         True,
         None,
@@ -77,7 +75,6 @@ def test_create_thread(ota_type, expected_thread, mock_disp_obj, mock_disp_broke
     thread = OtaFactory.get_factory(
         ota_type,
         "remote",
-        mock_disp_obj,
         mock_disp_broker,
         True,
         None,

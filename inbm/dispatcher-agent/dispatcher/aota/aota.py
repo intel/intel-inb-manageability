@@ -26,17 +26,15 @@ logger = logging.getLogger(__name__)
 class AOTA:
     """Thread which is responsible for AOTA updates
 
-    @param dispatcher_callbacks: DispatcherCallbacks instance
     @param broker_core: MQTT broker to other INBM services
     @param parsed_manifest: Parsed parameters from manifest
     @param dbs: ConfigDbs.{ON, OFF, WARN}
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker,
+    def __init__(self,  broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs,
                  update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._broker_core = broker_core
         self._cmd = parsed_manifest['cmd']
         self._app_type = parsed_manifest['app_type']
@@ -45,7 +43,6 @@ class AOTA:
             raise AotaError("missing application type for AOTA")
         self._app_instance = get_app_instance(
             app_type=self._app_type,
-            dispatcher_callbacks=self._dispatcher_callbacks,
             broker_core=self._broker_core,
             parsed_manifest=parsed_manifest,
             dbs=dbs,

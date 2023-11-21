@@ -32,11 +32,10 @@ def _check_if_valid_file(file_name: str, repo: IRepo):
         raise DispatcherException(f'OTA File downloaded is of unsupported file type: {error}')
 
 
-def download(dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, uri: CanonicalUri,
+def download(broker_core: DispatcherBroker, uri: CanonicalUri,
              repo: IRepo, username: Optional[str], password: Optional[str], umask: int) -> None:
     """Downloads files and places capsule file in path mentioned by manifest file.
-    
-    @param dispatcher_callbacks: callback to dispatcher
+
     @param broker_core: MQTT broker to other INBM services
     @param uri: URI of the source location
     @param repo: repository for holding the download
@@ -57,7 +56,7 @@ def download(dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherB
     file_name = os.path.basename(urlsplit(uri.value).path)
     logger.debug(f"source: {source}, filename: {file_name}")
 
-    verify_source(source=source, dispatcher_callbacks=dispatcher_callbacks, broker_core=broker_core)
+    verify_source(source=source, broker_core=broker_core)
     broker_core.telemetry('Source Verification check passed')
     if username and password and uri.value.startswith("http://"):
         raise DispatcherException(

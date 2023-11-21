@@ -32,14 +32,12 @@ class OtaTarget:
     @param xml: XML to be modified
     @param parsed_manifest: parsed_manifest values for ota
     @param ota_type: type of ota
-    @param dispatcher_callbacks: callbacks
     @param broker_core: MQTT broker to other INBM services
     """
 
     def __init__(self, xml: str, parsed_manifest: Mapping[str, Optional[Any]], ota_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
+                 broker_core: DispatcherBroker) -> None:
         self._xml = xml
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._broker_core = broker_core
         self._uri: Optional[str] = parsed_manifest.get('uri', None)
         self._ota_element = parsed_manifest.get('resource')
@@ -65,9 +63,9 @@ class OtaTarget:
 
         self._broker_core.telemetry(
             "Publishing manifest on targets initialized..")
-        if self._dispatcher_callbacks is None:
+        if self._broker_core is None:
             raise DispatcherException(
-                "dispatcher_callbacks not specified in Publish OTA for Targets constructor")
+                "broker_core not specified in Publish OTA for Targets constructor")
         valid_check = True
         repo_list: List[DirectoryRepo] = []
         if self._ota_type == OtaType.POTA.name:
@@ -90,7 +88,7 @@ class OtaTarget:
                     download_info = {'username': username, 'password': password,
                                      'signature': signature, 'hash_algorithm': hash_algorithm}
                     self._download_and_validate_package(
-                        self._dispatcher_callbacks, uri, repo, ota_key.upper(), download_info)
+                        uri, repo, ota_key.upper(), download_info)
                 except (DispatcherException, UrlSecurityException) as err:
                     valid_check = False
                     ota_error = str(err)
@@ -103,7 +101,7 @@ class OtaTarget:
                 download_info = {'username': self._username, 'password': self._password,
                                  'signature': self._signature, 'hash_algorithm': self._hash_algorithm}
                 self._download_and_validate_package(
-                    self._dispatcher_callbacks, self._uri, self._repo, self._ota_type, download_info)
+                    self._uri, self._repo, self._ota_type, download_info)
             except (DispatcherException, UrlSecurityException) as err:
                 valid_check = False
                 ota_error = str(err)
@@ -124,7 +122,7 @@ class OtaTarget:
             TARGET_OTA_CMD_CHANNEL, xml_to_publish)
         return PUBLISH_SUCCESS
 
-    def _download_and_validate_package(self, disp_callbacks: DispatcherCallbacks, uri: Optional[str],
+    def _download_and_validate_package(self, uri: Optional[str],
                                        repo: DirectoryRepo, ota_type: str, download_info: Dict[str, Any]):
         if uri is None or uri == "":
             raise DispatcherException(
@@ -132,13 +130,13 @@ class OtaTarget:
 
         if repo is None:
             raise DispatcherException("attempted to download with uninitialized repo")
-        download(dispatcher_callbacks=disp_callbacks,
-                 broker_core=self._broker_core,
-                 uri=canonicalize_uri(uri),
-                 repo=repo,
-                 umask=UMASK_OTA,
-                 username=download_info.get('username', None),
-                 password=download_info.get('password', None))
+        download(
+            broker_core=self._broker_core,
+            uri=canonicalize_uri(uri),
+            repo=repo,
+            umask=UMASK_OTA,
+            username=download_info.get('username', None),
+            password=download_info.get('password', None))
         if ota_type != OtaType.SOTA.name:
             self._validate_signature(canonicalize_uri(uri), repo, download_info.get(
                 'signature', None), download_info.get('hash_algorithm', None))
@@ -151,7 +149,7 @@ class OtaTarget:
         file_path = os.path.join(repo.get_repo_path(), file_name)
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if signature:
-                verify_signature(signature, file_path, self._dispatcher_callbacks, self._broker_core, hash_algo)
+                verify_signature(signature, file_path, self._broker_core, hash_algo)
             else:
                 raise DispatcherException(
                     'OTA update aborted. Signature is required to validate the package and proceed with the update.')

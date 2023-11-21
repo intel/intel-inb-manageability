@@ -42,18 +42,15 @@ def _get_parsed_values(value: str) -> Optional[str]:
 class AotaCommand(ABC):
     """Base class to all the AOTA apps(docker,compose,application)
 
-    @param dispatcher_callbacks callback to the main Dispatcher object
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
 
-        self._dispatcher_callbacks = dispatcher_callbacks
         if 'container_tag' in parsed_manifest and parsed_manifest['container_tag'] is not None:
             self._container_tag = _get_parsed_values(parsed_manifest['container_tag'])
         else:
@@ -176,19 +173,17 @@ class AotaCommand(ABC):
 class Docker(AotaCommand):
     """Performs Docker operations based on the cmd triggered via AOTA
 
-    @param dispatcher_callbacks callback to the main Dispatcher object
     @param broker_core: MQTT broker to other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        super().__init__(parsed_manifest, dbs)
         self._broker_core = broker_core
 
     def verify_command(self, cmd: str) -> None:
@@ -263,7 +258,7 @@ class Docker(AotaCommand):
         if self._uri is None:
             raise AotaError("Fetch URI is required for Docker Load command.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks, self._broker_core)
+        check_resource(self.resource, self._uri, self._broker_core)
 
         if self.resource:
             ext = self.resource[-4:]
@@ -286,7 +281,6 @@ class Docker(AotaCommand):
         container = TrtlContainer(
             self._trtl,
             self._container_tag,
-            self._dispatcher_callbacks,
             self._broker_core,
             self._dbs)
 
@@ -307,12 +301,11 @@ class Docker(AotaCommand):
         if self._uri is None:
             raise AotaError("Fetch URI is required for Docker Import command.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks, self._broker_core)
+        check_resource(self.resource, self._uri, self._broker_core)
 
         container = TrtlContainer(
             self._trtl,
             self._container_tag,
-            self._dispatcher_callbacks,
             self._broker_core,
             self._dbs)
 
@@ -328,19 +321,17 @@ class Docker(AotaCommand):
 class DockerCompose(AotaCommand):
     """Performs Docker Compose operations based on the cmd triggered via AOTA
 
-    @param dispatcher_callbacks callback to the main Dispatcher object
     @param broker_core: MQTT broker to other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        super().__init__(parsed_manifest, dbs)
         self._broker_core = broker_core
 
     def verify_command(self, cmd: str) -> None:
@@ -365,7 +356,7 @@ class DockerCompose(AotaCommand):
         if self._uri is None:
             raise AotaError("fetch URI is required.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks, self._broker_core)
+        check_resource(self.resource, self._uri, self._broker_core)
 
         if self._docker_registry and self._docker_username and self._docker_password:
             self.docker_login()

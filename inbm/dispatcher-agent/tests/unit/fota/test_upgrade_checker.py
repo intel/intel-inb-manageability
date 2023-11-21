@@ -66,7 +66,7 @@ class TestOsFactory(TestCase):
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_unknown_version)
     def test_returns_false_parse_dmi_fails(self, mock_dmi, mock_dmi_exists):
         factory = LinuxFactory(self.resource,
-                               self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+                               self.mock_disp_broker_obj).create_upgrade_checker()
         self.check_bios_default(factory)
         self.check_manifest_default(factory)
 
@@ -81,7 +81,7 @@ class TestOsFactory(TestCase):
         resource = parsed.get_children('ota/type/fota')
 
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
         with self.assertRaisesRegex(FotaError, 'Firmware Update Aborted: either capsule release date is lower than '
                                                'the one on the platform or Manifest vendor name does not match the one '
                                                'on the platform'):
@@ -94,7 +94,7 @@ class TestOsFactory(TestCase):
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
         with self.assertRaisesRegex(FotaError, 'Firmware Update Aborted: either capsule release date is lower than '
                                                'the one on the platform or Manifest vendor name does not match the one '
                                                'on the platform'):
@@ -108,7 +108,7 @@ class TestOsFactory(TestCase):
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
         with self.assertRaisesRegex(FotaError, 'BIOS is not upgradable. Reason: DMI manufacturer/product check failed'):
             factory.check()
 
@@ -120,7 +120,7 @@ class TestOsFactory(TestCase):
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
         with self.assertRaisesRegex(FotaError, 'BIOS is not upgradable. Reason: DMI manufacturer/product check failed'):
             factory.check()
 
@@ -132,7 +132,7 @@ class TestOsFactory(TestCase):
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
         with self.assertRaisesRegex(FotaError,
                                     "BIOS is not upgradable. Reason: Manufacturer and/or product name check failed"):
             factory.check()
@@ -146,7 +146,7 @@ class TestOsFactory(TestCase):
         resource = parsed.get_children('ota/type/fota')
 
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
         with self.assertRaisesRegex(FotaError, 'Firmware Update Aborted: either capsule release date is lower than '
                                                'the one on the platform or Manifest vendor name does not match the one '
                                                'on the platform'):
@@ -160,7 +160,7 @@ class TestOsFactory(TestCase):
         resource = parsed.get_children('ota/type/fota')
 
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
 
         with self.assertRaisesRegex(FotaError, "Firmware Update Aborted as this package has already been applied."):
             factory.check()
@@ -173,7 +173,7 @@ class TestOsFactory(TestCase):
         resource = parsed.get_children('ota/type/fota')
 
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
         with self.assertRaisesRegex(FotaError, 'Firmware Update Aborted: either capsule release date is lower than '
                                                'the one on the platform or Manifest vendor name does not match the one '
                                                'on the platform'):
@@ -187,7 +187,7 @@ class TestOsFactory(TestCase):
         resource = parsed.get_children('ota/type/fota')
 
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
 
         with self.assertRaisesRegex(FotaError, 'Firmware Update Aborted: either capsule release date is lower than '
                                                'the one on the platform or Manifest vendor name does not match the one '
@@ -202,7 +202,7 @@ class TestOsFactory(TestCase):
         resource = parsed.get_children('ota/type/fota')
 
         factory = LinuxFactory(
-            resource, self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+            resource, self.mock_disp_broker_obj).create_upgrade_checker()
 
         with self.assertRaisesRegex(FotaError, 'Firmware Update Aborted: either capsule release date is lower than '
                                                'the one on the platform or Manifest vendor name does not match the one '
@@ -216,7 +216,7 @@ class TestOsFactory(TestCase):
         mock_disp_state.return_value = True
 
         factory = LinuxFactory(self.resource,
-                               self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).create_upgrade_checker()
+                               self.mock_disp_broker_obj).create_upgrade_checker()
         bios_vendor, platform_product = factory.check()
         self.assertEqual(bios_vendor, 'test')
         self.assertEqual(platform_product, 'testproduct')

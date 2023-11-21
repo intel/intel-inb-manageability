@@ -23,19 +23,19 @@ class TestOtaDownloader(TestCase):
 
     def test_download_aota(self):
         try:
-            AotaDownloader(self.mock_disp_obj, parsed_manifest).download()
+            AotaDownloader(parsed_manifest).download()
         except (DispatcherException, AotaError):
             self.fail("Raised expected when not expected.")
 
     def test_download_sota(self):
         try:
-            SotaDownloader(self.mock_disp_obj, parsed_manifest).download()
+            SotaDownloader(parsed_manifest).download()
         except (DispatcherException, AotaError):
             self.fail("Raised expected when not expected.")
 
     @patch('dispatcher.ota_downloader.download')
     def test_download_fota(self, mock_download):
         try:
-            FotaDownloader(self.mock_disp_obj, self.mock_disp_broker, parsed_manifest).download()
+            FotaDownloader(self.mock_disp_broker, parsed_manifest).download()
         except (DispatcherException, AotaError):
             self.fail("Raised expected when not expected.")

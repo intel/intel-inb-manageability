@@ -42,13 +42,11 @@ logger = logging.getLogger(__name__)
 class SOTAUtil:  # FIXME intermediate step in refactor
     def check_diagnostic_disk(self,
                               estimated_size: Union[float, int],
-                              dispatcher_callbacks: DispatcherCallbacks,
                               broker_core: DispatcherBroker,
                               install_check_service: InstallCheckService) -> None:
         """Checks if there is sufficient size for an update with diagnostic agent
 
         @param estimated_size: estimated install size
-        @param dispatcher_callbacks: DispatcherCallbacks
         @param broker_core: MQTT broker to other INBM services
         @param install_check_service: provides an install check
         """
@@ -83,7 +81,6 @@ class SOTA:
     def __init__(self,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  update_logger: UpdateLogger,
                  sota_repos: Optional[str],
@@ -94,7 +91,6 @@ class SOTA:
 
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
-        @param dispatcher_callbacks: A reference to the main Dispatcher object
         @param broker_core: MQTT broker to other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param update_logger: UpdateLogger instance--expected to notify it with update status
@@ -111,7 +107,6 @@ class SOTA:
         self.sota_cmd: Optional[str] = None
         self.snap_num: Optional[str] = None
         self.log_to_file: Optional[str] = None
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._sota_repos = sota_repos
         self.installer: Union[None, OsUpdater] = None
         self.factory: Optional[ISotaOs] = None
@@ -167,7 +162,7 @@ class SOTA:
             assert self.factory  # noqa: S101
             self.installer = self.factory.create_os_updater()
             estimated_size = self.installer.get_estimated_size()
-            SOTAUtil().check_diagnostic_disk(estimated_size, self._dispatcher_callbacks, self._broker_core,
+            SOTAUtil().check_diagnostic_disk(estimated_size, self._broker_core,
                                              self._install_check_service)
             if self._repo_type == REMOTE_SOURCE:
                 logger.debug(f"Remote repo URI: {self._uri}")
@@ -192,7 +187,6 @@ class SOTA:
         log_destination = get_log_destination(self.log_to_file, self.sota_cmd)
         run_commands(log_destination=log_destination,
                      cmd_list=cmd_list,
-                     dispatcher_callbacks=self._dispatcher_callbacks,
                      broker_core=self._broker_core)
         return cmd_list
 
@@ -233,7 +227,7 @@ class SOTA:
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
 
-        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._broker_core,
+        os_factory = SotaOsFactory(self._broker_core,
                                    self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()
@@ -292,11 +286,11 @@ class SOTA:
             logger.debug(f"SOTA Download URI: {self._uri}")
             if self._uri is None:
                 downloader.download(
-                    self._dispatcher_callbacks, self._broker_core, None, sota_cache_repo,
+                    self._broker_core, None, sota_cache_repo,
                     self._username, self._password, release_date)
             else:
                 downloader.download(
-                    self._dispatcher_callbacks, self._broker_core, canonicalize_uri(
+                    self._broker_core, canonicalize_uri(
                         self._uri), sota_cache_repo,
                     self._username, self._password, release_date)
 
@@ -354,7 +348,7 @@ class SOTA:
         finally:
             if self._repo_type == LOCAL_SOURCE:
                 self._clean_local_repo_file()
-            print_execution_summary(cmd_list, self._dispatcher_callbacks, self._broker_core)
+            print_execution_summary(cmd_list, self._broker_core)
             if success:
                 # Save the log before reboot
                 if self.sota_mode == 'download-only':
@@ -386,7 +380,7 @@ class SOTA:
         validated_package_list = parse_and_validate_package_list(self._package_list)
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
-        os_factory = SotaOsFactory(self._dispatcher_callbacks, self._broker_core,
+        os_factory = SotaOsFactory(self._broker_core,
                                    self._sota_repos, validated_package_list)
         try:
             os_type = detect_os()

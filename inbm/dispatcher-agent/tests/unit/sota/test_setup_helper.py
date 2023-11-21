@@ -79,7 +79,6 @@ class TestSetupHelper(unittest.TestCase):
     @patch('dispatcher.sota.setup_helper.YoctoSetupHelper._is_mender_file_exists')
     def test_yocto_pre_processing(self, mock_is_mender_file_exists):
         factory = SotaOsFactory(
-            MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
         setup_helper = factory.create_setup_helper()
         setup_helper.pre_processing()

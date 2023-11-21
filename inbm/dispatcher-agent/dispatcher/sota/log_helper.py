@@ -34,7 +34,7 @@ def get_log_destination(manifest_log_to_file: Optional[str], manifest_sota_cmd: 
 
 
 def log_command_error(cmd: CommandList.CommandObject, cmd_index: int, err: Optional[str], output: str, log_file: Optional[str],
-                      log_destination: str, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
+                      log_destination: str,  broker_core: DispatcherBroker) -> None:
     """TODO figure out what this method does or split into multiple
 
     @param cmd: command object that failed
@@ -43,7 +43,6 @@ def log_command_error(cmd: CommandList.CommandObject, cmd_index: int, err: Optio
     @param output: output message
     @param log_file: file name
     @param log_destination: Log to FILE or CLOUD?
-    @param dispatcher_callbacks: A reference to the main Dispatcher instance.
     """
     logger.debug("")
     file_err = ""

@@ -25,13 +25,11 @@ logger = logging.getLogger(__name__)
 class RemediationManager:
     """Receives notification from diagnostic to perform remediation management on
     containers/images via TRTL application
-    @param dispatcher_callbacks: DispatcherCallbacks instance
     @param container_image_list_to_be_removed: Container image list to be removed. Default it will be empty list. When containers are active, respective images will be added to this list.
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
+    def __init__(self,  broker_core: DispatcherBroker) -> None:
         self.ignore_dbs_results = True  # default to WARN until we receive config
         self.dbs_remove_image_on_failed_container = True
         self.container_image_list_to_be_removed: List = []

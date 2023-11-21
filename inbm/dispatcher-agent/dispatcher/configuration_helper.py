@@ -30,12 +30,10 @@ logger = logging.getLogger(__name__)
 class ConfigurationHelper:
     """Helps manage interaction with configuration-agent messages
 
-    @param dispatcher_callbacks: DispatcherCallbacks object
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
+    def __init__(self,  broker_core: DispatcherBroker) -> None:
         self._repo: Optional[IRepo] = None
         self._broker_core = broker_core
 
@@ -109,7 +107,7 @@ class ConfigurationHelper:
         source = url[:-(len(url.split('/')[-1]) + 1)]
         logger.debug(f"source: {source}")
 
-        verify_source(source=source, dispatcher_callbacks=self._dispatcher_callbacks, broker_core=self._broker_core)
+        verify_source(source=source, broker_core=self._broker_core)
         self._broker_core.telemetry('Source Verification check passed')
         self._broker_core.telemetry(
             f'Fetching configuration file from {url}')
@@ -129,7 +127,7 @@ class ConfigurationHelper:
                 if signature:
                     try:
                         verify_signature(signature, tar_file_path,
-                                         self._dispatcher_callbacks, self._broker_core, hash_algorithm)
+                                         self._broker_core, hash_algorithm)
                     except DispatcherException as err:
                         self._repo.delete(tar_file_name)
                         raise DispatcherException(f'Configuration Load Aborted. {str(err)}')

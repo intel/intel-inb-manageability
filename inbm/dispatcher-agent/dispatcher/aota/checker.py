@@ -31,7 +31,7 @@ def check_url(url: Optional[str]) -> None:
         raise AotaError("missing URL.")
 
 
-def check_resource(resource: Optional[str], uri: Optional[str], dispatcher_callbacks: DispatcherCallbacks,
+def check_resource(resource: Optional[str], uri: Optional[str],
                    broker_core: DispatcherBroker) -> None:
     if resource is None or resource == '':
         raise AotaError('Invalid resource URL.')
@@ -41,10 +41,10 @@ def check_resource(resource: Optional[str], uri: Optional[str], dispatcher_callb
 
     try:
         if is_local_file(uri):
-            verify_source(source=uri, dispatcher_callbacks=dispatcher_callbacks, broker_core=broker_core, source_file=True)
+            verify_source(source=uri, broker_core=broker_core, source_file=True)
         else:
             source = uri_utilities.get_uri_prefix(uri)
-            verify_source(source=source, dispatcher_callbacks=dispatcher_callbacks, broker_core=broker_core)
+            verify_source(source=source, broker_core=broker_core)
     except DispatcherException as err:
         broker_core.telemetry(str(err))
         raise AotaError('Source verification check failed')

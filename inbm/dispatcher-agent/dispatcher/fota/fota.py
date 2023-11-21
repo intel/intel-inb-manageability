@@ -43,7 +43,6 @@ class FOTA:
     def __init__(self,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  update_logger: UpdateLogger) -> None:
         """Base class constructor for variable assignment, to send telemetry info and create a new
@@ -51,12 +50,10 @@ class FOTA:
 
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
-        @param dispatcher_callbacks: DispatcherCallbacks instance
         @param broker_core: MQTT broker to other INBM services
         @param update_logger: UpdateLogger instance. Needs to be updated with status of OTA command.
         """
         self._ota_element = parsed_manifest.get('resource')
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._update_logger = update_logger
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
@@ -89,8 +86,8 @@ class FOTA:
         self._password = parsed_manifest['password']
         self._password = parsed_manifest['password']
         self._device_reboot = parsed_manifest['deviceReboot']
-        if self._dispatcher_callbacks is None:
-            raise FotaError("dispatcher_callbacks not specified in FOTA constructor")
+        if self._broker_core is None:
+            raise FotaError("broker_core not specified in FOTA constructor")
         self._broker_core.telemetry("Firmware Update Tool launched")
         if repo_path:
             logger.debug("Using manifest specified repo path")
@@ -110,7 +107,7 @@ class FOTA:
         hold_reboot = False
         try:
             factory = OsFactory.get_factory(
-                self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks, self._broker_core)
+                self._verify_os_supported(), self._ota_element, self._broker_core)
 
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
 
@@ -122,8 +119,7 @@ class FOTA:
                         "internal error: _uri uninitialized in Fota.install with download requested in manifest")
 
                 uri = canonicalize_uri(self._uri)
-                download(dispatcher_callbacks=self._dispatcher_callbacks,
-                         broker_core=self._broker_core,
+                download(broker_core=self._broker_core,
                          uri=uri,
                          repo=self._repo,
                          umask=UMASK_OTA,
@@ -211,5 +207,5 @@ class FOTA:
         """validate the manifest before FOTA"""
         logger.debug("")
         factory = OsFactory.get_factory(
-            self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks, self._broker_core)
+            self._verify_os_supported(), self._ota_element, self._broker_core)
         factory.create_upgrade_checker().check()

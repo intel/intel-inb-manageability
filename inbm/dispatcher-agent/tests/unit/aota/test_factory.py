@@ -51,31 +51,31 @@ class TestFactory(TestCase):
         self.mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     def test_successfully_get_factory_docker_compose(self):
-        assert type(get_app_instance("compose", self.mock_disp_obj, self.mock_disp_broker, DOCKER_COMPOSE_PARSED_MANIFEST,
+        assert type(get_app_instance("compose", self.mock_disp_broker, DOCKER_COMPOSE_PARSED_MANIFEST,
                                      dbs=ConfigDbs.ON, update_logger=UpdateLogger('', ''))) is DockerCompose
 
     def test_successfully_get_factory_docker(self):
-        assert type(get_app_instance("docker", self.mock_disp_obj, self.mock_disp_broker, DOCKER_PARSED_MANIFEST,
+        assert type(get_app_instance("docker", self.mock_disp_broker, DOCKER_PARSED_MANIFEST,
                                      dbs=ConfigDbs.ON, update_logger=UpdateLogger('', ''))) is Docker
 
     def test_raise_no_valid_command_type(self):
         with self.assertRaisesRegex(AotaError, "Invalid application type: unknown"):
-            get_app_instance("unknown", self.mock_disp_obj, self.mock_disp_broker, DOCKER_COMPOSE_PARSED_MANIFEST,
+            get_app_instance("unknown", self.mock_disp_broker, DOCKER_COMPOSE_PARSED_MANIFEST,
                              dbs=ConfigDbs.ON, update_logger=UpdateLogger('', ''))
 
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True)
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
     def test_successfully_get_factory_cent_os(self, detect_os, is_inside_container):
-        assert type(get_app_os(self.mock_disp_obj, self.mock_disp_broker, DRIVER_PARSED_MANIFEST,
+        assert type(get_app_os(self.mock_disp_broker, DRIVER_PARSED_MANIFEST,
                                dbs=ConfigDbs.ON, update_logger=UpdateLogger('', ''))) is CentOsApplication
 
     @patch('dispatcher.aota.factory.detect_os', return_value='Ubuntu')
     def test_successfully_get_factory_ubuntu(self, detect_os):
-        assert type(get_app_os(self.mock_disp_obj, self.mock_disp_broker, DOCKER_COMPOSE_PARSED_MANIFEST,
+        assert type(get_app_os(self.mock_disp_broker, DOCKER_COMPOSE_PARSED_MANIFEST,
                                dbs=ConfigDbs.ON, update_logger=UpdateLogger('', ''))) is UbuntuApplication
 
     @patch('dispatcher.aota.factory.detect_os', return_value='RedHat')
     def test_raise_no_application_os(self, detect_os):
         with self.assertRaisesRegex(AotaError, "Application commands are unsupported on the OS: RedHat"):
-            get_app_os(self.mock_disp_obj, self.mock_disp_broker, DOCKER_COMPOSE_PARSED_MANIFEST,
+            get_app_os(self.mock_disp_broker, DOCKER_COMPOSE_PARSED_MANIFEST,
                        dbs=ConfigDbs.ON, update_logger=UpdateLogger('', ''))

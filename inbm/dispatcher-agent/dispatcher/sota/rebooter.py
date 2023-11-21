@@ -19,13 +19,11 @@ logger = logging.getLogger(__name__)
 class Rebooter:
     """Base class for rebooting the system."""
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
+    def __init__(self,  broker_core: DispatcherBroker) -> None:
         """Initializes the Rebooter base class
 
-        @param dispatcher_callbacks: Callback to Dispatcher
         @param broker_core: MQTT broker to other INBM services
         """
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._broker_core = broker_core
 
     def reboot(self) -> None:
@@ -38,12 +36,11 @@ class Rebooter:
 class LinuxRebooter(Rebooter):
     """Reboots the system on a Linux OS
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
-        super().__init__(dispatcher_callbacks, broker_core=broker_core)
+    def __init__(self,  broker_core: DispatcherBroker) -> None:
+        super().__init__(broker_core=broker_core)
         self._broker_core = broker_core
 
     def reboot(self) -> None:
@@ -66,12 +63,11 @@ class LinuxRebooter(Rebooter):
 class WindowsRebooter(Rebooter):
     """Reboots the system on a Windows OS
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker) -> None:
-        super().__init__(dispatcher_callbacks, broker_core=broker_core)
+    def __init__(self,  broker_core: DispatcherBroker) -> None:
+        super().__init__(broker_core=broker_core)
 
     def reboot(self) -> None:
         pass

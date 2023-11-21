@@ -318,18 +318,15 @@ class TestAOTA(TestCase):
                                'docker_password': docker_password,
                                'device_reboot': device_reboot}
         if instance == 'compose':
-            return DockerCompose(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
-                                 MockDispatcherBroker.build_mock_dispatcher_broker(),
+            return DockerCompose(MockDispatcherBroker.build_mock_dispatcher_broker(),
                                  parsed_manifest=parsed_manifest,
                                  dbs=ConfigDbs.ON)
         elif instance == 'docker':
-            return Docker(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
-                          MockDispatcherBroker.build_mock_dispatcher_broker(),
+            return Docker(MockDispatcherBroker.build_mock_dispatcher_broker(),
                           parsed_manifest=parsed_manifest,
                           dbs=ConfigDbs.ON)
         else:
-            return AOTA(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
-                        MockDispatcherBroker.build_mock_dispatcher_broker(),
+            return AOTA(MockDispatcherBroker.build_mock_dispatcher_broker(),
                         parsed_manifest=parsed_manifest,
                         dbs=ConfigDbs.ON,
                         update_logger=UpdateLogger('AOTA', 'metadata'))

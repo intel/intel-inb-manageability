@@ -40,19 +40,16 @@ class OtaThread(metaclass=abc.ABCMeta):
     """Base class for starting OTA thread.
 
     @param repo_type: source location -> local or remote
-    @param dispatcher_callbacks: callback to Dispatcher object
     @param parsed_manifest: parameters from OTA manifest
     @param install_check_service: provides install check
     """
 
     def __init__(self,
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  install_check_service: InstallCheckService) -> None:
 
         self._repo_type = repo_type
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._parsed_manifest = parsed_manifest
         self._install_check_service = install_check_service
 
@@ -76,19 +73,17 @@ class FotaThread(OtaThread):
     """Performs thread synchronization, FOTA and returns the result.
 
     @param repo_type: source location -> local or remote
-    @param dispatcher_callbacks: reference to the main Dispatcher object
     @param broker_core: MQTT broker to other INBM services
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     """
 
     def __init__(self, repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  update_logger: UpdateLogger) -> None:
-        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest,
+        super().__init__(repo_type, parsed_manifest,
                          install_check_service=install_check_service)
         self._update_logger = update_logger
         self._broker_core = broker_core
@@ -106,7 +101,6 @@ class FotaThread(OtaThread):
         if ota_lock.acquire(False):
             try:
                 fota_instance = FOTA(parsed_manifest=self._parsed_manifest, repo_type=self._repo_type,
-                                     dispatcher_callbacks=self._dispatcher_callbacks,
                                      broker_core=self._broker_core,
                                      update_logger=self._update_logger)
                 return fota_instance.install()
@@ -126,7 +120,6 @@ class FotaThread(OtaThread):
         try:
             fota_instance = FOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
-                                 dispatcher_callbacks=self._dispatcher_callbacks,
                                  broker_core=self._broker_core,
                                  update_logger=self._update_logger)
             fota_instance.check()
@@ -140,7 +133,6 @@ class SotaThread(OtaThread):
     """"Performs thread synchronization, SOTA and returns the result.
 
     @param repo_type: source location -> local or remote
-    @param dispatcher_callbacks callback to the main Dispatcher object
     @param broker_core: MQTT broker to other INBM service
     @param proceed_without_rollback: Is it OK to run SOTA without rollback ability?
     @param sota_repos: new Ubuntu/Debian mirror (or None)
@@ -152,14 +144,13 @@ class SotaThread(OtaThread):
 
     def __init__(self,
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  proceed_without_rollback: bool,
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  update_logger: UpdateLogger) -> None:
-        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest,
+        super().__init__(repo_type, parsed_manifest,
                          install_check_service=install_check_service)
         self._sota_repos = sota_repos
         self._proceed_without_rollback = proceed_without_rollback
@@ -180,7 +171,6 @@ class SotaThread(OtaThread):
             try:
                 sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                      repo_type=self._repo_type,
-                                     dispatcher_callbacks=self._dispatcher_callbacks,
                                      broker_core=self._broker_core,
                                      update_logger=self._update_logger,
                                      sota_repos=self._sota_repos,
@@ -204,7 +194,6 @@ class SotaThread(OtaThread):
         try:
             sota_instance = SOTA(parsed_manifest=self._parsed_manifest,
                                  repo_type=self._repo_type,
-                                 dispatcher_callbacks=self._dispatcher_callbacks,
                                  broker_core=self._broker_core,
                                  update_logger=self._update_logger,
                                  sota_repos=self._sota_repos,
@@ -220,7 +209,6 @@ class AotaThread(OtaThread):
     """"Performs thread synchronization, AOTA and returns the result.
 
     @param repo_type: source location -> local or remote
-    @param dispatcher_callbacks: reference to the main Dispatcher object
     @param broker_core: MQTT broker to other INBM services
     @param update_logger: UpdateLogger reference (needs to be updated after OTA)
     @param install_check_service: provides install_check
@@ -231,13 +219,12 @@ class AotaThread(OtaThread):
 
     def __init__(self,
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  update_logger: UpdateLogger,
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs) -> None:
-        super().__init__(repo_type, dispatcher_callbacks, parsed_manifest, install_check_service)
+        super().__init__(repo_type, parsed_manifest, install_check_service)
         self._dbs = dbs
         self._update_logger = update_logger
         self._broker_core = broker_core
@@ -261,8 +248,7 @@ class AotaThread(OtaThread):
             try:
                 self._check_trtl_binary()
                 # Passing dispatcher instance to AOTA and spawn a thread for AOTA
-                aota.AOTA(dispatcher_callbacks=self._dispatcher_callbacks,
-                          broker_core=self._broker_core,
+                aota.AOTA(broker_core=self._broker_core,
                           parsed_manifest=self._parsed_manifest,
                           dbs=self._dbs,
                           update_logger=self._update_logger).run()

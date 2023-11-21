@@ -69,15 +69,13 @@ class BiosFactory(ABC):
     """Abstract Factory for creating the concrete classes based on the BIOS
     on the platform.
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     @param repo: string representation of dispatcher's repository path
     @param params: platform product parameters
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, repo: IRepo, params: Dict) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
+    def __init__(self,  broker_core: DispatcherBroker, repo: IRepo, params: Dict) -> None:
         self._repo = repo
         self._runner = PseudoShellRunner()
         self._fw_file: Optional[str] = None
@@ -103,13 +101,12 @@ class BiosFactory(ABC):
         pass
 
     @staticmethod
-    def get_factory(platform_product: Optional[str], params: Dict, callback: DispatcherCallbacks,
+    def get_factory(platform_product: Optional[str], params: Dict,
                     broker_core: DispatcherBroker, repo: IRepo) -> "BiosFactory":
         """Checks if the current platform is supported or not
 
         @param platform_product: platform product name
         @param params: platform product parameters from the fota conf file 
-        @param callback: callback to dispatcher
         @param broker_core: MQTT broker to other INBM services
         @param repo: string representation of dispatcher's repository path
         @raises: FotaError
@@ -118,13 +115,13 @@ class BiosFactory(ABC):
         fw_dest = params.get('firmware_dest_path', None)
         if platform.system() == "Linux":
             if fw_dest:
-                return LinuxFileFirmware(callback, broker_core, repo, params)
+                return LinuxFileFirmware(broker_core, repo, params)
             else:
-                return LinuxToolFirmware(callback, broker_core, repo, params)
+                return LinuxToolFirmware(broker_core, repo, params)
         elif platform.system() == 'Windows':
             if (platform_product is not None) and (WINDOWS_NUC_PLATFORM in platform_product):
                 logger.debug("Windows NUC product name detected")
-                return WindowsBiosNUC(callback, repo, params, broker_core)
+                return WindowsBiosNUC(repo,  params, broker_core)
             else:
                 raise FotaError("The current Windows system is unsupported.")
         else:
@@ -188,18 +185,16 @@ class LinuxToolFirmware(BiosFactory):
     """Derived class constructor invoking base class constructor for 
     Linux devices that use Firmware tool to perform the update.
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param broker_core: MQTT broker to other INBM services
     @param repo: string representation of dispatcher's repository path
     @param params: platform product parameters from the fota conf file 
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  repo: IRepo,
                  params: Dict) -> None:
-        super().__init__(dispatcher_callbacks, broker_core, repo, params)
+        super().__init__(broker_core, repo, params)
 
     def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
                         tool_options: Optional[str], runner: PseudoShellRunner) -> None:
@@ -287,14 +282,13 @@ class LinuxFileFirmware(BiosFactory):
     """Derived class constructor invoking base class constructor for 
     Linux devices that use Firmware file to update firmware.
 
-        @param dispatcher_callbacks: callback to dispatcher
         @param broker_core: MQTT broker to other INBM services
         @param repo: string representation of dispatcher's repository path
         @param params: platform product parameters from the FOTA conf file
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, broker_core: DispatcherBroker, repo: IRepo, params: Dict) -> None:
-        super().__init__(dispatcher_callbacks, broker_core, repo, params)
+    def __init__(self,  broker_core: DispatcherBroker, repo: IRepo, params: Dict) -> None:
+        super().__init__(broker_core, repo, params)
 
     def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
                 guid: Optional[str] = None) -> None:
@@ -326,13 +320,12 @@ class LinuxFileFirmware(BiosFactory):
 class WindowsBiosNUC(BiosFactory):
     """Derived class constructor invoking base class constructor for variable assignment
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param repo: string representation of dispatcher's repository path
     @param broker_core: MQTT broker to other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict, broker_core: DispatcherBroker) -> None:
-        super().__init__(dispatcher_callbacks, broker_core, repo, params)
+    def __init__(self,  repo: IRepo, params: Dict, broker_core: DispatcherBroker) -> None:
+        super().__init__(broker_core, repo, params)
 
     def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
                 guid: Optional[str] = None) -> None:

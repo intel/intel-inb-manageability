@@ -109,14 +109,15 @@ class TestManager(TestCase):
 
     def test_verify_source_empty_source_fail(self) -> None:
         with self.assertRaisesRegex(DispatcherException, 'Source verification failed.  Download aborted.'):
-            verify_source(None, MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker())
+            verify_source(None,
+                          MockDispatcherBroker.build_mock_dispatcher_broker())
 
     @patch("dispatcher.packagemanager.package_manager.extract_files_from_tar")
     def test_verify_signature_invalid_tar_fail(self, mockup):
         mockup.return_value = None, None
         with self.assertRaisesRegex(DispatcherException, "Signature check failed. Unsupported file format."):
             verify_signature(
-                "signature", "path", MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
+                "signature", "path", MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
 
     @patch("dispatcher.packagemanager.package_manager.extract_files_from_tar")
     @patch("dispatcher.packagemanager.package_manager._is_valid_file")
@@ -127,7 +128,7 @@ class TestManager(TestCase):
         mock_valid_file.return_value = True
         with self.assertRaises(DispatcherException):
             verify_signature(
-                "signature", "path/to/file.tar", MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
+                "signature", "path/to/file.tar", MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
 
     @patch("dispatcher.packagemanager.package_manager.extract_files_from_tar")
     def test_file_content_empty_tar_fail(self, mockup):
@@ -135,7 +136,7 @@ class TestManager(TestCase):
         with self.assertRaisesRegex(DispatcherException, 'Signature check failed. Invalid tar ball. '
                                                          'No package found in tarball while validating signature.'):
             verify_signature(
-                "signature", "path/to/file.tar", MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
+                "signature", "path/to/file.tar", MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
 
     @patch("dispatcher.packagemanager.package_manager.extract_files_from_tar")
     @patch("dispatcher.packagemanager.package_manager._is_valid_file")
@@ -146,7 +147,7 @@ class TestManager(TestCase):
         mockup.return_value = 'files', MockTar('tar')
         with self.assertRaisesRegex(DispatcherException, 'Signature check failed. Unable to get checksum for package.'):
             verify_signature(
-                "signature", "path/to/file.tar", MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
+                "signature", "path/to/file.tar", MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
 
     @patch("dispatcher.packagemanager.package_manager.extract_files_from_tar")
     def test_verify_signature_cert_package_not_found(self, mockup):
@@ -154,7 +155,7 @@ class TestManager(TestCase):
         mockup.return_value = files, None
         with self.assertRaisesRegex(DispatcherException, "Signature check failed. Unsupported file format."):
             verify_signature(
-                "signature", "path", MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
+                "signature", "path", MockDispatcherBroker.build_mock_dispatcher_broker(), 384)
 
     def test_get_checksum_fail(self):
         with self.assertRaisesRegex(DispatcherException, 'Signature check failed. Unable to get checksum for package.'):
@@ -213,14 +214,14 @@ class TestManager(TestCase):
     def test_verify_checksum_with_key_fail(self):
         with self.assertRaisesRegex(DispatcherException, 'Signature check failed. Invalid checksum.'):
             _verify_checksum_with_key(
-                None, None, None, MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker())
+                None, None, None, MockDispatcherBroker.build_mock_dispatcher_broker())
 
     def test_verify_checksum_with_key_wrong_size_fail(self):
         key = rsa.generate_private_key(
             public_exponent=65537, key_size=2048, backend=default_backend())
         with self.assertRaisesRegex(DispatcherException, 'Signature check failed. Invalid signature.'):
             _verify_checksum_with_key(
-                key, None, b'abc', MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker())
+                key, None, b'abc', MockDispatcherBroker.build_mock_dispatcher_broker())
 
     def test_verify_checksum_with_key_wrong_checksum_fail(self):
         private_key = rsa.generate_private_key(
@@ -228,7 +229,7 @@ class TestManager(TestCase):
         pub_key = private_key.public_key()
         with self.assertRaisesRegex(DispatcherException, 'Signature check failed. Invalid signature.'):
             _verify_checksum_with_key(
-                pub_key, None, b'abc', MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker())
+                pub_key, None, b'abc', MockDispatcherBroker.build_mock_dispatcher_broker())
 
     def test_verify_checksum_with_key_success(self):
         private_key = rsa.generate_private_key(
@@ -240,7 +241,7 @@ class TestManager(TestCase):
                                              hashes.SHA384()))
         try:
             _verify_checksum_with_key(pub_key, signature.decode(encoding='utf-8', errors='strict'), checksum.encode('utf-8'),
-                                      MockDispatcherCallbacks.build_mock_dispatcher_callbacks(), MockDispatcherBroker.build_mock_dispatcher_broker())
+                                      MockDispatcherBroker.build_mock_dispatcher_broker())
         except DispatcherException:
             self.fail('Dispatcher exception raised when not expected.')
 

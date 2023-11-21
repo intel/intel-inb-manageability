@@ -33,13 +33,13 @@ class TestBiosFactory(TestCase):
                           'firmware_tool': 'UpdateBIOS.sh', 'firmware_file_type': 'bio'}
 
     def test_get_factory_linux_tool_type(self):
-        assert type(BiosFactory.get_factory("test", self._arm_dict, self.mock_callbacks_obj,
+        assert type(BiosFactory.get_factory("test", self._arm_dict,
                                             self.mock_dispatcher_broker, MemoryRepo("test"))) \
             is LinuxToolFirmware
 
     def test_get_factory_linux_file_type(self):
         assert type(
-            BiosFactory.get_factory("test", {'firmware_dest_path': 'abc'}, self.mock_callbacks_obj,
+            BiosFactory.get_factory("test", {'firmware_dest_path': 'abc'},
                                     self.mock_dispatcher_broker, MemoryRepo("test"))) is LinuxFileFirmware
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
@@ -49,7 +49,7 @@ class TestBiosFactory(TestCase):
         mock_unpack.return_value = ('capsule.bio', None)
         mock_runner.return_value = ('cert', '', 0)
         try:
-            LinuxToolFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
+            LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
                               self._nuc_dict).install(self._uri, self._repo_name, None)
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))
@@ -62,7 +62,7 @@ class TestBiosFactory(TestCase):
     def test_linux_bios_nuc_install_fail_no_tool(self, mock_delete_pkg, mock_runner):
         mock_runner.return_value = ('cert', 'some error', 127)
         try:
-            LinuxToolFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
+            LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
                               self._nuc_dict).install(self._uri, self._repo_name, None)
         except FotaError as e:
             self.assertRaises(FotaError)
@@ -78,7 +78,7 @@ class TestBiosFactory(TestCase):
             "Firmware Update Aborted: Invalid File sent. error: some error")
 
         try:
-            LinuxToolFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
+            LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
                               self._nuc_dict).install(self._uri, self._repo_name, None)
         except FotaError as e:
             self.assertRaises(FotaError)
@@ -95,7 +95,7 @@ class TestBiosFactory(TestCase):
         mock_unpack.return_value = ('capsule.bio', None)
 
         try:
-            LinuxToolFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
+            LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
                               self._nuc_dict).install(self._uri, self._repo_name, None)
         except FotaError as e:
             self.assertRaises(FotaError)
@@ -112,7 +112,7 @@ class TestBiosFactory(TestCase):
         mock_runner.return_value = ('cert', '', 0)
 
         try:
-            LinuxFileFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name), self._apl_dict).install(
+            LinuxFileFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name), self._apl_dict).install(
                 self._uri, self._repo_name, '/p /b')
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))
@@ -131,7 +131,6 @@ class TestBiosFactory(TestCase):
         try:
             BiosFactory.get_factory("Elkhart Lake Embedded Platform",
                                     self._lake_dict,
-                                    self.mock_callbacks_obj,
                                     self.mock_dispatcher_broker,
                                     MemoryRepo(self._repo_name)).install(self._uri,
                                                                          self._repo_name, None,
@@ -152,7 +151,6 @@ class TestBiosFactory(TestCase):
 
         try:
             BiosFactory.get_factory("Elkhart Lake Embedded Platform", self._lake_dict,
-                                    self.mock_callbacks_obj,
                                     self.mock_dispatcher_broker,
                                     MemoryRepo(self._repo_name)).install(self._uri,
                                                                          self._repo_name,
@@ -173,7 +171,6 @@ class TestBiosFactory(TestCase):
             BiosFactory.get_factory(
                 "Tiger Lake Client Platform",
                 self._lake_dict,
-                self.mock_callbacks_obj,
                 self.mock_dispatcher_broker,
                 MemoryRepo(self._repo_name)).install(self._uri,
                                                      self._repo_name,
@@ -193,7 +190,6 @@ class TestBiosFactory(TestCase):
 
         try:
             BiosFactory.get_factory("Elkhart Lake Embedded Platform", self._lake_dict,
-                                    self.mock_callbacks_obj,
                                     self.mock_dispatcher_broker,
                                     MemoryRepo(self._repo_name)).install(self._uri,
                                                                          self._repo_name,
@@ -213,7 +209,7 @@ class TestBiosFactory(TestCase):
         mock_unpack.return_value = ('capsule.bin', None)
         try:
             BiosFactory.get_factory("test", self._arm_dict,
-                                    self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install("a", "b", "c")
+                                    self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install("a", "b", "c")
         except FotaError as e:
             self.assertRaises(FotaError)
             self.assertEqual(str(e), "Error: some message")
@@ -227,8 +223,8 @@ class TestBiosFactory(TestCase):
 
         try:
             BiosFactory.get_factory("tes", self._arm_dict,
-                                    self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install(self._uri,
-                                                                                                  self._repo_name)
+                                    self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install(self._uri,
+                                                                                                      self._repo_name)
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))
 
@@ -242,8 +238,8 @@ class TestBiosFactory(TestCase):
         mock_unpack.return_value = ('capsule.bin', None)
         try:
             BiosFactory.get_factory("tes", self._arm_dict,
-                                    self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install(self._uri,
-                                                                                                  self._repo_name)
+                                    self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install(self._uri,
+                                                                                                      self._repo_name)
         except FotaError as e:
             self.assertEqual("Firmware Update Aborted, failed to run apply cmd: error: ", str(e))
         mock_delete.assert_called_once()
@@ -258,8 +254,8 @@ class TestBiosFactory(TestCase):
 
         try:
             BiosFactory.get_factory("tes", self._arm_dict,
-                                    self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install(self._uri,
-                                                                                                  self._repo_name)
+                                    self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install(self._uri,
+                                                                                                      self._repo_name)
         except FotaError as e:
             self.assertEqual(
                 "Firmware Update Aborted: Invalid File sent. error: some error", str(e))
@@ -269,7 +265,7 @@ class TestBiosFactory(TestCase):
     def test_linux_bios_apollo_lake_unpack_status_fails(self, mock_delete, mock_runner):
         mock_runner.return_value = ('', 'some error', 2)
         try:
-            LinuxFileFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name), self._apl_dict).install(
+            LinuxFileFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name), self._apl_dict).install(
                 self._uri, self._repo_name, '/p /b')
         except FotaError as e:
             self.assertEqual(
@@ -284,7 +280,7 @@ class TestBiosFactory(TestCase):
         mock_isfile.return_value = True
         mock_runner.return_value = ('bios', '', 0)
         try:
-            LinuxToolFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
+            LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
                               self._ami_dict).install(self._uri, self._repo_name, '/p /b')
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))
@@ -297,7 +293,7 @@ class TestBiosFactory(TestCase):
     def test_linux_bios_ami_install_raises_no_tool(self, mock_unpack, mock_isfile, mock_runner):
         mock_isfile.return_value = False
         try:
-            LinuxToolFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
+            LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
                               self._ami_dict_tool).install(self._uri, self._repo_name, '/p /b')
         except FotaError as e:
             self.assertRaises(FotaError)
@@ -311,7 +307,7 @@ class TestBiosFactory(TestCase):
         mock_isfile.return_value = True
         mock_runner.return_value = ('', 'some error', 2)
         try:
-            LinuxToolFirmware(self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
+            LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
                               self._ami_dict).install(self._uri, self._repo_name, '/p /b')
         except FotaError as e:
             self.assertRaises(FotaError)
@@ -343,8 +339,8 @@ class TestBiosFactory(TestCase):
         mock_runner.side_effect = [('', '', 0), ('', '', 0)]
         mock_ext.return_value = 'bios'
         BiosFactory.get_factory("tes", self._arm_dict,
-                                self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install('abc.bin',
-                                                                                              self._repo_name)
+                                self.mock_dispatcher_broker, MemoryRepo(self._repo_name)).install('abc.bin',
+                                                                                                  self._repo_name)
         mock_ext.assert_called_once()
 
     @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
@@ -356,7 +352,6 @@ class TestBiosFactory(TestCase):
         mock_unpack.return_value = ('capsule.efi', None)
         try:
             BiosFactory.get_factory("Tiger Lake Client Platform", self._lake_dict,
-                                    self.mock_callbacks_obj,
                                     self.mock_dispatcher_broker,
                                     MemoryRepo(self._repo_name)).install(self._uri,
                                                                          self._repo_name,
@@ -373,7 +368,7 @@ class TestBiosFactory(TestCase):
     def test_linux_bios_tgl_install_success(self, mock_delete, mock_unpack, mock_runner, mock_guid):
         try:
             BiosFactory.get_factory("Tiger Lake Client Platform", self._lake_dict,
-                                    self.mock_callbacks_obj, self.mock_dispatcher_broker, MemoryRepo(self._repo_name)) \
+                                    self.mock_dispatcher_broker, MemoryRepo(self._repo_name)) \
                 .install(self._uri, self._repo_name, None, guid="6B29FC40-CA47-1067-B31D-00DD010662D")
         except FotaError as e:
             self.fail("raised FotaError unexpectedly! --> {}".format(str(e)))

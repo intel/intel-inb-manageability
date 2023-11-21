@@ -23,15 +23,12 @@ logger = logging.getLogger(__name__)
 class OtaDownloader(metaclass=abc.ABCMeta):
     """Base class for starting OTA downloader.
 
-    @param dispatcher_callbacks: callbacks in dispatcher
     @param parsed_manifest:
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  parsed_manifest: Mapping[str, Optional[Any]]) -> None:
 
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._parsed_manifest = parsed_manifest
         if 'uri' in parsed_manifest and parsed_manifest['uri'] is not None:
             self._uri: CanonicalUri = canonicalize_uri(parsed_manifest['uri'])
@@ -50,16 +47,14 @@ class OtaDownloader(metaclass=abc.ABCMeta):
 class FotaDownloader(OtaDownloader):
     """Performs OTA download.
 
-    @param dispatcher_callbacks: callbacks in dispatcher
     @param broker_core: MQTT broker to other INBM services
     @param parsed_manifest:
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  parsed_manifest: Mapping[str, Optional[Any]]) -> None:
-        super().__init__(dispatcher_callbacks, parsed_manifest)
+        super().__init__(parsed_manifest)
         self._broker_core = broker_core
 
     def download(self) -> None:
@@ -67,8 +62,7 @@ class FotaDownloader(OtaDownloader):
         the FOTA thread.
         """
         logger.debug("")
-        download(dispatcher_callbacks=self._dispatcher_callbacks,
-                 broker_core=self._broker_core,
+        download(broker_core=self._broker_core,
                  uri=self._uri,
                  umask=UMASK_OTA,
                  repo=self._repo,
@@ -79,14 +73,12 @@ class FotaDownloader(OtaDownloader):
 class SotaDownloader(OtaDownloader):
     """"Performs SOTA download.
 
-@param dispatcher_callbacks: callbacks in dispatcher
     @param parsed_manifest:
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  parsed_manifest: Mapping[str, Optional[Any]]) -> None:
-        super().__init__(dispatcher_callbacks, parsed_manifest)
+        super().__init__(parsed_manifest)
 
     def download(self) -> None:
         """Starts the SOTA download.  Used when in a host/node scenario.  If not, download will be performed by
@@ -98,14 +90,12 @@ class SotaDownloader(OtaDownloader):
 class AotaDownloader(OtaDownloader):
     """"Performs thread synchronization, AOTA and returns the result.
 
-    @param dispatcher_callbacks: callbacks in dispatcher
     @param parsed_manifest:
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  parsed_manifest: Mapping[str, Optional[Any]]) -> None:
-        super().__init__(dispatcher_callbacks, parsed_manifest)
+        super().__init__(parsed_manifest)
 
     def download(self) -> None:
         """Starts the AOTA download.  Used when in a host/node scenario.  If not, download will be performed by

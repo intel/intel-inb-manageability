@@ -37,16 +37,14 @@ class Snapshot(ABC):  # pragma: no cover
 
     @param trtl: TRTL instance
     @param sota_cmd: SOTA command (update)
-    @param dispatcher_callbacks: Callbacks from Dispatcher object
     @param snap_num: snapshot number
     @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
     """
 
-    def __init__(self, trtl: Trtl, sota_cmd: str, dispatcher_callbacks: DispatcherCallbacks, snap_num: Optional[str],
+    def __init__(self, trtl: Trtl, sota_cmd: str,  snap_num: Optional[str],
                  proceed_without_rollback: bool) -> None:
         self.trtl = trtl
         self.sota_cmd = sota_cmd
-        self._dispatcher_callbacks = dispatcher_callbacks
         self.snap_num = snap_num
         self.proceed_without_rollback = proceed_without_rollback
 
@@ -101,16 +99,15 @@ class DebianBasedSnapshot(Snapshot):
 
         @param trtl: TRTL instance
         @param sota_cmd: SOTA command (update)
-        @param dispatcher_callbacks: Callbacks from Dispatcher object
         @param broker_core: MQTT broker to other INBM services
         @param snap_num: snapshot number
         @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
         """
 
-    def __init__(self, trtl: Trtl, sota_cmd: str, dispatcher_callbacks: DispatcherCallbacks,
+    def __init__(self, trtl: Trtl, sota_cmd: str,
                  broker_core: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
         super().__init__(trtl, sota_cmd,
-                         dispatcher_callbacks, snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback)
         self._broker_core = broker_core
 
     def take_snapshot(self) -> None:
@@ -255,15 +252,14 @@ class WindowsSnapshot(Snapshot):  # pragma: no cover
 
         @param trtl: TRTL instance
         @param sota_cmd: SOTA command (update)
-        @param dispatcher_callbacks: Callbacks from Dispatcher object
         @param snap_num: snapshot number
         @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
         """
 
-    def __init__(self, trtl: Trtl, sota_cmd: str, dispatcher_callbacks: DispatcherCallbacks, snap_num: Optional[str],
+    def __init__(self, trtl: Trtl, sota_cmd: str,  snap_num: Optional[str],
                  proceed_without_rollback: bool) -> None:
         super().__init__(trtl, sota_cmd,
-                         dispatcher_callbacks, snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback)
 
     def take_snapshot(self) -> None:
         """Takes a Snapshot through Trtl before running commands. if Snapshot fails,
@@ -316,16 +312,15 @@ class YoctoSnapshot(Snapshot):
 
     @param trtl: TRTL instance
     @param sota_cmd: SOTA command (update)
-    @param dispatcher_callbacks: Callbacks from Dispatcher object
     @param broker_core: MQTT broker to other INBM services
     @param snap_num: snapshot number
     @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
    """
 
-    def __init__(self, trtl: Trtl, sota_cmd: str, dispatcher_callbacks: DispatcherCallbacks,
+    def __init__(self, trtl: Trtl, sota_cmd: str,
                  broker_core: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
         super().__init__(trtl, sota_cmd,
-                         dispatcher_callbacks, snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback)
         self._broker_core = broker_core
 
     def take_snapshot(self) -> None:

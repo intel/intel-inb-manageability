@@ -15,7 +15,7 @@ class TestRebooter(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', side_effect=[('', '', None), ('', '', 0), ('', '', -1)])
     @patch('unit.common.mock_resources.MockDispatcherBroker.telemetry')
     def test_reboot_linux(self, mock_runner, mock_call_telemetry, mock_sleep):
-        LinuxRebooter(self.mock_disp_callbacks_obj, self.mock_disp_broker_obj).reboot()
+        LinuxRebooter(self.mock_disp_broker_obj).reboot()
         if mock_runner.side_effect in [('', '', None), ('', '', 0)]:
             mock_call_telemetry.assert_not_called()
         else:

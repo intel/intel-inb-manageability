@@ -25,7 +25,6 @@ class TrtlContainer:  # pragma: no cover
 
     @param trtl: TRTL object
     @param name: resource name to be installed
-    @param dispatcher_callbacks: DispatcherCallbacks instance
     @param broker_core: MQTT broker to other INBM services
     @param dbs: ConfigDbs.{ON, OFF, WARN}
     """
@@ -33,14 +32,12 @@ class TrtlContainer:  # pragma: no cover
     def __init__(self,
                  trtl: Any,
                  name: str,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  broker_core: DispatcherBroker,
                  dbs: ConfigDbs) -> None:
 
         self.__name = name
         self.__trtl = trtl
         self.__last_version = 0
-        self._dispatcher_callbacks = dispatcher_callbacks
         self._dbs = dbs
         self._broker_core = broker_core
         logger.debug("dbs = " + str(dbs))
@@ -50,7 +47,7 @@ class TrtlContainer:  # pragma: no cover
         if self._dbs == ConfigDbs.ON or self._dbs == ConfigDbs.WARN:
             logger.debug("dbs is ON or WARN")
             try:
-                message = DbsChecker(self._dispatcher_callbacks, self._broker_core, self, self.__trtl, self.__name,
+                message = DbsChecker(self._broker_core, self, self.__trtl, self.__name,
                                      self.__last_version, self._dbs) \
                     .run_docker_security_test()
             except DispatcherException as e:
@@ -105,7 +102,7 @@ class TrtlContainer:  # pragma: no cover
                 message = "DBS is OFF"
             else:
                 try:
-                    message = DbsChecker(self._dispatcher_callbacks, self._broker_core, self, self.__trtl, self.__name,
+                    message = DbsChecker(self._broker_core, self, self.__trtl, self.__name,
                                          self.__last_version, self._dbs) \
                         .run_docker_security_test()
                 except DispatcherException:
