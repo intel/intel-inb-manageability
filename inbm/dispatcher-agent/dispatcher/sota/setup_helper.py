@@ -52,7 +52,6 @@ class DebianBasedSetupHelper(SetupHelper):
     def __init__(self, sota_repos: Optional[str]):
         """Initializes DebianBasedSetupHelper class
 
-        @param dispatcher_callbacks: callback to dispatcher
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         """
 
@@ -151,7 +150,7 @@ class YoctoSetupHelper(SetupHelper):
 
     def __init__(self, broker: DispatcherBroker):
         """ Initializes YoctoSetupHelper
-        @param dispatcher_callbacks: callback to dispatcher
+        @param broker: DispatcherBroker instance used to communicate with other INBM agents
         """
         self._broker = broker
         super().__init__()

@@ -12,6 +12,7 @@ from threading import Timer
 from typing import Any, Optional, Mapping
 
 from future.moves.urllib.parse import urlparse
+from dispatcher.update_logger import UpdateLogger
 from inbm_lib.constants import OTA_PENDING
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri
@@ -24,10 +25,10 @@ from .os_factory import OsFactory, OsType
 from ..common import dispatcher_state
 from ..common.result_constants import *
 from ..constants import UMASK_OTA
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..dispatcher_exception import DispatcherException
 from ..downloader import download
 from ..packagemanager.local_repo import DirectoryRepo
+from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -41,18 +42,21 @@ class FOTA:
     def __init__(self,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  repo_type: str,
-                 dispatcher_callbacks: DispatcherCallbacks) -> None:
+                 dispatcher_broker: DispatcherBroker,
+                 update_logger: UpdateLogger) -> None:
         """Base class constructor for variable assignment, to send telemetry info and create a new
         directory if no repo is present
 
         @param parsed_manifest: Parsed parameters from manifest
         @param repo_type: OTA source location -> local or remote
-        @param dispatcher_callbacks: DispatcherCallbacks instance
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
+        @param update_logger: UpdateLogger instance. Needs to be updated with status of OTA command.
         """
         self._ota_element = parsed_manifest.get('resource')
-        self._dispatcher_callbacks = dispatcher_callbacks
+        self._update_logger = update_logger
         self._uri: Optional[str] = parsed_manifest['uri']
         self._repo_type = repo_type
+        self._dispatcher_broker = dispatcher_broker
 
         repo_path: Optional[str]
         """If repo_type=local, then use path and not URI"""
@@ -81,9 +85,9 @@ class FOTA:
         self._password = parsed_manifest['password']
         self._password = parsed_manifest['password']
         self._device_reboot = parsed_manifest['deviceReboot']
-        if self._dispatcher_callbacks is None:
-            raise FotaError("dispatcher_callbacks not specified in FOTA constructor")
-        self._dispatcher_callbacks.broker_core.telemetry("Firmware Update Tool launched")
+        if self._dispatcher_broker is None:
+            raise FotaError("dispatcher_broker not specified in FOTA constructor")
+        self._dispatcher_broker.telemetry("Firmware Update Tool launched")
         if repo_path:
             logger.debug("Using manifest specified repo path")
             self._repo = DirectoryRepo(repo_path)
@@ -102,7 +106,7 @@ class FOTA:
         hold_reboot = False
         try:
             factory = OsFactory.get_factory(
-                self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
+                self._verify_os_supported(), self._ota_element, self._dispatcher_broker)
 
             bios_vendor, platform_product = factory.create_upgrade_checker().check()
 
@@ -114,7 +118,7 @@ class FOTA:
                         "internal error: _uri uninitialized in Fota.install with download requested in manifest")
 
                 uri = canonicalize_uri(self._uri)
-                download(dispatcher_callbacks=self._dispatcher_callbacks,
+                download(dispatcher_broker=self._dispatcher_broker,
                          uri=uri,
                          repo=self._repo,
                          umask=UMASK_OTA,
@@ -144,9 +148,9 @@ class FOTA:
                 factory.create_rebooter().reboot()
 
             # Save the log before reboot
-            self._dispatcher_callbacks.logger.status = OTA_PENDING
-            self._dispatcher_callbacks.logger.error = ""
-            self._dispatcher_callbacks.logger.save_log()
+            self._update_logger.status = OTA_PENDING
+            self._update_logger.error = ""
+            self._update_logger.save_log()
 
             if not hold_reboot:
                 logger.debug("")
@@ -162,11 +166,11 @@ class FOTA:
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
                 logger.debug(status)
                 return_message = COMMAND_SUCCESS
-                self._dispatcher_callbacks.broker_core.telemetry(status)
+                self._dispatcher_broker.telemetry(status)
         except (DispatcherException, FotaError, UrlSecurityException, ValueError, FileNotFoundError) as e:
             error = 'Firmware Update Aborted: ' + str(e)
             logger.error(error)
-            self._dispatcher_callbacks.broker_core.telemetry(error)
+            self._dispatcher_broker.telemetry(error)
             return_message = INSTALL_FAILURE
             self._repo.delete(self._pkg_filename)
             # In POTA, mender file needs to be deleted also.
@@ -179,7 +183,7 @@ class FOTA:
                 status = 'Firmware Update Aborted'
                 dispatcher_state.clear_dispatcher_state()
             logger.debug('Firmware update status: ' + status)
-            self._dispatcher_callbacks.broker_core.telemetry(status)
+            self._dispatcher_broker.telemetry(status)
             return return_message
 
     @staticmethod
@@ -202,5 +206,5 @@ class FOTA:
         """validate the manifest before FOTA"""
         logger.debug("")
         factory = OsFactory.get_factory(
-            self._verify_os_supported(), self._ota_element, self._dispatcher_callbacks)
+            self._verify_os_supported(), self._ota_element, self._dispatcher_broker)
         factory.create_upgrade_checker().check()

@@ -318,17 +318,18 @@ class TestAOTA(TestCase):
                                'docker_password': docker_password,
                                'device_reboot': device_reboot}
         if instance == 'compose':
-            return DockerCompose(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+            return DockerCompose(MockDispatcherBroker.build_mock_dispatcher_broker(),
                                  parsed_manifest=parsed_manifest,
                                  dbs=ConfigDbs.ON)
         elif instance == 'docker':
-            return Docker(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+            return Docker(MockDispatcherBroker.build_mock_dispatcher_broker(),
                           parsed_manifest=parsed_manifest,
                           dbs=ConfigDbs.ON)
         else:
-            return AOTA(MockDispatcherCallbacks.build_mock_dispatcher_callbacks(),
+            return AOTA(MockDispatcherBroker.build_mock_dispatcher_broker(),
                         parsed_manifest=parsed_manifest,
-                        dbs=ConfigDbs.ON)
+                        dbs=ConfigDbs.ON,
+                        update_logger=UpdateLogger('AOTA', 'metadata'))
 
     @patch('inbm_lib.trtl.Trtl.login', return_value=("", "", 0))
     def test_docker_login_success(self, mock_login) -> Any:

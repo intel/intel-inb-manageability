@@ -13,7 +13,6 @@ from dispatcher.install_check_service import InstallCheckService
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.dispatcher_broker import DispatcherBroker
 from dispatcher.dispatcher_exception import DispatcherException
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.update_logger import UpdateLogger
 from inbm_common_lib.utility import canonicalize_uri
@@ -134,8 +133,8 @@ fake_sota_success = """<?xml version="1.0" encoding="utf-8"?><manifest><type>ota
 dummy_success = INSTALL_SUCCESS
 dummy_failure = INSTALL_FAILURE
 mock_url = canonicalize_uri("http://www.example.com:8976/capsule.tar")
-username = None
-password = None
+username: Optional[str] = None
+password: Optional[str] = None
 
 
 parsed_dmi_current = PlatformInformation(datetime.datetime(
@@ -277,18 +276,6 @@ class Mqtt(MQTT):
         pass
 
 
-class MockDispatcherCallbacks(DispatcherCallbacks):
-    def __init__(self) -> None:
-        self.broker_core = MockDispatcherBroker.build_mock_dispatcher_broker()
-        self.sota_repos = None
-        self.proceed_without_rollback = False
-        self.logger = UpdateLogger("", "")
-
-    @staticmethod
-    def build_mock_dispatcher_callbacks() -> DispatcherCallbacks:
-        return MockDispatcherCallbacks()
-
-
 class MockDispatcherBroker(DispatcherBroker):
     # Fake DispatcherBroker
     def __init__(self) -> None:
@@ -331,7 +318,7 @@ class MockDispatcher(Dispatcher):
         self.dbs_remove_image_on_failed_container = True
         self.sota_repos = None
         self.proceed_without_rollback = False
-        self.broker_core = MockDispatcherBroker.build_mock_dispatcher_broker()
+        self.dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         self.update_logger = UpdateLogger("", "")
 
     def clear_dispatcher_state(self):
