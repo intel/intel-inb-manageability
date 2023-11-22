@@ -717,7 +717,7 @@ class Dispatcher:
                 if cleaned_payload is None:
                     logger.error("No ubuntuAptSource selected!")
                 else:
-                    self.sota_repos = cleaned_payload
+                    self._sota_repos = cleaned_payload
 
         try:
             logger.debug('Subscribing to: %s', STATE_CHANNEL)
@@ -750,7 +750,7 @@ class Dispatcher:
 
         parsed_manifest = {'sota_mode': self.sota_mode, 'package_list': self._package_list,
                            'sota_cmd': 'rollback', 'log_to_file': None,
-                           'sota_repos': self.sota_repos,
+                           'sota_repos': self._sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
         sota_instance = SOTA(parsed_manifest,
