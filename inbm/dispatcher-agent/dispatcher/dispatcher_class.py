@@ -49,7 +49,6 @@ from .ota_target import *
 from .ota_thread import ota_lock
 from .ota_util import create_ota_resource_list
 from .packagemanager.local_repo import DirectoryRepo
-from .provision_target import ProvisionTarget
 from .remediationmanager.remediation_manager import RemediationManager
 from .sota.os_factory import SotaOsFactory
 from .sota.sota import SOTA
@@ -360,10 +359,6 @@ class Dispatcher:
             header = parsed_head.get_children('custom')
             json_data = header['data']
             self._dispatcher_broker.mqtt_publish(CUSTOM_CMD_CHANNEL, json_data)
-            return PUBLISH_SUCCESS
-        elif cmd == "provisionNode":
-            ProvisionTarget(xml,
-                            self._dispatcher_broker).install(parsed_head)
             return PUBLISH_SUCCESS
         elif cmd == "decommission":
             message = self.device_manager.decommission()

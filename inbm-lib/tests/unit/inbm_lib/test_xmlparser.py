@@ -105,7 +105,7 @@ class TestXmlParser(TestCase):
         except XmlException as e:
             self.assertEqual("Empty tag encountered. XML rejected", str(e))
 
-            def test_empty_tag_allowed(self) -> None:
+    def test_empty_tag_allowed(self) -> None:
         parsed = XmlHandler(EMPTY_TAG_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         parsed.get_children('ota/type/aota')
 

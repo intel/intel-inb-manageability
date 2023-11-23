@@ -85,7 +85,7 @@ class DbsChecker:
             logger.debug("Failed Images:" + str(dbs_result.failed_images))
             logger.debug("Failed Containers:" + str(dbs_result.failed_containers))
             self._publish_remediation_request(dbs_result.failed_containers, dbs_result.failed_images)
-            self._dispatcher_callbacks.broker_core.mqtt_publish(
+            self._dispatcher_broker.mqtt_publish(
                 EVENTS_CHANNEL, "Docker Bench Security results: " + dbs_result.result.strip(','))
 
             if self._config_dbs == ConfigDbs.WARN:
