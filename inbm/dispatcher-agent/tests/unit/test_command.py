@@ -14,7 +14,7 @@ class TestCommand(TestCase):
         patcher = patch('shortuuid.uuid', return_value='12345')
         self.mock_uuid = patcher.start()
         self.addCleanup(patcher.stop)
-        self.obj = Command('Test_Command', DispatcherBroker(), '100')
+        self.obj = Command('Test_Command', DispatcherBroker(), 100)
 
     def test_command_creation_success(self) -> None:
         self.assertIsNotNone(self.obj)
@@ -37,7 +37,7 @@ class TestCommand(TestCase):
         payload = json.loads(self.obj.create_payload())
         self.assertEqual(payload['cmd'], 'Test_Command')
         self.assertEqual(payload['id'], '12345')
-        self.assertEqual(payload['size'], '100')
+        self.assertEqual(payload['size'], 100)
 
 
 if __name__ == '__main__':

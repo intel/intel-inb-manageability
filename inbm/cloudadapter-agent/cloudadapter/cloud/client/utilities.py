@@ -150,7 +150,7 @@ class Formatter:
         for f in fields:
             self._fields.add(f.group(1))
 
-    def _escape(self, string):
+    def _escape(self, string: str):
         """Escape quotes and control characters in the given string
 
         @param string: (str) String to escape
