@@ -51,7 +51,7 @@ FROM venv-py3 as mypy-inbm-lib
 RUN source /venv-py3/bin/activate && \
     cd /src/inbm-lib && \
     rm -rf build && \
-    ./mypy-py3.sh . && \
+    mypy . && \
     touch /passed.txt
 
 FROM venv-py3 as test-inbm-lib
@@ -75,16 +75,14 @@ WORKDIR /src/inbc-program
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbc-program /src/inbc-program
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-inbc-py3 as mypy-inbc
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh inbc && \
+    mypy inbc && \
     touch /passed.txt
 
 FROM venv-inbc-py3 as inbc-unit-tests
@@ -103,17 +101,14 @@ WORKDIR /src/diagnostic-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/diagnostic-agent /src/diagnostic-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-diagnostic-py3 as mypy-diagnostic
-COPY inbm/common-python-config /common-python-config/
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh diagnostic && \
+    mypy diagnostic && \
     touch /passed.txt
 
 FROM venv-diagnostic-py3 as diagnostic-unit-tests
@@ -135,17 +130,15 @@ RUN source /venv-py3/bin/activate && \
     pip3.11 install setuptools-rust && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/dispatcher-agent /src/dispatcher-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-dispatcher-py3 as mypy-dispatcher
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh dispatcher && \
-    /common-python-config/mypy-py3.sh tests && \
+    mypy dispatcher && \
+    mypy tests && \
     touch /passed.txt
 
 FROM venv-dispatcher-py3 as dispatcher-unit-tests
@@ -164,16 +157,14 @@ WORKDIR /src/cloudadapter-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-cloudadapter-py3 as mypy-cloudadapter
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh cloudadapter && \
+    mypy cloudadapter && \
     touch /passed.txt
 
 FROM venv-cloudadapter-py3 as cloudadapter-unit-tests
@@ -191,18 +182,15 @@ COPY inbm/telemetry-agent/test-requirements.txt /src/telemetry-agent/test-requir
 WORKDIR /src/telemetry-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt && \
-    pip3.11 install flake8-annotations==2.9.1
-COPY inbm/common-python-config /common-python-config
+    pip3.11 install -r test-requirements.txt
 COPY inbm/telemetry-agent /src/telemetry-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-telemetry-py3 as mypy-telemetry
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh telemetry && \
+    mypy telemetry && \
     touch /passed.txt
 
 FROM venv-telemetry-py3 as telemetry-unit-tests
@@ -221,16 +209,14 @@ WORKDIR /src/configuration-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/configuration-agent /src/configuration-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
     
 FROM venv-configuration-py3 as mypy-configuration
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh configuration && \
+    mypy configuration && \
     touch /passed.txt
 
 FROM venv-configuration-py3 as configuration-unit-tests

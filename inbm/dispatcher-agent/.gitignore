@@ -100,5 +100,3 @@ fpm-files/
 
 # test coverage report
 cover/
-
-pyproject.toml
