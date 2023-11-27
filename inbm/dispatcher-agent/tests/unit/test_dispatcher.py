@@ -136,7 +136,7 @@ class TestDispatcher(TestCase):
             aota.start()
 
     @patch.object(Dispatcher, '_send_result', autospec=True)
-    def test_on_cloud_response_with_unicode_succeeds(self, mock_logging, mock_send_result):
+    def test_on_cloud_response_with_unicode_succeeds(self, mock_logging, mock_send_result) -> None:
         d = TestDispatcher._build_dispatcher()
         d.update_queue = Mock()
         d.update_queue.full = Mock(return_value=False)  # type: ignore
@@ -149,7 +149,7 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_do_install_ota_error_result_succeeds(self, mock_workload_orchestration_func, MockXmlHandler,
-                                                  MockOtaFactory, mock_logging):
+                                                  MockOtaFactory, mock_logging) -> None:
         parsed_head = MockXmlHandler.return_value
         mock_ota_factory = Mock()
         MockOtaFactory.get_factory.return_value = mock_ota_factory
@@ -169,7 +169,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.ota_util.create_ota_resource_list')
     @patch('dispatcher.dispatcher_class.Dispatcher._do_ota_update')
     def test_do_install_pota_resource_func_called(self, mock_ota_update, mock_ota_resource_func, MockXmlHandler,
-                                                  mock_logging):
+                                                  mock_logging) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><type>pota</type><repo>remote</repo>' \
               '</header><type><pota><targetType>node</targetType>' \
@@ -192,7 +192,7 @@ class TestDispatcher(TestCase):
 
     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
     @patch('inbm_lib.xmlhandler.XmlHandler.get_children')
-    def test_do_install_pota_do_ota_func_called(self, mock_get_children, MockXmlHandler, mock_logging):
+    def test_do_install_pota_do_ota_func_called(self, mock_get_children, MockXmlHandler, mock_logging) -> None:
         parsed_head = MockXmlHandler.return_value
         resource = {'fota': ' ', 'sota': ' '}
         d = TestDispatcher._build_dispatcher()
@@ -245,7 +245,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'sota_upgrade'})
     def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
-                                             mock_logging):
+                                             mock_logging) -> None:
         mock_install = MockInstallCheckService()
         d = TestDispatcher._build_dispatcher(install_check=mock_install)
         d.check_dispatcher_state_info()
@@ -255,7 +255,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})
     def test_dispatcher_state_file_info_no_restart_reason(self, mock_disp_state_file_exist, mock_consume_disp_file,
-                                                          mock_logging):
+                                                          mock_logging) -> None:
         d = TestDispatcher._build_dispatcher()
         try:
             d.check_dispatcher_state_info()
@@ -268,7 +268,7 @@ class TestDispatcher(TestCase):
            return_value={'mender-version': 'abcvdk'})
     def test_dispatcher_state_file_info_sota_without_restart_reason(self, mock_disp_state_file_exist,
                                                                     mock_consume_disp_file, mock_invoke_sota,
-                                                                    mock_logging):
+                                                                    mock_logging) -> None:
         mock_install = MockInstallCheckService()
         d = TestDispatcher._build_dispatcher(install_check=mock_install)
         d.check_dispatcher_state_info()
@@ -282,7 +282,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
     def test_dispatcher_state_file_info_fota(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
-                                             mock_dmi_exists, mock_send_result, mock_logging):
+                                             mock_dmi_exists, mock_send_result, mock_logging) -> None:
         d = TestDispatcher._build_dispatcher()
         d.check_dispatcher_state_info()
         mock_send_result.assert_called_once_with(
@@ -295,7 +295,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
     def test_dispatcher_state_file_info_fota1(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
-                                              mock_dmi_exists, mock_send_result, mock_logging):
+                                              mock_dmi_exists, mock_send_result, mock_logging) -> None:
         d = TestDispatcher._build_dispatcher()
         d.check_dispatcher_state_info()
         mock_send_result.assert_called_once_with(
@@ -333,7 +333,7 @@ class TestDispatcher(TestCase):
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
     def test_dispatcher_device_tree_called_on_disp_state(self, mock_consume_disp_file, mock_disp_state_file_exist,
                                                          mock_devicetree, mock_dmi_path, mock_send_result,
-                                                         mock_logging):
+                                                         mock_logging) -> None:
         d = TestDispatcher._build_dispatcher()
         d.check_dispatcher_state_info()
         mock_send_result.assert_called()
@@ -448,7 +448,7 @@ class TestDispatcher(TestCase):
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
+    def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>restart</cmd></manifest>'
         d = TestDispatcher._build_dispatcher()
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
@@ -457,14 +457,14 @@ class TestDispatcher(TestCase):
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging):
+    def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>query</cmd><query><option>status</option><targetType>node</targetType></query></manifest>'
         d = TestDispatcher._build_dispatcher()
         status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
         mock_workload_orchestration.assert_called()
         mock_perform_cmd_type_operation.assert_called_once()
 
-    def test_parse_error_invalid_command(self, mock_logging):
+    def test_parse_error_invalid_command(self, mock_logging) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange><targetType>node</targetType></orange></manifest>'
         d = TestDispatcher._build_dispatcher()
         status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status

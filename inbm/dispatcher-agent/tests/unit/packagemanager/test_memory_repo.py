@@ -6,25 +6,25 @@ from dispatcher.packagemanager.memory_repo import MemoryRepo
 
 class TestMemoryRepo(TestCase):
 
-    def test_blank_repo(self):
+    def test_blank_repo(self) -> None:
         repo = MemoryRepo("test")
 
         self.assertEqual(0, len(repo.list()))
 
-    def test_get_blank_repo(self):
+    def test_get_blank_repo(self) -> None:
         repo = MemoryRepo("test")
 
         with self.assertRaises(KeyError):
             repo.get("anything")
 
-    def test_add_one_item(self):
+    def test_add_one_item(self) -> None:
         repo = MemoryRepo("test")
 
         repo.add("foo", b"contents")
 
         self.assertEqual(1, len(repo.list()))
 
-    def test_add_retrieve_one_item(self):
+    def test_add_retrieve_one_item(self) -> None:
         repo = MemoryRepo("test")
         contents = b"contents2"
         name = "foo2"
@@ -33,7 +33,7 @@ class TestMemoryRepo(TestCase):
 
         self.assertEqual(contents, repo.get(name))
 
-    def test_add_two_items(self):
+    def test_add_two_items(self) -> None:
         repo = MemoryRepo("test")
 
         repo.add("foo3", b"contents3")
@@ -41,7 +41,7 @@ class TestMemoryRepo(TestCase):
 
         self.assertEqual(2, len(repo.list()))
 
-    def test_retrieve_with_two_items(self):
+    def test_retrieve_with_two_items(self) -> None:
         repo = MemoryRepo("test")
         contents = b"contents3"
         name = "foo3"
@@ -51,11 +51,11 @@ class TestMemoryRepo(TestCase):
 
         self.assertEqual(contents, repo.get(name))
 
-    def test_exists(self):
+    def test_exists(self) -> None:
         repo = MemoryRepo("test")
         self.assertTrue(repo.exists())
 
-    def test_id(self):
+    def test_id(self) -> None:
         repo = MemoryRepo("bar")
         self.assertEqual("bar", repo.name())
 

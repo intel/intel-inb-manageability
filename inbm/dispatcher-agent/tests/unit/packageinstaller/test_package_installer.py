@@ -13,7 +13,7 @@ from dispatcher.packageinstaller.package_installer import _is_valid_extension
 
 class MockTrtl(Trtl):
 
-    def __init__(self, smart_error=False, params=None):
+    def __init__(self, smart_error=False, params=None) -> None:
         self.rollback_called = False
         self.copy_called = False
         self.stop_called = False
@@ -64,22 +64,22 @@ class MockTrtl(Trtl):
 class TestContainerManagement(TestCase):
 
     @patch('dispatcher.packageinstaller.dbs_checker.DbsChecker.run_docker_security_test')
-    def test_return_success_if_valid_import(self, mock_docker_security_test):
+    def test_return_success_if_valid_import(self, mock_docker_security_test) -> None:
         mock_docker_security_test.return_value = "Pass"
         self.__test_import("sample-container:2", False)
 
-    def test_return_fail_if_no_colon_import(self):
+    def test_return_fail_if_no_colon_import(self) -> None:
         self.__test_import("sample-container", True)
 
-    def test_return_fail_if_ver_not_int_import(self):
+    def test_return_fail_if_ver_not_int_import(self) -> None:
         self.__test_import("sample-container:a", True)
 
     @patch('dispatcher.packageinstaller.dbs_checker.DbsChecker.run_docker_security_test')
-    def test_return_success_if_valid_load(self, mock_docker_security_test):
+    def test_return_success_if_valid_load(self, mock_docker_security_test) -> None:
         mock_docker_security_test.return_value = "Pass"
         self.__test_load("sample-container", False)
 
-    def __test_import(self, image_name, smart_fail_stderr=False):
+    def __test_import(self, image_name, smart_fail_stderr=False) -> None:
         mock_trtl = MockTrtl(smart_error=smart_fail_stderr)
         container = TrtlContainer(mock_trtl, image_name,
                                   MockDispatcherBroker.build_mock_dispatcher_broker(), ConfigDbs.ON)
@@ -89,7 +89,7 @@ class TestContainerManagement(TestCase):
         else:
             self.assertEqual(result, INSTALL_SUCCESS)
 
-    def __test_load(self, image_name, smart_fail_stderr=False):
+    def __test_load(self, image_name, smart_fail_stderr=False) -> None:
         mock_trtl = MockTrtl(smart_error=smart_fail_stderr)
         container = TrtlContainer(mock_trtl, image_name,
                                   MockDispatcherBroker.build_mock_dispatcher_broker(), ConfigDbs.ON)
@@ -99,11 +99,11 @@ class TestContainerManagement(TestCase):
         else:
             self.assertEqual(result, INSTALL_SUCCESS)
 
-    def test_extract_ext_success(self):
+    def test_extract_ext_success(self) -> None:
         self.assertEqual(_is_valid_extension("abc.deb"), True)
         self.assertEqual(_is_valid_extension("abc.rpm"), True)
 
-    def test_extract_ext_fail(self):
+    def test_extract_ext_fail(self) -> None:
         self.assertEqual(_is_valid_extension("abc.abc"), False)
 
 

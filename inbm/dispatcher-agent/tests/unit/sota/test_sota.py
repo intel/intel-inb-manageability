@@ -21,7 +21,7 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
 
 class MockInstaller:
 
-    def __init__(self, size_value):
+    def __init__(self, size_value) -> None:
         self._size_value = size_value
 
     def get_estimated_size(self):
@@ -32,7 +32,7 @@ class MockInstaller:
 class TestSota(testtools.TestCase):
 
     @classmethod
-    def setUpClass(cls):
+    def setUpClass(cls) -> None:
         cls.mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         parsed = XmlHandler(fake_sota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         cls.resource = parsed.get_children('ota/type/sota')
@@ -55,9 +55,9 @@ class TestSota(testtools.TestCase):
         cls.sota_util_instance = SOTAUtil()
 
     @data(0, 510000, 6500000)
-    def test_check_diagnostic_disk(self, size_value):
+    def test_check_diagnostic_disk(self, size_value) -> None:
         try:
-            TestSota.sota_util_instance.check_diagnostic_disk(size_value,                                                              
+            TestSota.sota_util_instance.check_diagnostic_disk(size_value,
                                                               MockDispatcherBroker.build_mock_dispatcher_broker(),
                                                               install_check_service=MockInstallCheckService())
         except SotaError:
@@ -79,7 +79,7 @@ class TestSota(testtools.TestCase):
                         ('out', 'err', 0, '/home/fakepath/'),
                         ('out', 'err', 0, '/home/fakepath/')])
     def test_run_commands(self, sota_cmd, sota_logto,
-                          mock_run, mock_shell_open, mock_update, _):
+                          mock_run, mock_shell_open, mock_update, _) -> None:
         TestSota.sota_instance.sota_cmd = sota_cmd
         TestSota.sota_instance.log_to_file = sota_logto
         TestSota.sota_instance.factory = SotaOsFactory(
@@ -98,7 +98,7 @@ class TestSota(testtools.TestCase):
            side_effect=SotaError('Disk Space not sufficient for update'))
     @patch('dispatcher.sota.os_updater.DebianBasedUpdater.update_remote_source')
     def test_run_commands_raises(self, sota_cmd, sota_logto,
-                                 mock_update, _):
+                                 mock_update, _) -> None:
         TestSota.sota_instance.sota_cmd = sota_cmd
         TestSota.sota_instance.logtofile = sota_logto
         TestSota.sota_instance.factory = SotaOsFactory(
@@ -111,7 +111,7 @@ class TestSota(testtools.TestCase):
     @patch("dispatcher.sota.snapshot.DebianBasedSnapshot._rollback_and_delete_snap")
     @patch("dispatcher.sota.rebooter.LinuxRebooter.reboot")
     def test_run_raises(self, mock_reboot, mock_rollback_and_delete_snap, mock_print,
-                        mock_detect_os):
+                        mock_detect_os) -> None:
         mock_detect_os.return_value = 'Ubuntu'
         parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
                            'sota_repos': None,
@@ -137,7 +137,7 @@ class TestSota(testtools.TestCase):
     @patch("dispatcher.sota.snapshot.DebianBasedSnapshot._rollback_and_delete_snap")
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=('200', "", 0))
     def test_run_pass(self, mock_run, mock_rollback_and_delete_snap, mock_print,
-                      mock_detect_os):
+                      mock_detect_os) -> None:
         mock_detect_os.return_value = 'Ubuntu'
         parsed_manifest = {'log_to_file': 'Y', 'sota_cmd': 'update',
                            'sota_repos': None,
@@ -160,7 +160,7 @@ class TestSota(testtools.TestCase):
     @patch("dispatcher.sota.snapshot.YoctoSnapshot.recover")
     @patch("dispatcher.sota.setup_helper.YoctoSetupHelper.pre_processing")
     @patch("dispatcher.sota.setup_helper.YoctoSetupHelper")
-    def test_no_reboot_on_fail(self, mock_create_helper, mock_helper, mock_recover, mock_release_date):
+    def test_no_reboot_on_fail(self, mock_create_helper, mock_helper, mock_recover, mock_release_date) -> None:
         mock_release_date.return_value = False
         mock_helper.return_value = True
         TestSota.sota_instance.factory = SotaOsFactory(
@@ -185,7 +185,7 @@ class TestSota(testtools.TestCase):
     @patch('dispatcher.sota.sota.SOTA._clean_local_repo_file', side_effect=SotaError("error"))
     def test_local_file_cleanup_called(self, sota_cmd, sota_logto,
                                        mock_cleanup, mock_diagnostic_check, mock_create_helper, mock_helper,
-                                       mock_release_date):
+                                       mock_release_date) -> None:
         mock_release_date.return_value = False
         mock_helper.return_value = True
         TestSota.sota_local_instance.sota_cmd = sota_cmd
@@ -201,7 +201,7 @@ class TestSota(testtools.TestCase):
         except SotaError as e:
             self.assertEqual(str(e), 'Final result in SOTA execution: SOTA fail')
 
-    def tearDown(self):
+    def tearDown(self) -> None:
         super().tearDown()
         TestSota.sota_instance.log_to_file = None
         TestSota.sota_instance.sota_cmd = None
@@ -217,7 +217,7 @@ class TestSota(testtools.TestCase):
         return mem_repo
 
     @patch("dispatcher.sota.sota.detect_os")
-    def test_check_do_not_raise_exception(self, mock_detect_os):
+    def test_check_do_not_raise_exception(self, mock_detect_os) -> None:
         parsed_manifest = {'release_date': "1970-01-01"}
         mock_detect_os.return_value = 'Ubuntu'
         TestSota.sota_instance._parsed_manifest = parsed_manifest

@@ -15,7 +15,7 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
 
 class TestDownloader(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         parsed = XmlHandler(fake_ota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         self.resource = parsed.get_children('ota/type/fota')
@@ -24,7 +24,7 @@ class TestDownloader(TestCase):
     @patch('dispatcher.downloader.get')
     @patch('dispatcher.downloader.verify_source')
     @patch('dispatcher.downloader._check_if_valid_file')
-    def test_download_successful(self, mock_check_valid_file, mock_verify_source, mock_fetch, mock_space):
+    def test_download_successful(self, mock_check_valid_file, mock_verify_source, mock_fetch, mock_space) -> None:
         mock_fetch.return_value = dummy_success
         try:
             download(self.mock_dispatcher_broker, mock_url,
@@ -34,7 +34,7 @@ class TestDownloader(TestCase):
 
     @patch('dispatcher.downloader.verify_source')
     @patch('dispatcher.downloader.is_enough_space_to_download', return_value=False)
-    def test_raises_when_space_check_fails(self, mock_verify_source, mock_space):
+    def test_raises_when_space_check_fails(self, mock_verify_source, mock_space) -> None:
         with self.assertRaises(DispatcherException):
             download(self.mock_dispatcher_broker, mock_url,
                      TestDownloader._build_mock_repo(0),
@@ -44,7 +44,7 @@ class TestDownloader(TestCase):
     @patch('dispatcher.downloader.get')
     @patch('dispatcher.downloader.verify_source', side_effect=DispatcherException('error'))
     def test_raises_when_verify_source_fails(self, mock_verify_source, mock_fetch,
-                                             mock_space):
+                                             mock_space) -> None:
         mock_fetch.return_value = dummy_success
         with self.assertRaises(DispatcherException):
             download(self.mock_dispatcher_broker, mock_url,
@@ -55,7 +55,7 @@ class TestDownloader(TestCase):
     @patch('dispatcher.downloader.is_enough_space_to_download', return_value=True)
     @patch('dispatcher.downloader.get')
     @patch('dispatcher.downloader.verify_source')
-    def test_raises_when_get_fails(self, mock_verify_source, mock_fetch, mock_space):
+    def test_raises_when_get_fails(self, mock_verify_source, mock_fetch, mock_space) -> None:
         mock_fetch.return_value = dummy_failure
         with self.assertRaises(DispatcherException):
             download(self.mock_dispatcher_broker, mock_url,

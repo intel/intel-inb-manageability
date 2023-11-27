@@ -18,13 +18,13 @@ info = {'timestamp': 1637019250.2020352, 'type': 'static_telemetry',
 
 
 class MockMQTT(MQTT):
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
 
 class TestTelemetryHandling(TestCase):
 
-    def test_set_collect_time(self):
+    def test_set_collect_time(self) -> None:
         collect_time = 0.003
         publish_time = 0.03
         handler = TelemetryTimer(collect_time, publish_time)
@@ -33,7 +33,7 @@ class TestTelemetryHandling(TestCase):
 
         self.assertTrue(handler.time_to_collect())
 
-    def test_set_publish_time(self):
+    def test_set_publish_time(self) -> None:
         collect_time = 0.05
         publish_time = 0.03
         handler = TelemetryTimer(collect_time, publish_time)
@@ -42,7 +42,7 @@ class TestTelemetryHandling(TestCase):
 
         self.assertTrue(handler.time_to_publish())
 
-    def test_telemetry_timestamp(self):
+    def test_telemetry_timestamp(self) -> None:
         telem: dict[str, Optional[Any]] = {"item1": "foo", "item2": "bar"}
 
         the_time = time.time()
@@ -51,7 +51,7 @@ class TestTelemetryHandling(TestCase):
 
         self.assertTrue(float(telem['timestamp']) >= the_time)
 
-    def test_telemetry_timer_1(self):
+    def test_telemetry_timer_1(self) -> None:
         collect_time = 0.003
         publish_time = 0.03
         handler = TelemetryTimer(collect_time, publish_time)
@@ -59,7 +59,7 @@ class TestTelemetryHandling(TestCase):
         handler.wait_collect()
         self.assertFalse(handler.time_to_publish())
 
-    def test_telemetry_timer_with_max_sleep_time_1(self):
+    def test_telemetry_timer_with_max_sleep_time_1(self) -> None:
         collect_time = 0.003
         publish_time = 0.03
         handler = TelemetryTimer(collect_time, publish_time)
@@ -69,7 +69,7 @@ class TestTelemetryHandling(TestCase):
         self.assertTrue(handler.time_to_collect())
         self.assertFalse(handler.time_to_publish())
 
-    def test_telemetry_timer_with_max_sleep_time_2(self):
+    def test_telemetry_timer_with_max_sleep_time_2(self) -> None:
         collect_time = 0.003
         publish_time = 0.03
         handler = TelemetryTimer(collect_time, publish_time)
@@ -78,7 +78,7 @@ class TestTelemetryHandling(TestCase):
 
         self.assertFalse(handler.time_to_collect())
 
-    def test_telemetry_timer_with_max_sleep_time_3(self):
+    def test_telemetry_timer_with_max_sleep_time_3(self) -> None:
         collect_time = 0.003
         publish_time = 0.03
         handler = TelemetryTimer(collect_time, publish_time)
@@ -87,7 +87,7 @@ class TestTelemetryHandling(TestCase):
         handler.wait_collect(max_sleep_time=0.002)
         self.assertTrue(handler.time_to_collect())
 
-    def test_telemetry_timer_2(self):
+    def test_telemetry_timer_2(self) -> None:
         collect_time = 0.003
         publish_time = 0.03
         handler = TelemetryTimer(collect_time, publish_time)
@@ -102,7 +102,7 @@ class TestTelemetryHandling(TestCase):
 
     @patch('telemetry.telemetry_handling.publish_dynamic_telemetry')
     @patch('telemetry.telemetry_handling.publish_static_telemetry')
-    def test_publish_initial_telemetry(self, mock_static, mock_publish):
+    def test_publish_initial_telemetry(self, mock_static, mock_publish) -> None:
         send_initial_telemetry(MockMQTT(), False)
         mock_static.assert_called_once()
         mock_publish.assert_called()
@@ -112,7 +112,7 @@ class TestTelemetryHandling(TestCase):
     def test_publish_telemetry_update_succeeds(
             self,
             mock_get_dynamic_telemetry,
-            mock_publish_dynamic_telemetry):
+            mock_publish_dynamic_telemetry) -> None:
         mock_get_dynamic_telemetry.return_value = {
             "values": {
                 "a": "a",
@@ -128,7 +128,7 @@ class TestTelemetryHandling(TestCase):
         assert telemetry.get("a") is None
         assert telemetry.get("b") is not None
 
-    def test_get_all_query_related_info(self):
+    def test_get_all_query_related_info(self) -> None:
         collect_time = 0.003
         publish_time = 0.03
         handler = TelemetryTimer(collect_time, publish_time)
@@ -136,8 +136,8 @@ class TestTelemetryHandling(TestCase):
         self.assertEqual(info, result)
 
     @patch('os.path.exists', return_value=False)
-    def test_docker_stats_return_no_trtl_message(self, mock_exists):
+    def test_docker_stats_return_no_trtl_message(self, mock_exists) -> None:
         self.assertEqual(get_docker_stats(True), "TRTL is not installed")
 
-    def test_docker_stats_return_no_docker_message(self):
+    def test_docker_stats_return_no_docker_message(self) -> None:
         self.assertEqual(get_docker_stats(False), "Docker is not installed")

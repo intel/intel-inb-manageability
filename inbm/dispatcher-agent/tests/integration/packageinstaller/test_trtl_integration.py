@@ -6,7 +6,7 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 
 class TestTrtlIntegration(TestCase):
 
-    def test_no_shell_runner_return_code_integration(self):
+    def test_no_shell_runner_return_code_integration(self) -> None:
         (out, err, code) = PseudoShellRunner().run("false")
         self.assertEqual(1, code)
 

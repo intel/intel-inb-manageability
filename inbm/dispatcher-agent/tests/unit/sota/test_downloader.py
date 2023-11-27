@@ -23,7 +23,7 @@ class TestDownloader(unittest.TestCase):
     sotaerror_instance: Optional[SotaError] = None
 
     @classmethod
-    def setUp(cls):
+    def setUp(cls) -> None:
         cls.sotaerror_instance = SotaError(cls.mock_disp_broker)
 
         assert cls.mock_disp_broker is not None

@@ -15,18 +15,18 @@ from cloudadapter.agent.device_manager import DeviceManager
 class TestDeviceManager(unittest.TestCase):
 
     @mock.patch('cloudadapter.agent.broker.Broker', autospec=True)
-    def setUp(self, MockBroker):
+    def setUp(self, MockBroker) -> None:
         self.MockBroker = MockBroker
         self.device_manager = DeviceManager(self.MockBroker())
 
-    def test_shutdown_device_succeed(self):
+    def test_shutdown_device_succeed(self) -> None:
         message = self.device_manager.shutdown_device()
 
         assert message == MESSAGE.SHUTDOWN
         mocked = self.MockBroker.return_value
         mocked.publish_shutdown.assert_called_once_with()
 
-    def test_reboot_device_succeed(self):
+    def test_reboot_device_succeed(self) -> None:
         message = self.device_manager.reboot_device()
 
         assert message == MESSAGE.REBOOT
@@ -38,7 +38,7 @@ class TestDeviceManager(unittest.TestCase):
         return_value=[])
     @mock.patch('cloudadapter.agent.device_manager.os')
     def test_decommission_device_no_configs_succeed(
-            self, mock_os, mock_get_adapter_config_filepaths):
+            self, mock_os, mock_get_adapter_config_filepaths) -> None:
         message = self.device_manager.decommission_device()
 
         assert message == MESSAGE.DECOMMISSION
@@ -50,7 +50,7 @@ class TestDeviceManager(unittest.TestCase):
         return_value=['F', 'I', 'L', 'E', 'S'])
     @mock.patch('cloudadapter.agent.device_manager.remove_file')
     def test_decommission_device_with_configs_succeed(
-            self, mock_remove, mock_get_adapter_config_filepaths):
+            self, mock_remove, mock_get_adapter_config_filepaths) -> None:
         message = self.device_manager.decommission_device()
 
         assert message == MESSAGE.DECOMMISSION
@@ -64,6 +64,6 @@ class TestDeviceManager(unittest.TestCase):
         return_value=['FILE'])
     @mock.patch('cloudadapter.agent.device_manager.logger')
     def test_decommission_device_logs_warning_succeed(
-            self, mock_logger, mock_get_adapter_config_filepaths, mock_remove, mock_exists):
+            self, mock_logger, mock_get_adapter_config_filepaths, mock_remove, mock_exists) -> None:
         self.device_manager.decommission_device()
         assert mock_logger.warn.call_count > 0

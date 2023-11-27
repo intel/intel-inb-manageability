@@ -2,27 +2,36 @@ import pytest
 from inbc.validator import ConfigurationItem, configuration_bounds_check, validate_guid, validate_package_list
 import argparse
 
+
 @pytest.fixture
 def config_item():
     return ConfigurationItem('RegistrationRetry Timer Secs', 1, 60, 20)
 
-def test_return_value_when_within_limits(config_item):
+
+def test_return_value_when_within_limits(config_item) -> None:
     assert configuration_bounds_check(config_item, 30) == 30
 
-def test_return_default_when_below_lower_limit(config_item):
+
+def test_return_default_when_below_lower_limit(config_item) -> None:
     assert configuration_bounds_check(config_item, 0) == 20
 
-def test_return_default_when_above_upper_limit(config_item):
+
+def test_return_default_when_above_upper_limit(config_item) -> None:
     assert configuration_bounds_check(config_item, 61) == 20
 
-def test_return_value_when_on_upper_limit(config_item):
+
+def test_return_value_when_on_upper_limit(config_item) -> None:
     assert configuration_bounds_check(config_item, 60) == 60
 
-def test_return_value_when_on_lower_limit(config_item):
+
+def test_return_value_when_on_lower_limit(config_item) -> None:
     assert configuration_bounds_check(config_item, 1) == 1
 
-def test_check_validate_guid_format():
-    assert validate_guid('6c8e136f-d3e6-4131-ac32-4687cb4abd27') == '6c8e136f-d3e6-4131-ac32-4687cb4abd27'
+
+def test_check_validate_guid_format() -> None:
+    assert validate_guid(
+        '6c8e136f-d3e6-4131-ac32-4687cb4abd27') == '6c8e136f-d3e6-4131-ac32-4687cb4abd27'
+
 
 @pytest.mark.parametrize("guid,expected", [
     ('6c8e13-d3e6-4131-ac32-4687cb4abd27', 'first 8 characters'),
@@ -36,9 +45,10 @@ def test_check_validate_guid_format():
     ('6c8e136f-d3e6-4131-ac32-4687cb4ab', 'fifth 12 characters'),
     ('6c8e136f-d3e6-4131-ac32-4687cb4abd27ef89', 'fifth 12 characters')
 ])
-def test_check_validate_guid_raises_error(guid, expected):
+def test_check_validate_guid_raises_error(guid, expected) -> None:
     with pytest.raises(argparse.ArgumentTypeError, match="GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed"):
         validate_guid(guid)
+
 
 # List of valid package names
 valid_packages = [
@@ -63,24 +73,32 @@ invalid_packages = [
 ]
 
 # Test valid package names
+
+
 @pytest.mark.parametrize("package", valid_packages)
-def test_validate_package_list_valid_packages(package):
+def test_validate_package_list_valid_packages(package) -> None:
     assert validate_package_list(package) == package
 
 # Test invalid package names
+
+
 @pytest.mark.parametrize("package", invalid_packages)
-def test_validate_package_list_invalid_packages(package):
+def test_validate_package_list_invalid_packages(package) -> None:
     with pytest.raises(argparse.ArgumentTypeError):
         validate_package_list(package)
 
 # Test multiple valid package names combined in a comma-separated string
-def test_validate_package_list_multiple_valid_packages():
+
+
+def test_validate_package_list_multiple_valid_packages() -> None:
     package_list = ','.join(valid_packages)
     assert validate_package_list(package_list) == ",".join(valid_packages)
 
 # Test multiple invalid package names combined in a comma-separated string
+
+
 @pytest.mark.parametrize("package", invalid_packages)
-def test_validate_package_list_multiple_invalid_packages(package):
+def test_validate_package_list_multiple_invalid_packages(package) -> None:
     package_list = ','.join(valid_packages + [package])
     with pytest.raises(argparse.ArgumentTypeError):
         validate_package_list(package_list)

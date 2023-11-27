@@ -10,7 +10,7 @@ from .test_package_installer import MockTrtl
 
 class TestDbsChecker(TestCase):
     @patch('dispatcher.packageinstaller.package_installer.TrtlContainer')
-    def test_return_build_result_success(self, mock_trtl_container):
+    def test_return_build_result_success(self, mock_trtl_container) -> None:
         mock_trtl = MockTrtl(smart_error=True)
         success_flag = True
         result = "Test results: "
@@ -24,7 +24,7 @@ class TestDbsChecker(TestCase):
             self.fail('Exception thrown when not expected.')
 
     @patch('dispatcher.packageinstaller.package_installer.TrtlContainer')
-    def test_return_build_result_fail(self, mock_trtl_container):
+    def test_return_build_result_fail(self, mock_trtl_container) -> None:
         mock_trtl = MockTrtl(smart_error=True)
         success_flag = False
         result = "Test results: "
@@ -37,7 +37,7 @@ class TestDbsChecker(TestCase):
                 _return_build_result(success_flag, result, fails, failed_images, failed_containers)
 
     @patch('dispatcher.packageinstaller.package_installer.TrtlContainer')
-    def test_find_current_container(self, mock_trtl_container):
+    def test_find_current_container(self, mock_trtl_container) -> None:
         mock_trtl = MockTrtl(smart_error=True)
         container = DbsChecker(MockDispatcherBroker.build_mock_dispatcher_broker(), mock_trtl_container,
                                mock_trtl, "sample-container", 0, ConfigDbs.ON). \

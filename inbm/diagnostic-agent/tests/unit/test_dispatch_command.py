@@ -25,7 +25,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("netifaces.gateways",
            return_value={})
-    def test_pin_install_check_network_down(self, mock_run):
+    def test_pin_install_check_network_down(self, mock_run) -> None:
         result = dispatch_command('install_check', 30, UNIT_TEST_DISK_PATH,
                                   20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -35,7 +35,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch.object(psutil, 'sensors_battery')
-    def test_pin_health_device_battery_no_battery(self, mock_sensors_battery, mock_run):
+    def test_pin_health_device_battery_no_battery(self, mock_sensors_battery, mock_run) -> None:
         mock_sensors_battery.return_value = None
         result = dispatch_command('health_device_battery', 30, UNIT_TEST_DISK_PATH, 20, 20, 20,
                                   'docker', 'true')
@@ -45,7 +45,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch.object(psutil, 'sensors_battery')
-    def test_pin_health_device_battery_low_battery(self, mock_sensors_battery, mock_run):
+    def test_pin_health_device_battery_low_battery(self, mock_sensors_battery, mock_run) -> None:
         mock_sensors_battery.return_value = Mock(percent=10, power_plugged=False)
         result = dispatch_command('health_device_battery', 30, UNIT_TEST_DISK_PATH, 20, 20, 20,
                                   'docker', 'true')
@@ -57,7 +57,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch.object(psutil, 'sensors_battery')
-    def test_pin_health_device_battery_passed(self, mock_sensors_battery, mock_run):
+    def test_pin_health_device_battery_passed(self, mock_sensors_battery, mock_run) -> None:
         mock_sensors_battery.return_value = Mock(percent=50, power_plugged=False)
         result = dispatch_command('health_device_battery', 30, UNIT_TEST_DISK_PATH, 20, 20, 20,
                                   'docker', 'true')
@@ -67,7 +67,7 @@ class TestDispatchCommand(TestCase):
                                       'message': BATTERY_CHECK_PASSED, 'rc': 0})
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
-    def test_pin_health_device_battery_invalid_power(self, mock_run):
+    def test_pin_health_device_battery_invalid_power(self, mock_run) -> None:
         result = dispatch_command('health_device_battery', 30, UNIT_TEST_DISK_PATH, 20, 110, 20,
                                   'docker', 'true')
         assert result is not None
@@ -77,7 +77,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_space', return_value=40000005)
-    def test_pin_check_storage_good(self, mock_free_space, mock_run):
+    def test_pin_check_storage_good(self, mock_free_space, mock_run) -> None:
         result = dispatch_command('check_storage', 30, UNIT_TEST_DISK_PATH,
                                   20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -88,7 +88,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_space', return_value=2000005)
-    def test_pin_check_storage_not_enough(self, mock_free_space, mock_run):
+    def test_pin_check_storage_not_enough(self, mock_free_space, mock_run) -> None:
         result = dispatch_command('check_storage', 30, UNIT_TEST_DISK_PATH,
                                   20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -98,7 +98,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_space', return_value=3000005)
-    def test_pin_check_storage_size_is_None(self, mock_free_space, mock_run):
+    def test_pin_check_storage_size_is_None(self, mock_free_space, mock_run) -> None:
         result = dispatch_command('check_storage', None,  # type: ignore[arg-type]
                                   UNIT_TEST_DISK_PATH, 20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -108,9 +108,10 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_space', return_value=3000005)
-    def test_pin_check_storage_size_min_storage_is_not_int(self, mock_free_space, mock_run):
+    def test_pin_check_storage_size_min_storage_is_not_int(self, mock_free_space, mock_run) -> None:
         result = dispatch_command('check_storage', None,  # type: ignore[arg-type]
-                                  UNIT_TEST_DISK_PATH, 20, 20, 'not an int',  # type: ignore[arg-type]
+                                  # type: ignore[arg-type]
+                                  UNIT_TEST_DISK_PATH, 20, 20, 'not an int',
                                   'docker', 'true')
         assert result is not None
         self.assertDictEqual(result, {'cmd': 'check_storage', 'message': INVALID_SIZE_SENT,
@@ -118,7 +119,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_memory', return_value=123456789)
-    def test_pin_check_memory_passed(self, mock_free_memory, mock_run):
+    def test_pin_check_memory_passed(self, mock_free_memory, mock_run) -> None:
         result = dispatch_command('check_memory', 30, UNIT_TEST_DISK_PATH,
                                   20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -128,7 +129,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_memory', return_value=200)
-    def test_pin_check_memory_failed(self, mock_free_memory, mock_run):
+    def test_pin_check_memory_failed(self, mock_free_memory, mock_run) -> None:
         result = dispatch_command('check_memory', 30, UNIT_TEST_DISK_PATH,
                                   20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -138,7 +139,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_memory', return_value=123456789)
-    def test_pin_check_memory_invalid(self, mock_free_memory, mock_run):
+    def test_pin_check_memory_invalid(self, mock_free_memory, mock_run) -> None:
         mock_free_memory.return_value = 123456789
         result = dispatch_command('check_memory', 30, UNIT_TEST_DISK_PATH, 'not an integer', 20, 20,  # type: ignore[arg-type]
                                   'docker', 'true')
@@ -148,7 +149,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("netifaces.gateways",
            return_value={'default': {2: ('134.134.155.251', 'eno1')}})
-    def test_pin_check_network_healthy(self, mock_run):
+    def test_pin_check_network_healthy(self, mock_run) -> None:
         result = dispatch_command('check_network', 30, UNIT_TEST_DISK_PATH,
                                   20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -156,7 +157,7 @@ class TestDispatchCommand(TestCase):
                                       'message': NETWORK_INTERFACE_HEALTHY,
                                       'rc': 0})
 
-    def test_check_network_diable_on_platform(self):
+    def test_check_network_diable_on_platform(self) -> None:
         result = dispatch_command('check_network', 30, UNIT_TEST_DISK_PATH,
                                   20, 20, 20, 'docker', 'false')
         assert result is not None
@@ -166,7 +167,7 @@ class TestDispatchCommand(TestCase):
 
     @patch("netifaces.gateways",
            return_value={})
-    def test_pin_check_network_down(self, mock_run):
+    def test_pin_check_network_down(self, mock_run) -> None:
         result = dispatch_command('check_network', 30, UNIT_TEST_DISK_PATH,
                                   20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -175,7 +176,7 @@ class TestDispatchCommand(TestCase):
                                       'rc': 1})
 
     @patch('inbm_lib.trtl.Trtl.list', return_value=("", ARBITRARY_STRING_1))
-    def test_pin_container_health_check_good(self, mock_list):
+    def test_pin_container_health_check_good(self, mock_list) -> None:
         result = dispatch_command('container_health_check', 30, UNIT_TEST_DISK_PATH, 20, 20, 20,
                                   'docker', 'true')
         assert result is not None
@@ -185,7 +186,7 @@ class TestDispatchCommand(TestCase):
 
     @patch('inbm_lib.trtl.Trtl.list', return_value=(ARBITRARY_STRING_1 + ' err',
                                                     ARBITRARY_STRING_1))
-    def test_pin_container_health_check_error(self, mock_list):
+    def test_pin_container_health_check_error(self, mock_list) -> None:
         result = dispatch_command('container_health_check', 30,
                                   UNIT_TEST_DISK_PATH, 20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -194,7 +195,7 @@ class TestDispatchCommand(TestCase):
                                       'rc': 1})
 
     @patch('inbm_lib.trtl.Trtl.list', return_value=(FAILED_TO_RUN_TRTL, ""))
-    def test_pin_container_health_check_trtl_not_found(self, mock_list):
+    def test_pin_container_health_check_trtl_not_found(self, mock_list) -> None:
         result = dispatch_command('container_health_check', 30,
                                   UNIT_TEST_DISK_PATH, 20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -203,7 +204,7 @@ class TestDispatchCommand(TestCase):
                                       'rc': 1})
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
-    def test_pin_invalid_command(self, mock_run):
+    def test_pin_invalid_command(self, mock_run) -> None:
         result = dispatch_command('invalid_command', 30,
                                   UNIT_TEST_DISK_PATH, 20, 20, 20, 'docker', 'true')
         assert result is not None
@@ -211,7 +212,7 @@ class TestDispatchCommand(TestCase):
 
     @patch('inbm_lib.detect_os.detect_os', return_value='Ubuntu')
     @patch('os.path.exists', return_value=True)
-    def test_software_check_pass(self, mock_path_exists, mock_detect_os):
+    def test_software_check_pass(self, mock_path_exists, mock_detect_os) -> None:
         result = dispatch_command('swCheck', 30,
                                   UNIT_TEST_DISK_PATH, 20, 20, 20, 'trtl', 'true')
         assert result is not None
@@ -221,7 +222,7 @@ class TestDispatchCommand(TestCase):
 
     @patch('inbm_lib.detect_os.detect_os', return_value='Ubuntu')
     @patch('os.path.exists', return_value=False)
-    def test_software_check_fail(self, mock_path_exists, mock_detect_os):
+    def test_software_check_fail(self, mock_path_exists, mock_detect_os) -> None:
         result = dispatch_command('swCheck', 30,
                                   UNIT_TEST_DISK_PATH, 20, 20, 20, 'trtl', 'true')
         assert result is not None
