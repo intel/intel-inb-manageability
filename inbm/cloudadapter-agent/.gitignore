@@ -99,5 +99,3 @@ fpm-files/
 
 # virtual environment
 virtual-env/
-
-pyproject.toml

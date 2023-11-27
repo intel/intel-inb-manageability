@@ -99,5 +99,3 @@ fpm-files/
 
 # Configuration agent
 mqttclient/
-
-pyproject.toml

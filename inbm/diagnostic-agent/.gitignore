@@ -104,5 +104,3 @@ virtual-env/
 
 # vs code
 .vscode/
-
-pyproject.toml
