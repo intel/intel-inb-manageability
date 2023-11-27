@@ -7,8 +7,10 @@ from threading import Thread
 
 import mock
 
+from diagnostic.ibroker import IBroker
 
-class mock_mqtt():
+
+class mock_mqtt(IBroker):
 
     def __init__(self):
         self.channel = None
@@ -19,6 +21,9 @@ class mock_mqtt():
         self.call_count += 1
         self.channel = channel
         self.message = message
+    
+    def stop(self):
+        pass
 
 
 class mock_dbs():
@@ -71,7 +76,7 @@ class TestEventWatcher(TestCase):
 
         def test():
             ev = EventWatcher(mock_mqtt())
-            ev._parse_dbs_result = mock.Mock()
+            ev._parse_dbs_result = mock.Mock()  # type: ignore[method-assign]
             ev.run_docker_bench_security()
 
         thread = Thread(target=test)

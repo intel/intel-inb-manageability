@@ -38,21 +38,21 @@ class EventWatcher(Thread):
         self._process: Popen[Any]
         self._running = True
 
-    def run(self):  # pragma: no cover
+    def run(self) -> None:  # pragma: no cover
         """Runs the EventWatcher thread"""
         self._process = PseudoShellRunner().get_process(TRTL_EVENTS)
         logger.debug(f'Watching for Docker events on PID: {self._process.pid}')
         self._parse_process_output(self._process)
         logger.debug("Event Watcher thread exited")
 
-    def set_dbs_mode(self, mode_value):
+    def set_dbs_mode(self, mode_value) -> None:
         global current_dbs_mode
         current_dbs_mode = mode_value
         logger.debug(f"Current DBS mode is set to - {current_dbs_mode}")
 
-    def run_docker_bench_security(self):  # pragma: no cover
+    def run_docker_bench_security(self) -> None:  # pragma: no cover
         """Launch Docker Bench Security in separate thread."""
-        def run():
+        def run() -> None:
             self.lock.acquire()
             if current_dbs_mode != ConfigDbs.OFF:
                 dbs = DockerBenchRunner()
@@ -86,7 +86,7 @@ class EventWatcher(Thread):
             self._broker.publish(REMEDIATION_IMAGE_CHANNEL,
                                  str(failed_images))
 
-    def _parse_dbs_result(self, result, dbs):
+    def _parse_dbs_result(self, result, dbs) -> None:
         if result is not None:
             failed_containers = dbs.failed_container_list
             failed_images = dbs.failed_image_list
@@ -102,7 +102,7 @@ class EventWatcher(Thread):
     def _output_ended(next_line, process):
         return True if next_line == '' and process.poll() is not None else False
 
-    def _process_output(self, events, next_line):
+    def _process_output(self, events, next_line) -> None:
         if len(events) < 3:
             logger.debug(
                 " ".join(TRTL_EVENTS) +
@@ -121,7 +121,7 @@ class EventWatcher(Thread):
 
             logger.debug(" ".join(TRTL_EVENTS) + " command done processing.")
 
-    def _parse_process_output(self, process):
+    def _parse_process_output(self, process) -> None:
         while self._running:
             logger.debug(" ".join(TRTL_EVENTS) + " command output log start.")
             # we filter out bad characters but still accept the rest of the string

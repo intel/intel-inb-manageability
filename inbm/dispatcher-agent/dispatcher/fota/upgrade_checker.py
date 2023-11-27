@@ -103,7 +103,7 @@ class LinuxUpgradeChecker(UpgradeChecker):
     @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
-    def __init__(self, ota_element,  dispatcher_broker: DispatcherBroker):
+    def __init__(self, ota_element,  dispatcher_broker: DispatcherBroker) -> None:
         super().__init__(ota_element)
         self._dispatcher_broker = dispatcher_broker
 

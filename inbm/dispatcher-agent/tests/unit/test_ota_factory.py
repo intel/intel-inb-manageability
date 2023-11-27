@@ -81,5 +81,5 @@ def test_create_thread(ota_type, expected_thread, mock_disp_obj, mock_disp_broke
         MockInstallCheckService(),
         UpdateLogger(ota_type=ota_type, data="metadata"),
         ConfigDbs.ON
-    ).create_thread('abc')
+    ).create_thread({'abc': 'def'})
     assert isinstance(thread, expected_thread)

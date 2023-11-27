@@ -9,7 +9,7 @@
 import logging
 import json
 
-from typing import Optional
+from typing import Any, Optional
 
 from diagnostic import constants
 from diagnostic.ibroker import IBroker
@@ -133,7 +133,7 @@ class DiagnosticChecker:
             logger.debug(f"DBS is set to - {self.dbs_mode}")
             logger.debug("Docker is not required.  Not listening for Docker events.")
 
-    def execute(self, request: str) -> None:
+    def execute(self, request: str | dict[str, Any]) -> None:
         """Execute MQTT command received on command channel
 
         @param request: Incoming JSON request
@@ -166,7 +166,7 @@ class DiagnosticChecker:
         logger.info(f'Command output: {resp}')
         self._broker.publish(RESPONSE_CHANNEL + str(request_id), json.dumps(resp))
 
-    def _check_sw_mandatory_list(self, software: str) -> bool:
+    def _check_sw_mandatory_list(self, software: str | None) -> bool:
         """Checks if software exists in mandatory software list
 
         @param software: string value of software

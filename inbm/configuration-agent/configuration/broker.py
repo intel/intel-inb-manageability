@@ -53,11 +53,11 @@ class Broker:  # pragma: no cover
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
 
-    def _on_message(self, topic, payload, qos):
+    def _on_message(self, topic, payload, qos) -> None:
         """Callback for STATE_CHANNEL"""
         logger.info('Message received: %s on topic: %s', payload, topic)
 
-    def _on_command(self, topic, payload, qos):
+    def _on_command(self, topic, payload, qos) -> None:
         """Callback for COMMAND_CHANNEL"""
         try:
             if payload is not None:

@@ -14,7 +14,7 @@ from ..client.cloud_client import CloudClient
 
 
 class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
-    def __init__(self, config: dict):
+    def __init__(self, config: dict) -> None:
         self._client = self.configure(config)
 
     def get_client_id(self) -> Optional[str]:
