@@ -6,7 +6,7 @@
 """
 
 import json
-from typing import Any
+from typing import Optional, Any
 
 import shortuuid
 from inbm_lib.count_down_latch import CountDownLatch
@@ -22,7 +22,7 @@ class Command:
     @param size: size of payload; default=None
     """
 
-    def __init__(self, command: str, broker: DispatcherBroker, size=None) -> None:
+    def __init__(self, command: str, broker: DispatcherBroker, size: Optional[int] = None) -> None:
         self.command = command
         self._id = self._create_request_id()
         self.response = None

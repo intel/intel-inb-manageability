@@ -75,7 +75,7 @@ class CloudAdapter(WindowsService):
 
         if platform.system() != 'Windows':
             # Unblock on termination signals
-            def unblock(signal, _):
+            def unblock(signal, _) -> None:
                 self.waiter.finish()
 
             signal.signal(signal.SIGTERM, unblock)
@@ -85,7 +85,7 @@ class CloudAdapter(WindowsService):
         client.stop()
 
 
-def main():
+def main() -> None:
     """The main function"""
 
     if platform.system() == 'Windows':

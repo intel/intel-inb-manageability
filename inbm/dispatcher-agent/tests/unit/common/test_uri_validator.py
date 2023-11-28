@@ -7,7 +7,7 @@ from dispatcher.common.uri_utilities import is_valid_uri, uri_to_filename, get_u
 
 class TestUriValidator(TestCase):
 
-    def test_uri_validator(self):
+    def test_uri_validator(self) -> None:
         self.assertFalse(is_valid_uri("") is None)
 
         self.assertFalse(is_valid_uri(None))
@@ -22,13 +22,13 @@ class TestUriValidator(TestCase):
         self.assertTrue(is_valid_uri("https://www.example.com/"))
         self.assertTrue(is_valid_uri("ftp://www.example.com/"))
 
-    def test_uri_to_filename(self):
+    def test_uri_to_filename(self) -> None:
         self.assertEqual("a.txt", uri_to_filename("http://www.google.com/b/c/a.txt"))
         self.assertEqual("q.txt", uri_to_filename("http://www.google.com/q.txt?33"))
         self.assertEqual("foo", uri_to_filename("foo"))
         self.assertEqual("", uri_to_filename(""))
 
-    def test_get_uri_prefix(self):
+    def test_get_uri_prefix(self) -> None:
         self.assertEqual("http://www.google.com/",
                          get_uri_prefix("http://www.google.com/b/c/a.txt"))
         self.assertEqual("http://www.google.com/",

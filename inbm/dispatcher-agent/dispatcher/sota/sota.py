@@ -141,7 +141,7 @@ class SOTA:
 
         logger.debug(f"SOTA Tool launched in {self.sota_state} mode")
 
-    def _clean_local_repo_file(self):
+    def _clean_local_repo_file(self) -> None:
         local_cache_repo = DirectoryRepo(self._local_file_path.rsplit('/', 1)[0])
         local_cache_repo.delete_all()
         logger.debug("Deleting files in {}.".format(

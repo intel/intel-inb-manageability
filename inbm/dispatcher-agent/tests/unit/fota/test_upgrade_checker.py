@@ -20,7 +20,7 @@ TEST_SCHEMA_LOCATION = os.path.join(
 @ddt
 class TestOsFactory(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_disp_broker_obj = mock_resources.MockDispatcherBroker.build_mock_dispatcher_broker()
         parsed = XmlHandler(
             mock_resources.fake_ota_success,
@@ -28,7 +28,7 @@ class TestOsFactory(TestCase):
             schema_location=TEST_SCHEMA_LOCATION)
         self.resource = parsed.get_children('ota/type/fota')
 
-    def check_bios_success(self, factory):
+    def check_bios_success(self, factory) -> None:
         self.assertEqual('test', factory._platform_info.bios_vendor)
         self.assertEqual('A.B.C.D.E.F', factory._platform_info.bios_version)
         self.assertEqual(
@@ -39,7 +39,7 @@ class TestOsFactory(TestCase):
         self.assertEqual('testmanufacturer', factory._platform_info.platform_mfg)
         self.assertEqual('testproduct', factory._platform_info.platform_product)
 
-    def check_manifest_success(self, factory):
+    def check_manifest_success(self, factory) -> None:
         self.assertEqual('test', factory._manifest_platform_info.bios_vendor)
         self.assertEqual('A.B.D.E.F', factory._manifest_platform_info.bios_version)
         self.assertEqual(datetime.datetime.strptime('06/12/2017', "%m/%d/%Y"),
@@ -47,14 +47,14 @@ class TestOsFactory(TestCase):
         self.assertEqual('testmanufacturer', factory._manifest_platform_info.platform_mfg)
         self.assertEqual('testproduct', factory._manifest_platform_info.platform_product)
 
-    def check_bios_default(self, factory):
+    def check_bios_default(self, factory) -> None:
         self.assertEqual('Unknown', factory._platform_info.bios_vendor)
         self.assertEqual('Unknown', factory._platform_info.bios_version)
         self.assertEqual('Unknown', factory._platform_info.bios_release_date)
         self.assertEqual("", factory._platform_info.platform_mfg)
         self.assertEqual("", factory._platform_info.platform_product)
 
-    def check_manifest_default(self, factory):
+    def check_manifest_default(self, factory) -> None:
         self.assertEqual('Unknown', factory._manifest_platform_info.bios_vendor)
         self.assertEqual('Unknown', factory._manifest_platform_info.bios_version)
         self.assertEqual('Unknown', factory._manifest_platform_info.bios_release_date)
@@ -63,7 +63,7 @@ class TestOsFactory(TestCase):
 
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_unknown_version)
-    def test_returns_false_parse_dmi_fails(self, mock_dmi, mock_dmi_exists):
+    def test_returns_false_parse_dmi_fails(self, mock_dmi, mock_dmi_exists) -> None:
         factory = LinuxFactory(self.resource,
                                self.mock_disp_broker_obj).create_upgrade_checker()
         self.check_bios_default(factory)
@@ -72,7 +72,7 @@ class TestOsFactory(TestCase):
     @patch('distutils.spawn.find_executable', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_current)
-    def test_fails_when_manifest_parse_fails_and_no_devicetree(self, mock_dmi, mock_dmi_path, mock_find):
+    def test_fails_when_manifest_parse_fails_and_no_devicetree(self, mock_dmi, mock_dmi_path, mock_find) -> None:
         parsed = XmlHandler(
             mock_resources.fake_ota_invalid,
             is_file=False,
@@ -88,7 +88,7 @@ class TestOsFactory(TestCase):
 
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_current)
-    def test_fail_with_dmi_manifest_mismatch(self, mock_dmi, mock_dmi_exists):
+    def test_fail_with_dmi_manifest_mismatch(self, mock_dmi, mock_dmi_exists) -> None:
         parsed = XmlHandler(mock_resources.fake_ota_fail3, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -102,7 +102,7 @@ class TestOsFactory(TestCase):
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info',
            return_value=mock_resources.parsed_dmi_mismatch_product)
-    def test_raise_mismatched_product(self, mock_dmi, mock_dmi_exists):
+    def test_raise_mismatched_product(self, mock_dmi, mock_dmi_exists) -> None:
         parsed = XmlHandler(mock_resources.fake_fota_mismatch_product, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -114,7 +114,7 @@ class TestOsFactory(TestCase):
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info',
            return_value=mock_resources.parsed_dmi_unknown_version)
-    def test_fail_with_dmi_error(self, mock_dmi, mock_dmi_exists):
+    def test_fail_with_dmi_error(self, mock_dmi, mock_dmi_exists) -> None:
         parsed = XmlHandler(mock_resources.fake_ota_fail3, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -126,7 +126,7 @@ class TestOsFactory(TestCase):
     @patch('dispatcher.fota.upgrade_checker.get_device_tree_system_info',
            return_value=mock_resources.parsed_dmi_unknown_version)
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=False)
-    def test_use_devicetree_for_check(self, mock_path, mock_devicetree):
+    def test_use_devicetree_for_check(self, mock_path, mock_devicetree) -> None:
         parsed = XmlHandler(mock_resources.fake_ota_fail3, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -139,7 +139,7 @@ class TestOsFactory(TestCase):
 
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_current)
-    def test_fail_with_different_manufacturer(self, mock_dmi, mock_dmi_path):
+    def test_fail_with_different_manufacturer(self, mock_dmi, mock_dmi_path) -> None:
         parsed = XmlHandler(mock_resources.fake_ota_fail3, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -153,7 +153,7 @@ class TestOsFactory(TestCase):
 
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_current)
-    def test_fail_with_same_release_date(self, mock_dmi, mock_dmi_exists):
+    def test_fail_with_same_release_date(self, mock_dmi, mock_dmi_exists) -> None:
         parsed = XmlHandler(mock_resources.fake_ota_fail1, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -166,7 +166,7 @@ class TestOsFactory(TestCase):
 
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_current)
-    def test_fail_with_lower_release_date(self, mock_dmi, mock_dmi_exists):
+    def test_fail_with_lower_release_date(self, mock_dmi, mock_dmi_exists) -> None:
         parsed = XmlHandler(mock_resources.fake_ota_fail2, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -180,7 +180,7 @@ class TestOsFactory(TestCase):
 
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_current)
-    def test_fail_when_vendor_name_mismatch(self, mock_dmi, mock_dmi_exists):
+    def test_fail_when_vendor_name_mismatch(self, mock_dmi, mock_dmi_exists) -> None:
         parsed = XmlHandler(mock_resources.fake_ota_fail3, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -195,7 +195,7 @@ class TestOsFactory(TestCase):
 
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_current)
-    def test_fail_when_vendor_name_mismatch_and_lower_release_date(self, mock_dmi, mock_dmi_exists):
+    def test_fail_when_vendor_name_mismatch_and_lower_release_date(self, mock_dmi, mock_dmi_exists) -> None:
         parsed = XmlHandler(mock_resources.fake_ota_fail4, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -211,7 +211,7 @@ class TestOsFactory(TestCase):
     @patch('dispatcher.fota.upgrade_checker.is_dmi_path_exists', return_value=True)
     @patch('dispatcher.fota.upgrade_checker.get_dmi_system_info', return_value=mock_resources.parsed_dmi_current)
     @patch('dispatcher.common.dispatcher_state.write_dispatcher_state_to_state_file', autospec=True)
-    def test_returns_true_upgradable(self, mock_disp_state, mock_dmi, mock_is_dmi):
+    def test_returns_true_upgradable(self, mock_disp_state, mock_dmi, mock_is_dmi) -> None:
         mock_disp_state.return_value = True
 
         factory = LinuxFactory(self.resource,

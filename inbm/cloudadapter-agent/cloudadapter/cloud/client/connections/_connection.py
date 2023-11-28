@@ -11,7 +11,7 @@ from typing import Optional
 class Connection(metaclass=abc.ABCMeta):  # pragma: no cover
 
     @abc.abstractproperty
-    def request_id(self):
+    def request_id(self) -> int:
         """A readonly property
 
         @return: (int) Current request ID

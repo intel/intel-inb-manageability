@@ -14,21 +14,21 @@ svmem(10, 5, 50, 5, 5, 2, 3, 5, 5, 5)
 class TestStaticAttributes(TestCase):
 
     @patch('psutil.virtual_memory')
-    def test_get_total_physical_memory(self, mock_virtual_memory):
+    def test_get_total_physical_memory(self, mock_virtual_memory) -> None:
         mock_virtual_memory.return_value = svmem
         res = get_total_physical_memory()
         mock_virtual_memory.assert_called_once()
         self.assertEqual(res, svmem.total)
 
     @patch('telemetry.lsblk.get_lsblk_output')
-    def test_disk_information_fail(self, mock_lsblk):
+    def test_disk_information_fail(self, mock_lsblk) -> None:
         mock_lsblk.return_value = None
         res = get_disk_information()
         self.assertEqual(res, 'Unknown')
         mock_lsblk.assert_called_once()
 
     @patch('telemetry.lsblk.get_lsblk_output')
-    def test_disk_information_success(self, mock_lsblk):
+    def test_disk_information_success(self, mock_lsblk) -> None:
         mock_lsblk.return_value = "NAME          SIZE ROTA\n loop1     33554432    1\n sr0     1073741312    1" \
                                   "\n loop2     33554432    1\n loop0     33554432    1\nsda   250059350016    1"
         res = get_disk_information()
@@ -40,7 +40,7 @@ class TestStaticAttributes(TestCase):
 
     @patch('telemetry.lsblk.get_lsblk_output')
     @patch('telemetry.lsblk.parse_lsblk')
-    def test_disk_information_parse_fail(self, mock_parse, mock_lsblk):
+    def test_disk_information_parse_fail(self, mock_parse, mock_lsblk) -> None:
         mock_lsblk.return_value = "abc"
         mock_parse.return_value = None
         res = get_disk_information()
@@ -49,7 +49,7 @@ class TestStaticAttributes(TestCase):
         mock_parse.assert_called_once()
 
     @patch('platform.uname')
-    def test_os_information(self, mock_platform):
+    def test_os_information(self, mock_platform) -> None:
         mock_platform.return_value = ('Linux', '16.04')
         res = get_os_information()
         self.assertEqual(res, "Linux 16.04")

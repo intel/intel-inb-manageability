@@ -42,7 +42,7 @@ def setup_xml_handlers():
     return mock_dispatcher_broker, good, tar, sign_tar
 
 
-def test_file_download_success(setup_xml_handlers, mocker):
+def test_file_download_success(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
     mock_validate_file = mocker.patch('dispatcher.configuration_helper.validate_file_type')
     mock_xml = mocker.patch('inbm_lib.xmlhandler.XmlHandler.get_children',
@@ -57,7 +57,7 @@ def test_file_download_success(setup_xml_handlers, mocker):
         pytest.fail("Dispatcher download raised DispatcherException unexpectedly!")
 
 
-def test_file_download_fetch_fails(setup_xml_handlers, mocker):
+def test_file_download_fetch_fails(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
     mock_xml = mocker.patch('inbm_lib.xmlhandler.XmlHandler.get_children',
                             return_value=GOOD_PARSED_XML)
@@ -71,7 +71,7 @@ def test_file_download_fetch_fails(setup_xml_handlers, mocker):
             good, memory_repo.MemoryRepo(""))
 
 
-def test_file_download_xml_fails(setup_xml_handlers, mocker):
+def test_file_download_xml_fails(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
     mock_get = mocker.patch('dispatcher.configuration_helper.get',
                             return_value=Result(404, "Not Found"))
@@ -83,7 +83,7 @@ def test_file_download_xml_fails(setup_xml_handlers, mocker):
             good, memory_repo.MemoryRepo(""))
 
 
-def test_source_verification_fails(setup_xml_handlers, mocker):
+def test_source_verification_fails(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
     mock_source = mocker.patch('dispatcher.configuration_helper.verify_source',
                                side_effect=DispatcherException('Source verification failed'))
@@ -93,7 +93,7 @@ def test_source_verification_fails(setup_xml_handlers, mocker):
             good, memory_repo.MemoryRepo(""))
 
 
-def test_conf_file_name_correct(setup_xml_handlers, mocker):
+def test_conf_file_name_correct(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
     mock_validate_file = mocker.patch('dispatcher.configuration_helper.validate_file_type')
     mock_xml = mocker.patch('inbm_lib.xmlhandler.XmlHandler.get_children',
@@ -109,7 +109,7 @@ def test_conf_file_name_correct(setup_xml_handlers, mocker):
     assert conf == 'tc.xml'
 
 
-def test_tar_conf_filename_correct(setup_xml_handlers, mocker):
+def test_tar_conf_filename_correct(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
 
     mock_validate = mocker.patch('dispatcher.configuration_helper.validate_file_type')
@@ -131,7 +131,7 @@ def test_tar_conf_filename_correct(setup_xml_handlers, mocker):
     assert conf == 'tc.xml'
 
 
-def test_tar_conf_with_pem_no_sign_fail(setup_xml_handlers, mocker):
+def test_tar_conf_with_pem_no_sign_fail(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
 
     mock_valid_file = mocker.patch(
@@ -152,7 +152,7 @@ def test_tar_conf_with_pem_no_sign_fail(setup_xml_handlers, mocker):
             tar, memory_repo.MemoryRepo(""))
 
 
-def test_tar_file_download_success(setup_xml_handlers, mocker):
+def test_tar_file_download_success(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
 
     mock_validate = mocker.patch('dispatcher.configuration_helper.validate_file_type')
@@ -175,7 +175,7 @@ def test_tar_file_download_success(setup_xml_handlers, mocker):
         pytest.fail("Raised exception when not expected.")
 
 
-def test_signature_check_fails(setup_xml_handlers, mocker):
+def test_signature_check_fails(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
 
     mock_is_file = mocker.patch(
@@ -196,7 +196,7 @@ def test_signature_check_fails(setup_xml_handlers, mocker):
         mock_delete.assert_called_once()
 
 
-def test_extract_files_from_tar(setup_xml_handlers, mocker):
+def test_extract_files_from_tar(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
 
     mock_xml = mocker.patch('inbm_lib.xmlhandler.XmlHandler.get_children',
@@ -209,7 +209,7 @@ def test_extract_files_from_tar(setup_xml_handlers, mocker):
     assert conf_file == 'tc.conf'
 
 
-def test_extract_files_from_tar_file_fail(setup_xml_handlers, mocker):
+def test_extract_files_from_tar_file_fail(setup_xml_handlers, mocker) -> None:
     mock_dispatcher_broker, good, tar, sign_tar = setup_xml_handlers
 
     mock_xml = mocker.patch('inbm_lib.xmlhandler.XmlHandler.get_children',

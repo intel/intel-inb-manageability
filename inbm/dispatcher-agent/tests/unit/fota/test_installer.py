@@ -17,11 +17,11 @@ FW_CONF_PATH = os.path.join(os.path.dirname(__file__),
 
 class TestInstaller(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_disp_broker_obj = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @patch('dispatcher.fota.bios_factory.LinuxFileFirmware.install')
-    def test_linux_install_successful(self, mock_install):
+    def test_linux_install_successful(self, mock_install) -> None:
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
@@ -36,7 +36,7 @@ class TestInstaller(TestCase):
             self.fail("raised FotaError unexpectedly!")
 
     @patch('dispatcher.fota.bios_factory.LinuxToolFirmware.install')
-    def test_linux_ami_install_successful(self, mock_install):
+    def test_linux_ami_install_successful(self, mock_install) -> None:
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
@@ -52,7 +52,7 @@ class TestInstaller(TestCase):
             self.fail(f"raised FotaError unexpectedly! {e}")
 
     @patch('dispatcher.fota.bios_factory.LinuxToolFirmware.install')
-    def test_linux_elkhart_install_successful(self, mock_install):
+    def test_linux_elkhart_install_successful(self, mock_install) -> None:
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
@@ -67,7 +67,7 @@ class TestInstaller(TestCase):
             self.fail(f"raised FotaError unexpectedly! {e}")
 
     @patch('dispatcher.fota.bios_factory.LinuxToolFirmware.install')
-    def test_linux_elkhart_install_fail_due_to_toolOptions(self, mock_install):
+    def test_linux_elkhart_install_fail_due_to_toolOptions(self, mock_install) -> None:
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
@@ -84,7 +84,7 @@ class TestInstaller(TestCase):
                 str(e), "Tool options are not supported by the platform. Please check the firmware configuration.")
 
     @patch('dispatcher.fota.bios_factory.LinuxToolFirmware.install')
-    def test_linux_elkhart_install_fail(self, mock_install):
+    def test_linux_elkhart_install_fail(self, mock_install) -> None:
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:
@@ -100,7 +100,7 @@ class TestInstaller(TestCase):
             self.assertEqual(str(e), "The current platform is unsupported - Dummy Platform")
 
     @patch('dispatcher.fota.bios_factory.LinuxToolFirmware.install')
-    def test_linux_check_install_params(self, mock_install):
+    def test_linux_check_install_params(self, mock_install) -> None:
         mock_install.return_value = True
         try:
             val = LinuxInstaller(self.mock_disp_broker_obj, TestInstaller._build_mock_repo(
@@ -111,7 +111,7 @@ class TestInstaller(TestCase):
             self.fail(f"raised FotaError unexpectedly! {e}")
 
     @patch('dispatcher.fota.bios_factory.LinuxToolFirmware.install')
-    def test_linux_bios_ami_install_no_options(self, mock_install):
+    def test_linux_bios_ami_install_no_options(self, mock_install) -> None:
         mock_install.return_value = True
         uri = mock_url.value.split('/')[-1]
         try:

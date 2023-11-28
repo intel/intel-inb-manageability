@@ -128,7 +128,7 @@ class LoadConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_LOAD)
 
-    def trigger_manifest(self, args: Any, topic: str):
+    def trigger_manifest(self, args: Any, topic: str) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments from user

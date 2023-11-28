@@ -36,7 +36,7 @@ MENDER_UPDATE_SCRIPT_EHL = "/etc/mender/scripts/ArtifactInstall_Leave_00_relabel
 MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
 
 
-def mender_install_argument():
+def mender_install_argument() -> str:
     """Determine the correct command-line argument to trigger an installation in the Mender utility.
 
     This function executes a shell command to retrieve the help text of the Mender utility and
@@ -283,10 +283,10 @@ class YoctoX86_64Updater(OsUpdater):
         """
         return 0
 
-    def no_download(self):
+    def no_download(self) -> None:
         pass
 
-    def download_only(self):
+    def download_only(self) -> None:
         pass
 
 
@@ -330,10 +330,10 @@ class YoctoARMUpdater(OsUpdater):
         """
         return 0
 
-    def no_download(self):
+    def no_download(self) -> None:
         pass
 
-    def download_only(self):
+    def download_only(self) -> None:
         pass
 
 
@@ -367,8 +367,8 @@ class WindowsUpdater(OsUpdater):
         """
         return 0
 
-    def no_download(self):
+    def no_download(self) -> None:
         pass
 
-    def download_only(self):
+    def download_only(self) -> None:
         pass
