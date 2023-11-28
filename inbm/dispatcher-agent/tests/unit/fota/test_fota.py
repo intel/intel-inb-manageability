@@ -1,6 +1,6 @@
 import os
 import unittest
-from typing import Dict, Optional, List
+from typing import Dict
 
 from ..common.mock_resources import *
 from dispatcher.fota.fota import FOTA
