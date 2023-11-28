@@ -7,7 +7,7 @@ from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
 
 
 def test_mender_install_argument_present(mocker) -> None:
-    mocked_run = mocker.patch('dispatcher.sota.os_updater.PseudoShellRunner().run')
+    mocked_run = mocker.patch('dispatcher.sota.os_updater.PseudoShellRunner.run')
     mocked_run.return_value = ("Usage of the command with -install option", "", 0)
 
     assert mender_install_argument(
@@ -17,7 +17,7 @@ def test_mender_install_argument_present(mocker) -> None:
 
 
 def test_mender_install_argument_absent(mocker) -> None:
-    mocked_run = mocker.patch('dispatcher.sota.os_updater.PseudoShellRunner().run')
+    mocked_run = mocker.patch('dispatcher.sota.os_updater.PseudoShellRunner.run')
     mocked_run.return_value = ("Usage of the command with only install option", "", 0)
 
     assert mender_install_argument(
