@@ -52,28 +52,12 @@ OTA_FAILURE_IN_PROGRESS = Result(
     CODE_FOUND, "ANOTHER OTA IN PROGRESS, TRY LATER")
 OTA_FAILURE = Result(
     CODE_FOUND, "OTA FAILURE")
-UNABLE_TO_START_DOCKER_COMPOSE = Result(
-    CODE_BAD_REQUEST, "Unable to start docker-compose container.")
-UNABLE_TO_STOP_DOCKER_COMPOSE = Result(
-    CODE_BAD_REQUEST, "Unable to stop docker-compose container.")
 UNABLE_TO_DOWNLOAD_DOCKER_COMPOSE = Result(
     CODE_BAD_REQUEST, "Unable to download docker-compose container.")
-UNABLE_TO_PULL_IMAGE = Result(
-    CODE_BAD_REQUEST, "Unable to pull image.")
 FILE_NOT_FOUND = Result(
     CODE_NOT_FOUND, "FILE NOT FOUND")
 IMAGE_IMPORT_FAILURE = Result(
     CODE_UNAUTHORIZED, "FAILED IMAGE IMPORT, IMAGE ALREADY PRESENT")
-UNABLE_TO_LOGIN_INTO_DOCKER_REGISTRY = Result(
-    CODE_BAD_REQUEST, "Unable to login into docker registry")
-UNABLE_TO_LIST_IMAGE_CONTAINERS = Result(
-    CODE_BAD_REQUEST, "Unable to list running containers.")
-UNABLE_TO_REMOVE_DOCKER_IMAGES = Result(
-    CODE_BAD_REQUEST, "Docker Remove operation failed.")
-UNABLE_TO_STOP_CONTAINER = Result(
-    CODE_BAD_REQUEST, "Unable to stop container.")
-UNABLE_TO_FETCH_DOCKER_STATS = Result(
-    CODE_BAD_REQUEST, "Unable to fetch container stats.")
 UNABLE_TO_DOWNLOAD_APPLICATION_PACKAGE = Result(
     CODE_BAD_REQUEST, "Unable to download application package.")
 
