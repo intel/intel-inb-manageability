@@ -20,6 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - dependabot: update golang.org/x/net from 0.14.0 to 0.17.0 in /inbm/trtl (addresses CVE-2023-39325, CVE-2023-44487)
  - update pypi urllib3 from 1.26.17 to 1.26.18 (addresses CVE-2023-45803 in urllib3)
  - depandabot: bump github.com/docker/docker from 24.0.5+incompatible to 24.0.7+incompatible in /inbm/trtl (addresses GHSA-jq35-85cj-fj4p)
+ - update cryptography dependency in dispatcher-agent from 41.0.4 to 41.0.5, addressing CVE-2023-5678
+ - update included reference certifi source code from 2020.12.05 to 2023.7.22, which was not a security issue per se but was flagged in BDBA as it contains CVE-2022-23491 and CVE-2023-37920
 
 ## 4.1.4 - 2023-10-11
 

@@ -99,5 +99,3 @@ fpm-files/
 
 # Python virtual environments
 venv*/
-
-pyproject.toml

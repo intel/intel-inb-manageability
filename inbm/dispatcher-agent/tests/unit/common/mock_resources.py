@@ -316,7 +316,7 @@ class MockDispatcher(Dispatcher):
         self._logger = logger
         self.config_dbs = ConfigDbs.ON
         self.dbs_remove_image_on_failed_container = True
-        self.sota_repos = None
+        self._sota_repos = None
         self.proceed_without_rollback = False
         self.dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         self.update_logger = UpdateLogger("", "")
