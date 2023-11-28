@@ -1,3 +1,4 @@
+from typing import Tuple
 from unittest import TestCase
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from unittest.mock import mock_open, patch, Mock, PropertyMock
@@ -10,7 +11,7 @@ class TestShellRunner(TestCase):
         def __init__(self) -> None:
             pass
 
-        def communicate(self, input=None):
+        def communicate(self, input: None = None) -> Tuple[str, str]:
             return 'stdout', 'stderr'
 
         def close(self) -> None:

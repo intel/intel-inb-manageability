@@ -5,7 +5,7 @@ class PmsReset(object):
     def __init__(self, conn) -> None:  # type: ignore  # don't have information to type this
         pass
 
-    def ResetRequest(self, sw_device_id):
+    def ResetRequest(self, sw_device_id):  # type: ignore  # don't have information to type this
         return Status.Success
 
 
