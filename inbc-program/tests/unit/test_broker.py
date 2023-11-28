@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 from inbc.broker import Broker
 from inbc.parser import ArgsParser, _get_password
 from inbm_common_lib.request_message_constants import *

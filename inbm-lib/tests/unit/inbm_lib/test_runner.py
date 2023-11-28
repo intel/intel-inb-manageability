@@ -6,7 +6,7 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 
 
 class TestRunner(PseudoShellRunner):
-    def __init__(self, output, err, return_code) -> None:
+    def __init__(self, output: str, err: str, return_code: int) -> None:
         self.__last_commands: list[str] = []
         self.__output = output
         self.__return_code = return_code
@@ -30,7 +30,7 @@ class TestTestRunner(TestCase):
 
     def test_test_runner(self) -> None:
         output = str(random.randint(1000, 2000))
-        return_code = str(random.randint(10, 30))
+        return_code = random.randint(10, 30)
         r = TestRunner(output, "", return_code)
         self.assertEqual(None, r.last_cmd())
         cmd = str(random.randint(1000, 2000))
