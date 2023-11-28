@@ -32,7 +32,7 @@ class TestDispatchCommand(TestCase):
                                       'message': NETWORK_INTERFACE_DOWN,
                                       'rc': 1})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch.object(psutil, 'sensors_battery')
     def test_pin_health_device_battery_no_battery(self, mock_sensors_battery, mock_run):
         mock_sensors_battery.return_value = None
@@ -41,7 +41,7 @@ class TestDispatchCommand(TestCase):
         self.assertDictEqual(result, {'cmd': 'health_device_battery',
                                       'message': NO_BATTERY_INSTALLED, 'rc': 0})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch.object(psutil, 'sensors_battery')
     def test_pin_health_device_battery_low_battery(self, mock_sensors_battery, mock_run):
         mock_sensors_battery.return_value = Mock(percent=10, power_plugged=False)
@@ -52,7 +52,7 @@ class TestDispatchCommand(TestCase):
                                                  'percent before update. Current charge %: 10',
                                       'rc': 1})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch.object(psutil, 'sensors_battery')
     def test_pin_health_device_battery_passed(self, mock_sensors_battery, mock_run):
         mock_sensors_battery.return_value = Mock(percent=50, power_plugged=False)
@@ -62,7 +62,7 @@ class TestDispatchCommand(TestCase):
         self.assertDictEqual(result, {'cmd': 'health_device_battery',
                                       'message': BATTERY_CHECK_PASSED, 'rc': 0})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     def test_pin_health_device_battery_invalid_power(self, mock_run):
         result = dispatch_command('health_device_battery', 30, UNIT_TEST_DISK_PATH, 20, 110, 20,
                                   'docker', 'true')
@@ -70,7 +70,7 @@ class TestDispatchCommand(TestCase):
                                       'message': 'Invalid power sent. Must be in percent',
                                       'rc': 1})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_space', return_value=40000005)
     def test_pin_check_storage_good(self, mock_free_space, mock_run):
         result = dispatch_command('check_storage', 30, UNIT_TEST_DISK_PATH,
@@ -80,7 +80,7 @@ class TestDispatchCommand(TestCase):
                               'message': 'Min storage check passed.  Available: 40000005. ',
                               'rc': 0})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_space', return_value=2000005)
     def test_pin_check_storage_not_enough(self, mock_free_space, mock_run):
         result = dispatch_command('check_storage', 30, UNIT_TEST_DISK_PATH,
@@ -89,7 +89,7 @@ class TestDispatchCommand(TestCase):
                                       'message': 'Less than 31457280 bytes free. Available: '
                                                  '2000005. ', 'rc': 1})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_space', return_value=3000005)
     def test_pin_check_storage_size_is_None(self, mock_free_space, mock_run):
         result = dispatch_command('check_storage', None,
@@ -98,7 +98,7 @@ class TestDispatchCommand(TestCase):
                                       'message': 'Less than 20971520 bytes free. Available: '
                                                  '3000005. ', 'rc': 1})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_space', return_value=3000005)
     def test_pin_check_storage_size_min_storage_is_not_int(self, mock_free_space, mock_run):
         result = dispatch_command('check_storage', None, UNIT_TEST_DISK_PATH, 20, 20, 'not an int',
@@ -106,7 +106,7 @@ class TestDispatchCommand(TestCase):
         self.assertDictEqual(result, {'cmd': 'check_storage', 'message': INVALID_SIZE_SENT,
                                       'rc': 1})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_memory', return_value=123456789)
     def test_pin_check_memory_passed(self, mock_free_memory, mock_run):
         result = dispatch_command('check_memory', 30, UNIT_TEST_DISK_PATH,
@@ -115,7 +115,7 @@ class TestDispatchCommand(TestCase):
                                       'message': 'Min memory check passed. Available: 123456789. ',
                                       'rc': 0})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_memory', return_value=200)
     def test_pin_check_memory_failed(self, mock_free_memory, mock_run):
         result = dispatch_command('check_memory', 30, UNIT_TEST_DISK_PATH,
@@ -124,7 +124,7 @@ class TestDispatchCommand(TestCase):
                                       'message': 'Less than 20971520 bytes free. Available: 200. ',
                                       'rc': 1})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('diagnostic.command_pattern.get_free_memory', return_value=123456789)
     def test_pin_check_memory_invalid(self, mock_free_memory, mock_run):
         mock_free_memory.return_value = 123456789
@@ -183,7 +183,7 @@ class TestDispatchCommand(TestCase):
                                       'message': FAILED_TO_RUN_TRTL,
                                       'rc': 1})
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('200', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     def test_pin_invalid_command(self, mock_run):
         result = dispatch_command('invalid_command', 30,
                                   UNIT_TEST_DISK_PATH, 20, 20, 20, 'docker', 'true')
