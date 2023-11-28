@@ -69,7 +69,7 @@ class TestSota(testtools.TestCase):
     @patch('dispatcher.sota.os_updater.DebianBasedUpdater.update_remote_source',
            return_value=CommandList(['abc']).cmd_list)
     @patch('dispatcher.sota.sota.open')
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run_with_log_path',
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run_with_log_path',
            side_effect=[('out', 'err', 0, '/home/fakepath/'), ('out', 'err', 0, '/home/fakepath/'),
                         ('out', 'err', 0, '/home/fakepath/'), ('out',
                                                                'err', 0, None),

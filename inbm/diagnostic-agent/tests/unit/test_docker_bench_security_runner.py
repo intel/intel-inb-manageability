@@ -28,7 +28,7 @@ docker_bench_fail_image_output = "[WARN] 4.5  - Ensure Content trust for Docker 
 
 class TestDockerBenchSecurityRunner(TestCase):
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().get_process')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
     def test_success_dbs_run(self, mocked_trtl, mock_shellrunner):
         mocked_trtl.return_value = docker_bench_pass_output
@@ -40,7 +40,7 @@ class TestDockerBenchSecurityRunner(TestCase):
         self.assertEqual([], dbs.failed_container_list)
         self.assertEqual([], dbs.failed_image_list)
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().get_process')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
     def test_fail_dbs_container_run(self, mocked_trtl, mock_shellrunner):
         mocked_trtl.return_value = docker_bench_fail_container_output
@@ -52,7 +52,7 @@ class TestDockerBenchSecurityRunner(TestCase):
         self.assertEquals(dbs.failed_container_list, ['abc'])
         self.assertEquals(dbs.failed_image_list, [])
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().get_process')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
     def test_fail_dbs_image_run(self, mocked_trtl, mock_shellrunner):
         mocked_trtl.return_value = docker_bench_fail_image_output
@@ -64,7 +64,7 @@ class TestDockerBenchSecurityRunner(TestCase):
         self.assertEquals(dbs.failed_container_list, [])
         self.assertEquals(dbs.failed_image_list, ['a1', 'a2', 'a3'])
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().get_process')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
     def test_fail_dbs_not_run(self, mocked_trtl, mock_shellrunner):
         mocked_trtl.return_value = ''
