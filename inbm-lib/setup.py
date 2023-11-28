@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 with open('README.md') as f:
     readme = f.read()
 
-test_deps = ['mock==4.0.2', 'pytest==7.4.3', 'testtools==2.5.0', 'ddt==1.2.1']
+test_deps = ['mock==4.0.2', 'types-mock==5.1.0.3', 'pytest==7.4.3', 'testtools==2.5.0', 'ddt==1.2.1']
 extras = {
     'test': test_deps,
 }

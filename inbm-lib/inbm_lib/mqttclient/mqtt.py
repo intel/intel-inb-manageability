@@ -7,6 +7,7 @@
 
 import logging
 import os
+import socket
 import ssl
 
 import paho.mqtt.client as mqtt
@@ -98,7 +99,7 @@ class MQTT:
                                     keyfile=mqtt_client_keys, cert_reqs=ssl.CERT_REQUIRED, ciphers=cipher)
             self._mqttc.connect(mqtt_host, mqtt_port, keep_alive)
             logger.info('Connected to MQTT broker: %s on port: %d', mqtt_host, mqtt_port)
-        except mqtt.socket.error:
+        except socket.error:
             logger.error('Ensure MQTT service is running!')
             raise
 
