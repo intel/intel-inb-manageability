@@ -102,7 +102,7 @@ class TestDiagnosticChecker(TestCase):
         elif path == MIN_POWER_PERCENT:
             self.assertEquals(self.dc._min_power_percent.config_value, 17)
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run",
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run",
            return_value=('eth0', "", 0))
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')

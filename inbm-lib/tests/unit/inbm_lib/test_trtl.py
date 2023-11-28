@@ -1,4 +1,5 @@
 import random
+from typing import Tuple
 import unittest
 from unittest import TestCase
 from mock import patch
@@ -12,12 +13,12 @@ TRTL_APP = '/usr/bin/trtl'
 class TestTrtl(TestCase):
 
     @staticmethod
-    def __setup_trtl_test():
-        return_code = str(random.randint(10, 30))
+    def __setup_trtl_test() -> Tuple[int, TestRunner]:
+        return_code = random.randint(10, 30)
         runner = TestRunner("", "", return_code)
         return return_code, runner
 
-    def __check_str_type(self, strn):
+    def __check_str_type(self, strn: str) -> bytes:
         encoded_str = bytes(strn + '\n', 'utf-8')
         return encoded_str
 

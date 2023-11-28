@@ -45,7 +45,7 @@ sda   123456    1
         self.assertIsNone(res)
 
     @patch('platform.system')
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run')
     def test_get_lsblk_ouput_fail(self, mock_runner, mock_platform) -> None:
         mock_runner.return_value = ('', 'ERROR', 1)
         mock_platform.return_value = 'Linux'
@@ -53,7 +53,7 @@ sda   123456    1
         self.assertIsNone(res)
 
     @patch('platform.system')
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run')
     def test_get_lsblk_ouput_success(self, mock_runner, mock_platform) -> None:
         lsblk_output = \
             """NAME    SIZE ROTA

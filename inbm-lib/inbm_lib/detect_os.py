@@ -55,10 +55,10 @@ def get_lsb_release_name_host() -> Optional[str]:
     try:
         is_docker_app = os.environ.get("container", False)
         if is_docker_app:
-            (result, error, exit_code) = PseudoShellRunner.run(
+            (result, error, exit_code) = PseudoShellRunner().run(
                 DOCKER_CHROOT_PREFIX + "/usr/bin/lsb_release -i -s")
         else:
-            (result, error, exit_code) = PseudoShellRunner.run("lsb_release -i -s")
+            (result, error, exit_code) = PseudoShellRunner().run("lsb_release -i -s")
         if exit_code == 0:
             logger.debug("Found lsb_release -i: " + result)
             return result.replace('\n', '')

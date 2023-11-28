@@ -103,7 +103,7 @@ class MQTT:
             logger.error('Ensure MQTT service is running!')
             raise
 
-        self.topics: Dict = {}
+        self.topics: dict[str,Callable[[str, Any, int], None]] = {}
 
     def loop_once(self, timeout: float = 1.0, max_packets: int = 1) -> None:
         """Loop the MQTT client once

@@ -48,7 +48,7 @@ class ConfigurationHelper:
         logger.debug(f"untar command: {cmd}")
         conf_file = None
         try:
-            (out, err, code) = PseudoShellRunner.run(cmd)
+            (out, err, code) = PseudoShellRunner().run(cmd)
             if code == 0 and not err:
                 for line in out.splitlines():
                     file_type = get_file_type(line)

@@ -97,8 +97,8 @@ def print_execution_summary(cmd_list: List,  dispatcher_broker: DispatcherBroker
 
 def _run_command(cmd: CommandList.CommandObject, log_destination: str) -> Tuple[str, Optional[str], int, Optional[str]]:
     logger.debug("")
-    return PseudoShellRunner.run_with_log_path(str(cmd), LOGPATH) if \
-        log_destination == "FILE" else PseudoShellRunner.run_with_log_path(str(cmd), log_path=None)
+    return PseudoShellRunner().run_with_log_path(str(cmd), LOGPATH) if \
+        log_destination == "FILE" else PseudoShellRunner().run_with_log_path(str(cmd), log_path=None)
 
 
 def _skip_remaining_commands(cmd_list: List, current_failed_index: int,

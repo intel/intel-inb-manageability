@@ -37,28 +37,28 @@ class TestDeviceManager(TestCase):
             failed = True
         assert failed
 
-    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_linux_restart(self, mock_run) -> None:
         result = self.mock_linux_dm.restart()
         assert result == SUCCESS_RESTART
 
-    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_linux_shutdown(self, mock_run) -> None:
         result = self.mock_linux_dm.shutdown()
         assert result == SUCCESS_SHUTDOWN
 
     @mock.patch('os.remove')
-    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_linux_decommission(self, mock_run, mock_os_remove) -> None:
         result = self.mock_linux_dm.decommission()
         assert result == SUCCESS_DECOMMISSION
 
-    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_win_restart(self, mock_run) -> None:
         result = self.mock_win_dm.restart()
         assert result == SUCCESS_RESTART
 
-    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @mock.patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_win_shutdown(self, mock_run) -> None:
         result = self.mock_win_dm.shutdown()
         assert result == SUCCESS_SHUTDOWN

@@ -202,7 +202,7 @@ def test_extract_files_from_tar(setup_xml_handlers, mocker) -> None:
     mock_xml = mocker.patch('inbm_lib.xmlhandler.XmlHandler.get_children',
                             return_value=GOOD_PARSED_XML)
     mock_runner = mocker.patch(
-        'inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=('tc.conf', '', 0))
+        'inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=('tc.conf', '', 0))
 
     conf_file = ConfigurationHelper(mock_dispatcher_broker)._extract_files_from_tar(
         '/var/cache/manageability/repository/tc.tar')
@@ -215,7 +215,7 @@ def test_extract_files_from_tar_file_fail(setup_xml_handlers, mocker) -> None:
     mock_xml = mocker.patch('inbm_lib.xmlhandler.XmlHandler.get_children',
                             return_value=GOOD_PARSED_XML)
     mock_runner = mocker.patch(
-        'inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=('tc.txt', '', 0))
+        'inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=('tc.txt', '', 0))
 
     with pytest.raises(DispatcherException, match='Configuration File Load Error: Invalid File sent. error:'):
         ConfigurationHelper(mock_dispatcher_broker)._extract_files_from_tar(

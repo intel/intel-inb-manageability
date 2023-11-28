@@ -31,39 +31,39 @@ class TestTelemetry(TestCase):
         v = Poller.is_between_bounds("MIN_MEMORY", "3", 2, 5)
         self.assertTrue(v)
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     @patch('telemetry.telemetry_handling.TelemetryTimer.set_collect_time')
     def test_set_configuration_value_collect_time(self, mock_set_time, mock_run) -> None:
         Poller().set_configuration_value("100", COLLECTION_INTERVAL_SECONDS)
         mock_set_time.assert_called_once()
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     @patch('telemetry.telemetry_handling.TelemetryTimer.set_publish_time')
     def test_set_configuration_value_publish_time(self, mock_set_time, mock_run) -> None:
         Poller().set_configuration_value("150", PUBLISH_INTERVAL_SECONDS)
         mock_set_time.assert_called_once()
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_set_configuration_value_cache_size(self, mock_run) -> None:
         poller = Poller()
         poller.set_configuration_value("150", MAX_CACHE_SIZE)
         self.assertEqual(poller._max_cache_size, 150)
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_set_configuration_value_container_health_interval(self, mock_run) -> None:
         poller = Poller()
         poller.set_configuration_value("300", CONTAINER_HEALTH_INTERVAL_SECONDS)
         self.assertEqual(poller._container_health_interval_seconds, 300)
         self.assertEqual(poller._container_health_temp, 300)
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_set_configuration_value_software_bom_interval(self, mock_run) -> None:
         poller = Poller()
         poller.set_configuration_value("24", SOFTWARE_BOM_INTERVAL_HOURS)
         self.assertEqual(poller._swbom_interval_seconds, 86400)
         self.assertEqual(poller._swbom_timer_seconds, 86400)
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
     def test_set_configuration_value_enable_software_bom(self, mock_run) -> None:
         poller = Poller()
         poller.set_configuration_value("False", ENABLE_SOFTWARE_BOM)

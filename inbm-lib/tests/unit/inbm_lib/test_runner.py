@@ -1,4 +1,5 @@
 import random
+from typing import Tuple
 import unittest
 from unittest import TestCase
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -11,17 +12,17 @@ class TestRunner(PseudoShellRunner):
         self.__return_code = return_code
         self.__err = err
 
-    def run(self, cmd):
+    def run(self, cmd: str, cwd: str | None = None) -> Tuple[str, str | None, int]:
         self.__last_commands.append(cmd)
         return self.__output, self.__err, self.__return_code
 
-    def last_cmd(self):
+    def last_cmd(self) -> str | None:
         cmds = self.__last_commands
         if len(cmds) == 0:
             return None
         return cmds[len(cmds) - 1]
 
-    def last_commands(self):
+    def last_commands(self) -> list[str]:
         return self.__last_commands
 
 

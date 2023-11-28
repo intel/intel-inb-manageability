@@ -51,7 +51,7 @@ class TestWorkloadOrchestration(TestCase):
         mock_mode.assert_called_once()
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('active', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('active', "", 0))
     def test_is_workload_service_active(self, mock_run, mock_value) -> None:
         mock_callback = Mock()
         result = WorkloadOrchestration(
@@ -59,7 +59,7 @@ class TestWorkloadOrchestration(TestCase):
         self.assertEqual(result, True)
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('inactive', "", 0))
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner().run", return_value=('inactive', "", 0))
     def test_is_workload_service_inactive(self, mock_run, mock_value) -> None:
         mock_callback = Mock()
         result = WorkloadOrchestration(

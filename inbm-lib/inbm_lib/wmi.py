@@ -47,7 +47,7 @@ def wmic_query(system: str, attribute: str) -> Dict[str, str]:
     logger.debug("")
     cmd = f"wmic {system} get {attribute}"
     try:
-        (output, err, code) = PseudoShellRunner.run(cmd)
+        (output, err, code) = PseudoShellRunner().run(cmd)
     except BaseException as exception:
         logger.error(f"wmic could not be run: {exception}")
         raise WmiException from exception

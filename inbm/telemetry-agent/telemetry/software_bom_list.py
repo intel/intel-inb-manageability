@@ -33,12 +33,12 @@ def get_sw_bom_list() -> List[Any]:
         os_type = detect_os()
         output = ""
         if os_type in [LinuxDistType.Ubuntu.name, LinuxDistType.Deby.name]:
-            (output, err, code) = PseudoShellRunner.run(
+            (output, err, code) = PseudoShellRunner().run(
                 "dpkg-query -f '${Package} ${Version}\n' -W")
             if code != 0:
                 raise SoftwareBomError(err)
         elif os_type in [LinuxDistType.YoctoX86_64.name, LinuxDistType.YoctoARM.name]:
-            (output, err, code) = PseudoShellRunner.run("rpm -qa")
+            (output, err, code) = PseudoShellRunner().run("rpm -qa")
             if code != 0:
                 raise SoftwareBomError(err)
             swbom = " mender version: " + read_mender_file(MENDER_PATH,  UNKNOWN)

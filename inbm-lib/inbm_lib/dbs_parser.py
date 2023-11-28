@@ -26,8 +26,8 @@ def parse_docker_bench_security_results(dbs_output: str) -> Dict[str, Union[bool
     fails = "Failures in: "
     success_flag = True
     prev_warn = False
-    failed_images: List = []
-    failed_containers: List = []
+    failed_images: list[str] = []
+    failed_containers: list[str] = []
     for line in dbs_output.splitlines():
         if _is_name_in_line(line, prev_warn):
             _fetch_names_for_warn_test(line, failed_containers, failed_images)

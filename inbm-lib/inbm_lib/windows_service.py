@@ -28,7 +28,7 @@ if platform.system() == 'Windows' and 'unittest' not in sys.modules.keys():
     import win32service
     import win32timezone  # needed for pyinstaller to handle transitive import
 
-    class WindowsService(win32serviceutil.ServiceFramework, ABC):
+    class WindowsService(win32serviceutil.ServiceFramework, ABC):  # type: ignore[misc]  # ignore type errors for Windows libraries
         # Inherit from this class to create a service
 
         def __init__(self, args: List[str]) -> None:

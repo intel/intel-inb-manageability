@@ -69,7 +69,7 @@ class TestSota(testtools.TestCase):
     @patch('dispatcher.sota.os_updater.DebianBasedUpdater.update_remote_source',
            return_value=CommandList(['abc']).cmd_list)
     @patch('dispatcher.sota.sota.open')
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run_with_log_path',
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run_with_log_path',
            side_effect=[('out', 'err', 0, '/home/fakepath/'), ('out', 'err', 0, '/home/fakepath/'),
                         ('out', 'err', 0, '/home/fakepath/'), ('out',
                                                                'err', 0, None),
@@ -135,7 +135,7 @@ class TestSota(testtools.TestCase):
     @patch("inbm_lib.detect_os.detect_os")
     @patch("dispatcher.sota.sota.print_execution_summary")
     @patch("dispatcher.sota.snapshot.DebianBasedSnapshot._rollback_and_delete_snap")
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=('200', "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=('200', "", 0))
     def test_run_pass(self, mock_run, mock_rollback_and_delete_snap, mock_print,
                       mock_detect_os) -> None:
         mock_detect_os.return_value = 'Ubuntu'
