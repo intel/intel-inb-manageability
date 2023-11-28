@@ -55,7 +55,7 @@ def run_commands(log_destination: str, cmd_list: List[CommandList.CommandObject]
                     "{}. Command {} completed with Log: {}".format(cmd_index + 1, cmd, output))
             elif log_destination == 'FILE':
                 dispatcher_broker.telemetry("{}. Command {} completed, but will log instead to file: "
-                                      "{}".format(cmd_index + 1, cmd, abs_log_path))
+                                            "{}".format(cmd_index + 1, cmd, abs_log_path))
             cmd.status = SUCCESS
 
 
