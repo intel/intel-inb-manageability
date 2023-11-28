@@ -153,8 +153,8 @@ class XmlHandler:
         logger.debug("XML get attr")
         element = self._root.find(xpath)
         if element is not None:
-            # type: ignore[no-any-return]  # not practical to type this
-            return element.attrib[attribute_name]
+            # not practical to type this
+            return element.attrib[attribute_name]  # type: ignore[no-any-return]
         else:
             raise XmlException("Could not find element in get_attribute")
 
@@ -182,8 +182,8 @@ class XmlHandler:
                     element._children.append(subtag)
                 else:
                     raise e
-            # type: ignore[no-any-return]  # not practical to type this
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while add : {e}")
 
@@ -202,8 +202,8 @@ class XmlHandler:
                 element.text = attribute_value
             else:
                 raise XmlException("The path doesn't contain the element specified")
-            # type: ignore[no-any-return]  # not practical to type this
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while set : {e}")
 
@@ -223,8 +223,8 @@ class XmlHandler:
 
                 parent = parent_map[element]
                 parent.remove(element)
-            # type: ignore[no-any-return]  # not practical to type this
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while remove : {e}")
 
