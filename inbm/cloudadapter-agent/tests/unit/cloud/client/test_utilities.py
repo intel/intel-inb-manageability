@@ -16,7 +16,7 @@ import mock
 class TestProxyConfig(unittest.TestCase):
 
     @mock.patch('cloudadapter.cloud.client.utilities.getproxies', autospec=True)
-    def test_manual_proxy_succeeds(self, mock_getproxies):
+    def test_manual_proxy_succeeds(self, mock_getproxies) -> None:
         mock_getproxies.return_value = {
             "http": "http://proxy.com:123/"
         }
@@ -25,7 +25,7 @@ class TestProxyConfig(unittest.TestCase):
         assert proxy_config.endpoint == endpoint
 
     @mock.patch('cloudadapter.cloud.client.utilities.getproxies', autospec=True)
-    def test_auto_proxy_succeeds(self, mock_getproxies):
+    def test_auto_proxy_succeeds(self, mock_getproxies) -> None:
         mock_getproxies.return_value = {
             "http": "http://proxy.com:123/"
         }
@@ -36,12 +36,12 @@ class TestProxyConfig(unittest.TestCase):
 class TestTLSConfig(unittest.TestCase):
 
     @mock.patch('cloudadapter.cloud.client.utilities.SSLContext', autospec=True)
-    def test_tls_config_succeeds(self, MockSSLContext):
+    def test_tls_config_succeeds(self, MockSSLContext) -> None:
         tls_config = TLSConfig("location")
         assert tls_config.context is MockSSLContext.return_value
 
     @mock.patch('cloudadapter.cloud.client.utilities.SSLContext', autospec=True)
-    def test_tls_config_with_bad_certificates_fails(self, MockSSLContext):
+    def test_tls_config_with_bad_certificates_fails(self, MockSSLContext) -> None:
         MockSSLContext.return_value.load_verify_locations.side_effect = IOError("Error!")
         failed = False
         try:
@@ -53,49 +53,49 @@ class TestTLSConfig(unittest.TestCase):
 
 class TestFormatter(unittest.TestCase):
 
-    def test_format_unformatted_succeeds(self):
+    def test_format_unformatted_succeeds(self) -> None:
         formatter = Formatter("unformatted")
         result = formatter.format()
         assert result == "unformatted"
 
-    def test_format_supplies_timestamps_succeeds(self):
+    def test_format_supplies_timestamps_succeeds(self) -> None:
         formatter = Formatter("{ts} {timestamp} {timestamp=%c}")
         result = formatter.format()
         assert "{ts}" not in result
         assert "{timestamp" not in result
 
-    def test_format_supplies_defaults_succeeds(self):
+    def test_format_supplies_defaults_succeeds(self) -> None:
         formatter = Formatter("{default}", {"default": "filled"})
         result = formatter.format()
         assert result == "filled"
 
-    def test_format_supplies_given_succeeds(self):
+    def test_format_supplies_given_succeeds(self) -> None:
         formatter = Formatter("{given}")
         result = formatter.format(given="filled")
         assert result == "filled"
 
-    def test_format_escapes_succeeds(self):
+    def test_format_escapes_succeeds(self) -> None:
         formatter = Formatter("{escape}")
         result = formatter.format(escape="\r\t\n\"")
         assert result == "\\r\\t\\n\\\""
 
-    def test_raw_format_no_escapes(self):
+    def test_raw_format_no_escapes(self) -> None:
         formatter = Formatter("{raw_escape}")
         result = formatter.format(escape="\r\t\n\"")
         assert result == "\r\t\n\""
 
-    def test_raw_format_no_escapes_default(self):
+    def test_raw_format_no_escapes_default(self) -> None:
         formatter = Formatter("{raw_default}", {"default": "f\"illed"})
         result = formatter.format()
         assert result == "f\"illed"
 
-    def test_format_backslash_escape_succeeds(self):
+    def test_format_backslash_escape_succeeds(self) -> None:
         formatter = Formatter("{escape}")
         result = formatter.format(escape="\\")
         assert result == "\\\\"
 
     @mock.patch('cloudadapter.cloud.client.utilities.logger', autospec=True)
-    def test_format_not_supplied_logged_succeeds(self, mock_logger):
+    def test_format_not_supplied_logged_succeeds(self, mock_logger) -> None:
         formatter = Formatter("{unsupplied}")
         formatter.format()
         assert mock_logger.error.call_count == 1
@@ -103,7 +103,7 @@ class TestFormatter(unittest.TestCase):
 
 class TestMethodParse(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.parse_info = {
             "method": {
                 "regex": r"methods\/([\w_-]+)",
@@ -115,21 +115,21 @@ class TestMethodParse(unittest.TestCase):
         }
         self.parser = MethodParser(self.parse_info)
 
-    def test_parse_single_succeeds(self):
+    def test_parse_single_succeeds(self) -> None:
         topic = "methods/my-method"
         payload = "{ \"parent\": { \"child\": { \"item\": { \"param\": \"arg\" } } } }"
         result = self.parser.parse(topic, payload)[0]
         assert result.method == "my-method"
         assert result.args.get("param") is not None
 
-    def test_parse_single_without_method_succeeds(self):
+    def test_parse_single_without_method_succeeds(self) -> None:
         topic = "methods"
         payload = "{ \"parent\": { \"child\": { \"item\": { \"param\": \"arg\" } } } }"
         result = self.parser.parse(topic, payload)[0]
         assert not result.method
         assert result.args.get("param") is not None
 
-    def test_parse_single_without_args_succeeds(self):
+    def test_parse_single_without_args_succeeds(self) -> None:
         topic = "methods/my-method"
         payload = "{ }"
         result = self.parser.parse(topic, payload)[0]
@@ -137,7 +137,7 @@ class TestMethodParse(unittest.TestCase):
         assert result.method == "my-method"
         assert not result.args
 
-    def test_parse_invalid_payload_fails(self):
+    def test_parse_invalid_payload_fails(self) -> None:
         failed = False
         try:
             self.parser.parse("topic", "payload")
@@ -145,7 +145,7 @@ class TestMethodParse(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_parse_multiple_succeeds(self):
+    def test_parse_multiple_succeeds(self) -> None:
         aggregate_info = {
             "path": "methods"
         }

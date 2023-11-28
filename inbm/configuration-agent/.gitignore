@@ -42,7 +42,6 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
-nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
@@ -100,5 +99,3 @@ fpm-files/
 
 # Configuration agent
 mqttclient/
-
-pyproject.toml

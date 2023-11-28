@@ -20,11 +20,11 @@ class TestCloudPublisher(unittest.TestCase):
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
     @mock.patch('cloudadapter.cloud.adapters.adapter.Adapter', autospec=True)
-    def setUp(self, MockedAdapter, mock_logger):
+    def setUp(self, MockedAdapter, mock_logger) -> None:
         self.MockedAdapter = MockedAdapter
         self.cloud_publisher = CloudPublisher(self.MockedAdapter("config"))
 
-    def test_publish_event_succeed(self):
+    def test_publish_event_succeed(self) -> None:
         event = "event"
         self.cloud_publisher.publish_event(event)
 
@@ -32,18 +32,18 @@ class TestCloudPublisher(unittest.TestCase):
         mocked.publish_event.assert_called_once_with(event)
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_event_with_adapter_success_succeeds(self, mock_logger):
+    def test_publish_event_with_adapter_success_succeeds(self, mock_logger) -> None:
         self.MockedAdapter.return_value.publish_event.return_value = None
         self.cloud_publisher.publish_event("Test Event")
         assert mock_logger.error.call_count == 0
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_event_with_adapter_fail_fails(self, mock_logger):
+    def test_publish_event_with_adapter_fail_fails(self, mock_logger) -> None:
         self.MockedAdapter.return_value.publish_event.side_effect = PublishError("Error!")
         self.cloud_publisher.publish_event("Test Event")
         assert mock_logger.error.call_count == 1
 
-    def test_publish_telemetry_static_succeed(self):
+    def test_publish_telemetry_static_succeed(self) -> None:
         telemetry = {
             "type": "static_telemetry",
             "values": {
@@ -57,7 +57,7 @@ class TestCloudPublisher(unittest.TestCase):
         mocked.publish_attribute.assert_called_once_with("TestAttribute", "Test Value")
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_telemetry_static_with_adapter_success_succeeds(self, mock_logger):
+    def test_publish_telemetry_static_with_adapter_success_succeeds(self, mock_logger) -> None:
         self.MockedAdapter.return_value.publish_attribute.return_value = None
         telemetry = json.dumps({
             "type": "static_telemetry",
@@ -69,7 +69,7 @@ class TestCloudPublisher(unittest.TestCase):
         assert mock_logger.error.call_count == 0
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_telemetry_static_with_adapter_fail_fails(self, mock_logger):
+    def test_publish_telemetry_static_with_adapter_fail_fails(self, mock_logger) -> None:
         self.MockedAdapter.return_value.publish_attribute.side_effect = PublishError("Error!")
         telemetry = json.dumps({
             "type": "static_telemetry",
@@ -80,7 +80,7 @@ class TestCloudPublisher(unittest.TestCase):
         self.cloud_publisher.publish_telemetry(telemetry)
         assert mock_logger.error.call_count == 1
 
-    def test_publish_telemetry_dynamic_succeed(self):
+    def test_publish_telemetry_dynamic_succeed(self) -> None:
         telemetry = {
             "type": "dynamic_telemetry",
             "values": {
@@ -100,7 +100,7 @@ class TestCloudPublisher(unittest.TestCase):
         )
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_telemetry_dynamic_with_adapter_success_succeeds(self, mock_logger):
+    def test_publish_telemetry_dynamic_with_adapter_success_succeeds(self, mock_logger) -> None:
         self.MockedAdapter.return_value.publish_telemetry.return_value = None
         telemetry = json.dumps({
             "type": "dynamic_telemetry",
@@ -112,7 +112,7 @@ class TestCloudPublisher(unittest.TestCase):
         assert mock_logger.error.call_count == 0
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_telemetry_dynamic_with_adapter_fail_fails(self, mock_logger):
+    def test_publish_telemetry_dynamic_with_adapter_fail_fails(self, mock_logger) -> None:
         self.MockedAdapter.return_value.publish_telemetry.side_effect = PublishError("Error!")
         telemetry = json.dumps({
             "type": "dynamic_telemetry",
@@ -124,7 +124,7 @@ class TestCloudPublisher(unittest.TestCase):
         assert mock_logger.error.call_count == 1
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_telemetry_unkown_fail(self, mock_logger):
+    def test_publish_telemetry_unkown_fail(self, mock_logger) -> None:
         telemetry = json.dumps({
             "values": {
                 "TestAttribute": "Test Value"
@@ -140,7 +140,7 @@ class TestCloudPublisher(unittest.TestCase):
         )
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_telemetry_empty_fail(self, mock_logger):
+    def test_publish_telemetry_empty_fail(self, mock_logger) -> None:
         telemetry = json.dumps({})
 
         self.cloud_publisher.publish_telemetry(telemetry)
@@ -152,7 +152,7 @@ class TestCloudPublisher(unittest.TestCase):
         )
 
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
-    def test_publish_telemetry_bad_json_fail(self, mock_logger):
+    def test_publish_telemetry_bad_json_fail(self, mock_logger) -> None:
         telemetry = "invalid"
 
         self.cloud_publisher.publish_telemetry(telemetry)

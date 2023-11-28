@@ -15,13 +15,13 @@ import cloudadapter.cloud.adapter_factory as adapter_factory
 
 class TestAdapterFactory(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.CONFIG = {
             "sample": "config"
         }
 
     @mock.patch("os.path.islink")
-    def test_islink_error(self, mock_islink):
+    def test_islink_error(self, mock_islink) -> None:
         # Mock the islink function to return True
         mock_islink.return_value = True
 
@@ -37,7 +37,7 @@ class TestAdapterFactory(unittest.TestCase):
 
     @mock.patch('cloudadapter.cloud.adapter_factory.AzureAdapter')
     @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
-    def test_get_adapter_azure_succeeds(self, mock_load_adapter_config, MockAzureAdapter):
+    def test_get_adapter_azure_succeeds(self, mock_load_adapter_config, MockAzureAdapter) -> None:
         mock_load_adapter_config.return_value = {
             "cloud": "azure",
             "config": self.CONFIG
@@ -45,19 +45,9 @@ class TestAdapterFactory(unittest.TestCase):
         adapter_factory.get_adapter()
         assert MockAzureAdapter.call_count == 1
 
-    @mock.patch('cloudadapter.cloud.adapter_factory.TelitAdapter')
-    @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
-    def test_get_adapter_telit_succeeds(self, mock_load_adapter_config, MockTelitAdapter):
-        mock_load_adapter_config.return_value = {
-            "cloud": "telit",
-            "config": self.CONFIG
-        }
-        adapter_factory.get_adapter()
-        assert MockTelitAdapter.call_count == 1
-
     @mock.patch('cloudadapter.cloud.adapter_factory.GenericAdapter')
     @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
-    def test_get_adapter_generic_succeeds(self, mock_load_adapter_config, MockGenericAdapter):
+    def test_get_adapter_generic_succeeds(self, mock_load_adapter_config, MockGenericAdapter) -> None:
         mock_load_adapter_config.return_value = {
             "cloud": "generic",
             "config": self.CONFIG
@@ -66,12 +56,12 @@ class TestAdapterFactory(unittest.TestCase):
         assert MockGenericAdapter.call_count == 1
 
     @mock.patch('cloudadapter.cloud.adapter_factory.open')
-    def test_get_adapter_no_file_fails(self, mock_open):
+    def test_get_adapter_no_file_fails(self, mock_open) -> None:
         mock_open.side_effect = IOError("Error!")
         self.assertRaises(BadConfigError, adapter_factory.get_adapter)
 
     @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
-    def test_get_adapter_no_cloud_fails(self, mock_load_adapter_config):
+    def test_get_adapter_no_cloud_fails(self, mock_load_adapter_config) -> None:
         mock_load_adapter_config.return_value = {
             "config": self.CONFIG
         }
@@ -79,7 +69,7 @@ class TestAdapterFactory(unittest.TestCase):
 
     @mock.patch('cloudadapter.cloud.adapter_factory.GenericAdapter')
     @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
-    def test_get_adapter_no_config_fails(self, mock_load_adapter_config, MockGenericAdapter):
+    def test_get_adapter_no_config_fails(self, mock_load_adapter_config, MockGenericAdapter) -> None:
         mock_load_adapter_config.return_value = {
             "cloud": "generic",
         }

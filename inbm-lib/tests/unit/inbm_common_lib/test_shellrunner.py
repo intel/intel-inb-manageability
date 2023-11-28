@@ -8,17 +8,17 @@ class TestShellRunner(testtools.TestCase):
 
     class MockPopen:
 
-        def __init__(self):
+        def __init__(self) -> None:
             pass
 
         def communicate(self, input=None):
             return 'stdout', 'stderr'
 
-        def close(self):
+        def close(self) -> None:
             pass
 
     @patch('os.makedirs', return_value=True)
-    def test_run_file(self, mock_makedir):
+    def test_run_file(self, mock_makedir) -> None:
         with patch('builtins.open', new_callable=mock_open()) as m:
             mock_popen = TestShellRunner.MockPopen()
             mock_returncode = mock.PropertyMock(return_value=0)
@@ -30,7 +30,7 @@ class TestShellRunner(testtools.TestCase):
             self.assertEquals(out, '')
 
     @patch('os.makedirs', return_value=True)
-    def test_run_stdout(self, mock_makedir):
+    def test_run_stdout(self, mock_makedir) -> None:
         with patch('builtins.open', new_callable=mock_open()) as m:
             mock_popen = TestShellRunner.MockPopen()
             mock_makedir.assert_not_called()
@@ -40,7 +40,7 @@ class TestShellRunner(testtools.TestCase):
             out, err, return_code = PseudoShellRunner.run("echo TestCase")
             assert (out == "TestCase\n")
 
-    def test_sanitize(self, filename='test file/name'):
+    def test_sanitize(self, filename='test file/name') -> None:
         self.assertEqual(
             PseudoShellRunner._sanitize(filename),
             'test_file_name')

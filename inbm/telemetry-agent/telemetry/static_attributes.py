@@ -9,8 +9,6 @@ from inbm_common_lib.constants import UNKNOWN
 import psutil
 import platform
 import json
-from future import standard_library
-standard_library.install_aliases()
 
 
 def get_os_information() -> str:

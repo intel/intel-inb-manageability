@@ -32,8 +32,16 @@ All instructions below assume you are in `$GOPATH/src/intel-inb-manageability/in
  ❗ First ensure your dependencies are up to date.  
 - run `scripts/set-up-trtl-deps`
 
-* To build statically linked go libraries (dynamically linked to e.g. pthread, libc): `go build -o trtl`
-* To build fully statically linked (takes longer): `CGO_ENABLE=0 go build -o trtl`
+* To build statically linked go libraries (dynamically linked to e.g. pthread, libc): 
+```
+export CGO_CPPFLAGS = "-D_FORTIFY_SOURCE=2"
+export CGO_CFLAGS = -pipe -fno-plt
+export CGO_CXXFLAGS = -pipe -fno-plt
+export CGO_LDFLAGS = -fstack-protector-strong -Wl,-O1,--sort-common,--as-needed,-z,relro,-z,now,-z,noexecstack,-z,defs
+CGO_ENABLED=1 go build -trimpath -mod=readonly -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" -buildmode=pie -ldflags="all=-linkmode=external -s -w" -o trtl`
+```
+
+* To build fully statically linked (takes longer): `CGO_ENABLED=0 go build -trimpath -mod=readonly -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" -ldflags="all=-s -w" -o trtl`
 
 ### Run
  `trtl`

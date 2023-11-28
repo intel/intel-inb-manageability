@@ -5,6 +5,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
+from abc import abstractmethod
 import logging
 from datetime import datetime
 
@@ -14,7 +15,7 @@ from .sota_error import SotaError
 from ..constants import UMASK_OTA
 from ..downloader import download
 from ..packagemanager.irepo import IRepo
-from ..dispatcher_callbacks import DispatcherCallbacks
+from ..dispatcher_broker import DispatcherBroker
 from inbm_common_lib.utility import CanonicalUri
 
 
@@ -28,7 +29,7 @@ class Downloader:
         pass
 
     def download(self,
-                 callback: DispatcherCallbacks,
+                 dispatcher_broker: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
                  username: Optional[str],
@@ -36,7 +37,7 @@ class Downloader:
                  release_date: Optional[str]) -> None:
         """Downloads update/upgrade and places capsule file in local cache.
 
-        @param callback: callback to dispatcher
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param uri: URI of the source location
         @param repo: repository for holding the download
         @param username: username to use for download
@@ -65,6 +66,7 @@ class Downloader:
         logger.debug(f"System mender release date: {platform_mender_date}")
         return True if manifest_release_date > platform_mender_date else False
 
+    @abstractmethod
     def check_release_date(self, release_date: Optional[str]) -> bool:
         pass
 
@@ -76,7 +78,7 @@ class DebianBasedDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 callback: DispatcherCallbacks,
+                 dispatcher_broker: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
                  username: Optional[str],
@@ -101,7 +103,7 @@ class WindowsDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 callback: DispatcherCallbacks,
+                 dispatcher_broker: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
                  username: Optional[str],
@@ -109,7 +111,6 @@ class WindowsDownloader(Downloader):
                  release_date: Optional[str]) -> None:
         """STUB: downloads Windows update
 
-        @param callback: callback to dispatcher
         @param uri: URI of the source location
         @param repo: repository for holding the download
         @param username: username to use for download
@@ -121,7 +122,7 @@ class WindowsDownloader(Downloader):
         logger.debug("")
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
-        pass
+        raise NotImplementedError()
 
 
 class YoctoDownloader(Downloader):
@@ -131,7 +132,7 @@ class YoctoDownloader(Downloader):
         super().__init__()
 
     def download(self,
-                 callback: DispatcherCallbacks,
+                 dispatcher_broker: DispatcherBroker,
                  uri: Optional[CanonicalUri],
                  repo: IRepo,
                  username: Optional[str],
@@ -139,7 +140,7 @@ class YoctoDownloader(Downloader):
                  release_date: Optional[str]) -> None:
         """Downloads files and places image in local cache
 
-        @param callback: callback to dispatcher
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param uri: URI of the source location
         @param repo: repository for holding the download
         @param username: username to use for download
@@ -155,7 +156,7 @@ class YoctoDownloader(Downloader):
         if uri is None:
             raise SotaError("URI is None while performing Yocto download")
 
-        download(dispatcher_callbacks=callback,
+        download(dispatcher_broker=dispatcher_broker,
                  uri=uri,
                  repo=repo,
                  umask=UMASK_OTA,

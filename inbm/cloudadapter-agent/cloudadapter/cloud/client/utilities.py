@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 class ProxyConfig:
 
-    def __init__(self, hostname: str = None, port: int = None) -> None:
+    def __init__(self, hostname: Optional[str] = None, port: Optional[int] = None) -> None:
         """Construct a proxy configuration object
 
         @param hostname: (str) Hostname for proxy without http://
@@ -67,7 +67,7 @@ class ProxyConfig:
 class TLSConfig:
 
     def __init__(self, ca_certs: Optional[str] = None, device_cert: Optional[str] = None,
-                 device_key: Optional[str] = None):
+                 device_key: Optional[str] = None) -> None:
         """Construct a TLS configuration
 
         @param ca_certs: (str) File path to CA certificates to use
@@ -126,7 +126,7 @@ class TLSConfig:
 
 class Formatter:
 
-    def __init__(self, formatting, defaults={}):
+    def __init__(self, formatting, defaults={}) -> None:
         """Create a formatter for a given string formatting.
         Placeholder fields are surrounded with brackets,
         and there are no spaces in the bracketed placeholder field.
@@ -150,7 +150,7 @@ class Formatter:
         for f in fields:
             self._fields.add(f.group(1))
 
-    def _escape(self, string):
+    def _escape(self, string: str):
         """Escape quotes and control characters in the given string
 
         @param string: (str) String to escape
@@ -210,7 +210,7 @@ class Formatter:
 
 class MethodParsed:
 
-    def __init__(self, method: str = "", args: Dict[str, Any] = {}, **symbols: str):
+    def __init__(self, method: str = "", args: Dict[str, Any] = {}, **symbols: str) -> None:
         """Construct readonly parsed method information
         @param method:    (str) Method name
         @param args:   (dict) Method arguments
@@ -238,7 +238,7 @@ class MethodParsed:
 
 class MethodParser:
 
-    def __init__(self, parse_info, aggregate_info=None):
+    def __init__(self, parse_info, aggregate_info=None) -> None:
         """Create a parser to process method information from
         the raw string the topic and payload.
         parse_info is a dict with the following format:

@@ -1,6 +1,5 @@
 from setuptools import setup, find_packages
-from future import standard_library
-standard_library.install_aliases()
+
 
 with open('README.md') as f:
     readme = f.read()
@@ -12,7 +11,8 @@ setup(
     license='Apache 2.0',
     packages=find_packages(exclude=('tests', 'doc')),
     include_package_data=True,
-    install_requires=['nose', 'packaging', 'future', 'paho-mqtt', 'psutil'],
-    test_suite='nose.collector',
-    tests_require=['nose']
+    install_requires=['pytest', 'pytest-cov', 'pytest-mock',
+                      'packaging', 'future', 'paho-mqtt', 'psutil'],
+    test_suite='pytest',
+    tests_require=['pytest', 'pytest-cov', 'pytest-mock']
 )

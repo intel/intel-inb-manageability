@@ -7,9 +7,8 @@
 import platform
 import os
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from future import standard_library
+
 from telemetry.constants import RM_PATH
-standard_library.install_aliases()
 
 
 def is_iahost() -> bool:

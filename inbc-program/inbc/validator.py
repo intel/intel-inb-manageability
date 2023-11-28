@@ -6,6 +6,7 @@
 import logging
 import datetime
 import argparse
+from inbm_lib.validate_package_list import parse_and_validate_package_list
 from dataclasses import dataclass
 import re
 logger = logging.getLogger(__name__)
@@ -36,14 +37,30 @@ def validate_date(date: str) -> str:
     except ValueError:
         raise argparse.ArgumentTypeError(f"Not a valid date - format YYYY-MM-DD: '{date}")
 
+
 def validate_guid(value: str) -> str:
     """Validates that the user inputted string does not exceed the maximum allowed
-        @param value: string entered by user
-        @raise argparse.ArgumentTypeError: Invalid guid format
-        """
+    @param value: string entered by user
+    @raise argparse.ArgumentTypeError: Invalid guid format
+    """
     if not bool(re.match("^[{]?[0-9a-fA-F]{8}" + "-([0-9a-fA-F]{4}-)" + "{3}[0-9a-fA-F]{12}[}]?$", str(value))):
-        raise argparse.ArgumentTypeError(f"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed")
+        raise argparse.ArgumentTypeError(
+            f"GUID should be 36 characters displayed in five groups separated by a dash in the format XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX and Hexdigits are allowed")
     return value
+
+
+def validate_package_list(package_list: str) -> str:
+    """Function to validate the comma-separated package list.
+    @param package_list: A comma-separated string of package names
+    @return: Same parameter (if valid)
+    """
+    v = parse_and_validate_package_list(package_list)
+    if v is None:
+        raise argparse.ArgumentTypeError(f"Invalid package list: {package_list}. Package names must "
+                                         f"consist only of lowercase letters, digits, and delimiters (., +, -)")
+
+    return package_list
+
 
 @dataclass
 class ConfigurationItem:

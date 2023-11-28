@@ -55,9 +55,9 @@ class CloudAdapter(WindowsService):
 
         fileConfig(path, disable_existing_loggers=False)
         logger = logging.getLogger(__name__)
-        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
+        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 11:
             logger.error(
-                "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
         logger.info('Cloud Adapter agent is running')
 
@@ -75,7 +75,7 @@ class CloudAdapter(WindowsService):
 
         if platform.system() != 'Windows':
             # Unblock on termination signals
-            def unblock(signal, _):
+            def unblock(signal, _) -> None:
                 self.waiter.finish()
 
             signal.signal(signal.SIGTERM, unblock)
@@ -85,7 +85,7 @@ class CloudAdapter(WindowsService):
         client.stop()
 
 
-def main():
+def main() -> None:
     """The main function"""
 
     if platform.system() == 'Windows':

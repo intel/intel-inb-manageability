@@ -226,6 +226,10 @@
             "requestTimeout": 500,
             "otaTextFields": [
               {
+                "label": "Package List (comma separated)",
+                "key": "package_list"
+              },
+              {
                 "label": "Fetch",
                 "key": "fetch"
               },
@@ -248,6 +252,10 @@
                   {
                     "label": "update",
                     "key": "update"
+                  },
+                  {
+                    "label": "install",
+                    "key": "install"
                   }
                 ],
                 "data": {

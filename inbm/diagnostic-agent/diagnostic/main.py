@@ -24,7 +24,7 @@ from inbm_lib.windows_service import WindowsService
 
 class LoggingPath:  # pragma: no cover
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @classmethod
@@ -75,7 +75,7 @@ class Diagnostic(WindowsService):  # pragma: no cover
             # Catch the CTRL-C exit from the user
             signal.signal(signal.SIGINT, _sig_handler)
 
-        def _sig_handler(signo: signal.Signals, _: types.FrameType) -> None:
+        def _sig_handler(signo: int, _: Optional[types.FrameType]) -> None:
             if signo in (signal.SIGINT, signal.SIGTERM):
                 self.running = False
 
@@ -83,9 +83,9 @@ class Diagnostic(WindowsService):  # pragma: no cover
             _register_stop_callbacks()
         logger = self._set_up_logging()
         logger.info('Diagnostic agent is running')
-        if sys.version_info[0] <= 3 and sys.version_info[1] < 8:
+        if sys.version_info[0] <= 3 and sys.version_info[1] < 11:
             logger.error(
-                "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
 
         self.running = True

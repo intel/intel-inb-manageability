@@ -39,7 +39,6 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
-nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
@@ -100,5 +99,3 @@ fpm-files/
 
 # virtual environment
 virtual-env/
-
-pyproject.toml

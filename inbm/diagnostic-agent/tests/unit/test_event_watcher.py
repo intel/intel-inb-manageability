@@ -79,4 +79,4 @@ class TestEventWatcher(TestCase):
         thread.start()
         thread.join(timeout=1)
 
-        assert thread.isAlive() == False
+        assert thread.is_alive() == False

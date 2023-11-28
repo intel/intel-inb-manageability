@@ -161,7 +161,7 @@ class MQTTConnection(Connection):
             raise DisconnectError("Could not stop the connection thread!")
 
     def subscribe(self, topic: Optional[str], callback: Callable) -> None:
-        def wrapped(client, userdata, message):
+        def wrapped(client, userdata, message) -> None:
             topic = message.topic
             payload = message.payload
             callback(topic, payload)
@@ -188,5 +188,6 @@ class MQTTConnection(Connection):
         message = self._client.publish(topic=topic, payload=payload, qos=1)
         message.wait_for_publish()
         if message.rc != mqtt.MQTT_ERR_SUCCESS:
-            error = f"Error publishing to MQTT topic, got code: {message.rc}"
-            raise PublishError(error)
+            # TODO this could also be an exception (PublishError) but we have to be careful about catching it
+            # in all callers
+            logger.error(f"Error publishing to MQTT topic, got code: {message.rc}")

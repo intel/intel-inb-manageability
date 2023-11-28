@@ -14,9 +14,9 @@ import paho.mqtt.client as mqtt
 from typing import Dict, Optional, Callable
 
 import json
-from future import standard_library
 
-standard_library.install_aliases()
+
+
 
 CUSTOM_CMD_CHANNEL = "manageability/cmd/custom"
 DEFAULT_MQTT_HOST = 'localhost'
@@ -114,7 +114,7 @@ class MQTT:
 
         self._mqttc.loop_stop()
 
-    def publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:
+    def publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
         """Publish a MQTT message to the specified topic, encoded as utf-8
 
         @param topic: MQTT topic to publish message on
@@ -238,9 +238,9 @@ class CustomCmd():
         signal.signal(signal.SIGINT, _sig_handler)
         signal.signal(signal.SIGTERM, _sig_handler)
 
-        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
+        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 11:
             print(
-                "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
         print('Command program is running.')
 

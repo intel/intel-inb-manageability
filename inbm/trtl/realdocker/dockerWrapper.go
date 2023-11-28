@@ -1,24 +1,25 @@
 /*
-    Copyright (C) 2017-2023 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2023 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
 
 import (
-	"github.com/docker/docker/api/types/registry"
 	"io"
 	"log"
-	"time"
+
+	"github.com/docker/docker/api/types/registry"
+
+	"os"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/events"
 	"github.com/docker/docker/api/types/network"
 	"github.com/docker/docker/client"
-	"golang.org/x/net/context"
-	"os"
 	specs "github.com/opencontainers/image-spec/specs-go/v1"
+	"golang.org/x/net/context"
 )
 
 // DockerWrap is a struct that contains DockerInfo-specific instance information
@@ -33,7 +34,7 @@ type DockerWrapper interface {
 	ImageList(types.ImageListOptions) ([]types.ImageSummary, error)
 	ImageLoad(io.Reader, bool) error
 	ContainerCommit(string, types.ContainerCommitOptions) (types.IDResponse, error)
-	ContainerCreate(*container.Config, *container.HostConfig, *network.NetworkingConfig, *specs.Platform, string) (container.ContainerCreateCreatedBody, error)
+	ContainerCreate(*container.Config, *container.HostConfig, *network.NetworkingConfig, *specs.Platform, string) (container.CreateResponse, error)
 	ContainerExecAttach(string, types.ExecStartCheck) error
 	ContainerExecCreate(string, types.ExecConfig) (types.IDResponse, error)
 	ContainerInspect(string) (types.ContainerJSON, error)
@@ -42,7 +43,7 @@ type DockerWrapper interface {
 	ContainerRemove(string, types.ContainerRemoveOptions) error
 	ContainerStats(string, bool) (types.ContainerStats, error)
 	ContainerStart(string, types.ContainerStartOptions) error
-	ContainerStop(string, *time.Duration) error
+	ContainerStop(string, *int) error
 	CopyToContainer(string, string, io.Reader, types.CopyToContainerOptions) error
 	Login(types.AuthConfig) (registry.AuthenticateOKBody, error)
 }
@@ -167,10 +168,10 @@ func (dw DockerWrap) ContainerExecCreate(container string, config types.ExecConf
 
 // ContainerCreate makes the actual call to docker to create the container.
 func (dw DockerWrap) ContainerCreate(config *container.Config, hostConfig *container.HostConfig,
-	netConfig *network.NetworkingConfig, platform *specs.Platform, containerName string) (container.ContainerCreateCreatedBody, error) {
+	netConfig *network.NetworkingConfig, platform *specs.Platform, containerName string) (container.CreateResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
-		return container.ContainerCreateCreatedBody{}, err
+		return container.CreateResponse{}, err
 	}
 
 	return cli.ContainerCreate(context.Background(), config, hostConfig, netConfig, platform, containerName)
@@ -262,13 +263,14 @@ func (dw DockerWrap) ContainerStats(containerID string, stream bool) (types.Cont
 }
 
 // ContainerStop makes the actual call to docker to stop a container.
-func (dw DockerWrap) ContainerStop(containerID string, timeout *time.Duration) error {
+// timeout is # of seconds
+func (dw DockerWrap) ContainerStop(containerID string, timeout *int) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
 
-	return cli.ContainerStop(context.Background(), containerID, timeout)
+	return cli.ContainerStop(context.Background(), containerID, container.StopOptions{Timeout: timeout})
 }
 
 // ContainerInspect makes the actual call to docker to inspect a container.

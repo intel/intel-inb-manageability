@@ -27,7 +27,7 @@ class PseudoShellRunner:
 
     @staticmethod
     # should be Popen[bytes] but not yet supported in this Python version
-    def get_process(cmd: Union[str, List[str]]) -> Any:
+    def get_process(cmd: Union[str, List[str]]) -> subprocess.Popen:
         """Returns a shell to process a command
 
         @param cmd: command to execute
@@ -165,10 +165,10 @@ class PseudoShellRunner:
         @return: array suitable for Popen with shell=False
         """
 
-        def which(program):
+        def which(program: str) -> Optional[str]:
             import os
 
-            def is_exe(fpath):
+            def is_exe(fpath: str) -> bool:
                 return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
             fpath, fname = os.path.split(program)

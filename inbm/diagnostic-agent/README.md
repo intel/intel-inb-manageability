@@ -88,7 +88,7 @@ Ex:
 ```
 
 ## Install from Source
-❗ Use a Python version greater than 3.8 is installed
+❗ Use a Python version greater than 3.11 is installed
 
 1. [Build INBM](#../../README.md#build-instructions)
 2. [Install INBM](#../../docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)

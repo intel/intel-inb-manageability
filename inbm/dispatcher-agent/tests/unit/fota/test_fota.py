@@ -3,7 +3,6 @@ import unittest
 from typing import Dict, Optional, List
 
 from ..common.mock_resources import *
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.fota.fota import FOTA
 from dispatcher.fota.fota_error import FotaError
 from dispatcher.packagemanager.memory_repo import MemoryRepo
@@ -32,11 +31,7 @@ class TestFota(unittest.TestCase):
     _fota_local_instance: Optional[FOTA] = None
     invalid_parsed: Optional[XmlHandler] = None
     invalid_resource: Optional[Dict] = None
-    mock_disp_callbacks = DispatcherCallbacks(install_check=mock_disp_obj.install_check,
-                                              sota_repos=mock_disp_obj.sota_repos,
-                                              proceed_without_rollback=mock_disp_obj.proceed_without_rollback,
-                                              broker_core=MockDispatcherBroker.build_mock_dispatcher_broker(),
-                                              logger=mock_disp_obj.update_logger)
+    mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @classmethod
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
@@ -47,10 +42,16 @@ class TestFota(unittest.TestCase):
                            'callback': cls.mock_disp_obj, 'signature': None, 'hash_algorithm': None,
                            'uri': mock_url.value, 'repo': "/cache/", 'username': username,
                            'password': password, 'deviceReboot': 'yes'}
-        TestFota._fota_instance = FOTA(parsed_manifest, "remote", cls.mock_disp_callbacks)
-        TestFota._fota_local_instance = FOTA(parsed_manifest, "local", cls.mock_disp_callbacks)
+        TestFota._fota_instance = FOTA(parsed_manifest, "remote",
+                                       cls.mock_disp_broker, UpdateLogger("FOTA", "metadata"))
+        TestFota._fota_local_instance = FOTA(parsed_manifest,
+                                             "local",
+
+                                             cls.mock_disp_broker,
+                                             cls.mock_disp_obj.update_logger)
         parsed_manifest.update({'resource': cls.resource_2})
-        TestFota._fota_instance_1 = FOTA(parsed_manifest, "remote", cls.mock_disp_callbacks)
+        TestFota._fota_instance_1 = FOTA(
+            parsed_manifest, "remote", cls.mock_disp_broker, UpdateLogger("FOTA", "metadata"))
         cls.invalid_parsed = XmlHandler(
             fake_ota_invalid, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         cls.invalid_resource = cls.invalid_parsed.get_children('ota/type/fota')
@@ -61,10 +62,10 @@ class TestFota(unittest.TestCase):
     @patch('dispatcher.fota.fota.download')
     @patch('dispatcher.fota.upgrade_checker.LinuxUpgradeChecker.check')
     @patch('dispatcher.fota.os_factory.LinuxFactory.create_installer')
-    def test_does_not_download_with_local_repo(self, mock_create_installer, mock_upgrade_check, mock_downloader, mock_install, mock_rebooter, mock_dispatcher_state):
+    def test_does_not_download_with_local_repo(self, mock_create_installer, mock_upgrade_check, mock_downloader, mock_install, mock_rebooter, mock_dispatcher_state) -> None:
         mock_upgrade_check.return_value = 'abc', 'def'
         mock_dispatcher_state.return_value = True
-        mock_create_installer.return_value = LinuxInstaller(self.mock_disp_callbacks,
+        mock_create_installer.return_value = LinuxInstaller(self.mock_disp_broker,
                                                             TestFota._build_mock_repo(0), FW_CONF_PATH, FW_SCHEMA_LOCATION)
         assert TestFota._fota_local_instance
         TestFota._fota_local_instance.install()
@@ -80,7 +81,7 @@ class TestFota(unittest.TestCase):
     @patch('dispatcher.fota.upgrade_checker.LinuxUpgradeChecker.check')
     @patch('platform.system', return_value='Linux')
     def test_install_download_fails(self, mock_platform,
-                                    mock_upgrade_check, mock_install, mock_downloader, mock_delete):
+                                    mock_upgrade_check, mock_install, mock_downloader, mock_delete) -> None:
         mock_upgrade_check.return_value = 'abc', 'def'
         mock_downloader.return_value = 'fakepath'
         assert TestFota._fota_instance
@@ -95,7 +96,7 @@ class TestFota(unittest.TestCase):
     @patch('dispatcher.fota.upgrade_checker.LinuxUpgradeChecker.check', return_value=False)
     @patch('platform.system', return_value='Linux')
     def test_install_not_upgradable(self, mock_platform,
-                                    mock_upgrade_check, mock_install, mock_downloader):
+                                    mock_upgrade_check, mock_install, mock_downloader) -> None:
         mock_upgrade_check.return_value = "test", "test", False
         mock_install.return_value = False
         mock_downloader.return_value = 'fakepath'
@@ -114,10 +115,10 @@ class TestFota(unittest.TestCase):
     @patch('dispatcher.fota.os_factory.LinuxFactory.create_installer')
     @patch('dispatcher.common.dispatcher_state.write_dispatcher_state_to_state_file', autospec=True)
     def test_install_success(self, mock_dispatcher_state, mock_create_installer, mock_system, mock_upgrade_check, mock_install,
-                             mock_downloader, mock_rebooter, mock_tool_options):
+                             mock_downloader, mock_rebooter, mock_tool_options) -> None:
         mock_dispatcher_state.return_value = True
         mock_upgrade_check.return_value = 'abc', 'def'
-        mock_create_installer.return_value = LinuxInstaller(self.mock_disp_callbacks,
+        mock_create_installer.return_value = LinuxInstaller(self.mock_disp_broker,
                                                             TestFota._build_mock_repo(0), FW_CONF_PATH, FW_SCHEMA_LOCATION)
         assert TestFota._fota_instance
         TestFota._fota_instance.install()
@@ -134,10 +135,10 @@ class TestFota(unittest.TestCase):
     @patch('dispatcher.common.dispatcher_state.write_dispatcher_state_to_state_file', autospec=True)
     @patch('dispatcher.common.dispatcher_state.clear_dispatcher_state', autospec=True)
     def test_install_failure(self, mock_clear_disp_state, mock_dispatcher_state, mock_create_installer, mock_system, mock_upgrade_check,
-                             mock_tool_options):
+                             mock_tool_options) -> None:
         mock_dispatcher_state.return_value = True
         mock_upgrade_check.return_value = False, '', 'abc', 'def'
-        mock_create_installer.return_value = LinuxInstaller(self.mock_disp_callbacks,
+        mock_create_installer.return_value = LinuxInstaller(self.mock_disp_broker,
                                                             TestFota._build_mock_repo(0), FW_CONF_PATH, FW_SCHEMA_LOCATION)
         assert TestFota._fota_instance
         TestFota._fota_instance.install()
@@ -154,10 +155,10 @@ class TestFota(unittest.TestCase):
     @patch('dispatcher.fota.os_factory.LinuxFactory.create_installer')
     @patch('dispatcher.common.dispatcher_state.write_dispatcher_state_to_state_file', autospec=True)
     def test_does_not_download_with_remote_repo_hold_reboot(self, mock_dispatcher_state, mock_create_installer, mock_system, mock_upgrade_check, mock_install,
-                                                            mock_downloader, mock_rebooter, mock_tool_options):
+                                                            mock_downloader, mock_rebooter, mock_tool_options) -> None:
         mock_upgrade_check.return_value = 'abc', 'def'
         mock_dispatcher_state.return_value = True
-        mock_create_installer.return_value = LinuxInstaller(self.mock_disp_callbacks,
+        mock_create_installer.return_value = LinuxInstaller(self.mock_disp_broker,
                                                             TestFota._build_mock_repo(0), FW_CONF_PATH, FW_SCHEMA_LOCATION)
         assert TestFota._fota_instance_1
         TestFota._fota_instance_1.install()
@@ -171,7 +172,7 @@ class TestFota(unittest.TestCase):
     @patch('dispatcher.fota.upgrade_checker.UpgradeChecker.check')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     def test_install_raises_exception(
-            self, mock_pseudo_shell_runner, mock_upgrade_check, mock_delete):
+            self, mock_pseudo_shell_runner, mock_upgrade_check, mock_delete) -> None:
         mock_upgrade_check.return_value = True
         assert TestFota._fota_instance
         TestFota._fota_instance.install()
@@ -187,7 +188,7 @@ class TestFota(unittest.TestCase):
         return mem_repo
 
     @patch('dispatcher.fota.upgrade_checker.UpgradeChecker.check', side_effect=FotaError('dispatcher.fota error'))
-    def test_check_raise_exception(self, mock_upgrade_check):
+    def test_check_raise_exception(self, mock_upgrade_check) -> None:
         assert TestFota._fota_instance
         with self.assertRaises(FotaError):
             TestFota._fota_instance.check()
