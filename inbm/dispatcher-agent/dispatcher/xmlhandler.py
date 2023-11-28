@@ -126,9 +126,12 @@ class XmlHandler:
                 children[each.tag] = each.text
             elif len(each):
                 children[each.tag] = str(each.tag)
-                logger.debug(f'The element {each.tag} has {len(each)} children.')
+                logger.debug(f'The element {each.text} has {len(each)} children.')
             else:
-                raise XmlException('Empty tag encountered. XML rejected')
+                # empty tags are OK. for example, <package_list></package_list> in a SOTA
+                # command just means 'upgrade all packages'
+                children[each.tag] = ''
+                logger.debug(f'Empty tag {each.tag} encountered, but allowed.')
 
         return children
 
@@ -154,7 +157,7 @@ class XmlHandler:
         else:
             raise XmlException("Could not find element in get_attribute")
 
-    def add_attribute(self, xpath, attribute_name, attribute_value) -> bytes:
+    def add_attribute(self, xpath, attribute_name: str, attribute_value) -> bytes:
         """Add a new key value to the given path.
 
         @param xpath: path to key

@@ -17,24 +17,25 @@ parsed_manifest = {'uri': 'https://abc.com', 'signature': 'asdf',
 
 class TestOtaDownloader(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_disp_obj = MockDispatcher.build_mock_dispatcher()
+        self.mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
-    def test_download_aota(self):
+    def test_download_aota(self) -> None:
         try:
-            AotaDownloader(self.mock_disp_obj, parsed_manifest).download()
+            AotaDownloader(parsed_manifest).download()
         except (DispatcherException, AotaError):
             self.fail("Raised expected when not expected.")
 
-    def test_download_sota(self):
+    def test_download_sota(self) -> None:
         try:
-            SotaDownloader(self.mock_disp_obj, parsed_manifest).download()
+            SotaDownloader(parsed_manifest).download()
         except (DispatcherException, AotaError):
             self.fail("Raised expected when not expected.")
 
     @patch('dispatcher.ota_downloader.download')
-    def test_download_fota(self, mock_download):
+    def test_download_fota(self, mock_download) -> None:
         try:
-            FotaDownloader(self.mock_disp_obj, parsed_manifest).download()
+            FotaDownloader(self.mock_disp_broker, parsed_manifest).download()
         except (DispatcherException, AotaError):
             self.fail("Raised expected when not expected.")

@@ -7,7 +7,7 @@
 """
 import logging
 import os
-from typing import Optional, Callable
+from typing import Any, Optional, Callable
 
 from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS
 from dispatcher.dispatcher_exception import DispatcherException
@@ -46,7 +46,7 @@ class DispatcherBroker:
         else:
             self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
 
-    def mqtt_publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
+    def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.
 
         @param topic: topic to publish

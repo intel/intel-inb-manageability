@@ -20,7 +20,7 @@ class TestMQTTConnection(unittest.TestCase):
 
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.Waiter', autospec=True)
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.mqtt', autospec=True)
-    def setUp(self, mock_mqtt, MockWaiter):
+    def setUp(self, mock_mqtt, MockWaiter) -> None:
         mock_tls_config = mock.create_autospec(TLSConfig).return_value
         mock_proxy_config = mock.create_autospec(ProxyConfig).return_value
         mock_proxy_config.endpoint = ("end.point", 42)
@@ -37,7 +37,7 @@ class TestMQTTConnection(unittest.TestCase):
 
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.Waiter', autospec=True)
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.mqtt', autospec=True)
-    def test_no_proxy_config(self, mock_mqtt, MockWaiter):
+    def test_no_proxy_config(self, mock_mqtt, MockWaiter) -> None:
         mock_tls_config = mock.create_autospec(TLSConfig).return_value
         mock_proxy_config = mock.create_autospec(ProxyConfig).return_value
         mock_proxy_config.endpoint = None
@@ -52,25 +52,25 @@ class TestMQTTConnection(unittest.TestCase):
             tls_config=mock_tls_config,
             proxy_config=mock_proxy_config)
 
-    def test_request_id_generation_succeeds(self):
+    def test_request_id_generation_succeeds(self) -> None:
         r0 = self.mqtt_connection.request_id
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS
         self.mqtt_connection.publish("topic", "payload")
         r1 = self.mqtt_connection.request_id
         assert r0 != r1
 
-    def test_publish_succeeds(self):
+    def test_publish_succeeds(self) -> None:
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS
         self.mqtt_connection.publish("topic", "payload")
         assert self.mock_client.publish.call_count == 1
 
-    def test_publish_blank_topic_succeeds(self):
+    def test_publish_blank_topic_succeeds(self) -> None:
         # blank topic is used to disable publishing in our template files
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_SUCCESS
         self.mqtt_connection.publish("", "payload")
         assert self.mock_client.publish.call_count == 0
 
-    def test_publish_with_publish_fail_fails(self):
+    def test_publish_with_publish_fail_fails(self) -> None:
         self.mock_client.publish.return_value.rc = mqtt.MQTT_ERR_INVAL
         failed = False
         try:
@@ -78,7 +78,7 @@ class TestMQTTConnection(unittest.TestCase):
         except PublishError:
             failed = True
 
-    def test_start_succeeds(self):
+    def test_start_succeeds(self) -> None:
         self.mock_client.loop_start.return_value = None
         self.mock_waiter.wait.return_value = mqtt.MQTT_ERR_SUCCESS
         self.mock_client.connect = mock.Mock()
@@ -89,7 +89,7 @@ class TestMQTTConnection(unittest.TestCase):
         assert self.mock_client.loop_start.call_count == 1
         assert result is None
 
-    def test_start_with_loop_start_fail_fails(self):
+    def test_start_with_loop_start_fail_fails(self) -> None:
         self.mock_client.loop_start.return_value = mqtt.MQTT_ERR_INVAL
         self.mock_waiter.wait.return_value = mqtt.MQTT_ERR_SUCCESS
         self.mock_client.connect = mock.Mock()
@@ -101,7 +101,7 @@ class TestMQTTConnection(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_start_with_connect_auth_fail_fails(self):
+    def test_start_with_connect_auth_fail_fails(self) -> None:
         self.mock_client.loop_start.return_value = None
         self.mock_waiter.wait.return_value = mqtt.MQTT_ERR_CONN_REFUSED
         self.mock_client.connect = mock.Mock()
@@ -113,7 +113,7 @@ class TestMQTTConnection(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_start_with_connect_fail_fails(self):
+    def test_start_with_connect_fail_fails(self) -> None:
         self.mock_client.loop_start.return_value = None
         self.mock_waiter.wait.return_value = mqtt.MQTT_ERR_NOT_FOUND
         self.mock_client.connect = mock.Mock()
@@ -125,7 +125,7 @@ class TestMQTTConnection(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_start_with_connect_fatal_fail_fails(self):
+    def test_start_with_connect_fatal_fail_fails(self) -> None:
         self.mock_client.loop_start.return_value = None
         self.mock_waiter.wait.return_value = mqtt.MQTT_ERR_NOT_FOUND
         self.mock_client.connect = mock.Mock()
@@ -138,7 +138,7 @@ class TestMQTTConnection(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_stop_succeeds(self):
+    def test_stop_succeeds(self) -> None:
         self.mock_client.loop_stop.return_value = None
         self.mock_client.disconnect.return_value = mqtt.MQTT_ERR_SUCCESS
 
@@ -148,7 +148,7 @@ class TestMQTTConnection(unittest.TestCase):
         assert self.mock_client.loop_stop.call_count == 1
         assert result is None
 
-    def test_stop_with_loop_stop_fail_fails(self):
+    def test_stop_with_loop_stop_fail_fails(self) -> None:
         self.mock_client.loop_stop.return_value = mqtt.MQTT_ERR_INVAL
         self.mock_client.disconnect.return_value = mqtt.MQTT_ERR_SUCCESS
 
@@ -159,7 +159,7 @@ class TestMQTTConnection(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_stop_with_disconnect_fail_fails(self):
+    def test_stop_with_disconnect_fail_fails(self) -> None:
         self.mock_client.loop_stop.return_value = None
         self.mock_client.disconnect.return_value = mqtt.MQTT_ERR_CONN_REFUSED
 
@@ -170,7 +170,7 @@ class TestMQTTConnection(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_subscribe_succeeds(self):
+    def test_subscribe_succeeds(self) -> None:
         self.mqtt_connection.subscribe("topic", lambda: None)
 
         assert self.mock_client.subscribe.call_count == 1
@@ -179,14 +179,14 @@ class TestMQTTConnection(unittest.TestCase):
         args, _ = self.mock_client.subscribe.call_args
         assert ("topic",) == args
 
-    def test_subscribe_blank_topic_succeeds(self):
+    def test_subscribe_blank_topic_succeeds(self) -> None:
         # blank topic is used to disable a topic in our config templates
         self.mqtt_connection.subscribe("", lambda: None)
 
         assert self.mock_client.subscribe.call_count == 0
         assert self.mock_client.message_callback_add.call_count == 0
 
-    def test_connect_resubscribe_succeeds(self):
+    def test_connect_resubscribe_succeeds(self) -> None:
         callback = mock.Mock()
         self.mqtt_connection.subscribe("topic", callback)
 

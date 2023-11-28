@@ -4,13 +4,15 @@
 import logging
 from threading import Lock
 import datetime
+from typing import Callable, Optional, Union, Any
 
 from dispatcher.common.result_constants import *
+from dispatcher.install_check_service import InstallCheckService
 
 # case 1: success case
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.dispatcher_broker import DispatcherBroker
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
+from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.update_logger import UpdateLogger
 from inbm_common_lib.utility import canonicalize_uri
@@ -50,7 +52,7 @@ fake_fota_guid = """<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</t
                       <type><fota name="sample-rpm"><fetch>http://localhost:8080</fetch>
                       <biosversion>A.B.D.E.F</biosversion><vendor>test</vendor>
                       <signature>testsig</signature><manufacturer>testmanufacturer</manufacturer><product>testproduct</product>
-                      <releasedate>2017-06-12</releasedate><path>fakepath</path><guid>1234</guid>
+                      <releasedate>2017-06-12</releasedate><path>fakepath</path><guid>6B29FC40-CA47-1067-B31D-00DD010662DA</guid>
                       </fota></type></ota></manifest>
                    """
 
@@ -131,8 +133,8 @@ fake_sota_success = """<?xml version="1.0" encoding="utf-8"?><manifest><type>ota
 dummy_success = INSTALL_SUCCESS
 dummy_failure = INSTALL_FAILURE
 mock_url = canonicalize_uri("http://www.example.com:8976/capsule.tar")
-username = None
-password = None
+username: Optional[str] = None
+password: Optional[str] = None
 
 
 parsed_dmi_current = PlatformInformation(datetime.datetime(
@@ -264,29 +266,14 @@ LOGGERPATH = '../dispatcher-agent/fpm-template/etc/logging.ini'
 
 class Mqtt(MQTT):
 
-    def __init__(self):
-        pass
-
-    def publish(self, topic, payload):
-        pass
-
-    def subscribe(self, topic, callback):
-        pass
-
-
-class MockDispatcherCallbacks(DispatcherCallbacks):
     def __init__(self) -> None:
-        self.broker_core = MockDispatcherBroker.build_mock_dispatcher_broker()
-        self.sota_repos = None
-        self.proceed_without_rollback = False
-        self.logger = UpdateLogger("", "")
-
-    def install_check(self, size: int, check_type: str) -> None:
         pass
 
-    @staticmethod
-    def build_mock_dispatcher_callbacks() -> DispatcherCallbacks:
-        return MockDispatcherCallbacks()
+    def publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
+        pass
+
+    def subscribe(self, topic: str, callback: Callable[[str, Any, int], None], qos: int = 0) -> None:
+        pass
 
 
 class MockDispatcherBroker(DispatcherBroker):
@@ -300,7 +287,7 @@ class MockDispatcherBroker(DispatcherBroker):
     def send_result(self, message: str) -> None:
         pass
 
-    def mqtt_publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:
+    def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
         pass
 
     def mqtt_subscribe(self, topic, callback, qos=0) -> None:
@@ -323,22 +310,34 @@ class MockDispatcherBroker(DispatcherBroker):
 class MockDispatcher(Dispatcher):
     # Fake Dispatcher
 
-    def __init__(self, logger):
+    def __init__(self, logger) -> None:
         self.lock = Lock()
         self.mqttc = Mqtt()
         self._logger = logger
         self.config_dbs = ConfigDbs.ON
         self.dbs_remove_image_on_failed_container = True
-        self.sota_repos = None
+        self._sota_repos = None
         self.proceed_without_rollback = False
+        self.dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         self.update_logger = UpdateLogger("", "")
 
-    def install_check(self, size=None, check_type=None) -> None:
-        pass
-
-    def clear_dispatcher_state(self):
+    def clear_dispatcher_state(self) -> None:
         pass
 
     @staticmethod
     def build_mock_dispatcher():
         return MockDispatcher(logging.getLogger(__name__))
+
+
+class MockInstallCheckService(InstallCheckService):
+    def __init__(self, install_check: bool = True) -> None:
+        self._install_check = install_check
+        self._install_check_called = False
+
+    def install_check(self, size: Union[float, int], check_type: Optional[str] = None) -> None:
+        self._install_check_called = True
+        if not self._install_check:
+            raise DispatcherException('MockInstallCheckService set to fail install check')
+
+    def install_check_called(self) -> bool:
+        return self._install_check_called

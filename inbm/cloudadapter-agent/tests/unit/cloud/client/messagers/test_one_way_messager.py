@@ -16,7 +16,7 @@ import mock
 
 class TestOneWayMessenger(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_connection = mock.create_autospec(Connection)
         self.mock_topic = mock.create_autospec(Formatter)
         self.mock_payload = mock.create_autospec(Formatter)
@@ -25,7 +25,7 @@ class TestOneWayMessenger(unittest.TestCase):
             self.mock_payload,
             self.mock_connection)
 
-    def test_publish_suceeds(self):
+    def test_publish_suceeds(self) -> None:
         self.mock_topic.format.return_value = "topic"
         self.mock_payload.format.return_value = "payload"
 
@@ -38,7 +38,7 @@ class TestOneWayMessenger(unittest.TestCase):
         args, _ = self.mock_connection.publish.call_args
         assert args == ("topic", "payload")
 
-    def test_publish_with_connection_error_fails(self):
+    def test_publish_with_connection_error_fails(self) -> None:
         self.mock_connection.publish.side_effect = PublishError("Error!")
         failed = False
         try:

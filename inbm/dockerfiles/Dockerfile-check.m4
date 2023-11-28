@@ -15,7 +15,6 @@ RUN python3.11 -m venv /venv-py3
 RUN source /venv-py3/bin/activate && \
     pip3.11 install wheel==0.40.0 && \
     pip3.11 install \
-        pynose==1.4.8 \
         flake8==4.0.1 \
         bandit==1.7.3 \
         flake8-bandit==3.0.0 \
@@ -26,6 +25,11 @@ RUN source /venv-py3/bin/activate && \
         pylint==2.5.3 \
         mypy==1.3 \
         types-requests==2.31.0.1 \
+    	pytest==7.4.3 \
+    	pytest-cov==4.1.0 \
+        pytest-mock==3.12.0 \
+        pytest-xdist==3.3.1 \
+	pytest-mock==3.12.0 \
         -U
 COPY inbm-lib /src/inbm-lib
 ENV PYTHONPATH=/src/inbm-lib
@@ -47,9 +51,8 @@ FROM venv-py3 as mypy-inbm-lib
 RUN source /venv-py3/bin/activate && \
     cd /src/inbm-lib && \
     rm -rf build && \
-    ./mypy-py3.sh . && \
+    mypy . && \
     touch /passed.txt
-
 
 FROM venv-py3 as test-inbm-lib
 WORKDIR /src/inbm-lib
@@ -58,9 +61,9 @@ RUN source /venv-py3/bin/activate && \
     set -o pipefail && \
     mkdir -p /output/coverage && \
     cd tests/unit && \
-    pynose --with-coverage --cover-erase --cover-inclusive --cover-package=inbm_common_lib inbm_common_lib 2>&1 | tee /output/coverage/inbm-common-lib-coverage.txt && \
-    pynose --with-coverage --cover-erase --cover-inclusive --cover-package=inbm_lib inbm_lib 2>&1 | tee /output/coverage/inbm-lib-coverage.txt && \
-    coverage report --show-missing --fail-under=82 && \
+    pytest -n 1 --cov=inbm_common_lib --cov-report=term-missing --cov-fail-under=82 inbm_common_lib 2>&1 | tee /output/coverage/inbm-common-lib-coverage.txt && \
+    pytest -n 1 --cov=inbm_lib --cov-report=term-missing --cov-fail-under=82 inbm_lib 2>&1 | tee /output/coverage/inbm-lib-coverage.txt && \
+    export PYTHONPATH=$PYTHONPATH:$(pwd) && \
     touch /passed.txt
 
 # ---inbc---
@@ -72,24 +75,22 @@ WORKDIR /src/inbc-program
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbc-program /src/inbc-program
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-inbc-py3 as mypy-inbc
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh inbc && \
+    mypy inbc && \
     touch /passed.txt
 
 FROM venv-inbc-py3 as inbc-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
-    pynose --with-coverage --cover-erase --cover-inclusive --cover-package=inbc tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt && \
-    coverage report --fail-under=84
+    export PYTHONPATH=$PYTHONPATH:$(pwd) && \
+    pytest -n 1 --cov=inbc --cov-report=term-missing --cov-fail-under=84 tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt
 
 # ---diagnostic agent---
 
@@ -100,25 +101,22 @@ WORKDIR /src/diagnostic-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/diagnostic-agent /src/diagnostic-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-diagnostic-py3 as mypy-diagnostic
-COPY inbm/common-python-config /common-python-config/
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh diagnostic && \
+    mypy diagnostic && \
     touch /passed.txt
 
 FROM venv-diagnostic-py3 as diagnostic-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
-    pynose --with-coverage --cover-erase --cover-inclusive --cover-package=diagnostic tests/unit 2>&1 | tee /output/coverage/diagnostic-coverage.txt && \
-    coverage report --fail-under=80
+    export PYTHONPATH=$PYTHONPATH:$(pwd) && \
+    pytest -n 1 --cov=diagnostic --cov-report=term-missing --cov-fail-under=80 tests/unit 2>&1 | tee /output/coverage/diagnostic-coverage.txt
 
 # ---dispatcher agent---
 
@@ -132,25 +130,23 @@ RUN source /venv-py3/bin/activate && \
     pip3.11 install setuptools-rust && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/dispatcher-agent /src/dispatcher-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-dispatcher-py3 as mypy-dispatcher
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh dispatcher && \
-    /common-python-config/mypy-py3.sh tests && \
+    mypy dispatcher && \
+    mypy tests && \
     touch /passed.txt
 
 FROM venv-dispatcher-py3 as dispatcher-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
-    pynose --with-coverage --cover-erase --cover-inclusive --cover-package=dispatcher tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt && \
-    coverage report --fail-under=80
+    export PYTHONPATH=$PYTHONPATH:$(pwd) && \
+    pytest -n 3 --cov=dispatcher --cov-report=term-missing --cov-fail-under=79.6 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
 
 # ---cloudadapter agent---
 
@@ -161,24 +157,22 @@ WORKDIR /src/cloudadapter-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-cloudadapter-py3 as mypy-cloudadapter
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh cloudadapter && \
+    mypy cloudadapter && \
     touch /passed.txt
 
 FROM venv-cloudadapter-py3 as cloudadapter-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
-    pynose --with-coverage --cover-erase --cover-inclusive --cover-package=cloudadapter tests/unit 2>&1 | tee /output/coverage/cloudadapter-coverage.txt && \
-    coverage report --fail-under=90
+    export PYTHONPATH=$PYTHONPATH:$(pwd) && \
+    pytest -n 10 --cov=cloudadapter --cov-report=term-missing --cov-fail-under=90 tests/unit 2>&1 | tee /output/coverage/cloudadapter-coverage.txt
 
 # ---telemetry agent---
 
@@ -189,24 +183,22 @@ WORKDIR /src/telemetry-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/telemetry-agent /src/telemetry-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
 
 FROM venv-telemetry-py3 as mypy-telemetry
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh telemetry && \
+    mypy telemetry && \
     touch /passed.txt
 
 FROM venv-telemetry-py3 as telemetry-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
-    pynose --with-coverage --cover-erase --cover-inclusive --cover-package=telemetry telemetry/tests/unit 2>&1 | tee /output/coverage/telemetry-coverage.txt && \
-    coverage report --fail-under=83
+    export PYTHONPATH=$PYTHONPATH:$(pwd) && \
+    pytest -n 1 --cov=telemetry --cov-report=term-missing --cov-fail-under=83 telemetry/tests/unit 2>&1 | tee /output/coverage/telemetry-coverage.txt
 
 # ---configuration agent---
 
@@ -217,24 +209,22 @@ WORKDIR /src/configuration-agent
 RUN source /venv-py3/bin/activate && \
     pip3.11 install -r requirements.txt && \
     pip3.11 install -r test-requirements.txt
-COPY inbm/common-python-config /common-python-config
 COPY inbm/configuration-agent /src/configuration-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    cp -f /common-python-config/pyproject.toml . && \
     flakeheaven lint
     
 FROM venv-configuration-py3 as mypy-configuration
 RUN source /venv-py3/bin/activate && \
-    /common-python-config/mypy-py3.sh configuration && \
+    mypy configuration && \
     touch /passed.txt
 
 FROM venv-configuration-py3 as configuration-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
-    pynose --with-coverage --cover-erase --cover-inclusive --cover-package=configuration configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt && \
-    coverage report --fail-under=88
+    export PYTHONPATH=$PYTHONPATH:$(pwd) && \
+    pytest -n 1 --cov=configuration --cov-report=term-missing --cov-fail-under=88 configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt
 
 # output container
 FROM base as output

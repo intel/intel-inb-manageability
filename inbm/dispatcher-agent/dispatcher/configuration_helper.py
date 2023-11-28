@@ -18,10 +18,10 @@ from inbm_common_lib.utility import validate_file_type
 from inbm_lib.xmlhandler import XmlHandler, XmlException
 from .constants import *
 from .packagemanager.package_manager import get, verify_source, verify_signature, get_file_type
-from .dispatcher_callbacks import DispatcherCallbacks
 from .packagemanager.irepo import IRepo
 from .dispatcher_exception import DispatcherException
 from .packagemanager.local_repo import DirectoryRepo
+from .dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -29,12 +29,12 @@ logger = logging.getLogger(__name__)
 class ConfigurationHelper:
     """Helps manage interaction with configuration-agent messages
 
-    @param dispatcher_callbacks: DispatcherCallbacks object
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
+    def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:
         self._repo: Optional[IRepo] = None
+        self._dispatcher_broker = dispatcher_broker
 
     def _is_tar_file(self, tar_file_name: str) -> bool:
         extension = tar_file_name.rsplit('.', 1)[-1]
@@ -106,14 +106,14 @@ class ConfigurationHelper:
         source = url[:-(len(url.split('/')[-1]) + 1)]
         logger.debug(f"source: {source}")
 
-        verify_source(source=source, dispatcher_callbacks=self._dispatcher_callbacks)
-        self._dispatcher_callbacks.broker_core.telemetry('Source Verification check passed')
-        self._dispatcher_callbacks.broker_core.telemetry(
+        verify_source(source=source, dispatcher_broker=self._dispatcher_broker)
+        self._dispatcher_broker.telemetry('Source Verification check passed')
+        self._dispatcher_broker.telemetry(
             f'Fetching configuration file from {url}')
         result = get(canonical_url, repo, UMASK_CONFIGURATION_FILE)
 
         if result.status == 200:
-            self._dispatcher_callbacks.broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 'Configuration File Download Successful')
             try:
                 logger.debug(
@@ -126,7 +126,7 @@ class ConfigurationHelper:
                 if signature:
                     try:
                         verify_signature(signature, tar_file_path,
-                                         self._dispatcher_callbacks, hash_algorithm)
+                                         self._dispatcher_broker, hash_algorithm)
                     except DispatcherException as err:
                         self._repo.delete(tar_file_name)
                         raise DispatcherException(f'Configuration Load Aborted. {str(err)}')
@@ -135,7 +135,7 @@ class ConfigurationHelper:
                     raise DispatcherException('Configuration Load Aborted: Signature is required to '
                                               'proceed with the update.')
             else:
-                self._dispatcher_callbacks.broker_core.telemetry(
+                self._dispatcher_broker.telemetry(
                     'Proceeding without signature check on package.')
             if not is_tar_file:
                 conf_file = tar_file_name

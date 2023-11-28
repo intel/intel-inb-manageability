@@ -8,7 +8,7 @@ import sys
 import time
 import json
 import logging
-from typing import Union
+from typing import Any, Union
 from .constants import *
 from . import telemetry_handling
 from inbm_common_lib.constants import TELEMETRY_CHANNEL
@@ -24,9 +24,9 @@ class PmsException(Exception):
 
 
 class PMSNotification():
-    client = MQTT
+    client: MQTT
 
-    def __init__(self, client) -> None:
+    def __init__(self, client: MQTT) -> None:
         PMSNotification.client = client
         self.running = True
 

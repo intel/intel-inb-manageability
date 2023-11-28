@@ -7,19 +7,19 @@ from typing import List
 
 class TestCommandHandler(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.command = CommandList(["Test"])
         self.command_object = self.command.cmd_list[0]
 
-    def test_get_command_status_success(self):
+    def test_get_command_status_success(self) -> None:
         self.command_object.status = SUCCESS
         cmd_list = [self.command_object]
         self.assertEqual(get_command_status(cmd_list), SUCCESS)
 
-    def test_get_command_status_fail(self):
+    def test_get_command_status_fail(self) -> None:
         cmd_list = [self.command_object]
         self.assertEqual(get_command_status(cmd_list), FAILED)
 
-    def test_get_command_status_empty_list_fail(self):
+    def test_get_command_status_empty_list_fail(self) -> None:
         cmd_list: List[CommandList] = []
         self.assertEqual(get_command_status(cmd_list), FAILED)

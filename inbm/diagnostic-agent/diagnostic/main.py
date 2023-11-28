@@ -24,7 +24,7 @@ from inbm_lib.windows_service import WindowsService
 
 class LoggingPath:  # pragma: no cover
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @classmethod

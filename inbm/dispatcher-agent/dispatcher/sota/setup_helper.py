@@ -12,10 +12,11 @@ import fileinput
 import logging
 import sys
 import os
+from typing import Any, Optional
 
+from ..dispatcher_broker import DispatcherBroker
 from .constants import GET_UBUNTU_PKG_REPO, APT_SOURCES_LIST_PATH, MENDER_FILE_PATH
 from ..common import dispatcher_state
-from ..dispatcher_callbacks import DispatcherCallbacks
 
 logger = logging.getLogger(__name__)
 
@@ -25,13 +26,10 @@ class SetupHelper:
     an OS upgrade
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, list_path):
+    def __init__(self) -> None:
         """Initializes SetupHelper class
-        @param dispatcher_callbacks: Callback to Dispatcher
-        @param list_path:
         """
-        self._dispatcher_callbacks = dispatcher_callbacks
-        self.list_path = list_path
+        pass
 
     @abc.abstractmethod
     def pre_processing(self):
@@ -51,16 +49,17 @@ class SetupHelper:
 class DebianBasedSetupHelper(SetupHelper):
     """Debian-based specific implementation of SetupHelper."""
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks):
+    def __init__(self, sota_repos: Optional[str]) -> None:
         """Initializes DebianBasedSetupHelper class
 
-        @param dispatcher_callbacks: callback to dispatcher
+        @param sota_repos: new Ubuntu/Debian mirror (or None)
         """
 
-        list_path = GET_UBUNTU_PKG_REPO
-        super().__init__(dispatcher_callbacks, list_path)
+        self._list_path = GET_UBUNTU_PKG_REPO
+        self._sota_repos = sota_repos
+        super().__init__()
 
-    def pre_processing(self):
+    def pre_processing(self) -> bool:
         """Perform checks immediately before applying an OS update or upgrade.
         Debian-based: This is a on-disk operation done after taking a snapshot
         It proceeds only if the APT store url was successfully retrieved
@@ -68,13 +67,12 @@ class DebianBasedSetupHelper(SetupHelper):
         @return: True
         """
         logger.debug("")
-        if self._dispatcher_callbacks.sota_repos:
-            self.update_sources(self._dispatcher_callbacks.sota_repos)
+        if self._sota_repos:
+            self.update_sources(self._sota_repos)
         return True  # FIXME why do we always return True?
 
     def update_sources(self, payload: str, filename: str = APT_SOURCES_LIST_PATH) -> None:
-        """Update the apt sources.list file with payload if needed.
-        If in a container, filename is relative to the host root.
+        """Update the apt sources.list file with payload if needed
         @param payload: String, http url value retrieved from config manager
         @param filename: file name for sources
         """
@@ -132,14 +130,12 @@ class DebianBasedSetupHelper(SetupHelper):
 
 class WindowsSetupHelper(SetupHelper):
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks):
+    def __init__(self) -> None:
         """ Initializes WindowsSetupHelper
-        @param dispatcher_callbacks: callback to dispatcher
         """
+        super().__init__()
 
-        super().__init__(dispatcher_callbacks, None)
-
-    def pre_processing(self):
+    def pre_processing(self) -> None:
         logger.debug("")
         pass
 
@@ -155,12 +151,12 @@ class YoctoSetupHelper(SetupHelper):
     Yocto specific implementation of SetupHelper.
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks):
+    def __init__(self, broker: DispatcherBroker) -> None:
         """ Initializes YoctoSetupHelper
-        @param dispatcher_callbacks: callback to dispatcher
+        @param broker: DispatcherBroker instance used to communicate with other INBM agents
         """
-
-        super().__init__(dispatcher_callbacks, None)
+        self._broker = broker
+        super().__init__()
 
     def pre_processing(self):
         """Perform checks immediately before applying an OS update or upgrade.
@@ -170,18 +166,18 @@ class YoctoSetupHelper(SetupHelper):
         logger.debug("Yocto pre processing")
         return self._is_mender_file_exists()
 
-    def _is_mender_file_exists(self):
+    def _is_mender_file_exists(self) -> bool:
         """Verifies to see if Mender file is present to perform the OS update
         @return: Boolean value to proceed or not with the OS update
         """
         logger.debug("Checking to see if mender tool exists")
         if os.path.isfile(MENDER_FILE_PATH):
-            self._dispatcher_callbacks.broker_core.telemetry("Mender tool found in " + MENDER_FILE_PATH +
-                                                             ". Proceeding to perform SOTA.")
+            self._broker.telemetry("Mender tool found in " + MENDER_FILE_PATH +
+                                   ". Proceeding to perform SOTA.")
             return True
         else:
-            self._dispatcher_callbacks.broker_core.telemetry("Mender tool not found in " + MENDER_FILE_PATH +
-                                                             ". Aborting SOTA.")
+            self._broker.telemetry("Mender tool not found in " + MENDER_FILE_PATH +
+                                   ". Aborting SOTA.")
             return False
 
     def get_snapper_snapshot_number(self) -> str:

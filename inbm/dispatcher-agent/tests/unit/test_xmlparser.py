@@ -97,35 +97,32 @@ class TestXmlParser(TestCase):
             parsed = XmlHandler(EMPTY_TAG_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
             parsed.get_children('ota/type/fetch')
         except XmlException as e:
-            self.assertEquals("Cannot find children at specified path: ota/type/fetch", str(e))
+            self.assertEqual("Cannot find children at specified path: ota/type/fetch", str(e))
 
     def test_empty_tag_failure2(self) -> None:
-        try:
-            parsed = XmlHandler(EMPTY_TAG_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
-            parsed.get_children('ota/type/aota')
-        except XmlException as e:
-            self.assertEquals("Empty tag encountered. XML rejected", str(e))
+        parsed = XmlHandler(EMPTY_TAG_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        parsed.get_children('ota/type/aota')
 
     def test_get_element(self) -> None:
-        self.assertEquals('sampleId', self.good.get_element('ota/header/id'))
+        self.assertEqual('sampleId', self.good.get_element('ota/header/id'))
 
     def test_get_children(self) -> None:
-        self.assertEquals(
+        self.assertEqual(
             {'app': 'docker', 'cmd': 'load', 'fetch': 'sample',
              'containerTag': 'defg', },
             self.good.get_children('ota/type/aota'))
 
     def test_set_attribute(self) -> None:
-        self.assertEquals("remote", self.test.get_element("ota/header/repo"))
+        self.assertEqual("remote", self.test.get_element("ota/header/repo"))
         self.test.set_attribute("ota/header/repo", "local")
-        self.assertEquals("local", self.test.get_element("ota/header/repo"))
+        self.assertEqual("local", self.test.get_element("ota/header/repo"))
 
     def test_add_attribute(self) -> None:
         self.test.add_attribute("ota/type/fota", "path", "/new/path/added")
-        self.assertEquals("/new/path/added", self.test.get_element("ota/type/fota/path"))
+        self.assertEqual("/new/path/added", self.test.get_element("ota/type/fota/path"))
 
     def test_remove_attribute(self) -> None:
-        self.assertEquals("Intel", self.test.get_element("ota/type/fota/vendor"))
+        self.assertEqual("Intel", self.test.get_element("ota/type/fota/vendor"))
         self.test.remove_attribute("ota/type/fota/vendor")
         self.assertRaises(XmlException, self.test.get_element, "ota/type/fota/vendor")
 

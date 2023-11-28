@@ -21,8 +21,6 @@ from typing import List, Any
 from .ipoller import IPoller
 
 
-
-
 logger = logging.getLogger(__name__)
 
 
@@ -57,7 +55,7 @@ class Poller(IPoller):
                                                         self._with_docker)
 
     @staticmethod
-    def is_between_bounds(value_desc, actual_value, lower_bound, upper_bound) -> bool:
+    def is_between_bounds(value_desc: str, actual_value: str, lower_bound: int, upper_bound: int) -> bool:
         """Checks if value is between the upper and lower boundaries.
 
         @return True if between bounds; otherwise, false.
@@ -73,7 +71,7 @@ class Poller(IPoller):
             logger.error(value_desc + " value needs to be an integer.")
             return False
 
-    def set_configuration_value(self, val, path) -> None:
+    def set_configuration_value(self, val: str, path: str) -> None:
         """Sets the class variables with the values retrieved from the configuration agent."""
 
         if path == COLLECTION_INTERVAL_SECONDS:
@@ -117,7 +115,7 @@ class Poller(IPoller):
         else:
             logger.error('Received path that is not configured: ' + path)
 
-    def loop_telemetry(self, client) -> None:
+    def loop_telemetry(self, client: MQTT) -> None:
         """Repeatedly wait collection_interval and collect telemetry.  Whenever publish_interval
         is exceeded, publish telemetry. Verify if Resource Monitor is active and 
         publish PMS telemetry and RAS errors whenever encountered.

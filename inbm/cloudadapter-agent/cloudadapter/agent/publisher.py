@@ -216,10 +216,18 @@ class Publisher:
         logger.debug("SOTA Triggered")
         self._sanitize_values(
             arguments, {
-                "cmd": ["update", "upgrade"],
+                "cmd": ["update", "install"],
                 "log_to_file": ["N", "Y"]
             }
         )
+
+        # manifest uses 'update' for both update and install; currently they are equivalent
+        if arguments.get("cmd") == "install":
+            arguments["cmd"] = "update"
+
+        # package_list should always be sent even if it's not included
+        if arguments.get("package_list") is None:
+            arguments["package_list"] = ""
 
         manifest = ('<?xml version="1.0" encoding="utf-8"?>'
                     '<manifest>'
@@ -238,6 +246,7 @@ class Publisher:
             arguments.get("log_to_file"),
             arguments.get("cmd"),
             create_xml_tags(arguments,
+                            "package_list",
                             "fetch",
                             "signature",
                             "version",
