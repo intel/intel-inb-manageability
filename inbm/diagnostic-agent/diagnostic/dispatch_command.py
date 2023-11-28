@@ -7,7 +7,7 @@
 
 
 import logging
-from typing import Any, Optional, Dict
+from typing import Optional, Dict
 
 from .commands import Commands
 from .health_checker import HealthChecker
@@ -26,7 +26,7 @@ def dispatch_command(command: str,
                      min_power_percent: int,
                      min_storage_mb: int,
                      sw_list: str,
-                     network_check: str) -> Optional[Dict[str, Any]]:
+                     network_check: str) -> Optional[Dict[str, object]]:
     """Dispatches the correct command(s) based on the request
 
     @param command: command sent via MQTT from another agent.

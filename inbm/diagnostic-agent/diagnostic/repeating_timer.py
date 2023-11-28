@@ -19,10 +19,10 @@ class RepeatingTimer:
     @param f: callback function
     """
 
-    def __init__(self, interval_time, f) -> None:
+    def __init__(self, interval_time, f):
         self._interval_time = interval_time
         self.f = f
-        self._timer: Timer | None = None
+        self._timer = None
 
     def _callback(self) -> None:
         """Runs the callback method and restarts the timer"""

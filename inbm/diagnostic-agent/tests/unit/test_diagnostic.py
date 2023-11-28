@@ -27,10 +27,10 @@ class TestDiagnostic(TestCase):
 class TestLoggingPath(TestCase):
 
     @patch.dict(os.environ, {'LOGGERCONFIG': '/var/logs'})
-    def test_get_os_set_logging_path(self) -> None:
+    def test_get_os_set_logging_path(self):
         self.assertEqual(LoggingPath.get_log_config_path(), '/var/logs')
 
-    def test_get_os_not_set_logging_path(self) -> None:
+    def test_get_os_not_set_logging_path(self):
         self.assertEqual(LoggingPath.get_log_config_path(),
                          '/etc/intel-manageability/public/diagnostic-agent/logging.ini')
 

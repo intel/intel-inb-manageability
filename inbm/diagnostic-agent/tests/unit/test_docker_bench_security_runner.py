@@ -30,7 +30,7 @@ class TestDockerBenchSecurityRunner(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
-    def test_success_dbs_run(self, mocked_trtl, mock_shellrunner) -> None:
+    def test_success_dbs_run(self, mocked_trtl, mock_shellrunner):
         mocked_trtl.return_value = docker_bench_pass_output
         dbs = DockerBenchRunner()
         dbs.start()
@@ -42,7 +42,7 @@ class TestDockerBenchSecurityRunner(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
-    def test_fail_dbs_container_run(self, mocked_trtl, mock_shellrunner) -> None:
+    def test_fail_dbs_container_run(self, mocked_trtl, mock_shellrunner):
         mocked_trtl.return_value = docker_bench_fail_container_output
         dbs = DockerBenchRunner()
         dbs.start()
@@ -54,7 +54,7 @@ class TestDockerBenchSecurityRunner(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
-    def test_fail_dbs_image_run(self, mocked_trtl, mock_shellrunner) -> None:
+    def test_fail_dbs_image_run(self, mocked_trtl, mock_shellrunner):
         mocked_trtl.return_value = docker_bench_fail_image_output
         dbs = DockerBenchRunner()
         dbs.start()
@@ -66,7 +66,7 @@ class TestDockerBenchSecurityRunner(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.get_process')
     @patch('inbm_lib.trtl.Trtl.run_docker_bench_security_test')
-    def test_fail_dbs_not_run(self, mocked_trtl, mock_shellrunner) -> None:
+    def test_fail_dbs_not_run(self, mocked_trtl, mock_shellrunner):
         mocked_trtl.return_value = ''
         dbs = DockerBenchRunner()
         dbs.start()

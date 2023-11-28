@@ -20,14 +20,14 @@ logger = logging.getLogger(__name__)
 class DockerBenchRunner(Thread):
     """Runs the DBS script on all containers and images.  Parses results"""
 
-    def __init__(self) -> None:
+    def __init__(self):
         Thread.__init__(self, name="dockerBenchRunner")
-        self.result: bool | None = None
-        self.result_string: str | None = None
-        self.failed_image_list: list[str] | None = None
-        self.failed_container_list: list[str] | None = None
+        self.result = None
+        self.result_string = None
+        self.failed_image_list = None
+        self.failed_container_list = None
 
-    def run(self) -> None:
+    def run(self):
         """Runs the DockerBenchRunner thread"""
         out = Trtl(PseudoShellRunner()).run_docker_bench_security_test()
 

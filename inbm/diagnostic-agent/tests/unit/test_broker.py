@@ -9,7 +9,7 @@ class TestBroker(TestCase):
     @patch('threading.Thread.start')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    def test_broker_subscribe_topics(self, m_sub, m_connect, m_thread) -> None:
+    def test_broker_subscribe_topics(self, m_sub, m_connect, m_thread):
         d = TestBroker._build_broker()
         self.assertTrue(m_sub.called)
         self.assertEquals(len(d._mqttc.topics), 4)
@@ -20,7 +20,7 @@ class TestBroker(TestCase):
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    def test_broker_stop(self, m_pub, m_connect) -> None:
+    def test_broker_stop(self, m_pub, m_connect):
         d = TestBroker._build_broker()
         d.stop()
         self.assertTrue(m_pub.called)
@@ -28,7 +28,7 @@ class TestBroker(TestCase):
     @patch('threading.Thread.start')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    def test_on_message(self, m_pub, m_connect, m_thread) -> None:
+    def test_on_message(self, m_pub, m_connect, m_thread):
         d = TestBroker._build_broker()
         d._on_message('topic', 'payload', 1)
 
