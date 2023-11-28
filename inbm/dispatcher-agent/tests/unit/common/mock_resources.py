@@ -4,7 +4,7 @@
 import logging
 from threading import Lock
 import datetime
-from typing import Optional, Union, Any
+from typing import Callable, Optional, Union, Any
 
 from dispatcher.common.result_constants import *
 from dispatcher.install_check_service import InstallCheckService
@@ -266,13 +266,13 @@ LOGGERPATH = '../dispatcher-agent/fpm-template/etc/logging.ini'
 
 class Mqtt(MQTT):
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
-    def publish(self, topic, payload):
+    def publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
         pass
 
-    def subscribe(self, topic, callback):
+    def subscribe(self, topic: str, callback: Callable[[str, Any, int], None], qos: int = 0) -> None:
         pass
 
 
@@ -310,7 +310,7 @@ class MockDispatcherBroker(DispatcherBroker):
 class MockDispatcher(Dispatcher):
     # Fake Dispatcher
 
-    def __init__(self, logger):
+    def __init__(self, logger) -> None:
         self.lock = Lock()
         self.mqttc = Mqtt()
         self._logger = logger
@@ -321,7 +321,7 @@ class MockDispatcher(Dispatcher):
         self.dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         self.update_logger = UpdateLogger("", "")
 
-    def clear_dispatcher_state(self):
+    def clear_dispatcher_state(self) -> None:
         pass
 
     @staticmethod
@@ -330,7 +330,7 @@ class MockDispatcher(Dispatcher):
 
 
 class MockInstallCheckService(InstallCheckService):
-    def __init__(self, install_check: bool = True):
+    def __init__(self, install_check: bool = True) -> None:
         self._install_check = install_check
         self._install_check_called = False
 

@@ -54,7 +54,7 @@ def make_threaded(f: Callable) -> Callable:
 
     @param f: (Callable) The function to put on a daemonic thread
     """
-    def threaded(*args, **kwargs):
+    def threaded(*args, **kwargs) -> None:
         thread = Thread(target=f, args=args, kwargs=kwargs)
         thread.daemon = True
         thread.start()

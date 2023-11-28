@@ -15,7 +15,7 @@ import mock
 
 class TestEchoHandler(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_connection = mock.create_autospec(Connection)
         self.mock_topic = mock.create_autospec(Formatter)
         self.mock_payload = mock.create_autospec(Formatter)
@@ -26,7 +26,7 @@ class TestEchoHandler(unittest.TestCase):
             "subscribe_topic",
             self.mock_connection)
 
-    def test_echo_succeeds(self):
+    def test_echo_succeeds(self) -> None:
         self.mock_topic.format.return_value = "topic"
         self.mock_payload.format.return_value = "payload"
 
@@ -35,7 +35,7 @@ class TestEchoHandler(unittest.TestCase):
         args, _ = self.mock_connection.publish.call_args
         assert args == ("topic", "payload")
 
-    def test_bind_fails(self):
+    def test_bind_fails(self) -> None:
         failed = False
         try:
             self.echo_handler.bind("name", lambda: None)

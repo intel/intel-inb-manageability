@@ -322,7 +322,7 @@ def verify_source(source: Optional[str],  dispatcher_broker: DispatcherBroker,
 
     latch = CountDownLatch(1)
 
-    def on_command(topic, payload, qos):
+    def on_command(topic, payload, qos) -> None:
         logger.info('Message received: %s on topic: %s', payload, topic)
 
         try:

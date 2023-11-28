@@ -46,7 +46,7 @@ def is_dispatcher_state_file_exists() -> bool:
         return False
 
 
-def consume_dispatcher_state_file(read=False) -> Optional[Dict[str, Any]]:
+def consume_dispatcher_state_file(read: bool = False) -> Optional[Dict[str, Any]]:
     """Read dispatcher state file and return state object, clearing state file on success
 
     @param read: set to True when only file info needs to be read without removing the file

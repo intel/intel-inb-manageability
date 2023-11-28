@@ -53,7 +53,7 @@ class OtaFactory(metaclass=abc.ABCMeta):
                     sota_repos: Optional[str],
                     install_check_service: InstallCheckService,
                     update_logger: UpdateLogger,
-                    dbs: ConfigDbs) -> Any:
+                    dbs: ConfigDbs) -> "OtaFactory":
         """Create an OTA factory of a specified OTA type
 
         @param ota_type: The OTA type
@@ -199,6 +199,6 @@ class PotaFactory(OtaFactory):
         logger.debug(" ")
         return PotaParser(self._repo_type)
 
-    def create_thread(self, parsed_manifest: Mapping[str, Optional[Any]]):
+    def create_thread(self, parsed_manifest: Mapping[str, Optional[Any]]) -> OtaThread:
         logger.debug(" ")
-        pass
+        raise NotImplementedError("this method for POTA is not intended to be called")        

@@ -95,12 +95,12 @@ class TestPublishTargetOta(TestCase):
         self.assertEqual(mock_download.call_count, 2)
         mock_modify_manifest.assert_called_once()
 
-    def test_modify_manifest_without_credential_info(self):
+    def test_modify_manifest_without_credential_info(self) -> None:
         t = OtaTarget(TEST_XML, parsed_manifest, "FOTA", Mock())
         m = t._modify_manifest(schema_location=TEST_SCHEMA_LOCATION)
         self.assertEqual(m, MODIFIED_TEST_XML)
 
-    def test_modify_manifest_with_credential_info(self):
+    def test_modify_manifest_with_credential_info(self) -> None:
         t = OtaTarget(TEST_XML_WITH_CREDENTIALS, parsed_manifest, "FOTA", Mock())
         m = t._modify_manifest(schema_location=TEST_SCHEMA_LOCATION)
         self.assertEqual(m, MODIFIED_TEST_XML)

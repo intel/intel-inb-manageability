@@ -268,7 +268,7 @@ class WorkloadOrchestration:
         """
         latch = CountDownLatch(1)
 
-        def on_command(topic, payload, qos):  # pragma: no cover
+        def on_command(topic, payload, qos) -> None:  # pragma: no cover
             logger.info('Message received: %s on topic: %s', payload, topic)
             try:
                 cmd.response = json.loads(payload)

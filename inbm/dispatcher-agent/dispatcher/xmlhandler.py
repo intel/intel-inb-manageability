@@ -157,7 +157,7 @@ class XmlHandler:
         else:
             raise XmlException("Could not find element in get_attribute")
 
-    def add_attribute(self, xpath, attribute_name, attribute_value) -> bytes:
+    def add_attribute(self, xpath, attribute_name: str, attribute_value) -> bytes:
         """Add a new key value to the given path.
 
         @param xpath: path to key

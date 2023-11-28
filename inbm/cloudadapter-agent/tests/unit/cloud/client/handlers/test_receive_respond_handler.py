@@ -25,7 +25,7 @@ logger.addHandler(stream_handler)
 
 class TestReceiveRespondHandler(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_connection = mock.create_autospec(Connection)
         self.mock_topic = mock.create_autospec(Formatter)
         self.mock_payload = mock.create_autospec(Formatter)
@@ -38,7 +38,7 @@ class TestReceiveRespondHandler(unittest.TestCase):
             self.mock_parser,
             self.mock_connection)
 
-    def test_bind_succeeds(self):
+    def test_bind_succeeds(self) -> None:
         self.mock_topic.format.return_value = "topic"
         self.mock_payload.format.return_value = b'{"manifest":"\'<?xml version=\\"1.0\\" encoding=\\"utf-8\\"?><manifest><type>ota</type><ota><header><type>fota</type><repo>remote</repo></header><type><username>XXXXX</username><password>XXXXX</password><fota name=\\"sample\\"></fota></type></ota></manifest>"}'
         self.mock_parser.parse.return_value = [MethodParsed(method="method")]
@@ -49,7 +49,7 @@ class TestReceiveRespondHandler(unittest.TestCase):
         self.receive_respond_handler._on_method("topic", self.mock_payload.format.return_value)
         assert mock_callback.call_count == 1
 
-    def test_bind_succeeds_no_parser(self):
+    def test_bind_succeeds_no_parser(self) -> None:
         receive_respond_handler = ReceiveRespondHandler(
             self.mock_topic,
             self.mock_payload,
@@ -67,7 +67,7 @@ class TestReceiveRespondHandler(unittest.TestCase):
 
         self.assertEqual(mock_callback.call_count, 1)
 
-    def test_on_method_exits_on_no_methods_succeeds(self):
+    def test_on_method_exits_on_no_methods_succeeds(self) -> None:
         self.mock_topic.format.return_value = "topic"
         self.mock_payload.format.return_value = b"payload"
         self.mock_parser.parse.return_value = []
@@ -75,7 +75,7 @@ class TestReceiveRespondHandler(unittest.TestCase):
         self.receive_respond_handler._on_method("topic", b"payload")
         assert self.mock_connection.publish.call_count == 0
 
-    def test_on_method_exits_on_invalid_method_succeeds(self):
+    def test_on_method_exits_on_invalid_method_succeeds(self) -> None:
         self.mock_topic.format.return_value = "topic"
         self.mock_payload.format.return_value = b"payload"
         self.mock_parser.parse.return_value = [MethodParsed(method="")]

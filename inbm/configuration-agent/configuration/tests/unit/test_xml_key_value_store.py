@@ -60,34 +60,34 @@ INVALID_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
 
 class TestXmlParser(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.good = XmlKeyValueStore(GOOD_XML, is_file=False, schema_location=SCHEMA_LOCATION)
 
-    def test_parser_creation_success(self):
+    def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
 
-    def test_parser_creation_xml_none_success(self):
+    def test_parser_creation_xml_none_success(self) -> None:
         self.assertIsNotNone(XmlKeyValueStore)
 
-    def test_parser_creation_failure(self):
+    def test_parser_creation_failure(self) -> None:
         self.assertRaises(XmlException, XmlKeyValueStore, BAD_XML,
                           is_file=False, schema_location=SCHEMA_LOCATION)
 
-    def test_xsd_validation_failure(self):
+    def test_xsd_validation_failure(self) -> None:
         self.assertRaises(XmlException, XmlKeyValueStore, INVALID_XML,
                           is_file=False, schema_location=SCHEMA_LOCATION)
 
-    def test_invalid_schema_file_path_failure(self):
+    def test_invalid_schema_file_path_failure(self) -> None:
         self.assertRaises(XmlException, XmlKeyValueStore, INVALID_SCHEMA_FILE_LOCATION,
                           is_file=True, schema_location=SCHEMA_LOCATION)
 
-    def test_validate_intel_manageability_conf(self):
+    def test_validate_intel_manageability_conf(self) -> None:
         XmlKeyValueStore(IOTG_INB_CONF, True, schema_location=SCHEMA_LOCATION)
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._validate')
     @patch('builtins.open', new_callable=mock_open())
     @patch('os.remove')
-    def test_load_raises_move_fails(self, mock_remove, mock_open_file, mock_validate):
+    def test_load_raises_move_fails(self, mock_remove, mock_open_file, mock_validate) -> None:
         mock_validate.return_value = ElementTree()
         mock_open_file.side_effect = IOError('abc')
         with self.assertRaises(XmlException):
@@ -97,7 +97,7 @@ class TestXmlParser(TestCase):
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._validate')
     @patch('shutil.copy')
     @patch('shutil.move')
-    def test_load_raises_copy_fails(self, mock_move, mock_copy, mock_validate):
+    def test_load_raises_copy_fails(self, mock_move, mock_copy, mock_validate) -> None:
         mock_validate.return_value = ElementTree()
         mock_copy.side_effect = OSError('abc')
         with self.assertRaises(XmlException):
@@ -108,7 +108,7 @@ class TestXmlParser(TestCase):
         self.assertEqual('telemetry/maxCacheSize:100',
                           self.good.get_element('telemetry/maxCacheSize'))
 
-    def test_get_element_throws_exception(self):
+    def test_get_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.get_element, 'telemetry/maxCacheSize/bb')
 
     def test_set_element(self):
@@ -118,21 +118,21 @@ class TestXmlParser(TestCase):
         self.assertEqual('telemetry/maxCacheSize:200',
                           self.good.get_element('telemetry/maxCacheSize'))
 
-    def test_validate_file(self):
+    def test_validate_file(self) -> None:
         try:
             XmlKeyValueStore(IOTG_INB_CONF, is_file=False, schema_location="/path")
         except XmlException as e:
             self.assertEqual("Schema file not found.", str(e))
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
-    def test_set_element_in_file(self, mock_write):
+    def test_set_element_in_file(self, mock_write) -> None:
         xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         path = xml.set_element('telemetry/maxCacheSize', '200')
         self.assertEqual('200', path)
         mock_write.assert_called_once()
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
-    def test_set_element_in_file_fail_write(self, mock_write):
+    def test_set_element_in_file_fail_write(self, mock_write) -> None:
         try:
             mock_write.side_effect = XmlException('error')
             xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
@@ -161,7 +161,7 @@ class TestXmlParser(TestCase):
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._validate_file')
-    def test_set_element_in_file_fail_validate(self, mock_validate, mock_write):
+    def test_set_element_in_file_fail_validate(self, mock_validate, mock_write) -> None:
         mock_validate.return_value = False
         xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         path = xml.set_element('telemetry/maxCacheSize', 'a')
@@ -169,11 +169,11 @@ class TestXmlParser(TestCase):
         self.assertEqual(mock_write.call_count, 1)
         mock_validate.assert_called_once()
 
-    def test_set_element_throws_exception(self):
+    def test_set_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.set_element, 'telemetry/maxCacheSize/bb', '200')
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
-    def test_append_element_in_file(self, mock_write):
+    def test_append_element_in_file(self, mock_write) -> None:
         xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         path = xml.append('dispatcher', value_string='trustedRepositories:https://dummy')
         self.assertRegex(path, "dummy")
@@ -182,7 +182,7 @@ class TestXmlParser(TestCase):
     @patch('configuration.xml_key_value_store.XmlKeyValueStore.get_element',
            return_value="dispatcher/trustedRepositories: http\n\t  https")
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
-    def test_remove_element_in_file(self, mock_write, mock_get_ele_val):
+    def test_remove_element_in_file(self, mock_write, mock_get_ele_val) -> None:
         xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         path = xml.remove('dispatcher', value_string='trustedRepositories:https')
         self.assertEqual('dispatcher/trustedRepositories:\n\t    http\n\t;', path)
