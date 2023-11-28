@@ -14,4 +14,4 @@ cd "$DIR"
 
 
 launchers/vagrant-up.sh
-launchers/install-framework-slow.sh
+launchers/install-framework-quicker.sh

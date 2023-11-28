@@ -119,7 +119,7 @@ done
 
 cp /scripts/inb_fw_tool_info.conf /etc/firmware_tool_info.conf
 
-NO_CLOUD=1 PROVISION_TPM=auto NO_OTA_CERT=1 TELIT_HOST="localhost" bash -x /usr/bin/provision-tc
+NO_CLOUD=1 PROVISION_TPM=auto NO_OTA_CERT=1 bash -x /usr/bin/provision-tc
 
 # Copy certs/keys to paths expected by INBM
 cp /etc/ucc_mosquitto/certs/client.crt /etc/intel-manageability/secret/cloudadapter-agent/client.crt

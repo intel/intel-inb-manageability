@@ -13,7 +13,7 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
 
 class TestManifest(TestCase):
 
-    def test_parses_valid_manifest_successfully(self):
+    def test_parses_valid_manifest_successfully(self) -> None:
         parsed = XmlHandler(fake_ota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
 
@@ -25,7 +25,7 @@ class TestManifest(TestCase):
         self.assertEqual('testmanufacturer', manifest_info.platform_mfg)
         self.assertEqual('testproduct', manifest_info.platform_product)
 
-    def test_parses_without_tool_options(self):
+    def test_parses_without_tool_options(self) -> None:
         parsed = XmlHandler(fake_ota_no_tool_option, is_file=False,
                             schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
@@ -33,21 +33,21 @@ class TestManifest(TestCase):
         tool_options = parse_tool_options(resource)
         self.assertEqual(None, tool_options)
 
-    def test_parses_with_tool_options(self):
+    def test_parses_with_tool_options(self) -> None:
         parsed = XmlHandler(fake_ota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
 
         tool_options = parse_tool_options(resource)
         self.assertEqual('/p /b', tool_options)
 
-    def test_parses_with_guid(self):
+    def test_parses_with_guid(self) -> None:
         parsed = XmlHandler(fake_fota_guid, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
 
         guid = parse_guid(resource)
-        self.assertEqual('1234', guid)
+        self.assertEqual('6B29FC40-CA47-1067-B31D-00DD010662DA', guid)
 
-    def test_parses_without_guid(self):
+    def test_parses_without_guid(self) -> None:
         parsed = XmlHandler(fake_fota_no_guid, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         resource = parsed.get_children('ota/type/fota')
 

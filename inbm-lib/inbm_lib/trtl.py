@@ -157,7 +157,7 @@ class Trtl:
                          "]; return code: " + str(code))
         return out, err, code
 
-    def image_pull_public(self, image: str, reference: Optional[str], file_name: str = None) \
+    def image_pull_public(self, image: str, reference: Optional[str], file_name: Optional[str] = None) \
             -> Tuple[str, Optional[str], int]:
         """Do image pull to public registry
 

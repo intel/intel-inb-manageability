@@ -37,7 +37,7 @@ class TestBroker(TestCase):
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    def test_broker_subscribe_topics(self, m_sub, m_connect):
+    def test_broker_subscribe_topics(self, m_sub, m_connect) -> None:
         d = TestBroker._build_broker()
         self.assertTrue(m_sub.called)
         self.assertEquals(len(d.mqttc.topics), 2)
@@ -46,21 +46,21 @@ class TestBroker(TestCase):
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    def test_broker_stop(self, m_pub, m_connect):
+    def test_broker_stop(self, m_pub, m_connect) -> None:
         d = TestBroker._build_broker()
         d.broker_stop()
         self.assertTrue(m_pub.called)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
-    def test_on_message(self, m_pub, m_connect):
+    def test_on_message(self, m_pub, m_connect) -> None:
         d = TestBroker._build_broker()
         d._on_message('topic', 'payload', 1)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('configuration.broker.Broker._execute')
-    def test_on_command_success(self, mock_execute, m_pub, m_connect):
+    def test_on_command_success(self, mock_execute, m_pub, m_connect) -> None:
         get_command = "{\"cmd\": \"g_element\", \"value\": null, \"headers\": null, \"path\": null, " \
                       "\"id\": \"b5cHpb6HpK42V84GHHeQD2\", \"valueString\": \"{u'minStorageMB'}\"}"
         d = TestBroker._build_broker()
@@ -70,7 +70,7 @@ class TestBroker(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('configuration.broker.Broker._execute')
-    def test_on_command_throws_error(self, mock_execute, m_pub, m_connect):
+    def test_on_command_throws_error(self, mock_execute, m_pub, m_connect) -> None:
         get_command = "{, \"value\": null, \"headers\": null, \"path\": null, " \
                       " \"valueString\": \"{u'minStorageMB'}\"}"
         d = TestBroker._build_broker()
@@ -98,7 +98,7 @@ class TestBroker(TestCase):
         self.assertEqual(m_pub.call_count, 2)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
-    def test_subscription_fails(self, m_sub):
+    def test_subscription_fails(self, m_sub) -> None:
         e = ValueError('abc')
         m_sub.side_effect = e
         self.assertRaises(Exception)

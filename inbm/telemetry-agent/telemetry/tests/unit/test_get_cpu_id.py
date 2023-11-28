@@ -1,8 +1,6 @@
 from telemetry.static_attributes import _get_cpu_id_from_proc_cpuinfo, get_cpu_id
 from mock import patch
 from unittest import TestCase
-from future import standard_library
-standard_library.install_aliases()
 
 
 proc_cpuinfo_expected_blank = "Unknown"
@@ -258,29 +256,29 @@ power management:
 
 class TestGetCpuId(TestCase):
 
-    def test_get_cpu_id_real_example(self):
+    def test_get_cpu_id_real_example(self) -> None:
         expected = proc_cpuinfo_expected_real
         actual = _get_cpu_id_from_proc_cpuinfo(proc_cpuinfo_input_real)
         self.assertEqual(actual, expected)
 
-    def test_get_cpu_id_modified_real_example(self):
+    def test_get_cpu_id_modified_real_example(self) -> None:
         expected = proc_cpuinfo_expected_modified
         actual = _get_cpu_id_from_proc_cpuinfo(proc_cpuinfo_input_modified)
         self.assertEqual(actual, expected)
 
-    def test_get_cpu_id_blank(self):
+    def test_get_cpu_id_blank(self) -> None:
         expected = proc_cpuinfo_expected_blank
         actual = _get_cpu_id_from_proc_cpuinfo(proc_cpuinfo_input_blank)
         self.assertEqual(actual, expected)
 
     @patch('platform.system')
-    def test_get_cpu_id_linux(self, mock_platform):
+    def test_get_cpu_id_linux(self, mock_platform) -> None:
         mock_platform.return_value = 'Linux'
         get_cpu_id()
         mock_platform.assert_called_once()
 
     @patch('platform.system')
-    def test_get_cpu_id_non_linux(self, mock_platform):
+    def test_get_cpu_id_non_linux(self, mock_platform) -> None:
         mock_platform.return_value = 'Windows'
         get_cpu_id()
         mock_platform.assert_called_once()

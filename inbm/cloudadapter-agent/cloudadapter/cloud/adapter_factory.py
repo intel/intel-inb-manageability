@@ -6,7 +6,6 @@ SPDX-License-Identifier: Apache-2.0
 """
 
 from .adapters.azure_adapter import AzureAdapter
-from .adapters.telit_adapter import TelitAdapter
 from .adapters.generic_adapter import GenericAdapter
 from ..constants import ADAPTER_CONFIG_PATH
 from ..exceptions import BadConfigError
@@ -59,8 +58,6 @@ def get_adapter() -> Adapter:
 
     if cloud == "azure":
         return AzureAdapter(config)
-    elif cloud == "telit":
-        return TelitAdapter(config)
     elif cloud is not None:
         return GenericAdapter(config)
     else:

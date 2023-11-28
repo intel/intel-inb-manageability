@@ -12,6 +12,13 @@ UCC_FILE=/etc/intel-manageability/public/ucc_flag
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
+trap_error() {
+  echo "Command '$BASH_COMMAND' failed on line $BASH_LINENO.  Status=$?" >&2
+  exit $?
+}
+
+trap trap_error ERR
+
 # Function will print an error and exit with code 1 if a user exists
 # and has a password set.
 # If the user exists and has a shell other than {/usr,}/sbin/nologin, set shell to

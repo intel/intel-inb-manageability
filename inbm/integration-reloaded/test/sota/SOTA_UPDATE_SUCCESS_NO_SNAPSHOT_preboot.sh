@@ -10,6 +10,8 @@ echo "Triggering SOTA integration INB test: SOTA UPDATE SUCCESS NO SNAPSHOT"
 mv /usr/bin/snapper /usr/bin/snapper.bak
 echo "<START> SOTA UPDATE SUCCESS NO SNAPSHOT" | systemd-cat
 
+rm -rf /var/lib/dispatcher/upload/*
+
 inbc sota
 
 RESULT=$?

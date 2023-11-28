@@ -32,6 +32,7 @@ class SupportedDriver(Enum):
     XLINK = "thb-hddl-xlink-pci-net-driver"
     FLASH_LOGIC = "thb-flash-logic-driver"
 
+
 # Command Exit Status
 CMD_SUCCESS = 0
 CMD_TERMINATED_BY_SIGTERM = -15

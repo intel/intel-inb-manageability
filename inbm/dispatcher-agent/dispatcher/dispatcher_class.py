@@ -18,12 +18,14 @@ from threading import Thread, active_count
 from time import sleep
 from typing import Tuple
 
+from .install_check_service import InstallCheckService
+
 from inbm_lib import wmi
 from inbm_lib.count_down_latch import CountDownLatch
 from inbm_lib.detect_os import detect_os, LinuxDistType, OsType
-from inbm_lib.windows_service import WindowsService
 from inbm_lib.wmi_exception import WmiException
-from inbm_common_lib.constants import REMOTE_SOURCE, UNKNOWN, UNKNOWN_DATETIME, CONFIG_LOAD
+from inbm_lib.validate_package_list import parse_and_validate_package_list
+from inbm_common_lib.constants import REMOTE_SOURCE, UNKNOWN, CONFIG_LOAD
 from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
@@ -31,7 +33,6 @@ from inbm_common_lib.utility import remove_file
 from inbm_lib.constants import QUERY_CMD_CHANNEL, OTA_SUCCESS, OTA_FAIL
 
 from .aota.aota_error import AotaError
-from .command import Command
 from .common import dispatcher_state
 from .common.result_constants import CODE_OK, CODE_BAD_REQUEST, CODE_MULTIPLE, \
     CONFIG_LOAD_FAIL_WRONG_PATH, CODE_FOUND
@@ -115,36 +116,22 @@ def _get_config_value(parsed: XmlHandler) -> Tuple[str, Optional[str]]:
     return config_cmd_type, value_object
 
 
-class Dispatcher(WindowsService):
-    """An instance of this class will be the callback to
-    L{TestAdapter} and L{HdcAdapter} to enable the cloud connectors to
-    call the OTA tools
-    """
-
-    _svc_name_ = 'inbm-dispatcher'
-    _svc_display_name_ = 'Dispatcher Agent'
-    _svc_description_ = 'Intel Manageability coordinating agent'
-
-    def __init__(self, args: Optional[List] = None, broker_core: Optional[DispatcherBroker] = None) -> None:
-        if args is None:
-            args = []
-
-        super().__init__(args)
-
+class Dispatcher:
+    def __init__(self, args: List[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
         log_config_path = get_log_config_path()
         msg = f"Looking for logging configuration file at {log_config_path}"
         print(msg)
         fileConfig(log_config_path,
                    disable_existing_loggers=False)
 
-        if broker_core is not None:
-            self._broker = broker_core
-        else:
-            self._broker = DispatcherBroker()
+        self._dispatcher_broker = broker
+        self._install_check_service = install_check_service
         self.update_queue: Queue[Tuple[str, str]] = Queue(1)
         self._thread_count = 1
-        self.sota_repos = None
+        self._sota_repos = None
         self.sota_mode = None
+        self._package_list: str = ""
+
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
         self.dbs_remove_image_on_failed_container = True
@@ -155,21 +142,12 @@ class Dispatcher(WindowsService):
                                    'message': 'No health report from diagnostic'}
         self.RUNNING = False
         self._update_logger = UpdateLogger(ota_type="", data="")
-        self.remediation_instance = RemediationManager(self._make_callbacks_object())
+        self.remediation_instance = RemediationManager(
+            self._dispatcher_broker)
         self._wo: Optional[WorkloadOrchestration] = None
 
-    def _make_callbacks_object(self) -> DispatcherCallbacks:
-        return DispatcherCallbacks(install_check=self.install_check,
-                                   sota_repos=self.sota_repos,
-                                   proceed_without_rollback=self.proceed_without_rollback,
-                                   broker_core=self._broker,
-                                   logger=self._update_logger)
-
-    def svc_stop(self) -> None:
+    def stop(self) -> None:
         self.RUNNING = False
-
-    def svc_main(self) -> None:
-        self.start()
 
     def start(self, tls: bool = True) -> None:
         """Start the Dispatcher service.
@@ -181,14 +159,14 @@ class Dispatcher(WindowsService):
         @param tls: Transport level security;  Default=True
         """
 
-        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 8:
+        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 11:
             logger.error(
-                "Python version must be 3.8 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
         self.RUNNING = True
         logger.info("Dispatcher agent starting. Version info: " +
                     get_friendly_inbm_version_commit())
-        self._broker.start(tls)
+        self._dispatcher_broker.start(tls)
         self._initialize_broker()
 
         self.remediation_instance.run()
@@ -199,7 +177,7 @@ class Dispatcher(WindowsService):
         with ota_lock:
             self._perform_startup_tasks()
 
-        def _sig_handler(signo, frame):
+        def _sig_handler(signo, frame) -> None:
             """Callback to register different signals. Currently we do that only for SIGTERM & SIGINT
 
             @param signo: currently SIGTERM & SIGINT
@@ -215,7 +193,7 @@ class Dispatcher(WindowsService):
             # Catch termination via systemd
             signal.signal(signal.SIGTERM, _sig_handler)
 
-        self._broker.mqtt_publish(f'{AGENT}/state', 'running', retain=True)
+        self._dispatcher_broker.mqtt_publish(f'{AGENT}/state', 'running', retain=True)
 
         active_start_count = active_count()
         while self.RUNNING:
@@ -226,8 +204,8 @@ class Dispatcher(WindowsService):
                     worker.start()
             sleep(1)
 
-        self._broker.mqtt_publish(f'{AGENT}/state', 'dead', retain=True)
-        self._broker.stop()
+        self._dispatcher_broker.mqtt_publish(f'{AGENT}/state', 'dead', retain=True)
+        self._dispatcher_broker.stop()
 
     def _perform_startup_tasks(self) -> None:
         """Perform one-time dispatcher startup tasks
@@ -247,42 +225,45 @@ class Dispatcher(WindowsService):
             detected_os = detect_os()
             if detected_os in [LinuxDistType.YoctoARM.name, LinuxDistType.YoctoX86_64.name]:
                 try:
-                    SotaOsFactory(self._make_callbacks_object()).get_os(detected_os).create_snapshotter('update',
-                                                                                                        snap_num='1',
-                                                                                                        proceed_without_rollback=True).commit()
+                    validated_package_list = parse_and_validate_package_list(self._package_list)
+                    if validated_package_list is None:
+                        raise DispatcherException(
+                            F'parsing and validating package list: {self._package_list} failed')
+                    SotaOsFactory(self._dispatcher_broker, self._sota_repos, validated_package_list).\
+                        get_os(detected_os).\
+                        create_snapshotter('update',
+                                           snap_num='1',
+                                           proceed_without_rollback=True,
+                                           ).commit()
                 except OSError:
                     # harmless here--mender commit is speculative
                     pass
         self.create_workload_orchestration_instance()
         self.invoke_workload_orchestration_check(True)
 
-    def _do_config_install_load(self, parsed_head: XmlHandler, target_type: str,
-                                xml: str = None) -> Result:
+    def _do_config_install_load(self, parsed_head: XmlHandler, xml: Optional[str] = None) -> Result:
         """Invoked by do_config_operation to perform config file load. It replaces the existing
         TC conf file with a new file.
 
         @param parsed_head: The root parsed xml
-        @param target_type: Target type (vision/node), None for inb
         @param xml: Manifest to be published for Accelerator Manageability Framework agents, None for inb
         @return Result: {'status': 400, 'message': 'Configuration load: FAILED'}
         or {'status': 200, 'message': 'Configuration load: successful'}
         """
-        if not self._broker.is_started():
+        if not self._dispatcher_broker.is_started():
             return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED (mqttc not initialized)')
-        configuration_helper = ConfigurationHelper(self._make_callbacks_object())
+        configuration_helper = ConfigurationHelper(
+            self._dispatcher_broker)
         uri = configuration_helper.parse_url(parsed_head)
         if not is_valid_uri(uri):
-            if target_type is TargetType.none.name:
-                logger.debug("Config load operation using local path.")
-                path_header = parsed_head.get_children('config/configtype/load')
-                new_file_loc = path_header.get('path', None)
-                if CACHE not in new_file_loc.rsplit('/', 1):
-                    return CONFIG_LOAD_FAIL_WRONG_PATH
-                if new_file_loc is None:
-                    return Result(CODE_BAD_REQUEST,
-                                  'Configuration load: Invalid configuration load manifest without <path> tag')
-            else:
-                return Result(CODE_BAD_REQUEST, 'Configuration load: unable to download configuration (bad URI)')
+            logger.debug("Config load operation using local path.")
+            path_header = parsed_head.get_children('config/configtype/load')
+            new_file_loc = path_header.get('path', None)
+            if CACHE not in new_file_loc.rsplit('/', 1):
+                return CONFIG_LOAD_FAIL_WRONG_PATH
+            if new_file_loc is None:
+                return Result(CODE_BAD_REQUEST,
+                              'Configuration load: Invalid configuration load manifest without <path> tag')
 
         if uri:
             try:
@@ -297,23 +278,15 @@ class Dispatcher(WindowsService):
 
         logger.debug(f"new_file_loc = {new_file_loc}")
 
-        if target_type is TargetType.none.name:
-            try:
-                self._request_config_agent(CONFIG_LOAD, file_path=new_file_loc)
-                if new_file_loc:
-                    remove_file(new_file_loc)
-                return Result(CODE_OK, 'Configuration load: SUCCESSFUL')
-            except DispatcherException as error:
+        try:
+            self._request_config_agent(CONFIG_LOAD, file_path=new_file_loc)
+            if new_file_loc:
                 remove_file(new_file_loc)
-                logger.error(error)
-                return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED')
-        else:
-            if xml is None:
-                return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED. No XML to publish to targets')
-
-            target_config_load_operation(
-                xml=xml, file_path=new_file_loc, broker_core=self._broker)
-            return PUBLISH_SUCCESS
+            return Result(CODE_OK, 'Configuration load: SUCCESSFUL')
+        except DispatcherException as error:
+            remove_file(new_file_loc)
+            logger.error(error)
+            return Result(CODE_BAD_REQUEST, 'Configuration load: FAILED. Error: ' + str(error))
 
     def _do_config_install_update_config_items(self, config_cmd_type: str, value_object: Optional[str]) -> Result:
         """Invoked by do_config_operation to perform update of configuration values
@@ -337,7 +310,7 @@ class Dispatcher(WindowsService):
                     append_remove_path = value_list[i].split(":")[0]
                     if append_remove_path not in CONFIGURATION_APPEND_REMOVE_PATHS_LIST:
                         logger.error(
-                            "Given parameters doesn't support Config append or remove method...")
+                            "Given parameter doesn't support Config append or remove method...")
                         return Result(status=CODE_BAD_REQUEST, message=f'Configuration {config_cmd_type} command: FAILED')
                 try:
                     self._request_config_agent(config_cmd_type, file_path=None,
@@ -350,7 +323,7 @@ class Dispatcher(WindowsService):
         except (ValueError, IndexError) as error:
             raise DispatcherException(f'Invalid values for payload {error}')
 
-    def _do_config_operation(self, parsed_head: XmlHandler, target_type: str) -> Result:
+    def _do_config_operation(self, parsed_head: XmlHandler) -> Result:
         """Performs either a config load or update of config items.  Delegates to either
         do_config_install_update_config_items or do_config_install_load method depending on type
         of operation invoked
@@ -358,14 +331,9 @@ class Dispatcher(WindowsService):
         @param parsed_head: The root parsed xml. It determines config_cmd_type
         @return (dict): returns success or failure dict from child methods
         """
-        try:
-            self.install_check(check_type='check_network')
-        except DispatcherException:
-            return Result(CODE_MULTIPLE, 'Network and Cloud check failed')
-
         config_cmd_type, value_object = _get_config_value(parsed_head)
         if config_cmd_type == 'load':
-            return self._do_config_install_load(parsed_head=parsed_head, target_type=target_type)
+            return self._do_config_install_load(parsed_head=parsed_head)
         else:
             return self._do_config_install_update_config_items(config_cmd_type, value_object)
 
@@ -377,32 +345,25 @@ class Dispatcher(WindowsService):
         @return (dict): returns success or failure dict from child methods
         """
         cmd = parsed_head.get_element('cmd')
-        target_type = parsed_head.find_element('*/targetType')
 
         if cmd == "shutdown":
             message = self.device_manager.shutdown()
         elif cmd == "restart":
-            if target_type is None:
-                message = self.device_manager.restart()
-                if message == SUCCESS_RESTART:
-                    state = {'restart_reason': 'restart_cmd'}
-                    dispatcher_state.write_dispatcher_state_to_state_file(state)
-            else:
-                self._broker.mqtt_publish(TARGET_CMD_RESTART, xml)
-                message = PUBLISH_SUCCESS
+            message = self.device_manager.restart()
+            if message == SUCCESS_RESTART:
+                state = {'restart_reason': 'restart_cmd'}
+                dispatcher_state.write_dispatcher_state_to_state_file(state)
         elif cmd == "query":
-            if target_type is None:
-                self._broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
-            elif target_type == "node":
-                self._broker.mqtt_publish(VISION_CMD_QUERY, xml)
+            self._dispatcher_broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
             return PUBLISH_SUCCESS
         elif cmd == "custom":
             header = parsed_head.get_children('custom')
             json_data = header['data']
-            self._broker.mqtt_publish(CUSTOM_CMD_CHANNEL, json_data)
+            self._dispatcher_broker.mqtt_publish(CUSTOM_CMD_CHANNEL, json_data)
             return PUBLISH_SUCCESS
         elif cmd == "provisionNode":
-            ProvisionTarget(xml, self._make_callbacks_object()).install(parsed_head)
+            ProvisionTarget(xml,
+                            self._dispatcher_broker).install(parsed_head)
             return PUBLISH_SUCCESS
         elif cmd == "decommission":
             message = self.device_manager.decommission()
@@ -412,16 +373,16 @@ class Dispatcher(WindowsService):
         return Result(CODE_OK, message)
 
     def _telemetry(self, message: str) -> None:
-        self._broker.telemetry(message)
+        self._dispatcher_broker.telemetry(message)
 
     def _send_result(self, message: str) -> None:
         """Sends event messages to local MQTT channel
 
         @param message: message to be published to cloud
         """
-        self._broker.send_result(message)
+        self._dispatcher_broker.send_result(message)
 
-    def do_install(self, xml: str, schema_location: Optional[str] = None) -> int:
+    def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:
         """Delegates the installation to either
         . call a DeviceManager command
         . do_ota_install
@@ -480,13 +441,7 @@ class Dispatcher(WindowsService):
                 if target_type is None:
                     target_type = TargetType.none.name
                 logger.debug(f"target_type : {target_type}")
-                if target_type is TargetType.none.name:
-                    result = self._do_config_operation(parsed_head, target_type)
-                else:
-                    config_cmd_type = parsed_head.get_element('config/cmd')
-                    logger.debug(f"cmd_type : {config_cmd_type}")
-                    result = self._do_config_operation_on_target(
-                        config_cmd_type, parsed_head, xml, target_type, self._broker)
+                result = self._do_config_operation(parsed_head)
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
@@ -516,7 +471,7 @@ class Dispatcher(WindowsService):
                 self._update_logger.status = OTA_SUCCESS
                 self._update_logger.error = ""
             self._update_logger.save_log()
-            return result.status
+            return result
 
     def _do_ota_update(self, xml: str, ota_type: str, repo_type: str, target_type: Optional[str], resource: Dict,
                        kwargs: Dict, parsed_head: XmlHandler) -> Result:
@@ -535,7 +490,11 @@ class Dispatcher(WindowsService):
         factory = OtaFactory.get_factory(
             ota_type.upper(),
             repo_type,
-            self._make_callbacks_object(),
+            self._dispatcher_broker,
+            self.proceed_without_rollback,
+            self._sota_repos,
+            self._install_check_service,
+            self._update_logger,
             self.config_dbs)
 
         p = factory.create_parser()
@@ -543,13 +502,8 @@ class Dispatcher(WindowsService):
         parsed_manifest = p.parse(resource, kwargs, parsed_head)
         self.check_username_password(parsed_manifest)
 
-        # target_type is only used for Accelerator Manageability Framework
-        if target_type is TargetType.none.name:
-            t = factory.create_thread(parsed_manifest)
-            return t.start()
-        else:
-            return self._do_install_on_target(
-                ota_type.upper(), xml, repo_type, parsed_manifest)
+        t = factory.create_thread(parsed_manifest)
+        return t.start()
 
     def _validate_pota_manifest(self, repo_type: str, target_type: Optional[str],
                                 kwargs: Dict, parsed_head: XmlHandler, ota_list: Dict) -> None:
@@ -569,7 +523,11 @@ class Dispatcher(WindowsService):
                 factory = OtaFactory.get_factory(
                     ota.upper(),
                     repo_type,
-                    self._make_callbacks_object(),
+                    self._dispatcher_broker,
+                    self.proceed_without_rollback,
+                    self._sota_repos,
+                    self._install_check_service,
+                    self._update_logger,
                     self.config_dbs)
                 p = factory.create_parser()
                 # NOTE: p.parse can raise one of the *otaError exceptions
@@ -608,29 +566,10 @@ class Dispatcher(WindowsService):
         elif (usr is None) and pwd:
             raise DispatcherException(f'No Username sent in manifest for {ota}')
 
-    def _do_config_operation_on_target(self, config_cmd: str, parsed_head: XmlHandler, xml: str, target_type: str,
-                                       broker_core: DispatcherBroker) -> Result:
-        """Performs config operations on Accelerator Manageability Framework agents
-
-        @param config_cmd: Config cmd to be performed on targets
-        @param parsed_head: Parsed head of the manifest xml
-        @param xml: manifest in XML format
-        @param target_type: Target on which the config operation needs to be performed
-        @param broker_core: Dispatcher Broker object
-        @return Result: PUBLISH_SUCCESS if success
-        @raises DispatcherException: if unsuccessful or if MQTT object is None
-        """
-        logger.debug("")
-        if config_cmd == CONFIG_LOAD:
-            return self._do_config_install_load(parsed_head=parsed_head, target_type=target_type, xml=xml)
-        else:
-            broker_core.mqtt_publish(CONFIG_CHANNEL + config_cmd, xml)
-            return PUBLISH_SUCCESS
-
     def _do_install_on_target(self, ota_type: str, xml: str, repo_type: str, parsed_manifest: Mapping[str, Optional[Any]]):
         logger.debug("")
         t = OtaTarget(xml, parsed_manifest, ota_type,
-                      self._make_callbacks_object())
+                      self._dispatcher_broker)
         target_ota_status = t.install()
         logger.debug(f"Install on Target STATUS: {target_ota_status}")
         return target_ota_status
@@ -640,7 +579,7 @@ class Dispatcher(WindowsService):
         latch = CountDownLatch(1)
         logger.debug(" ")
 
-        def on_command(topic: str, payload: str, qos: int) -> None:
+        def on_command(topic: str, payload: Any, qos: int) -> None:
             logger.info('Message received: %s on topic: %s', payload, topic)
 
             try:
@@ -656,8 +595,8 @@ class Dispatcher(WindowsService):
         cmd = ConfigCommand(cmd_type, path=file_path,
                             value_string=value_string)
 
-        self._broker.mqtt_subscribe(cmd.create_response_topic(), on_command)
-        self._broker.mqtt_publish(cmd.create_request_topic(), cmd.create_payload())
+        self._dispatcher_broker.mqtt_subscribe(cmd.create_response_topic(), on_command)
+        self._dispatcher_broker.mqtt_publish(cmd.create_request_topic(), cmd.create_payload())
 
         latch.await_()
         if cmd.response is None and cmd_type != 'load':
@@ -678,41 +617,6 @@ class Dispatcher(WindowsService):
             if cmd.response is not None and 'rc' in cmd.response.keys() and cmd.response['rc'] == 1:
                 raise DispatcherException(cmd.response['message'])
 
-    def install_check(self, size: Optional[int] = None, check_type: Optional[str] = None) -> None:
-        """Perform pre install checks via the diagnostic agent. Send a command <pre_ota_check> to
-        diagnostic agent which checks [cloud agent, cloud, memory, storage, battery]
-
-        @param size: size of the install package; default=None
-        @param check_type : String representation of checks
-        eg: check_type='check_storage'..could later be extended to other types
-        """
-
-        # Create command object for pre install check
-        cmd = Command(check_type, self._broker) if check_type else Command(
-            'install_check', self._broker)
-
-        cmd.execute()
-
-        if cmd.log_info != "":
-            logger.info(cmd.log_info)
-        if cmd.log_error != "":
-            logger.error(cmd.log_error)
-
-        if cmd.response is None:
-            self._telemetry('Install check timed out. Please '
-                            'check health of the diagnostic agent')
-            raise DispatcherException('Install check timed out')
-
-        if cmd.response['rc'] == 0:
-            self._telemetry('Command: {} passed. Message: {}'
-                            .format(cmd.command, cmd.response['message']))
-            logger.info('Install check passed')
-
-        else:
-            self._telemetry('Command: {} failed. Message: {}'
-                            .format(cmd.command, cmd.response['message']))
-            raise DispatcherException('Install check failed')
-
     def _on_cloud_request(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from cloud
 
@@ -730,7 +634,7 @@ class Dispatcher(WindowsService):
             self._send_result(
                 str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
 
-    def _on_message(self, topic: str, payload: str, qos: int) -> None:
+    def _on_message(self, topic: str, payload: Any, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
 
         @param topic: incoming topic
@@ -739,7 +643,7 @@ class Dispatcher(WindowsService):
         """
         logger.info('Message received: %s on topic: %s', payload, topic)
 
-    def _initialize_broker(self):
+    def _initialize_broker(self) -> None:
         """Set up initial subscription topics. The callbacks have following purposes:
 
         a.) _on_message : called when a message is received from _telemetry agent
@@ -747,7 +651,7 @@ class Dispatcher(WindowsService):
         c.) override_defaults: called when config agent sends updates value
         """
 
-        def override_defaults(topic: str, payload: str, qos: int) -> None:
+        def override_defaults(topic: str, payload: Any, qos: int) -> None:
             """Called when config agent sends updates value
 
             @param topic: incoming topic
@@ -813,30 +717,31 @@ class Dispatcher(WindowsService):
                 if cleaned_payload is None:
                     logger.error("No ubuntuAptSource selected!")
                 else:
-                    self.sota_repos = cleaned_payload
+                    self._sota_repos = cleaned_payload
 
         try:
             logger.debug('Subscribing to: %s', STATE_CHANNEL)
-            self._broker.mqtt_subscribe(STATE_CHANNEL, self._on_message)
+            self._dispatcher_broker.mqtt_subscribe(STATE_CHANNEL, self._on_message)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_DISPATCHER_UPDATE_CHANNEL)
-            self._broker.mqtt_subscribe(
+            self._dispatcher_broker.mqtt_subscribe(
                 CONFIGURATION_DISPATCHER_UPDATE_CHANNEL, override_defaults)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_SOTA_UPDATE_CHANNEL)
-            self._broker.mqtt_subscribe(CONFIGURATION_SOTA_UPDATE_CHANNEL, override_defaults)
+            self._dispatcher_broker.mqtt_subscribe(
+                CONFIGURATION_SOTA_UPDATE_CHANNEL, override_defaults)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_ALL_AGENTS_UPDATE_CHANNEL)
-            self._broker.mqtt_subscribe(
+            self._dispatcher_broker.mqtt_subscribe(
                 CONFIGURATION_ALL_AGENTS_UPDATE_CHANNEL, override_defaults)
 
             logger.debug('Subscribing to: %s', TC_REQUEST_CHANNEL)
-            self._broker.mqtt_subscribe(TC_REQUEST_CHANNEL, self._on_cloud_request)
+            self._dispatcher_broker.mqtt_subscribe(TC_REQUEST_CHANNEL, self._on_cloud_request)
 
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
 
-    def invoke_sota(self, **kwargs) -> None:
+    def invoke_sota(self, snapshot: Optional[Any] = None, action: Optional[Any] = None) -> None:
         """Invokes SOTA in either snapshot_revert or snapshot_delete mode along with snapshot_num
 
         @param kwargs: dict value containing action='snapshot_revert' or 'snapshot_delete',
@@ -844,19 +749,25 @@ class Dispatcher(WindowsService):
         """
         logger.debug('Invoking SOTA')
 
-        parsed_manifest = {'sota_mode': self.sota_mode, 'sota_cmd': 'rollback', 'log_to_file': None,
-                           'sota_repos': self.sota_repos,
+        parsed_manifest = {'sota_mode': self.sota_mode, 'package_list': self._package_list,
+                           'sota_cmd': 'rollback', 'log_to_file': None,
+                           'sota_repos': self._sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
-        sota_instance = SOTA(parsed_manifest, REMOTE_SOURCE, self._make_callbacks_object(),
-                             **kwargs)
+        sota_instance = SOTA(parsed_manifest,
+                             REMOTE_SOURCE,
+                             self._dispatcher_broker,
+                             self._update_logger,
+                             self._sota_repos,
+                             self._install_check_service,
+                             snapshot, action)
 
         sota_instance.execute(self.proceed_without_rollback)
 
     def create_workload_orchestration_instance(self) -> None:
         """This method used to create WorkloadOrchestration instance.
         """
-        self._wo = WorkloadOrchestration(self._make_callbacks_object())
+        self._wo = WorkloadOrchestration(self._dispatcher_broker)
 
     def invoke_workload_orchestration_check(self, online_mode: bool, type_of_manifest: Optional[str] = None, parsed_head: Optional[XmlHandler] = None) -> None:
         """This method is used to invoke workload orchestration checks at startup and before/after any OTA update that performs shutdown/reboot within.
@@ -879,16 +790,19 @@ class Dispatcher(WindowsService):
         times-outs or in case of bad health report, it performs a SOTA rollback
         In case of a good health report, it just deletes the snapshot."""
         try:
-            self.install_check(check_type='swCheck')
-            self.install_check(check_type='check_network')
+            self._install_check_service.install_check(check_type='swCheck', size=0)
+            self._install_check_service.install_check(check_type='check_network', size=0)
             self._telemetry('On Boot, Diagnostics reports healthy system')
+            logger.info("On Boot, Diagnostics reports healthy system")
             self.invoke_sota(action='diagnostic_system_healthy', snapshot=None)
             self._update_logger.update_log(OTA_SUCCESS)
+            logger.info(OTA_SUCCESS)
         except DispatcherException:
             self._telemetry(
                 'On Boot, Diagnostics reports some services not up after previous SOTA')
             self.invoke_sota(action='diagnostic_system_unhealthy', snapshot=None)
             self._update_logger.update_log(OTA_FAIL)
+            logger.info(OTA_FAIL)
 
     def check_fota_state(self, fota_state: Dict) -> None:
         """This method checks the FOTA info in dispatcher state file and validates the release date

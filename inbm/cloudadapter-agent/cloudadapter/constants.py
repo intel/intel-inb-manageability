@@ -108,15 +108,6 @@ AZURE_TOKEN_EXPIRATION = 31556952000
 # Endpoint for device provisioning
 AZURE_DPS_ENDPOINT = "https://global.azure-devices-provisioning.net"
 
-# ========== Telit configuration constants
-
-
-# An arbitrary ID used to verify the device ID
-TELIT_APP_ID = "intel-manageability"
-
-# Datetime formatting expected for telemetry
-TELIT_DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-
 # ========== Generic configuration constants
 
 

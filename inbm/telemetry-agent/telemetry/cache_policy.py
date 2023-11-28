@@ -4,9 +4,7 @@
 """
 
 
-from future import standard_library
 from typing import List, Any
-standard_library.install_aliases()
 
 
 def trim_cache(input_collection: List[Any], max_cache_size: int) -> List[Any]:

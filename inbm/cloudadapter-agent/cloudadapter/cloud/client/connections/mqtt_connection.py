@@ -20,9 +20,9 @@ import socks
 import logging
 logger = logging.getLogger(__name__)
 
-MAX_STRING_CHARS = 50
+MAX_STRING_CHARS = 2048
 MAX_PORT_LENGTH = 7
-MAX_CLIENT_ID_LENGTH = 35
+MAX_CLIENT_ID_LENGTH = 500
 
 
 class MQTTConnection(Connection):
@@ -31,7 +31,7 @@ class MQTTConnection(Connection):
             self,
             username: str,
             hostname: str,
-            port: str,
+            port: int,
             password: Optional[str] = None,
             client_id: Optional[str] = None,
             tls_config: Optional[TLSConfig] = None,
@@ -41,7 +41,7 @@ class MQTTConnection(Connection):
         @param username:  (str) MQTT username
         @param password:  (str) MQTT password
         @param hostname:  (str) Target broker hostname
-        @param port:      (str) Target broker port
+        @param port:      (int) Target broker port
         @param client_id: (str) Client ID to use when connecting to broker
         @param tls_config: (TLSConfig) TLS configuration to use
         @param proxy_config: (ProxyConfig) Proxy configuration to use
@@ -53,15 +53,17 @@ class MQTTConnection(Connection):
         self._subscriptions: Dict = {}
 
         if len(username) > MAX_STRING_CHARS:
-            raise ValueError(f"{username} is too long.  Must be less than {MAX_STRING_CHARS} in length.")
+            raise ValueError(
+                f"username {username} is too long.  Must be less than {MAX_STRING_CHARS} in length.")
         if password and len(password) > MAX_STRING_CHARS:
-            raise ValueError(f"{password} is too long.  Must be less than {MAX_STRING_CHARS} in length")
+            raise ValueError(
+                f"password is too long.  Must be less than {MAX_STRING_CHARS} in length")
         if len(hostname) > MAX_STRING_CHARS:
-            raise ValueError(f"{hostname} is too long.  Must be less than {MAX_STRING_CHARS} in length")
-        if len(port) > MAX_PORT_LENGTH:
-            raise ValueError(f"{port} is too long.  Must be less than {MAX_PORT_LENGTH} in length")
+            raise ValueError(
+                f"hostname {hostname} is too long.  Must be less than {MAX_STRING_CHARS} in length")
         if client_id and len(client_id) > MAX_CLIENT_ID_LENGTH:
-            raise ValueError(f"{client_id} is too long.  Must be less than {MAX_CLIENT_ID_LENGTH} in length")
+            raise ValueError(
+                f"client_id {client_id} is too long.  Must be less than {MAX_CLIENT_ID_LENGTH} in length")
 
         self._username = username
         self._password = password
@@ -159,7 +161,7 @@ class MQTTConnection(Connection):
             raise DisconnectError("Could not stop the connection thread!")
 
     def subscribe(self, topic: Optional[str], callback: Callable) -> None:
-        def wrapped(client, userdata, message):
+        def wrapped(client, userdata, message) -> None:
             topic = message.topic
             payload = message.payload
             callback(topic, payload)
@@ -186,5 +188,6 @@ class MQTTConnection(Connection):
         message = self._client.publish(topic=topic, payload=payload, qos=1)
         message.wait_for_publish()
         if message.rc != mqtt.MQTT_ERR_SUCCESS:
-            error = f"Error publishing to MQTT topic, got code: {message.rc}"
-            raise PublishError(error)
+            # TODO this could also be an exception (PublishError) but we have to be careful about catching it
+            # in all callers
+            logger.error(f"Error publishing to MQTT topic, got code: {message.rc}")

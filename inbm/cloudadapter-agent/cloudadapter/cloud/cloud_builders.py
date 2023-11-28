@@ -117,7 +117,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
                 tls_config=tls_config,
                 proxy_config=proxy_config)
         except (ValueError, ConnectError, OSError, FileNotFoundError) as e:
-            raise ClientBuildError(f"Error creating MQTT Connection: {e}")
+            raise ClientBuildError(f"Error creating MQTT Connection") from e
     else:
         raise ClientBuildError(
             "Missing MQTT config information while setting up cloud connection.")

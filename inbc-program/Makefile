@@ -17,7 +17,7 @@ run:
 	sudo PYTHONPATH=$(LOCAL_PIP_PATH) python3 -m $(PROGRAM).$(PROGRAM) $(COMMAND_TO_TRIGGER)
 
 tests:
-	PYTHONDONTWRITEBYTECODE=x nosetests --with-coverage --cover-erase --cover-inclusive --cover-html --cover-package=$(PROGRAM)
+	PYTHONPATH="${PYTHONPATH}:$(shell pwd):$(shell pwd)/../inbm-lib" PYTHONDONTWRITEBYTECODE=x pytest --cov=$(PROGRAM) --cov-report=term-missing tests/unit
 
 deb-eval-py3:
 	./package-py3.sh deb EVAL

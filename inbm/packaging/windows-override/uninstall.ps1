@@ -6,7 +6,7 @@ Stop-Service mosquitto -ErrorAction SilentlyContinue
 $ErrorActionPreference = "Stop"
 
 $mosquittoPath = "c:\intel-manageability\mosquitto\mosquitto.exe"
-$inbmCloudAdapterPath = "c:\intel-manageability\inbm\usr\bin\inbm-cloudadapter.exe"
+$inbmCloudAdapterPath = "c:\intel-manageability\inbm\usr\bin\inbm-cloudadapter\inbm-cloudadapter.exe"
 
 if (Test-Path $mosquittoPath) {
     & $mosquittoPath uninstall

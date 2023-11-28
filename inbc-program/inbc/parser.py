@@ -12,7 +12,7 @@ from inbc.xml_tag import create_xml_tag
 from inbm_common_lib.dmi import get_dmi_system_info, is_dmi_path_exists
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters, validate_guid
+from .validator import validate_date, validate_string_less_than_n_characters, validate_guid, validate_package_list
 from inbm_lib.detect_os import detect_os, LinuxDistType
 
 from .inbc_exception import InbcException
@@ -56,17 +56,26 @@ class ArgsParser(object):
         """Method to parse AOTA arguments"""
         parser = self._create_subparser('aota')
 
-        parser.add_argument('--uri', '-u', required=True,
+        parser.add_argument('--uri', '-u', required=False,
                             type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
                             help='Remote URI from where to retrieve package')
-        parser.add_argument('--app', '-a', default='application', required=False, choices=['application'],
-                            help='Type of information [ application ]')
-        parser.add_argument('--command', '-c', default='update', required=False, choices=['update'],
-                            help='Type of information [ update ]')
+        parser.add_argument('--app', '-a', required=True, choices=['application', 'compose', 'docker'],
+                            help='Type of information [ application, compose, docker]')
+        parser.add_argument('--command', '-c', required=True, choices=['update', 'pull', 'up', 'down', 'import', 'load', 'remove'],
+                            help='Type of information [ update , pull, up, down, import, load, remove]')
         parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
                             help='Type of information [ yes | no ]')
         parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
                             type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
+        parser.add_argument('--version', '-v', required=False)
+        parser.add_argument('--containertag', '-ct', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'TAG', 50),
+                            help='Container Tag name')
+        parser.add_argument('--file', '-f', required=False, type=lambda x: validate_string_less_than_n_characters(x, 'FILE', 100),
+                            help='File name')
+        parser.add_argument('--dockerusername', '-du', required=False,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50), help='docker username')
+        parser.add_argument('--dockerregistry', '-dr', required=False,
+                            type=lambda x: validate_string_less_than_n_characters(x, 'Docker Registry', 500), help='docker registry')
         parser.set_defaults(func=aota)
 
     def parse_fota_args(self) -> None:
@@ -108,6 +117,9 @@ class ArgsParser(object):
                                  help='Type of information [ yes | no ]')
         parser_sota.add_argument('--mode', '-m', default='full',
                                  required=False, choices=['full', 'download-only', 'no-download'])
+        parser_sota.add_argument('--package-list', '-p', required=False,
+                                 type=lambda x: validate_package_list(x),
+                                 help='Comma-separated list of package namess to install')
         parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
@@ -204,14 +216,14 @@ class ArgsParser(object):
         parser_query.set_defaults(func=query)
 
 
-def _get_password(args) -> Optional[str]:
+def _get_password(username: str, password_prompt: str) -> Optional[str]:
     password = None
-    if args.username:
-        password = getpass.getpass("Please provide the password: ")
+    if username:
+        password = getpass.getpass(password_prompt)
     return password
 
 
-def aota(args) -> str:
+def aota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -223,7 +235,13 @@ def aota(args) -> str:
         'fetch': args.uri,
         'deviceReboot': args.reboot,
         'username': args.username,
-        'password': _get_password(args)
+        'password': _get_password(args.username, "Please provide the password: "),
+        'version': args.version,
+        'containerTag': args.containertag,
+        'file': args.file,
+        'dockerUsername': args.dockerusername,
+        'dockerRegistry': args.dockerregistry,
+        'dockerPassword': _get_password(args.dockerusername, "Please provide the docker password: ")
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -245,14 +263,18 @@ def aota(args) -> str:
                        "fetch",
                        "deviceReboot",
                        "username",
-                       "password"
-                       )
+                       "password",
+                       "version",
+                       "containerTag",
+                       "file",
+                       "dockerUsername",
+                       "dockerPassword",
+                       "dockerRegistry")
     )
-    print("manifest {0}".format(manifest))
     return manifest
 
 
-def sota(args) -> str:
+def sota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -267,6 +289,9 @@ def sota(args) -> str:
     # if source_location is None, then update is local Ubuntu and does not need a release date.
     release_date = args.releasedate if source_location else None
 
+    # pass comma-separated package list as is in manifest
+    package_list = args.package_list if args.package_list else ""
+
     # This is necessary to have the fetch/path xml tags placed in sequence to comply with the xsd schema.
     if source_tag == PATH_STRING:
         path_location = source_location
@@ -280,9 +305,10 @@ def sota(args) -> str:
         'release_date': release_date,
         'fetch': fetch_location,
         'username': args.username,
-        'password': _get_password(args),
-        'deviceReboot': args.reboot,
-        'path': path_location
+        'password': _get_password(args.username, "Please provide the password: "),
+        'deviceReboot': "no" if args.mode == "download-only" else args.reboot,
+        'path': path_location,
+        'package_list': package_list,
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -301,6 +327,7 @@ def sota(args) -> str:
                 '</manifest>').format(
         (create_xml_tag(arguments,
                         "mode",
+                        "package_list",
                         "fetch",
                         "username",
                         "password",
@@ -326,7 +353,7 @@ def _gather_system_details() -> PlatformInformation:
     return get_device_tree_system_info()
 
 
-def fota(args) -> str:
+def fota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -345,7 +372,7 @@ def fota(args) -> str:
         'tooloptions': args.tooloptions,
         'fetch': args.uri,
         'username': args.username,
-        'password': _get_password(args),
+        'password': _get_password(args.username, "Please provide the password: "),
         'guid': args.guid,
         'deviceReboot': args.reboot
     }
@@ -379,7 +406,7 @@ def fota(args) -> str:
     return manifest
 
 
-def pota(args) -> str:
+def pota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -441,7 +468,7 @@ def pota(args) -> str:
     return manifest
 
 
-def load(args) -> str:
+def load(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -452,7 +479,7 @@ def load(args) -> str:
         'fetch': args.uri,
         'signature': args.signature,
         'username': args.username,
-        'password': _get_password(args)
+        'password': _get_password(args.username, "Please provide the password: ")
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -477,7 +504,7 @@ def load(args) -> str:
     return manifest
 
 
-def get(args) -> str:
+def get(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -506,7 +533,7 @@ def get(args) -> str:
     return manifest
 
 
-def set(args) -> str:
+def set(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -535,7 +562,7 @@ def set(args) -> str:
     return manifest
 
 
-def append(args) -> str:
+def append(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
@@ -565,7 +592,7 @@ def append(args) -> str:
     return manifest
 
 
-def remove(args) -> str:
+def remove(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
     @param args: Arguments provided by the user from command line
     @return: Generated xml manifest string
@@ -595,7 +622,7 @@ def remove(args) -> str:
     return manifest
 
 
-def restart(args) -> str:
+def restart(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
@@ -614,7 +641,7 @@ def restart(args) -> str:
     return manifest
 
 
-def query(args) -> str:
+def query(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line

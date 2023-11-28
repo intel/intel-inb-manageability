@@ -13,7 +13,7 @@ def TestOneInput(input_bytes):
     fdp = atheris.FuzzedDataProvider(input_bytes)
     user_data = fdp.ConsumeString(60)
     hostname_data = fdp.ConsumeString(60)
-    port_data = fdp.ConsumeString(10)
+    port_data = fdp.ConsumeUInt(65535)
     password_data = fdp.ConsumeString(60)
     client_id_data = fdp.ConsumeString(40)
     cert_data = fdp.ConsumeString(2500)
@@ -30,7 +30,7 @@ def TestOneInput(input_bytes):
         raise
 
 
-def main():
+def main() -> None:
     atheris.Setup(sys.argv, TestOneInput)
     atheris.Fuzz()
 

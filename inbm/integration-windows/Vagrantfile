@@ -7,7 +7,7 @@ no_proxy = ENV['no_proxy']
 
 Vagrant.configure("2") do |config|
   config.vm.box = "peru/windows-10-enterprise-x64-eval"
-  config.vm.box_version = "20230401.01"
+  config.vm.box_version = "20230601.01"
 
   # Configure the proxy for Vagrant
   if Vagrant.has_plugin?("vagrant-proxyconf")

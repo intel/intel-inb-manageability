@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['diagnostic/diagnostic.py'],
-             pathex=['/src/diagnostic-agent'],
+             pathex=['/src/diagnostic-agent', '/src/inbm-lib'],
              binaries=[],
              datas=[],
              hiddenimports=['inbm_lib.mqttclient', 'inbm_lib'],

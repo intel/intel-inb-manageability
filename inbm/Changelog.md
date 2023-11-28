@@ -5,10 +5,78 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+### Changed
+ - RTC 536078 - Added package list option to inbc, cloud, and internal manifest. This allows SOTA to run an install/upgrade command on a set of individual packages rather than all installed packages.
+
+### Fixed
+ - RTC 534426 - Could not write to /var/log/inbm-update-status.log on Yocto due to /var/log being a symlink to /var/volatile/log.
+ - RTC 523677 - Improve INBC error logging - invalid child tag not printed
+ - RTC 522583 - Fix missing SOTA logs
+ - RTC 534998 - Fix SOTA failure due to snapshot error 
+
+### Security
+ - RTC 533615 - Validate GUID format in manifest using XML schema.  
+ -              Ensure the GUID in the manifest if provided matches the GUID on the system before performing a FOTA.
+ - dependabot: update golang.org/x/net from 0.14.0 to 0.17.0 in /inbm/trtl (addresses CVE-2023-39325, CVE-2023-44487)
+ - update pypi urllib3 from 1.26.17 to 1.26.18 (addresses CVE-2023-45803 in urllib3)
+ - depandabot: bump github.com/docker/docker from 24.0.5+incompatible to 24.0.7+incompatible in /inbm/trtl (addresses GHSA-jq35-85cj-fj4p)
+ - update cryptography dependency in dispatcher-agent from 41.0.4 to 41.0.5, addressing CVE-2023-5678
+ - update included reference certifi source code from 2020.12.05 to 2023.7.22, which was not a security issue per se but was flagged in BDBA as it contains CVE-2022-23491 and CVE-2023-37920
+
+## 4.1.4 - 2023-10-11
+
+### Fixed
+ - RTC 533936 - [INBM] Fix sota Kernel upgrade failure
+
+### Added
+ - Add firmware update database entry for NUC12WSHv5 using /usr/bin/iFlashVLnx64. This tool can be downloaded from https://www.intel.com/content/www/us/en/download/19504/intel-aptio-v-uefi-firmware-integrator-tools-for-intel-nuc.html
+
+### Security
+ - dependabot: update cryptography from 41.0.3 to 41.0.4
+ - update urllib3 from 1.26.16 to 1.26.17 (addresses CVE-2023-43804 in urllib3)
+
+## 4.1.3 - 2023-09-05
+
+### Fixed
+ - RTC 532663 - [INBM][UCC][Bug] During every Windows reboot there will be a temporary folder created
+ - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
+ - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
+ - RTC [533020] - Fix SOTA to  handle dpkg interactive prompt
+ - RTC 532662 - [INBM][UCC][Bug] INBM fails to send telemetry when IP is changed manually
+ - Changed golang builds to not depend on glibc.
+ - Updated OpenSSL download path in Windows installer.
+
+### Added
+- RTC 532655 - Add AOTA docker-compose up,down and pull commands to INBC
+- RTC 532848 - Add AOTA docker pull, import, load and remove commands to INBC
+
+### Security
+ - (dependabot) - Updated cryptography from 41.0.0 to 41.0.2
+ - (dependabot) - Updated cryptography from 41.0.2 to 41.0.3
+ - Updated golang runtime from 1.20.5 to 1.20.6
+ - (533039) Added Intel standard compiler flags and settings to golang builds
+ - (533037) CT72 - Secure Configuration Guidance: remove all remaining Telit references
+ - Update to Python 3.11 to address some CVEs.
+ - Update Windows Dockerfile to pull in Python 3.11.5 to address some CVEs.
+
+## 4.1.2 - 2023-06-29
+
+### Fixed
+ - RTC 531066 - [TC Base] [Bug] Cloud Adapter disconnected upon provisioned
+ - RTC 532217 - [TC Base] [Bug] Cloud Adapter cannot connect to Azure
+
+### Security
+ - Updated Windows Python version to pull in security updates
+
+## 4.1.1 - 2023-06-23
+
+NOTE: update log path has changed to /var/log/inbm-update-status.log
+
 ### Fixed
  - RTC 530729 - Fix AOTA update log file show Reboot Failed although platform already rebooted and application updated
  - RTC 530881 - Fix JSON update log/access
  - RTC 530960 - Fix INBC SOTA observe post-install check and rollback on EXT4
+ - RTC 530992 - [TC Base] [Bug] Cloudadapter Agent failed to start - TypeError: object of type 'int' has no len()
 
 ## 4.1.0 - 2023-06-13
 

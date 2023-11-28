@@ -18,6 +18,14 @@ else
 	test_fail "update success"
 fi
 
+test_started "sota install"
+echo .. Sota install test running. ..
+if vagrant ssh -c "sudo /test/sota/SOTA_INSTALL.sh"; then
+	test_pass "sota install"
+else
+	test_fail "sota install"
+fi
+
 test_started "update success no snapshot"
 echo .. Update success test no snapshot running. ..
 vagrant ssh -c "sudo /test/sota/SOTA_UPDATE_SUCCESS_NO_SNAPSHOT_preboot.sh" || true

@@ -17,6 +17,7 @@ from inbm_lib import wmi
 from inbm_lib.count_down_latch import CountDownLatch
 from inbm_lib.constants import TRTL_PATH, DOCKER_STATS
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_lib.mqttclient.mqtt import MQTT
 from inbm_lib.trtl import Trtl
 from inbm_lib.wmi_exception import WmiException
 
@@ -38,7 +39,7 @@ from telemetry import software_bom_list
 logger = logging.getLogger(__name__)
 
 
-def _set_timestamp(telemetry, telemetry_type):
+def _set_timestamp(telemetry: dict[str, Optional[Any]], telemetry_type: str) -> dict[str, Any]:
     return {'timestamp': time.time(), 'type': telemetry_type, 'values': telemetry}
 
 
@@ -57,19 +58,19 @@ def get_pms_rm_telemetry() -> str:
 class TelemetryTimer:
     """Handles waiting for collection and publishing."""
 
-    def __init__(self, collect_time, publish_time, with_docker=True) -> None:
-        self.__publish_slept_counter = 0
-        self.__collect_slept_counter = 0
+    def __init__(self, collect_time: float, publish_time: float, with_docker: bool = True) -> None:
+        self.__publish_slept_counter = 0.0
+        self.__collect_slept_counter = 0.0
         self.__collect_time = collect_time
-        self.__collect_counter = 0
+        self.__collect_counter = 0.0
         self.__publish_time = publish_time
         self.__with_docker = with_docker
-        self.__publish_counter = 0
+        self.__publish_counter = 0.0
         # this lock is intended to protect config items:
         # collect_time and publish_time
         self._config_lock = threading.Lock()
 
-    def set_collect_time(self, collect_time) -> None:
+    def set_collect_time(self, collect_time: float) -> None:
         """Sets the collection time
 
         @param collect_time: Time collected
@@ -80,7 +81,7 @@ class TelemetryTimer:
         finally:
             self._config_lock.release()
 
-    def set_publish_time(self, publish_time) -> None:
+    def set_publish_time(self, publish_time: float) -> None:
         """Sets the publish time
 
         @param publish_time: Time published"""
@@ -90,7 +91,7 @@ class TelemetryTimer:
         finally:
             self._config_lock.release()
 
-    def wait_collect(self, max_sleep_time=0) -> None:
+    def wait_collect(self, max_sleep_time: float = 0) -> None:
         """Sleep until time to collect.  If max time is not specified, use the collection time.
 
         @param max_sleep_time: Maximum time to sleep
@@ -143,7 +144,7 @@ class TelemetryTimer:
             return False
 
 
-def get_container_health(client, send_topic) -> None:  # pragma: no cover
+def get_container_health(client: MQTT, send_topic: str) -> None:  # pragma: no cover
     """Collect container health.
 
     @param client: MQTT client
@@ -153,7 +154,7 @@ def get_container_health(client, send_topic) -> None:  # pragma: no cover
     cmd_lock = threading.Lock()
     latch = CountDownLatch(1)
 
-    def on_command(topic, payload, qos):
+    def on_command(topic: str, payload: Any, qos: int) -> None:
         logger.info('Message received: %s on topic: %s', payload, topic)
 
         if not cmd_lock.acquire(False):
@@ -229,7 +230,7 @@ def get_dynamic_telemetry(is_docker_installed: bool, rm_active: bool = False) ->
     return _set_timestamp(dynamic_telemetry, telemetry_type="dynamic_telemetry")
 
 
-def get_docker_stats(is_docker_installed) -> Optional[str]:
+def get_docker_stats(is_docker_installed: bool) -> Optional[str]:
     """Get the Docker stats if possible
 
     @param is_docker_installed: true if docker is on the system; else false
@@ -244,7 +245,7 @@ def get_docker_stats(is_docker_installed) -> Optional[str]:
     return Trtl(PseudoShellRunner()).stats()
 
 
-def publish_telemetry_update(client, topic, with_docker, to_update) -> None:
+def publish_telemetry_update(client: MQTT, topic: str, with_docker: bool, to_update: str) -> None:
     """Update a specific telemetry item
 
     @param client: MQTT client exposing a publish method
@@ -262,7 +263,7 @@ def publish_telemetry_update(client, topic, with_docker, to_update) -> None:
     publish_dynamic_telemetry(client, topic, telemetry)
 
 
-def publish_dynamic_telemetry(client, topic, telemetry) -> None:
+def publish_dynamic_telemetry(client: MQTT, topic: str, telemetry: dict) -> None:
     """Publish dynamic (recurring) telemetry bundle.
 
     @param client: MQTT client exposing a publish method
@@ -350,13 +351,13 @@ def get_static_telemetry_info() -> Dict:
                  'osInformation': get_os_information(),
                  'diskInformation': get_disk_information()}
 
-    clean_telemetry = {k: (UNKNOWN if v == [] else v)
-                       for k, v in telemetry.items()}
+    clean_telemetry: dict[str, Optional[Any]] = {k: (UNKNOWN if v == [] else v)
+                                                 for k, v in telemetry.items()}
     telemetry = _set_timestamp(clean_telemetry, telemetry_type="static_telemetry")
     return telemetry
 
 
-def publish_static_telemetry(client, topic) -> None:
+def publish_static_telemetry(client: MQTT, topic: str) -> None:
     """Publish static (one time) telemetry.
 
     @param client: MQTT client exposing a publish method
@@ -370,7 +371,7 @@ def publish_static_telemetry(client, topic) -> None:
         str(telemetry))
 
 
-def send_initial_telemetry(client, with_docker) -> None:
+def send_initial_telemetry(client: MQTT, with_docker: bool) -> None:
     """Collect and send current static and dynamic telemetry.
 
     @param client: broker client

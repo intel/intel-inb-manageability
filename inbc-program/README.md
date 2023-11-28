@@ -106,6 +106,8 @@ SOTA on Ubuntu is supported in 3 modes:
 2. No download - Retrieves and installs packages.
 3. Download only - Retrieve packages (will not unpack or install).
 
+By default when SOTA is performaing an install, it will upgrade all eligible packages. The user can optionally specify a list of packages to upgrade (or install if not present) via the [--package-list, -p=PACKAGES] option.
+
 
 ### Usage
 ```
@@ -114,6 +116,7 @@ inbc sota {--uri, -u=URI}
    [--username, -un USERNAME]
    [--mode, -m MODE; default="full", choices=["full","no-download", "download-only"] ]
    [--reboot, -rb; default=yes]
+   [--package-list, -p=PACKAGES]
 ```
 ### Examples
 #### Edge Device on Yocto OS requiring username/password
@@ -128,15 +131,40 @@ inbc sota
 inbc sota
 ```
 
+#### Edge Device on Ubuntu in Update/Full mode with package list
+```
+inbc sota --package-list less,git
+```
+
+This will install (or upgrade) the less and git packages and any necessary
+dependencies.
+
 #### Edge Device on Ubuntu in download-only mode
 ```
 inbc sota --mode download-only
 ```
 
+#### Edge Device on Ubuntu in download-only mode with package list
+```
+inbc sota --mode download-only --package-list less,git
+```
+
+This will download the latest versions of less and git and any necessary
+dependencies.
+
 #### Edge Device on Ubuntu in no-download mode
 ```
 inbc sota --mode no-download
 ```
+
+#### Edge Device on Ubuntu in no-download mode with package list
+```
+inbc sota --mode no-download --package-list less,git
+```
+
+This will upgrade or install the packages less and git and any necessary
+dependencies, as long as all packages needed to do this have already been
+downloaded. (see download-only mode)
 
 ## POTA
 ### Description
@@ -178,18 +206,79 @@ INBC is only supporting the application update portion of AOTA.
 
 ### Usage
 ```
-inbc aota {--uri, -u=URI} 
-   [--app, -a APP_TYPE; default="application"] 
-   [--command, -c COMMAND; default="update"]
+inbc aota {--app, -a APP_TYPE} {--command, -c COMMAND}
+   [--uri, -u URI]
+   [--version, -v VERSION]
+   [--containertag, -ct CONTAINERTAG]
+   [--file, -f FILE]
    [--reboot, -rb REBOOT; default="no"]
-   [--username, -un USERNAME] 
+   [--username, -un USERNAME]
+   [--dockerusername, -du DOCKERUSERNAME]
+   [--dockerregistry, -dr DOCKERREGISTRY]
 ```
+
+Note: when the arguments --username/--dockerusername are used, passwords need to be entered after the prompt "Enter Password".
 
 ### Examples
 #### Application Update
 ```
 inbc aota
-     --uri <remote URI to AOTA file>/update.deb 
+     --uri <remote URI to AOTA file>/update.deb
+```
+
+#### Docker pull
+
+```
+inbc aota --app docker --command pull --version 1.0 --containertag name
+```
+
+#### Docker load
+
+```
+inbc aota --app docker --command load --uri <remote URI to AOTA file>/name.tgz --version 1.0 --containertag name
+```
+
+#### Docker import
+
+```
+inbc aota --app docker --command import --uri <remote URI to AOTA file>/name.tgz --version 1.0 --containertag name
+```
+
+#### Docker remove
+
+```
+inbc aota --app docker --command remove --version 1.0 --containertag name
+```
+
+
+#### Docker-compose Up
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-up.tar.gz --version 1.0 --containertag compose-up --dockerusername xxx --dockerregistry xxxxx
+```
+
+#### Docker-compose Up with custom file
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-up-multiple-yml.tar.gz --version 1.0 --containertag compose-up-multiple-yml --file docker-compose-2.yml
+```
+
+#### Docker-compose Pull
+
+```
+inbc aota --app compose --command pull --uri <remote URI to AOTA file>/compose-pull.tar.gz --version 1.0 --containertag compose-pull
+```
+
+#### Docker-compose Pull with custom file
+
+```
+inbc aota --app compose --command up --uri <remote URI to AOTA file>/compose-pull-multiple-yml.tar.gz --version 1.0 --containertag compose-pull-multiple-yml --file docker-compose-2.yml
+```
+
+#### Docker-compose Down
+
+```
+inbc aota --app compose --command down --version 1.0 --containertag compose-up
 ```
 
 ## LOAD
@@ -243,7 +332,7 @@ inbc set --path  maxCacheSize:100
 
 ## Append
 ### Description
-Append is only applicable to three config tags, which are trustedRepositories, sotaSW and ubuntuAptSource
+Append is only applicable to two config tags, which are trustedRepositories and sotaSW
 
 ### Usage
 ```
@@ -259,7 +348,7 @@ inbc append --path  trustedRepositories:https://abc.com/
 
 ## Remove
 ### Description
-Remove is only applicable to three config tags, which are trustedRepositories, sotaSW and ubuntuAptSource
+Remove is only applicable to two config tags, which are trustedRepositories and sotaSW
 
 ### Usage
 ```

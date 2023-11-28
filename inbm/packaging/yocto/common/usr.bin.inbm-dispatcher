@@ -124,4 +124,5 @@
   /bin/busybox.nosuid rUx,
   /usr/bin/fwupdate rUx,
   /var/log/inbm-update-status.log rw,
+  /var/volatile/log/inbm-update-status.log rw,
 }
