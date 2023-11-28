@@ -9,7 +9,7 @@ from dispatcher.fota.fota_error import FotaError
 class TestGuid(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run',
-           return_value=("6B29FC40-CA47-1067-B31D-00DD010662D", "", 0))
+           return_value=("System Firmware type,{6B29FC40-CA47-1067-B31D-00DD010662D} version 27 is updatable", "", 0))
     def test_extract_guid(self, mock_shell):
         self.assertEqual(extract_guid("tool"), "6B29FC40-CA47-1067-B31D-00DD010662D")
 
@@ -22,7 +22,7 @@ class TestGuid(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run',
            return_value=("", "", 0))
     def test_raise_error_when_no_guid(self, mock_shell):
-        with self.assertRaises(FotaError):
+        with self.assertRaisesRegex(FotaError, "Firmware Update Aborted: No System Firmware type GUID found"):
             extract_guid("tool")
 
     def test_parse_guid(self):

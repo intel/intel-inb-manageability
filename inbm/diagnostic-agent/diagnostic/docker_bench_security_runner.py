@@ -7,8 +7,9 @@
 
 import logging
 from threading import Thread
+from dataclasses import replace
 
-from inbm_lib.dbs_parser import parse_docker_bench_security_results, DBSResult
+from inbm_lib.dbs_parser import parse_docker_bench_security_results, DBSResult, FAILURE
 from inbm_lib.trtl import Trtl
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
@@ -30,21 +31,28 @@ class DockerBenchRunner(Thread):
         if out:
             self.dbs_result = DockerBenchRunner._handle_docker_security_test_results(out)
         else:
-            self.dbs_result.is_success = False
-            self.dbs_result.result = ""
-
+            self.dbs_result = DBSResult(is_success=False, result="", failed_containers=[],
+                                        failed_images=[], fails=FAILURE)
+            #self.dbs_result.is_success = False
+            #self.dbs_result.result = ""
 
     @staticmethod
     def _handle_docker_security_test_results(output: str) -> DBSResult:
         dbs_result = parse_docker_bench_security_results(output)
         logger.info(f"is_success={dbs_result.is_success}")
         if dbs_result.is_success:
-            dbs_result.result += "All Passed"
-            dbs_result.failed_containers = []
-            dbs_result.failed_images = []
+            return replace(dbs_result, result=(dbs_result.result + "All Passed").strip(','),
+                           failed_containers=[], failed_images=[])
+            # return _dbs_result
+            # dbs_result.result += "All Passed"
+            ##dbs_result.failed_containers = []
+            # dbs_result.failed_images = []
         else:
-            dbs_result.result += dbs_result.fails
+            result = (dbs_result.result + dbs_result.fails).strip(',')
+            _dbs_result = replace(dbs_result, result=result)
+            # dbs_result.result += dbs_result.fails
             logger.debug("Failed Images:" + str(dbs_result.failed_images))
             logger.debug("Failed Containers:" + str(dbs_result.failed_containers))
-        dbs_result.result = dbs_result.result.strip(',')
-        return dbs_result
+            return _dbs_result
+        # dbs_result.result = dbs_result.result.strip(',')
+        # return dbs_result

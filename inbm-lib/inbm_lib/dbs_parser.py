@@ -12,6 +12,9 @@ from typing import List
 
 logger = logging.getLogger(__name__)
 
+FAILURE = "Failures in: "
+TEST_RESULTS = "Test results: "
+
 
 @dataclass(init=True)
 class DBSResult:
@@ -32,18 +35,24 @@ def parse_docker_bench_security_results(dbs_output: str) -> DBSResult:
     and fails (text summary of DBS failures)
     """
 
-    dbs_result = DBSResult()
     prev_warn = False
+    fails = FAILURE
+    result = TEST_RESULTS
+    is_success = True
+    failed_containers:  List[str] = []
+    failed_images: List[str] = []
     for line in dbs_output.splitlines():
         if _is_name_in_line(line, prev_warn):
-            _fetch_names_for_warn_test(line, dbs_result.failed_containers, dbs_result.failed_images)
+            _fetch_names_for_warn_test(line, failed_containers, failed_images)
         if _is_test_warn(line):
-            dbs_result.fails = _add_test_in_fails(line, dbs_result.fails)
-            dbs_result.is_success = False
+            fails = _add_test_in_fails(line, fails)
+            is_success = False
             prev_warn = True
             continue
         prev_warn = False
-    return dbs_result
+
+    return DBSResult(is_success=is_success, fails=fails, result=result,
+                     failed_containers=failed_containers, failed_images=failed_images)
 
 
 def _is_name_in_line(line: str, prev_warn: bool) -> bool:

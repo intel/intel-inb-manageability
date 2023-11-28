@@ -23,7 +23,6 @@ class TestDbsChecker(TestCase):
         except DispatcherException:
             self.fail('Exception thrown when not expected.')
 
-
     @patch('dispatcher.packageinstaller.package_installer.TrtlContainer')
     def test_successfully_parse_success_dbs_results(self, mock_trtl_container):
         mock_trtl = MockTrtl(smart_error=True)
