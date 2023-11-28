@@ -177,7 +177,7 @@ class Dispatcher:
         with ota_lock:
             self._perform_startup_tasks()
 
-        def _sig_handler(signo, frame):
+        def _sig_handler(signo, frame) -> None:
             """Callback to register different signals. Currently we do that only for SIGTERM & SIGINT
 
             @param signo: currently SIGTERM & SIGINT
@@ -643,7 +643,7 @@ class Dispatcher:
         """
         logger.info('Message received: %s on topic: %s', payload, topic)
 
-    def _initialize_broker(self):
+    def _initialize_broker(self) -> None:
         """Set up initial subscription topics. The callbacks have following purposes:
 
         a.) _on_message : called when a message is received from _telemetry agent
@@ -717,7 +717,7 @@ class Dispatcher:
                 if cleaned_payload is None:
                     logger.error("No ubuntuAptSource selected!")
                 else:
-                    self.sota_repos = cleaned_payload
+                    self._sota_repos = cleaned_payload
 
         try:
             logger.debug('Subscribing to: %s', STATE_CHANNEL)
@@ -728,7 +728,8 @@ class Dispatcher:
                 CONFIGURATION_DISPATCHER_UPDATE_CHANNEL, override_defaults)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_SOTA_UPDATE_CHANNEL)
-            self._dispatcher_broker.mqtt_subscribe(CONFIGURATION_SOTA_UPDATE_CHANNEL, override_defaults)
+            self._dispatcher_broker.mqtt_subscribe(
+                CONFIGURATION_SOTA_UPDATE_CHANNEL, override_defaults)
 
             logger.debug('Subscribing to: %s', CONFIGURATION_ALL_AGENTS_UPDATE_CHANNEL)
             self._dispatcher_broker.mqtt_subscribe(
@@ -750,7 +751,7 @@ class Dispatcher:
 
         parsed_manifest = {'sota_mode': self.sota_mode, 'package_list': self._package_list,
                            'sota_cmd': 'rollback', 'log_to_file': None,
-                           'sota_repos': self.sota_repos,
+                           'sota_repos': self._sota_repos,
                            'uri': None, 'signature': None, 'hash_algorithm': None,
                            'username': None, 'password': None, 'release_date': None, "deviceReboot": "yes"}
         sota_instance = SOTA(parsed_manifest,

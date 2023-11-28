@@ -38,7 +38,7 @@ class EchoHandler(Handler):
         """
         raise NotImplementedError("Callbacks for echo handler not implemented")
 
-    def _on_message(self, topic: str, payload: str):
+    def _on_message(self, topic: str, payload: str) -> None:
         """Callback for subscribed messages
 
         @param topic:   (str) Specific topic

@@ -8,7 +8,7 @@ class TestPasswordMasker(TestCase):
 
     maxDiff = None
 
-    def test_mask_docker_password_and_username(self):
+    def test_mask_docker_password_and_username(self) -> None:
         manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header' \
                    '><type>aota</type>' \
                    '</header><type><aota name="sample-rpm"><cmd>pull</cmd><app>docker</app><fetch' \
@@ -27,7 +27,7 @@ class TestPasswordMasker(TestCase):
                      '>XXXXX</dockerPassword></aota></type></ota></manifest>'
         self.assertEqual(r_manifest, mask_security_info(manifest))
 
-    def test_mask_server_password_and_username(self):
+    def test_mask_server_password_and_username(self) -> None:
         manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header' \
                    '><type>aota</type>' \
                    '</header><type><aota name="sample-rpm"><cmd>pull</cmd><app>docker</app><fetch' \
@@ -47,7 +47,7 @@ class TestPasswordMasker(TestCase):
                      "</aota></type></ota></manifest>"
         self.assertEqual(r_manifest, mask_security_info(manifest))
 
-    def test_mask_both_passwords_and_user_names(self):
+    def test_mask_both_passwords_and_user_names(self) -> None:
         manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header' \
                    '><type>aota</type>' \
                    '</header><type><aota name="sample-rpm"><cmd>pull</cmd><app>docker</app><fetch' \
@@ -70,7 +70,7 @@ class TestPasswordMasker(TestCase):
                      "</dockerPassword></aota></type></ota></manifest>"
         self.assertEqual(r_manifest, mask_security_info(manifest))
 
-    def test_mask_no_passwords_or_usernames(self):
+    def test_mask_no_passwords_or_usernames(self) -> None:
         manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header' \
                    '><type>aota</type>' \
                    '</header><type><aota name="sample-rpm"><cmd>pull</cmd><app>docker</app><fetch' \

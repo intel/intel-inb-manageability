@@ -25,7 +25,7 @@ from inbm_lib.windows_service import WindowsService
 
 class LoggingPath:
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @classmethod
@@ -82,7 +82,7 @@ class Configuration(WindowsService):
 
         self.running = True
 
-        def _sig_handler(signo, _):
+        def _sig_handler(signo, _) -> None:
             if signo in (signal.SIGINT, signal.SIGTERM):
                 self.running = False
 

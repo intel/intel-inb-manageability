@@ -1,5 +1,3 @@
-pyproject.toml
-
 # Unit test / coverage reports
 .coverage
 .coverage.*

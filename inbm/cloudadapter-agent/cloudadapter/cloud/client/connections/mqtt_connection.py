@@ -161,7 +161,7 @@ class MQTTConnection(Connection):
             raise DisconnectError("Could not stop the connection thread!")
 
     def subscribe(self, topic: Optional[str], callback: Callable) -> None:
-        def wrapped(client, userdata, message):
+        def wrapped(client, userdata, message) -> None:
             topic = message.topic
             payload = message.payload
             callback(topic, payload)

@@ -26,7 +26,7 @@ class SetupHelper:
     an OS upgrade
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initializes SetupHelper class
         """
         pass
@@ -49,7 +49,7 @@ class SetupHelper:
 class DebianBasedSetupHelper(SetupHelper):
     """Debian-based specific implementation of SetupHelper."""
 
-    def __init__(self, sota_repos: Optional[str]):
+    def __init__(self, sota_repos: Optional[str]) -> None:
         """Initializes DebianBasedSetupHelper class
 
         @param sota_repos: new Ubuntu/Debian mirror (or None)
@@ -59,7 +59,7 @@ class DebianBasedSetupHelper(SetupHelper):
         self._sota_repos = sota_repos
         super().__init__()
 
-    def pre_processing(self):
+    def pre_processing(self) -> bool:
         """Perform checks immediately before applying an OS update or upgrade.
         Debian-based: This is a on-disk operation done after taking a snapshot
         It proceeds only if the APT store url was successfully retrieved
@@ -127,12 +127,12 @@ class DebianBasedSetupHelper(SetupHelper):
 
 class WindowsSetupHelper(SetupHelper):
 
-    def __init__(self):
+    def __init__(self) -> None:
         """ Initializes WindowsSetupHelper
         """
         super().__init__()
 
-    def pre_processing(self):
+    def pre_processing(self) -> None:
         logger.debug("")
         pass
 
@@ -148,7 +148,7 @@ class YoctoSetupHelper(SetupHelper):
     Yocto specific implementation of SetupHelper.
     """
 
-    def __init__(self, broker: DispatcherBroker):
+    def __init__(self, broker: DispatcherBroker) -> None:
         """ Initializes YoctoSetupHelper
         @param broker: DispatcherBroker instance used to communicate with other INBM agents
         """
@@ -163,7 +163,7 @@ class YoctoSetupHelper(SetupHelper):
         logger.debug("Yocto pre processing")
         return self._is_mender_file_exists()
 
-    def _is_mender_file_exists(self):
+    def _is_mender_file_exists(self) -> bool:
         """Verifies to see if Mender file is present to perform the OS update
         @return: Boolean value to proceed or not with the OS update
         """

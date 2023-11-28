@@ -16,12 +16,12 @@ logger = logging.getLogger(__name__)
 
 class TestWorkloadOrchestration(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.mock_disp_obj = MockDispatcher.build_mock_dispatcher()
         self.mock_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
-    def test_is_workload_service_file_not_present(self, mock_value):
+    def test_is_workload_service_file_not_present(self, mock_value) -> None:
         mock_callback = Mock()
         mock_value.return_value = "in.conf"
         result = WorkloadOrchestration(
@@ -31,7 +31,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration._switch_to_maintenance_mode')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.is_workload_service_active')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.is_workload_service_file_present')
-    def test_set_workload_orchestration_mode1(self, mock_file_present, mock_active, mock_mode):
+    def test_set_workload_orchestration_mode1(self, mock_file_present, mock_active, mock_mode) -> None:
         mock_callback = Mock()
         mock_file_present.return_value = True
         mock_active.return_value = True
@@ -42,7 +42,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration._switch_to_online_mode')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.is_workload_service_active')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.is_workload_service_file_present')
-    def test_set_workload_orchestration_mode2(self, mock_file_present, mock_active, mock_mode):
+    def test_set_workload_orchestration_mode2(self, mock_file_present, mock_active, mock_mode) -> None:
         mock_callback = Mock()
         mock_file_present.return_value = True
         mock_active.return_value = True
@@ -52,7 +52,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('active', "", 0))
-    def test_is_workload_service_active(self, mock_run, mock_value):
+    def test_is_workload_service_active(self, mock_run, mock_value) -> None:
         mock_callback = Mock()
         result = WorkloadOrchestration(
             self.mock_broker).is_workload_service_active()
@@ -60,7 +60,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('inactive', "", 0))
-    def test_is_workload_service_inactive(self, mock_run, mock_value):
+    def test_is_workload_service_inactive(self, mock_run, mock_value) -> None:
         mock_callback = Mock()
         result = WorkloadOrchestration(
             self.mock_broker).is_workload_service_active()
@@ -69,7 +69,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('time.sleep', return_value=0)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='true')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
-    def test_workload_orchestration_maintenance_mode_failure1(self, mock_wo_status, mock_value, mock_time):
+    def test_workload_orchestration_maintenance_mode_failure1(self, mock_wo_status, mock_value, mock_time) -> None:
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 400)
         mock_callback = Mock()
         try:
@@ -81,7 +81,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('time.sleep', return_value=0)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='false')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
-    def test_workload_orchestration_maintenance_mode_failure2(self, mock_wo_status, mock_value, mock_time):
+    def test_workload_orchestration_maintenance_mode_failure2(self, mock_wo_status, mock_value, mock_time) -> None:
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 400)
         mock_callback = Mock()
         try:
@@ -95,7 +95,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='true')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_workload_orchestration_maintenance_mode_failure3(self, mock_poll, mock_wo_status, mock_value, mock_time):
+    def test_workload_orchestration_maintenance_mode_failure3(self, mock_poll, mock_wo_status, mock_value, mock_time) -> None:
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': ['one']}, 202)
         mock_poll.return_value = ({'Enabled': True, 'Workloads': ['one']}, 400)
         mock_callback = Mock()
@@ -111,7 +111,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='false')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_workload_orchestration_maintenance_mode_failure4(self, mock_poll, mock_wo_status, mock_value, mock_time):
+    def test_workload_orchestration_maintenance_mode_failure4(self, mock_poll, mock_wo_status, mock_value, mock_time) -> None:
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': ['one']}, 202)
         mock_poll.return_value = ({'Enabled': True, 'Workloads': ['one']}, 400)
         mock_callback = Mock()
@@ -126,7 +126,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='false')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_workload_orchestration_maintenance_mode_failure5(self, mock_poll, mock_wo_status, mock_value, mock_time):
+    def test_workload_orchestration_maintenance_mode_failure5(self, mock_poll, mock_wo_status, mock_value, mock_time) -> None:
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': ['one']}, 202)
         mock_poll.return_value = ({'Enabled': True, 'Workloads': ['one']}, 400)
         mock_callback = Mock()
@@ -140,7 +140,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='false')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_workload_orchestration_maintenance_mode_pass(self, mock_poll, mock_wo_status, mock_value):
+    def test_workload_orchestration_maintenance_mode_pass(self, mock_poll, mock_wo_status, mock_value) -> None:
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': ['one']}, 202)
         mock_poll.return_value = ({'Enabled': True, 'Workloads': []}, 200)
         mock_callback = Mock()
@@ -153,7 +153,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='true')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
-    def test_workload_orchestration_maintenance_mode_success(self, mock_wo_status, mock_value):
+    def test_workload_orchestration_maintenance_mode_success(self, mock_wo_status, mock_value) -> None:
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 202)
         mock_callback = Mock()
         try:
@@ -165,7 +165,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
     @patch("dispatcher.workload_orchestration.WorkloadOrchestration.is_workload_service_active", return_value=True)
-    def test_workload_orchestration_online_mode1(self, mock_active, mock_value, mock_poll):
+    def test_workload_orchestration_online_mode1(self, mock_active, mock_value, mock_poll) -> None:
         mock_callback = Mock()
         mock_poll.return_value = ({'Enabled': False, 'Workloads': []}, 200)
         WorkloadOrchestration(self.mock_broker)._switch_to_online_mode()
@@ -175,7 +175,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
     @patch("dispatcher.workload_orchestration.WorkloadOrchestration.is_workload_service_active", return_value=True)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
-    def test_workload_orchestration_online_mode2(self, mock_switch_wo_status, mock_active, mock_value, mock_poll):
+    def test_workload_orchestration_online_mode2(self, mock_switch_wo_status, mock_active, mock_value, mock_poll) -> None:
         mock_poll.return_value = ({'Enabled': True, 'Workloads': []}, 200)
         mock_switch_wo_status.return_value = ({'Enabled': False, 'Workloads': []}, 202)
         mock_callback = Mock()
@@ -186,7 +186,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_wo_details')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
-    def test_switch_wo_status(self, mock_value, mock_details):
+    def test_switch_wo_status(self, mock_value, mock_details) -> None:
         mock_details.return_value = (None, None)
         mock_callback = Mock()
         try:
@@ -199,7 +199,7 @@ class TestWorkloadOrchestration(TestCase):
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration._get_workload_orchestration_file_content')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_wo_details')
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
-    def test_switch_wo_status_failure(self, mock_value, mock_details, mock_content, mock_hostname):
+    def test_switch_wo_status_failure(self, mock_value, mock_details, mock_content, mock_hostname) -> None:
         mock_content.return_value = "ip_port"
         mock_details.return_value = ("ip", "port")
         mock_value.return_value = '/etc/cert.pem'
@@ -213,7 +213,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('time.sleep', return_value=0)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_process_maintenance_mode_ok_status_result(self, mock_wo_status, mock_time):
+    def test_process_maintenance_mode_ok_status_result(self, mock_wo_status, mock_time) -> None:
         try:
             mock_callback = Mock()
             mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 400)
@@ -225,7 +225,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('time.sleep', return_value=0)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_process_maintenance_mode_ok_status_result1(self, mock_wo_status, mock_time):
+    def test_process_maintenance_mode_ok_status_result1(self, mock_wo_status, mock_time) -> None:
         try:
             mock_callback = Mock()
             mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 400)
@@ -237,7 +237,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('time.sleep', return_value=0)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_process_maintenance_mode_ok_status_result2(self, mock_wo_status, mock_time):
+    def test_process_maintenance_mode_ok_status_result2(self, mock_wo_status, mock_time) -> None:
         try:
             mock_callback = Mock()
             mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 200)
@@ -249,7 +249,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('time.sleep', return_value=0)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_process_maintenance_mode_ok_status_result3(self, mock_wo_status, mock_time):
+    def test_process_maintenance_mode_ok_status_result3(self, mock_wo_status, mock_time) -> None:
         try:
             mock_callback = Mock()
             mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 200)
@@ -261,7 +261,7 @@ class TestWorkloadOrchestration(TestCase):
 
     @patch('time.sleep', return_value=0)
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status')
-    def test_process_maintenance_mode_ok_status_result4(self, mock_wo_status, mock_time):
+    def test_process_maintenance_mode_ok_status_result4(self, mock_wo_status, mock_time) -> None:
         try:
             mock_callback = Mock()
             mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 400)
@@ -272,7 +272,7 @@ class TestWorkloadOrchestration(TestCase):
                 "Failure in switching Device Workload Orchestration status to Maintenance mode: Can't proceed to OTA update ", str(e))
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
-    def test_process_online_mode_ok_status_result(self, mock_wo_status):
+    def test_process_online_mode_ok_status_result(self, mock_wo_status) -> None:
         mock_callback = Mock()
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 202)
         WorkloadOrchestration(self.mock_broker)._process_online_mode_ok_status_result(
@@ -280,7 +280,7 @@ class TestWorkloadOrchestration(TestCase):
         mock_wo_status.assert_called_once()
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
-    def test_process_online_mode_ok_status_result1(self, mock_wo_status):
+    def test_process_online_mode_ok_status_result1(self, mock_wo_status) -> None:
         mock_callback = Mock()
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 400)
         WorkloadOrchestration(self.mock_broker)._process_online_mode_ok_status_result(
@@ -288,7 +288,7 @@ class TestWorkloadOrchestration(TestCase):
         mock_wo_status.assert_called_once()
 
     @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status')
-    def test_process_online_mode_ok_status_result2(self, mock_wo_status):
+    def test_process_online_mode_ok_status_result2(self, mock_wo_status) -> None:
         mock_callback = Mock()
         mock_wo_status.return_value = ({'Enabled': True, 'Workloads': []}, 202)
         WorkloadOrchestration(self.mock_broker)._process_online_mode_ok_status_result(

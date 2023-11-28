@@ -15,7 +15,7 @@ import mock
 
 class TestCloudBuilders(unittest.TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.CONFIG = {
             "mqtt": {
                 "username": "username",
@@ -123,7 +123,7 @@ class TestCloudBuilders(unittest.TestCase):
             }]
         }
 
-    def test_configure_tls_raises_error_on_symlink(self):
+    def test_configure_tls_raises_error_on_symlink(self) -> None:
         config = {
             "tls": {
                 "certificates": "fake_ca_certs"
@@ -156,7 +156,7 @@ class TestCloudBuilders(unittest.TestCase):
     @mock.patch('cloudadapter.cloud.cloud_builders.MQTTConnection', autospec=True)
     @mock.patch('cloudadapter.cloud.cloud_builders.validate_config', autospec=True)
     def test_build_client_with_config_succeeds(
-            self, mock_validate_config, MockMQTTConnection, MockCloudClient):
+            self, mock_validate_config, MockMQTTConnection, MockCloudClient) -> None:
         mock_validate_config.return_value = None
         client = build_client_with_config(self.CONFIG)
         assert client is MockCloudClient.return_value
@@ -165,7 +165,7 @@ class TestCloudBuilders(unittest.TestCase):
     @mock.patch('cloudadapter.cloud.cloud_builders.MQTTConnection', autospec=True)
     @mock.patch('cloudadapter.cloud.cloud_builders.validate_config', autospec=True)
     def test_build_client_with_config_no_command_succeeds(
-            self, mock_validate_config, MockMQTTConnection, MockCloudClient):
+            self, mock_validate_config, MockMQTTConnection, MockCloudClient) -> None:
         mock_validate_config.return_value = None
         no_command_config = self.CONFIG
         del no_command_config['command']
@@ -177,14 +177,14 @@ class TestCloudBuilders(unittest.TestCase):
     @mock.patch('cloudadapter.cloud.cloud_builders.validate_config', autospec=True)
     @mock.patch('cloudadapter.cloud.client.utilities.SSLContext.load_cert_chain', autospec=True)
     def test_build_client_with_x509_config_succeeds(
-            self, mock_load_certs, mock_validate_config, MockMQTTConnection, MockCloudClient):
+            self, mock_load_certs, mock_validate_config, MockMQTTConnection, MockCloudClient) -> None:
         mock_validate_config.return_value = None
         client = build_client_with_config(self.X509_CONFIG)
         assert client is MockCloudClient.return_value
 
     @mock.patch('cloudadapter.cloud.cloud_builders.MQTTConnection', autospec=True)
     @mock.patch('cloudadapter.cloud.cloud_builders.validate_config', autospec=True)
-    def test_build_client_with_config_fails(self, mock_validate_config, MockMQTTConnection):
+    def test_build_client_with_config_fails(self, mock_validate_config, MockMQTTConnection) -> None:
         mock_validate_config.side_effect = jsonschema.ValidationError("Error!")
         failed = False
         try:
@@ -195,7 +195,7 @@ class TestCloudBuilders(unittest.TestCase):
 
     @mock.patch('cloudadapter.cloud.cloud_builders.MQTTConnection', autospec=True)
     @mock.patch('cloudadapter.cloud.cloud_builders.validate_config', autospec=True)
-    def test_build_client_with_x509_config_fails(self, mock_validate_config, MockMQTTConnection):
+    def test_build_client_with_x509_config_fails(self, mock_validate_config, MockMQTTConnection) -> None:
         mock_validate_config.side_effect = jsonschema.ValidationError("Error!")
         failed = False
         try:
@@ -208,7 +208,7 @@ class TestCloudBuilders(unittest.TestCase):
     @mock.patch('cloudadapter.cloud.cloud_builders.MQTTConnection', autospec=True)
     @mock.patch('cloudadapter.cloud.cloud_builders.validate_config', autospec=True)
     def test_build_client_with_tls_fails(
-            self, mock_validate_config, MockMQTTConnection, MockTLSConfig):
+            self, mock_validate_config, MockMQTTConnection, MockTLSConfig) -> None:
         MockTLSConfig.side_effect = IOError("Error!")
         failed = False
         try:

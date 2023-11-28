@@ -14,14 +14,14 @@ class TestSnapshot(unittest.TestCase):
 
     class DispatcherTelemetry:
 
-        def telemetry(self, s):
+        def telemetry(self, s) -> None:
             pass
     dispatcher_telemetry = DispatcherTelemetry()
 
     @unpack
     @data((1, 0, ""), (2, '1', ""))
     @patch("inbm_lib.trtl.Trtl.delete_snapshot")
-    def test_ubuntu_delete_snap(self, order, rc, err, mock_del_snap):
+    def test_ubuntu_delete_snap(self, order, rc, err, mock_del_snap) -> None:
         factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
@@ -37,7 +37,7 @@ class TestSnapshot(unittest.TestCase):
     @data((1, "0", ""), (2, "1", "err"))
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
     @patch("inbm_lib.trtl.Trtl.single_snapshot", return_value=('', 'ERROR'))
-    def test_ubuntu_snapshot(self, order, rc, err, mock_trtl_single_snapshot, mock_state):
+    def test_ubuntu_snapshot(self, order, rc, err, mock_trtl_single_snapshot, mock_state) -> None:
         factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
@@ -52,7 +52,7 @@ class TestSnapshot(unittest.TestCase):
     @data((1, "err"))
     @patch("inbm_lib.trtl.Trtl.single_snapshot")
     @patch("pickle.dump", side_effect=Exception('foo'))
-    def test_Ubuntu_snapshot_raises1(self, rc, err, mock_pickle_dump, mock_trtl_single_snapshot):
+    def test_Ubuntu_snapshot_raises1(self, rc, err, mock_pickle_dump, mock_trtl_single_snapshot) -> None:
         factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
         snapshot = factory.create_snapshotter("update", '1', False)
@@ -65,7 +65,7 @@ class TestSnapshot(unittest.TestCase):
     @unpack
     @data((1, "err"))
     @patch("inbm_lib.trtl.Trtl.single_snapshot")
-    def test_Ubuntu_snapshot_raises2(self, rc, err, mock_trtl_single_snapshot):
+    def test_Ubuntu_snapshot_raises2(self, rc, err, mock_trtl_single_snapshot) -> None:
         with patch('builtins.open', new_callable=mock_open()) as m:
             factory = SotaOsFactory(
                 MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
@@ -80,7 +80,7 @@ class TestSnapshot(unittest.TestCase):
 class TestUbuntuSnapshot(unittest.TestCase):
 
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
-    def test_take_snapshot_proceed_fail_publishes_error_succeeds(self, mock_state):
+    def test_take_snapshot_proceed_fail_publishes_error_succeeds(self, mock_state) -> None:
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
         trtl = Mock()
@@ -95,7 +95,7 @@ class TestUbuntuSnapshot(unittest.TestCase):
         self.assertIn("will proceed without", message)
 
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
-    def test_take_snapshot_proceed_cannot_write_publishes_error_succeeds(self, mock_dispatcher_state):
+    def test_take_snapshot_proceed_cannot_write_publishes_error_succeeds(self, mock_dispatcher_state) -> None:
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
         trtl = Mock()
@@ -108,7 +108,7 @@ class TestUbuntuSnapshot(unittest.TestCase):
         (message,), _ = dispatcher_broker.telemetry.call_args
         self.assertIn("succeeded", message)
 
-    def test_rollback_and_delete_snap_skipped_succeeds(self):
+    def test_rollback_and_delete_snap_skipped_succeeds(self) -> None:
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
         trtl = Mock()
@@ -122,7 +122,7 @@ class TestUbuntuSnapshot(unittest.TestCase):
         assert "skipped" in message
 
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
-    def test_revert_succeeds(self, mock_dispatcher_state):
+    def test_revert_succeeds(self, mock_dispatcher_state) -> None:
         rebooter = Mock()
         ubuntu_snapshot = DebianBasedSnapshot(Mock(), "command", Mock(), "", True)
         ubuntu_snapshot._rollback_and_delete_snap = Mock()  # type: ignore
@@ -137,7 +137,7 @@ class TestYoctoSnapshot(unittest.TestCase):
 
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
     @patch('dispatcher.sota.snapshot.read_current_mender_version', autospec=True)
-    def test_take_snapshot_succeeds(self, mock_mender_version, mock_dispatcher_state):
+    def test_take_snapshot_succeeds(self, mock_mender_version, mock_dispatcher_state) -> None:
         mock_mender_version.return_value = "foo"
         mock_dispatcher_state.write_dispatcher_state_to_state_file.return_value = True
         dispatcher_callbacks = Mock()
@@ -156,7 +156,7 @@ class TestYoctoSnapshot(unittest.TestCase):
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'sota_upgrade'})
     @patch('dispatcher.common.dispatcher_state.write_dispatcher_state_to_state_file')
-    def test_dispatcher_state_file_exist_consume_called_sota(self, mock_write_state_file, mock_disp_state_file_exist, mock_consume_disp_file, mock_read_mender):
+    def test_dispatcher_state_file_exist_consume_called_sota(self, mock_write_state_file, mock_disp_state_file_exist, mock_consume_disp_file, mock_read_mender) -> None:
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
 
@@ -170,7 +170,7 @@ class TestYoctoSnapshot(unittest.TestCase):
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'sota_upgrade'})
     @patch('dispatcher.common.dispatcher_state.write_dispatcher_state_to_state_file')
-    def test_dispatcher_state_file_not_exist_consume_not_called_sota(self, mock_write_state_file, mock_consume_disp_file, mock_disp_state_file_exist, mock_read_mender):
+    def test_dispatcher_state_file_not_exist_consume_not_called_sota(self, mock_write_state_file, mock_consume_disp_file, mock_disp_state_file_exist, mock_read_mender) -> None:
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
 
@@ -182,7 +182,7 @@ class TestYoctoSnapshot(unittest.TestCase):
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
     @patch('dispatcher.sota.snapshot.read_current_mender_version', return_value='abc')
     def test_raise_when_unable_to_write_file(
-            self, mock_read_mender_ver, mock_dispatcher_state):
+            self, mock_read_mender_ver, mock_dispatcher_state) -> None:
         mock_dispatcher_state.write_dispatcher_state_to_state_file.side_effect = DispatcherException(
             'Error')
         dispatcher_callbacks = Mock()

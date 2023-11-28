@@ -15,7 +15,7 @@ from cloudadapter.agent.publisher import Publisher
 class TestPublisher(unittest.TestCase):
 
     @mock.patch('cloudadapter.agent.broker.Broker', autospec=True)
-    def setUp(self, MockBroker):
+    def setUp(self, MockBroker) -> None:
         self.MockBroker = MockBroker
         self.publisher = Publisher(self.MockBroker())
 
@@ -332,7 +332,7 @@ class TestPublisher(unittest.TestCase):
             "option": "status",
         }
 
-    def test_publish_manifest_succeed(self):
+    def test_publish_manifest_succeed(self) -> None:
         manifest = "<manifest></mainfest>"
 
         message = self.publisher.publish_manifest(manifest)
@@ -341,13 +341,13 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(manifest)
 
-    def test_publish_manifest_whitespace_fail(self):
+    def test_publish_manifest_whitespace_fail(self) -> None:
         self.assertRaises(ValueError, self.publisher.publish_manifest, "    ")
 
-    def test_publish_manifest_empty_fail(self):
+    def test_publish_manifest_empty_fail(self) -> None:
         self.assertRaises(ValueError, self.publisher.publish_manifest, "")
 
-    def test_publish_aota_with_container_tag_succeed(self):
+    def test_publish_aota_with_container_tag_succeed(self) -> None:
         arguments = self.AOTA_ARGUMENTS
 
         message = self.publisher.publish_aota(**arguments)
@@ -356,7 +356,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.AOTA_XML)
 
-    def test_publish_aota_with_containerTag_succeed(self):
+    def test_publish_aota_with_containerTag_succeed(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(containerTag=arguments.pop("container_tag"))
 
@@ -366,31 +366,31 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.AOTA_XML)
 
-    def test_publish_aota_with_invalid_app_fail(self):
+    def test_publish_aota_with_invalid_app_fail(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(app="invalid")
 
         self.assertRaises(ValueError, self.publisher.publish_aota, **arguments)
 
-    def test_publish_aota_with_no_app_fail(self):
+    def test_publish_aota_with_no_app_fail(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(app="")
 
         self.assertRaises(ValueError, self.publisher.publish_aota, **arguments)
 
-    def test_publish_aota_with_invalid_cmd_fail(self):
+    def test_publish_aota_with_invalid_cmd_fail(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(cmd="invalid")
 
         self.assertRaises(ValueError, self.publisher.publish_aota, **arguments)
 
-    def test_publish_aota_with_no_cmd_fail(self):
+    def test_publish_aota_with_no_cmd_fail(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(cmd="")
 
         self.assertRaises(ValueError, self.publisher.publish_aota, **arguments)
 
-    def test_publish_fota_with_release_date_succeed(self):
+    def test_publish_fota_with_release_date_succeed(self) -> None:
         arguments = self.FOTA_ARGUMENTS
 
         message = self.publisher.publish_fota(**arguments)
@@ -399,7 +399,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.FOTA_XML)
 
-    def test_publish_fota_with_releasedate_succeed(self):
+    def test_publish_fota_with_releasedate_succeed(self) -> None:
         arguments = self.FOTA_ARGUMENTS.copy()
         arguments.update(releasedate=arguments.pop("release_date"))
 
@@ -409,7 +409,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.FOTA_XML)
 
-    def test_publish_fota_without_arguments_fail(self):
+    def test_publish_fota_without_arguments_fail(self) -> None:
         failed = False
         try:
             self.publisher.publish_fota()
@@ -417,31 +417,31 @@ class TestPublisher(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_publish_sota_with_invalid_cmd_fail(self):
+    def test_publish_sota_with_invalid_cmd_fail(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(cmd="invalid")
 
         self.assertRaises(ValueError, self.publisher.publish_sota, **arguments)
 
-    def test_publish_sota_with_no_cmd_fail(self):
+    def test_publish_sota_with_no_cmd_fail(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(cmd="")
 
         self.assertRaises(ValueError, self.publisher.publish_sota, **arguments)
 
-    def test_publish_sota_with_invalid_log_to_file_fail(self):
+    def test_publish_sota_with_invalid_log_to_file_fail(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(log_to_file="invalid")
 
         self.assertRaises(ValueError, self.publisher.publish_sota, **arguments)
 
-    def test_publish_sota_with_no_log_to_file_fail(self):
+    def test_publish_sota_with_no_log_to_file_fail(self) -> None:
         arguments = self.AOTA_ARGUMENTS.copy()
         arguments.update(log_to_file="")
 
         self.assertRaises(ValueError, self.publisher.publish_sota, **arguments)
 
-    def test_publish_sota_succeed_no_packages(self):
+    def test_publish_sota_succeed_no_packages(self) -> None:
         arguments = self.SOTA_ARGUMENTS_NO_PACKAGES
 
         message = self.publisher.publish_sota(**arguments)
@@ -451,7 +451,7 @@ class TestPublisher(unittest.TestCase):
         # BLANK_PACKAGES is intentional here
         mocked.publish_install.assert_called_once_with(self.SOTA_XML_BLANK_PACKAGES)
 
-    def test_publish_sota_succeed_blank_packages(self):
+    def test_publish_sota_succeed_blank_packages(self) -> None:
         arguments = self.SOTA_ARGUMENTS_BLANK_PACKAGES
 
         message = self.publisher.publish_sota(**arguments)
@@ -460,7 +460,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.SOTA_XML_BLANK_PACKAGES)
 
-    def test_publish_sota_succeed_with_packages(self):
+    def test_publish_sota_succeed_with_packages(self) -> None:
         arguments = self.SOTA_ARGUMENTS_WITH_PACKAGES
 
         message = self.publisher.publish_sota(**arguments)
@@ -469,7 +469,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.SOTA_XML_WITH_PACKAGES)
 
-    def test_publish_config_succeed(self):
+    def test_publish_config_succeed(self) -> None:
         arguments = self.CONFIG_ARGUMENTS
 
         message = self.publisher.publish_config(**arguments)
@@ -478,7 +478,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.CONFIG_XML_GET)
 
-    def test_publish_config_set_succeed(self):
+    def test_publish_config_set_succeed(self) -> None:
         arguments = self.CONFIG_ARGUMENTS
         arguments.update(cmd="set")
 
@@ -488,7 +488,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.CONFIG_XML_SET)
 
-    def test_publish_config_load_succeed(self):
+    def test_publish_config_load_succeed(self) -> None:
         arguments = self.CONFIG_ARGUMENTS
         arguments.update(cmd="load")
 
@@ -498,19 +498,19 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.CONFIG_XML_LOAD)
 
-    def test_publish_config_with_invalid_cmd_fail(self):
+    def test_publish_config_with_invalid_cmd_fail(self) -> None:
         arguments = self.CONFIG_ARGUMENTS
         arguments.update(cmd="invalid")
 
         self.assertRaises(ValueError, self.publisher.publish_config, **arguments)
 
-    def test_publish_query_with_invalid_option_fail(self):
+    def test_publish_query_with_invalid_option_fail(self) -> None:
         arguments = self.QUERY_ARGUMENTS
         arguments.update(option="invalid")
 
         self.assertRaises(ValueError, self.publisher.publish_query, **arguments)
 
-    def test_publish_config_without_arguments_fail(self):
+    def test_publish_config_without_arguments_fail(self) -> None:
         failed = False
         try:
             self.publisher.publish_config()
@@ -518,7 +518,7 @@ class TestPublisher(unittest.TestCase):
             failed = True
         assert failed
 
-    def test_query_all(self):
+    def test_query_all(self) -> None:
         arguments = self.QUERY_ARGUMENTS_ALL
 
         message = self.publisher.publish_query(**arguments)
@@ -527,7 +527,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_ALL)
 
-    def test_query_hw(self):
+    def test_query_hw(self) -> None:
         arguments = self.QUERY_ARGUMENTS_HW
 
         message = self.publisher.publish_query(**arguments)
@@ -536,7 +536,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_HW)
 
-    def test_query_fw(self):
+    def test_query_fw(self) -> None:
         arguments = self.QUERY_ARGUMENTS_FW
 
         message = self.publisher.publish_query(**arguments)
@@ -545,7 +545,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_FW)
 
-    def test_query_os(self):
+    def test_query_os(self) -> None:
         arguments = self.QUERY_ARGUMENTS_OS
 
         message = self.publisher.publish_query(**arguments)
@@ -554,7 +554,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_OS)
 
-    def test_query_security(self):
+    def test_query_security(self) -> None:
         arguments = self.QUERY_ARGUMENTS_SECURITY
 
         message = self.publisher.publish_query(**arguments)
@@ -563,7 +563,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_SECURITY)
 
-    def test_query_swbom(self):
+    def test_query_swbom(self) -> None:
         arguments = self.QUERY_ARGUMENTS_SWBOM
 
         message = self.publisher.publish_query(**arguments)
@@ -572,7 +572,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_SWBOM)
 
-    def test_query_guid(self):
+    def test_query_guid(self) -> None:
         arguments = self.QUERY_ARGUMENTS_GUID
 
         message = self.publisher.publish_query(**arguments)
@@ -581,7 +581,7 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(self.QUERY_GUID)
 
-    def test_query_status(self):
+    def test_query_status(self) -> None:
         arguments = self.QUERY_ARGUMENTS_STATUS
 
         message = self.publisher.publish_query(**arguments)

@@ -10,7 +10,7 @@ from dispatcher.packagemanager.memory_repo import MemoryRepo
 
 class TestBiosFactory(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self._path = 'fakepath/'
         self._repo_name = 'fakerepo/'
         self._uri = mock_url.value.split('/')[-1]
@@ -31,12 +31,12 @@ class TestBiosFactory(TestCase):
         self._nuc_dict = {'bios_vendor': 'Intel Corp.', 'operating_system': 'linux',
                           'firmware_tool': 'UpdateBIOS.sh', 'firmware_file_type': 'bio'}
 
-    def test_get_factory_linux_tool_type(self):
+    def test_get_factory_linux_tool_type(self) -> None:
         assert type(BiosFactory.get_factory("test", self._arm_dict,
                                             self.mock_dispatcher_broker, MemoryRepo("test"))) \
             is LinuxToolFirmware
 
-    def test_get_factory_linux_file_type(self):
+    def test_get_factory_linux_file_type(self) -> None:
         assert type(
             BiosFactory.get_factory("test", {'firmware_dest_path': 'abc'},
                                     self.mock_dispatcher_broker, MemoryRepo("test"))) is LinuxFileFirmware
@@ -44,7 +44,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
-    def test_linux_bios_nuc_install_success(self, mock_unpack, mock_delete_pkg, mock_runner):
+    def test_linux_bios_nuc_install_success(self, mock_unpack, mock_delete_pkg, mock_runner) -> None:
         mock_unpack.return_value = ('capsule.bio', None)
         mock_runner.return_value = ('cert', '', 0)
         try:
@@ -58,7 +58,7 @@ class TestBiosFactory(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
-    def test_linux_bios_nuc_install_fail_no_tool(self, mock_delete_pkg, mock_runner):
+    def test_linux_bios_nuc_install_fail_no_tool(self, mock_delete_pkg, mock_runner) -> None:
         mock_runner.return_value = ('cert', 'some error', 127)
         try:
             LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
@@ -72,7 +72,7 @@ class TestBiosFactory(TestCase):
 
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
-    def test_linux_bios_nuc_install_unpack_fail(self, mock_unpack, mock_delete_pkg):
+    def test_linux_bios_nuc_install_unpack_fail(self, mock_unpack, mock_delete_pkg) -> None:
         mock_unpack.side_effect = FotaError(
             "Firmware Update Aborted: Invalid File sent. error: some error")
 
@@ -89,7 +89,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
-    def test_linux_bios_nuc_install_apply_fail(self, mock_unpack, mock_delete_pkg, mock_runner):
+    def test_linux_bios_nuc_install_apply_fail(self, mock_unpack, mock_delete_pkg, mock_runner) -> None:
         mock_runner.side_effect = [('cert', 'some error', 127)]
         mock_unpack.return_value = ('capsule.bio', None)
 
@@ -107,7 +107,7 @@ class TestBiosFactory(TestCase):
     @patch('dispatcher.fota.bios_factory.move_file')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack', return_value=("fw_file", "cert_file"))
-    def test_linux_bios_apollo_lake_install_success(self, mock_unpack, mock_delete_pkg, mock_shutil, mock_runner):
+    def test_linux_bios_apollo_lake_install_success(self, mock_unpack, mock_delete_pkg, mock_shutil, mock_runner) -> None:
         mock_runner.return_value = ('cert', '', 0)
 
         try:
@@ -123,7 +123,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_elh_install_success(self, mock_delete, mock_unpack, mock_runner, mock_guid):
+    def test_linux_bios_elh_install_success(self, mock_delete, mock_unpack, mock_runner, mock_guid) -> None:
         mock_runner.return_value = ('', '', 0)
         mock_unpack.return_value = ('capsule.efi', None)
 
@@ -144,7 +144,7 @@ class TestBiosFactory(TestCase):
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
     def test_linux_bios_lake_install_success_guid(self, mock_delete, mock_unpack, mock_runner,
-                                                  mock_get_guid):
+                                                  mock_get_guid) -> None:
         mock_runner.return_value = ('', '', 0)
         mock_unpack.return_value = ('capsule.efi', None)
 
@@ -163,7 +163,7 @@ class TestBiosFactory(TestCase):
 
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    def test_linux_bios_lake_install_fail_not_supported(self, mock_runner, mock_delete):
+    def test_linux_bios_lake_install_fail_not_supported(self, mock_runner, mock_delete) -> None:
         mock_runner.return_value = ('', 'firmware update not supported', 1)
 
         try:
@@ -183,7 +183,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_elh_install_fail(self, mock_delete, mock_unpack, mock_runner, mock_get_guid):
+    def test_linux_bios_elh_install_fail(self, mock_delete, mock_unpack, mock_runner, mock_get_guid) -> None:
         mock_runner.side_effect = [('', '', 0), ('', '', 0), ('firmware update failed', '', 1)]
         mock_unpack.return_value = ('capsule.efi', None)
 
@@ -203,7 +203,7 @@ class TestBiosFactory(TestCase):
 
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
-    def test_linux_bios_aarch_install_fail_no_fwup(self, mock_run, mock_unpack):
+    def test_linux_bios_aarch_install_fail_no_fwup(self, mock_run, mock_unpack) -> None:
         mock_run.return_value = ('', 'some message', 127)
         mock_unpack.return_value = ('capsule.bin', None)
         try:
@@ -216,7 +216,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_aarch_install_success(self, mock_delete, mock_unpack, mock_runner):
+    def test_linux_bios_aarch_install_success(self, mock_delete, mock_unpack, mock_runner) -> None:
         mock_runner.side_effect = [('', '', 0), ('', '', 0)]
         mock_unpack.return_value = ('capsule.bin', None)
 
@@ -232,7 +232,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_aarch_install_fail_apply(self, mock_delete, mock_unpack, mock_runner):
+    def test_linux_bios_aarch_install_fail_apply(self, mock_delete, mock_unpack, mock_runner) -> None:
         mock_runner.side_effect = [('', '', 0), ('', '', 127)]
         mock_unpack.return_value = ('capsule.bin', None)
         try:
@@ -246,7 +246,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_aarch_install_fail_unpack(self, mock_delete, mock_unpack, mock_runner):
+    def test_linux_bios_aarch_install_fail_unpack(self, mock_delete, mock_unpack, mock_runner) -> None:
         mock_runner.side_effect = [('', '', 0), ('', '', 127)]
         mock_unpack.side_effect = FotaError(
             "Firmware Update Aborted: Invalid File sent. error: some error")
@@ -261,7 +261,7 @@ class TestBiosFactory(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_apollo_lake_unpack_status_fails(self, mock_delete, mock_runner):
+    def test_linux_bios_apollo_lake_unpack_status_fails(self, mock_delete, mock_runner) -> None:
         mock_runner.return_value = ('', 'some error', 2)
         try:
             LinuxFileFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name), self._apl_dict).install(
@@ -275,7 +275,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack', return_value=("fw_file", "cert_file"))
-    def test_linux_bios_ami_install_success(self, mock_unpack, mock_delete_pkg, mock_runner, mock_isfile):
+    def test_linux_bios_ami_install_success(self, mock_unpack, mock_delete_pkg, mock_runner, mock_isfile) -> None:
         mock_isfile.return_value = True
         mock_runner.return_value = ('bios', '', 0)
         try:
@@ -289,7 +289,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('os.path.isfile')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack', return_value=("fw_file", "cert_file"))
-    def test_linux_bios_ami_install_raises_no_tool(self, mock_unpack, mock_isfile, mock_runner):
+    def test_linux_bios_ami_install_raises_no_tool(self, mock_unpack, mock_isfile, mock_runner) -> None:
         mock_isfile.return_value = False
         try:
             LinuxToolFirmware(self.mock_dispatcher_broker, MemoryRepo(self._repo_name),
@@ -302,7 +302,7 @@ class TestBiosFactory(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('os.path.isfile')
-    def test_linux_bios_ami_install_raises_on_run_fails(self, mock_isfile, mock_runner):
+    def test_linux_bios_ami_install_raises_on_run_fails(self, mock_isfile, mock_runner) -> None:
         mock_isfile.return_value = True
         mock_runner.return_value = ('', 'some error', 2)
         try:
@@ -313,28 +313,28 @@ class TestBiosFactory(TestCase):
             self.assertEqual(
                 str(e), "Firmware Update Aborted: Invalid File sent. error: some error")
 
-    def test_extract_package_extension(self):
+    def test_extract_package_extension(self) -> None:
         self.assertEqual(extract_ext("test.fv"), "package")
 
-    def test_extract_cert_extension(self):
+    def test_extract_cert_extension(self) -> None:
         self.assertEqual(extract_ext("test.cert"), "cert")
 
-    def test_extract_pem_extension(self):
+    def test_extract_pem_extension(self) -> None:
         self.assertEqual(extract_ext("test.pem"), "cert")
 
-    def test_extract_crt_extension(self):
+    def test_extract_crt_extension(self) -> None:
         self.assertEqual(extract_ext("test.pem"), "cert")
 
-    def test_extract_bin_extension(self):
+    def test_extract_bin_extension(self) -> None:
         self.assertEqual(extract_ext("bios.bin"), "bios")
 
-    def test_extract_unsupported_extension(self):
+    def test_extract_unsupported_extension(self) -> None:
         self.assertEqual(extract_ext("test.bla"), None)
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.extract_ext')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_aach64_non_tar_format(self, mock_delete, mock_ext, mock_runner):
+    def test_linux_bios_aach64_non_tar_format(self, mock_delete, mock_ext, mock_runner) -> None:
         mock_runner.side_effect = [('', '', 0), ('', '', 0)]
         mock_ext.return_value = 'bios'
         BiosFactory.get_factory("tes", self._arm_dict,
@@ -346,7 +346,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_tgl_install_fail(self, mock_delete, mock_unpack, mock_runner, mock_get_guid):
+    def test_linux_bios_tgl_install_fail(self, mock_delete, mock_unpack, mock_runner, mock_get_guid) -> None:
         mock_runner.side_effect = [('', '', 0), ('', '', 0), ('firmware update failed', '', 1)]
         mock_unpack.return_value = ('capsule.efi', None)
         try:
@@ -364,7 +364,7 @@ class TestBiosFactory(TestCase):
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=('', '', 0))
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack', return_value=('capsule.efi', None))
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
-    def test_linux_bios_tgl_install_success(self, mock_delete, mock_unpack, mock_runner, mock_guid):
+    def test_linux_bios_tgl_install_success(self, mock_delete, mock_unpack, mock_runner, mock_guid) -> None:
         try:
             BiosFactory.get_factory("Tiger Lake Client Platform", self._lake_dict,
                                     self.mock_dispatcher_broker, MemoryRepo(self._repo_name)) \

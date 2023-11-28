@@ -12,16 +12,16 @@ SOTA_MANIFEST = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type
 
 class TestUpdateLogger(TestCase):
 
-    def setUp(self):
+    def setUp(self) -> None:
         self.update_logger = UpdateLogger(ota_type="sota", data=SOTA_MANIFEST)
 
-    def test_set_time(self):
+    def test_set_time(self) -> None:
         ori_time = self.update_logger._time
         self.update_logger.set_time()
         self.assertNotEqual(ori_time, self.update_logger._time)
 
     @patch('dispatcher.update_logger.UpdateLogger.write_log_file')
-    def test_save_log(self, mock_write_log_file):
+    def test_save_log(self, mock_write_log_file) -> None:
         expected_status = OTA_FAIL
         self.update_logger._time = datetime.datetime(2023, 12, 25, 00, 00, 00, 000000)
         expected_error = '{"status": 302, "message": "OTA FAILURE"}'
@@ -40,7 +40,7 @@ class TestUpdateLogger(TestCase):
 
     @patch('dispatcher.update_logger.UpdateLogger.read_log_file')
     @patch('dispatcher.update_logger.UpdateLogger.write_log_file')
-    def test_update_log(self, mock_write_log_file, mock_read_log_file):
+    def test_update_log(self, mock_write_log_file, mock_read_log_file) -> None:
         expected_type = "sota"
         self.update_logger._time = datetime.datetime(2023, 12, 25, 00, 00, 00, 000000)
         self.update_logger.ota_type = expected_type
