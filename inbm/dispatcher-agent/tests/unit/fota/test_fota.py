@@ -34,7 +34,7 @@ class TestFota(unittest.TestCase):
     mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
 
     @classmethod
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     def setUpClass(cls, mock_pseudoshellrunner):
         parsed = XmlHandler(fake_ota_success, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         cls.resource = parsed.get_children('ota/type/fota')
@@ -170,7 +170,7 @@ class TestFota(unittest.TestCase):
 
     @patch('dispatcher.fota.fota.DirectoryRepo.delete')
     @patch('dispatcher.fota.upgrade_checker.UpgradeChecker.check')
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     def test_install_raises_exception(
             self, mock_pseudo_shell_runner, mock_upgrade_check, mock_delete) -> None:
         mock_upgrade_check.return_value = True

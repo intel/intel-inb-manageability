@@ -66,7 +66,7 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.aota_command.AotaCommand.create_repository_cache_repo')
     @patch('dispatcher.aota.factory.detect_os', return_value='Ubuntu')
     @patch('dispatcher.aota.aota_command.DirectoryRepo.get_repo_path', return_value='abc/bdb')
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=['', 'update failed', 2])
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=['', 'update failed', 2])
     @patch('dispatcher.aota.aota.cleanup_repo')
     @patch('dispatcher.aota.application_command.is_inside_container', return_value=False)
     def test_raise_when_application_update_fails(self, check_os, mock_cleanup, mock_shell, mock_get_repo, mock_platform,
@@ -629,7 +629,7 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.checker.check_resource')
     @patch('dispatcher.aota.checker.verify_source')
     @patch('dispatcher.aota.application_command.get', return_value=Result(200, "ok"))
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.factory.is_inside_container', return_value=True)
     @patch('dispatcher.aota.factory.detect_os', return_value='CentOS')
     def test_application_centos_driver_update_raise_error_if_file_is_not_rpm_type(self, detect_os, is_inside_container, run, get, mock_verify, mock_resource, mock_cleanup) -> None:
@@ -641,7 +641,7 @@ class TestAOTA(TestCase):
     @patch('dispatcher.aota.checker.check_resource')
     @patch('dispatcher.aota.checker.verify_source')
     @patch('dispatcher.aota.application_command.CentOsApplication._is_rpm_file_type', return_value=True)
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run', return_value=("", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "", 0))
     @patch('dispatcher.aota.application_command.Application.identify_package', return_value=SupportedDriver.XLINK.value)
     @patch('dispatcher.aota.application_command.move_file')
     @patch('os.listdir', return_value=[])

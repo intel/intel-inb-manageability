@@ -15,7 +15,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: False, MENDER_FILE_PATH: False}.get)
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="Ubuntu")
     @patch('inbm_lib.detect_os.verify_os_supported', return_value='Linux')
     def test_get_sw_bom_list_pass(self, mock_os, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system) -> None:
@@ -27,7 +27,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: False, MENDER_FILE_PATH: False}.get)
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="Ubuntu")
     def test_get_sw_bom_list_fail(self, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system) -> None:
         mock_runner.return_value = ("", "Error", -1)
@@ -42,7 +42,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: True, MENDER_FILE_PATH: False}.get)
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="YoctoX86_64")
     def test_get_sw_bom_list_fail2(self, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system) -> None:
         mock_runner.return_value = ("", "Error", -1)
@@ -57,7 +57,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: True, MENDER_FILE_PATH: False}.get)
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="YoctoX86_64")
     @patch('telemetry.software_bom_list.read_mender_file')
     def test_get_sw_bom_list_fail3(self, mock_read_file, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system) -> None:
@@ -71,7 +71,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: True, MENDER_FILE_PATH: True}.get)
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="YoctoX86_64")
     @patch('telemetry.software_bom_list.read_mender_file')
     def test_get_sw_bom_list_pass2(self, mock_read_file, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system) -> None:
@@ -88,7 +88,7 @@ class TestSoftwareBomList(TestCase):
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
     @patch('inbm_lib.detect_os.os.path.exists', side_effect={SYSTEM_IS_YOCTO_PATH: True, MENDER_FILE_PATH: False}.get)
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner().run')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('inbm_lib.detect_os.get_lsb_release_name_host', return_value="YoctoARM")
     def test_get_sw_bom_list_fail4(self, mock_name, mock_runner, mock_path_exists, mock_uname, mock_system) -> None:
         mock_runner.return_value = ("", "", 0)
