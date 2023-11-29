@@ -203,7 +203,7 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.config.config_operation.ConfigOperation._request_config_agent')
+    @patch('dispatcher.config.config_operation.ConfigOperation.request_config_agent')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_config_set_check_pass(self,
                                    mock_workload_orchestration_func: Any,
@@ -222,7 +222,7 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.config.config_operation.ConfigOperation._request_config_agent')
+    @patch('dispatcher.config.config_operation.ConfigOperation.request_config_agent')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_config_set_check_fail(self,
                                    mock_workload_orchestration_func: Any,
@@ -429,7 +429,7 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.config.config_operation.ConfigOperation._request_config_agent')
+    @patch('dispatcher.config.config_operation.ConfigOperation.request_config_agent')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_config_get_element_fail(self,
                                      mock_workload_orchestration: Any,
@@ -447,7 +447,7 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.config.config_operation.ConfigOperation._request_config_agent')
+    @patch('dispatcher.config.config_operation.ConfigOperation.request_config_agent')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_config_get_element_pass(self,
                                      mock_workload_orchestration: Any,

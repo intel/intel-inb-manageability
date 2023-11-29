@@ -26,7 +26,7 @@ class ConfigOperation:
     def __init__(self, dispatcher_broker: DispatcherBroker) -> None:
         self._dispatcher_broker = dispatcher_broker
 
-    def _do_config_operation(self, parsed_head: XmlHandler) -> Result:
+    def do_config_operation(self, parsed_head: XmlHandler) -> Result:
         """Performs either a config load or update of config items.  Delegates to either
         do_config_install_update_config_items or do_config_install_load method depending on type
         of operation invoked
@@ -100,7 +100,7 @@ class ConfigOperation:
         logger.debug(f"new_file_loc = {new_file_loc}")
 
         try:
-            self._request_config_agent(CONFIG_LOAD, file_path=new_file_loc)
+            self.request_config_agent(CONFIG_LOAD, file_path=new_file_loc)
             if new_file_loc:
                 remove_file(new_file_loc)
             return Result(CODE_OK, 'Configuration load: SUCCESSFUL')
@@ -134,7 +134,7 @@ class ConfigOperation:
                             "Given parameter doesn't support Config append or remove method...")
                         return Result(status=CODE_BAD_REQUEST, message=f'Configuration {config_cmd_type} command: FAILED')
                 try:
-                    self._request_config_agent(config_cmd_type, file_path=None,
+                    self.request_config_agent(config_cmd_type, file_path=None,
                                                value_string=value_list[i])
                 except DispatcherException as err:
                     logger.error(err)
@@ -144,7 +144,7 @@ class ConfigOperation:
         except (ValueError, IndexError) as error:
             raise DispatcherException(f'Invalid values for payload {error}')
 
-    def _request_config_agent(self, cmd_type: str, file_path: Optional[str] = None,
+    def request_config_agent(self, cmd_type: str, file_path: Optional[str] = None,
                               header: Optional[str] = None, value_string: Optional[str] = None) -> None:
         latch = CountDownLatch(1)
         logger.debug(" ")
