@@ -21,10 +21,11 @@ from inbm_common_lib.utility import remove_file
 
 logger = logging.getLogger(__name__)
 
+
 class ConfigOperation:
     def __init__(self, dispatcher_broker: DispatcherBroker) -> None:
         self._dispatcher_broker = dispatcher_broker
-        
+
     def _do_config_operation(self, parsed_head: XmlHandler) -> Result:
         """Performs either a config load or update of config items.  Delegates to either
         do_config_install_update_config_items or do_config_install_load method depending on type
@@ -60,7 +61,7 @@ class ConfigOperation:
             header = parsed.get_children('config/configtype/remove')
             value_object = header['path'].strip()
         return config_cmd_type, value_object
-    
+
     def _do_config_install_load(self, parsed_head: XmlHandler, xml: Optional[str] = None) -> Result:
         """Invoked by do_config_operation to perform config file load. It replaces the existing
         TC conf file with a new file.
@@ -170,17 +171,17 @@ class ConfigOperation:
         latch.await_()
         if cmd.response is None and cmd_type != 'load':
             self._dispatcher_broker.telemetry('Failure in fetching element requested for'
-                            ' command: {} header: {} path: {}'.
-                            format(cmd_type, header, value_string))
+                                              ' command: {} header: {} path: {}'.
+                                              format(cmd_type, header, value_string))
             raise DispatcherException('Failure in fetching element')
 
         if cmd_type in ['load', 'set_element', 'append', 'remove']:
             self._dispatcher_broker.telemetry('Got response back for command: {} header: {} response: {}'.
-                            format(cmd_type, header, cmd.response))
+                                              format(cmd_type, header, cmd.response))
 
         if cmd_type == 'get_element':
             self._dispatcher_broker.telemetry('Got response back for command: {} response: {}'.
-                            format(cmd_type, cmd.response))
+                                              format(cmd_type, cmd.response))
 
         if type(cmd.response) is dict:
             if cmd.response is not None and 'rc' in cmd.response.keys() and cmd.response['rc'] == 1:

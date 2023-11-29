@@ -465,7 +465,6 @@ class Dispatcher:
         logger.debug(f"Install on Target STATUS: {target_ota_status}")
         return target_ota_status
 
-
     def _on_cloud_request(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from cloud
 

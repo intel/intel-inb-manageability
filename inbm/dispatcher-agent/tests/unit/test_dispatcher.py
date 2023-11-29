@@ -402,9 +402,6 @@ class TestDispatcher(TestCase):
         self.assertIn("Error parsing/validating manifest: XML va", d.do_install(
             xml=xml, schema_location=TEST_SCHEMA_LOCATION).message)
 
-
-
-
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
     def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging) -> None:

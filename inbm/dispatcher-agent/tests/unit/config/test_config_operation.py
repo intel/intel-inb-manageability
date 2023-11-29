@@ -31,7 +31,6 @@ class TestConfigOperation(TestCase):
         mock_req_conf_func.assert_not_called()
         self.assertEqual(CONFIG_LOAD_SUCCESS, c._do_config_install_load(
             parsed_head=parsed_head, xml=xml))
-    
 
     @patch('dispatcher.config.config_operation.ConfigOperation._request_config_agent')
     @patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
