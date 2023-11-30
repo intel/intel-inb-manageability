@@ -84,17 +84,17 @@ class RemediationManager:
                 err = ""
             if code != 0:
                 self._dispatcher_broker.telemetry('DBS Security issue raised on imageID: '
-                                            + str(image_id)
-                                            + '.  Unable to remove image. Error: ' + err)
+                                                  + str(image_id)
+                                                  + '.  Unable to remove image. Error: ' + err)
             else:
                 self._dispatcher_broker.telemetry('DBS Security issue raised on imageID: '
-                                            + str(image_id)
-                                            + '.  Image has been removed.')
+                                                  + str(image_id)
+                                                  + '.  Image has been removed.')
         else:
             self._dispatcher_broker.telemetry('DBS Security issue raised on imageID: '
-                                        + str(image_id)
-                                        + '.  Image will not be removed due to system in '
-                                        'DBS WARN mode.')
+                                              + str(image_id)
+                                              + '.  Image will not be removed due to system in '
+                                              'DBS WARN mode.')
 
     def _get_image_id(self, trtl: Trtl, container_id: str) -> Tuple[Optional[str], Optional[str]]:
         """Get the image id associated with the container id via TRTL
