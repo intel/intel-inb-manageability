@@ -20,7 +20,7 @@ class TestDetectOs(TestCase):
             mock_runner.return_value = ("InvalidOS", "", 0)
 
             ret = detect_os()
-            self.assertEquals(ret, 'YoctoARM')
+            self.assertEqual(ret, 'YoctoARM')
 
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')

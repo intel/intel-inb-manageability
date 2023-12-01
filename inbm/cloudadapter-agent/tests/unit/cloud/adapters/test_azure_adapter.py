@@ -90,7 +90,7 @@ class TestAzureAdapter(unittest.TestCase):
 
         device_auth_set = {"certs": "certs", "sas_key": "device_sas_key"}
         res = self.azure_adapter._retrieve_hostname("scope", "device_id", device_auth_set, None)
-        self.assertEquals(res, "portland")
+        self.assertEqual(res, "portland")
 
     @mock.patch.object(AzureAdapter, '_retrieve_hostname', autospec=True)
     @mock.patch('cloudadapter.cloud.client.cloud_client.CloudClient', autospec=True)
