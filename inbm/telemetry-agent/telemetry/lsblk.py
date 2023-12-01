@@ -38,6 +38,6 @@ def get_lsblk_output() -> Optional[str]:
     @return: Command output or None if anything printed on stderr
     """
     if platform.system() == 'Linux':
-        (out, err, code) = PseudoShellRunner.run("lsblk -b -d -o name,size,rota")
+        (out, err, code) = PseudoShellRunner().run("lsblk -b -d -o name,size,rota")
         return out if err == "" and code == 0 else None
     return None

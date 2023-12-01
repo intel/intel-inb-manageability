@@ -101,7 +101,7 @@ class Application(AotaCommand):
 
             logger.debug(f" Application {self.resource} installed. Rebooting...")
             self._dispatcher_broker.telemetry('Rebooting...')
-            (output, err, code) = PseudoShellRunner.run(cmd)
+            (output, err, code) = PseudoShellRunner().run(cmd)
             if code != CMD_SUCCESS and code != CMD_TERMINATED_BY_SIGTERM:
                 raise AotaError(f'Reboot Failed {err}')
 

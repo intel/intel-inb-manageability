@@ -2,10 +2,10 @@ from enum import Enum, auto
 
 
 class PmsReset(object):
-    def __init__(self, conn) -> None:
+    def __init__(self, conn) -> None:  # type: ignore  # don't have information to type this
         pass
 
-    def ResetRequest(self, sw_device_id):
+    def ResetRequest(self, sw_device_id):  # type: ignore  # don't have information to type this
         return Status.Success
 
 
@@ -13,7 +13,7 @@ class PmsConnection(object):
     def __init__(self) -> None:
         pass
 
-    def Connect(self, type=None) -> None:
+    def Connect(self, type=None) -> None:  # type: ignore  # don't have information to type this
         pass
 
     def Disconnect(self) -> None:
@@ -25,7 +25,7 @@ class Status(Enum):
 
 
 class PmsTelemetry():
-    def __init__(self, conn) -> None:
+    def __init__(self, conn) -> None:  # type: ignore  # don't have information to type this
         pass
 
     def GetMetrics(self) -> None:

@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 
 def mender_commit_command() -> str:  # pragma: no cover
-    (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
+    (out, err, code) = PseudoShellRunner().run(MENDER_FILE_PATH + " -help")
     if "-commit" in out or ((err is not None) and "-commit" in err):
         return "mender -commit"
     else:
@@ -360,7 +360,7 @@ class YoctoSnapshot(Snapshot):
         dispatcher_state.clear_dispatcher_state()
         cmd = mender_commit_command()
         logger.debug("Running Mender commit: " + str(cmd))
-        PseudoShellRunner.run(cmd)
+        PseudoShellRunner().run(cmd)
 
     def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA.

@@ -1,7 +1,8 @@
 import random
+from typing import Tuple
 import unittest
 from unittest import TestCase
-from mock import patch
+from unittest.mock import patch, Mock
 
 from .test_runner import TestRunner
 from inbm_lib.trtl import Trtl
@@ -12,18 +13,18 @@ TRTL_APP = '/usr/bin/trtl'
 class TestTrtl(TestCase):
 
     @staticmethod
-    def __setup_trtl_test():
-        return_code = str(random.randint(10, 30))
+    def __setup_trtl_test() -> Tuple[int, TestRunner]:
+        return_code = random.randint(10, 30)
         runner = TestRunner("", "", return_code)
         return return_code, runner
 
-    def __check_str_type(self, strn):
+    def __check_str_type(self, strn: str) -> bytes:
         encoded_str = bytes(strn + '\n', 'utf-8')
         return encoded_str
 
     def __check_trtl_output(self,
-                            expected, actual,
-                            expected_code, actual_code) -> None:
+                            expected: str | None, actual: str | None,
+                            expected_code: int | None, actual_code: int | None) -> None:
         self.assertEqual(expected, actual)
         self.assertEqual(expected_code, actual_code)
 
@@ -41,7 +42,7 @@ class TestTrtl(TestCase):
         self.assertTrue(err is not None)
 
     def test_stats(self) -> None:
-        return_code = str(random.randint(10, 30))
+        return_code = random.randint(10, 30)
         runner = TestRunner("ContainerStats=abc", "", return_code)
         result = Trtl(runner, "docker").stats()
         self.assertEqual("/usr/bin/trtl -type=docker -cmd=stats", runner.last_cmd())
@@ -85,7 +86,7 @@ class TestTrtl(TestCase):
             result)
 
     @patch.object(Trtl, '_send_password', return_value=("", "", 0))
-    def test_trtl_image_pull_private(self, mock_send_password) -> None:
+    def test_trtl_image_pull_private(self, mock_send_password: Mock) -> None:
         return_code, runner = self.__setup_trtl_test()
         out, err, result = Trtl(runner, "docker").image_pull_private("image", "docker.hub.com",
                                                                      "user", "pswd")
@@ -199,9 +200,10 @@ class TestTrtl(TestCase):
     def test_trtl_remove_old_images(self) -> None:
         return_code, runner = self.__setup_trtl_test()
         err = Trtl(runner, "docker").remove_old_images("image")
-        self.__check_trtl_output("/usr/bin/trtl -type=docker "
+        self.assertEqual("/usr/bin/trtl -type=docker "
                                  "-cmd=imagedeleteold -in=image",
-                                 runner.last_cmd(), None, err)
+                                 runner.last_cmd())
+        self.assertEqual(None, err)
 
     def test_trtl_returns_on_compose_remove_old_image(self) -> None:
         return_code, runner = self.__setup_trtl_test()
@@ -222,18 +224,20 @@ class TestTrtl(TestCase):
             "docker").remove_container(
             container_id="123e4",
             force=True)
-        self.__check_trtl_output("/usr/bin/trtl -type=docker "
+        self.assertEqual("/usr/bin/trtl -type=docker "
                                  "-cmd=containerRemoveByID -f -id=123e4",
-                                 runner.last_cmd(), None, err)
+                                 runner.last_cmd())
+        self.assertEqual(None, err)
 
     def test_trtl_single_snapshot(self) -> None:
         return_code, runner = self.__setup_trtl_test()
         out, err = Trtl(runner, "btrfs").single_snapshot(desc="test")
         test_desc = "test"
-        self.__check_trtl_output(
+        self.assertEqual(
             "/usr/bin/trtl -type=btrfs "
             "-cmd=singleSnapshot -description={}".format(test_desc),
-            runner.last_cmd(),
+            runner.last_cmd())
+        self.assertEqual(
             '',
             out)
 
@@ -258,9 +262,10 @@ class TestTrtl(TestCase):
     def test_trtl_docker_bench_security(self) -> None:
         return_code, runner = self.__setup_trtl_test()
         out = Trtl(runner, "docker").run_docker_bench_security_test()
-        self.__check_trtl_output("/usr/bin/trtl -type=docker "
+        self.assertEqual("/usr/bin/trtl -type=docker "
                                  "-cmd=dockerbenchsecurity",
-                                 runner.last_cmd(), None, out)
+                                 runner.last_cmd())
+        self.assertEqual(None, out)
 
     def test_trtl_image_remove_all(self) -> None:
         return_code, runner = self.__setup_trtl_test()
@@ -274,11 +279,10 @@ class TestTrtl(TestCase):
     def test_trtl_list(self) -> None:
         return_code, runner = self.__setup_trtl_test()
         err, _ = Trtl(runner, "compose").list("abc")
-        self.__check_trtl_output(
+        self.assertEqual(
             "/usr/bin/trtl -type=compose -cmd=list -in=abc",
-            runner.last_cmd(),
-            None,
-            err)
+            runner.last_cmd())
+        self.assertEqual(None, err)
 
     def test_trtl_compose_image_pull_public_with_image_tag(self) -> None:
         return_code, runner = self.__setup_trtl_test()

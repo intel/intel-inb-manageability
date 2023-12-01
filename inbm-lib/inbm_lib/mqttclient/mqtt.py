@@ -7,6 +7,7 @@
 
 import logging
 import os
+import socket
 import ssl
 
 import paho.mqtt.client as mqtt
@@ -98,11 +99,11 @@ class MQTT:
                                     keyfile=mqtt_client_keys, cert_reqs=ssl.CERT_REQUIRED, ciphers=cipher)
             self._mqttc.connect(mqtt_host, mqtt_port, keep_alive)
             logger.info('Connected to MQTT broker: %s on port: %d', mqtt_host, mqtt_port)
-        except mqtt.socket.error:
+        except socket.error:
             logger.error('Ensure MQTT service is running!')
             raise
 
-        self.topics: Dict = {}
+        self.topics: dict[str, Callable[[str, Any, int], None]] = {}
 
     def loop_once(self, timeout: float = 1.0, max_packets: int = 1) -> None:
         """Loop the MQTT client once
