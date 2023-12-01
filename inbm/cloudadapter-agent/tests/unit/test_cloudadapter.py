@@ -44,4 +44,4 @@ class TestCloudAdapter(unittest.TestCase):
     def test_service_name_prefixed_inbm(self, MockClient, MockWaiter, mock_fileConfig) -> None:
         ca = CloudAdapter()
         self.assertFalse(' ' in ca._svc_name_)
-        self.assertEquals(ca._svc_name_.split('-')[0], 'inbm')
+        self.assertEqual(ca._svc_name_.split('-')[0], 'inbm')

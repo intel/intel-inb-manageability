@@ -9,7 +9,7 @@ import logging
 
 from subprocess import Popen
 from threading import Thread, Lock
-from typing import Any, Optional, List, Union
+from typing import Any, Optional, List
 
 from .ibroker import IBroker
 from .constants import EVENTS_CHANNEL

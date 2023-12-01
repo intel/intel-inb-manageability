@@ -201,4 +201,4 @@ class PotaFactory(OtaFactory):
 
     def create_thread(self, parsed_manifest: Mapping[str, Optional[Any]]) -> OtaThread:
         logger.debug(" ")
-        raise NotImplementedError("this method for POTA is not intended to be called")        
+        raise NotImplementedError("this method for POTA is not intended to be called")

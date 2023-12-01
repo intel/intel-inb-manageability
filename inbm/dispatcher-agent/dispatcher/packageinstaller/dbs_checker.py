@@ -78,14 +78,15 @@ class DbsChecker:
     def _handle_docker_security_test_results(self, output: str) -> str:
         dbs_result = parse_docker_bench_security_results(output)
         if dbs_result.is_success:
-            dbs_result.result += "All Passed"
-            return dbs_result.result.strip(',')
+            return (dbs_result.result + "All Passed").strip(',')
+            # dbs_result.result += "All Passed"
+            # return dbs_result.result.strip(',')
         else:
-            #dbs_result.result += dbs_result.fails
             result = dbs_result.result + dbs_result.fails
             logger.debug("Failed Images:" + str(dbs_result.failed_images))
             logger.debug("Failed Containers:" + str(dbs_result.failed_containers))
-            self._publish_remediation_request(dbs_result.failed_containers, dbs_result.failed_images)
+            self._publish_remediation_request(
+                dbs_result.failed_containers, dbs_result.failed_images)
             self._dispatcher_broker.mqtt_publish(
                 EVENTS_CHANNEL, "Docker Bench Security results: " + result.strip(','))
 

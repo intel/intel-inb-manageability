@@ -33,8 +33,6 @@ class DockerBenchRunner(Thread):
         else:
             self.dbs_result = DBSResult(is_success=False, result="", failed_containers=[],
                                         failed_images=[], fails=FAILURE)
-            #self.dbs_result.is_success = False
-            #self.dbs_result.result = ""
 
     @staticmethod
     def _handle_docker_security_test_results(output: str) -> DBSResult:
@@ -43,16 +41,8 @@ class DockerBenchRunner(Thread):
         if dbs_result.is_success:
             return replace(dbs_result, result=(dbs_result.result + "All Passed").strip(','),
                            failed_containers=[], failed_images=[])
-            # return _dbs_result
-            # dbs_result.result += "All Passed"
-            ##dbs_result.failed_containers = []
-            # dbs_result.failed_images = []
         else:
-            result = (dbs_result.result + dbs_result.fails).strip(',')
-            _dbs_result = replace(dbs_result, result=result)
-            # dbs_result.result += dbs_result.fails
+            _dbs_result = replace(dbs_result, result=(dbs_result.result + dbs_result.fails).strip(','))
             logger.debug("Failed Images:" + str(dbs_result.failed_images))
             logger.debug("Failed Containers:" + str(dbs_result.failed_containers))
             return _dbs_result
-        # dbs_result.result = dbs_result.result.strip(',')
-        # return dbs_result

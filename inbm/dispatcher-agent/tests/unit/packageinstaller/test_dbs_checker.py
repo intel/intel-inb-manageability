@@ -6,19 +6,20 @@ from unit.common.mock_resources import *
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.packageinstaller.dbs_checker import DbsChecker
 from .test_package_installer import MockTrtl
+from inbm_lib.dbs_parser import DBSResult
 
 
 class TestDbsChecker(TestCase):
     @patch('dispatcher.packageinstaller.package_installer.TrtlContainer')
     def test_successfully_parse_failed_dbs_results(self, mock_trtl_container):
         mock_trtl = MockTrtl(smart_error=True)
-        output = """
-    [WARN] 5.2  - Ensure SELinux security options are set, if applicable
+        output = """[WARN] 5.2  - Ensure SELinux security options are set, if applicable
     [WARN]      * No SecurityOptions Found: container_name"""
         try:
-            result = DbsChecker(MockDispatcherBroker.build_mock_dispatcher_broker(), mock_trtl_container,
-                                mock_trtl, "sample-container", 0, ConfigDbs.WARN). \
-                _handle_docker_security_test_results(output)
+            dbs = DbsChecker(MockDispatcherBroker.build_mock_dispatcher_broker(), mock_trtl_container,
+                             mock_trtl, "sample-container", 0, ConfigDbs.WARN)
+            result = dbs._handle_docker_security_test_results(output)
+
             self.assertEqual('Test results: Failures in: 5.2', result)
         except DispatcherException:
             self.fail('Exception thrown when not expected.')
@@ -29,7 +30,7 @@ class TestDbsChecker(TestCase):
         output = """[INFO] 5.9  - Some text"""
         try:
             result = DbsChecker(MockDispatcherBroker.build_mock_dispatcher_broker(), mock_trtl_container,
-                       mock_trtl, "sample-container", 0, ConfigDbs.WARN). \
+                                mock_trtl, "sample-container", 0, ConfigDbs.WARN). \
                 _handle_docker_security_test_results(output)
             self.assertEqual('Test results: All Passed', result)
         except DispatcherException:

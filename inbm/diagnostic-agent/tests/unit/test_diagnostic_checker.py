@@ -80,7 +80,7 @@ class TestDiagnosticChecker(TestCase):
             self.assertEqual(self.dc._min_storage_MB.config_value, DEFAULT_MIN_STORAGE_MB)
         elif path == DOCKER_BENCH_SECURITY_INTERVAL_SEC:
             self.assertEqual(self.dc.docker_bench_security_interval_sec.config_value,
-                              DEFAULT_DOCKER_BENCH_SECURITY_INTERVAL_SEC)
+                             DEFAULT_DOCKER_BENCH_SECURITY_INTERVAL_SEC)
         elif path == MIN_POWER_PERCENT:
             self.assertEqual(self.dc._min_power_percent.config_value, DEFAULT_MIN_POWER_PERCENT)
 
@@ -97,7 +97,7 @@ class TestDiagnosticChecker(TestCase):
             self.assertEqual(self.dc._min_storage_MB.config_value, 120)
         elif path == DOCKER_BENCH_SECURITY_INTERVAL_SEC:
             self.assertEqual(self.dc.docker_bench_security_interval_sec.config_value,
-                              1000)
+                             1000)
         elif path == MIN_POWER_PERCENT:
             self.assertEqual(self.dc._min_power_percent.config_value, 17)
 

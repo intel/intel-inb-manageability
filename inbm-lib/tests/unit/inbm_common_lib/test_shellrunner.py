@@ -27,7 +27,7 @@ class TestShellRunner(testtools.TestCase):
             out, err, return_code, abslogpath = PseudoShellRunner.run_with_log_path(
                 "echo TestCase", "/home/fakepath/")
             mock_makedir.assert_called_once()
-            self.assertEquals(out, '')
+            self.assertEqual(out, '')
 
     @patch('os.makedirs', return_value=True)
     def test_run_stdout(self, mock_makedir) -> None:

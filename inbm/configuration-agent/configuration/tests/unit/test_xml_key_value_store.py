@@ -106,17 +106,17 @@ class TestXmlParser(TestCase):
 
     def test_get_element(self):
         self.assertEqual('telemetry/maxCacheSize:100',
-                          self.good.get_element('telemetry/maxCacheSize'))
+                         self.good.get_element('telemetry/maxCacheSize'))
 
     def test_get_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.get_element, 'telemetry/maxCacheSize/bb')
 
     def test_set_element(self):
         self.assertEqual('telemetry/maxCacheSize:100',
-                          self.good.get_element(path='telemetry/maxCacheSize'))
+                         self.good.get_element(path='telemetry/maxCacheSize'))
         self.good.set_element('telemetry/maxCacheSize', '200')
         self.assertEqual('telemetry/maxCacheSize:200',
-                          self.good.get_element('telemetry/maxCacheSize'))
+                         self.good.get_element('telemetry/maxCacheSize'))
 
     def test_validate_file(self) -> None:
         try:
