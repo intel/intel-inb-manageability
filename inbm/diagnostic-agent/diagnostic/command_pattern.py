@@ -240,7 +240,7 @@ class ContainerHealthChecker(Command):
     @param value: None
     """
 
-    def __init__(self, value=None):
+    def __init__(self, value: Any = None) -> None:
         super().__init__("container_health_check", value)
 
     def execute(self) -> Dict[str, Union[str, int]]:
