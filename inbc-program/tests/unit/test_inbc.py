@@ -274,7 +274,7 @@ class TestINBC(TestCase):
 
     @patch('inbc.parser.get_dmi_system_info',
            return_value=PlatformInformation('2024-12-31', 'Intel', '5.12', 'Intel', 'kmb'))
-    def test_create_fota_manifest(self, mock_dmi) -> None:
+    def test_create_fota_manifest_2(self, mock_dmi) -> None:
         f = self.arg_parser.parse_args(
             ['fota', '-u', 'https://abc.com/BIOS.img', '-r', '2024-12-31'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type' \

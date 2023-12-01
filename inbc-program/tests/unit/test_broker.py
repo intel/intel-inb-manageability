@@ -38,14 +38,14 @@ class TestINBC(TestCase):
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_event(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
+    def test_on_event_fota(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('fota', self._fota_args, False)
         b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
 
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_event(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
+    def test_on_event_aota(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('aota', self._aota_args, False)
         b._on_event('manageability/event', 'Overall AOTA status : SUCCESS', 1)
 
@@ -68,7 +68,7 @@ class TestINBC(TestCase):
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_message_response(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
+    def test_on_message_response_fota(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('fota', self._fota_args, False)
         b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
 
@@ -172,7 +172,7 @@ class TestINBC(TestCase):
     @patch('inbc.command.command.Command.search_response')
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
-    def test_on_message_response(self, mock_trigger, mock_mqtt, mock_search) -> None:
+    def test_on_message_response_search_called(self, mock_trigger, mock_mqtt, mock_search) -> None:
         b = Broker('fota', self._fota_args, False)
         b._on_response('manageability/response', 'check', 1)
         mock_search.assert_called_once()
