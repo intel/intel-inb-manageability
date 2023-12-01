@@ -6,10 +6,10 @@
 
 
 import logging
-from subprocess import Popen
 
+from subprocess import Popen
 from threading import Thread, Lock
-from typing import Any
+from typing import Any, Optional, List
 
 from .ibroker import IBroker
 from .constants import EVENTS_CHANNEL
@@ -35,24 +35,23 @@ class EventWatcher(Thread):
         Thread.__init__(self, name="dockerEventWatcher")
         self._broker = broker
         self.daemon = True
-        self._process: Popen[Any]
         self._running = True
 
-    def run(self):  # pragma: no cover
+    def run(self) -> None:  # pragma: no cover
         """Runs the EventWatcher thread"""
-        self._process = PseudoShellRunner().get_process(TRTL_EVENTS)
-        logger.debug(f'Watching for Docker events on PID: {self._process.pid}')
-        self._parse_process_output(self._process)
+        process = PseudoShellRunner().get_process(TRTL_EVENTS)
+        logger.debug(f'Watching for Docker events on PID: {process.pid}')
+        self._parse_process_output(process)
         logger.debug("Event Watcher thread exited")
 
-    def set_dbs_mode(self, mode_value):
+    def set_dbs_mode(self, mode_value: ConfigDbs) -> None:
         global current_dbs_mode
         current_dbs_mode = mode_value
         logger.debug(f"Current DBS mode is set to - {current_dbs_mode}")
 
-    def run_docker_bench_security(self):  # pragma: no cover
+    def run_docker_bench_security(self) -> None:  # pragma: no cover
         """Launch Docker Bench Security in separate thread."""
-        def run():
+        def run() -> None:
             self.lock.acquire()
             if current_dbs_mode != ConfigDbs.OFF:
                 dbs = DockerBenchRunner()
@@ -61,7 +60,7 @@ class EventWatcher(Thread):
                 dbs.join()
                 if current_dbs_mode == ConfigDbs.ON:
                     logger.debug("Parsing DBS result after DBS check. . .")
-                    self._parse_dbs_result(dbs.result, dbs)
+                    self._parse_dbs_result(dbs.dbs_result.result, dbs)
                 else:
                     logger.debug(
                         "Failed Images and Containers are not terminated since \
@@ -75,34 +74,32 @@ class EventWatcher(Thread):
         thread.daemon = True
         thread.start()
 
-    def _check_failed_containers(self, failed_containers: str) -> None:
+    def _check_failed_containers(self, failed_containers: List[str]) -> None:
         logger.debug("Passing failed containers on REMEDIATION_CONTAINER_CHANNEL")
         if failed_containers and len(failed_containers) > 0:
             self._broker.publish(REMEDIATION_CONTAINER_CHANNEL, str(failed_containers))
 
-    def _check_failed_images(self, failed_images: str) -> None:
+    def _check_failed_images(self, failed_images: List[str]) -> None:
         logger.debug("Passing failed images on REMEDIATION_IMAGE_CHANNEL")
         if failed_images and len(failed_images) > 0:
             self._broker.publish(REMEDIATION_IMAGE_CHANNEL,
                                  str(failed_images))
 
-    def _parse_dbs_result(self, result, dbs):
+    def _parse_dbs_result(self, result: Optional[Any], dbs: DockerBenchRunner) -> None:
         if result is not None:
-            failed_containers = dbs.failed_container_list
-            failed_images = dbs.failed_image_list
-            result_string = dbs.result_string
-            self._check_failed_containers(failed_containers)
-            self._check_failed_images(failed_images)
-            self._broker.publish(
-                EVENTS_CHANNEL, "Docker Bench Security results: " + result_string)
+            self._check_failed_containers(dbs.dbs_result.failed_containers)
+            self._check_failed_images(dbs.dbs_result.failed_images)
+            if dbs.dbs_result.result:
+                self._broker.publish(
+                    EVENTS_CHANNEL, "Docker Bench Security results: " + dbs.dbs_result.result)
         else:
             self._broker.publish(EVENTS_CHANNEL, "Unable to run Docker Bench Security")
 
     @staticmethod
-    def _output_ended(next_line, process):
+    def _output_ended(next_line: str, process: Popen[Any]) -> bool:
         return True if next_line == '' and process.poll() is not None else False
 
-    def _process_output(self, events, next_line):
+    def _process_output(self, events: List[str], next_line: str) -> None:
         if len(events) < 3:
             logger.debug(
                 " ".join(TRTL_EVENTS) +
@@ -121,7 +118,7 @@ class EventWatcher(Thread):
 
             logger.debug(" ".join(TRTL_EVENTS) + " command done processing.")
 
-    def _parse_process_output(self, process):
+    def _parse_process_output(self, process: Any) -> None:
         while self._running:
             logger.debug(" ".join(TRTL_EVENTS) + " command output log start.")
             # we filter out bad characters but still accept the rest of the string

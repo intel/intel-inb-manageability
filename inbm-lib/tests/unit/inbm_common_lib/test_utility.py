@@ -3,17 +3,18 @@ from unittest.mock import patch, Mock
 from unittest import TestCase
 
 from inbm_common_lib.exceptions import UrlSecurityException
-from inbm_common_lib.utility import clean_input, get_canonical_representation_of_path, canonicalize_uri, validate_file_type, remove_file, copy_file, move_file
+from inbm_common_lib.utility import clean_input, get_canonical_representation_of_path, canonicalize_uri, \
+    validate_file_type, remove_file, copy_file, move_file
 
 
 class TestUtility(TestCase):
     def test_clean_input(self) -> None:
-        self.assertEquals(clean_input('\x00Hello<\x00There&You"\x00'),
-                          'Hello&lt;There&amp;You&quot;')
+        self.assertEqual(clean_input('\x00Hello<\x00There&You"\x00'),
+                         'Hello&lt;There&amp;You&quot;')
 
     def test_get_canonical_representation_of_absolute_path(self) -> None:
-        self.assertEquals('/var/cache/manageability',
-                          get_canonical_representation_of_path("/var/cache/manageability"))
+        self.assertEqual('/var/cache/manageability',
+                         get_canonical_representation_of_path("/var/cache/manageability"))
 
     def test_canonicalize_url(self) -> None:
         self.assertEqual('https://www.example.com/a/c',

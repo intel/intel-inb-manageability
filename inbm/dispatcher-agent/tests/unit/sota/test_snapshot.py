@@ -29,7 +29,7 @@ class TestSnapshot(unittest.TestCase):
         val = snapshot.commit()
         mock_del_snap.assert_called_once()
         if order == 2:
-            self.assertNotEquals(val, 0)
+            self.assertNotEqual(val, 0)
         if order == 1:
             self.assertEqual(val, 0)
 
