@@ -155,7 +155,7 @@ class BiosFactory(ABC):
         logger.debug(f"repo_name:{repo_name}, pkg_filename:{pkg_filename}")
         cmd = "tar -xvf " + str(Path(repo_name) / pkg_filename) + \
               " --no-same-owner -C " + repo_name
-        (out, err, code) = PseudoShellRunner.run(cmd)
+        (out, err, code) = PseudoShellRunner().run(cmd)
         fw_file, cert_file = BiosFactory.get_files(out)
         if code == 0 and not err:
             return fw_file, cert_file

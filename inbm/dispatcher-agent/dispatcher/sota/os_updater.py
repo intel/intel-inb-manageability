@@ -45,7 +45,7 @@ def mender_install_argument() -> str:
 
     @return: '-install' if the Mender utility help text mentions this argument, otherwise 'install'.
     """
-    (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
+    (out, err, code) = PseudoShellRunner().run(MENDER_FILE_PATH + " -help")
     if "-install" in out or ((err is not None) and "-install" in err):
         return "-install"
     else:
@@ -176,9 +176,9 @@ class DebianBasedUpdater(OsUpdater):
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
 
-            (upgrade, _, _) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)
+            (upgrade, _, _) = PseudoShellRunner().run(DOCKER_CHROOT_PREFIX + cmd)
         else:
-            (upgrade, _, _) = PseudoShellRunner.run(cmd)
+            (upgrade, _, _) = PseudoShellRunner().run(cmd)
         return DebianBasedUpdater._get_estimated_size_from_apt_get_upgrade(upgrade)
 
     @staticmethod

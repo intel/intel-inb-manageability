@@ -25,7 +25,7 @@ def are_docker_and_trtl_on_system() -> bool:
     if platform.system() == 'Windows':
         return False
     else:  # Linux
-        (out, err, code) = PseudoShellRunner.run("systemctl is-active --quiet docker")
+        (out, err, code) = PseudoShellRunner().run("systemctl is-active --quiet docker")
         docker_present = True if err == "" and code == 0 else False
         trtl_present = os.path.exists(TRTL_PATH)
         return docker_present and trtl_present

@@ -8,7 +8,7 @@ from inbc.command.ota_command import FotaCommand, AotaCommand
 
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_lib.request_message_constants import *
-from mock import patch, mock_open, Mock
+from unittest.mock import patch, mock_open, Mock
 from io import StringIO
 
 OVER_FIFTY_CHARACTER_STRING = "ThisIsWayTooLongOfAManufacturerNameForThisTestAndMore"
