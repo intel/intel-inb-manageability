@@ -32,10 +32,10 @@ class TestSourceApplicationParser(TestCase):
              '-fileName', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=application>' \
-                   '<application><add><gpg><path>https://repositories.intel.com/gpu/intel-graphics.key</path>' \
+                   '<add><gpg><path>https://repositories.intel.com/gpu/intel-graphics.key</path>' \
                    '<keyname>intel-graphics.gpg</keyname></gpg><repo><source>' \
                    'echo &quot;deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified&quot;' \
-                   '</source><filename>intel-gpu-jammy.list</filename></repo></add></application></source></manifest>'
+                   '</source><filename>intel-gpu-jammy.list</filename></repo></add></source></manifest>'
         self.assertEqual(p.func(p), expected)
 
     def test_parse_remove_arguments_successfully(self):
@@ -54,8 +54,8 @@ class TestSourceApplicationParser(TestCase):
              '-fileName', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=application>' \
-                   '<application><remove><gpg><keyid>46C1680FC119E61A501811823A319F932D945953</keyid></gpg>' \
-                   '<repo><filename>intel-gpu-jammy.list</filename></repo></remove></application></source></manifest>'
+                   '<remove><gpg><keyid>46C1680FC119E61A501811823A319F932D945953</keyid></gpg>' \
+                   '<repo><filename>intel-gpu-jammy.list</filename></repo></remove></source></manifest>'
         self.assertEqual(p.func(p), expected)
 
     def test_parse_update_arguments_successfully(self):
@@ -76,14 +76,10 @@ class TestSourceApplicationParser(TestCase):
              '-fileName', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=application>' \
-                   '<application><update><repo><source_pkg>' \
+                   '<update><repo><source_pkg>' \
                    'echo &quot;deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified&quot;' \
-                   '</source_pkg>' \
-                   '<filename>intel-gpu-jammy.list</filename></repo></update></application></source></manifest>'
+                   '</source_pkg><filename>intel-gpu-jammy.list</filename></repo></update></source></manifest>'
         self.assertEqual(p.func(p), expected)
-
-    def test_parse_list_arguments_successfully(self):
-        f = self.arg_parser.parse_args(['source', 'application', 'list'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_list_manifest_successfully(self, m_connect):
@@ -91,5 +87,5 @@ class TestSourceApplicationParser(TestCase):
             ['source', 'application', 'list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=application>' \
-                   '<application></list></application></source></manifest>'
+                   '</list></source></manifest>'
         self.assertEqual(p.func(p), expected)
