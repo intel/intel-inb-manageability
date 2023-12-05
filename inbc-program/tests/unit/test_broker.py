@@ -38,14 +38,14 @@ class TestINBC(TestCase):
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_event_fota(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
+    def test_ensure_no_exception_on_fota_broker_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('fota', self._fota_args, False)
         b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.FotaCommand.rigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_event_aota(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
+    def test_ensure_no_exception_on_aota_broker_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('aota', self._aota_args, False)
         b._on_event('manageability/event', 'Overall AOTA status : SUCCESS', 1)
 
