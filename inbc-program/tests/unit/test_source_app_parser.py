@@ -1,5 +1,5 @@
-from mock import patch, mock_open, Mock
 from unittest import TestCase
+from unittest.mock import patch
 
 from inbc.inbc import Inbc
 from inbc.parser.parser import ArgsParser

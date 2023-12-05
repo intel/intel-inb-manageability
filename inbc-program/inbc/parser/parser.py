@@ -8,8 +8,6 @@ import argparse
 
 from typing import Any, Optional, Sequence
 
-from inbm_common_lib.validater import validate_date, validate_string_less_than_n_characters, validate_guid
-
 from .config_parser import load, get, set, append, remove
 from .ota_parser import fota, sota, pota, aota
 from .source_app_parser import application_add, application_remove, application_update, application_list
@@ -17,6 +15,7 @@ from .source_os_parser import os_add, os_remove, os_update, os_list
 from ..inbc_exception import InbcException
 from ..xml_tag import create_xml_tag
 from ..constants import PATH_STRING
+from ..validator import validate_date, validate_string_less_than_n_characters, validate_guid, validate_package_list
 
 logger = logging.getLogger(__name__)
 
@@ -184,21 +183,24 @@ class ArgsParser(object):
 
     def parse_sota_args(self) -> None:
         """Method to parse SOTA arguments"""
-        sota_parser = self.inbc_subparsers.add_parser('sota')
+        parser_sota = self.inbc_subparsers.add_parser('sota')
 
-        sota_parser.add_argument('--uri', '-u', required=False,
+        parser_sota.add_argument('--uri', '-u', required=False,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
-        sota_parser.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
+        parser_sota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        sota_parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
+        parser_sota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
-        sota_parser.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+        parser_sota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
                                  help='Type of information [ yes | no ]')
-        sota_parser.add_argument('--mode', '-m', default='full',
+        parser_sota.add_argument('--mode', '-m', default='full',
                                  required=False, choices=['full', 'download-only', 'no-download'])
-        sota_parser.set_defaults(func=sota)
+        parser_sota.add_argument('--package-list', '-p', required=False,
+                                 type=lambda x: validate_package_list(x),
+                                 help='Comma-separated list of package names to install')
+        parser_sota.set_defaults(func=sota)
 
     def parse_pota_args(self) -> None:
         """Method to parse POTA arguments."""

@@ -44,7 +44,8 @@ class TestINBC(TestCase):
 
     def test_aota_manifest_pass(self) -> None:
         f = self.arg_parser.parse_args(
-            ['aota', '-un', 'username', '-u', 'https://abc.com/test.deb', '-rb', 'no', '-a', 'application', '-c', 'update'])
+            ['aota', '-un', 'username', '-u', 'https://abc.com/test.deb', '-rb', 'no', '-a', 'application', '-c',
+             'update'])
         self.assertEqual(f.uri, 'https://abc.com/test.deb')
         self.assertEqual(f.app, 'application')
         self.assertEqual(f.command, 'update')
@@ -108,7 +109,8 @@ class TestINBC(TestCase):
 
     def test_aota_docker_compose_pull_manifest_pass(self) -> None:
         f = self.arg_parser.parse_args(
-            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz',  '-a', 'compose', '-c', 'pull', '-v', '1.0', '-ct', 'compose'])
+            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz', '-a', 'compose', '-c', 'pull', '-v',
+             '1.0', '-ct', 'compose'])
         self.assertEqual(f.uri, 'https://abc.com/compose.tar.gz')
         self.assertEqual(f.app, 'compose')
         self.assertEqual(f.command, 'pull')
@@ -118,8 +120,9 @@ class TestINBC(TestCase):
 
     def test_aota_docker_compose_up_manifest_pass(self) -> None:
         f = self.arg_parser.parse_args(
-            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz',  '-a', 'compose', '-c', 'up', '-v', '1.0', '-ct', 'compose',
-                '-du', 'dockerusername', '-dr', 'dockerregistry'])
+            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz', '-a', 'compose', '-c', 'up', '-v',
+             '1.0', '-ct', 'compose',
+             '-du', 'dockerusername', '-dr', 'dockerregistry'])
         self.assertEqual(f.uri, 'https://abc.com/compose.tar.gz')
         self.assertEqual(f.app, 'compose')
         self.assertEqual(f.command, 'up')
@@ -131,7 +134,8 @@ class TestINBC(TestCase):
 
     def test_aota_docker_compose_up_file_manifest_pass(self) -> None:
         f = self.arg_parser.parse_args(
-            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz',  '-a', 'compose', '-c', 'up', '-v', '1.0', '-ct', 'compose', '-f', 'compose.yml'])
+            ['aota', '-un', 'username', '-u', 'https://abc.com/compose.tar.gz', '-a', 'compose', '-c', 'up', '-v',
+             '1.0', '-ct', 'compose', '-f', 'compose.yml'])
         self.assertEqual(f.uri, 'https://abc.com/compose.tar.gz')
         self.assertEqual(f.app, 'compose')
         self.assertEqual(f.command, 'up')
@@ -142,7 +146,7 @@ class TestINBC(TestCase):
 
     def test_aota_docker_compose_down_manifest_pass(self) -> None:
         f = self.arg_parser.parse_args(
-            ['aota',  '-a', 'compose', '-c', 'down', '-v', '1.0', '-ct', 'compose'])
+            ['aota', '-a', 'compose', '-c', 'down', '-v', '1.0', '-ct', 'compose'])
         self.assertEqual(f.app, 'compose')
         self.assertEqual(f.command, 'down')
         self.assertEqual(f.version, '1.0')
@@ -177,23 +181,6 @@ class TestINBC(TestCase):
                    '<option>all</option></query></manifest>'
         self.assertEqual(p.func(p), expected)
 
-    def test_create_fota_manifest(self, mock_start, m_sub, m_pub,
-                                  m_connect, m_pass, m_dmi, mock_reconnect, mock_thread) -> None:
-        p = self.arg_parser.parse_args(
-            ['fota', '-u', 'https://abc.com/package.bin', '-un', 'frank', '-to', '/b /p'])
-        Inbc(p, 'fota', False)
-        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type>' \
-                   '<repo>remote</repo></header><type><fota name="sample">' \
-                   '<biosversion>ADLSFWI1.R00</biosversion><vendor>Intel Corporation</vendor>' \
-                   '<manufacturer>Intel Corporation</manufacturer>' \
-                   '<product>Alder Lake Client Platform</product><releasedate>2024-12-31</releasedate>' \
-                   '<tooloptions>/b /p</tooloptions>' \
-                   '<username>frank</username><password>123abc</password>' \
-                   '<fetch>https://abc.com/package.bin</fetch><deviceReboot>yes</deviceReboot>' \
-                   '</fota></type></ota></manifest>'
-        self.assertEqual(p.func(p), expected)
-        assert mock_start.call_count == 1
-
     @patch('threading.Thread.start')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.parser.ota_parser.get_dmi_system_info',
@@ -202,7 +189,8 @@ class TestINBC(TestCase):
     @patch('inbc.utility.getpass.getpass', return_value='123abc')
     @patch('inbc.inbc.Broker')
     @patch('inbm_lib.timer.Timer.start')
-    def test_create_fota_manifest_clean_input(self, mock_start, m_broker, m_pass, m_dmi, mock_reconnect, mock_thread) -> None:
+    def test_create_fota_manifest_clean_input(self, mock_start, m_broker, m_pass, m_dmi, mock_reconnect,
+                                              mock_thread) -> None:
         f = self.arg_parser.parse_args(
             ['fota', '-u', 'https://abc.com/\x00package.bin', '-r', '2024-12-31'])
         Inbc(f, 'fota', False)
@@ -248,7 +236,7 @@ class TestINBC(TestCase):
         self.assertEqual(s.func(s), expected)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('inbc.parser.getpass.getpass', return_value='123abc')
+    @patch('inbc.utility.getpass.getpass', return_value='123abc')
     def test_create_sota_manifest(self, mock_pass, mock_reconnect) -> None:
         s = self.arg_parser.parse_args(
             ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank'])
@@ -261,7 +249,7 @@ class TestINBC(TestCase):
         self.assertEqual(s.func(s), expected)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('inbc.parser.getpass.getpass', return_value='123abc')
+    @patch('inbc.utility.getpass.getpass', return_value='123abc')
     def test_create_sota_mode_manifest(self, mock_pass, mock_reconnect) -> None:
         s = self.arg_parser.parse_args(
             ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank', '-m', 'full'])
@@ -272,7 +260,7 @@ class TestINBC(TestCase):
                    '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot></sota></type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
-    @patch('inbc.parser.get_dmi_system_info',
+    @patch('inbc.parser.ota_parser.get_dmi_system_info',
            return_value=PlatformInformation('2024-12-31', 'Intel', '5.12', 'Intel', 'kmb'))
     def test_create_fota_manifest(self, mock_dmi) -> None:
         f = self.arg_parser.parse_args(
@@ -297,8 +285,7 @@ class TestINBC(TestCase):
     @patch('inbc.parser.ota_parser._gather_system_details',
            return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',
                                             'Intel Corporation', 'Alder Lake Client Platform'))
-
-    @patch('inbc.parser.detect_os', return_value='NonUbuntu')
+    @patch('inbc.parser.ota_parser.detect_os', return_value='NonUbuntu')
     def test_create_pota_uri_manifest_non_ubuntu(self, mock_os, mock_info) -> None:
         p = PlatformInformation()
         s = self.arg_parser.parse_args(
