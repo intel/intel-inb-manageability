@@ -1,5 +1,8 @@
-from inbc.parser.parser import ArgsParser
 from unittest import TestCase
+from unittest.mock import patch
+
+from inbc.inbc import Inbc
+from inbc.parser.parser import ArgsParser
 
 
 class TestSourceOsParser(TestCase):
@@ -37,3 +40,12 @@ class TestSourceOsParser(TestCase):
 
     def test_parse_list_arguments_successfully(self):
         f = self.arg_parser.parse_args(['source', 'os', 'list'])
+
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    def test_create_list_manifest_successfully(self, m_connect):
+        p = self.arg_parser.parse_args(
+            ['source', 'os', 'list'])
+        Inbc(p, 'source', False)
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=os>' \
+                   '<os></list></os></source></manifest>'
+        self.assertEqual(p.func(p), expected)

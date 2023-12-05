@@ -257,7 +257,8 @@ class TestINBC(TestCase):
                    '><repo>remote</repo></header><type><sota><cmd ' \
                    'logtofile="y">update</cmd><mode>full</mode><package_list></package_list>' \
                    '<fetch>https://abc.com/test.tar</fetch><username>Frank</username><password>123abc</password>' \
-                   '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot></sota></type></ota></manifest>'
+                   '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot></sota>' \
+                   '</type></ota></manifest>'
         self.assertEqual(s.func(s), expected)
 
     @patch('inbc.parser.ota_parser.get_dmi_system_info',
@@ -267,8 +268,8 @@ class TestINBC(TestCase):
             ['fota', '-u', 'https://abc.com/BIOS.img', '-r', '2024-12-31'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type' \
                    '><repo>remote</repo></header><type><fota name="sample">' \
-                   '<biosversion>5.12</biosversion><vendor>Intel</vendor' \
-                   '><manufacturer>Intel</manufacturer><product>kmb</product>' \
+                   '<biosversion>5.12</biosversion><vendor>Intel</vendor>' \
+                   '<manufacturer>Intel</manufacturer><product>kmb</product>' \
                    '<releasedate>2024-12-31' \
                    '</releasedate><fetch>https://abc.com/BIOS.img</fetch>' \
                    '<deviceReboot>yes</deviceReboot>' \

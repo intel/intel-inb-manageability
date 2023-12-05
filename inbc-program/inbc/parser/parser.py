@@ -161,25 +161,25 @@ class ArgsParser(object):
     def parse_fota_args(self) -> None:
         """Method to parse FOTA arguments"""
         # Create the parser for the "fota" command
-        fota_parser = self.inbc_subparsers.add_parser('fota')
+        parser_fota = self.inbc_subparsers.add_parser('fota')
 
-        fota_parser.add_argument('--uri', '-u', required=True,
+        parser_fota.add_argument('--uri', '-u', required=True,
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
-        fota_parser.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
+        parser_fota.add_argument('--releasedate', '-r', default='2026-12-31', required=False, type=validate_date,
                                  help='Release date of the applying package - format YYYY-MM-DD')
-        fota_parser.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
+        parser_fota.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
-        fota_parser.add_argument('--tooloptions', '-to', required=False, help='Firmware tool options',
+        parser_fota.add_argument('--tooloptions', '-to', required=False, help='Firmware tool options',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Tool Options', 10))
-        fota_parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
+        parser_fota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
-        fota_parser.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
+        parser_fota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
                                  help='Type of information [ yes | no ]')
-        fota_parser.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
+        parser_fota.add_argument('--guid', '-gu', required=False, help='Firmware guid update',
                                  type=validate_guid)
-        fota_parser.set_defaults(func=fota)
+        parser_fota.set_defaults(func=fota)
 
     def parse_sota_args(self) -> None:
         """Method to parse SOTA arguments"""

@@ -44,11 +44,9 @@ def application_remove(args: argparse.Namespace) -> str:
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
-                '<manifest>' +
-                '<type>source</type>' +
+                '<manifest><type>source</type>' +
                 '<source type=application>' +
-                '<application>' +
-                '<remove><gpg>'
+                '<application><remove><gpg>'
                 '{0}' +
                 '</gpg><repo>' +
                 '{1}'
@@ -62,14 +60,29 @@ def application_remove(args: argparse.Namespace) -> str:
 
 
 def application_update(args: argparse.Namespace) -> str:
-    manifest = "manifest"
+    arguments = {
+        'source_pkg': args.s,
+        'filename': args.f
+    }
+    manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
+                '<manifest><type>source</type>' +
+                '<source type=application>' +
+                '<application><update><repo>'
+                '{0}{1}' +
+                '</repo></update></application></source>' +
+                '</manifest>').format(create_xml_tag(arguments, "source_pkg"),
+                                      create_xml_tag(arguments, "filename"))
 
     print("manifest {0}".format(manifest))
     return manifest
 
 
 def application_list(args: argparse.Namespace) -> str:
-    manifest = "manifest"
+    manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
+                '<manifest><type>source</type>' +
+                '<source type=application>' +
+                '<application></list></application></source>' +
+                '</manifest>')
 
     print("manifest {0}".format(manifest))
     return manifest

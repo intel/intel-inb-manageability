@@ -28,7 +28,11 @@ def os_update(args: argparse.Namespace) -> str:
 
 
 def os_list(args: argparse.Namespace) -> str:
-    manifest = "manifest"
+    manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
+                '<manifest><type>source</type>' +
+                '<source type=os>' +
+                '<os></list></os></source>' +
+                '</manifest>')
 
     print("manifest {0}".format(manifest))
     return manifest
