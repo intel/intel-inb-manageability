@@ -5,7 +5,7 @@ from diagnostic.constants import MIN_MEMORY_MB, MIN_STORAGE_MB, DOCKER_BENCH_SEC
     MIN_POWER_PERCENT, NETWORK_CHECK, DEFAULT_MIN_POWER_PERCENT, DEFAULT_MIN_MEMORY_MB, DEFAULT_MIN_STORAGE_MB, \
     DEFAULT_DOCKER_BENCH_SECURITY_INTERVAL_SEC
 from diagnostic.diagnostic_checker import DiagnosticChecker
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 
 
 @ddt

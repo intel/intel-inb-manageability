@@ -4,7 +4,7 @@ import unittest
 
 import fixtures
 from ..common.mock_resources import *
-from mock import patch, mock_open
+from unittest.mock import patch, mock_open
 from dispatcher.sota.os_factory import SotaOsFactory
 from dispatcher.sota.setup_helper import DebianBasedSetupHelper
 
@@ -13,14 +13,14 @@ class TestSetupHelper(unittest.TestCase):
 
     @patch('dispatcher.sota.setup_helper.DebianBasedSetupHelper.update_sources')
     def test_ubuntu_update_config(self, mock_apt_source) -> None:
-        setup_helper = DebianBasedSetupHelper(None)  # type: ignore
+        setup_helper = DebianBasedSetupHelper(None)
         setup_helper.update_sources('')
         mock_apt_source.assert_called_once()
 
     @patch("pickle.load", return_value={'restart_reason': 'rollback', 'snapshot_num': 1})
     def test_ubuntu_extract_snap_num_from_disk(self, mock_pickle) -> None:
         with patch('builtins.open', new_callable=mock_open()) as m:
-            setup_helper = DebianBasedSetupHelper(None)  # type: ignore
+            setup_helper = DebianBasedSetupHelper(None)
             setup_helper.extract_snap_num_from_disk()
             mock_pickle.assert_called_once()
 

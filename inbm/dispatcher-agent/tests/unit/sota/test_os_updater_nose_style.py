@@ -8,7 +8,7 @@ from dispatcher.sota.os_updater import DebianBasedUpdater
 from dispatcher.sota.sota import SOTA
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from dispatcher.sota.constants import *
-from mock import patch
+from unittest.mock import patch
 from inbm_lib.xmlhandler import XmlHandler
 from unit.common.mock_resources import *
 from dispatcher.sota.constants import *
@@ -61,7 +61,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_Ubuntu_update(self) -> None:
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')
 
         factory = TestOsUpdater.sota_instance.factory
         assert factory
@@ -80,7 +80,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_Ubuntu_install(self) -> None:
         assert TestOsUpdater.sota_instance_packages
         TestOsUpdater.sota_instance_packages.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, ['package1', 'package2']).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_broker, None, ['package1', 'package2']).get_os('Ubuntu')
 
         factory = TestOsUpdater.sota_instance_packages.factory
         assert factory
@@ -91,7 +91,7 @@ class TestOsUpdater(unittest.TestCase):
                     "dpkg --configure -a --force-confdef --force-confold",
                     "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
                     "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install package1 package2"]
-        x_cmd_list = installer.update_remote_source(  # type: ignore
+        x_cmd_list = installer.update_remote_source(
             mock_url, TestOsUpdater._build_mock_repo(0))
 
         for (each, expected) in zip(x_cmd_list, cmd_list):
@@ -100,7 +100,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_33_2_kB_used(self) -> None:
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -112,7 +112,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_33_2_kB_freed(self) -> None:
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -124,7 +124,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_1_mB_used(self) -> None:
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -136,7 +136,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_42_gB_used(self) -> None:
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -148,7 +148,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_234_3_B_used(self) -> None:
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -160,7 +160,7 @@ class TestOsUpdater(unittest.TestCase):
     def test_bad_input(self) -> None:
         assert TestOsUpdater.sota_instance
         TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')  # type: ignore
+            TestOsUpdater.mock_disp_broker, None, []).get_os('Ubuntu')
         factory = TestOsUpdater.sota_instance.factory
         assert factory
         TestOsUpdater.sota_instance.installer = factory.create_os_updater()
@@ -172,15 +172,11 @@ class TestOsUpdater(unittest.TestCase):
     @patch('dispatcher.sota.os_updater.YoctoX86_64Updater.update_remote_source')
     def test_Yocto_update(self, mock_yocto_os_update) -> None:
         assert TestOsUpdater.sota_instance
-        TestOsUpdater.sota_instance.factory = SotaOsFactory(
-            TestOsUpdater.mock_disp_broker, None, []).get_os('YoctoX86_64')  # type: ignore
-        factory = TestOsUpdater.sota_instance.factory
+        factory = SotaOsFactory(TestOsUpdater.mock_disp_broker, None, []).get_os('YoctoX86_64')
         assert factory
-        TestOsUpdater.sota_instance.installer = factory.create_os_updater()
-        installer = TestOsUpdater.sota_instance.installer
+        installer = factory.create_os_updater()
         assert installer
-        TestOsUpdater.sota_instance.cmd_list = installer.update_remote_source(  # type: ignore
-            mock_url, TestOsUpdater._build_mock_repo(0))
+        installer.update_remote_source(mock_url, TestOsUpdater._build_mock_repo(0))
         mock_yocto_os_update.assert_called_once()
 
     @staticmethod

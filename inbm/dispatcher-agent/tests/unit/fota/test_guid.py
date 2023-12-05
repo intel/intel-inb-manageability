@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import patch
+from unittest.mock import patch
 
 from unit.common.mock_resources import *
 from dispatcher.fota.guid import _parse_guid, extract_guid

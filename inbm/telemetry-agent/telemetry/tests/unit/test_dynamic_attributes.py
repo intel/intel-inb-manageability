@@ -1,6 +1,6 @@
 from telemetry.dynamic_attributes import get_percent_disk_used, get_available_memory, get_cpu_percent, \
     get_core_temp_celsius
-from mock import patch
+from unittest.mock import patch
 from unittest import TestCase
 from collections import namedtuple
 

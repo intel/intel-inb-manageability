@@ -6,7 +6,7 @@ from xml.etree.ElementTree import ElementTree
 
 from configuration.xml_key_value_store import XmlException, XmlKeyValueStore
 from configuration.configuration_exception import ConfigurationException
-from mock import patch
+from unittest.mock import patch
 from typing import Any
 
 SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),

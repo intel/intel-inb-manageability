@@ -4,7 +4,7 @@ import mock
 from ..common.mock_resources import *
 from dispatcher.fota.bios_factory import *
 from dispatcher.fota.bios_factory import extract_ext, LinuxToolFirmware, LinuxFileFirmware, BiosFactory
-from mock import patch
+from unittest.mock import patch
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 
 

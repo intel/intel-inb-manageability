@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import patch
+from unittest.mock import patch
 from ast import literal_eval
 from dispatcher.remediationmanager.remediation_manager import RemediationManager
 from unit.common.mock_resources import *

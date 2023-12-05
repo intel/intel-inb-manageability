@@ -178,7 +178,7 @@ class XmlHandler:
             except TypeError as e:
                 # workaround for https://github.com/tiran/defusedxml/issues/54
                 if 'expected an Element' in str(e):
-                    element._children.append(subtag)  # type: ignore
+                    element._children.append(subtag)
                 else:
                     raise e
             return tostring(self._root, encoding='utf-8')
