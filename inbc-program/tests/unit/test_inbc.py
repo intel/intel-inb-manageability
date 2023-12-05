@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 from inbc.inbc import Inbc
-from inbc.parser import ArgsParser, fota, sota, load, get, set, append, remove
+from inbc.parser.parser import ArgsParser
 from inbc.constants import COMMAND_FAIL, COMMAND_SUCCESS
 from inbc.inbc_exception import InbcCode, InbcException
 from inbc.command.ota_command import FotaCommand, AotaCommand
@@ -196,10 +196,10 @@ class TestINBC(TestCase):
 
     @patch('threading.Thread.start')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
-    @patch('inbc.parser.get_dmi_system_info',
+    @patch('inbc.parser.ota_parser.get_dmi_system_info',
            return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',
                                             'Intel Corporation', 'Alder Lake Client Platform'))
-    @patch('inbc.parser.getpass.getpass', return_value='123abc')
+    @patch('inbc.utility.getpass.getpass', return_value='123abc')
     @patch('inbc.inbc.Broker')
     @patch('inbm_lib.timer.Timer.start')
     def test_create_fota_manifest_clean_input(self, mock_start, m_broker, m_pass, m_dmi, mock_reconnect, mock_thread) -> None:
@@ -294,9 +294,10 @@ class TestINBC(TestCase):
                 ['sota', '-u', 'https://abc.com/test.mender', '-r', '12-31-2024'])
         self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
 
-    @patch('inbc.parser._gather_system_details',
+    @patch('inbc.parser.ota_parser._gather_system_details',
            return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',
                                             'Intel Corporation', 'Alder Lake Client Platform'))
+
     @patch('inbc.parser.detect_os', return_value='NonUbuntu')
     def test_create_pota_uri_manifest_non_ubuntu(self, mock_os, mock_info) -> None:
         p = PlatformInformation()
