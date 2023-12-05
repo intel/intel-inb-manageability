@@ -42,7 +42,8 @@ class DockerBenchRunner(Thread):
             return replace(dbs_result, result=(dbs_result.result + "All Passed").strip(','),
                            failed_containers=[], failed_images=[])
         else:
-            _dbs_result = replace(dbs_result, result=(dbs_result.result + dbs_result.fails).strip(','))
+            _dbs_result = replace(dbs_result, result=(
+                dbs_result.result + dbs_result.fails).strip(','))
             logger.debug("Failed Images:" + str(dbs_result.failed_images))
             logger.debug("Failed Containers:" + str(dbs_result.failed_containers))
             return _dbs_result

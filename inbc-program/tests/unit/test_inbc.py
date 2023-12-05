@@ -177,23 +177,6 @@ class TestINBC(TestCase):
                    '<option>all</option></query></manifest>'
         self.assertEqual(p.func(p), expected)
 
-    def test_create_fota_manifest(self, mock_start, m_sub, m_pub,
-                                  m_connect, m_pass, m_dmi, mock_reconnect, mock_thread) -> None:
-        p = self.arg_parser.parse_args(
-            ['fota', '-u', 'https://abc.com/package.bin', '-un', 'frank', '-to', '/b /p'])
-        Inbc(p, 'fota', False)
-        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type>' \
-                   '<repo>remote</repo></header><type><fota name="sample">' \
-                   '<biosversion>ADLSFWI1.R00</biosversion><vendor>Intel Corporation</vendor>' \
-                   '<manufacturer>Intel Corporation</manufacturer>' \
-                   '<product>Alder Lake Client Platform</product><releasedate>2024-12-31</releasedate>' \
-                   '<tooloptions>/b /p</tooloptions>' \
-                   '<username>frank</username><password>123abc</password>' \
-                   '<fetch>https://abc.com/package.bin</fetch><deviceReboot>yes</deviceReboot>' \
-                   '</fota></type></ota></manifest>'
-        self.assertEqual(p.func(p), expected)
-        assert mock_start.call_count == 1
-
     @patch('threading.Thread.start')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('inbc.parser.get_dmi_system_info',
@@ -274,7 +257,7 @@ class TestINBC(TestCase):
 
     @patch('inbc.parser.get_dmi_system_info',
            return_value=PlatformInformation('2024-12-31', 'Intel', '5.12', 'Intel', 'kmb'))
-    def test_create_fota_manifest(self, mock_dmi) -> None:
+    def test_create_expected_manifest_from_fota(self, mock_dmi) -> None:
         f = self.arg_parser.parse_args(
             ['fota', '-u', 'https://abc.com/BIOS.img', '-r', '2024-12-31'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>fota</type' \

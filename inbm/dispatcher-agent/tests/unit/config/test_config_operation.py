@@ -9,6 +9,8 @@ TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     'manifest_schema.xsd')
 
 # Parameterize the test function to run it with different inputs and expected outputs
+
+
 @pytest.mark.parametrize(
     "xml_path, expected_result",
     [
@@ -23,9 +25,11 @@ def test_config_load_operation(mocker, xml_path, expected_result):
     parsed_head = XmlHandler(xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
     c = ConfigOperation(dispatcher_broker=mocker.Mock())
 
-    mock_download = mocker.patch('dispatcher.configuration_helper.ConfigurationHelper.download_config')
+    mock_download = mocker.patch(
+        'dispatcher.configuration_helper.ConfigurationHelper.download_config')
     mock_url = mocker.patch('dispatcher.configuration_helper.ConfigurationHelper.parse_url')
-    mock_req_conf_func = mocker.patch('dispatcher.config.config_operation.ConfigOperation.request_config_agent')
+    mock_req_conf_func = mocker.patch(
+        'dispatcher.config.config_operation.ConfigOperation.request_config_agent')
 
     # Set return values for mocked functions
     mock_url.return_value = None

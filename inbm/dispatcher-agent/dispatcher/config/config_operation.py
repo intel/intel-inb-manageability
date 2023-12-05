@@ -135,7 +135,7 @@ class ConfigOperation:
                         return Result(status=CODE_BAD_REQUEST, message=f'Configuration {config_cmd_type} command: FAILED')
                 try:
                     self.request_config_agent(config_cmd_type, file_path=None,
-                                               value_string=value_list[i])
+                                              value_string=value_list[i])
                 except DispatcherException as err:
                     logger.error(err)
                     return Result(status=CODE_BAD_REQUEST, message=f'Configuration {config_cmd_type} command: FAILED')
@@ -145,7 +145,7 @@ class ConfigOperation:
             raise DispatcherException(f'Invalid values for payload {error}')
 
     def request_config_agent(self, cmd_type: str, file_path: Optional[str] = None,
-                              header: Optional[str] = None, value_string: Optional[str] = None) -> None:
+                             header: Optional[str] = None, value_string: Optional[str] = None) -> None:
         latch = CountDownLatch(1)
         logger.debug(" ")
 
