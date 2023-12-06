@@ -26,8 +26,7 @@ class ArgsParser(object):
     def __init__(self) -> None:
         self.main_parser = argparse.ArgumentParser(
             description='INBC Command-line tool to trigger updates')
-        self.inbc_subparsers = self.main_parser.add_subparsers(required=True,
-                                                               help='valid commands: [aota, fota, sota, pota, '
+        self.inbc_subparsers = self.main_parser.add_subparsers(help='valid commands: [aota, fota, sota, pota, '
                                                                     'load, get, set, restart, query, source]')
 
         self.parse_aota_args()
