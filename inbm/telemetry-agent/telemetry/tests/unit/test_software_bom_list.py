@@ -1,6 +1,6 @@
 from unittest import TestCase
 import logging
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 from telemetry.software_bom_list import *
 from telemetry.software_bom_list import get_sw_bom_list, read_mender_file, publish_software_bom
 from telemetry.constants import UNKNOWN

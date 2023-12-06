@@ -1,6 +1,6 @@
 import json
 from telemetry.static_attributes import get_total_physical_memory, get_disk_information, get_os_information
-from mock import patch
+from unittest.mock import patch
 from unittest import TestCase
 from collections import namedtuple
 

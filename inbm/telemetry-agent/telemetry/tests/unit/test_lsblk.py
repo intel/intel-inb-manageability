@@ -1,4 +1,4 @@
-from mock import patch
+from unittest.mock import patch
 from telemetry.lsblk import parse_lsblk, get_lsblk_output
 from unittest import TestCase
 import unittest

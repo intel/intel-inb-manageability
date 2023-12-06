@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unit.common.mock_resources import *
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 
 from dispatcher.aota.factory import get_app_instance, get_app_os
 from dispatcher.aota.aota_command import DockerCompose, Docker

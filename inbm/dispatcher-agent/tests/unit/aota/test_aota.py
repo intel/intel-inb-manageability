@@ -9,7 +9,7 @@ from dispatcher.aota.aota_error import AotaError
 from dispatcher.aota.constants import SupportedDriver
 from dispatcher.aota.checker import check_resource
 from ..common.mock_resources import *
-from mock import patch
+from unittest.mock import patch
 from typing import Any
 from dispatcher.common.result_constants import (
     INSTALL_SUCCESS,

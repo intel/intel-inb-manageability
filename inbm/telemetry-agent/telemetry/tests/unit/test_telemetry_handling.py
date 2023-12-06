@@ -2,7 +2,7 @@ from typing import Any, Optional
 from telemetry.telemetry_handling import (
     _set_timestamp, TelemetryTimer, send_initial_telemetry, publish_telemetry_update, get_query_related_info,
     get_docker_stats)
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 from unittest import TestCase
 import time
 from inbm_lib.mqttclient.mqtt import MQTT

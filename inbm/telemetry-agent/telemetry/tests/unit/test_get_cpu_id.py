@@ -1,5 +1,5 @@
 from telemetry.static_attributes import _get_cpu_id_from_proc_cpuinfo, get_cpu_id
-from mock import patch
+from unittest.mock import patch
 from unittest import TestCase
 
 

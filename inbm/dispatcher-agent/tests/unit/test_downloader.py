@@ -6,7 +6,7 @@ from dispatcher.downloader import download
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from inbm_lib.xmlhandler import XmlHandler
 from dispatcher.dispatcher_exception import DispatcherException
-from mock import patch
+from unittest.mock import patch
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../fpm-template/usr/share/dispatcher-agent/'

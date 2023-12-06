@@ -3,7 +3,7 @@ import unittest
 from unittest import TestCase
 
 from dispatcher.command import Command
-from mock import patch
+from unittest.mock import patch
 
 from dispatcher.dispatcher_broker import DispatcherBroker
 

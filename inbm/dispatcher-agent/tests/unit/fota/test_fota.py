@@ -8,7 +8,7 @@ from dispatcher.fota.fota_error import FotaError
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from inbm_lib.xmlhandler import XmlHandler
 from dispatcher.fota.installer import LinuxInstaller
-from mock import patch
+from unittest.mock import patch
 import time
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),

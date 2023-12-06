@@ -163,10 +163,10 @@ class AotaCommand(ABC):
             raise AotaError("Docker Password is required for Docker Login.")
         (out, err, code) = self._trtl.login(
             self._docker_registry, self._docker_username, self._docker_password)
-        logger.debug(f'Docker Login Result: {code} {err}')  # type: ignore
+        logger.debug(f'Docker Login Result: {code} {err}')
 
         if code != 0:
-            raise AotaError(f'Docker Login Failed {err}')  # type: ignore
+            raise AotaError(f'Docker Login Failed {err}')
 
 
 class Docker(AotaCommand):

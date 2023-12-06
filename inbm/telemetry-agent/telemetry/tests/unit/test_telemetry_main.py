@@ -1,6 +1,6 @@
 from telemetry.constants import DEFAULT_LOGGING_PATH
 from telemetry.telemetry import PathLogger, Telemetry
-from mock import patch
+from unittest.mock import patch
 from unittest import TestCase
 import os
 

@@ -5,7 +5,7 @@ from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.aota.aota_error import AotaError
 from dispatcher.ota_downloader import AotaDownloader, SotaDownloader, FotaDownloader
 from dispatcher.packagemanager.memory_repo import MemoryRepo
-from mock import patch
+from unittest.mock import patch
 
 ota_element = {'fetch': 'https://abc.tar'}
 parsed_manifest = {'uri': 'https://abc.com', 'signature': 'asdf',

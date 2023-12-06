@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 from diagnostic.broker import Broker
 from diagnostic.constants import STATE_CHANNEL, CMD_CHANNEL, CONFIGURATION_UPDATE_CHANNEL, ALL_AGENTS_UPDATE_CHANNEL
 

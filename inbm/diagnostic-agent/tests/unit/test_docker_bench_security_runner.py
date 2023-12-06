@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from diagnostic.docker_bench_security_runner import DockerBenchRunner
-from mock import patch
+from unittest.mock import patch
 
 docker_bench_pass_output = "[INFO] 6 - Docker Security Operations \n" \
                            "[INFO] 6.1  - Avoid image sprawl \n" \

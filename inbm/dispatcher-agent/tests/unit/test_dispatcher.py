@@ -138,11 +138,11 @@ class TestDispatcher(TestCase):
     def test_on_cloud_response_with_unicode_succeeds(self, mock_logging, mock_send_result) -> None:
         d = TestDispatcher._build_dispatcher()
         d.update_queue = Mock()
-        d.update_queue.full = Mock(return_value=False)  # type: ignore
-        d.update_queue.full.return_value = False  # type: ignore
-        d.update_queue.put = Mock()  # type: ignore
+        d.update_queue.full = Mock(return_value=False)
+        d.update_queue.full.return_value = False
+        d.update_queue.put = Mock()
         d._on_cloud_request('topic', '\xe2\x82\xac', 1)
-        assert d.update_queue.put.call_count == 1  # type: ignore
+        assert d.update_queue.put.call_count == 1
 
     @patch('dispatcher.dispatcher_class.OtaFactory', autospec=True)
     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
@@ -157,9 +157,9 @@ class TestDispatcher(TestCase):
 
         d = TestDispatcher._build_dispatcher()
         with patch('dispatcher.dispatcher_class._check_type_validate_manifest', return_value=("ota", parsed_head)):
-            d._send_result = Mock()  # type: ignore
+            d._send_result = Mock()  # type: ignore[method-assign]
             d.do_install("<xml></xml>")
-            args, _ = d._send_result.call_args  # type: ignore
+            args, _ = d._send_result.call_args
             result, = args
 
             assert "400" in result
@@ -195,7 +195,7 @@ class TestDispatcher(TestCase):
         resource = {'fota': ' ', 'sota': ' '}
         d = TestDispatcher._build_dispatcher()
         with patch('dispatcher.dispatcher_class._check_type_validate_manifest', return_value=("ota", parsed_head)):
-            d.send_result = Mock()  # type: ignore
+            d._send_result = Mock()  # type: ignore[method-assign]
             d.do_install("<xml></xml>")
             res = create_ota_resource_list(parsed_head, resource)
             self.assertEqual(list(res.keys()), ['fota', 'sota'])
@@ -477,5 +477,5 @@ class TestDispatcher(TestCase):
     def _build_dispatcher(install_check: InstallCheckService = MockInstallCheckService()) -> Dispatcher:
         d = Dispatcher([], MockDispatcherBroker.build_mock_dispatcher_broker(),
                        install_check)
-        d._update_logger = Mock()  # type: ignore
+        d._update_logger = Mock()
         return d
