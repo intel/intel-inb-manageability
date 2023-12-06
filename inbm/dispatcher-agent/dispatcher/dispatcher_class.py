@@ -241,7 +241,11 @@ class Dispatcher:
         elif cmd == "restart":
             message = self.device_manager.restart()
             if message == SUCCESS_RESTART:
-                state = {'restart_reason': 'restart_cmd'}
+                state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd', 
+                                                           'snapshot_num': None,
+                                                           'bios_version': None,
+                                                           'release_date': None,
+                                                           'mender_version': None}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
         elif cmd == "query":
             self._dispatcher_broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
@@ -647,7 +651,7 @@ class Dispatcher:
             self._update_logger.update_log(OTA_FAIL)
             logger.info(OTA_FAIL)
 
-    def check_fota_state(self, fota_state: Dict) -> None:
+    def check_fota_state(self, fota_state: dispatcher_state.DispatcherState) -> None:
         """This method checks the FOTA info in dispatcher state file and validates the release date
         and bios version number within the file to match the device's fw info and sends the _telemetry
         info accordingly based on the validation of information above.

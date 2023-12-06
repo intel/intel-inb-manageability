@@ -154,7 +154,11 @@ class FOTA:
 
             if not hold_reboot:
                 logger.debug("")
-                state = {'restart_reason': "fota"}
+                state: dispatcher_state.DispatcherState = {'restart_reason': "fota", 
+                                                           'snapshot_num': None,
+                                                           'bios_version': None,
+                                                           'release_date': None,
+                                                           'mender_version': None}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
                 if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
                     time_to_trigger_reboot = Timer(0.1, trigger_reboot)
@@ -162,7 +166,11 @@ class FOTA:
                 return_message = COMMAND_SUCCESS
             else:
                 status = 'Reboot on hold after Firmware update...'
-                state = {'restart_reason': "pota"}
+                state = {'restart_reason': "pota",
+                         'snapshot_num': None,
+                         'bios_version': None,
+                         'release_date': None,
+                         'mender_version': None}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
                 logger.debug(status)
                 return_message = COMMAND_SUCCESS
@@ -187,10 +195,10 @@ class FOTA:
             return return_message
 
     @staticmethod
-    def _verify_os_supported():
+    def _verify_os_supported() -> str:
         """checks if the current OS is supported.
 
-        @return True if OS is supported; otherwise, false.
+        @return os_type if OS is supported; otherwise raise ValueError
         @raise ValueError Unsupported OS
         """
         logger.debug("")

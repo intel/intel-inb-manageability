@@ -21,7 +21,7 @@ from ..common import dispatcher_state
 logger = logging.getLogger(__name__)
 
 
-class SetupHelper:
+class SetupHelper(metaclass=abc.ABCMeta):
     """Abstract class to perform OS-dependent tasks immediately before and after performing
     an OS upgrade
     """
@@ -32,14 +32,14 @@ class SetupHelper:
         pass
 
     @abc.abstractmethod
-    def pre_processing(self):
+    def pre_processing(self) -> bool:
         """Perform checks immediately before applying an OS update or upgrade.
         @return: True if OK to proceed; False otherwise
         """
         pass
 
     @abc.abstractmethod
-    def get_snapper_snapshot_number(self) -> str:
+    def get_snapper_snapshot_number(self) -> str | None:
         """
         @return: snapshot number from dispatcher state file (FIXME this is not OS generic)
         """
@@ -103,14 +103,14 @@ class DebianBasedSetupHelper(SetupHelper):
                 break
         apt_file.close()
 
-    def get_snapper_snapshot_number(self) -> str:
+    def get_snapper_snapshot_number(self) -> str | None:
         """
         @return: snapshot number from dispatcher state file (FIXME this is not OS generic)
         """
         logger.debug("")
         return self.extract_snap_num_from_disk()
 
-    def extract_snap_num_from_disk(self):
+    def extract_snap_num_from_disk(self) -> str | None:
         """if dispatcher_state_file exists, it extracts snapshot_num from it
 
         @return: snapshot_num in integer; None on error
@@ -132,9 +132,9 @@ class WindowsSetupHelper(SetupHelper):
         """
         super().__init__()
 
-    def pre_processing(self) -> None:
+    def pre_processing(self) -> bool:
         logger.debug("")
-        pass
+        raise NotImplementedError()
 
     def get_snapper_snapshot_number(self) -> str:
         """See parent class for description. This is a stub method on Windows."""

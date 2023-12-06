@@ -7,13 +7,14 @@
     SPDX-License-Identifier: Apache-2.0
 """
 import builtins
+from datetime import datetime
 import logging
 import os
 
 # pickle is only used to read from a trusted state file
 import pickle  # noqa: S403
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, TypedDict
 
 from .constants import DISPATCHER_STATE_FILE
 from ..dispatcher_exception import DispatcherException
@@ -45,8 +46,14 @@ def is_dispatcher_state_file_exists() -> bool:
         logger.debug('Dispatcher state file does not exist')
         return False
 
+class DispatcherState(TypedDict):
+    restart_reason: str | None
+    snapshot_num: str | None
+    bios_version: str | None
+    release_date: datetime | None
+    mender_version: str | None
 
-def consume_dispatcher_state_file(read: bool = False) -> Optional[Dict[str, Any]]:
+def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:
     """Read dispatcher state file and return state object, clearing state file on success
 
     @param read: set to True when only file info needs to be read without removing the file
@@ -75,7 +82,7 @@ def consume_dispatcher_state_file(read: bool = False) -> Optional[Dict[str, Any]
     return state
 
 
-def write_dispatcher_state_to_state_file(state: Dict) -> None:  # pragma: no cover
+def write_dispatcher_state_to_state_file(state: DispatcherState) -> None:  # pragma: no cover
     """Update state file dictionary with state object
 
     @param state: state object to use to update state file

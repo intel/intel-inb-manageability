@@ -52,13 +52,17 @@ class OtaThread(metaclass=abc.ABCMeta):
         self._parsed_manifest = parsed_manifest
         self._install_check_service = install_check_service
 
-    def start(self):
+    def pre_install_check(self) -> None:
         logger.debug('Performing pre install check')
         try:
             self._install_check_service.install_check(size=0)
             logger.info('Manifest has been parsed successfully')
         except DispatcherException:
             raise DispatcherException('Pre OTA check failed')
+    
+    @abc.abstractmethod
+    def start(self) -> Result:
+        pass        
 
     def post_install_check(self) -> None:
         logger.debug('Performing post install check')
@@ -94,7 +98,7 @@ class FotaThread(OtaThread):
         @return (dict): result of the OTA
         """
         logger.debug(" ")
-        super().start()
+        super().pre_install_check()
 
         global ota_lock
         if ota_lock.acquire(False):
@@ -163,7 +167,7 @@ class SotaThread(OtaThread):
         @return (dict): result of the OTA
         """
         logger.debug(" ")
-        super().start()
+        super().pre_install_check()
 
         global ota_lock
         if ota_lock.acquire(False):
@@ -240,7 +244,7 @@ class AotaThread(OtaThread):
         @return (dict): result of the OTA
         """
         logger.debug(" ")
-        super().start()
+        super().pre_install_check()
 
         global ota_lock
         if ota_lock.acquire(False):
