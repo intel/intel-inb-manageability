@@ -241,7 +241,7 @@ class Dispatcher:
         elif cmd == "restart":
             message = self.device_manager.restart()
             if message == SUCCESS_RESTART:
-                state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd', 
+                state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd',
                                                            'snapshot_num': None,
                                                            'bios_version': None,
                                                            'release_date': None,

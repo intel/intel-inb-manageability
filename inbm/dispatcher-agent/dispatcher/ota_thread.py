@@ -59,10 +59,10 @@ class OtaThread(metaclass=abc.ABCMeta):
             logger.info('Manifest has been parsed successfully')
         except DispatcherException:
             raise DispatcherException('Pre OTA check failed')
-    
+
     @abc.abstractmethod
     def start(self) -> Result:
-        pass        
+        pass
 
     def post_install_check(self) -> None:
         logger.debug('Performing post install check')

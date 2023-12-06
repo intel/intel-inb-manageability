@@ -130,7 +130,8 @@ class DebianBasedSnapshot(Snapshot):
             if snapshot_num:
                 restart_reason = None
 
-                state: dispatcher_state.DispatcherState | None = dispatcher_state.consume_dispatcher_state_file(read=True)
+                state: dispatcher_state.DispatcherState | None = dispatcher_state.consume_dispatcher_state_file(
+                    read=True)
                 if state:
                     restart_reason = state.get('restart_reason')
                 if restart_reason:
@@ -140,7 +141,7 @@ class DebianBasedSnapshot(Snapshot):
                              'release_date': None,
                              'mender_version': None}
                 else:
-                    state = {'restart_reason': "sota_" + self.sota_cmd, 
+                    state = {'restart_reason': "sota_" + self.sota_cmd,
                              'snapshot_num': snapshot_num,
                              'bios_version': None,
                              'release_date': None,
@@ -153,7 +154,7 @@ class DebianBasedSnapshot(Snapshot):
                 # need dispatcher_state to reflect that we ran a SOTA so we can update
                 # logs, perform health check, etc.
                 initial_state: dispatcher_state.DispatcherState = (
-                    {'restart_reason': "sota_" + self.sota_cmd, 
+                    {'restart_reason': "sota_" + self.sota_cmd,
                      'snapshot_num': '0',
                      'bios_version': None,
                      'release_date': None,

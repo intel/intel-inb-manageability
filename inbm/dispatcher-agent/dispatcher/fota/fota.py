@@ -154,7 +154,7 @@ class FOTA:
 
             if not hold_reboot:
                 logger.debug("")
-                state: dispatcher_state.DispatcherState = {'restart_reason': "fota", 
+                state: dispatcher_state.DispatcherState = {'restart_reason': "fota",
                                                            'snapshot_num': None,
                                                            'bios_version': None,
                                                            'release_date': None,

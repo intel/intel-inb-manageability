@@ -46,12 +46,14 @@ def is_dispatcher_state_file_exists() -> bool:
         logger.debug('Dispatcher state file does not exist')
         return False
 
+
 class DispatcherState(TypedDict):
     restart_reason: str | None
     snapshot_num: str | None
     bios_version: str | None
     release_date: datetime | None
     mender_version: str | None
+
 
 def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:
     """Read dispatcher state file and return state object, clearing state file on success
