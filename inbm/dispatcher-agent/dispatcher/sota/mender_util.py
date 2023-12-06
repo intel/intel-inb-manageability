@@ -21,5 +21,5 @@ def read_current_mender_version() -> str:
         return content.decode('utf-8', errors='strict').strip('artifact_name=')
     except (FileNotFoundError, IOError, OSError, ValueError, UnicodeError) as e:
         logger.debug(f"Error: {str(e)}")
-        raise SotaError('failed to read mender_version from state file or'
+        raise SotaError('failed to read mender-version from state file or'
                         ' failed to read state file')

@@ -350,11 +350,11 @@ class YoctoSnapshot(Snapshot):
                 if consumed_state:
                     restart_reason = consumed_state.get('restart_reason', None)
                 if restart_reason:
-                    state = {'mender_version': content}
+                    state = {'mender-version': content}
             else:
                 state = (
                     {'restart_reason': "sota",
-                     'mender_version': content}
+                     'mender-version': content}
                 )
             dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
@@ -412,11 +412,11 @@ class YoctoSnapshot(Snapshot):
 
         logger.debug("attempting to get dispatcher state from state file")
         state = dispatcher_state.consume_dispatcher_state_file()
-        if state is not None and 'mender_version' in state:
-            logger.debug("got mender_version from state: " + str(state['mender_version']))
+        if state is not None and 'mender-version' in state:
+            logger.debug("got mender-version from state: " + str(state['mender-version']))
             version = read_current_mender_version()
             current_mender_version = version
-            previous_mender_version = state['mender_version']
+            previous_mender_version = state['mender-version']
 
             if current_mender_version == previous_mender_version:
                 raise SotaError(
@@ -426,4 +426,4 @@ class YoctoSnapshot(Snapshot):
 
         else:
             raise SotaError(
-                f"'mender_version' not in state or state is not available. state = {str(state)}")
+                f"'mender-version' not in state or state is not available. state = {str(state)}")

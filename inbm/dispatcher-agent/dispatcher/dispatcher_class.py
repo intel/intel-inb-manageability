@@ -708,7 +708,7 @@ class Dispatcher:
             try:
                 restart_reason = str(state['restart_reason'])
             except KeyError:
-                if 'mender_version' in state:
+                if 'mender-version' in state:
                     restart_reason = 'sota'
                 else:
                     raise DispatcherException(
