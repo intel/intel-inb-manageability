@@ -1,5 +1,5 @@
 {
-  "@id": "urn:intelInbandManageability:IntelManageability:2",
+  "@id": "urn:intelInbandManageability:IntelManageability:3",
   "@type": "Interface",
   "contents": [
     {
@@ -536,7 +536,7 @@
             {
               "@id": "urn:intelInbandManageability:IntelManageability:triggersota:triggersota:m8kv_mmlf:cmd:1",
               "displayName": {
-                "en": "Command (update only)"
+                "en": "Command (update or install)"
               },
               "name": "cmd",
               "schema": "string"
