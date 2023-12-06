@@ -76,21 +76,21 @@ class ArgsParser(object):
         # Application Remove Command
         app_remove_parser = app_subparsers.add_parser('remove')
         app_remove_parser.add_argument('-gpgKeyId', '--gki', required=True,
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'URL', 50),
-                                       help='GPG Key ID of the source to remove.')
+                                      type=lambda x: validate_string_less_than_n_characters(x, 'URL', 50),
+                                      help='GPG Key ID of the source to remove.')
         app_remove_parser.add_argument('-fileName', '--f', required=True,
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'URL', 200),
-                                       help='file name to use when storing the source information')
+                                      type=lambda x: validate_string_less_than_n_characters(x, 'URL', 200),
+                                      help='file name to use when storing the source information')
         app_remove_parser.set_defaults(func=application_remove)
 
         # Application Update Command
         app_update_parser = app_subparsers.add_parser('update')
         app_update_parser.add_argument('-fileName', '--f', required=True,
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'URL', 200),
-                                       help='file name to use when storing the source information')
+                                      type=lambda x: validate_string_less_than_n_characters(x, 'URL', 200),
+                                      help='file name to use when storing the source information')
         app_update_parser.add_argument('-source', '--s', required=True,
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
-                                       help='Source information to store in the file')
+                                      type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                                      help='Source information to store in the file')
         app_update_parser.set_defaults(func=application_update)
 
         # Application List Command
