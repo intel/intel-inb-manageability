@@ -154,11 +154,7 @@ class FOTA:
 
             if not hold_reboot:
                 logger.debug("")
-                state: dispatcher_state.DispatcherState = {'restart_reason': "fota",
-                                                           'snapshot_num': None,
-                                                           'bios_version': None,
-                                                           'release_date': None,
-                                                           'mender_version': None}
+                state: dispatcher_state.DispatcherState = {'restart_reason': "fota"}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
                 if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
                     time_to_trigger_reboot = Timer(0.1, trigger_reboot)
@@ -166,11 +162,7 @@ class FOTA:
                 return_message = COMMAND_SUCCESS
             else:
                 status = 'Reboot on hold after Firmware update...'
-                state = {'restart_reason': "pota",
-                         'snapshot_num': None,
-                         'bios_version': None,
-                         'release_date': None,
-                         'mender_version': None}
+                state = {'restart_reason': "pota"}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
                 logger.debug(status)
                 return_message = COMMAND_SUCCESS

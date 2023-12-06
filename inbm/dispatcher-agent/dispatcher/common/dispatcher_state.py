@@ -47,12 +47,12 @@ def is_dispatcher_state_file_exists() -> bool:
         return False
 
 
-class DispatcherState(TypedDict):
-    restart_reason: str | None
-    snapshot_num: str | None
-    bios_version: str | None
-    release_date: datetime | None
-    mender_version: str | None
+class DispatcherState(TypedDict, total=False):
+    restart_reason: str
+    snapshot_num: str
+    bios_version: str
+    release_date: datetime
+    mender_version: str
 
 
 def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:

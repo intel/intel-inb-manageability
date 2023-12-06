@@ -135,17 +135,10 @@ class DebianBasedSnapshot(Snapshot):
                 if state:
                     restart_reason = state.get('restart_reason')
                 if restart_reason:
-                    state = {'restart_reason': None,
-                             'snapshot_num': snapshot_num,
-                             'bios_version': None,
-                             'release_date': None,
-                             'mender_version': None}
+                    state = {'snapshot_num': snapshot_num}
                 else:
                     state = {'restart_reason': "sota_" + self.sota_cmd,
-                             'snapshot_num': snapshot_num,
-                             'bios_version': None,
-                             'release_date': None,
-                             'mender_version': None}
+                             'snapshot_num': snapshot_num}
 
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
@@ -155,10 +148,7 @@ class DebianBasedSnapshot(Snapshot):
                 # logs, perform health check, etc.
                 initial_state: dispatcher_state.DispatcherState = (
                     {'restart_reason': "sota_" + self.sota_cmd,
-                     'snapshot_num': '0',
-                     'bios_version': None,
-                     'release_date': None,
-                     'mender_version': None}
+                     'snapshot_num': '0'}
                 )
                 dispatcher_state.write_dispatcher_state_to_state_file(initial_state)
                 self._dispatcher_broker.telemetry(
@@ -360,18 +350,11 @@ class YoctoSnapshot(Snapshot):
                 if consumed_state:
                     restart_reason = consumed_state.get('restart_reason', None)
                 if restart_reason:
-                    state = {'mender_version': content,
-                             'bios_version': None,
-                             'release_date': None,
-                             'restart_reason': None,
-                             'snapshot_num': None}
+                    state = {'mender_version': content}
             else:
                 state = (
                     {'restart_reason': "sota",
-                     'mender_version': content,
-                     'bios_version': None,
-                     'release_date': None,
-                     'snapshot_num': None}
+                     'mender_version': content}
                 )
             dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
@@ -429,8 +412,8 @@ class YoctoSnapshot(Snapshot):
 
         logger.debug("attempting to get dispatcher state from state file")
         state = dispatcher_state.consume_dispatcher_state_file()
-        if state is not None and 'mender-version' in state:
-            logger.debug("got mender-version from state: " + str(state['mender_version']))
+        if state is not None and 'mender_version' in state:
+            logger.debug("got mender_version from state: " + str(state['mender_version']))
             version = read_current_mender_version()
             current_mender_version = version
             previous_mender_version = state['mender_version']
@@ -443,4 +426,4 @@ class YoctoSnapshot(Snapshot):
 
         else:
             raise SotaError(
-                f"'mender-version' not in state or state is not available. state = {str(state)}")
+                f"'mender_version' not in state or state is not available. state = {str(state)}")

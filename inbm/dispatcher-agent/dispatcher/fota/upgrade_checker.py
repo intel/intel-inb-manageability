@@ -53,10 +53,7 @@ def check_upgrade_allowed(manifest_info: PlatformInformation,
         dispatcher_broker.telemetry(nf_message)
 
         state: dispatcher_state.DispatcherState = {'bios_version': platform_info.bios_version,
-                                                   'release_date': platform_info.bios_release_date,
-                                                   'restart_reason': None,
-                                                   'snapshot_num': None,
-                                                   'mender_version': None}
+                                                   'release_date': platform_info.bios_release_date}
         dispatcher_state.write_dispatcher_state_to_state_file(state)
     elif manifest_info.bios_vendor == platform_info.bios_vendor \
             and manifest_info.bios_release_date == platform_info.bios_release_date:

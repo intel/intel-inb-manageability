@@ -241,11 +241,7 @@ class Dispatcher:
         elif cmd == "restart":
             message = self.device_manager.restart()
             if message == SUCCESS_RESTART:
-                state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd',
-                                                           'snapshot_num': None,
-                                                           'bios_version': None,
-                                                           'release_date': None,
-                                                           'mender_version': None}
+                state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd'}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
         elif cmd == "query":
             self._dispatcher_broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
@@ -712,7 +708,7 @@ class Dispatcher:
             try:
                 restart_reason = str(state['restart_reason'])
             except KeyError:
-                if 'mender-version' in state:
+                if 'mender_version' in state:
                     restart_reason = 'sota'
                 else:
                     raise DispatcherException(
