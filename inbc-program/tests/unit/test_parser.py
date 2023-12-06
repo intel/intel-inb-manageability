@@ -32,6 +32,19 @@ class TestInbc(TestCase):
         f = self.arg_parser.parse_args(
             ['load', '-u', 'https://abc.com/intel_manageability.conf'])
         self.assertEqual(f.uri, 'https://abc.com/intel_manageability.conf')
+    
+    def test_parser_source_returns_non_empty_namespace(self) -> None:
+        exit = False
+        try:
+            f = self.arg_parser.parse_args(['source'])
+        except SystemExit as e:
+            exit = True
+
+        self.assertTrue(exit)
+
+    def test_parser_sota_returns_non_empty_namespace(self) -> None:
+        f = self.arg_parser.parse_args(['sota'])
+        self.assertNotEqual(vars(f), {})
 
     @patch('inbc.inbc.Broker')
     @patch('inbm_lib.timer.Timer.start')

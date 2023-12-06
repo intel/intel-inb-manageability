@@ -50,12 +50,15 @@ class ArgsParser(object):
         return self.main_parser.parse_args(args)
 
     def parse_source_args(self) -> None:
-        source_parser = self.inbc_subparsers.add_parser('source')
+        source_parser = self.inbc_subparsers.add_parser('source', help='Manage source configurations')
         source_subparsers = source_parser.add_subparsers(help='valid source types: [application, os]')
+        source_subparsers.required = True
+        source_parser.set_defaults(func=lambda args: source_parser.print_help())
 
         # Application Sub-level
         application_parser = source_subparsers.add_parser('application')
         app_subparsers = application_parser.add_subparsers(help='valid commands: [add, remove, update, list]')
+        app_subparsers.required = True        
 
         # Application Add Command
         app_add_parser = app_subparsers.add_parser('add')
