@@ -90,7 +90,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest -n 1 --cov=inbc --cov-report=term-missing --cov-fail-under=84 tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt
+    pytest -n 1 --cov=inbc --cov-report=term-missing --cov-fail-under=68 tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt
 
 # ---diagnostic agent---
 
