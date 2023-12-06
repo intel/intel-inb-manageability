@@ -51,14 +51,13 @@ class ArgsParser(object):
 
     def parse_source_args(self) -> None:
         source_parser = self.inbc_subparsers.add_parser('source', help='Manage source configurations')
-        source_subparsers = source_parser.add_subparsers(help='valid source types: [application, os]')
-        source_subparsers.required = True
+        source_subparsers = source_parser.add_subparsers(required=True, help='valid source types: [application, os]')
         source_parser.set_defaults(func=lambda args: source_parser.print_help())
 
         # Application Sub-level
         application_parser = source_subparsers.add_parser('application')
-        app_subparsers = application_parser.add_subparsers(help='valid commands: [add, remove, update, list]')
-        app_subparsers.required = True        
+        app_subparsers = application_parser.add_subparsers(required=True,
+                                                           help='valid commands: [add, remove, update, list]')
 
         # Application Add Command
         app_add_parser = app_subparsers.add_parser('add')
@@ -79,21 +78,21 @@ class ArgsParser(object):
         # Application Remove Command
         app_remove_parser = app_subparsers.add_parser('remove')
         app_remove_parser.add_argument('-gpgKeyId', '--gki', required=True,
-                                      type=lambda x: validate_string_less_than_n_characters(x, 'URL', 50),
-                                      help='GPG Key ID of the source to remove.')
+                                       type=lambda x: validate_string_less_than_n_characters(x, 'URL', 50),
+                                       help='GPG Key ID of the source to remove.')
         app_remove_parser.add_argument('-fileName', '--f', required=True,
-                                      type=lambda x: validate_string_less_than_n_characters(x, 'URL', 200),
-                                      help='file name to use when storing the source information')
+                                       type=lambda x: validate_string_less_than_n_characters(x, 'URL', 200),
+                                       help='file name to use when storing the source information')
         app_remove_parser.set_defaults(func=application_remove)
 
         # Application Update Command
         app_update_parser = app_subparsers.add_parser('update')
         app_update_parser.add_argument('-fileName', '--f', required=True,
-                                      type=lambda x: validate_string_less_than_n_characters(x, 'URL', 200),
-                                      help='file name to use when storing the source information')
+                                       type=lambda x: validate_string_less_than_n_characters(x, 'URL', 200),
+                                       help='file name to use when storing the source information')
         app_update_parser.add_argument('-source', '--s', required=True,
-                                      type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
-                                      help='Source information to store in the file')
+                                       type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                                       help='Source information to store in the file')
         app_update_parser.set_defaults(func=application_update)
 
         # Application List Command
@@ -102,7 +101,7 @@ class ArgsParser(object):
 
         # OS Sub-level
         os_parser = source_subparsers.add_parser('os')
-        os_subparsers = os_parser.add_subparsers(help='valid commands: [add, remove, update, list]')
+        os_subparsers = os_parser.add_subparsers(required=True, help='valid commands: [add, remove, update, list]')
 
         # OS Add Command
         os_add_parser = os_subparsers.add_parser('add')
