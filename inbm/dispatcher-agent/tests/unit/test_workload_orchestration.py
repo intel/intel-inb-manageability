@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from mock import Mock
+from unittest.mock import Mock
 from os import path
 import time
 from unit.common.mock_resources import *
@@ -8,7 +8,7 @@ from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.workload_orchestration import *
 from dispatcher.constants import *
 
-from mock import patch
+from unittest.mock import patch
 import logging
 import mock
 logger = logging.getLogger(__name__)

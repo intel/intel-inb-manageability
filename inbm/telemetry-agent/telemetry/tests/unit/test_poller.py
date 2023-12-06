@@ -1,7 +1,7 @@
 from telemetry.poller import Poller
 from telemetry.constants import COLLECTION_INTERVAL_SECONDS, PUBLISH_INTERVAL_SECONDS, MAX_CACHE_SIZE, \
     CONTAINER_HEALTH_INTERVAL_SECONDS, SOFTWARE_BOM_INTERVAL_HOURS, ENABLE_SOFTWARE_BOM
-from mock import patch
+from unittest.mock import patch
 from unittest import TestCase
 from telemetry.software_checker import *
 from telemetry.shared import *

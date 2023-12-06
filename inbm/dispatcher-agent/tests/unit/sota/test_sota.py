@@ -2,7 +2,7 @@ import testtools
 import os
 from ..common.mock_resources import *
 from ddt import data, ddt, unpack
-from mock import patch  # type: ignore
+from unittest.mock import patch
 
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from dispatcher.sota.command_list import CommandList

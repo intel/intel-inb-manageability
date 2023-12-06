@@ -216,7 +216,7 @@ class AzureAdapter(Adapter):
 
         sign_key = f"{resource}\n{expiration}".encode('utf-8')
         try:
-            signature = b64encode(HMAC(b64decode(device_key), sign_key,  # type: ignore
+            signature = b64encode(HMAC(b64decode(device_key), sign_key,
                                        sha256).digest())
         except ValueError as e:
             raise AdapterConfigureError(f"Error generating SAS Token: {str(e)}")

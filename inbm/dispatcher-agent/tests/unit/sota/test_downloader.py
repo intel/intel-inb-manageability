@@ -9,7 +9,7 @@ from dispatcher.sota.os_factory import SotaOsFactory
 from dispatcher.sota.sota import SOTA
 from dispatcher.sota.sota_error import SotaError
 from inbm_lib.xmlhandler import XmlHandler
-from mock import patch
+from unittest.mock import patch
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../../fpm-template/usr/share/dispatcher-agent/'

@@ -2,7 +2,7 @@ import os
 import tempfile
 import unittest
 import fixtures
-from mock import patch, mock_open
+from unittest.mock import patch, mock_open
 from dispatcher.sota.mender_util import *
 
 

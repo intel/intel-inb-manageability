@@ -4,11 +4,11 @@ from binascii import hexlify
 from unittest import TestCase
 
 from ..common.mock_resources import MockDispatcherBroker
-from cryptography.hazmat.backends import default_backend  # type: ignore
-from cryptography.hazmat.primitives import hashes  # type: ignore
-from cryptography.hazmat.primitives.asymmetric import padding  # type: ignore
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives.asymmetric import rsa
-from mock import patch
+from unittest.mock import patch
 from tarfile import TarFile
 
 from dispatcher.dispatcher_exception import DispatcherException
@@ -236,7 +236,7 @@ class TestManager(TestCase):
         pub_key = private_key.public_key()
         checksum = hashlib.sha256(b"abcde").hexdigest()
         signature = hexlify(private_key.sign(checksum.encode('utf-8'), padding.PSS(mgf=padding.MGF1(hashes.SHA384()),
-                                                                                   salt_length=padding.PSS.MAX_LENGTH),  # type: ignore
+                                                                                   salt_length=padding.PSS.MAX_LENGTH),
                                              hashes.SHA384()))
         try:
             _verify_checksum_with_key(pub_key, signature.decode(encoding='utf-8', errors='strict'), checksum.encode('utf-8'),

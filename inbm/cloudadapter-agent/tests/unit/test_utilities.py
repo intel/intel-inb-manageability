@@ -1,6 +1,6 @@
 """Unit tests for the utilities module"""
 
-from mock import mock_open, patch
+from unittest.mock import mock_open, patch
 import unittest
 from threading import Thread
 

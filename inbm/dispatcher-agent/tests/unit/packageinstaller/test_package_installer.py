@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase
 
 from unit.common.mock_resources import *
-from mock import patch
+from unittest.mock import patch
 
 from dispatcher.config_dbs import ConfigDbs
 from inbm_lib.trtl import Trtl

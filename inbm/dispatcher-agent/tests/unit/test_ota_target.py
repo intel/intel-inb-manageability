@@ -2,7 +2,7 @@ import mock
 import os
 
 from unittest import TestCase
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from unit.common.mock_resources import *
 from dispatcher.common.result_constants import PUBLISH_SUCCESS
 from dispatcher.ota_target import OtaTarget

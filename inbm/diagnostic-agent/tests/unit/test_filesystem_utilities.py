@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import patch
+from unittest.mock import patch
 
 from diagnostic.filesystem_utilities import get_free_space
 

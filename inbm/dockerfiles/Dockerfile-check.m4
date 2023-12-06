@@ -23,7 +23,7 @@ RUN source /venv-py3/bin/activate && \
         wemake-python-styleguide==0.17.0 \
         teamcity-messages==1.28 \
         pylint==2.5.3 \
-        mypy==1.3 \
+        mypy==1.7.1 \
         types-requests==2.31.0.1 \
     	pytest==7.4.3 \
     	pytest-cov==4.1.0 \

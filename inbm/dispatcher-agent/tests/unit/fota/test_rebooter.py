@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from unit.common.mock_resources import *
 from dispatcher.fota.rebooter import *
-from mock import patch
+from unittest.mock import patch
 
 
 class TestRebooter(TestCase):

@@ -19,11 +19,11 @@ from tarfile import TarFile
 from typing import Any, Union, Optional, Tuple, List, IO
 
 import requests
-from cryptography import exceptions  # type: ignore
-from cryptography.hazmat.backends import default_backend  # type: ignore
-from cryptography.hazmat.primitives import hashes  # type: ignore
-from cryptography.hazmat.primitives.asymmetric import padding  # type: ignore
-from cryptography.x509 import load_pem_x509_certificate  # type: ignore
+from cryptography import exceptions
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.x509 import load_pem_x509_certificate
 from future.moves.urllib.parse import urlparse
 from inbm_common_lib.utility import CanonicalUri, canonicalize_uri
 from inbm_common_lib.utility import get_canonical_representation_of_path
@@ -259,7 +259,7 @@ def _verify_checksum_with_key(pub_key: Any,
         try:
             pub_key.verify(unhexlify(signature), checksum,
                            padding.PSS(mgf=padding.MGF1(hashes.SHA384()),
-                                       salt_length=padding.PSS.MAX_LENGTH),  # type: ignore
+                                       salt_length=padding.PSS.MAX_LENGTH),
                            hashes.SHA384())
 
         except (exceptions.InvalidSignature, ValueError, TypeError):

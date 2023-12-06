@@ -6,7 +6,7 @@ from ..common import mock_resources
 from inbm_lib.xmlhandler import XmlHandler
 from dispatcher.fota.os_factory import LinuxFactory
 from dispatcher.fota.fota_error import FotaError
-from mock import patch
+from unittest.mock import patch
 import os
 
 import datetime

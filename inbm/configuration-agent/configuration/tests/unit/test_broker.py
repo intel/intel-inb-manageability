@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from configuration.broker import Broker
 from configuration.constants import *
-from mock import patch
+from unittest.mock import patch
 
 from configuration.ikeyvaluestore import IKeyValueStore
 

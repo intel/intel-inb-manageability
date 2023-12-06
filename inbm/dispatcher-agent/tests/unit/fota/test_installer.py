@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from ..common.mock_resources import mock_url, MockDispatcherBroker
 from dispatcher.fota.installer import Installer, LinuxInstaller
-from mock import patch
+from unittest.mock import patch
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from dispatcher.fota.fota_error import FotaError
 

@@ -2,7 +2,7 @@ import sys
 import os
 import logging
 
-from mock import patch, Mock
+from unittest.mock import patch, Mock
 from telemetry.pms_notification import PMSNotification, PmsException
 from telemetry.telemetry_handling import publish_telemetry_update
 from inbm_lib.mqttclient.mqtt import MQTT

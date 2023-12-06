@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from mock import patch
+from unittest.mock import patch
 from unit.common.mock_resources import *
 
 from dispatcher.dispatcher_exception import DispatcherException
