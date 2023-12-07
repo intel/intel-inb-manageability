@@ -17,46 +17,44 @@ class TestSourceOsParser(TestCase):
     def test_parse_add_arguments_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'os', 'add',
-             '-sources', '"deb http://example.com/ focal main restricted universe", '
-                         '"deb-src http://example.com/ focal-security main"'])
-        self.assertEqual(f.s, '"deb http://example.com/ focal main restricted universe", '
-                              '"deb-src http://example.com/ focal-security main"')
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+             'deb-src http://example.com/ focal-security main'])
+        self.assertEqual(f.s, ['deb http://example.com/ focal main restricted universe',
+                               'deb-src http://example.com/ focal-security main'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_add_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'os', 'add',
-             '-sources', '"deb http://example.com/ focal main restricted universe", '
-             '"deb-src http://example.com/ focal-security main"'])
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+                         'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=os>' \
                    '<add><repos>' \
-                   '<source_pkg>"deb http://example.com/ focal main restricted universe"</source_pkg>' \
-                   '<source_pkg>"deb-src http://example.com/ focal-security main"</source_pkg>' \
+                   '<source_pkg>deb http://example.com/ focal main restricted universe</source_pkg>' \
+                   '<source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
                    '</repos></add></source></manifest>'
         self.assertEqual(p.func(p), expected)
 
     def test_parse_remove_arguments_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'os', 'remove',
-             '-sources',
-             '"deb http://example.com/ focal main restricted universe", '
-             '"deb-src http://example.com/ focal-security main"'])
-        self.assertEqual(f.s,
-                         '"deb http://example.com/ focal main restricted universe", '
-                         '"deb-src http://example.com/ focal-security main"')
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+             'deb-src http://example.com/ focal-security main'])
+        self.assertEqual(f.s, ['deb http://example.com/ focal main restricted universe',
+                         'deb-src http://example.com/ focal-security main'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_remove_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'os', 'remove',
-             '-sources', '"deb http://example.com/ focal main restricted universe", '
-             '"deb-src http://example.com/ focal-security main"'])
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+                         'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=os>' \
                    '<remove><repos>' \
-                   '<source_pkg>"deb http://example.com/ focal main restricted universe"</source_pkg>' \
-                   '<source_pkg>"deb-src http://example.com/ focal-security main"</source_pkg>' \
+                   '<source_pkg>deb http://example.com/ focal main restricted universe</source_pkg>' \
+                   '<source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
                    '</repos></remove></source></manifest>'
         self.assertEqual(p.func(p), expected)
 
@@ -64,23 +62,22 @@ class TestSourceOsParser(TestCase):
         f = self.arg_parser.parse_args(
             ['source', 'os', 'update',
              '-sources',
-             '"deb http://example.com/ focal main restricted universe", '
-             '"deb-src http://example.com/ focal-security main"'])
-        self.assertEqual(f.s,
-                         '"deb http://example.com/ focal main restricted universe", '
-                         '"deb-src http://example.com/ focal-security main"')
+             'deb http://example.com/ focal main restricted universe',
+             'deb-src http://example.com/ focal-security main'])
+        self.assertEqual(f.s, ['deb http://example.com/ focal main restricted universe',
+                         'deb-src http://example.com/ focal-security main'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_update_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'os', 'update',
-             '-sources', '"deb http://example.com/ focal main restricted universe", '
-             '"deb-src http://example.com/ focal-security main"'])
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+                         'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=os>' \
                    '<update><repos>' \
-                   '<source_pkg>"deb http://example.com/ focal main restricted universe"</source_pkg>' \
-                   '<source_pkg>"deb-src http://example.com/ focal-security main"</source_pkg>' \
+                   '<source_pkg>deb http://example.com/ focal main restricted universe</source_pkg>' \
+                   '<source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
                    '</repos></update></source></manifest>'
         self.assertEqual(p.func(p), expected)
 
