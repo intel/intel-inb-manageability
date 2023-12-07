@@ -12,7 +12,7 @@ from typing import Any
 from time import sleep
 from inbc import shared
 from inbc.broker import Broker
-from inbc.parser import ArgsParser
+from inbc.parser.parser import ArgsParser
 from inbc.inbc_exception import InbcException, InbcCode
 
 from inbm_lib.request_message_constants import *

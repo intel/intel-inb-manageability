@@ -1,11 +1,11 @@
 from unittest import TestCase
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 from inbc.broker import Broker
-from inbc.parser import ArgsParser, _get_password
+from inbc.parser.parser import ArgsParser
 from inbm_common_lib.request_message_constants import *
 
 
-class TestINBC(TestCase):
+class TestBroker(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')

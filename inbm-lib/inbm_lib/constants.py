@@ -61,6 +61,11 @@ POTA = "pota"
 RESTART = "restart"
 QUERY = "query"
 
+# Source command and types.  Used by INBC and Dispatcher
+SOURCE = "source"
+APPLICATION = "application"
+OS = "os"
+
 OTA_UPDATE = "install"
 PROVISION = 'provision'
 REQUEST_CHANNEL = 'ma/request/'
