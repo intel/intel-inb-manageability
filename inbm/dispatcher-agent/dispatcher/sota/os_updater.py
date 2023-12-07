@@ -12,7 +12,7 @@ import re
 import os
 from pathlib import Path
 from typing import List, Optional, Union
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 
 from inbm_common_lib.utility import CanonicalUri
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -52,7 +52,7 @@ def mender_install_argument() -> str:
         return "install"
 
 
-class OsUpdater(ABC):  # pragma: no cover
+class OsUpdater(metaclass=ABCMeta):  # pragma: no cover
     """Abstract class for handling OS update related tasks for the system."""
 
     def __init__(self) -> None:
@@ -92,11 +92,15 @@ class OsUpdater(ABC):  # pragma: no cover
         return CommandList(commands).cmd_list
 
     @abstractmethod
-    def no_download(self):
+    def no_download(self) -> list[str]:
+        """Calculates commands needed for a no-download install.
+
+        @return: returns list of commands that need to be run, if any
+        """
         pass
 
     @abstractmethod
-    def download_only(self):
+    def download_only(self) -> list[str]:
         pass
 
 
@@ -204,11 +208,11 @@ class DebianBasedUpdater(OsUpdater):
             logger.info('Update size could not be extracted!')
             return 0
 
-    def no_download(self):
+    def no_download(self) -> list[str]:
         """Update command overridden from factory. It builds the commands for Ubuntu update
         of no-download command
 
-        @return: returns commands
+        @return: returns list of commands that need to be run
         """
 
         # if any packages are specified, use 'install' instead of 'upgrade' and include packages
@@ -283,11 +287,13 @@ class YoctoX86_64Updater(OsUpdater):
         """
         return 0
 
-    def no_download(self) -> None:
-        pass
+    def no_download(self) -> list[str]:
+        """Returns empty list for Yocto--not applicable"""
+        return []
 
-    def download_only(self) -> None:
-        pass
+    def download_only(self) -> list[str]:
+        """Returns empty list for Yocto--not applicable"""
+        return []
 
 
 class YoctoARMUpdater(OsUpdater):
@@ -330,11 +336,13 @@ class YoctoARMUpdater(OsUpdater):
         """
         return 0
 
-    def no_download(self) -> None:
-        pass
+    def no_download(self) -> list[str]:
+        """Returns empty list for Yocto -- not applicable"""
+        return []
 
-    def download_only(self) -> None:
-        pass
+    def download_only(self) -> list[str]:
+        """Returns empty list for Yocto--not applicable"""
+        return []
 
 
 class WindowsUpdater(OsUpdater):
@@ -367,8 +375,8 @@ class WindowsUpdater(OsUpdater):
         """
         return 0
 
-    def no_download(self) -> None:
-        pass
+    def no_download(self) -> list[str]:
+        raise NotImplementedError()
 
-    def download_only(self) -> None:
-        pass
+    def download_only(self) -> list[str]:
+        raise NotImplementedError()

@@ -8,7 +8,7 @@
 import logging
 import time
 
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 from inbm_lib.trtl import Trtl
 from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -31,7 +31,7 @@ def mender_commit_command() -> str:  # pragma: no cover
         return "mender commit"
 
 
-class Snapshot(ABC):  # pragma: no cover
+class Snapshot(metaclass=ABCMeta):  # pragma: no cover
     """Base class for handling snapshot related task for the system.
 
     @param trtl: TRTL instance
@@ -57,10 +57,12 @@ class Snapshot(ABC):  # pragma: no cover
         pass
 
     @abstractmethod
-    def commit(self):
+    def commit(self) -> int:
         """Generic method. Call when update is complete and everything is working.
 
         Always remove dispatcher state file.
+
+        @return: result code (0 on success).
         """
         pass
 
@@ -128,14 +130,15 @@ class DebianBasedSnapshot(Snapshot):
             if snapshot_num:
                 restart_reason = None
 
-                state = dispatcher_state.consume_dispatcher_state_file(read=True)
+                state: dispatcher_state.DispatcherState | None = dispatcher_state.consume_dispatcher_state_file(
+                    read=True)
                 if state:
                     restart_reason = state.get('restart_reason')
                 if restart_reason:
                     state = {'snapshot_num': snapshot_num}
                 else:
-                    state = {'restart_reason': "sota_" +
-                             self.sota_cmd, 'snapshot_num': snapshot_num}
+                    state = {'restart_reason': "sota_" + self.sota_cmd,
+                             'snapshot_num': snapshot_num}
 
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
@@ -143,8 +146,10 @@ class DebianBasedSnapshot(Snapshot):
                 # Even if we can't take a snapshot, on a subsequent boot we still
                 # need dispatcher_state to reflect that we ran a SOTA so we can update
                 # logs, perform health check, etc.
-                initial_state = {'restart_reason': "sota_" +
-                                 self.sota_cmd, 'snapshot_num': 0}
+                initial_state: dispatcher_state.DispatcherState = (
+                    {'restart_reason': "sota_" + self.sota_cmd,
+                     'snapshot_num': '0'}
+                )
                 dispatcher_state.write_dispatcher_state_to_state_file(initial_state)
                 self._dispatcher_broker.telemetry(
                     "SOTA snapshot of system failed, will proceed "
@@ -183,6 +188,8 @@ class DebianBasedSnapshot(Snapshot):
         b.) After reboot by SOTA, and diagnostic reports bad report for system health
 
         Remove dispatcher state file.
+
+        @return: result code (0 on success).
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
@@ -268,15 +275,18 @@ class WindowsSnapshot(Snapshot):  # pragma: no cover
         """
         pass
 
-    def commit(self) -> None:
+    def commit(self) -> int:
         """Invokes Trtl to delete snapshots in these conditions:
 
         a.) After reboot by SOTA, and everything works well
         b.) After reboot by SOTA, and diagnostic reports bad report for system health
 
         Delete dispatcher state file.
+
+        @return: result code (0 on success).
         """
         dispatcher_state.clear_dispatcher_state()
+        return 0
 
     def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA. Stub. Not implemented for Windows.
@@ -333,6 +343,7 @@ class YoctoSnapshot(Snapshot):
             format(self.sota_cmd))
         try:
             content = read_current_mender_version()
+            state: dispatcher_state.DispatcherState
             if dispatcher_state.is_dispatcher_state_file_exists():
                 consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)
                 restart_reason = None
@@ -341,7 +352,10 @@ class YoctoSnapshot(Snapshot):
                 if restart_reason:
                     state = {'mender-version': content}
             else:
-                state = {'restart_reason': "sota", 'mender-version': content}
+                state = (
+                    {'restart_reason': "sota",
+                     'mender-version': content}
+                )
             dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
             self._dispatcher_broker.telemetry(
@@ -351,7 +365,7 @@ class YoctoSnapshot(Snapshot):
         self._dispatcher_broker.telemetry(
             "Dispatcher state file creation successful.")
 
-    def commit(self) -> None:
+    def commit(self) -> int:
         """On Yocto, this method runs a Mender commit
 
         Also, delete dispatcher state file.
@@ -360,7 +374,9 @@ class YoctoSnapshot(Snapshot):
         dispatcher_state.clear_dispatcher_state()
         cmd = mender_commit_command()
         logger.debug("Running Mender commit: " + str(cmd))
-        PseudoShellRunner().run(cmd)
+        (out, err, code) = PseudoShellRunner().run(cmd)
+
+        return code
 
     def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA.
