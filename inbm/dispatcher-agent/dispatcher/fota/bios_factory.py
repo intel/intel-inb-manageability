@@ -22,7 +22,7 @@ from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 from . import constants
 from typing import Tuple, Optional, Dict
 
-from .guid import extract_guid
+from .guid import extract_guids
 from .constants import WINDOWS_NUC_PLATFORM
 from .fota_error import FotaError
 from ..dispatcher_broker import DispatcherBroker
@@ -206,13 +206,14 @@ class LinuxToolFirmware(BiosFactory):
         @param runner: To run shell commands
         @raises FotaError: on failed firmware attempt
         """
+        guid = ''
         if self._guid_required:
-            guid = extract_guid(self._fw_tool)  # get the GUID from the system using FW tool
+            extracted_guids = extract_guids(self._fw_tool, ["System Firmware type", "system-firmware type"])  # get the GUID from the system using FW tool
             if manifest_guid:
-                if guid != manifest_guid:
+                if manifest_guid not in extracted_guids:
                     raise FotaError(f"GUID in manifest does not match the GUID on the system")
-        else:
-            guid = ''
+                else:
+                    guid = manifest_guid
 
         if not tool_options:
             tool_options = ''

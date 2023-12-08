@@ -14,31 +14,35 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 
-def extract_guid(fw_tool: str) -> Optional[str]:
+def extract_guids(fw_tool: str, types: list[str]) -> list[str]:
     """Method to get system firmware type
 
     @param fw_tool: Tool to extract the GUID from the FW
-    @return: None or guid
+    @param types: type of GUID to search
+    @return: list of firmware GUIDs found
     """
     runner = PseudoShellRunner()
     cmd = fw_tool + " -l"
     (out, err, code) = runner.run(cmd)
     if code != 0:
         raise FotaError("Firmware Update Aborted: failed to list GUIDs: {}".format(str(err)))
-    guid = _parse_guid(out)
-    logger.debug("GUID : " + str(guid))
-    if not guid:
-        raise FotaError("Firmware Update Aborted: No System Firmware type GUID found")
-    return guid
+    guids = _parse_guids(out, types)
+    logger.debug("GUIDs: " + str(guids))
+    if guids == []:
+        raise FotaError("Firmware Update Aborted: No GUIDs found matching types: " + str(types))
+    return guids
 
 
-def _parse_guid(output: str) -> Optional[str]:
+def _parse_guids(output: str, types: list[str]) -> list[str]:
     """Method to parse the shell command output to retrieve the value of system firmware type
 
     @param output: shell command output from the firmware tool
-    @return: string value if system firmware type is present if not return None
+    @param types: types of GUID to search
+    @return: list of GUID values if system firmware types are present, if not return an empty list
     """
+    guids: list[str] = []
     for line in output.splitlines():
-        if "System Firmware type" in line or "system-firmware type" in line:
-            return line.split(',')[1].split()[0].strip('{').strip('}')
-    return None
+        if any(type_str in line for type_str in types):
+            guids.append(line.split(',')[1].split()[0].strip('{').strip('}'))
+    return guids
+
