@@ -71,11 +71,14 @@ class DebianBasedSetupHelper(SetupHelper):
             self.update_sources(self._sota_repos)
         return True  # FIXME why do we always return True?
 
-    def update_sources(self, payload: Any, filename: str = APT_SOURCES_LIST_PATH) -> None:
+    def update_sources(self, payload: str, filename: str = APT_SOURCES_LIST_PATH) -> None:
         """Update the apt sources.list file with payload if needed
-        @param payload: Any, http url value retrieved from config manager
+        @param payload: String, http url value retrieved from config manager
         @param filename: file name for sources
         """
+        if 'container' in os.environ and os.environ['container'] == 'docker':
+            filename = "/host/" + filename
+
         temp_payload = payload.strip()
         if not temp_payload.startswith('http'):
             temp_payload = payload.split(':', 1)[1].strip(' \t\n\r')
