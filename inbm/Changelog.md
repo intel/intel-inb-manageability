@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - RTC 522583 - Fix missing SOTA logs
  - RTC 534998 - Fix SOTA failure due to snapshot error 
  - Fixed some mismatched types in abstract classes vs subtypes in dispatcher agent
+ - Fixed some container mode issues
 
 ### Security
  - RTC 533615 - Validate GUID format in manifest using XML schema.  
