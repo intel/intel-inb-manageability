@@ -27,11 +27,11 @@ class DispatcherBroker:
     def start(self, tls: bool) -> None:  # pragma: no cover
         """Start the broker.
 
-        @param tls: True if TLS connection is desired"""        
+        @param tls: True if TLS connection is desired"""
         self.mqttc = MQTT(AGENT + "-agent", DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT,
-                        MQTT_KEEPALIVE_INTERVAL, env_config=True,
-                        tls=tls, client_certs=CLIENT_CERTS,
-                        client_keys=CLIENT_KEYS)
+                          MQTT_KEEPALIVE_INTERVAL, env_config=True,
+                          tls=tls, client_certs=CLIENT_CERTS,
+                          client_keys=CLIENT_KEYS)
         self.mqttc.start()
         self._is_started = True
 

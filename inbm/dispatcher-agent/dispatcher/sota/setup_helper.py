@@ -86,7 +86,7 @@ class DebianBasedSetupHelper(SetupHelper):
         # solves bug 38278
         if not temp_payload.startswith('http'):
             return
-        
+
         apt_file = fileinput.input(filename, inplace=True, backup='.bak')
         for line in apt_file:
             if line.startswith("#") or line.startswith("\n"):
