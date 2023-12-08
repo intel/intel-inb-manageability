@@ -2,7 +2,7 @@ import unittest
 
 from ..common.mock_resources import *
 from ddt import data, ddt, unpack
-from mock import mock_open, patch, Mock
+from unittest.mock import mock_open, patch, Mock
 
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.sota.sota_error import SotaError
@@ -29,7 +29,7 @@ class TestSnapshot(unittest.TestCase):
         val = snapshot.commit()
         mock_del_snap.assert_called_once()
         if order == 2:
-            self.assertNotEquals(val, 0)
+            self.assertNotEqual(val, 0)
         if order == 1:
             self.assertEqual(val, 0)
 
@@ -125,11 +125,11 @@ class TestUbuntuSnapshot(unittest.TestCase):
     def test_revert_succeeds(self, mock_dispatcher_state) -> None:
         rebooter = Mock()
         ubuntu_snapshot = DebianBasedSnapshot(Mock(), "command", Mock(), "", True)
-        ubuntu_snapshot._rollback_and_delete_snap = Mock()  # type: ignore
+        ubuntu_snapshot._rollback_and_delete_snap = Mock()  # type: ignore[method-assign]
         ubuntu_snapshot.snap_num = "1"
-        ubuntu_snapshot.revert(rebooter, 0)  # type: ignore
+        ubuntu_snapshot.revert(rebooter, 0)
         assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
-        self.assertEqual(ubuntu_snapshot._rollback_and_delete_snap.call_count, 1)  # type: ignore
+        self.assertEqual(ubuntu_snapshot._rollback_and_delete_snap.call_count, 1)
         assert rebooter.reboot.call_count == 1
 
 

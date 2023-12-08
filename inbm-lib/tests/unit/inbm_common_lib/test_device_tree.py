@@ -1,6 +1,6 @@
 from inbm_common_lib.device_tree import is_device_tree_exists, get_device_tree_cpu_id, \
     _parse_bios_date, get_device_tree_system_info
-from testtools import TestCase
+from unittest import TestCase
 import datetime
 
 

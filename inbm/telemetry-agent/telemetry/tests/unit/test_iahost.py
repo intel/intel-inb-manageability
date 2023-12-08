@@ -1,4 +1,4 @@
-from mock import patch
+from unittest.mock import patch
 from telemetry.iahost import *
 from unittest import TestCase
 import unittest

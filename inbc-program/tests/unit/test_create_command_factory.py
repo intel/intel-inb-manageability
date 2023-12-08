@@ -1,5 +1,5 @@
 from unittest import TestCase
-from mock import Mock
+from unittest.mock import Mock
 from inbc.inbc_exception import InbcException
 from inbc.command.command_factory import create_command_factory
 from inbc.command.command import RestartCommand, QueryCommand

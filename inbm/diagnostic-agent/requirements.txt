@@ -1,6 +1,7 @@
 #Production
 
 psutil==5.9.5
+types-psutil==5.9.5.17
 shortuuid==1.0.1
 pyinstaller==5.13.0
 setuptools==65.5.1

@@ -4,7 +4,9 @@
     Copyright (C) 2020-2023 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
-from typing import Any, List
+import getpass
+
+from typing import Any, List, Optional
 
 
 def search_keyword(payload: Any, words: List[str]) -> bool:
@@ -18,3 +20,10 @@ def search_keyword(payload: Any, words: List[str]) -> bool:
         if payload.find(word) >= 0:
             return True
     return False
+
+
+def _get_password(username: str, password_prompt: str) -> Optional[str]:
+    password = None
+    if username:
+        password = getpass.getpass(password_prompt)
+    return password

@@ -145,7 +145,7 @@ class Formatter:
         """
         self._formatting = formatting
         self._defaults = defaults
-        self._fields = set()  # type: ignore
+        self._fields = set()
         fields = re.finditer(r"{([\w\=\:\-\.\%]+)}", self._formatting)
         for f in fields:
             self._fields.add(f.group(1))

@@ -107,7 +107,7 @@ class XmlHandler:
         if element is None:
             raise XmlException('Cannot find element at specified '
                                'path: {}'.format(xpath))
-        return element
+        return element  # type: ignore[no-any-return]  # not practical to type this
 
     def get_children(self, xpath: str) -> Dict[str, Any]:
         """Find all elements matching XPath from parsed XML
@@ -153,7 +153,8 @@ class XmlHandler:
         logger.debug("XML get attr")
         element = self._root.find(xpath)
         if element is not None:
-            return element.attrib[attribute_name]
+            # not practical to type this
+            return element.attrib[attribute_name]  # type: ignore[no-any-return]
         else:
             raise XmlException("Could not find element in get_attribute")
 
@@ -178,10 +179,11 @@ class XmlHandler:
             except TypeError as e:
                 # workaround for https://github.com/tiran/defusedxml/issues/54
                 if 'expected an Element' in str(e):
-                    element._children.append(subtag)  # type: ignore
+                    element._children.append(subtag)
                 else:
                     raise e
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while add : {e}")
 
@@ -200,7 +202,8 @@ class XmlHandler:
                 element.text = attribute_value
             else:
                 raise XmlException("The path doesn't contain the element specified")
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while set : {e}")
 
@@ -220,11 +223,12 @@ class XmlHandler:
 
                 parent = parent_map[element]
                 parent.remove(element)
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while remove : {e}")
 
-    def get_root_elements(self, key: str, attr: str) -> list:
+    def get_root_elements(self, key: str, attr: str) -> list[str]:
         """This function retrieves all the elements matching
         the specified element and it's attribute
         @param key: element name

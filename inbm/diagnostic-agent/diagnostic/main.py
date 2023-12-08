@@ -28,7 +28,7 @@ class LoggingPath:  # pragma: no cover
         pass
 
     @classmethod
-    def get_log_config_path(cls):
+    def get_log_config_path(cls) -> str:
         try:
             return os.environ['LOGGERCONFIG']
         except KeyError:

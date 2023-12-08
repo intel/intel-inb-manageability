@@ -1,11 +1,11 @@
 from unittest import TestCase
-from mock import patch, Mock
+from unittest.mock import patch
 from inbc.broker import Broker
-from inbc.parser import ArgsParser, _get_password
+from inbc.parser.parser import ArgsParser
 from inbm_common_lib.request_message_constants import *
 
 
-class TestINBC(TestCase):
+class TestBroker(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.publish')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
@@ -38,14 +38,14 @@ class TestINBC(TestCase):
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_event(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
+    def test_ensure_no_exception_on_fota_broker_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('fota', self._fota_args, False)
         b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
 
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
     @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_event(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
+    def test_ensure_no_exception_on_aota_broker_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('aota', self._aota_args, False)
         b._on_event('manageability/event', 'Overall AOTA status : SUCCESS', 1)
 
@@ -64,13 +64,6 @@ class TestINBC(TestCase):
         b = Broker('aota', self._fota_args, False)
         b._on_response('manageability/response', FAILED_TO_INSTALL, 1)
         mock_terminate.assert_called_once()
-
-    @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
-    @patch('inbc.command.command.Command.terminate_operation')
-    def test_on_message_response(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
-        b = Broker('fota', self._fota_args, False)
-        b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
 
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
@@ -172,7 +165,7 @@ class TestINBC(TestCase):
     @patch('inbc.command.command.Command.search_response')
     @patch('inbc.broker.MQTT')
     @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
-    def test_on_message_response(self, mock_trigger, mock_mqtt, mock_search) -> None:
+    def test_on_message_response_search_called(self, mock_trigger, mock_mqtt, mock_search) -> None:
         b = Broker('fota', self._fota_args, False)
         b._on_response('manageability/response', 'check', 1)
         mock_search.assert_called_once()

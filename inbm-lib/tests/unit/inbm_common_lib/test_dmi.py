@@ -1,5 +1,5 @@
 from inbm_common_lib.dmi import _parse_release_date, manufacturer_check
-from testtools import TestCase
+from unittest import TestCase
 import datetime
 
 

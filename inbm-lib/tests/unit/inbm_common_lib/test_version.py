@@ -9,25 +9,25 @@ class TestVersion(TestCase):
         expected_version = "1.2.3"
         actual_version = read_version(input)
 
-        self.assertEquals(expected_version, actual_version)
+        self.assertEqual(expected_version, actual_version)
 
     def test_read_version_missing(self) -> None:
         input = "12345\r\nCommit: abcdef\n"
         expected_version = None
         actual_version = read_version(input)
 
-        self.assertEquals(expected_version, actual_version)
+        self.assertEqual(expected_version, actual_version)
 
     def test_read_commit(self) -> None:
         input = "12345\nVersion: 1.2.3\r\nCommit: abcdef\n"
         expected_commit = "abcdef"
         actual_commit = read_commit(input)
 
-        self.assertEquals(expected_commit, actual_commit)
+        self.assertEqual(expected_commit, actual_commit)
 
     def test_read_commit_missing(self) -> None:
         input = "12345\nVersion: 1.2.3\r\n"
         expected_commit = None
         actual_commit = read_commit(input)
 
-        self.assertEquals(expected_commit, actual_commit)
+        self.assertEqual(expected_commit, actual_commit)

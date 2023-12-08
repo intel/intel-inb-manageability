@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from inbm_lib.timer import Timer
-from mock import patch
+from unittest.mock import patch, Mock
 import time
 
 
@@ -22,7 +22,7 @@ class TestTimer(TestCase):
         self.assertRaises(TypeError, Timer)
 
     @patch('threading.Thread.start')
-    def test_timer_start(self, t_start) -> None:
+    def test_timer_start(self, t_start: Mock) -> None:
         new_timer = Timer(5)
         new_timer.start()
         self.assertIsNotNone(new_timer)
@@ -32,7 +32,7 @@ class TestTimer(TestCase):
         pass
 
     @patch('unit.inbm_lib.test_timer.TestTimer.dummy_callback')
-    def test_internal_timer(self, timer_callback) -> None:
+    def test_internal_timer(self, timer_callback: Mock) -> None:
         new_timer = Timer(1, self.dummy_callback)
         new_timer._start_internal_timer()
         time.sleep(0.01)

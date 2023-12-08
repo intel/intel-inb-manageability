@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from mock import patch
+from unittest.mock import patch
 import os
 
 from configuration.configuration import LoggingPath, Configuration
@@ -12,7 +12,7 @@ class TestConfiguration(TestCase):
     def test_service_name_prefixed_inbm(self, MockClient) -> None:
         c = Configuration()
         self.assertFalse(' ' in c._svc_name_)
-        self.assertEquals(c._svc_name_.split('-')[0], 'inbm')
+        self.assertEqual(c._svc_name_.split('-')[0], 'inbm')
 
 
 class TestLoggingPath(TestCase):

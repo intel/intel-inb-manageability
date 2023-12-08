@@ -55,7 +55,7 @@ def run_commands(log_destination: str, cmd_list: List[CommandList.CommandObject]
                     "{}. Command {} completed with Log: {}".format(cmd_index + 1, cmd, output))
             elif log_destination == 'FILE':
                 dispatcher_broker.telemetry("{}. Command {} completed, but will log instead to file: "
-                                      "{}".format(cmd_index + 1, cmd, abs_log_path))
+                                            "{}".format(cmd_index + 1, cmd, abs_log_path))
             cmd.status = SUCCESS
 
 
@@ -97,8 +97,8 @@ def print_execution_summary(cmd_list: List,  dispatcher_broker: DispatcherBroker
 
 def _run_command(cmd: CommandList.CommandObject, log_destination: str) -> Tuple[str, Optional[str], int, Optional[str]]:
     logger.debug("")
-    return PseudoShellRunner.run_with_log_path(str(cmd), LOGPATH) if \
-        log_destination == "FILE" else PseudoShellRunner.run_with_log_path(str(cmd), log_path=None)
+    return PseudoShellRunner().run_with_log_path(str(cmd), LOGPATH) if \
+        log_destination == "FILE" else PseudoShellRunner().run_with_log_path(str(cmd), log_path=None)
 
 
 def _skip_remaining_commands(cmd_list: List, current_failed_index: int,

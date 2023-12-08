@@ -36,7 +36,7 @@ def get_file_type(path: str) -> str:
     """
     try:
         canonical_path = get_canonical_representation_of_path(path)
-        (out, err, code) = PseudoShellRunner.run("file -b " + canonical_path)
+        (out, err, code) = PseudoShellRunner().run("file -b " + canonical_path)
     except OSError as e:
         raise CannotFindFileTypeException("OSError encountered") from e
     if code != 0:

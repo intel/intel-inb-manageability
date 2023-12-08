@@ -6,9 +6,9 @@
 """
 import logging
 
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, Optional
 
-from inbm_lib.dbs_parser import parse_docker_bench_security_results
+from inbm_lib.dbs_parser import parse_docker_bench_security_results, DBSResult
 from .constants import EVENTS_CHANNEL, REMEDIATION_CONTAINER_CMD_CHANNEL, \
     REMEDIATION_IMAGE_CMD_CHANNEL
 from inbm_lib.trtl import Trtl
@@ -76,29 +76,17 @@ class DbsChecker:
         return self._handle_docker_security_test_results(output)
 
     def _handle_docker_security_test_results(self, output: str) -> str:
-        parse_result = parse_docker_bench_security_results(output)
-        if not isinstance(parse_result['result'], str):
-            raise DispatcherException("Internal error: DBS parser returned invalid result type")
-        return self._return_build_result(success_flag=parse_result['success_flag'],
-                                         result=parse_result['result'],
-                                         fails=parse_result['fails'],
-                                         failed_images=parse_result['failed_images'],
-                                         failed_containers=parse_result['failed_containers'])
-
-    def _return_build_result(self,
-                             success_flag: Union[bool, str, List[str]],
-                             result: Any,
-                             fails: Union[bool, str, List[str]],
-                             failed_images: Union[bool, str, List[str]],
-                             failed_containers: Union[bool, str, List[str]]) -> str:
-        if success_flag:
-            result += "All Passed"
-            return result.strip(',')
+        dbs_result = parse_docker_bench_security_results(output)
+        if dbs_result.is_success:
+            return (dbs_result.result + "All Passed").strip(',')
+            # dbs_result.result += "All Passed"
+            # return dbs_result.result.strip(',')
         else:
-            result += fails
-            logger.debug("Failed Images:" + str(failed_images))
-            logger.debug("Failed Containers:" + str(failed_containers))
-            self._publish_remediation_request(failed_containers, failed_images)
+            result = dbs_result.result + dbs_result.fails
+            logger.debug("Failed Images:" + str(dbs_result.failed_images))
+            logger.debug("Failed Containers:" + str(dbs_result.failed_containers))
+            self._publish_remediation_request(
+                dbs_result.failed_containers, dbs_result.failed_images)
             self._dispatcher_broker.mqtt_publish(
                 EVENTS_CHANNEL, "Docker Bench Security results: " + result.strip(','))
 

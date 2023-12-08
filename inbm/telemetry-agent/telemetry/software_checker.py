@@ -26,7 +26,7 @@ def are_docker_and_trtl_on_system() -> bool:
         return False
     else:  # Linux
         try:
-            (out, err, code) = PseudoShellRunner.run("systemctl is-active --quiet docker")
+            (out, err, code) = PseudoShellRunner().run("systemctl is-active --quiet docker")
         except FileNotFoundError:  # if systemctl is not on the system
             return False
         docker_present = True if err == "" and code == 0 else False

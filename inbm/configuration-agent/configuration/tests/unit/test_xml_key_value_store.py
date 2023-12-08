@@ -6,7 +6,7 @@ from xml.etree.ElementTree import ElementTree
 
 from configuration.xml_key_value_store import XmlException, XmlKeyValueStore
 from configuration.configuration_exception import ConfigurationException
-from mock import patch
+from unittest.mock import patch
 from typing import Any
 
 SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
@@ -104,19 +104,19 @@ class TestXmlParser(TestCase):
             XmlKeyValueStore(IOTG_INB_CONF, is_file=False, schema_location=SCHEMA_LOCATION) \
                 .load('/opt/intel_manageability.conf')
 
-    def test_get_element(self) -> None:
-        self.assertEquals('telemetry/maxCacheSize:100',
-                          self.good.get_element('telemetry/maxCacheSize'))
+    def test_get_element(self):
+        self.assertEqual('telemetry/maxCacheSize:100',
+                         self.good.get_element('telemetry/maxCacheSize'))
 
     def test_get_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.get_element, 'telemetry/maxCacheSize/bb')
 
-    def test_set_element(self) -> None:
-        self.assertEquals('telemetry/maxCacheSize:100',
-                          self.good.get_element(path='telemetry/maxCacheSize'))
+    def test_set_element(self):
+        self.assertEqual('telemetry/maxCacheSize:100',
+                         self.good.get_element(path='telemetry/maxCacheSize'))
         self.good.set_element('telemetry/maxCacheSize', '200')
-        self.assertEquals('telemetry/maxCacheSize:200',
-                          self.good.get_element('telemetry/maxCacheSize'))
+        self.assertEqual('telemetry/maxCacheSize:200',
+                         self.good.get_element('telemetry/maxCacheSize'))
 
     def test_validate_file(self) -> None:
         try:
@@ -128,7 +128,7 @@ class TestXmlParser(TestCase):
     def test_set_element_in_file(self, mock_write) -> None:
         xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         path = xml.set_element('telemetry/maxCacheSize', '200')
-        self.assertEquals('200', path)
+        self.assertEqual('200', path)
         mock_write.assert_called_once()
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
@@ -137,10 +137,10 @@ class TestXmlParser(TestCase):
             mock_write.side_effect = XmlException('error')
             xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
             path = xml.set_element('telemetry/maxCacheSize', 'a')
-            self.assertEquals('a', path)
+            self.assertEqual('a', path)
             mock_write.assert_called_once()
         except ConfigurationException as e:
-            self.assertEquals('Exception caught while writing to file', str(e))
+            self.assertEqual('Exception caught while writing to file', str(e))
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._validate_file')
@@ -149,15 +149,15 @@ class TestXmlParser(TestCase):
             mock_write.side_effect = ConfigurationException('error')
             xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
             path = xml.set_element('telemetry/maxCacheSize', '127')
-            self.assertEquals('127', path)
+            self.assertEqual('127', path)
         except ConfigurationException as e:
-            self.assertEquals('error', str(e))
+            self.assertEqual('error', str(e))
 
     def test_get_children(self) -> None:
         empty = {'minMemoryMB': '200', 'minPowerPercent': '20',
                  'minStorageMB': '100', 'sotaSW': 'docker'}
         children_list = self.good.get_children('diagnostic')
-        self.assertEquals(children_list, empty)
+        self.assertEqual(children_list, empty)
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._write_to_file')
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._validate_file')
@@ -165,8 +165,8 @@ class TestXmlParser(TestCase):
         mock_validate.return_value = False
         xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         path = xml.set_element('telemetry/maxCacheSize', 'a')
-        self.assertEquals('a', path)
-        self.assertEquals(mock_write.call_count, 1)
+        self.assertEqual('a', path)
+        self.assertEqual(mock_write.call_count, 1)
         mock_validate.assert_called_once()
 
     def test_set_element_throws_exception(self) -> None:
@@ -185,12 +185,12 @@ class TestXmlParser(TestCase):
     def test_remove_element_in_file(self, mock_write, mock_get_ele_val) -> None:
         xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
         path = xml.remove('dispatcher', value_string='trustedRepositories:https')
-        self.assertEquals('dispatcher/trustedRepositories:\n\t    http\n\t;', path)
+        self.assertEqual('dispatcher/trustedRepositories:\n\t    http\n\t;', path)
         mock_write.assert_called_once()
 
     def test_get_parent_success(self) -> None:
         xml = XmlKeyValueStore(IOTG_INB_CONF, is_file=True, schema_location=SCHEMA_LOCATION)
-        self.assertEquals('telemetry', xml.get_parent('maxCacheSize'))
+        self.assertEqual('telemetry', xml.get_parent('maxCacheSize'))
 
     @patch('configuration.xml_key_value_store.XmlKeyValueStore._update_file')
     def test_set_element_attribute_value_fail(self, mock_update_file) -> None:

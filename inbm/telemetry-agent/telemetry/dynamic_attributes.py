@@ -52,7 +52,7 @@ def get_cpu_percent() -> float:
     return psutil.cpu_percent(interval=0.1)
 
 
-def get_core_temp_celsius() -> Union[str, dict, float]:
+def get_core_temp_celsius() -> str | float:
     """Attempt to get the system's core temperature in celsius.
 
     @return: Core temp in celsius if known, otherwise Unknown
@@ -60,7 +60,7 @@ def get_core_temp_celsius() -> Union[str, dict, float]:
     if platform.system() == 'Windows':
         return UNKNOWN  # psutil does not support this sensor in Windows
 
-    core_temp_celsius = UNKNOWN
+    core_temp_celsius: str | float = UNKNOWN
     try:
         sensors = psutil.sensors_temperatures(fahrenheit=False)
         if sensors == {}:
