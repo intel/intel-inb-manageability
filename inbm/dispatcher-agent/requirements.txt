@@ -9,6 +9,6 @@ shortuuid==1.0.1
 requests==2.31.0
 urllib3==1.26.18
 certifi==2023.7.22
-pyinstaller==5.13.0
+pyinstaller==5.13.1
 setuptools==65.5.1
 future==0.18.3
