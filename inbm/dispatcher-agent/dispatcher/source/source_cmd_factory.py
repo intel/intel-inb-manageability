@@ -6,7 +6,6 @@
 """
 import logging
 from abc import ABC, abstractmethod
-from typing import Type
 
 from .source_adder import SourceAdder, UbuntuOsSourceAdder, UbuntuApplicationSourceAdder
 from .source_remover import SourceRemover, UbuntuOsSourceRemover, UbuntuApplicationSourceRemover

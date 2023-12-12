@@ -5,6 +5,31 @@
 
 
 from enum import Enum, unique
+from dataclasses import dataclass, field
+from typing import List
+
+
+@dataclass(kw_only=True)
+class SourceParameters:
+    source: List[str] = field(default_factory=lambda: [])
+
+
+@dataclass(kw_only=True)
+class ApplicationAddSourceParameters(SourceParameters):
+    gpg_key_path: str
+    gpg_key_name: str
+    file_name: str
+
+
+@dataclass(kw_only=True)
+class ApplicationRemoveSourceParameters(SourceParameters):
+    gpg_key_id: str
+    file_name: str
+
+
+@dataclass(kw_only=True)
+class ApplicationUpdateSourceParameters(SourceParameters):
+    file_name: str
 
 
 @unique

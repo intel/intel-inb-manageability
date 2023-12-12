@@ -8,6 +8,7 @@
 import logging
 
 from abc import ABC, abstractmethod
+from .constants import ApplicationAddSourceParameters
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class SourceAdder(ABC):
         pass
 
     @abstractmethod
-    def add(self) -> None:
+    def add(self, parameters: ApplicationAddSourceParameters) -> None:
         """Adds a source file to a source file or source file list for future updates."""
         pass
 
@@ -30,7 +31,7 @@ class UbuntuOsSourceAdder(SourceAdder):
     def __init__(self) -> None:
         super().__init__()
 
-    def add(self) -> None:
+    def add(self, parameters: ApplicationAddSourceParameters) -> None:
         """Adds a source in the Ubuntu OS source file /etc/apt/sources.list"""
         # TODO: Add functionality to add a source file in Ubuntu to /etc/apt/sources.list file
         pass
@@ -42,7 +43,7 @@ class UbuntuApplicationSourceAdder(SourceAdder):
     def __init__(self) -> None:
         super().__init__()
 
-    def add(self) -> None:
+    def add(self, parameters: ApplicationAddSourceParameters) -> None:
         """Adds a new source file to the Ubuntu OS source file list under /etc/apt/sources.list.d"""
         # TODO: Add functionality to add a new source file to the Ubuntu OS source file list
         #  under /etc/apt/sources.list.d
