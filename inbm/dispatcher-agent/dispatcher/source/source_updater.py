@@ -9,6 +9,7 @@
 import logging
 
 from abc import ABC, abstractmethod
+from .constants import SourceParameters, ApplicationUpdateSourceParameters
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +21,7 @@ class SourceUpdater(ABC):
         pass
 
     @abstractmethod
-    def update(self) -> None:
+    def update(self, parameters: SourceParameters) -> None:
         """Updates a source file from a source file or source file list for future updates."""
         pass
 
@@ -31,7 +32,7 @@ class UbuntuOsSourceUpdater(SourceUpdater):
     def __init__(self) -> None:
         super().__init__()
 
-    def update(self) -> None:
+    def update(self, parameters: SourceParameters) -> None:
         """Updates a source in the Ubuntu OS source file /etc/apt/sources.list"""
         # TODO: Add functionality to update a source in Ubuntu file under /etc/apt/sources.list file
         pass
@@ -43,7 +44,7 @@ class UbuntuApplicationSourceUpdater(SourceUpdater):
     def __init__(self) -> None:
         super().__init__()
 
-    def update(self) -> None:
+    def update(self, parameters: ApplicationUpdateSourceParameters) -> None:
         """Updates a source file in Ubuntu OS source file list under /etc/apt/sources.list.d"""
         # TODO: Add functionality to update a Ubuntu source file under /etc/apt/sources.list.d
-        pass
+        logger.debug(f"file_name: {parameters.file_name}, source: {parameters.sources[0]}")
