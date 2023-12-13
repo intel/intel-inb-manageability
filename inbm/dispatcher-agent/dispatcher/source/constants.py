@@ -11,7 +11,7 @@ from typing import List
 
 @dataclass(kw_only=True)
 class SourceParameters:
-    source: List[str] = field(default_factory=lambda: [])
+    sources: List[str] = field(default_factory=lambda: [])
 
 
 @dataclass(kw_only=True)
