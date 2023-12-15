@@ -52,7 +52,7 @@ class UbuntuOsSourceManager(OsSourceManager):
     def update(self, parameters: SourceParameters) -> None:
         """Updates a source in the Ubuntu OS source file /etc/apt/sources.list"""
         # TODO: Add functionality to update a source in Ubuntu file under /etc/apt/sources.list file
-        pass
+        logger.debug(f"sources: {parameters.sources}")
 
 
 class UbuntuApplicationSourceManager(ApplicationSourceManager):
