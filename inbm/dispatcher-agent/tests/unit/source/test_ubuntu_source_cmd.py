@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import mock_open, patch
 from dispatcher.dispatcher_exception import DispatcherException
-from dispatcher.source.ubuntu_source_cmd import UbuntuSourceApplicationCommand, UbuntuSourceOsCommand
+from dispatcher.source.ubuntu_source_manager import UbuntuApplicationSourceManager, UbuntuOsSourceManager
 
 MOCK_SOURCES_LIST = """\
 # Comment line
@@ -16,9 +16,9 @@ deb-src http://example.com/ubuntu focal universe
 """
 
 
-def test_ubuntu_source_os_command_list():
+def test_ubuntu_os_source_manager_list():
     with patch('builtins.open', mock_open(read_data=MOCK_SOURCES_LIST)) as mock_file:
-        command = UbuntuSourceOsCommand()
+        command = UbuntuOsSourceManager()
         sources = command.list()
         mock_file.assert_called_once_with('/etc/apt/sources.list', 'r')
         assert sources == [
@@ -27,18 +27,18 @@ def test_ubuntu_source_os_command_list():
         ]
 
 
-def test_ubuntu_source_os_command_list_exception():
+def test_ubuntu_os_source_manager_list_exception():
     with patch('builtins.open', side_effect=OSError):
-        command = UbuntuSourceOsCommand()
+        command = UbuntuOsSourceManager()
         with pytest.raises(DispatcherException) as exc_info:
             command.list()
         assert 'Error opening source file' in str(exc_info.value)
 
 
-def test_ubuntu_source_application_command_list():
+def test_ubuntu_application_source_manager_list():
     with patch('glob.glob', return_value=['/etc/apt/sources.list.d/example.list']),\
             patch('builtins.open', mock_open(read_data=MOCK_SOURCES_LIST_D)):
-        command = UbuntuSourceApplicationCommand()
+        command = UbuntuApplicationSourceManager()
         sources = command.list()
         assert sources[0].name == 'example.list'
         assert sources[0].sources == [
@@ -47,10 +47,10 @@ def test_ubuntu_source_application_command_list():
         ]
 
 
-def test_ubuntu_source_application_command_list_exception():
+def test_ubuntu_application_source_manager_exception():
     with patch('glob.glob', return_value=['/etc/apt/sources.list.d/example.list']),\
             patch('builtins.open', side_effect=OSError):
-        command = UbuntuSourceApplicationCommand()
+        command = UbuntuApplicationSourceManager()
         with pytest.raises(DispatcherException) as exc_info:
             command.list()
         assert 'Error listing application sources' in str(exc_info.value)

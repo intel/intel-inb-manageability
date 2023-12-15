@@ -1,3 +1,8 @@
+"""
+    Copyright (C) 2023 Intel Corporation
+    SPDX-License-Identifier: Apache-2.0
+"""
+
 import glob
 import logging
 import os
@@ -9,15 +14,12 @@ from dispatcher.source.constants import (
     ApplicationUpdateSourceParameters,
     SourceParameters,
 )
-from dispatcher.source.source_cmd import (
-    SourceApplicationCommand,
-    SourceOsCommand,
-)
+from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
 
 logger = logging.getLogger(__name__)
 
 
-class UbuntuSourceOsCommand(SourceOsCommand):
+class UbuntuOsSourceManager(OsSourceManager):
     def __init__(self) -> None:
         pass
 
@@ -53,7 +55,7 @@ class UbuntuSourceOsCommand(SourceOsCommand):
         pass
 
 
-class UbuntuSourceApplicationCommand(SourceApplicationCommand):
+class UbuntuApplicationSourceManager(ApplicationSourceManager):
     def __init__(self) -> None:
         pass
 
