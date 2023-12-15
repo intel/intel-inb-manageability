@@ -1,8 +1,11 @@
+import glob
 import logging
+import os
+from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
-    ApplicationSource,
+    ApplicationSourceList,
     ApplicationUpdateSourceParameters,
     SourceParameters,
 )
@@ -25,9 +28,19 @@ class UbuntuSourceOsCommand(SourceOsCommand):
 
     def list(self) -> list[str]:
         """List deb and deb-src lines in /etc/apt/sources.list"""
-        # TODO: Add functionality to list /etc/apt/sources.list
-        logger.debug(f"list")
-        return []
+        try:
+            with open("/etc/apt/sources.list", "r") as file:
+                lines = [
+                    line.strip()
+                    for line in file.readlines()
+                    if line.strip() and not line.startswith("#")
+                ]
+            return [
+                line for line in lines if line.startswith("deb ") or line.startswith("deb-src ")
+            ]
+        except OSError as e:
+            logger.error(f"Error opening source file: {e}")
+            raise DispatcherException(f"Error opening source file: {e}")
 
     def remove(self, parameters: SourceParameters) -> None:
         """Removes a source in the Ubuntu OS source file /etc/apt/sources.list"""
@@ -48,11 +61,30 @@ class UbuntuSourceApplicationCommand(SourceApplicationCommand):
         """Adds new application source along with its key"""
         pass
 
-    def list(self) -> list[ApplicationSource]:
-        """Return a list of Ubuntu application sources (stored in /etc/apt/sources.list.d/*)"""
-        # TODO: Add functionality to list Ubuntu application sources in /etc/apt/sources.list.d/*
-        logger.debug(f"list")
-        return []
+    def list(self) -> list[ApplicationSourceList]:
+        """List Ubuntu Application source lists under /etc/apt/sources.list.d"""
+        sources = []
+        try:
+            for filepath in glob.glob("/etc/apt/sources.list.d/*.list"):
+                with open(filepath, "r") as file:
+                    lines = [
+                        line.strip()
+                        for line in file.readlines()
+                        if line.strip() and not line.startswith("#")
+                    ]
+                    new_source = ApplicationSourceList(
+                        name=os.path.basename(filepath),
+                        sources=[
+                            line
+                            for line in lines
+                            if line.startswith("deb ") or line.startswith("deb-src ")
+                        ],
+                    )
+                    sources.append(new_source)
+            return sources
+        except OSError as e:
+            logger.error(f"Error listing application sources: {e}")
+            raise DispatcherException(f"Error listing application sources: {e}")
 
     def remove(self, parameters: ApplicationRemoveSourceParameters) -> None:
         """Removes a source file from the Ubuntu source file list under /etc/apt/sources.list.d"""

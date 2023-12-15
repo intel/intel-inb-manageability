@@ -10,7 +10,7 @@ from typing import List
 
 
 @dataclass(kw_only=True, frozen=True)
-class ApplicationSource:
+class ApplicationSourceList:
     name: str
     sources: list[str]
 

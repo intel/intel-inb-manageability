@@ -4,7 +4,7 @@ from attr import dataclass
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
-    ApplicationSource,
+    ApplicationSourceList,
     ApplicationUpdateSourceParameters,
     SourceParameters,
 )
@@ -47,7 +47,7 @@ class SourceApplicationCommand(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def list(self) -> list[ApplicationSource]:
+    def list(self) -> list[ApplicationSourceList]:
         """Lists application sources"""
         pass
 
