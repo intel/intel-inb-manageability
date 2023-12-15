@@ -9,6 +9,12 @@ from dataclasses import dataclass, field
 from typing import List
 
 
+@dataclass(kw_only=True, frozen=True)
+class ApplicationSource:
+    name: str
+    sources: list[str]
+
+
 @dataclass(kw_only=True)
 class SourceParameters:
     sources: List[str] = field(default_factory=lambda: [])
@@ -46,5 +52,6 @@ class SourceCmdType(Enum):
 @unique
 class OsType(Enum):
     """Supported Operating Systems."""
+
     Ubuntu = 0
     # Windows = 1 # Not currently supported
