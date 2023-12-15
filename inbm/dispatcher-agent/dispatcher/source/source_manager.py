@@ -1,16 +1,21 @@
+"""
+    Copyright (C) 2023 Intel Corporation
+    SPDX-License-Identifier: Apache-2.0
+"""
+
 from abc import ABCMeta, abstractmethod
 
 from attr import dataclass
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
-    ApplicationSource,
+    ApplicationSourceList,
     ApplicationUpdateSourceParameters,
     SourceParameters,
 )
 
 
-class SourceOsCommand(metaclass=ABCMeta):
+class OsSourceManager(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self) -> None:
         pass
@@ -36,7 +41,7 @@ class SourceOsCommand(metaclass=ABCMeta):
         pass
 
 
-class SourceApplicationCommand(metaclass=ABCMeta):
+class ApplicationSourceManager(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self) -> None:
         pass
@@ -47,7 +52,7 @@ class SourceApplicationCommand(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def list(self) -> list[ApplicationSource]:
+    def list(self) -> list[ApplicationSourceList]:
         """Lists application sources"""
         pass
 

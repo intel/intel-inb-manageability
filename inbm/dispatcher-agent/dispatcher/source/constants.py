@@ -8,9 +8,12 @@ from enum import Enum, unique
 from dataclasses import dataclass, field
 from typing import List
 
+UBUNTU_APT_SOURCES_LIST = "/etc/apt/sources.list"
+UBUNTU_APT_SOURCES_LIST_D = "/etc/apt/sources.list.d"
+
 
 @dataclass(kw_only=True, frozen=True)
-class ApplicationSource:
+class ApplicationSourceList:
     name: str
     sources: list[str]
 
@@ -36,17 +39,6 @@ class ApplicationRemoveSourceParameters(SourceParameters):
 @dataclass(kw_only=True)
 class ApplicationUpdateSourceParameters(SourceParameters):
     file_name: str
-
-
-@unique
-class SourceCmdType(Enum):
-    """Source Type to manipulate
-    OS - Source files related to the operating system
-    Application - Source files related to installed applications
-    """
-
-    OS = ["os"]
-    Application = ["application"]
 
 
 @unique

@@ -50,49 +50,60 @@ class ArgsParser(object):
         return self.main_parser.parse_args(args)
 
     def parse_source_args(self) -> None:
-        source_parser = self.inbc_subparsers.add_parser('source', help='Manage source configurations')
-        source_subparsers = source_parser.add_subparsers(help='valid source types: [application, os]')
+        source_parser = self.inbc_subparsers.add_parser(
+            'source', help='Manage source configurations')
+        source_subparsers = source_parser.add_subparsers(
+            help='valid source types: [application, os]')
         source_subparsers.required = True
         source_parser.set_defaults(func=lambda args: source_parser.print_help())
 
         # Application Sub-level
         application_parser = source_subparsers.add_parser('application')
-        app_subparsers = application_parser.add_subparsers(help='valid commands: [add, remove, update, list]')
+        app_subparsers = application_parser.add_subparsers(
+            help='valid commands: [add, remove, update, list]')
         app_subparsers.required = True
 
         # Application Add Command
         app_add_parser = app_subparsers.add_parser('add')
         app_add_parser.add_argument('-gpgKeyPath', '--gkp', required=True,
-                                    type=lambda x: validate_string_less_than_n_characters(x, 'str', 1500),
+                                    type=lambda x: validate_string_less_than_n_characters(
+                                        x, 'str', 1500),
                                     help='Path to GPG key')
         app_add_parser.add_argument('-gpgKeyName', '--gkn', required=True,
-                                    type=lambda x: validate_string_less_than_n_characters(x, 'str', 200),
+                                    type=lambda x: validate_string_less_than_n_characters(
+                                        x, 'str', 200),
                                     help='Name to store the GPG key information')
         app_add_parser.add_argument('-source', '--s', required=True,
-                                    type=lambda x: validate_string_less_than_n_characters(x, 'str', 1000),
+                                    type=lambda x: validate_string_less_than_n_characters(
+                                        x, 'str', 1000),
                                     help='Source information to store in the file')
         app_add_parser.add_argument('-fileName', '--f', required=True,
-                                    type=lambda x: validate_string_less_than_n_characters(x, 'str', 200),
+                                    type=lambda x: validate_string_less_than_n_characters(
+                                        x, 'str', 200),
                                     help='file name to use when storing the source information')
         app_add_parser.set_defaults(func=application_add)
 
         # Application Remove Command
         app_remove_parser = app_subparsers.add_parser('remove')
         app_remove_parser.add_argument('-gpgKeyId', '--gki', required=True,
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'str', 50),
+                                       type=lambda x: validate_string_less_than_n_characters(
+                                           x, 'str', 50),
                                        help='GPG Key ID of the source to remove.')
         app_remove_parser.add_argument('-fileName', '--f', required=True,
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'str', 200),
+                                       type=lambda x: validate_string_less_than_n_characters(
+                                           x, 'str', 200),
                                        help='file name to use when storing the source information')
         app_remove_parser.set_defaults(func=application_remove)
 
         # Application Update Command
         app_update_parser = app_subparsers.add_parser('update')
         app_update_parser.add_argument('-fileName', '--f', required=True,
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'str', 200),
+                                       type=lambda x: validate_string_less_than_n_characters(
+                                           x, 'str', 200),
                                        help='file name to use when storing the source information')
         app_update_parser.add_argument('-source', '--s', required=True,
-                                       type=lambda x: validate_string_less_than_n_characters(x, 'str', 1000),
+                                       type=lambda x: validate_string_less_than_n_characters(
+                                           x, 'str', 1000),
                                        help='Source information to store in the file')
         app_update_parser.set_defaults(func=application_update)
 
@@ -102,27 +113,31 @@ class ArgsParser(object):
 
         # OS Sub-level
         os_parser = source_subparsers.add_parser('os')
-        os_subparsers = os_parser.add_subparsers(help='valid commands: [add, remove, update, list]')
+        os_subparsers = os_parser.add_subparsers(
+            help='valid commands: [add, remove, update, list]')
         os_subparsers.required = True
 
         # OS Add Command
         os_add_parser = os_subparsers.add_parser('add')
         os_add_parser.add_argument('-sources', '--s', required=True, nargs="*", default=[],
-                                   type=lambda x: validate_string_less_than_n_characters(x, 'List[str]', 3500),
+                                   type=lambda x: validate_string_less_than_n_characters(
+                                       x, 'List[str]', 3500),
                                    help='List of source information to store in the file')
         os_add_parser.set_defaults(func=os_add)
 
         # OS Remove Command
         os_remove_parser = os_subparsers.add_parser('remove')
         os_remove_parser.add_argument('-sources', '--s', required=True, nargs="*", default=[],
-                                      type=lambda x: validate_string_less_than_n_characters(x, 'List[str]', 3500),
+                                      type=lambda x: validate_string_less_than_n_characters(
+                                          x, 'List[str]', 3500),
                                       help='Source information to remove from the file')
         os_remove_parser.set_defaults(func=os_remove)
 
         # OS Update Command
         os_update_parser = os_subparsers.add_parser('update')
         os_update_parser.add_argument('-sources', '--s', required=True, nargs="*", default=[],
-                                      type=lambda x: validate_string_less_than_n_characters(x, 'List[str]', 3500),
+                                      type=lambda x: validate_string_less_than_n_characters(
+                                          x, 'List[str]', 3500),
                                       help='Source information to replace in the file')
         os_update_parser.set_defaults(func=os_update)
 
@@ -135,12 +150,14 @@ class ArgsParser(object):
         aota_parser = self.inbc_subparsers.add_parser('aota')
 
         aota_parser.add_argument('--uri', '-u', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'URL', 1000),
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
         aota_parser.add_argument('--app', '-a', required=True, choices=['application', 'compose', 'docker'],
                                  help='Type of information [application, compose, docker]')
         aota_parser.add_argument('--command', '-c', required=True,
-                                 choices=['update', 'pull', 'up', 'down', 'import', 'load', 'remove'],
+                                 choices=['update', 'pull', 'up',
+                                          'down', 'import', 'load', 'remove'],
                                  help='Type of information [ update , pull, up, down, import, load, remove]')
         aota_parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
                                  help='Type of information [ yes | no ]')
@@ -148,16 +165,20 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         aota_parser.add_argument('--version', '-v', required=False)
         aota_parser.add_argument('--containertag', '-ct', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'TAG', 50),
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'TAG', 50),
                                  help='Container Tag name')
         aota_parser.add_argument('--file', '-f', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'FILE', 100),
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'FILE', 100),
                                  help='File name')
         aota_parser.add_argument('--dockerusername', '-du', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Docker Username', 50),
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'Docker Username', 50),
                                  help='docker username')
         aota_parser.add_argument('--dockerregistry', '-dr', required=False,
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Docker Registry', 500),
+                                 type=lambda x: validate_string_less_than_n_characters(
+                                     x, 'Docker Registry', 500),
                                  help='docker registry')
         aota_parser.set_defaults(func=aota)
 
