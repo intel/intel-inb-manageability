@@ -145,14 +145,14 @@ class TestUbuntuApplicationSourceManager:
         "gpg_key_id, file_name, gpg_run_side_effect, gpg_key_exists, expected_except",
         [
             # Case: Successful removal of GPG key and source file
-            ("123456A0", "example_source.list", [(0, "", 0), (0, "", 0)], True, None),
+            ("123456A0", "example_source.list", [("", "", 0), ("", "", 0)], True, None),
             # Case: GPG key does not exist, but the source file is still removed
-            ("123456A1", "example_source.list", [(1, "No such key", 1)], False, None),
+            ("123456A1", "example_source.list", [("", "No such key", 1)], False, None),
             # Case: GPG exists but fails to delete, expect DispatcherException
             (
                 "123456A2",
                 "example_source.list",
-                [(0, "", 0), (1, "GPG Delete Error", 1)],
+                [("", "", 0), ("", "GPG Delete Error", 1)],
                 True,
                 DispatcherException,
             ),
@@ -162,7 +162,7 @@ class TestUbuntuApplicationSourceManager:
             (
                 "123456A4",
                 "example_source.list",
-                [(0, "", 0), (0, "", 0)],
+                [("", "", 0), ("", "", 0)],
                 True,
                 DispatcherException,
             ),
@@ -187,8 +187,8 @@ class TestUbuntuApplicationSourceManager:
         # Mock os.remove based on whether we expect an exception for file removal or not
         os_remove_mock = mocker.patch("os.remove")
         if expected_except is DispatcherException and gpg_run_side_effect == [
-            (0, "", 0),
-            (0, "", 0),
+            ("", "", 0),
+            ("", "", 0),
         ]:
             os_remove_mock.side_effect = OSError("File could not be removed")
 
