@@ -8,6 +8,8 @@ import logging
 import os
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.source.constants import (
+    UBUNTU_APT_SOURCES_LIST,
+    UBUNTU_APT_SOURCES_LIST_D,
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
     ApplicationSourceList,
@@ -31,7 +33,7 @@ class UbuntuOsSourceManager(OsSourceManager):
     def list(self) -> list[str]:
         """List deb and deb-src lines in /etc/apt/sources.list"""
         try:
-            with open("/etc/apt/sources.list", "r") as file:
+            with open(UBUNTU_APT_SOURCES_LIST, "r") as file:
                 lines = [
                     line.strip()
                     for line in file.readlines()
@@ -42,12 +44,31 @@ class UbuntuOsSourceManager(OsSourceManager):
             ]
         except OSError as e:
             logger.error(f"Error opening source file: {e}")
-            raise DispatcherException(f"Error opening source file: {e}")
+            raise DispatcherException(f"Error opening source file: {e}") from e
 
     def remove(self, parameters: SourceParameters) -> None:
         """Removes a source in the Ubuntu OS source file /etc/apt/sources.list"""
-        # TODO: Add functionality to remove a source file in Ubuntu to /etc/apt/sources.list file
-        logger.debug(f"sources: {parameters.sources}")
+        
+        sources_list_path = UBUNTU_APT_SOURCES_LIST
+        try:
+            with open(sources_list_path, "r") as file:
+                lines = file.readlines()
+            
+            sources_to_remove = set(source.strip() for source in parameters.sources)
+            
+            # Filter out any lines that exactly match the given sources
+            with open(sources_list_path, "w") as file:
+                for line in lines:
+                    if line.strip() not in sources_to_remove:
+                        file.write(line)
+                    else:
+                        logger.debug(f"Removed source: {line}")
+            
+        except OSError as e:
+            # Wrap any OSError exceptions in a DispatcherException and re-raise.
+            logger.error(f"Error occurred while trying to remove sources: {e}")
+            raise DispatcherException(f"Error occurred while trying to remove sources: {e}") from e
+        
 
     def update(self, parameters: SourceParameters) -> None:
         """Updates a source in the Ubuntu OS source file /etc/apt/sources.list"""
@@ -67,7 +88,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         """List Ubuntu Application source lists under /etc/apt/sources.list.d"""
         sources = []
         try:
-            for filepath in glob.glob("/etc/apt/sources.list.d/*.list"):
+            for filepath in glob.glob(UBUNTU_APT_SOURCES_LIST_D + "/*"):
                 with open(filepath, "r") as file:
                     lines = [
                         line.strip()
