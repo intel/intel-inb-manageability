@@ -173,7 +173,6 @@ class TestUbuntuApplicationSourceManager:
     ):
         parameters = ApplicationRemoveSourceParameters(gpg_key_id=gpg_key_id, file_name=file_name)
 
-        # Mock PseudoShellRunner and its run method
         shell_runner_mock = mocker.patch(
             "dispatcher.source.ubuntu_source_manager.PseudoShellRunner"
         )
@@ -203,14 +202,9 @@ class TestUbuntuApplicationSourceManager:
             command = UbuntuApplicationSourceManager()
             command.remove(parameters)
 
-            # Check GPG command runs
             expected_gpg_calls = [mocker.call(f"gpg --list-keys {gpg_key_id}")]
             if gpg_key_exists:
                 expected_gpg_calls.append(mocker.call(f"gpg --delete-key {gpg_key_id}"))
             shell_runner_instance.run.assert_has_calls(expected_gpg_calls)
 
-            # Check file removal
             os_remove_mock.assert_called_once_with(UBUNTU_APT_SOURCES_LIST_D + "/" + file_name)
-
-            # Note: UBUNTU_APT_SOURCES_LIST_D should be a string constant representing the
-            # path under which Ubuntu stores source files, e.g., "/etc/apt/sources.list.d"
