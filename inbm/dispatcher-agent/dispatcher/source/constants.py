@@ -39,17 +39,6 @@ class ApplicationUpdateSourceParameters(SourceParameters):
 
 
 @unique
-class SourceCmdType(Enum):
-    """Source Type to manipulate
-    OS - Source files related to the operating system
-    Application - Source files related to installed applications
-    """
-
-    OS = ["os"]
-    Application = ["application"]
-
-
-@unique
 class OsType(Enum):
     """Supported Operating Systems."""
 
