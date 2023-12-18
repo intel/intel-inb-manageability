@@ -49,17 +49,41 @@ class TestUbuntuOSSourceManager:
                 command.list()
             assert "Error opening source file" in str(exc_info.value)
 
-    def test_remove_single_source(self, sources_list_content):
+    @pytest.mark.parametrize(
+        "sources_to_remove, expected_content",
+        [
+            (
+                SourceParameters(sources=["deb http://example.com/ubuntu focal main restricted"]),
+                [
+                    "# Comment line\n",
+                    "deb-src http://example.com/ubuntu focal main restricted\n",
+                ],
+            ),
+            (
+                SourceParameters(
+                    sources=[
+                        "deb http://example.com/ubuntu focal main restricted",
+                        "deb-src http://example.com/ubuntu focal main restricted",
+                    ]
+                ),
+                ["# Comment line\n"],
+            ),
+            (
+                SourceParameters(
+                    sources=[
+                        "non-existent source line",
+                    ]
+                ),
+                [
+                    "# Comment line\n",
+                    "deb http://example.com/ubuntu focal main restricted\n",
+                    "deb-src http://example.com/ubuntu focal main restricted\n",
+                ],
+            ),
+        ],
+    )
+    def test_remove_sources(self, sources_list_content, sources_to_remove, expected_content):
         initial_content = sources_list_content
-        sources_to_remove = SourceParameters(
-            sources=["deb http://example.com/ubuntu focal main restricted"]
-        )
-
-        # Expected content after removal:
-        expected_content = [
-            "# Comment line\n",
-            "deb-src http://example.com/ubuntu focal main restricted\n",
-        ]
 
         # Mocking open to simulate file read and write operations
         mo = mock_open(read_data=initial_content)
@@ -69,47 +93,12 @@ class TestUbuntuOSSourceManager:
 
         # Check that the file was opened twice ('r' and 'w')
         assert mo.call_count == 2
+
+        # Check that the exact write calls happened
+        assert mo().write.call_count == len(expected_content)
         write_calls = [mock.call(line) for line in expected_content]
         mo().write.assert_has_calls(write_calls, any_order=False)
 
-    def test_remove_multiple_sources(self, sources_list_content):
-        initial_content = sources_list_content
-        sources_to_remove = SourceParameters(
-            sources=[
-                "deb http://example.com/ubuntu focal main restricted",
-                "deb http://example.com/ubuntu focal main restricted",
-            ]
-        )
-
-        # Expected content after removal:
-        expected_content = ["# Comment line\n"]
-
-        # Mocking open to simulate file read and write operations
-        mo = mock_open(read_data=initial_content)
-        with patch("builtins.open", mo):
-            manager = UbuntuOsSourceManager()
-            manager.remove(sources_to_remove)
-
-        # Check that the file was opened twice ('r' and 'w')
-        assert mo.call_count == 2
-        write_calls = [mock.call(line) for line in expected_content]
-        mo().write.assert_has_calls(write_calls, any_order=False)
-
-    def test_remove_nonexistent_source(self, sources_list_content):
-        initial_content = sources_list_content
-        sources_to_remove = SourceParameters(sources=["nonexistent source line"])
-
-        mo = mock_open(read_data=initial_content)
-        with patch("builtins.open", mo):
-            manager = UbuntuOsSourceManager()
-            manager.remove(sources_to_remove)
-
-        # Check that the file was opened twice ('r' and 'w')
-        assert mo.call_count == 2
-
-        # Check that the file content hasn't changed since the source was not found
-        write_calls = [mock.call(line + "\n") for line in initial_content.splitlines()]
-        mo().write.assert_has_calls(write_calls, any_order=False)
 
     def test_remove_raises_dispatcher_exception_on_write_error(self, sources_list_content):
         sources_to_remove = SourceParameters(
