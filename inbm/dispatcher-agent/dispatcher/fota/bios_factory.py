@@ -208,10 +208,13 @@ class LinuxToolFirmware(BiosFactory):
         """
         guid = ''
         if self._guid_required:
-            extracted_guids = extract_guids(self._fw_tool, ["System Firmware type", "system-firmware type"])  # get the GUID from the system using FW tool
+            # get the GUID from the system using FW tool
+            extracted_guids = extract_guids(
+                self._fw_tool, ["System Firmware type", "system-firmware type"])
             if manifest_guid:
                 if manifest_guid not in extracted_guids:
-                    raise FotaError(f"GUID in manifest does not match any system firmware GUID on the system")
+                    raise FotaError(
+                        f"GUID in manifest does not match any system firmware GUID on the system")
                 else:
                     guid = manifest_guid
 

@@ -45,4 +45,3 @@ def _parse_guids(output: str, types: list[str]) -> list[str]:
         if any(type_str in line for type_str in types):
             guids.append(line.split(',')[1].split()[0].strip('{').strip('}'))
     return guids
-

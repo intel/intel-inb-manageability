@@ -11,10 +11,11 @@ class TestGuid(TestCase):
     @patch('dispatcher.fota.guid.PseudoShellRunner.run',
            return_value=("System Firmware type,{6B29FC40-CA47-1067-B31D-00DD010662D} version 27 is updatable", "", 0))
     def test_find_the_guid(self, mock_shell):
-        self.assertEqual(extract_guids("tool", ['Firmware', 'foo']), ["6B29FC40-CA47-1067-B31D-00DD010662D"])
+        self.assertEqual(extract_guids("tool", ['Firmware', 'foo']), [
+                         "6B29FC40-CA47-1067-B31D-00DD010662D"])
 
     @patch('dispatcher.fota.guid.PseudoShellRunner.run',
-        return_value=("System Firmware type,{6B29FC40-CA47-1067-B31D-00DD010662D} version 27 is updatable", "", 0))
+           return_value=("System Firmware type,{6B29FC40-CA47-1067-B31D-00DD010662D} version 27 is updatable", "", 0))
     def test_not_find_the_guid_and_raise_exception(self, mock_shell):
         with self.assertRaises(FotaError):
             self.assertEqual(extract_guids("tool", ['foo', 'bar']), [])
