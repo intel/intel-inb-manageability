@@ -1,7 +1,13 @@
 import pytest
 from dispatcher.source.constants import OsType
-from dispatcher.source.source_manager_factory import create_application_source_manager, create_os_source_manager
-from dispatcher.source.ubuntu_source_manager import UbuntuApplicationSourceManager, UbuntuOsSourceManager
+from dispatcher.source.source_manager_factory import (
+    create_application_source_manager,
+    create_os_source_manager,
+)
+from dispatcher.source.ubuntu_source_manager import (
+    UbuntuApplicationSourceManager,
+    UbuntuOsSourceManager,
+)
 
 
 def test_create_os_source_manager_ubuntu():

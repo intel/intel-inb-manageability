@@ -11,6 +11,7 @@ from typing import List
 UBUNTU_APT_SOURCES_LIST = "/etc/apt/sources.list"
 UBUNTU_APT_SOURCES_LIST_D = "/etc/apt/sources.list.d"
 
+
 @dataclass(kw_only=True, frozen=True)
 class ApplicationSourceList:
     name: str

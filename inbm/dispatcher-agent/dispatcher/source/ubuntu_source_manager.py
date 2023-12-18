@@ -17,6 +17,7 @@ from dispatcher.source.constants import (
     SourceParameters,
 )
 from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
+from inbm_common_lib.shell_runner import PseudoShellRunner
 
 logger = logging.getLogger(__name__)
 
@@ -48,14 +49,14 @@ class UbuntuOsSourceManager(OsSourceManager):
 
     def remove(self, parameters: SourceParameters) -> None:
         """Removes a source in the Ubuntu OS source file /etc/apt/sources.list"""
-        
+
         sources_list_path = UBUNTU_APT_SOURCES_LIST
         try:
             with open(sources_list_path, "r") as file:
                 lines = file.readlines()
-            
+
             sources_to_remove = set(source.strip() for source in parameters.sources)
-            
+
             # Filter out any lines that exactly match the given sources
             with open(sources_list_path, "w") as file:
                 for line in lines:
@@ -63,12 +64,11 @@ class UbuntuOsSourceManager(OsSourceManager):
                         file.write(line)
                     else:
                         logger.debug(f"Removed source: {line}")
-            
+
         except OSError as e:
             # Wrap any OSError exceptions in a DispatcherException and re-raise.
             logger.error(f"Error occurred while trying to remove sources: {e}")
             raise DispatcherException(f"Error occurred while trying to remove sources: {e}") from e
-        
 
     def update(self, parameters: SourceParameters) -> None:
         """Updates a source in the Ubuntu OS source file /etc/apt/sources.list"""
@@ -107,13 +107,33 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
             return sources
         except OSError as e:
             logger.error(f"Error listing application sources: {e}")
-            raise DispatcherException(f"Error listing application sources: {e}")
+            raise DispatcherException(f"Error listing application sources: {e}") from e
 
     def remove(self, parameters: ApplicationRemoveSourceParameters) -> None:
         """Removes a source file from the Ubuntu source file list under /etc/apt/sources.list.d"""
-        # TODO: Add functionality to remove a source file under the Ubuntu source file list
-        #  under /etc/apt/sources.list.d
-        logger.debug(f"gpg_key_path: {parameters.gpg_key_id}, file_name: {parameters.file_name}")
+        # Remove the GPG key
+        try:
+            stdout, stderr, exit_code = PseudoShellRunner().run(
+                f"gpg --list-keys {parameters.gpg_key_id}"
+            )
+
+            # If the key exists, try to remove it
+            if exit_code == 0:
+                stdout, stderr, exit_code = PseudoShellRunner().run(
+                    f"gpg --delete-key {parameters.gpg_key_id}"
+                )
+                if exit_code != 0:
+                    raise DispatcherException("Error deleting GPG key: " + (stderr or stdout))
+
+        except OSError as e:
+            logger.error(f"Error checking or deleting GPG key: {e}")
+            raise DispatcherException(f"Error checking or deleting GPG key: {e}") from e
+
+        # Remove the file under /etc/apt/sources.list.d
+        try:
+            os.remove(UBUNTU_APT_SOURCES_LIST_D + "/" + parameters.file_name)
+        except OSError as e:
+            raise DispatcherException(f"Error removing file: {e}") from e
 
     def update(self, parameters: ApplicationUpdateSourceParameters) -> None:
         """Updates a source file in Ubuntu OS source file list under /etc/apt/sources.list.d"""
