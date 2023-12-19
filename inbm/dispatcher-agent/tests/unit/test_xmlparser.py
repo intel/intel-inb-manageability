@@ -59,9 +59,6 @@ TEST_XML = '<?xml version="1.0" encoding="utf-8"?>' \
     '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
     '2020-11-16</releasedate></fota></type></ota></manifest> '
 
-# SOURCE_APPLIST_XML = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>source</type><source type=application></source></manifest>'
-SOURCE_APPLIST_XML = '<manifest><type>source</type><source type="application"></source></manifest>'
-
 class TestXmlParser(TestCase):
 
     def setUp(self) -> None:
@@ -73,7 +70,14 @@ class TestXmlParser(TestCase):
 
     def test_source_xml(self) -> None:
         try:
-            parsed = XmlHandler(SOURCE_APPLIST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+            # this should not pass--there is no command
+            parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
+                <manifest><type>source</type>\
+                    <source type="application">\
+                    </source>\
+                </manifest>'            
+            parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+            # query parsed to make sure we get the data
         except XmlException as e:
             self.fail(f"XmlException: {e}")
 
