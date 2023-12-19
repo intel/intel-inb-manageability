@@ -99,7 +99,6 @@ class TestUbuntuOSSourceManager:
         write_calls = [mock.call(line) for line in expected_content]
         mo().write.assert_has_calls(write_calls, any_order=False)
 
-
     def test_remove_raises_dispatcher_exception_on_write_error(self, sources_list_content):
         sources_to_remove = SourceParameters(
             sources=["deb http://example.com/ubuntu focal main restricted"]

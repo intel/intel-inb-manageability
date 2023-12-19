@@ -23,7 +23,7 @@ from defusedxml import DefusedXmlException, DTDForbidden, EntitiesForbidden, Ext
 from .constants import PARSE_TIME_SECS
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from typing import Dict, Union, Any
+from typing import Dict, Tuple, Union, Any
 
 logger = logging.getLogger(__name__)
 
@@ -109,30 +109,44 @@ class XmlHandler:
                                'path: {}'.format(xpath))
         return element  # type: ignore[no-any-return]  # not practical to type this
 
-    def get_children(self, xpath: str) -> Dict[str, Any]:
+    def get_children_tuples(self, xpath: str) -> list[Tuple[str, Any]]:
         """Find all elements matching XPath from parsed XML
 
         @param xpath: Valid XPath expression
-        @return: Values of the matched elements as a List
+        @return: Values of the matched elements as a list of key/value tuples
         @raises XmlException
         """
-        children = {}
+        children: list[Tuple[str, Any]] = []
         elements = self._root.find(xpath)
 
         if elements is None:
             raise XmlException(f'Cannot find children at specified path: {xpath}')
         for each in elements:
             if each.text:
-                children[each.tag] = each.text
+                children.append((each.tag, each.text))
             elif len(each):
-                children[each.tag] = str(each.tag)
+                children.append((each.tag, str(each.tag)))
                 logger.debug(f'The element {each.tag} has {len(each)} children.')
             else:
                 # empty tags are OK. for example, <package_list></package_list> in a SOTA
                 # command just means 'upgrade all packages'
-                children[each.tag] = ''
+                children.append((each.tag, ''))
                 logger.debug(f'Empty tag {each.tag} encountered, but allowed.')
 
+        return children
+
+    def get_children(self, xpath: str) -> dict[str, Any]:
+        """Find all elements matching XPath from parsed XML
+
+        @param xpath: Valid XPath expression
+        @return: Values of the matched elements as a dict. Duplicate tags will only show the last entry.
+        @raises XmlException
+        """
+        children: dict[str, Any] = {}
+
+        tuples = self.get_children_tuples(xpath)
+        for key, value in tuples:
+            children[key] = value
         return children
 
     def find_element(self, xpath: str) -> Any:

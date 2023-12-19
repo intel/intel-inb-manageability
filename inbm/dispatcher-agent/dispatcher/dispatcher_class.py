@@ -18,6 +18,7 @@ from time import sleep
 from typing import Tuple
 
 from dispatcher.config.config_operation import ConfigOperation
+from dispatcher.source.source_command import do_source_command
 
 from .install_check_service import InstallCheckService
 
@@ -52,6 +53,7 @@ from inbm_lib.xmlhandler import *
 from inbm_lib.version import get_friendly_inbm_version_commit
 from inbm_lib.security_masker import mask_security_info
 from .update_logger import UpdateLogger
+from . import source
 
 logger = logging.getLogger(__name__)
 
@@ -287,6 +289,9 @@ class Dispatcher:
             if type_of_manifest == 'cmd':
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
+            elif type_of_manifest == 'source':
+                logger.debug('Running source command')
+                result = do_source_command(parsed_head, source.constants.OsType.Ubuntu)  # FIXME: actually detect OS
             elif type_of_manifest == 'ota':
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
