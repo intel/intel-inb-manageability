@@ -500,7 +500,7 @@
   	        <xs:restriction base="xs:string">
             	    <xs:enumeration value="source"/>
 		</xs:restriction>
-  	    </xs:SimpleType>
+  	    </xs:simpleType>
 	</xs:element>
         <xs:element name="source" type="xs:sourceType">
           <xs:complexType>
@@ -534,17 +534,17 @@
                                 <xs:element name="source" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
                                 <xs:element name="filename" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
                               </xs:sequence>
-                             </xs:choice>
                             </xs:complexType>
                           </xs:element>
                         </xs:sequence>
+</xs:choice>
                       </xs:complexType>
                     </xs:element>
                   </xs:sequence>
                 </xs:complexType>
-              </xs:element>
             </xs:sequence>
           </xs:complexType>
+              </xs:element>
         </xs:element>
         <xs:element name="type">
 	    <xs:simpleType>

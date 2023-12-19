@@ -72,7 +72,7 @@ class TestXmlParser(TestCase):
         self.assertIsNotNone(self.good)
 
     def test_source_xml(self) -> None:
-	try:
+        try:
             parsed = XmlHandler(SOURCE_APPLIST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         except XmlException as e:
             self.assertEqual("Validation failed")
