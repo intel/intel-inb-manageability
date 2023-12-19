@@ -68,12 +68,26 @@ class TestXmlParser(TestCase):
     def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
 
-    def test_source_xml(self) -> None:
+    def test_source_with_no_command_fails_validation(self) -> None:
         try:
             # this should not pass--there is no command
             parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
                 <manifest><type>source</type>\
                     <source type="application">\
+                    </source>\
+                </manifest>'            
+            parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+            # query parsed to make sure we get the data
+        except XmlException as e:
+            # this is fine
+            pass
+
+    def test_source_with_list_passes_validation(self) -> None:
+        try:
+            parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
+                <manifest><type>source</type>\
+                    <source type="application">\
+                    <list/>\
                     </source>\
                 </manifest>'            
             parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)

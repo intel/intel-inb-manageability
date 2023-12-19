@@ -350,7 +350,7 @@
                                     </xs:choice>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="list" type="xs:string" minOccurs="0" maxOccurs="1"/>
+                            <xs:element name="list" type="xs:string" minOccurs="1" maxOccurs="1"/>
                         </xs:choice>
                         <xs:attribute name="type" type="sourceType" use="required"/>
                     </xs:complexType>
