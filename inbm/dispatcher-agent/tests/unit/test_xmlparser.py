@@ -59,8 +59,8 @@ TEST_XML = '<?xml version="1.0" encoding="utf-8"?>' \
     '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
     '2020-11-16</releasedate></fota></type></ota></manifest> '
 
-SOURCE_APPLIST_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
-                  '<manifest><type>source</type><source type=application></list></source></manifest>'
+# SOURCE_APPLIST_XML = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>source</type><source type=application></source></manifest>'
+SOURCE_APPLIST_XML = '<manifest><type>source</type><source type="application"></source></manifest>'
 
 class TestXmlParser(TestCase):
 
@@ -75,7 +75,7 @@ class TestXmlParser(TestCase):
         try:
             parsed = XmlHandler(SOURCE_APPLIST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         except XmlException as e:
-            self.assertEqual("Validation failed")
+            self.fail(f"XmlException: {e}")
 
 
     def test_parser_creation_failure(self) -> None:
