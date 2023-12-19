@@ -266,93 +266,113 @@
                     </xs:complexType>
                 </xs:element>
 
-                <xs:element name="source" minOccurs="0">
+                <xs:element name="osSource" minOccurs="0">
                     <xs:complexType>
                         <xs:choice>
-                            <xs:element name="add">
+                            <xs:element name="add" minOccurs="1" maxOccurs="1">
                                 <xs:complexType>
-                                    <xs:choice>
-                                        <xs:element name="repos" minOccurs="0" maxOccurs="1">
+                                    <xs:sequence>
+                                        <xs:element name="repos" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element name="source_pkg" type="PathMax1500Chars" minOccurs="1" maxOccurs="25"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
-                                        <xs:sequence>
-                                            <xs:element name="gpg" minOccurs="0" maxOccurs="1">
-                                                <xs:complexType>
-                                                    <xs:sequence>
-                                                        <xs:element name="path" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
-                                                        <xs:element name="keyname" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
-                                                    </xs:sequence>
-                                                </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="repo" minOccurs="0" maxOccurs="1">
-                                                <xs:complexType>
-                                                    <xs:sequence>
-                                                        <xs:element name="source" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
-                                                        <xs:element name="filename" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
-                                                    </xs:sequence>
-                                                </xs:complexType>
-                                            </xs:element>
-                                        </xs:sequence>
-                                    </xs:choice>
+                                    </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="update">
+                            <xs:element name="update" minOccurs="1" maxOccurs="1">
                                 <xs:complexType>
-                                    <xs:choice>
-                                        <xs:element name="repos" minOccurs="0" maxOccurs="1">
+                                    <xs:sequence>
+                                        <xs:element name="repos" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element name="source_pkg" type="PathMax1500Chars" minOccurs="1" maxOccurs="25"/>
                                                 </xs:sequence>
                                             </xs:complexType>
-                                        </xs:element>
-                                        <xs:element name="repo" minOccurs="0" maxOccurs="1">
-                                            <xs:complexType>
-                                                <xs:sequence>
-                                                    <xs:element name="source_pkg" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
-                                                    <xs:element name="filename" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
-                                                </xs:sequence>
-                                            </xs:complexType>
-                                        </xs:element>
-                                    </xs:choice>
+                                        </xs:element>                                        
+                                    </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
-                            <xs:element name="remove">
+                            <xs:element name="remove" minOccurs="1" maxOccurs="1">
                                 <xs:complexType>
-                                    <xs:choice>
-                                        <xs:element name="repos" minOccurs="0" maxOccurs="1">
+                                    <xs:sequence>
+                                        <xs:element name="repos" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element name="source_pkg" type="PathMax1500Chars" minOccurs="1" maxOccurs="25"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
-                                        <xs:sequence>
-                                            <xs:element name="gpg" minOccurs="0" maxOccurs="1">
-                                                <xs:complexType>
-                                                    <xs:sequence>
-                                                        <xs:element name="keyid" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
-                                                    </xs:sequence>
-                                                </xs:complexType>
-                                            </xs:element>
-                                            <xs:element name="repo" minOccurs="0" maxOccurs="1">
-                                                <xs:complexType>
-                                                    <xs:sequence>
-                                                        <xs:element name="filename" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
-                                                    </xs:sequence>
-                                                </xs:complexType>
-                                            </xs:element>
-                                        </xs:sequence>
-                                    </xs:choice>
+                                    </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
                             <xs:element name="list" type="xs:string" minOccurs="1" maxOccurs="1"/>
                         </xs:choice>
-                        <xs:attribute name="type" type="sourceType" use="required"/>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="applicationSource" minOccurs="0">
+                    <xs:complexType>
+                        <xs:choice>
+                            <xs:element name="add" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="gpg" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="path" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
+                                                    <xs:element name="keyname" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="repo" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="source" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
+                                                    <xs:element name="filename" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="update" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="repos" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="source_pkg" type="PathMax1500Chars" minOccurs="1" maxOccurs="25"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="remove" minOccurs="1" maxOccurs="1">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="gpg" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="keyid" type="Max50Chars" minOccurs="1" maxOccurs="1"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="repo" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="filename" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="list" type="xs:string" minOccurs="1" maxOccurs="1"/>
+                        </xs:choice>
                     </xs:complexType>
                 </xs:element>
 
