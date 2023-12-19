@@ -8,10 +8,10 @@ import argparse
 
 def os_add(args: argparse.Namespace) -> str:
     manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type>' \
-               '<source type=os><add><repos>'
+               '<osSource><add><repos>'
     for source in args.s:
         manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
-    manifest += '</repos></add></source></manifest>'
+    manifest += '</repos></add></osSource></manifest>'
 
     print("manifest {0}".format(manifest))
     return manifest
@@ -19,10 +19,10 @@ def os_add(args: argparse.Namespace) -> str:
 
 def os_remove(args: argparse.Namespace) -> str:
     manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type>' \
-               '<source type=os><remove><repos>'
+               '<osSource><remove><repos>'
     for source in args.s:
         manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
-    manifest += '</repos></remove></source></manifest>'
+    manifest += '</repos></remove></osSource></manifest>'
 
     print("manifest {0}".format(manifest))
     return manifest
@@ -30,10 +30,10 @@ def os_remove(args: argparse.Namespace) -> str:
 
 def os_update(args: argparse.Namespace) -> str:
     manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type>' \
-               '<source type=os><update><repos>'
+               '<osSource><update><repos>'
     for source in args.s:
         manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
-    manifest += '</repos></update></source></manifest>'
+    manifest += '</repos></update></osSource></manifest>'
 
     print("manifest {0}".format(manifest))
     return manifest
@@ -42,8 +42,8 @@ def os_update(args: argparse.Namespace) -> str:
 def os_list(args: argparse.Namespace) -> str:
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
-                '<source type=os>' +
-                '</list></source>' +
+                '<osSource>' +
+                '<list/></osSource>' +
                 '</manifest>')
 
     print("manifest {0}".format(manifest))

@@ -29,11 +29,11 @@ class TestSourceOsParser(TestCase):
              '-sources', 'deb http://example.com/ focal main restricted universe',
                          'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
-        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=os>' \
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><osSource>' \
                    '<add><repos>' \
                    '<source_pkg>deb http://example.com/ focal main restricted universe</source_pkg>' \
                    '<source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
-                   '</repos></add></source></manifest>'
+                   '</repos></add></osSource></manifest>'
         self.assertEqual(p.func(p), expected)
 
     def test_parse_remove_arguments_successfully(self):
@@ -51,11 +51,11 @@ class TestSourceOsParser(TestCase):
              '-sources', 'deb http://example.com/ focal main restricted universe',
                          'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
-        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=os>' \
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><osSource>' \
                    '<remove><repos>' \
                    '<source_pkg>deb http://example.com/ focal main restricted universe</source_pkg>' \
                    '<source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
-                   '</repos></remove></source></manifest>'
+                   '</repos></remove></osSource></manifest>'
         self.assertEqual(p.func(p), expected)
 
     def test_parse_update_arguments_successfully(self):
@@ -74,11 +74,11 @@ class TestSourceOsParser(TestCase):
              '-sources', 'deb http://example.com/ focal main restricted universe',
                          'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
-        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=os>' \
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><osSource>' \
                    '<update><repos>' \
                    '<source_pkg>deb http://example.com/ focal main restricted universe</source_pkg>' \
                    '<source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
-                   '</repos></update></source></manifest>'
+                   '</repos></update></osSource></manifest>'
         self.assertEqual(p.func(p), expected)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -86,6 +86,6 @@ class TestSourceOsParser(TestCase):
         p = self.arg_parser.parse_args(
             ['source', 'os', 'list'])
         Inbc(p, 'source', False)
-        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><source type=os>' \
-                   '</list></source></manifest>'
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><osSource>' \
+                   '<list/></osSource></manifest>'
         self.assertEqual(p.func(p), expected)
