@@ -19,14 +19,14 @@ def application_add(args: argparse.Namespace) -> str:
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>source</type>' +
-                '<source type=application>' +
+                '<applicationSource>' +
                 '<add><gpg>'
                 '{0}' +
                 '{1}'
                 '</gpg><repo>' +
                 '{2}'
                 '{3}</repo>'
-                '</add></source>' +
+                '</add></applicationSource>' +
                 '</manifest>').format(create_xml_tag(arguments, "path"),
                                       create_xml_tag(arguments, "keyname"),
                                       create_xml_tag(arguments, "source"),
@@ -44,13 +44,13 @@ def application_remove(args: argparse.Namespace) -> str:
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
-                '<source type=application>' +
+                '<applicationSource>' +
                 '<remove><gpg>'
                 '{0}' +
                 '</gpg><repo>' +
                 '{1}'
                 '</repo>'
-                '</remove></source>' +
+                '</remove></applicationSource>' +
                 '</manifest>').format(create_xml_tag(arguments, "keyid"),
                                       create_xml_tag(arguments, "filename"))
 
@@ -65,10 +65,10 @@ def application_update(args: argparse.Namespace) -> str:
     }
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
-                '<source type=application>' +
+                '<applicationSource>' +
                 '<update><repo>'
                 '{0}{1}' +
-                '</repo></update></source>' +
+                '</repo></update></applicationSource>' +
                 '</manifest>').format(create_xml_tag(arguments, "source_pkg"),
                                       create_xml_tag(arguments, "filename"))
 
@@ -79,8 +79,8 @@ def application_update(args: argparse.Namespace) -> str:
 def application_list(args: argparse.Namespace) -> str:
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
-                '<source type=application>' +
-                '</list></source></manifest>')
+                '<applicationSource>' +
+                '<list/></applicationSource></manifest>')
 
     print("manifest {0}".format(manifest))
     return manifest
