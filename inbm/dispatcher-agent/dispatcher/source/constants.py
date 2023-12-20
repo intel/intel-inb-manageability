@@ -6,7 +6,6 @@
 
 from enum import Enum, unique
 from dataclasses import dataclass, field
-from typing import List
 
 UBUNTU_APT_SOURCES_LIST = "/etc/apt/sources.list"
 UBUNTU_APT_SOURCES_LIST_D = "/etc/apt/sources.list.d"
@@ -20,7 +19,7 @@ class ApplicationSourceList:
 
 @dataclass(kw_only=True)
 class SourceParameters:
-    sources: List[str] = field(default_factory=lambda: [])
+    sources: list[str] = field(default_factory=lambda: [])
 
 
 @dataclass(kw_only=True)
