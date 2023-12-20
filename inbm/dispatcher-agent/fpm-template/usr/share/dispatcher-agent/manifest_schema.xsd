@@ -322,16 +322,16 @@
                                         <xs:element name="gpg" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="path" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
-                                                    <xs:element name="keyname" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
+                                                    <xs:element name="path" type="PathMax1500Chars" minOccurs="1" maxOccurs="1"/>
+                                                    <xs:element name="keyname" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
                                         <xs:element name="repo" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="source" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
-                                                    <xs:element name="filename" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
+                                                    <xs:element name="source" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
+                                                    <xs:element name="filename" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -364,7 +364,7 @@
                                         <xs:element name="repo" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="filename" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
+                                                    <xs:element name="filename" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>
@@ -375,7 +375,6 @@
                         </xs:choice>
                     </xs:complexType>
                 </xs:element>
-
             </xs:sequence>
         </xs:complexType>
     </xs:element>
