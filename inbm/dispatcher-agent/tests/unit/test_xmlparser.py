@@ -59,6 +59,7 @@ TEST_XML = '<?xml version="1.0" encoding="utf-8"?>' \
     '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
     '2020-11-16</releasedate></fota></type></ota></manifest> '
 
+
 class TestXmlParser(TestCase):
 
     def setUp(self) -> None:
@@ -75,7 +76,7 @@ class TestXmlParser(TestCase):
                 <manifest><type>source</type>\
                     <osSource>\
                     </osSource>\
-                </manifest>'            
+                </manifest>'
             parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
             # query parsed to make sure we get the data
         except XmlException as e:
@@ -90,7 +91,7 @@ class TestXmlParser(TestCase):
                 <applicationSource>\
                 <list/>\
                 </applicationSource>\
-            </manifest>'            
+            </manifest>'
         parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         # query parsed to make sure we get the data
 
@@ -160,7 +161,7 @@ class TestXmlParser(TestCase):
                 <osSource>\
                 <list/>\
                 </osSource>\
-            </manifest>'            
+            </manifest>'
         parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         # query parsed to make sure we get the data
 

@@ -135,7 +135,7 @@ class TestInbc(TestCase):
         self.assertEqual(f.version, '1.0')
         self.assertEqual(f.containertag, 'compose')
 
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.FotaCommand.invoke_update')
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_invalid_fota_date_format(self, mock_stderr, mock_trigger) -> None:
         with self.assertRaises(SystemExit):

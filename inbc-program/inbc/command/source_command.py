@@ -10,7 +10,7 @@ from inbm_lib.constants import SOURCE
 
 from .command import Command
 from ..ibroker import IBroker
-from ..constants import SOURCE_TIME_LIMIT
+from ..constants import INBM_INSTALL_CHANNEL, SOURCE_TIME_LIMIT
 
 
 class SourceCommand(Command):
@@ -21,13 +21,12 @@ class SourceCommand(Command):
         """
         super().__init__(SOURCE_TIME_LIMIT, broker, SOURCE)
 
-    def trigger_manifest(self, args: Any, topic: str) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments from user
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, topic)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
     def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
