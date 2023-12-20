@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 def do_source_command(parsed_head: XmlHandler, os_type: OsType) -> Result:
     """
     Run a source command.
-    
+
     @param parsed_head: XmlHandler corresponding to the manifest tag
     @param os_type: os type
     @return Result
@@ -44,7 +44,7 @@ def do_source_command(parsed_head: XmlHandler, os_type: OsType) -> Result:
 def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_action: dict) -> Result:
     """
     Handle the os source commands.
-    
+
     @param parsed_head: XmlHandler with command information
     @param os_type: os type
     @param os_action: The action to be performed
@@ -67,7 +67,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
 def _handle_app_source_command(parsed_head: XmlHandler, os_type: OsType, app_action: dict) -> Result:
     """
     Handle the application source commands.
-    
+
     @param parsed_head: XmlHandler with command information
     @param os_type: os type
     @param app_action: The action to be performed
