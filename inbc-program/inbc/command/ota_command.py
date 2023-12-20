@@ -142,7 +142,7 @@ class FotaCommand(Command):
         """
         super().__init__(FOTA_TIME_LIMIT, broker, FOTA)
 
-    def invoke_update(self, args: Any, topic: str = INSTALL_CHANNEL) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
