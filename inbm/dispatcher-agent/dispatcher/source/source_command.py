@@ -6,7 +6,12 @@
 import logging
 import json
 from dispatcher.common.result_constants import Result
-from dispatcher.source.constants import ApplicationRemoveSourceParameters, OsType, SourceParameters
+from dispatcher.source.constants import (
+    ApplicationAddSourceParameters,
+    ApplicationRemoveSourceParameters,
+    OsType,
+    SourceParameters,
+)
 from dispatcher.source.source_manager_factory import create_os_source_manager
 from dispatcher.source.source_manager_factory import create_application_source_manager
 from inbm_lib.xmlhandler import XmlException, XmlHandler
@@ -25,14 +30,14 @@ def do_source_command(parsed_head: XmlHandler, os_type: OsType) -> Result:
     logger.debug(f"do_source_command: {parsed_head}")
 
     try:
-        os_action = parsed_head.get_children('osSource')
+        os_action = parsed_head.get_children("osSource")
         if os_action:
             return _handle_os_source_command(parsed_head, os_type, os_action)
     except XmlException:
         pass  # If we get an XmlException here we still want to try applicationSource
 
     try:
-        app_action = parsed_head.get_children('applicationSource')
+        app_action = parsed_head.get_children("applicationSource")
         if app_action:
             return _handle_app_source_command(parsed_head, os_type, app_action)
     except XmlException as e:
@@ -52,19 +57,33 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
     """
     os_source_manager = create_os_source_manager(os_type)
 
-    if os_action == {'list': ''}:
+    if "list" in os_action:
         return Result(status=200, message=json.dumps(os_source_manager.list()))
 
-    if os_action == {'remove': 'remove'}:
-        source_pkgs = _get_source_packages(parsed_head)
-        remove_parameters = SourceParameters(sources=source_pkgs)
+    if "remove" in os_action:
+        remove_source_pkgs: list[str] = []
+        for key, value in parsed_head.get_children_tuples("osSource/remove/repos"):
+            if key == "source_pkg":
+                remove_source_pkgs.append(value)
+        remove_parameters = SourceParameters(sources=remove_source_pkgs)
         os_source_manager.remove(remove_parameters)
+        return Result(status=200, message="SUCCESS")
+
+    if "add" in os_action:
+        add_source_pkgs: list[str] = []
+        for key, value in parsed_head.get_children_tuples("osSource/add/repos"):
+            if key == "source_pkg":
+                add_source_pkgs.append(value)
+        add_parameters = SourceParameters(sources=add_source_pkgs)
+        os_source_manager.add(add_parameters)
         return Result(status=200, message="SUCCESS")
 
     return Result(status=400, message="unknown os source command")
 
 
-def _handle_app_source_command(parsed_head: XmlHandler, os_type: OsType, app_action: dict) -> Result:
+def _handle_app_source_command(
+    parsed_head: XmlHandler, os_type: OsType, app_action: dict
+) -> Result:
     """
     Handle the application source commands.
 
@@ -75,28 +94,31 @@ def _handle_app_source_command(parsed_head: XmlHandler, os_type: OsType, app_act
     """
     application_source_manager = create_application_source_manager(os_type)
 
-    if app_action == {'list': ''}:
+    if "list" in app_action:
         return Result(status=200, message=json.dumps(application_source_manager.list()))
 
-    if app_action == {'remove': 'remove'}:
-        keyid = parsed_head.get_children('applicationSource/remove/gpg')['keyid']
-        filename = parsed_head.get_children('applicationSource/remove/repo')['filename']
+    if "remove" in app_action:
+        keyid = parsed_head.get_children("applicationSource/remove/gpg")["keyid"]
+        filename = parsed_head.get_children("applicationSource/remove/repo")["filename"]
         application_source_manager.remove(
-            ApplicationRemoveSourceParameters(file_name=filename, gpg_key_id=keyid))
+            ApplicationRemoveSourceParameters(file_name=filename, gpg_key_id=keyid)
+        )
+        return Result(status=200, message="SUCCESS")
+
+    if "add" in app_action:
+        gpg_key_path = parsed_head.get_children("applicationSource/add/gpg")["path"]
+        gpg_key_name = parsed_head.get_children("applicationSource/add/gpg")["keyname"]
+        repo_source = parsed_head.get_children("applicationSource/add/repo")["source"]
+        repo_filename = parsed_head.get_children("applicationSource/add/repo")["filename"]
+        application_source_manager.add(
+            ApplicationAddSourceParameters(
+                file_name=repo_filename,
+                gpg_key_name=gpg_key_name,
+                gpg_key_path=gpg_key_path,
+                sources=[repo_source],
+            )
+        )
+
         return Result(status=200, message="SUCCESS")
 
     return Result(status=400, message="unknown application source command")
-
-
-def _get_source_packages(parsed_head: XmlHandler) -> list[str]:
-    """
-    Extract source packages from XML command.
-
-    @param parsed_head: XmlHandler containing the remove source commands
-    @return List of packages to remove
-    """
-    source_pkgs: list[str] = []
-    for key, value in parsed_head.get_children_tuples('osSource/remove/repos'):
-        if key == 'source_pkg':
-            source_pkgs.append(value)
-    return source_pkgs
