@@ -291,7 +291,8 @@ class Dispatcher:
                 result = self._perform_cmd_type_operation(parsed_head, xml)
             elif type_of_manifest == 'source':
                 logger.debug('Running source command')
-                result = do_source_command(parsed_head, source.constants.OsType.Ubuntu)  # FIXME: actually detect OS
+                # FIXME: actually detect OS
+                result = do_source_command(parsed_head, source.constants.OsType.Ubuntu)
             elif type_of_manifest == 'ota':
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')

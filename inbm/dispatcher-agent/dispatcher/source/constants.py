@@ -31,7 +31,7 @@ class ApplicationAddSourceParameters(SourceParameters):
 
 
 @dataclass(kw_only=True)
-class ApplicationRemoveSourceParameters(SourceParameters):
+class ApplicationRemoveSourceParameters:
     gpg_key_id: str
     file_name: str
 

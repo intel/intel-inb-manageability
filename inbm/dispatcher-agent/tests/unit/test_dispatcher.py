@@ -365,12 +365,12 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_do_install_can_call_do_source_command(self,
-                                     mock_workload_orchestration_func: Any,
-                                     mock_send_result: Any,
-                                     m_sub: Any,
-                                     m_connect: Any,
-                                     mock_do_source_command: Any,
-                                     mock_logging: Any) -> None:
+                                                   mock_workload_orchestration_func: Any,
+                                                   mock_send_result: Any,
+                                                   m_sub: Any,
+                                                   m_connect: Any,
+                                                   mock_do_source_command: Any,
+                                                   mock_logging: Any) -> None:
         xml = """\
 <?xml version="1.0" encoding="utf-8"?>
     <manifest>
@@ -383,7 +383,6 @@ class TestDispatcher(TestCase):
         self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
         mock_workload_orchestration_func.assert_called()
         mock_do_source_command.assert_called_once()
-
 
     @patch('dispatcher.config.config_operation.ConfigOperation._do_config_install_load')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')

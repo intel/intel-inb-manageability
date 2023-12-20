@@ -5,7 +5,6 @@
 
 from abc import ABCMeta, abstractmethod
 
-from attr import dataclass
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
