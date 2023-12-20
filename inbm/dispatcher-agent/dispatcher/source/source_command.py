@@ -78,7 +78,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
         add_parameters = SourceParameters(sources=add_source_pkgs)
         os_source_manager.add(add_parameters)
         return Result(status=200, message="SUCCESS")
-    
+
     if "update" in os_action:
         update_source_pkgs: list[str] = []
         for key, value in parsed_head.get_children_tuples("osSource/update/repos"):
@@ -86,7 +86,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
                 update_source_pkgs.append(value)
         update_parameters = SourceParameters(sources=update_source_pkgs)
         os_source_manager.update(update_parameters)
-        return Result(status=200, message="SUCCESS")                   
+        return Result(status=200, message="SUCCESS")
 
     return Result(status=400, message="unknown os source command")
 
