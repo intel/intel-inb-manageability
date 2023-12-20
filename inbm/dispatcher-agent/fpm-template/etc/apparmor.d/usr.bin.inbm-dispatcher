@@ -59,6 +59,7 @@
   /etc/apt/sources.list.bak rw,
   /etc/apt/sources.list.d/* rw,
   /etc/apt/sources.list.d/ rw,
+  /usr/bin/gpg px,
   /etc/dispatcher_state rw,
   /etc/lsb-release r,
   /etc/magic r,

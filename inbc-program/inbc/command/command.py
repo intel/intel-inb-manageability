@@ -51,7 +51,6 @@ class Command(ABC):
         Sub-classes will override this method to provide specific implementations.
 
         @param args: arguments passed to command-line tool.
-        @param topic: topic on which to send the manifest
         """
         pass
 
