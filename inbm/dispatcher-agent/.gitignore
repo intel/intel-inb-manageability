@@ -100,3 +100,6 @@ fpm-files/
 
 # test coverage report
 cover/
+
+inbm_lib
+inbm_common_lib
