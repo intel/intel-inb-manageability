@@ -341,10 +341,11 @@
                             <xs:element name="update" minOccurs="1" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="repos" minOccurs="1" maxOccurs="1">
+                                        <xs:element name="repo" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="source_pkg" type="PathMax1500Chars" minOccurs="1" maxOccurs="25"/>
+                                                    <xs:element name="source_pkg" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
+                                                    <xs:element name="filename" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
                                                 </xs:sequence>
                                             </xs:complexType>
                                         </xs:element>

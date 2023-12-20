@@ -124,10 +124,10 @@ class TestXmlParser(TestCase):
     <type>source</type>
     <applicationSource>
         <update>
-            <repos>
-                <source_pkg></source_pkg>  
-                <source_pkg></source_pkg>  
-            </repos>
+            <repo>
+                <source_pkg>foo</source_pkg>  
+                <filename>bar</filename>
+            </repo>
         </update>
     </applicationSource>
 </manifest>

@@ -9,6 +9,7 @@ from dispatcher.common.result_constants import Result
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
+    ApplicationUpdateSourceParameters,
     OsType,
     SourceParameters,
 )
@@ -77,6 +78,15 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
         add_parameters = SourceParameters(sources=add_source_pkgs)
         os_source_manager.add(add_parameters)
         return Result(status=200, message="SUCCESS")
+    
+    if "update" in os_action:
+        update_source_pkgs: list[str] = []
+        for key, value in parsed_head.get_children_tuples("osSource/update/repos"):
+            if key == "source_pkg":
+                update_source_pkgs.append(value)
+        update_parameters = SourceParameters(sources=update_source_pkgs)
+        os_source_manager.update(update_parameters)
+        return Result(status=200, message="SUCCESS")                   
 
     return Result(status=400, message="unknown os source command")
 
@@ -118,7 +128,17 @@ def _handle_app_source_command(
                 sources=[repo_source],
             )
         )
+        return Result(status=200, message="SUCCESS")
 
+    if "update" in app_action:
+        repo_source = parsed_head.get_children("applicationSource/update/repo")["source_pkg"]
+        repo_filename = parsed_head.get_children("applicationSource/update/repo")["filename"]
+        application_source_manager.update(
+            ApplicationUpdateSourceParameters(
+                file_name=repo_filename,
+                sources=[repo_source],
+            )
+        )
         return Result(status=200, message="SUCCESS")
 
     return Result(status=400, message="unknown application source command")
