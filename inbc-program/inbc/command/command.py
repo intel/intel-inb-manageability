@@ -74,7 +74,7 @@ class Command(ABC):
         @param payload: payload received in which to search
         """
         if self._cmd_type != "query":
-            if search_keyword(payload, ["SUCCESSFUL"]):
+            if search_keyword(payload, ["SUCCESSFUL", '"status": 200']):
                 self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
             else:
                 self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)

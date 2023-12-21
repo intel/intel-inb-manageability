@@ -18,6 +18,7 @@ from dispatcher.source.constants import (
 )
 from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_common_lib.utility import get_canonical_representation_of_path, remove_file
 
 logger = logging.getLogger(__name__)
 
@@ -131,7 +132,19 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
 
         # Remove the file under /etc/apt/sources.list.d
         try:
-            os.remove(UBUNTU_APT_SOURCES_LIST_D + "/" + parameters.file_name)
+            if (
+                os.path.sep in parameters.file_name
+                or parameters.file_name == ".."
+                or parameters.file_name == "."
+            ):
+                raise DispatcherException(f"Invalid file name: {parameters.file_name}")
+
+            if not remove_file(
+                get_canonical_representation_of_path(
+                    os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name)
+                )
+            ):
+                raise DispatcherException(f"Error removing file: {parameters.file_name}")
         except OSError as e:
             raise DispatcherException(f"Error removing file: {e}") from e
 

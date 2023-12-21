@@ -106,20 +106,22 @@ def _check_paths(src: str, destination: str) -> None:
         raise IOError("Security error: Destination  is a symlink")
 
 
-def remove_file(path: Union[str, Path]) -> None:
+def remove_file(path: Union[str, Path]) -> bool:
     """ Remove file from the given path
 
     @param path: location of file to be removed
     """
     canonical_path = get_canonical_representation_of_path(str(path))
     if not os.path.exists(canonical_path):
-        return
+        return False
 
     if os.path.isfile(canonical_path):
         logger.debug(f"Removing file at {canonical_path}.")
         os.remove(canonical_path)
+        return True
     else:
         logger.warning("Failed to remove file. Path is a directory.")
+        return False
 
 
 def remove_file_list(path: List[str]) -> None:

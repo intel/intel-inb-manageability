@@ -3,6 +3,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
+from dataclasses import asdict
 import logging
 import json
 from dispatcher.common.result_constants import Result
@@ -105,7 +106,10 @@ def _handle_app_source_command(
     application_source_manager = create_application_source_manager(os_type)
 
     if "list" in app_action:
-        return Result(status=200, message=json.dumps(application_source_manager.list()))
+        serialized_list = json.dumps(
+            [asdict(app_source) for app_source in application_source_manager.list()]
+        )
+        return Result(status=200, message=serialized_list)
 
     if "remove" in app_action:
         keyid = parsed_head.get_children("applicationSource/remove/gpg")["keyid"]

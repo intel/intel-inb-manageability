@@ -10,6 +10,7 @@ from dispatcher.common.result_constants import Result
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
+    ApplicationSourceList,
     ApplicationUpdateSourceParameters,
     OsType,
     SourceParameters,
@@ -51,8 +52,8 @@ def xml_handler_factory():
                 <applicationSource><list/></applicationSource>
             </manifest>""",
             "dispatcher.source.source_command.create_application_source_manager",
-            {"foo.list": ["source1", "source2"]},
-            '{"foo.list": ["source1", "source2"]}',
+            [ApplicationSourceList(name="source_name", sources=["line1", "line2"])],
+            '[{"name": "source_name", "sources": ["line1", "line2"]}]',
         ),
     ],
 )
@@ -219,8 +220,7 @@ def test_do_source_command_add(
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationUpdateSourceParameters(
-                file_name="filename",
-                sources=["source_package line"]
+                file_name="filename", sources=["source_package line"]
             ),
         ),
     ],

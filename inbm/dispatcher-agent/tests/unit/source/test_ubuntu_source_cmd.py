@@ -183,8 +183,10 @@ class TestUbuntuApplicationSourceManager:
         else:  # Directly raise OSError
             shell_runner_instance.run.side_effect = gpg_run_side_effect
 
-        # Mock os.remove based on whether we expect an exception for file removal or not
-        os_remove_mock = mocker.patch("os.remove")
+        # Mock remove_file based on whether we expect an exception for file removal or not
+        os_remove_mock = mocker.patch(
+            "dispatcher.source.ubuntu_source_manager.remove_file", return_value=True
+        )
         if expected_except is DispatcherException and gpg_run_side_effect == [
             ("", "", 0),
             ("", "", 0),
