@@ -1,8 +1,5 @@
-import os
-import tempfile
 import unittest
-import fixtures
-from unittest.mock import patch, mock_open
+from unittest.mock import patch
 from dispatcher.sota.mender_util import *
 
 

@@ -129,7 +129,7 @@ def _handle_app_source_command(
                 file_name=repo_filename,
                 gpg_key_name=gpg_key_name,
                 gpg_key_path=gpg_key_path,
-                sources=[repo_source],
+                source=repo_source,
             )
         )
         return Result(status=200, message="SUCCESS")
@@ -140,7 +140,7 @@ def _handle_app_source_command(
         application_source_manager.update(
             ApplicationUpdateSourceParameters(
                 file_name=repo_filename,
-                sources=[repo_source],
+                source=repo_source,
             )
         )
         return Result(status=200, message="SUCCESS")

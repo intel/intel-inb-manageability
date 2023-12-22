@@ -6,6 +6,7 @@
 import glob
 import logging
 import os
+
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST,
@@ -18,7 +19,8 @@ from dispatcher.source.constants import (
 )
 from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.utility import get_canonical_representation_of_path, remove_file
+from inbm_common_lib.utility import get_canonical_representation_of_path, remove_file, \
+    move_file, create_file_with_contents
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +76,15 @@ class UbuntuOsSourceManager(OsSourceManager):
     def update(self, parameters: SourceParameters) -> None:
         """Updates a source in the Ubuntu OS source file /etc/apt/sources.list"""
         # TODO: Add functionality to update a source in Ubuntu file under /etc/apt/sources.list file
-        logger.debug(f"sources: {parameters.sources}")
+        try:
+            with open(UBUNTU_APT_SOURCES_LIST, "r") as file:
+                lines = file.readlines()
+
+            sources_to_update = set(source.strip() for source in parameters.sources)
+
+        except OSError as e:
+            logger.error(f"Error occurred while trying to update sources: {e}")
+            raise DispatcherException(f"Error occurred while trying to update sources: {e}") from e
 
 
 class UbuntuApplicationSourceManager(ApplicationSourceManager):
@@ -150,5 +160,12 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
 
     def update(self, parameters: ApplicationUpdateSourceParameters) -> None:
         """Updates a source file in Ubuntu OS source file list under /etc/apt/sources.list.d"""
-        # TODO: Add functionality to update a Ubuntu source file under /etc/apt/sources.list.d
-        logger.debug(f"file_name: {parameters.file_name}, source: {parameters.sources[0]}")
+        try:
+            # Make a copy of the existing file
+            move_file(parameters.file_name, parameters.file_name + ".bak")
+
+            create_file_with_contents(os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name),
+                                      [parameters.source])
+        except IOError as e:
+            logger.error(f"Error occurred while trying to update sources: {e}")
+            raise DispatcherException(f"Error occurred while trying to update sources: {e}") from e

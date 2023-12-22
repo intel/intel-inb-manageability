@@ -5,12 +5,15 @@ from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST_D,
     ApplicationRemoveSourceParameters,
-    SourceParameters,
+    SourceParameters, ApplicationUpdateSourceParameters
 )
 from dispatcher.source.ubuntu_source_manager import (
     UbuntuApplicationSourceManager,
     UbuntuOsSourceManager,
 )
+
+APP_SOURCE = "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] " \
+             "https://repositories.intel.com/gpu/ubuntu jammy unified"
 
 
 @pytest.fixture
@@ -53,32 +56,32 @@ class TestUbuntuOSSourceManager:
         "sources_to_remove, expected_content",
         [
             (
-                SourceParameters(sources=["deb http://example.com/ubuntu focal main restricted"]),
-                [
-                    "# Comment line\n",
-                    "deb-src http://example.com/ubuntu focal main restricted\n",
-                ],
+                    SourceParameters(sources=["deb http://example.com/ubuntu focal main restricted"]),
+                    [
+                        "# Comment line\n",
+                        "deb-src http://example.com/ubuntu focal main restricted\n",
+                    ],
             ),
             (
-                SourceParameters(
-                    sources=[
-                        "deb http://example.com/ubuntu focal main restricted",
-                        "deb-src http://example.com/ubuntu focal main restricted",
-                    ]
-                ),
-                ["# Comment line\n"],
+                    SourceParameters(
+                        sources=[
+                            "deb http://example.com/ubuntu focal main restricted",
+                            "deb-src http://example.com/ubuntu focal main restricted",
+                        ]
+                    ),
+                    ["# Comment line\n"],
             ),
             (
-                SourceParameters(
-                    sources=[
-                        "non-existent source line",
-                    ]
-                ),
-                [
-                    "# Comment line\n",
-                    "deb http://example.com/ubuntu focal main restricted\n",
-                    "deb-src http://example.com/ubuntu focal main restricted\n",
-                ],
+                    SourceParameters(
+                        sources=[
+                            "non-existent source line",
+                        ]
+                    ),
+                    [
+                        "# Comment line\n",
+                        "deb http://example.com/ubuntu focal main restricted\n",
+                        "deb-src http://example.com/ubuntu focal main restricted\n",
+                    ],
             ),
         ],
     )
@@ -119,9 +122,29 @@ class TestUbuntuOSSourceManager:
 
 
 class TestUbuntuApplicationSourceManager:
+
+    @patch('dispatcher.source.ubuntu_source_manager.move_file')
+    def test_update_app_source_successfully(self, mock_move):
+        try:
+            params = ApplicationUpdateSourceParameters(file_name="intel-gpu-jammy.list",
+                                                       source=APP_SOURCE)
+            command = UbuntuApplicationSourceManager()
+            with patch('builtins.open', new_callable=mock_open()) as m:
+                command.update(params)
+        except DispatcherException as err:
+            assert False, f"'UbuntuApplicationSourceManager.update' raised an exception {err}"
+
+    def test_raises_exception_on_io_error_during_update_app_source_ubuntu(self):
+        params = ApplicationUpdateSourceParameters(file_name="intel-gpu-jammy.list",
+                                                   source=APP_SOURCE)
+        command = UbuntuApplicationSourceManager()
+        with pytest.raises(DispatcherException):
+            with patch('builtins.open', new_callable=mock_open(), side_effect=IOError) as m:
+                command.update(params)
+
     def test_list(self, sources_list_d_content):
         with patch("glob.glob", return_value=["/etc/apt/sources.list.d/example.list"]), patch(
-            "builtins.open", mock_open(read_data=sources_list_d_content)
+                "builtins.open", mock_open(read_data=sources_list_d_content)
         ):
             command = UbuntuApplicationSourceManager()
             sources = command.list()
@@ -133,7 +156,7 @@ class TestUbuntuApplicationSourceManager:
 
     def test_list_raises_exception(self):
         with patch("glob.glob", return_value=["/etc/apt/sources.list.d/example.list"]), patch(
-            "builtins.open", side_effect=OSError
+                "builtins.open", side_effect=OSError
         ):
             command = UbuntuApplicationSourceManager()
             with pytest.raises(DispatcherException) as exc_info:
@@ -149,26 +172,26 @@ class TestUbuntuApplicationSourceManager:
             ("123456A1", "example_source.list", [("", "No such key", 1)], False, None),
             # Case: GPG exists but fails to delete, expect DispatcherException
             (
-                "123456A2",
-                "example_source.list",
-                [("", "", 0), ("", "GPG Delete Error", 1)],
-                True,
-                DispatcherException,
+                    "123456A2",
+                    "example_source.list",
+                    [("", "", 0), ("", "GPG Delete Error", 1)],
+                    True,
+                    DispatcherException,
             ),
             # Case: OSError on checking GPG key, expect DispatcherException
             ("123456A3", "example_source.list", OSError("GPG Error"), True, DispatcherException),
             # Case: OSError on removing the file, expect DispatcherException
             (
-                "123456A4",
-                "example_source.list",
-                [("", "", 0), ("", "", 0)],
-                True,
-                DispatcherException,
+                    "123456A4",
+                    "example_source.list",
+                    [("", "", 0), ("", "", 0)],
+                    True,
+                    DispatcherException,
             ),
         ],
     )
     def test_ubuntu_application_source_manager_remove(
-        self, gpg_key_id, file_name, gpg_run_side_effect, gpg_key_exists, expected_except, mocker
+            self, gpg_key_id, file_name, gpg_run_side_effect, gpg_key_exists, expected_except, mocker
     ):
         parameters = ApplicationRemoveSourceParameters(gpg_key_id=gpg_key_id, file_name=file_name)
 

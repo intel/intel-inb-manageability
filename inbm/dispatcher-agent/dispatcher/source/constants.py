@@ -23,10 +23,11 @@ class SourceParameters:
 
 
 @dataclass(kw_only=True)
-class ApplicationAddSourceParameters(SourceParameters):
+class ApplicationAddSourceParameters:
     gpg_key_path: str
     gpg_key_name: str
     file_name: str
+    source: str
 
 
 @dataclass(kw_only=True)
@@ -35,9 +36,10 @@ class ApplicationRemoveSourceParameters:
     file_name: str
 
 
-@dataclass(kw_only=True)
-class ApplicationUpdateSourceParameters(SourceParameters):
+@dataclass()
+class ApplicationUpdateSourceParameters:
     file_name: str
+    source: str
 
 
 @unique

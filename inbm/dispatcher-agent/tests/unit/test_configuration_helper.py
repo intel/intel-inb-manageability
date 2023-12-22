@@ -4,10 +4,7 @@ from .common.mock_resources import *
 from dispatcher.packagemanager import memory_repo
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_lib.xmlhandler import XmlHandler
-from unittest.mock import patch, MagicMock
 import os
-
-from typing import Any
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../fpm-template/usr/share/dispatcher-agent/'

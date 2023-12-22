@@ -163,7 +163,7 @@ def test_do_source_command_remove(
                 file_name="repofilename",
                 gpg_key_name="keyname",
                 gpg_key_path="gpgpath",
-                sources=["reposource"],
+                source="reposource",
             ),
         ),
     ],
@@ -220,7 +220,7 @@ def test_do_source_command_add(
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationUpdateSourceParameters(
-                file_name="filename", sources=["source_package line"]
+                file_name="filename", source="source_package line"
             ),
         ),
     ],
