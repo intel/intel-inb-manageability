@@ -1,0 +1,179 @@
+version: '3'
+services:
+  certgen:
+    build:
+      context: .
+      dockerfile: inbm/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
+    volumes:
+      - dispatcher_certs:/dispatcher-agent-certs
+      - configuration_certs:/configuration-agent-certs
+      - diagnostic_certs:/diagnostic-agent-certs
+      - telemetry_certs:/telemetry-agent-certs
+      - inbc_certs:/inbc-program-certs
+      - mqtt_broker_certs:/mqtt-broker-certs
+    entrypoint: /bin/bash /generate-certs.sh
+
+  dispatcher:
+    build:
+      context: .
+      dockerfile: inbm/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
+    environment:
+      - MQTT_HOST=localhost
+      - MQTT_PORT=8883
+      - MQTT_CA_CERTS=/certs/mqtt-ca.crt
+      - MQTT_CLIENT_CERTS=/certs/dispatcher-agent.crt
+      - MQTT_CLIENT_KEYS=/certs/dispatcher-agent.key
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}  
+    restart: always
+    volumes:
+      - dispatcher_certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    network_mode: host  # needed for apt-get chroots to function properly
+    depends_on:
+      - certgen
+    command: /usr/bin/inbm-dispatcher
+  
+  configuration:
+    build:
+      context: .
+      dockerfile: inbm/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=8883
+      - MQTT_CA_CERTS=/certs/mqtt-ca.crt
+      - MQTT_CLIENT_CERTS=/certs/configuration-agent.crt
+      - MQTT_CLIENT_KEYS=/certs/configuration-agent.key
+    restart: always
+    volumes:
+      - configuration_certs:/certs      
+    networks:
+      - inbm_network
+    depends_on:
+      - certgen
+    command: /usr/bin/inbm-configuration
+  
+  diagnostic:
+    build:
+      context: .
+      dockerfile: inbm/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=8883
+      - MQTT_CA_CERTS=/certs/mqtt-ca.crt
+      - MQTT_CLIENT_CERTS=/certs/diagnostic-agent.crt
+      - MQTT_CLIENT_KEYS=/certs/diagnostic-agent.key
+    restart: always
+    volumes:
+      - diagnostic_certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - inbm_network
+    depends_on:
+      - certgen
+    command: /usr/bin/inbm-diagnostic
+  
+  telemetry:
+    build:
+      context: .
+      dockerfile: inbm/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        NO_PROXY: ${NO_PROXY}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=8883
+      - MQTT_CA_CERTS=/certs/mqtt-ca.crt
+      - MQTT_CLIENT_CERTS=/certs/telemetry-agent.crt
+      - MQTT_CLIENT_KEYS=/certs/telemetry-agent.key
+    restart: always
+    volumes:
+      - telemetry_certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - inbm_network
+    depends_on:
+      - certgen
+    command: /usr/bin/inbm-telemetry
+
+  inbc:
+    build:
+      context: .
+      dockerfile: inbm/Dockerfile
+      args:
+        http_proxy: ${http_proxy}
+        https_proxy: ${https_proxy}
+        no_proxy: ${no_proxy}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=8883
+      - MQTT_CA_CERTS=/certs/mqtt-ca.crt
+      - MQTT_CLIENT_CERTS=/certs/inbc-program.crt
+      - MQTT_CLIENT_KEYS=/certs/inbc-program.key
+    restart: always
+    volumes:
+      - inbc_certs:/certs
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - inbm_network
+    depends_on:
+      - certgen
+    command: /keep-container-running.sh
+  
+  mosquitto:
+    build:
+      context: .
+      dockerfile: mosquitto/Dockerfile
+    ports:
+      - 8883:8883
+    volumes:
+      - mqtt_broker_certs:/certs
+    networks:
+      - inbm_network
+    depends_on:
+      - certgen
+      
+volumes:
+  dispatcher_certs:
+  configuration_certs:
+  diagnostic_certs:
+  telemetry_certs:
+  inbc_certs:
+  mqtt_broker_certs:
+
+networks:
+  inbm_network:
