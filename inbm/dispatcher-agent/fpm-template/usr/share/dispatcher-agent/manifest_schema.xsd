@@ -330,7 +330,13 @@
                                         <xs:element name="repo" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="source" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
+                                                    <xs:element name="repos" minOccurs="1" maxOccurs="1">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="source_pkg" type="Max200Chars" minOccurs="1" maxOccurs="2"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
                                                     <xs:element name="filename" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
                                                 </xs:sequence>
                                             </xs:complexType>
@@ -344,7 +350,13 @@
                                         <xs:element name="repo" minOccurs="1" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
-                                                    <xs:element name="source_pkg" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
+                                                    <xs:element name="repos" minOccurs="1" maxOccurs="1">
+                                                        <xs:complexType>
+                                                            <xs:sequence>
+                                                                <xs:element name="source_pkg" type="Max200Chars" minOccurs="1" maxOccurs="2"/>
+                                                            </xs:sequence>
+                                                        </xs:complexType>
+                                                    </xs:element>
                                                     <xs:element name="filename" type="Max200Chars" minOccurs="1" maxOccurs="1"/>
                                                 </xs:sequence>
                                             </xs:complexType>

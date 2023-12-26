@@ -12,9 +12,9 @@ from dispatcher.source.ubuntu_source_manager import (
     UbuntuOsSourceManager,
 )
 
-APP_SOURCE = "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] " \
-             "https://repositories.intel.com/gpu/ubuntu jammy unified"
-
+APP_SOURCE = ["deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] " \
+             "https://repositories.intel.com/gpu/ubuntu jammy unified",
+              "deb-src https://repo.zabbix.com/zabbix/5.0/ubuntu jammy main"]
 
 @pytest.fixture
 def sources_list_content():
@@ -127,7 +127,7 @@ class TestUbuntuApplicationSourceManager:
     def test_update_app_source_successfully(self, mock_move):
         try:
             params = ApplicationUpdateSourceParameters(file_name="intel-gpu-jammy.list",
-                                                       source=APP_SOURCE)
+                                                       sources=APP_SOURCE)
             command = UbuntuApplicationSourceManager()
             with patch('builtins.open', new_callable=mock_open()) as m:
                 command.update(params)
@@ -136,7 +136,7 @@ class TestUbuntuApplicationSourceManager:
 
     def test_raises_exception_on_io_error_during_update_app_source_ubuntu(self):
         params = ApplicationUpdateSourceParameters(file_name="intel-gpu-jammy.list",
-                                                   source=APP_SOURCE)
+                                                   sources=APP_SOURCE)
         command = UbuntuApplicationSourceManager()
         with pytest.raises(DispatcherException):
             with patch('builtins.open', new_callable=mock_open(), side_effect=IOError) as m:

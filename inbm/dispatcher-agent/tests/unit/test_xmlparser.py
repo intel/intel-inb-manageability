@@ -107,7 +107,9 @@ class TestXmlParser(TestCase):
                 <keyname></keyname>
             </gpg>
             <repo>
-                <source></source>
+                <repos>
+                    <source_pkg></source_pkg>
+                </repos>
                 <filename></filename>
             </repo>
         </add>
@@ -125,7 +127,9 @@ class TestXmlParser(TestCase):
     <applicationSource>
         <update>
             <repo>
-                <source_pkg>foo</source_pkg>  
+                <repos>
+                    <source_pkg>foo</source_pkg>  
+                </repos>
                 <filename>bar</filename>
             </repo>
         </update>

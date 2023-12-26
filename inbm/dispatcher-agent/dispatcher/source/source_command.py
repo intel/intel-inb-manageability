@@ -122,25 +122,34 @@ def _handle_app_source_command(
     if "add" in app_action:
         gpg_key_path = parsed_head.get_children("applicationSource/add/gpg")["path"]
         gpg_key_name = parsed_head.get_children("applicationSource/add/gpg")["keyname"]
-        repo_source = parsed_head.get_children("applicationSource/add/repo")["source"]
         repo_filename = parsed_head.get_children("applicationSource/add/repo")["filename"]
+
+        add_source_pkgs: list[str] = []
+        for key, value in parsed_head.get_children_tuples("applicationSource/add/repo/repos"):
+            if key == "source_pkg":
+                add_source_pkgs.append(value)
+
         application_source_manager.add(
             ApplicationAddSourceParameters(
                 file_name=repo_filename,
                 gpg_key_name=gpg_key_name,
                 gpg_key_path=gpg_key_path,
-                source=repo_source,
+                sources=add_source_pkgs,
             )
         )
         return Result(status=200, message="SUCCESS")
 
     if "update" in app_action:
-        repo_source = parsed_head.get_children("applicationSource/update/repo")["source_pkg"]
         repo_filename = parsed_head.get_children("applicationSource/update/repo")["filename"]
+        update_source_pkgs: list[str] = []
+        for key, value in parsed_head.get_children_tuples("applicationSource/update/repo/repos"):
+            if key == "source_pkg":
+                update_source_pkgs.append(value)
+
         application_source_manager.update(
             ApplicationUpdateSourceParameters(
                 file_name=repo_filename,
-                source=repo_source,
+                sources=update_source_pkgs,
             )
         )
         return Result(status=200, message="SUCCESS")

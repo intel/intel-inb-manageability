@@ -100,7 +100,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         # Step 2: Add the source
         try:
             stdout, stderr, exit_code = PseudoShellRunner().run(
-                f"{parameters.source} | sudo tee /etc/app/source.list.d/{parameters.file_name}"
+                f"{parameters.sources} | sudo tee /etc/app/source.list.d/{parameters.file_name}"
             )
 
             # If the key exists, try to remove it
@@ -171,7 +171,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
             move_file(parameters.file_name, parameters.file_name + ".bak")
 
             create_file_with_contents(os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name),
-                                      [parameters.source])
+                                      parameters.sources)
         except IOError as e:
             logger.error(f"Error occurred while trying to update sources: {e}")
             raise DispatcherException(f"Error occurred while trying to update sources: {e}") from e

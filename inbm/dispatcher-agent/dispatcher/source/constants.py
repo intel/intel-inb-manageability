@@ -27,7 +27,7 @@ class ApplicationAddSourceParameters:
     gpg_key_path: str
     gpg_key_name: str
     file_name: str
-    source: str
+    sources: list[str] = field(default_factory=lambda: [])
 
 
 @dataclass(kw_only=True)
@@ -39,7 +39,7 @@ class ApplicationRemoveSourceParameters:
 @dataclass()
 class ApplicationUpdateSourceParameters:
     file_name: str
-    source: str
+    sources: list[str] = field(default_factory=lambda: [])
 
 
 @unique

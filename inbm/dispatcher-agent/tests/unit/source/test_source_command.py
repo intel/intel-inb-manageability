@@ -151,7 +151,10 @@ def test_do_source_command_remove(
                             <keyname>keyname</keyname>
                         </gpg>
                         <repo>
-                            <source>reposource</source>
+                            <repos>
+                                <source_pkg>sourceA</source_pkg>
+                                <source_pkg>sourceB</source_pkg>
+                            </repos>
                             <filename>repofilename</filename>
                         </repo>
                     </add>
@@ -163,7 +166,7 @@ def test_do_source_command_remove(
                 file_name="repofilename",
                 gpg_key_name="keyname",
                 gpg_key_path="gpgpath",
-                source="reposource",
+                sources=["sourceA", "sourceB"],
             ),
         ),
     ],
@@ -211,7 +214,10 @@ def test_do_source_command_add(
                 <applicationSource>
                     <update>
                         <repo>
-                            <source_pkg>source_package line</source_pkg>  
+                            <repos>
+                                <source_pkg>source1</source_pkg>
+                                <source_pkg>source2</source_pkg>
+                            </repos>
                             <filename>filename</filename>  
                         </repo>
                     </update>
@@ -220,7 +226,7 @@ def test_do_source_command_add(
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationUpdateSourceParameters(
-                file_name="filename", source="source_package line"
+                file_name="filename", sources=["source1", "source2"]
             ),
         ),
     ],
