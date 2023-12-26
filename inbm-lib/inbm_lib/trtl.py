@@ -13,7 +13,6 @@
 from typing import Optional, Tuple
 
 import logging
-import pipes
 
 from .constants import DOCKER, COMPOSE, TRTL_PATH
 from subprocess import Popen, PIPE
@@ -150,7 +149,7 @@ class Trtl:
                          ", " + str(version) + ", [" + str(command) + "])")
             (out, err, code) = self.runner.run(self._boilerplate("exec") +
                                                " -in=" + image + " -iv=" + str(version) +
-                                               " -ec=" + pipes.quote(command))
+                                               " -ec=" + shlex.quote(command))
             if err is None:
                 err = ""
             logger.debug("(2/2) Stdout: [" + out + "]" + "; stderr: [" + err +

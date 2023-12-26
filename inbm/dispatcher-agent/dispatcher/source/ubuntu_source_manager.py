@@ -18,6 +18,8 @@ from dispatcher.source.constants import (
     SourceParameters,
 )
 from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
+from dispatcher.source.linux_gpg_key import remove_gpg_key, add_gpg_key
+
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import get_canonical_representation_of_path, remove_file, \
     move_file, create_file_with_contents
@@ -92,8 +94,25 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         pass
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
-        """Adds new application source along with its key"""
-        pass
+        # Step 1: Add key
+        key_id = add_gpg_key(parameters.gpg_key_path, parameters.gpg_key_name)
+
+        # Step 2: Add the source
+        try:
+            stdout, stderr, exit_code = PseudoShellRunner().run(
+                f"{parameters.source} | sudo tee /etc/app/source.list.d/{parameters.file_name}"
+            )
+
+            # If the key exists, try to remove it
+            if exit_code != 0:
+                # Remove key if adding the source file fails
+                remove_gpg_key(key_id)
+                logger.error(f"Error adding application source list: " + (stderr or stdout))
+                raise DispatcherException(f"Error adding application source list: " + (stderr or stdout))
+
+        except OSError as e:
+            logger.error(f"Error checking or deleting GPG key: {e}")
+            raise DispatcherException(f"Error checking or deleting GPG key: {e}") from e
 
     def list(self) -> list[ApplicationSourceList]:
         """List Ubuntu Application source lists under /etc/apt/sources.list.d"""
@@ -121,24 +140,11 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
             raise DispatcherException(f"Error listing application sources: {e}") from e
 
     def remove(self, parameters: ApplicationRemoveSourceParameters) -> None:
-        """Removes a source file from the Ubuntu source file list under /etc/apt/sources.list.d"""
+        """Removes a source file from the Ubuntu source file list under /etc/apt/sources.list.d
+        @parameters: dataclass parameters for ApplicationRemoveSourceParameters
+        """
         # Remove the GPG key
-        try:
-            stdout, stderr, exit_code = PseudoShellRunner().run(
-                f"gpg --list-keys {parameters.gpg_key_id}"
-            )
-
-            # If the key exists, try to remove it
-            if exit_code == 0:
-                stdout, stderr, exit_code = PseudoShellRunner().run(
-                    f"gpg --delete-key {parameters.gpg_key_id}"
-                )
-                if exit_code != 0:
-                    raise DispatcherException("Error deleting GPG key: " + (stderr or stdout))
-
-        except OSError as e:
-            logger.error(f"Error checking or deleting GPG key: {e}")
-            raise DispatcherException(f"Error checking or deleting GPG key: {e}") from e
+        remove_gpg_key(parameters.gpg_key_id)
 
         # Remove the file under /etc/apt/sources.list.d
         try:

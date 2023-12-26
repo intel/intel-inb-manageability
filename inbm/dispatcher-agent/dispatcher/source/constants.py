@@ -45,6 +45,5 @@ class ApplicationUpdateSourceParameters:
 @unique
 class OsType(Enum):
     """Supported Operating Systems."""
-
     Ubuntu = 0
     # Windows = 1 # Not currently supported
