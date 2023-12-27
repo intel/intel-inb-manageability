@@ -95,18 +95,11 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
 
         # Step 2: Add the source
         try:
-            stdout, stderr, exit_code = PseudoShellRunner().run(
-                f"{parameters.sources} | sudo tee /etc/app/source.list.d/{parameters.file_name}"
-            )
-
-            # If the key exists, try to remove it
-            if exit_code != 0:
-                # Remove key if adding the source file fails
-                remove_gpg_key(key_id)
-                raise SourceError(f"Error adding application source list: " + (stderr or stdout))
-
-        except OSError as e:
-            raise SourceError(f"Error checking or deleting GPG key: {e}") from e
+            create_file_with_contents(os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name),
+                                      parameters.sources)
+        except (IOError, OSError) as e:
+            remove_gpg_key(key_id)
+            raise SourceError(f"Error adding application source list: {e}")
 
     def list(self) -> list[ApplicationSourceList]:
         """List Ubuntu Application source lists under /etc/apt/sources.list.d"""
