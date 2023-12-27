@@ -19,6 +19,7 @@
    7. [Configuration Set](#set)
    8. [Restart](#restart)
    9. [Query](#query)
+   10. [Source](#source)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -403,6 +404,20 @@ inbc query --option hw
 ```
 inbc query --option sw
 ```
+
+## SOURCE
+### Description
+Manipulate OS and Application sources that are used to update the system
+
+### Usage
+```commandline
+inbc query [ application | os ]
+```
+
+### Sub-command
+application-Update the sources used to update an application
+
+
 
 # Status Codes
 

@@ -132,8 +132,8 @@ def create_file_with_contents(path: Union[str, Path], contents: List[str]) -> No
     """
     try:
         canonical_path = get_canonical_representation_of_path(str(path))
-        with open(canonical_path, 'a') as file:
-            file.writelines(contents)
+        with open(canonical_path, 'w') as f:
+            f.writelines([string + '\n' for string in contents])
     except (PermissionError, IsADirectoryError, OSError) as e:
         raise IOError(f"Error while copying file: {str(e)}")
 
