@@ -7,7 +7,6 @@
 
 import logging
 import os
-import re
 import time
 from typing import Any, List, Optional, Union, Mapping
 
@@ -17,7 +16,7 @@ from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
 from inbm_lib.validate_package_list import parse_and_validate_package_list
 from inbm_lib.detect_os import detect_os
-from inbm_lib.constants import OTA_PENDING, OTA_FAIL, OTA_SUCCESS
+from inbm_lib.constants import OTA_PENDING, FAIL, OTA_SUCCESS
 
 from dispatcher.dispatcher_exception import DispatcherException
 from .command_handler import run_commands, print_execution_summary, get_command_status
@@ -244,7 +243,7 @@ class SOTA:
         rebooter = self.factory.create_rebooter()
 
         if self.sota_state == 'diagnostic_system_unhealthy':
-            self._update_logger.update_log(OTA_FAIL)
+            self._update_logger.update_log(FAIL)
             snapshot.revert(rebooter, time_to_wait_before_reboot)
         elif self.sota_state == 'diagnostic_system_healthy':
             try:
@@ -257,7 +256,7 @@ class SOTA:
                 msg = "FAILED INSTALL: System has not been properly updated; reverting."
                 logger.debug(str(e))
                 self._dispatcher_broker.send_result(msg)
-                self._update_logger.update_log(OTA_FAIL)
+                self._update_logger.update_log(FAIL)
                 snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:
             self.execute_from_manifest(setup_helper=setup_helper,
@@ -340,7 +339,7 @@ class SOTA:
                 '{"status": 400, "message": "SOTA command status: FAILURE"}')
             if download_success and self.sota_mode != 'download-only':
                 snapshotter.recover(rebooter, time_to_wait_before_reboot)
-            self._update_logger.status = OTA_FAIL
+            self._update_logger.status = FAIL
             self._update_logger.error = ""
             self._update_logger.save_log()
             raise SotaError(str(msg))
@@ -366,7 +365,7 @@ class SOTA:
 
             else:
                 # Save the log before reboot
-                self._update_logger.status = OTA_FAIL
+                self._update_logger.status = FAIL
                 self._update_logger.error = ""
                 self._update_logger.save_log()
                 self._dispatcher_broker.telemetry(SOTA_FAILURE)

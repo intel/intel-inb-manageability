@@ -5,7 +5,7 @@
 import logging
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from dispatcher.dispatcher_exception import DispatcherException
+from dispatcher.source.source_exception import SourceError
 
 logger = logging.getLogger(__name__)
 
@@ -26,11 +26,10 @@ def remove_gpg_key(gpg_key_id: str) -> None:
                 f"gpg --delete-key {gpg_key_id}"
             )
             if exit_code != 0:
-                raise DispatcherException("Error deleting GPG key: " + (stderr or stdout))
+                raise SourceError("Error deleting GPG key: " + (stderr or stdout))
 
     except OSError as e:
-        logger.error(f"Error checking or deleting GPG key: {e}")
-        raise DispatcherException(f"Error checking or deleting GPG key: {e}") from e
+        raise SourceError(f"Error checking or deleting GPG key: {e}") from e
 
 
 def add_gpg_key(remote_key_path: str, key_store_path: str) -> str:
@@ -46,11 +45,10 @@ def add_gpg_key(remote_key_path: str, key_store_path: str) -> str:
 
         # If key add successful, return the key_id
         if exit_code != 0:
-            raise DispatcherException("Error adding GPG key: " + (stderr or stdout))
+            raise SourceError("Error adding GPG key: " + (stderr or stdout))
 
         logger.info(f"GPG Key ID: {stdout}")
         return stdout
 
     except OSError as e:
-        logger.error(f"Error adding GPG key: {e}")
-        raise DispatcherException(f"Error addingGPG key: {e}") from e
+        raise SourceError(f"Error addingGPG key: {e}") from e

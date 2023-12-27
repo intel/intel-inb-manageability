@@ -1,5 +1,4 @@
 [tool.flakeheaven]
-baseline = ".flakehell_baseline"
 format = "default"
 show_source = true
 statistics = false

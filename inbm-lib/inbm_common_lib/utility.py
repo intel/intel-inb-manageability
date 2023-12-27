@@ -135,7 +135,7 @@ def create_file_with_contents(path: Union[str, Path], contents: List[str]) -> No
         with open(canonical_path, 'w') as f:
             f.writelines([string + '\n' for string in contents])
     except (PermissionError, IsADirectoryError, OSError) as e:
-        raise IOError(f"Error while copying file: {str(e)}")
+        raise IOError(f"Error while writing file: {str(e)}")
 
 
 def remove_file_list(path: List[str]) -> None:

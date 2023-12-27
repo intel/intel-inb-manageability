@@ -10,14 +10,14 @@ class TestLinuxGpgKey:
         try:
             remove_gpg_key("123456A0")
         except DispatcherException:
-            self.fail("Dispatcher remove GPG key raised DispatcherException unexpectedly!")
+            self.fail("Remove GPG key raised SourceError unexpectedly!")
 
     @patch("dispatcher.source.linux_gpg_key.PseudoShellRunner.run", return_value=("", "", 2))
     def test_not_raise_when_list_fails(self, mock_run):
         try:
             remove_gpg_key("123456A0")
-        except DispatcherException:
-            self.fail("Dispatcher remove GPG key raised DispatcherException unexpectedly!")
+        except SourceError:
+            self.fail("Remove GPG key raised SourceError unexpectedly!")
 
     # @patch("dispatcher.source.linux_gpg_key.PseudoShellRunner.run",
     #        return_value=[{"", "", 0}, {"", "GPG Delete Error", 1}])

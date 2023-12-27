@@ -6,7 +6,6 @@
 """
 
 import logging
-import time
 from typing import Any, Optional
 from abc import ABC, abstractmethod
 from inbc import shared
@@ -48,7 +47,7 @@ class Command(ABC):
     def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
-        Sub-classes will override this method to provide specific implementations.
+        Subclasses will override this method to provide specific implementations.
 
         @param args: arguments passed to command-line tool.
         """
@@ -58,7 +57,7 @@ class Command(ABC):
         """Send a manifest.
 
         This is a default concrete implementation that takes in a topic. It is intended
-        to be called from a sub-class.
+        to be called from a subclass.
 
         @param args: arguments passed to command-line tool.
         @param topic: topic on which to send the manifest

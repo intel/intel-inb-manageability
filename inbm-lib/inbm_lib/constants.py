@@ -82,7 +82,7 @@ LOG_FILE = str(LOG_PATH / "inbm-update-status.log")
 
 # OTA STATUS
 OTA_SUCCESS = "SUCCESS"
-OTA_FAIL = "FAIL"
+FAIL = "FAIL"
 OTA_PENDING = "PENDING"
 
 FORMAT_VERSION = "v1"

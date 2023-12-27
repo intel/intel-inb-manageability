@@ -6,7 +6,7 @@
 1. [Introduction](#introduction)
 2. [Prerequisites](#prerequisites)
 3. [Notes](#-notes)
-4. [MQTT Communication](#mqtt-communication)
+4. [MQTT Communication](#mqtt-communication-)
    1. [Publish Channels](#publish-channels)
    2. [Subscribe Channels](#subscribe-channels)
 5. [Commands](#commands)
@@ -19,7 +19,9 @@
    7. [Configuration Set](#set)
    8. [Restart](#restart)
    9. [Query](#query)
-   10. [Source](#source)
+   10. [Source Application Update](#source-application-update)
+   11. [Source Application List](#source-application-list)
+   12. [Source OS List](#source-os-list)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -405,19 +407,53 @@ inbc query --option hw
 inbc query --option sw
 ```
 
-## SOURCE
+## SOURCE APPLICATION UPDATE
 ### Description
-Manipulate OS and Application sources that are used to update the system
+Updates Application sources that are used to update the system
+NOTE: Currently this only works on Ubuntu
+
+### Usage
+```
+inbc source application update {-fileName, --f=FILEPATH} {-sources, --s=SOURCES}
+```
+
+### Examples
+#### Update an application source file
+```
+sudo inbc source application update --f /etc/apt/sources.list.d/google-chrome.list --s "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test" "debsrc [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test2
+```
+
+## SOURCE APPLICATION LIST
+### Description
+Lists Application sources
+NOTE: Currently this only works on Ubuntu
 
 ### Usage
 ```commandline
-inbc query [ application | os ]
+inbc source application list
 ```
 
-### Sub-command
-application-Update the sources used to update an application
+### Examples
+#### Lists all application source files
+```
+sudo inbc source application list
+```
 
+## SOURCE OS LIST
+### Description
+Lists OS sources
+NOTE: Currently this only works on Ubuntu
 
+### Usage
+```commandline
+inbc source os list
+```
+
+### Examples
+#### Lists all OS source files
+```
+sudo inbc source os list
+```
 
 # Status Codes
 
