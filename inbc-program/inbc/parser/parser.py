@@ -73,10 +73,10 @@ class ArgsParser(object):
                                     type=lambda x: validate_string_less_than_n_characters(
                                         x, 'str', 200),
                                     help='Name to store the GPG key information')
-        app_add_parser.add_argument('-source', '--s', required=True,
+        app_add_parser.add_argument('-sources', '--s', required=True, nargs="*", default=[],
                                     type=lambda x: validate_string_less_than_n_characters(
-                                        x, 'str', 1000),
-                                    help='Source information to store in the file')
+                                        x, 'List[str]', 3500),
+                                    help='List of source information to store in the file')
         app_add_parser.add_argument('-fileName', '--f', required=True,
                                     type=lambda x: validate_string_less_than_n_characters(
                                         x, 'str', 200),
@@ -101,10 +101,10 @@ class ArgsParser(object):
                                        type=lambda x: validate_string_less_than_n_characters(
                                            x, 'str', 200),
                                        help='file name to use when storing the source information')
-        app_update_parser.add_argument('-source', '--s', required=True,
+        app_update_parser.add_argument('-sources', '--s', required=True, nargs="*", default=[],
                                        type=lambda x: validate_string_less_than_n_characters(
-                                           x, 'str', 1000),
-                                       help='Source information to store in the file')
+                                           x, 'List[str]', 3500),
+                                       help='List of source information to store in the file')
         app_update_parser.set_defaults(func=application_update)
 
         # Application List Command

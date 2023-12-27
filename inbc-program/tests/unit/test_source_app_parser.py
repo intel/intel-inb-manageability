@@ -15,11 +15,13 @@ class TestSourceApplicationParser(TestCase):
             ['source', 'application', 'add',
              '-gpgKeyPath', 'https://repositories.intel.com/gpu/intel-graphics.key',
              '-gpgKeyName', 'intel-graphics.gpg',
-             '-source', 'echo "deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified"',
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+             'deb-src http://example.com/ focal-security main',
              '-fileName', 'intel-gpu-jammy.list'])
         self.assertEqual(f.gkp, 'https://repositories.intel.com/gpu/intel-graphics.key')
         self.assertEqual(f.gkn, 'intel-graphics.gpg')
-        self.assertEqual(f.s, 'echo "deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified"')
+        self.assertEqual(f.s, ['deb http://example.com/ focal main restricted universe',
+                               'deb-src http://example.com/ focal-security main'])
         self.assertEqual(f.f, 'intel-gpu-jammy.list')
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -28,14 +30,16 @@ class TestSourceApplicationParser(TestCase):
             ['source', 'application', 'add',
              '-gpgKeyPath', 'https://repositories.intel.com/gpu/intel-graphics.key',
              '-gpgKeyName', 'intel-graphics.gpg',
-             '-source', 'echo "deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified"',
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+             'deb-src http://example.com/ focal-security main',
              '-fileName', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<add><gpg><path>https://repositories.intel.com/gpu/intel-graphics.key</path>' \
-                   '<keyname>intel-graphics.gpg</keyname></gpg><repo><source>' \
-                   'echo &quot;deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified&quot;' \
-                   '</source><filename>intel-gpu-jammy.list</filename></repo></add></applicationSource></manifest>'
+                   '<keyname>intel-graphics.gpg</keyname></gpg><repo><repos>' \
+                   '<source_pkg>deb http://example.com/ focal main restricted universe</source_pkg>' \
+                   '<source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
+                   '</repos><filename>intel-gpu-jammy.list</filename></repo></add></applicationSource></manifest>'
         self.assertEqual(p.func(p), expected)
 
     def test_parse_remove_arguments_successfully(self):
@@ -61,24 +65,25 @@ class TestSourceApplicationParser(TestCase):
     def test_parse_update_arguments_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'application', 'update',
-             '-source',
-             'echo "deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified"',
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+                         'deb-src http://example.com/ focal-security main',
              '-fileName', 'intel-gpu-jammy.list'])
-        self.assertEqual(f.s,
-                         'echo "deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified"')
+        self.assertEqual(f.s, ['deb http://example.com/ focal main restricted universe',
+                               'deb-src http://example.com/ focal-security main'])
         self.assertEqual(f.f, 'intel-gpu-jammy.list')
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_update_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'application', 'update',
-             '-source', 'echo "deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified"',
+             '-sources', 'deb http://example.com/ focal main restricted universe',
+                         'deb-src http://example.com/ focal-security main',
              '-fileName', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
-                   '<update><repo><source_pkg>' \
-                   'echo &quot;deb https://repositories.intel.com/gpu/ubuntu jammy/production/2328 unified&quot;' \
-                   '</source_pkg><filename>intel-gpu-jammy.list</filename></repo></update></applicationSource></manifest>'
+                   '<update><repo><repos><source_pkg>deb http://example.com/ focal main restricted universe' \
+                   '</source_pkg><source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
+                   '</repos><filename>intel-gpu-jammy.list</filename></repo></update></applicationSource></manifest>'
         self.assertEqual(p.func(p), expected)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')

@@ -12,7 +12,7 @@ def application_add(args: argparse.Namespace) -> str:
     arguments = {
         'path': args.gkp,
         'keyname': args.gkn,
-        'source': args.s,
+        'sources': args.s,
         'filename': args.f,
     }
 
@@ -23,14 +23,16 @@ def application_add(args: argparse.Namespace) -> str:
                 '<add><gpg>'
                 '{0}' +
                 '{1}'
-                '</gpg><repo>' +
-                '{2}'
-                '{3}</repo>'
-                '</add></applicationSource>' +
-                '</manifest>').format(create_xml_tag(arguments, "path"),
-                                      create_xml_tag(arguments, "keyname"),
-                                      create_xml_tag(arguments, "source"),
-                                      create_xml_tag(arguments, "filename"))
+                '</gpg><repo><repos>').format(create_xml_tag(arguments, "path"),
+                                              create_xml_tag(arguments, "keyname"))
+
+    for source in args.s:
+        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+
+    manifest += ('</repos>'
+                 f'{create_xml_tag(arguments, "filename")}</repo>'
+                 '</add></applicationSource>' +
+                 '</manifest>')
 
     print("manifest {0}".format(manifest))
     return manifest
@@ -46,33 +48,35 @@ def application_remove(args: argparse.Namespace) -> str:
                 '<manifest><type>source</type>' +
                 '<applicationSource>' +
                 '<remove><gpg>'
-                '{0}' +
+                f'{create_xml_tag(arguments, "keyid")}' +
                 '</gpg><repo>' +
-                '{1}'
+                f'{create_xml_tag(arguments, "filename")}'
                 '</repo>'
                 '</remove></applicationSource>' +
-                '</manifest>').format(create_xml_tag(arguments, "keyid"),
-                                      create_xml_tag(arguments, "filename"))
+                '</manifest>')
 
-    print("manifest {0}".format(manifest))
+    print(f"manifest {manifest}")
     return manifest
 
 
 def application_update(args: argparse.Namespace) -> str:
     arguments = {
-        'source_pkg': args.s,
+        'sources': args.s,
         'filename': args.f
     }
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
                 '<applicationSource>' +
-                '<update><repo>'
-                '{0}{1}' +
-                '</repo></update></applicationSource>' +
-                '</manifest>').format(create_xml_tag(arguments, "source_pkg"),
-                                      create_xml_tag(arguments, "filename"))
+                '<update><repo><repos>')
 
-    print("manifest {0}".format(manifest))
+    for source in args.s:
+        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+
+    manifest += (f'</repos>{create_xml_tag(arguments, "filename")}' +
+                 '</repo></update></applicationSource>' +
+                 '</manifest>')
+
+    print(f"manifest {manifest}")
     return manifest
 
 
