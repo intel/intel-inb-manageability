@@ -39,9 +39,9 @@ def add_gpg_key(remote_key_path: str, key_store_path: str) -> str:
     @param key_store_path: Path on local machine to store the GPG key
     """
     try:
-        stdout, stderr, exit_code = PseudoShellRunner().run(
-            f"wget -qO - {remote_key_path} | sudo gpg --dearmor --output {key_store_path}"
-        )
+        command = f"sudo wget -qO - {remote_key_path} | sudo gpg --dearmor --output {key_store_path}"
+        logger.debug(f"add GPG key command: {command}")
+        stdout, stderr, exit_code = PseudoShellRunner().run(command)
 
         # If key add successful, return the key_id
         if exit_code != 0:
