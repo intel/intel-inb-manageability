@@ -55,8 +55,7 @@ class Broker(IBroker):
         self.mqttc.start()
         self._subscribe()
         self._command = create_command_factory(cmd_type, self)
-        # Topics are coded in the methods.  Abstract method is requiring param 2, but it's not used.
-        self._command.trigger_manifest(parsed_args, "topic")
+        self._command.invoke_update(parsed_args)
 
     def publish(self, topic: str, message: str, retain: bool = False) -> None:
         """Publishes message via MQTT

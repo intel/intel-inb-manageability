@@ -28,7 +28,7 @@ class TestBroker(TestCase):
         self._restart_args = self.arg_parser.parse_args(['restart'])
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.SotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.SotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_event_sota_failure(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('sota', self._sota_args, False)
@@ -36,21 +36,21 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.FotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_ensure_no_exception_on_fota_broker_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('fota', self._fota_args, False)
         b._on_event('manageability/event', 'Overall FOTA status : SUCCESS', 1)
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.FotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_ensure_no_exception_on_aota_broker_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('aota', self._aota_args, False)
         b._on_event('manageability/event', 'Overall AOTA status : SUCCESS', 1)
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.AotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.AotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_aota_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('aota', self._aota_args, False)
@@ -58,7 +58,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.AotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.AotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_aota_failed(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('aota', self._fota_args, False)
@@ -66,7 +66,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.FotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_fota_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('fota', self._fota_args, False)
@@ -74,7 +74,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.FotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_fota_failed(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('fota', self._fota_args, False)
@@ -82,7 +82,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.PotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.PotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_pota_failed(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('pota', self._pota_args, False)
@@ -90,7 +90,7 @@ class TestBroker(TestCase):
         # mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.SotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.SotaCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_sota_failed(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('sota', self._sota_args, False)
@@ -98,7 +98,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
+    @patch('inbc.command.config_command.GetConfigCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_get_inbm_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('get', self._get_inbm_args, False)
@@ -106,7 +106,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
+    @patch('inbc.command.config_command.GetConfigCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_get_inbm_failed(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('get', self._get_inbm_args, False)
@@ -114,7 +114,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
+    @patch('inbc.command.config_command.GetConfigCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_set_inbm_success(self, mock_terminate, mock_trigger,
                                                   mock_mqtt) -> None:
@@ -123,7 +123,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.config_command.GetConfigCommand.trigger_manifest')
+    @patch('inbc.command.config_command.GetConfigCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_set_inbm_failed(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('set', self._set_inbm_args, False)
@@ -131,7 +131,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.config_command.LoadConfigCommand.trigger_manifest')
+    @patch('inbc.command.config_command.LoadConfigCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_load_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('load', self._load_args, False)
@@ -139,7 +139,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.config_command.LoadConfigCommand.trigger_manifest')
+    @patch('inbc.command.config_command.LoadConfigCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_load_failed(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('load', self._load_args, False)
@@ -147,7 +147,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.command.RestartCommand.trigger_manifest')
+    @patch('inbc.command.command.RestartCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_restart_success(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('restart', self._restart_args, False)
@@ -155,7 +155,7 @@ class TestBroker(TestCase):
         mock_terminate.assert_called_once()
 
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.command.RestartCommand.trigger_manifest')
+    @patch('inbc.command.command.RestartCommand.invoke_update')
     @patch('inbc.command.command.Command.terminate_operation')
     def test_on_message_response_restart_failed(self, mock_terminate, mock_trigger, mock_mqtt) -> None:
         b = Broker('restart', self._restart_args, False)
@@ -164,7 +164,7 @@ class TestBroker(TestCase):
 
     @patch('inbc.command.command.Command.search_response')
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.FotaCommand.invoke_update')
     def test_on_message_response_search_called(self, mock_trigger, mock_mqtt, mock_search) -> None:
         b = Broker('fota', self._fota_args, False)
         b._on_response('manageability/response', 'check', 1)
@@ -172,7 +172,7 @@ class TestBroker(TestCase):
 
     @patch('inbc.command.command.Command.stop_timer')
     @patch('inbc.broker.MQTT')
-    @patch('inbc.command.ota_command.FotaCommand.trigger_manifest')
+    @patch('inbc.command.ota_command.FotaCommand.invoke_update')
     def test_on_stop_broker(self, mock_trigger, mock_mqtt, mock_timer) -> None:
         b = Broker('fota', self._fota_args, False)
         b.stop_broker()

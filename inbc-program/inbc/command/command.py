@@ -45,10 +45,23 @@ class Command(ABC):
         self._update_timer.stop()
 
     @abstractmethod
-    def trigger_manifest(self, args: Any, topic: str) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
+        Sub-classes will override this method to provide specific implementations.
+
         @param args: arguments passed to command-line tool.
+        """
+        pass
+
+    def _send_manifest(self, args: Any, topic: str) -> None:
+        """Send a manifest.
+
+        This is a default concrete implementation that takes in a topic. It is intended
+        to be called from a sub-class.
+
+        @param args: arguments passed to command-line tool.
+        @param topic: topic on which to send the manifest
         """
         manifest = args.func(args)
         self._broker.publish(topic, manifest)
@@ -112,13 +125,12 @@ class RestartCommand(Command):
         """
         super().__init__(MAX_TIME_LIMIT, broker, RESTART)
 
-    def trigger_manifest(self, args: Any, topic: str = RESTART_CHANNEL) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke restart.
 
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic to publish the manifest.
         """
-        super().trigger_manifest(args, RESTART_CHANNEL)
+        super()._send_manifest(args, RESTART_CHANNEL)
 
     def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
@@ -152,13 +164,12 @@ class QueryCommand(Command):
         super().__init__(MAX_TIME_LIMIT, broker, QUERY)
         self._success_code: Optional[int] = None
 
-    def trigger_manifest(self, args: Any, topic: str = QUERY_CHANNEL) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke query request.
 
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic to publish the manifest.
         """
-        super().trigger_manifest(args, HOST_QUERY_CHANNEL)
+        super()._send_manifest(args, HOST_QUERY_CHANNEL)
 
     def search_response(self, payload: Any) -> None:
         """Search for keywords in response message

@@ -69,6 +69,153 @@ class TestXmlParser(TestCase):
     def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
 
+    def test_os_source_with_no_command_fails_validation(self) -> None:
+        try:
+            # this should not pass--there is no command
+            parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
+                <manifest><type>source</type>\
+                    <osSource>\
+                    </osSource>\
+                </manifest>'
+            parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+            # query parsed to make sure we get the data
+        except XmlException as e:
+            # this is fine
+            return
+        # if no exception, this is not fine
+        self.fail("should not pass")
+
+    def test_application_source_with_list_passes_validation(self) -> None:
+        parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
+            <manifest><type>source</type>\
+                <applicationSource>\
+                <list/>\
+                </applicationSource>\
+            </manifest>'
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_application_source_with_add_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <add>
+            <gpg>
+                <path></path>
+                <keyname></keyname>
+            </gpg>
+            <repo>
+                <source></source>
+                <filename></filename>
+            </repo>
+        </add>
+    </applicationSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_application_source_with_update_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <update>
+            <repos>
+                <source_pkg></source_pkg>  
+                <source_pkg></source_pkg>  
+            </repos>
+        </update>
+    </applicationSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_application_source_with_remove_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <remove>
+            <gpg>
+                <keyid></keyid>
+            </gpg>
+            <repo>
+                <filename></filename>
+            </repo>
+        </remove>
+    </applicationSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_os_source_with_list_passes_validation(self) -> None:
+        parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
+            <manifest><type>source</type>\
+                <osSource>\
+                <list/>\
+                </osSource>\
+            </manifest>'
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_os_source_with_add_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <add>
+            <repos>
+                <source_pkg></source_pkg>
+            </repos>
+        </add>
+    </osSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_os_source_with_update_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <update>
+            <repos>
+                <source_pkg></source_pkg>  
+            </repos>
+        </update>
+    </osSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_os_source_with_remove_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <remove>
+            <repos>
+                <source_pkg></source_pkg>
+            </repos>
+        </remove>
+    </osSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
     def test_parser_creation_failure(self) -> None:
         with self.assertRaises(XmlException):
             XmlHandler(xml=BAD_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
