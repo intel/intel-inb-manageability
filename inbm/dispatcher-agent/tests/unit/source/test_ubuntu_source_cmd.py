@@ -4,6 +4,7 @@ from unittest.mock import mock_open, patch
 from dispatcher.source.source_exception import SourceError
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST_D,
+    UBUNTU_APT_SOURCES_LIST,
     ApplicationRemoveSourceParameters,
     SourceParameters,
     ApplicationUpdateSourceParameters,
@@ -123,6 +124,33 @@ class TestUbuntuOSSourceManager:
             manager.remove(sources_to_remove)
 
         assert "Error occurred while trying to remove sources" in str(exc_info.value)
+
+    def test_ubuntu_os_source_manager_add_success(self):
+        test_sources = ["deb http://archive.ubuntu.com/ubuntu focal main", "deb-src http://archive.ubuntu.com/ubuntu focal main"]
+        parameters = SourceParameters(sources=test_sources)
+
+        manager = UbuntuOsSourceManager()
+
+        m = mock_open()
+        with patch("builtins.open", m):
+            manager.add(parameters)
+
+        m.assert_called_once_with(UBUNTU_APT_SOURCES_LIST, "a")
+        m().write.assert_any_call(f"{test_sources[0]}\n")
+        m().write.assert_any_call(f"{test_sources[1]}\n")
+
+    def test_ubuntu_os_source_manager_add_error(self):
+        test_sources = ["deb http://archive.ubuntu.com/ubuntu focal main", "deb-src http://archive.ubuntu.com/ubuntu focal main"]
+        parameters = SourceParameters(sources=test_sources)
+
+        manager = UbuntuOsSourceManager()
+
+        m = mock_open()
+        m.side_effect = OSError("Permission denied")
+        with patch("builtins.open", m):
+            with pytest.raises(SourceError) as e:
+                manager.add(parameters)
+            assert str(e.value) == 'Error adding sources: Permission denied'
 
 
 class TestUbuntuApplicationSourceManager:

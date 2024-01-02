@@ -36,9 +36,14 @@ class UbuntuOsSourceManager(OsSourceManager):
         pass
 
     def add(self, parameters: SourceParameters) -> None:
-        """Adds a source in the Ubuntu OS source file /etc/apt/sources.list"""
-        # TODO: Add functionality to add a source file in Ubuntu to /etc/apt/sources.list file
-        logger.debug(f"sources: {parameters.sources}")
+        """Adds sources in the Ubuntu OS source file /etc/apt/sources.list"""
+        
+        try:
+            with open(UBUNTU_APT_SOURCES_LIST, "a") as file:
+                for source in parameters.sources:
+                    file.write(f"{source}\n")
+        except OSError as e:
+            raise SourceError(f"Error adding sources: {e}") from e
 
     def list(self) -> list[str]:
         """List deb and deb-src lines in /etc/apt/sources.list"""
