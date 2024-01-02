@@ -147,7 +147,7 @@ def test_do_source_command_remove(
                 <applicationSource>
                     <add>
                         <gpg>
-                            <path>gpgpath</path>
+                            <uri>gpguri</uri>
                             <keyname>keyname</keyname>
                         </gpg>
                         <repo>
@@ -165,7 +165,7 @@ def test_do_source_command_remove(
             ApplicationAddSourceParameters(
                 file_name="repofilename",
                 gpg_key_name="keyname",
-                gpg_key_path="gpgpath",
+                gpg_key_uri="gpguri",
                 sources=["sourceA", "sourceB"],
             ),
         ),

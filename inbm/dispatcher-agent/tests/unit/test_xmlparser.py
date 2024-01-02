@@ -103,7 +103,7 @@ class TestXmlParser(TestCase):
     <applicationSource>
         <add>
             <gpg>
-                <path></path>
+                <uri></uri>
                 <keyname></keyname>
             </gpg>
             <repo>

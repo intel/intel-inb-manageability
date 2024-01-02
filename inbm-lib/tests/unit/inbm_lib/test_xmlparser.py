@@ -4,8 +4,20 @@ from unittest import TestCase
 from inbm_lib.xmlhandler import XmlHandler, XmlException
 import os
 
-TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
-                                    'manifest_schema.xsd')
+TEST_SCHEMA_LOCATION = os.path.join(
+                                        os.path.dirname(__file__),
+                                        '..',
+                                        '..',
+                                        '..',
+                                        '..',
+                                        'inbm',
+                                        'dispatcher-agent',
+                                        'fpm-template',
+                                        'usr',
+                                        'share',
+                                        'dispatcher-agent',
+                                        'manifest_schema.xsd',
+                                    )
 
 GOOD_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
            '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \

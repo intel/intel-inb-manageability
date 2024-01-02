@@ -10,7 +10,7 @@ from ..xml_tag import create_xml_tag
 
 def application_add(args: argparse.Namespace) -> str:
     arguments = {
-        'path': args.gpgKeyPath,
+        'uri': args.gpgKeyUri,
         'keyname': args.gpgKeyName,
         'sources': args.sources,
         'filename': args.fileName,
@@ -23,7 +23,7 @@ def application_add(args: argparse.Namespace) -> str:
                 '<add><gpg>'
                 '{0}' +
                 '{1}'
-                '</gpg><repo><repos>').format(create_xml_tag(arguments, "path"),
+                '</gpg><repo><repos>').format(create_xml_tag(arguments, "uri"),
                                               create_xml_tag(arguments, "keyname"))
 
     for source in args.sources:

@@ -65,10 +65,10 @@ class ArgsParser(object):
 
         # Application Add Command
         app_add_parser = app_subparsers.add_parser('add')
-        app_add_parser.add_argument('--gpgKeyPath', '-gkp', required=True,
+        app_add_parser.add_argument('--gpgKeyUri', '-gku', required=True,
                                     type=lambda x: validate_string_less_than_n_characters(
                                         x, 'str', 1500),
-                                    help='Path to GPG key')
+                                    help='Uri from which to download GPG key')
         app_add_parser.add_argument('--gpgKeyName', '-gkn', required=True,
                                     type=lambda x: validate_string_less_than_n_characters(
                                         x, 'str', 200),

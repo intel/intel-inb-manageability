@@ -17,26 +17,26 @@ class ApplicationSourceList:
     sources: list[str]
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class SourceParameters:
     sources: list[str] = field(default_factory=lambda: [])
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class ApplicationAddSourceParameters:
-    gpg_key_path: str
+    gpg_key_uri: str
     gpg_key_name: str
     file_name: str
     sources: list[str] = field(default_factory=lambda: [])
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class ApplicationRemoveSourceParameters:
     gpg_key_id: str
     file_name: str
 
 
-@dataclass()
+@dataclass(kw_only=True, frozen=True)
 class ApplicationUpdateSourceParameters:
     file_name: str
     sources: list[str] = field(default_factory=lambda: [])

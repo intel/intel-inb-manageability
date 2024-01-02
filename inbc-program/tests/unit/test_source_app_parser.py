@@ -13,12 +13,12 @@ class TestSourceApplicationParser(TestCase):
     def test_parse_add_arguments_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'application', 'add',
-             '--gpgKeyPath', 'https://repositories.intel.com/gpu/intel-graphics.key',
+             '--gpgKeyUri', 'https://repositories.intel.com/gpu/intel-graphics.key',
              '--gpgKeyName', 'intel-graphics.gpg',
              '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main',
              '--fileName', 'intel-gpu-jammy.list'])
-        self.assertEqual(f.gpgKeyPath, 'https://repositories.intel.com/gpu/intel-graphics.key')
+        self.assertEqual(f.gpgKeyUri, 'https://repositories.intel.com/gpu/intel-graphics.key')
         self.assertEqual(f.gpgKeyName, 'intel-graphics.gpg')
         self.assertEqual(f.sources, ['deb http://example.com/ focal main restricted universe',
                                'deb-src http://example.com/ focal-security main'])
@@ -28,14 +28,14 @@ class TestSourceApplicationParser(TestCase):
     def test_create_add_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'application', 'add',
-             '--gpgKeyPath', 'https://repositories.intel.com/gpu/intel-graphics.key',
+             '--gpgKeyUri', 'https://repositories.intel.com/gpu/intel-graphics.key',
              '--gpgKeyName', 'intel-graphics.gpg',
              '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main',
              '--fileName', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
-                   '<add><gpg><path>https://repositories.intel.com/gpu/intel-graphics.key</path>' \
+                   '<add><gpg><uri>https://repositories.intel.com/gpu/intel-graphics.key</uri>' \
                    '<keyname>intel-graphics.gpg</keyname></gpg><repo><repos>' \
                    '<source_pkg>deb http://example.com/ focal main restricted universe</source_pkg>' \
                    '<source_pkg>deb-src http://example.com/ focal-security main</source_pkg>' \
