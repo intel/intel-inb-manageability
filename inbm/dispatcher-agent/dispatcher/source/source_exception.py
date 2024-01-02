@@ -9,4 +9,5 @@
 
 class SourceError(Exception):
     """Class exception Module"""
+
     pass

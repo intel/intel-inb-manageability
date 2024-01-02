@@ -16,15 +16,11 @@ def remove_gpg_key(gpg_key_id: str) -> None:
     @param gpg_key_id: ID of GPG key to remove
     """
     try:
-        stdout, stderr, exit_code = PseudoShellRunner().run(
-            f"gpg --list-keys {gpg_key_id}"
-        )
+        stdout, stderr, exit_code = PseudoShellRunner().run(f"gpg --list-keys {gpg_key_id}")
 
         # If the key exists, try to remove it
         if exit_code == 0:
-            stdout, stderr, exit_code = PseudoShellRunner().run(
-                f"gpg --delete-key {gpg_key_id}"
-            )
+            stdout, stderr, exit_code = PseudoShellRunner().run(f"gpg --delete-key {gpg_key_id}")
             if exit_code != 0:
                 raise SourceError("Error deleting GPG key: " + (stderr or stdout))
 
@@ -39,7 +35,9 @@ def add_gpg_key(remote_key_path: str, key_store_path: str) -> str:
     @param key_store_path: Path on local machine to store the GPG key
     """
     try:
-        command = f"sudo wget -qO - {remote_key_path} | sudo gpg --dearmor --output {key_store_path}"
+        command = (
+            f"sudo wget -qO - {remote_key_path} | sudo gpg --dearmor --output {key_store_path}"
+        )
         logger.debug(f"add GPG key command: {command}")
         stdout, stderr, exit_code = PseudoShellRunner().run(command)
 
