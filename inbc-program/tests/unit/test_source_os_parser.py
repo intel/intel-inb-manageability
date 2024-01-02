@@ -17,16 +17,16 @@ class TestSourceOsParser(TestCase):
     def test_parse_add_arguments_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'os', 'add',
-             '-sources', 'deb http://example.com/ focal main restricted universe',
+             '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main'])
-        self.assertEqual(f.s, ['deb http://example.com/ focal main restricted universe',
+        self.assertEqual(f.sources, ['deb http://example.com/ focal main restricted universe',
                                'deb-src http://example.com/ focal-security main'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_add_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'os', 'add',
-             '-sources', 'deb http://example.com/ focal main restricted universe',
+             '--sources', 'deb http://example.com/ focal main restricted universe',
                          'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><osSource>' \
@@ -39,16 +39,16 @@ class TestSourceOsParser(TestCase):
     def test_parse_remove_arguments_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'os', 'remove',
-             '-sources', 'deb http://example.com/ focal main restricted universe',
+             '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main'])
-        self.assertEqual(f.s, ['deb http://example.com/ focal main restricted universe',
+        self.assertEqual(f.sources, ['deb http://example.com/ focal main restricted universe',
                          'deb-src http://example.com/ focal-security main'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_remove_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'os', 'remove',
-             '-sources', 'deb http://example.com/ focal main restricted universe',
+             '--sources', 'deb http://example.com/ focal main restricted universe',
                          'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><osSource>' \
@@ -61,17 +61,17 @@ class TestSourceOsParser(TestCase):
     def test_parse_update_arguments_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'os', 'update',
-             '-sources',
+             '--sources',
              'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main'])
-        self.assertEqual(f.s, ['deb http://example.com/ focal main restricted universe',
+        self.assertEqual(f.sources, ['deb http://example.com/ focal main restricted universe',
                          'deb-src http://example.com/ focal-security main'])
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_update_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'os', 'update',
-             '-sources', 'deb http://example.com/ focal main restricted universe',
+             '--sources', 'deb http://example.com/ focal main restricted universe',
                          'deb-src http://example.com/ focal-security main'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><osSource>' \

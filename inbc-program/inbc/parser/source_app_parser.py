@@ -10,10 +10,10 @@ from ..xml_tag import create_xml_tag
 
 def application_add(args: argparse.Namespace) -> str:
     arguments = {
-        'path': args.gkp,
-        'keyname': args.gkn,
-        'sources': args.s,
-        'filename': args.f,
+        'path': args.gpgKeyPath,
+        'keyname': args.gpgKeyName,
+        'sources': args.sources,
+        'filename': args.fileName,
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -26,7 +26,7 @@ def application_add(args: argparse.Namespace) -> str:
                 '</gpg><repo><repos>').format(create_xml_tag(arguments, "path"),
                                               create_xml_tag(arguments, "keyname"))
 
-    for source in args.s:
+    for source in args.sources:
         manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
 
     manifest += ('</repos>'
@@ -40,8 +40,8 @@ def application_add(args: argparse.Namespace) -> str:
 
 def application_remove(args: argparse.Namespace) -> str:
     arguments = {
-        'keyid': args.gki,
-        'filename': args.f
+        'keyid': args.gpgKeyId,
+        'filename': args.fileName
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -61,15 +61,15 @@ def application_remove(args: argparse.Namespace) -> str:
 
 def application_update(args: argparse.Namespace) -> str:
     arguments = {
-        'sources': args.s,
-        'filename': args.f
+        'sources': args.sources,
+        'filename': args.fileName
     }
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
                 '<applicationSource>' +
                 '<update><repo><repos>')
 
-    for source in args.s:
+    for source in args.sources:
         manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
 
     manifest += (f'</repos>{create_xml_tag(arguments, "filename")}' +

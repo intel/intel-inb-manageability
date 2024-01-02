@@ -414,13 +414,13 @@ NOTE: Currently this only works on Ubuntu
 
 ### Usage
 ```
-inbc source application update {-fileName, --f=FILEPATH} {-sources, --s=SOURCES}
+inbc source application update {--fileName, -f=FILEPATH} {--sources, -s=SOURCES}
 ```
 
 ### Examples
 #### Update an application source file
 ```
-sudo inbc source application update --f google-chrome.list --s "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test" "debsrc [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test2
+sudo inbc source application update -f google-chrome.list -s "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test" "debsrc [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test2"
 ```
 
 ## SOURCE APPLICATION LIST
