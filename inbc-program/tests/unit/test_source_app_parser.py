@@ -17,12 +17,12 @@ class TestSourceApplicationParser(TestCase):
              '--gpgKeyName', 'intel-graphics.gpg',
              '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main',
-             '--fileName', 'intel-gpu-jammy.list'])
+             '--filename', 'intel-gpu-jammy.list'])
         self.assertEqual(f.gpgKeyUri, 'https://repositories.intel.com/gpu/intel-graphics.key')
         self.assertEqual(f.gpgKeyName, 'intel-graphics.gpg')
         self.assertEqual(f.sources, ['deb http://example.com/ focal main restricted universe',
-                               'deb-src http://example.com/ focal-security main'])
-        self.assertEqual(f.fileName, 'intel-gpu-jammy.list')
+                                     'deb-src http://example.com/ focal-security main'])
+        self.assertEqual(f.filename, 'intel-gpu-jammy.list')
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_add_manifest_successfully(self, m_connect):
@@ -32,7 +32,7 @@ class TestSourceApplicationParser(TestCase):
              '--gpgKeyName', 'intel-graphics.gpg',
              '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main',
-             '--fileName', 'intel-gpu-jammy.list'])
+             '--filename', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<add><gpg><uri>https://repositories.intel.com/gpu/intel-graphics.key</uri>' \
@@ -46,16 +46,16 @@ class TestSourceApplicationParser(TestCase):
         f = self.arg_parser.parse_args(
             ['source', 'application', 'remove',
              '--gpgKeyId', '46C1680FC119E61A501811823A319F932D945953',
-             '--fileName', 'intel-gpu-jammy.list'])
+             '--filename', 'intel-gpu-jammy.list'])
         self.assertEqual(f.gpgKeyId, '46C1680FC119E61A501811823A319F932D945953')
-        self.assertEqual(f.fileName, 'intel-gpu-jammy.list')
+        self.assertEqual(f.filename, 'intel-gpu-jammy.list')
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_remove_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'application', 'remove',
              '--gpgKeyId', '46C1680FC119E61A501811823A319F932D945953',
-             '--fileName', 'intel-gpu-jammy.list'])
+             '--filename', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<remove><gpg><keyid>46C1680FC119E61A501811823A319F932D945953</keyid></gpg>' \
@@ -66,19 +66,19 @@ class TestSourceApplicationParser(TestCase):
         f = self.arg_parser.parse_args(
             ['source', 'application', 'update',
              '--sources', 'deb http://example.com/ focal main restricted universe',
-                         'deb-src http://example.com/ focal-security main',
-             '--fileName', 'intel-gpu-jammy.list'])
+             'deb-src http://example.com/ focal-security main',
+             '--filename', 'intel-gpu-jammy.list'])
         self.assertEqual(f.sources, ['deb http://example.com/ focal main restricted universe',
-                               'deb-src http://example.com/ focal-security main'])
-        self.assertEqual(f.fileName, 'intel-gpu-jammy.list')
+                                     'deb-src http://example.com/ focal-security main'])
+        self.assertEqual(f.filename, 'intel-gpu-jammy.list')
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_update_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'application', 'update',
              '--sources', 'deb http://example.com/ focal main restricted universe',
-                         'deb-src http://example.com/ focal-security main',
-             '--fileName', 'intel-gpu-jammy.list'])
+             'deb-src http://example.com/ focal-security main',
+             '--filename', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<update><repo><repos><source_pkg>deb http://example.com/ focal main restricted universe' \

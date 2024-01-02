@@ -77,7 +77,7 @@ class ArgsParser(object):
                                     type=lambda x: validate_string_less_than_n_characters(
                                         x, 'List[str]', 3500),
                                     help='List of source information to store in the file')
-        app_add_parser.add_argument('--fileName', '-f', required=True,
+        app_add_parser.add_argument('--filename', '-f', required=True,
                                     type=lambda x: validate_string_less_than_n_characters(
                                         x, 'str', 200),
                                     help='file name to use when storing the source information')
@@ -89,7 +89,7 @@ class ArgsParser(object):
                                        type=lambda x: validate_string_less_than_n_characters(
                                            x, 'str', 50),
                                        help='GPG Key ID of the source to remove.')
-        app_remove_parser.add_argument('--fileName', '-f', required=True,
+        app_remove_parser.add_argument('--filename', '-f', required=True,
                                        type=lambda x: validate_string_less_than_n_characters(
                                            x, 'str', 200),
                                        help='file name to use when storing the source information')
@@ -97,7 +97,7 @@ class ArgsParser(object):
 
         # Application Update Command
         app_update_parser = app_subparsers.add_parser('update')
-        app_update_parser.add_argument('--fileName', '-f', required=True,
+        app_update_parser.add_argument('--filename', '-f', required=True,
                                        type=lambda x: validate_string_less_than_n_characters(
                                            x, 'str', 200),
                                        help='file name to use when storing the source information')

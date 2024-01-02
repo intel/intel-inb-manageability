@@ -13,7 +13,7 @@ def application_add(args: argparse.Namespace) -> str:
         'uri': args.gpgKeyUri,
         'keyname': args.gpgKeyName,
         'sources': args.sources,
-        'filename': args.fileName,
+        'filename': args.filename,
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -41,7 +41,7 @@ def application_add(args: argparse.Namespace) -> str:
 def application_remove(args: argparse.Namespace) -> str:
     arguments = {
         'keyid': args.gpgKeyId,
-        'filename': args.fileName
+        'filename': args.filename
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -62,7 +62,7 @@ def application_remove(args: argparse.Namespace) -> str:
 def application_update(args: argparse.Namespace) -> str:
     arguments = {
         'sources': args.sources,
-        'filename': args.fileName
+        'filename': args.filename
     }
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
