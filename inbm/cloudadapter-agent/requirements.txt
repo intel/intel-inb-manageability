@@ -6,4 +6,4 @@ urllib3==1.26.18
 PySocks==1.7.1
 psutil==5.9.5
 shortuuid==1.0.1
-pyinstaller==5.13.0
+pyinstaller==5.13.1
