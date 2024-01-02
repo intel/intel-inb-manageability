@@ -12,7 +12,7 @@ from dispatcher.source.ubuntu_source_manager import (
     UbuntuOsSourceManager,
 )
 
-APP_SOURCE = ["deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] " \
+APP_SOURCE = ["deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] "
               "https://repositories.intel.com/gpu/ubuntu jammy unified",
               "deb-src https://repo.zabbix.com/zabbix/5.0/ubuntu jammy main"]
 
@@ -57,32 +57,32 @@ class TestUbuntuOSSourceManager:
         "sources_to_remove, expected_content",
         [
             (
-                    SourceParameters(sources=["deb http://example.com/ubuntu focal main restricted"]),
-                    [
-                        "# Comment line\n",
-                        "deb-src http://example.com/ubuntu focal main restricted\n",
-                    ],
+                SourceParameters(sources=["deb http://example.com/ubuntu focal main restricted"]),
+                [
+                    "# Comment line\n",
+                    "deb-src http://example.com/ubuntu focal main restricted\n",
+                ],
             ),
             (
-                    SourceParameters(
-                        sources=[
-                            "deb http://example.com/ubuntu focal main restricted",
-                            "deb-src http://example.com/ubuntu focal main restricted",
-                        ]
-                    ),
-                    ["# Comment line\n"],
+                SourceParameters(
+                    sources=[
+                        "deb http://example.com/ubuntu focal main restricted",
+                        "deb-src http://example.com/ubuntu focal main restricted",
+                    ]
+                ),
+                ["# Comment line\n"],
             ),
             (
-                    SourceParameters(
-                        sources=[
-                            "non-existent source line",
-                        ]
-                    ),
-                    [
-                        "# Comment line\n",
-                        "deb http://example.com/ubuntu focal main restricted\n",
-                        "deb-src http://example.com/ubuntu focal main restricted\n",
-                    ],
+                SourceParameters(
+                    sources=[
+                        "non-existent source line",
+                    ]
+                ),
+                [
+                    "# Comment line\n",
+                    "deb http://example.com/ubuntu focal main restricted\n",
+                    "deb-src http://example.com/ubuntu focal main restricted\n",
+                ],
             ),
         ],
     )
@@ -168,7 +168,8 @@ class TestUbuntuApplicationSourceManager:
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=True)
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key")
     def test_successfully_remove_gpg_key_and_source_list(self, mock_remove_gpg_key, mock_remove_file):
-        parameters = ApplicationRemoveSourceParameters(gpg_key_id="123456A0", file_name="example_source.list")
+        parameters = ApplicationRemoveSourceParameters(
+            gpg_key_id="123456A0", file_name="example_source.list")
         command = UbuntuApplicationSourceManager()
         try:
             command.remove(parameters)
@@ -177,7 +178,8 @@ class TestUbuntuApplicationSourceManager:
 
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key")
     def test_raises_when_space_check_fails(self, mock_remove_gpg_key):
-        parameters = ApplicationRemoveSourceParameters(gpg_key_id="123456A0", file_name="../example_source.list")
+        parameters = ApplicationRemoveSourceParameters(
+            gpg_key_id="123456A0", file_name="../example_source.list")
         command = UbuntuApplicationSourceManager()
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
@@ -186,7 +188,8 @@ class TestUbuntuApplicationSourceManager:
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=False)
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key")
     def test_raises_when_unable_to_remove_file(self, mock_remove_gpg_key, mock_remove_file):
-        parameters = ApplicationRemoveSourceParameters(gpg_key_id="123456A0", file_name="example_source.list")
+        parameters = ApplicationRemoveSourceParameters(
+            gpg_key_id="123456A0", file_name="example_source.list")
         command = UbuntuApplicationSourceManager()
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
@@ -196,7 +199,8 @@ class TestUbuntuApplicationSourceManager:
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=False)
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key")
     def test_raises_on_os_error(self, mock_remove_gpg_key, mock_remove_file, mock_os_error):
-        parameters = ApplicationRemoveSourceParameters(gpg_key_id="123456A0", file_name="example_source.list")
+        parameters = ApplicationRemoveSourceParameters(
+            gpg_key_id="123456A0", file_name="example_source.list")
         command = UbuntuApplicationSourceManager()
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
