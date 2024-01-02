@@ -126,7 +126,10 @@ class TestUbuntuOSSourceManager:
         assert "Error occurred while trying to remove sources" in str(exc_info.value)
 
     def test_ubuntu_os_source_manager_add_success(self):
-        test_sources = ["deb http://archive.ubuntu.com/ubuntu focal main", "deb-src http://archive.ubuntu.com/ubuntu focal main"]
+        test_sources = [
+            "deb http://archive.ubuntu.com/ubuntu focal main",
+            "deb-src http://archive.ubuntu.com/ubuntu focal main",
+        ]
         parameters = SourceParameters(sources=test_sources)
 
         manager = UbuntuOsSourceManager()
@@ -140,7 +143,10 @@ class TestUbuntuOSSourceManager:
         m().write.assert_any_call(f"{test_sources[1]}\n")
 
     def test_ubuntu_os_source_manager_add_error(self):
-        test_sources = ["deb http://archive.ubuntu.com/ubuntu focal main", "deb-src http://archive.ubuntu.com/ubuntu focal main"]
+        test_sources = [
+            "deb http://archive.ubuntu.com/ubuntu focal main",
+            "deb-src http://archive.ubuntu.com/ubuntu focal main",
+        ]
         parameters = SourceParameters(sources=test_sources)
 
         manager = UbuntuOsSourceManager()
@@ -150,7 +156,7 @@ class TestUbuntuOSSourceManager:
         with patch("builtins.open", m):
             with pytest.raises(SourceError) as e:
                 manager.add(parameters)
-            assert str(e.value) == 'Error adding sources: Permission denied'
+            assert str(e.value) == "Error adding sources: Permission denied"
 
 
 class TestUbuntuApplicationSourceManager:

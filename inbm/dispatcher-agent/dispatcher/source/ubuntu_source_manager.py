@@ -37,7 +37,7 @@ class UbuntuOsSourceManager(OsSourceManager):
 
     def add(self, parameters: SourceParameters) -> None:
         """Adds sources in the Ubuntu OS source file /etc/apt/sources.list"""
-        
+
         try:
             with open(UBUNTU_APT_SOURCES_LIST, "a") as file:
                 for source in parameters.sources:
