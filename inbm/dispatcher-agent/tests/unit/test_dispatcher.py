@@ -383,7 +383,7 @@ class TestDispatcher(TestCase):
         self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
         mock_workload_orchestration_func.assert_called()
         mock_do_source_command.assert_called_once()
-    
+
     def test_abc(self, mock_logging: Any):
         xml = """\
 <?xml version="1.0" encoding="utf-8"?>

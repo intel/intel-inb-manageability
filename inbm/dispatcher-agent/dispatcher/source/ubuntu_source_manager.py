@@ -21,8 +21,12 @@ from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceM
 from dispatcher.source.linux_gpg_key import remove_gpg_key, add_gpg_key
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.utility import get_canonical_representation_of_path, remove_file, \
-    move_file, create_file_with_contents
+from inbm_common_lib.utility import (
+    get_canonical_representation_of_path,
+    remove_file,
+    move_file,
+    create_file_with_contents,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +36,14 @@ class UbuntuOsSourceManager(OsSourceManager):
         pass
 
     def add(self, parameters: SourceParameters) -> None:
-        """Adds a source in the Ubuntu OS source file /etc/apt/sources.list"""
-        # TODO: Add functionality to add a source file in Ubuntu to /etc/apt/sources.list file
-        logger.debug(f"sources: {parameters.sources}")
+        """Adds sources in the Ubuntu OS source file /etc/apt/sources.list"""
+
+        try:
+            with open(UBUNTU_APT_SOURCES_LIST, "a") as file:
+                for source in parameters.sources:
+                    file.write(f"{source}\n")
+        except OSError as e:
+            raise SourceError(f"Error adding sources: {e}") from e
 
     def list(self) -> list[str]:
         """List deb and deb-src lines in /etc/apt/sources.list"""
@@ -91,12 +100,13 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
         # Step 1: Add key
-        key_id = add_gpg_key(parameters.gpg_key_path, parameters.gpg_key_name)
+        key_id = add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
 
         # Step 2: Add the source
         try:
-            create_file_with_contents(os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name),
-                                      parameters.sources)
+            create_file_with_contents(
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
+            )
         except (IOError, OSError) as e:
             remove_gpg_key(key_id)
             raise SourceError(f"Error adding application source list: {e}")
@@ -153,7 +163,8 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
     def update(self, parameters: ApplicationUpdateSourceParameters) -> None:
         """Updates a source file in Ubuntu OS source file list under /etc/apt/sources.list.d"""
         try:
-            create_file_with_contents(os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name),
-                                      parameters.sources)
+            create_file_with_contents(
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
+            )
         except IOError as e:
             raise SourceError(f"Error occurred while trying to update sources: {e}") from e

@@ -20,6 +20,8 @@
   /usr/bin/cp rix,
   /bin/grep rix,
   /usr/bin/grep rix,
+  /usr/bin/wget rix,
+  /etc/wgetrc rix,
   /bin/gzip rix,
   /bin/mkdir rix,
   /bin/mv rix,

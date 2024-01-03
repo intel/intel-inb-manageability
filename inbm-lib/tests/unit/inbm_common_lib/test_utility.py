@@ -97,7 +97,15 @@ class TestUtility(TestCase):
 
     def test_create_file_with_contents_successfully(self) -> None:
         try:
-            with patch('builtins.open', new_callable=mock_open(read_data="data")) as m:
-                create_file_with_contents('/etc/apt/sources.list.d', ['docker.list'])
+            m = mock_open()
+            lines = ['line1', 'line2']
+            with patch('builtins.open', m) as m_open:
+                create_file_with_contents('/etc/apt/sources.list.d/docker.list', lines)
+            
+            m_open.assert_called_once_with('/etc/apt/sources.list.d/docker.list', 'w')
+            
+            handle = m()
+            handle.writelines.assert_called_once_with([line + "\n" for line in lines])
+
         except IOError as e:
             self.fail(f"Unexpected exception raised during test: {e}")

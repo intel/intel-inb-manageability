@@ -120,7 +120,7 @@ def _handle_app_source_command(
         return Result(status=200, message="SUCCESS")
 
     if "add" in app_action:
-        gpg_key_path = parsed_head.get_children("applicationSource/add/gpg")["path"]
+        gpg_key_uri = parsed_head.get_children("applicationSource/add/gpg")["uri"]
         gpg_key_name = parsed_head.get_children("applicationSource/add/gpg")["keyname"]
         repo_filename = parsed_head.get_children("applicationSource/add/repo")["filename"]
 
@@ -133,7 +133,7 @@ def _handle_app_source_command(
             ApplicationAddSourceParameters(
                 file_name=repo_filename,
                 gpg_key_name=gpg_key_name,
-                gpg_key_path=gpg_key_path,
+                gpg_key_uri=gpg_key_uri,
                 sources=add_source_pkgs,
             )
         )

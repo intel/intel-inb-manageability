@@ -4,17 +4,21 @@ from unittest.mock import mock_open, patch
 from dispatcher.source.source_exception import SourceError
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST_D,
+    UBUNTU_APT_SOURCES_LIST,
     ApplicationRemoveSourceParameters,
-    SourceParameters, ApplicationUpdateSourceParameters
+    SourceParameters,
+    ApplicationUpdateSourceParameters,
 )
 from dispatcher.source.ubuntu_source_manager import (
     UbuntuApplicationSourceManager,
     UbuntuOsSourceManager,
 )
 
-APP_SOURCE = ["deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] " \
-              "https://repositories.intel.com/gpu/ubuntu jammy unified",
-              "deb-src https://repo.zabbix.com/zabbix/5.0/ubuntu jammy main"]
+APP_SOURCE = [
+    "deb [arch=amd64 signed-by=/usr/share/keyrings/intel-graphics.gpg] "
+    "https://repositories.intel.com/gpu/ubuntu jammy unified",
+    "deb-src https://repo.zabbix.com/zabbix/5.0/ubuntu jammy main",
+]
 
 
 @pytest.fixture
@@ -57,32 +61,32 @@ class TestUbuntuOSSourceManager:
         "sources_to_remove, expected_content",
         [
             (
-                    SourceParameters(sources=["deb http://example.com/ubuntu focal main restricted"]),
-                    [
-                        "# Comment line\n",
-                        "deb-src http://example.com/ubuntu focal main restricted\n",
-                    ],
+                SourceParameters(sources=["deb http://example.com/ubuntu focal main restricted"]),
+                [
+                    "# Comment line\n",
+                    "deb-src http://example.com/ubuntu focal main restricted\n",
+                ],
             ),
             (
-                    SourceParameters(
-                        sources=[
-                            "deb http://example.com/ubuntu focal main restricted",
-                            "deb-src http://example.com/ubuntu focal main restricted",
-                        ]
-                    ),
-                    ["# Comment line\n"],
+                SourceParameters(
+                    sources=[
+                        "deb http://example.com/ubuntu focal main restricted",
+                        "deb-src http://example.com/ubuntu focal main restricted",
+                    ]
+                ),
+                ["# Comment line\n"],
             ),
             (
-                    SourceParameters(
-                        sources=[
-                            "non-existent source line",
-                        ]
-                    ),
-                    [
-                        "# Comment line\n",
-                        "deb http://example.com/ubuntu focal main restricted\n",
-                        "deb-src http://example.com/ubuntu focal main restricted\n",
-                    ],
+                SourceParameters(
+                    sources=[
+                        "non-existent source line",
+                    ]
+                ),
+                [
+                    "# Comment line\n",
+                    "deb http://example.com/ubuntu focal main restricted\n",
+                    "deb-src http://example.com/ubuntu focal main restricted\n",
+                ],
             ),
         ],
     )
@@ -121,16 +125,49 @@ class TestUbuntuOSSourceManager:
 
         assert "Error occurred while trying to remove sources" in str(exc_info.value)
 
+    def test_ubuntu_os_source_manager_add_success(self):
+        test_sources = [
+            "deb http://archive.ubuntu.com/ubuntu focal main",
+            "deb-src http://archive.ubuntu.com/ubuntu focal main",
+        ]
+        parameters = SourceParameters(sources=test_sources)
+
+        manager = UbuntuOsSourceManager()
+
+        m = mock_open()
+        with patch("builtins.open", m):
+            manager.add(parameters)
+
+        m.assert_called_once_with(UBUNTU_APT_SOURCES_LIST, "a")
+        m().write.assert_any_call(f"{test_sources[0]}\n")
+        m().write.assert_any_call(f"{test_sources[1]}\n")
+
+    def test_ubuntu_os_source_manager_add_error(self):
+        test_sources = [
+            "deb http://archive.ubuntu.com/ubuntu focal main",
+            "deb-src http://archive.ubuntu.com/ubuntu focal main",
+        ]
+        parameters = SourceParameters(sources=test_sources)
+
+        manager = UbuntuOsSourceManager()
+
+        m = mock_open()
+        m.side_effect = OSError("Permission denied")
+        with patch("builtins.open", m):
+            with pytest.raises(SourceError) as e:
+                manager.add(parameters)
+            assert str(e.value) == "Error adding sources: Permission denied"
+
 
 class TestUbuntuApplicationSourceManager:
-
-    @patch('dispatcher.source.ubuntu_source_manager.move_file')
+    @patch("dispatcher.source.ubuntu_source_manager.move_file")
     def test_update_app_source_successfully(self, mock_move):
         try:
-            params = ApplicationUpdateSourceParameters(file_name="intel-gpu-jammy.list",
-                                                       sources=APP_SOURCE)
+            params = ApplicationUpdateSourceParameters(
+                file_name="intel-gpu-jammy.list", sources=APP_SOURCE
+            )
             command = UbuntuApplicationSourceManager()
-            with patch('builtins.open', new_callable=mock_open()) as m:
+            with patch("builtins.open", new_callable=mock_open()) as m:
                 command.update(params)
         except SourceError as err:
             assert False, f"'UbuntuApplicationSourceManager.update' raised an exception {err}"
@@ -146,7 +183,7 @@ class TestUbuntuApplicationSourceManager:
 
     def test_list(self, sources_list_d_content):
         with patch("glob.glob", return_value=["/etc/apt/sources.list.d/example.list"]), patch(
-                "builtins.open", mock_open(read_data=sources_list_d_content)
+            "builtins.open", mock_open(read_data=sources_list_d_content)
         ):
             command = UbuntuApplicationSourceManager()
             sources = command.list()
@@ -158,7 +195,7 @@ class TestUbuntuApplicationSourceManager:
 
     def test_list_raises_exception(self):
         with patch("glob.glob", return_value=["/etc/apt/sources.list.d/example.list"]), patch(
-                "builtins.open", side_effect=OSError
+            "builtins.open", side_effect=OSError
         ):
             command = UbuntuApplicationSourceManager()
             with pytest.raises(SourceError) as exc_info:
@@ -167,8 +204,12 @@ class TestUbuntuApplicationSourceManager:
 
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=True)
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key")
-    def test_successfully_remove_gpg_key_and_source_list(self, mock_remove_gpg_key, mock_remove_file):
-        parameters = ApplicationRemoveSourceParameters(gpg_key_id="123456A0", file_name="example_source.list")
+    def test_successfully_remove_gpg_key_and_source_list(
+        self, mock_remove_gpg_key, mock_remove_file
+    ):
+        parameters = ApplicationRemoveSourceParameters(
+            gpg_key_id="123456A0", file_name="example_source.list"
+        )
         command = UbuntuApplicationSourceManager()
         try:
             command.remove(parameters)
@@ -177,7 +218,9 @@ class TestUbuntuApplicationSourceManager:
 
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key")
     def test_raises_when_space_check_fails(self, mock_remove_gpg_key):
-        parameters = ApplicationRemoveSourceParameters(gpg_key_id="123456A0", file_name="../example_source.list")
+        parameters = ApplicationRemoveSourceParameters(
+            gpg_key_id="123456A0", file_name="../example_source.list"
+        )
         command = UbuntuApplicationSourceManager()
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
@@ -186,17 +229,24 @@ class TestUbuntuApplicationSourceManager:
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=False)
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key")
     def test_raises_when_unable_to_remove_file(self, mock_remove_gpg_key, mock_remove_file):
-        parameters = ApplicationRemoveSourceParameters(gpg_key_id="123456A0", file_name="example_source.list")
+        parameters = ApplicationRemoveSourceParameters(
+            gpg_key_id="123456A0", file_name="example_source.list"
+        )
         command = UbuntuApplicationSourceManager()
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
         assert str(ex.value) == "Error removing file: example_source.list"
 
-    @patch("dispatcher.source.ubuntu_source_manager.os.path.join", side_effect=OSError("unable to join path"))
+    @patch(
+        "dispatcher.source.ubuntu_source_manager.os.path.join",
+        side_effect=OSError("unable to join path"),
+    )
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=False)
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key")
     def test_raises_on_os_error(self, mock_remove_gpg_key, mock_remove_file, mock_os_error):
-        parameters = ApplicationRemoveSourceParameters(gpg_key_id="123456A0", file_name="example_source.list")
+        parameters = ApplicationRemoveSourceParameters(
+            gpg_key_id="123456A0", file_name="example_source.list"
+        )
         command = UbuntuApplicationSourceManager()
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
