@@ -1143,7 +1143,7 @@ The query command can be used to gather information about the system and the Vis
 | `</manifest>`                            | `</manifest>`                            |         R         |                 |
 
 
-#### Source application remove Manifest Example
+#### Source os remove Manifest Example
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
