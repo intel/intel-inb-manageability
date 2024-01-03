@@ -1061,6 +1061,8 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
+## OS
+
 #### Source OS add Manifest Parameters
 | Tag                                      | Example                                  | Required/Optional | Notes           |
 |:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
