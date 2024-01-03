@@ -14,6 +14,8 @@ The following outlines the manifest parameters used to perform the supported OTA
 9. [Configuration LOAD](#Load)
 10. [Configuration APPEND](#Append)
 11. [Configuration REMOVE](#Remove)
+12. [Source Application](#Application)
+13. [Source OS](#OS)
 
 ## Manifest Rules 
 
@@ -903,5 +905,280 @@ The query command can be used to gather information about the system and the Vis
             </remove>
         </configtype>
     </config>
+</manifest>
+```
+
+## Application
+
+#### Source application add Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |                 |
+| `<applicationSource>`                    | `<applicationSource>`                    |         R         |                 |
+| `<add>`                                  | `<add>`                                  |         R         |                 |
+| `<gpg>`                                  | `<gpg>`                                  |         R         |                 |
+| `<path></path>`                          | `<path>`                                 |         R         |                 |
+| `<keyname></keyname>`                    | `<keyname></keyname>`                    |         R         |                 | 
+| `</gpg>`                                 | `<gpg>`                                  |         R         |                 |
+| `<repo>`                                 | `</repo>`                                |         R         |                 |
+| `<repos>`                                | `</crepos>`                              |         R         |                 |
+| `<source_pkg>`                           | `</source_pkg>`                          |         R         |                 |
+| `</repos>`                               | `</repos>`                               |         R         |                 |
+| `<filename></filename>`                  | `<filename></filename>`                  |         R         |                 |
+| `</repo>`                                | `</repo>`                                |         R         |                 |
+| `</add>`                                 | `</add>`                                 |         R         |                 |
+| `</applicationSource>`                   | `</applicationSource>`                   |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
+
+
+
+
+#### Source application add Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <add>
+            <gpg>
+                <path></path>
+                <keyname></keyname>
+            </gpg>
+            <repo>
+                <repos>
+                    <source_pkg></source_pkg>
+                </repos>
+                <filename></filename>
+            </repo>
+        </add>
+    </applicationSource>
+</manifest>
+```
+
+#### Source application update Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |                 |
+| `<applicationSource>`                    | `<applicationSource>`                    |         R         |                 |
+| `<update>`                               | `<update>`                               |         R         |                 |
+| `<gpg>`                                  | `<gpg>`                                  |         R         |                 |
+| `<repo>`                                 | `</repo>`                                |         R         |                 |
+| `<repos>`                                | `</repos>`                               |         R         |                 |
+| `<source_pkg>`                           | `</source_pkg>`                          |         R         |                 |
+| `</repos>`                               | `</repos>`                               |         R         |                 |
+| `<filename></filename>`                  | `<filename></filename>`                  |         R         |                 |
+| `</repo>`                                | `</repo>`                                |         R         |                 |
+| `</update>`                              | `</update>`                              |         R         |                 |  
+| `</applicationSource>`                   | `</applicationSource>`                   |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
+
+
+
+
+#### Source application update Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <update>
+            <repo>
+                <repos>
+                    <source_pkg>foo</source_pkg>  
+                </repos>
+                <filename>bar</filename>
+            </repo>
+        </update>
+    </applicationSource>
+</manifest>
+```
+
+#### Source application remove Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |                 |
+| `<applicationSource>`                    | `<applicationSource>`                    |         R         |                 |
+| `<remove>`                               | `<remove>`                               |         R         |                 |
+| `<gpg>`                                  | `<gpg>`                                  |         R         |                 |
+| `<keyid></keyid>`                        | `<keyid></keyid>`                        |         R         |                 | 
+| `</gpg>`                                 | `<gpg>`                                  |         R         |                 |
+| `<repo>`                                 | `</repo>`                                |         R         |                 |
+| `<filename></filename>`                  | `<filename></filename>`                  |         R         |                 |
+| `</repo>`                                | `</repo>`                                |         R         |                 |
+| `</remove>`                              | `</remove>`                              |         R         |                 |
+| `</applicationSource>`                   | `</applicationSource>`                   |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
+
+
+
+
+#### Source application remove Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <remove>
+            <gpg>
+                <keyid></keyid>
+            </gpg>
+            <repo>
+                <filename></filename>
+            </repo>
+        </remove>
+    </applicationSource>
+</manifest>
+```
+
+#### Source application list Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |                 |
+| `<applicationSource>`                    | `<applicationSource>`                    |         R         |                 |
+| `<list></list>`                          | `<list></list>`                          |         R         |                 |
+| `</applicationSource>`                   | `</applicationSource>`                   |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
+
+
+
+
+#### Source application list Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        </list>
+    </applicationSource>
+</manifest>
+```
+
+#### Source OS add Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |                 |
+| `<osSource>`                             | `<osSource>`                             |         R         |                 |
+| `<add>`                                  | `<add>`                                  |         R         |                 |
+| `<repos>`                                | `</repos>`                               |         R         |                 |
+| `<source_pkg>`                           | `</source_pkg>`                          |         R         |                 |
+| `</repos>`                               | `</repos>`                               |         R         |                 |
+| `</add>`                                 | `</add>`                                 |         R         |                 |
+| `</osSource>`                            | `</osSource>`                            |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
+
+
+
+
+#### Source OS add Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <add>
+            <repos>
+                <source_pkg></source_pkg>
+            </repos>
+        </add>
+    </osSource>
+</manifest>
+```
+
+#### Source os update Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |                 |
+| `<osSource>`                             | `<osSource>`                             |         R         |                 |
+| `<update>`                               | `<update>`                               |         R         |                 |
+| `<repos>`                                | `</repos>`                               |         R         |                 |
+| `<source_pkg>`                           | `</source_pkg>`                          |         R         |                 |
+| `</repos>`                               | `</repos>`                               |         R         |                 |
+| `</update>`                              | `</update>`                              |         R         |                 |  
+| `</osSource>`                            | `</osSource>`                            |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
+
+
+
+
+#### Source os update Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <update>
+            <repos>
+                <source_pkg></source_pkg>  
+            </repos>
+        </update>
+    </osSource>
+</manifest>
+```
+
+#### Source os remove Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |                 |
+| `<osSource>`                             | `<osSource>`                             |         R         |                 |
+| `<remove>`                               | `<remove>`                               |         R         |                 |
+| `<repos>`                                | `</repos>`                               |         R         |                 |
+| `<source_pkg></source_pkg>`              | `<source_pkg></source_pkg>`              |         R         |                 |
+| `</repos>`                               | `</repos>`                               |         R         |                 |
+| `</remove>`                              | `</remove>`                              |         R         |                 |
+| `</osSource>`                            | `</osSource>`                            |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
+
+
+#### Source application remove Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <remove>
+            <repos>
+                <source_pkg></source_pkg>
+            </repos>
+        </remove>
+    </osSource>
+</manifest>
+```
+
+#### Source os list Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |                 |
+| `<manifest>`                             | `<manifest>`                             |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |                 |
+| `<osSource>`                             | `<osSource>`                             |         R         |                 |
+| `<list></list>`                          | `<list></list>`                          |         R         |                 |
+| `</osSource>`                            | `</osSource>`                            |         R         |                 |
+| `</manifest>`                            | `</manifest>`                            |         R         |                 |
+
+
+
+
+#### Source os list Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        </list>
+    </osSource>
 </manifest>
 ```
