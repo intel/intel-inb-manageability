@@ -919,11 +919,11 @@ The query command can be used to gather information about the system and the Vis
 | `<applicationSource>`                    | `<applicationSource>`                    |         R         |                 |
 | `<add>`                                  | `<add>`                                  |         R         |                 |
 | `<gpg>`                                  | `<gpg>`                                  |         R         |                 |
-| `<path></path>`                          | `<path>`                                 |         R         |                 |
+| `<uri></uri>`                            | `<uri>`                                  |         R         |                 |
 | `<keyname></keyname>`                    | `<keyname></keyname>`                    |         R         |                 | 
 | `</gpg>`                                 | `<gpg>`                                  |         R         |                 |
 | `<repo>`                                 | `</repo>`                                |         R         |                 |
-| `<repos>`                                | `</crepos>`                              |         R         |                 |
+| `<repos>`                                | `</repos>`                               |         R         |                 |
 | `<source_pkg>`                           | `</source_pkg>`                          |         R         |                 |
 | `</repos>`                               | `</repos>`                               |         R         |                 |
 | `<filename></filename>`                  | `<filename></filename>`                  |         R         |                 |
@@ -943,7 +943,7 @@ The query command can be used to gather information about the system and the Vis
     <applicationSource>
         <add>
             <gpg>
-                <path></path>
+                <uri></uri>
                 <keyname></keyname>
             </gpg>
             <repo>
