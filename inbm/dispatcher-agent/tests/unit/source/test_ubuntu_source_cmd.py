@@ -158,6 +158,38 @@ class TestUbuntuOSSourceManager:
                 manager.add(parameters)
             assert str(e.value) == "Error adding sources: Permission denied"
 
+    def test_update_sources_success(self):
+        mock_sources = [
+            "deb http://archive.ubuntu.com/ubuntu/ bionic universe",
+            "deb http://archive.ubuntu.com/ubuntu/ bionic-updates universe",
+        ]
+        parameters = SourceParameters(sources=mock_sources)
+        manager = UbuntuOsSourceManager()
+        mock_file = mock_open()
+
+        # Act & Assert
+        with patch("builtins.open", mock_file):
+            manager.update(parameters)
+            mock_file.assert_called_once_with(UBUNTU_APT_SOURCES_LIST, "w")
+            mock_file().write.assert_has_calls(
+                [mock.call(f"{source}\n") for source in mock_sources]
+            )
+
+    def test_update_sources_os_error(self):
+        # Arrange
+        parameters = SourceParameters(sources=["source"])
+        manager = UbuntuOsSourceManager()
+        mock_file = mock_open()
+
+        # Simulate an OSError
+        mock_file.side_effect = OSError("Mocked error")
+
+        # Act & Assert
+        with patch("builtins.open", mock_file):
+            with pytest.raises(SourceError) as excinfo:
+                manager.update(parameters)
+            assert "Error adding sources: Mocked error" in str(excinfo.value)
+
 
 class TestUbuntuApplicationSourceManager:
     @patch("dispatcher.source.ubuntu_source_manager.move_file")

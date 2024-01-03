@@ -36,7 +36,7 @@ def add_gpg_key(remote_key_path: str, key_store_path: str) -> str:
     @param key_store_path: Path on local machine to store the GPG key
     """
     try:
-        command = f"wget -qO - {remote_key_path} " #| gpg --dearmor | sudo tee /etc/apt/sources.list.d/{key_store_path}"
+        command = f"wget -qO - {remote_key_path} "  # | gpg --dearmor | sudo tee /etc/apt/sources.list.d/{key_store_path}"
 
         stdout, stderr, exit_code = PseudoShellRunner().run(command)
         logger.debug(f"GPG key: {stdout}")
@@ -45,14 +45,14 @@ def add_gpg_key(remote_key_path: str, key_store_path: str) -> str:
         if exit_code != 0:
             raise SourceError("Error getting GPG key from remote source: " + (stderr or stdout))
 
-        #gpg_command = f"sudo gpg --dearmor --output {key_store_path}"
-        #stdout, stderr, exit_code = PseudoShellRunner().run(gpg_command)
-        #logger.debug(f"GPG Key ID: {stdout}")
+        # gpg_command = f"sudo gpg --dearmor --output {key_store_path}"
+        # stdout, stderr, exit_code = PseudoShellRunner().run(gpg_command)
+        # logger.debug(f"GPG Key ID: {stdout}")
 
-        #if exit_code != 0:
+        # if exit_code != 0:
         #    raise SourceError("Error encrypting GPG key")
 
-        #logger.info(f"GPG Key ID: {stdout}")
+        # logger.info(f"GPG Key ID: {stdout}")
         return stdout
 
     except OSError as e:

@@ -82,16 +82,16 @@ class UbuntuOsSourceManager(OsSourceManager):
             raise SourceError(f"Error occurred while trying to remove sources: {e}") from e
 
     def update(self, parameters: SourceParameters) -> None:
-        """Updates a source in the Ubuntu OS source file /etc/apt/sources.list"""
-        # TODO: Add functionality to update a source in Ubuntu file under /etc/apt/sources.list file
+        """Updates a source in the Ubuntu OS source file /etc/apt/sources.list
+
+        This will overwrite the file and add the listed sources."""
+
         try:
-            with open(UBUNTU_APT_SOURCES_LIST, "r") as file:
-                lines = file.readlines()
-
-            sources_to_update = set(source.strip() for source in parameters.sources)
-
+            with open(UBUNTU_APT_SOURCES_LIST, "w") as file:
+                for source in parameters.sources:
+                    file.write(f"{source}\n")
         except OSError as e:
-            raise SourceError(f"Error occurred while trying to update sources: {e}") from e
+            raise SourceError(f"Error adding sources: {e}") from e
 
 
 class UbuntuApplicationSourceManager(ApplicationSourceManager):
