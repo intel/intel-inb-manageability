@@ -493,18 +493,53 @@ inbc source application list
 
 ## SOURCE OS ADD
 ### Description
-Adds a source to the <em>/etc/apt/sources.list</em> file
+Appends new source(s) to the <em>/etc/apt/sources.list</em> file
 
 ### Usage
 ```
-inbc source os add {--sources, -s=SOURCES}
+inbc source os add 
+   {--sources, -s=SOURCES}
 ```
 
 ### Example
 #### Adds two sources
 ```
 inbc source os add 
---sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+```
+
+## SOURCE OS REMOVE
+### Description
+Removes the provided source(s) from the <em>/etc/apt/sources.list</em> file, if they are present.
+
+### Usage
+```
+inbc source os remove 
+   {--sources, -s=SOURCES}
+```
+
+### Example
+#### Removes the two provided source(s) from the <em>/etc/apt/sources.list</em> file
+```
+inbc source os remove 
+   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+```
+
+## SOURCE OS UPDATE
+### Description
+Creates a new <em>/etc/apt/sources.list</em> file with only the sources provided
+
+### Usage
+```
+inbc source os update 
+   {--sources, -s=SOURCES}
+```
+
+### Example
+#### Creates a new <em>/etc/apt/sources.list</em> file with only the two provided sources
+```
+inbc source os update 
+   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
 ## SOURCE OS LIST
