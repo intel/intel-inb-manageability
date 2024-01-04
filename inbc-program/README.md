@@ -20,6 +20,7 @@
    8. [Restart](#restart)
    9. [Query](#query)
    10. [Source Application Add](#source-application-add)
+   11. [Source Application Remove](#source-applicaiton-remove)
    11. [Source Application Update](#source-application-update)
    12. [Source Application List](#source-application-list)
    13. [Source OS List](#source-os-list)
@@ -356,7 +357,7 @@ Remove is only applicable to two config tags, which are trustedRepositories and 
 
 ### Usage
 ```
-inbc remove
+inbc remove 
    {--path, -p KEY_PATH;...} 
 ```
 
@@ -410,18 +411,45 @@ inbc query --option sw
 
 ## SOURCE APPLICATION ADD
 ### Description
-Downloads and encrypts GPG key and stores it on the system.  Creates a file under /etc/apt/sources.d to store the update source information.
+Downloads and encrypts GPG key and stores it on the system.  Creates a file under <em>/etc/apt/sources.d</em> to store the update source information.
 This list file is used during 'sudo apt update' to update the application
 
 ### Usage
 ```
-inbc source application add {--gpgKeyUri, -gku=GPG_KEY_URI} {--gpgKeyName, -gkn=GPG_KEY_NAME} {--sources, -s=SOURCES} {--filename, -f=FILENAME}
+inbc source application add 
+   {--gpgKeyUri, -gku=GPG_KEY_URI}
+   {--gpgKeyName, -gkn=GPG_KEY_NAME}
+   {--sources, -s=SOURCES}
+   {--filename, -f=FILENAME}
 ```
 
-### Examples
+### Example
 #### Add an application source
 ```
-sudo inbc source application add --gpgKeyUri https://dl-ssl.google.com/linux/linux_signing_key.pub --gpgKeyName google-chrome.gpg --sources "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"  --filename google-chrome.list
+inbc source application add 
+   --gpgKeyUri https://dl-ssl.google.com/linux/linux_signing_key.pub 
+   --gpgKeyName google-chrome.gpg 
+   --sources "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"  
+   --filename google-chrome.list
+```
+
+## SOURCE APPLICATION REMOVE
+### Description
+Removes the GPG key file from under <em>/usr/share/keyrings</em>.  Removes the source file from under /etc/apt/sources.d/.
+
+### Usage
+```
+inbc source application remove 
+   {--gpgKeyName, -gkn=GPG_KYE_NAME} 
+   {--filename, -f=FILE_NAME}
+```
+
+### Example
+#### Remove an application source
+```commandline
+inbc source application remove 
+    --gpgKeyName google-chrome.gpg 
+    --filename google-chrome.list
 ```
 
 ## SOURCE APPLICATION UPDATE
@@ -431,13 +459,17 @@ NOTE: Currently this only works on Ubuntu
 
 ### Usage
 ```
-inbc source application update {--filename, -f=FILEPATH} {--sources, -s=SOURCES}
+inbc source application update 
+   {--filename, -f=FILEPATH} 
+   {--sources, -s=SOURCES}
 ```
 
 ### Examples
 #### Update an application source file
 ```
-sudo inbc source application update -f google-chrome.list -s "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test" "debsrc [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test2"
+inbc source application update 
+   --filename google-chrome.list 
+   --sources "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test" "debsrc [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test2"
 ```
 
 ## SOURCE APPLICATION LIST
@@ -453,7 +485,7 @@ inbc source application list
 ### Examples
 #### Lists all application source files
 ```
-sudo inbc source application list
+inbc source application list
 ```
 
 ## SOURCE OS LIST
@@ -469,7 +501,7 @@ inbc source os list
 ### Examples
 #### Lists all OS source files
 ```
-sudo inbc source os list
+inbc source os list
 ```
 
 # Status Codes
