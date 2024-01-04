@@ -20,10 +20,13 @@
    8. [Restart](#restart)
    9. [Query](#query)
    10. [Source Application Add](#source-application-add)
-   11. [Source Application Remove](#source-applicaiton-remove)
-   11. [Source Application Update](#source-application-update)
-   12. [Source Application List](#source-application-list)
-   13. [Source OS List](#source-os-list)
+   11. [Source Application Remove](#source-application-remove)
+   12. [Source Application Update](#source-application-update)
+   13. [Source Application List](#source-application-list)
+   14. [Source OS Add](#source-os-add)
+   15. [Source OS Remove](#source-os-remove)
+   16. [Source OS Update](#source-os-update)
+   15. [Source OS List](#source-os-list)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -411,7 +414,7 @@ inbc query --option sw
 
 ## SOURCE APPLICATION ADD
 ### Description
-Downloads and encrypts GPG key and stores it on the system.  Creates a file under <em>/etc/apt/sources.d</em> to store the update source information.
+Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.d</em> to store the update source information.
 This list file is used during 'sudo apt update' to update the application
 
 ### Usage
@@ -478,7 +481,7 @@ Lists Application sources
 NOTE: Currently this only works on Ubuntu
 
 ### Usage
-```commandline
+```
 inbc source application list
 ```
 
@@ -486,6 +489,22 @@ inbc source application list
 #### Lists all application source files
 ```
 inbc source application list
+```
+
+## SOURCE OS ADD
+### Description
+Adds a source to the <em>/etc/apt/sources.list</em> file
+
+### Usage
+```
+inbc source os add {--sources, -s=SOURCES}
+```
+
+### Example
+#### Adds two sources
+```
+inbc source os add 
+--sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
 ## SOURCE OS LIST

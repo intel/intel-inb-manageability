@@ -152,6 +152,7 @@
   /usr/share/configuration-agent/iotg_inb_schema.xsd l,
   /usr/share/configuration-agent/iotg_inb_schema.xsd.dpkg-tmp l,
   /usr/share/diagnostic-agent/ w,
+  /usr/share/keyrings/*.gpg w,
   /usr/share/telemetry-agent/ w,
   /usr/share/dispatcher-agent/*.json r,
   /usr/share/dispatcher-agent/manifest_schema.xsd r,
