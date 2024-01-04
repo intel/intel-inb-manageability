@@ -19,9 +19,10 @@
    7. [Configuration Set](#set)
    8. [Restart](#restart)
    9. [Query](#query)
-   10. [Source Application Update](#source-application-update)
-   11. [Source Application List](#source-application-list)
-   12. [Source OS List](#source-os-list)
+   10. [Source Application Add](#source-application-add)
+   11. [Source Application Update](#source-application-update)
+   12. [Source Application List](#source-application-list)
+   13. [Source OS List](#source-os-list)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -407,6 +408,22 @@ inbc query --option hw
 inbc query --option sw
 ```
 
+## SOURCE APPLICATION ADD
+### Description
+Downloads and encrypts GPG key and stores it on the system.  Creates a file under /etc/apt/sources.d to store the update source information.
+This list file is used during 'sudo apt update' to update the application
+
+### Usage
+```
+inbc source application add {--gpgKeyUri, -gku=GPG_KEY_URI} {--gpgKeyName, -gkn=GPG_KEY_NAME} {--sources, -s=SOURCES} {--filename, -f=FILENAME}
+```
+
+### Examples
+#### Add an application source
+```
+sudo inbc source application add --gpgKeyUri https://dl-ssl.google.com/linux/linux_signing_key.pub --gpgKeyName /usr/share/keyrings/google-chrome.gpg --sources "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"  --filename google-chrome.list
+```
+
 ## SOURCE APPLICATION UPDATE
 ### Description
 Updates Application sources that are used to update the system
@@ -414,7 +431,7 @@ NOTE: Currently this only works on Ubuntu
 
 ### Usage
 ```
-inbc source application update {--fileName, -f=FILEPATH} {--sources, -s=SOURCES}
+inbc source application update {--filename, -f=FILEPATH} {--sources, -s=SOURCES}
 ```
 
 ### Examples
