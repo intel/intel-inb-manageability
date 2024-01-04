@@ -179,6 +179,8 @@
   /usr/share/trtl/trtl.xsd r,
   /usr/share/trtl/ w,
   /usr/share/trtl/* rw,
+  /usr/share/keyrings/ rw,
+  /usr/share/keyrings/* rw,
   /var/cache/manageability/ rw,
   /var/cache/manageability/** rw,
   /etc/intel-manageability/public/configuration-agent/ w,
