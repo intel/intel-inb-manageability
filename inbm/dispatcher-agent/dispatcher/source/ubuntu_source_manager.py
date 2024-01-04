@@ -100,7 +100,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
         # Step 1: Add key
-        key_id = add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
+        add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
 
         # Step 2: Add the source
         try:
@@ -108,7 +108,6 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
                 os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
             )
         except (IOError, OSError) as e:
-            remove_gpg_key(key_id)
             raise SourceError(f"Error adding application source list: {e}")
 
     def list(self) -> list[ApplicationSourceList]:

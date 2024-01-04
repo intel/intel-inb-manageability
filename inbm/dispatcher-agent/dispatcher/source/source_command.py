@@ -14,6 +14,7 @@ from dispatcher.source.constants import (
     OsType,
     SourceParameters,
 )
+from dispatcher.source.source_exception import SourceError
 from dispatcher.source.source_manager_factory import create_os_source_manager
 from dispatcher.source.source_manager_factory import create_application_source_manager
 from inbm_lib.xmlhandler import XmlException, XmlHandler

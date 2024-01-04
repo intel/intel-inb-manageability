@@ -5,6 +5,8 @@
 import logging
 import subprocess
 
+import requests
+
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from dispatcher.source.source_exception import SourceError
 
@@ -29,31 +31,35 @@ def remove_gpg_key(gpg_key_id: str) -> None:
         raise SourceError(f"Error checking or deleting GPG key: {e}") from e
 
 
-def add_gpg_key(remote_key_path: str, key_store_path: str) -> str:
+def add_gpg_key(remote_key_path: str, key_store_path: str) -> None:
     """Linux - Adds a GPG key from a remote source
+
+    Raises SourceError if there are any problems.
 
     @param remote_key_path: Remote location of the GPG key to download
     @param key_store_path: Path on local machine to store the GPG key
     """
+
     try:
-        command = f"wget -qO - {remote_key_path} "  # | gpg --dearmor | sudo tee /etc/apt/sources.list.d/{key_store_path}"
+        # Download the GPG key from the remote source
+        response = requests.get(remote_key_path)
+        response.raise_for_status()
 
-        stdout, stderr, exit_code = PseudoShellRunner().run(command)
-        logger.debug(f"GPG key: {stdout}")
+        decoded_ascii = response.content.decode("utf-8", errors="strict")
 
-        # If key add successful, return the key_id
-        if exit_code != 0:
-            raise SourceError("Error getting GPG key from remote source: " + (stderr or stdout))
+        # Use gpg to dearmor the key and save it to the key store path
+        subprocess.run(
+            ["/usr/bin/gpg", "--dearmor", "--output", key_store_path],
+            input=decoded_ascii,
+            check=True,
+            text=True,
+            shell=False,
+        )
 
-        # gpg_command = f"sudo gpg --dearmor --output {key_store_path}"
-        # stdout, stderr, exit_code = PseudoShellRunner().run(gpg_command)
-        # logger.debug(f"GPG Key ID: {stdout}")
+        logger.info(f"GPG key added to {key_store_path}")
 
-        # if exit_code != 0:
-        #    raise SourceError("Error encrypting GPG key")
+    except requests.exceptions.RequestException as e:
+        raise SourceError(f"Error getting GPG key from remote source: {e}")
 
-        # logger.info(f"GPG Key ID: {stdout}")
-        return stdout
-
-    except OSError as e:
-        raise SourceError(f"Error addingGPG key: {e}") from e
+    except subprocess.CalledProcessError as e:
+        raise SourceError(f"Error running gpg to dearmor key: {e}")
