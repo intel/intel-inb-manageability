@@ -9,7 +9,7 @@ from dataclasses import dataclass, field
 
 UBUNTU_APT_SOURCES_LIST = "/etc/apt/sources.list"
 UBUNTU_APT_SOURCES_LIST_D = "/etc/apt/sources.list.d"
-LINUX_GPG_KEY_PATH = '/usr/share/keyrings'
+LINUX_GPG_KEY_PATH = "/usr/share/keyrings"
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -33,7 +33,7 @@ class ApplicationAddSourceParameters:
 
 @dataclass(kw_only=True, frozen=True)
 class ApplicationRemoveSourceParameters:
-    gpg_key_id: str
+    gpg_key_name: str
     file_name: str
 
 

@@ -91,14 +91,14 @@ def test_do_source_command_list(
             """<?xml version="1.0" encoding="utf-8"?>
             <manifest>
                 <type>source</type>
-                <applicationSource><remove>  <gpg><keyid>46C1680FC119E61A501811823A319F932D945953</keyid></gpg>
+                <applicationSource><remove>  <gpg><keyname>intel-gpu-jammy.gpg</keyname></gpg>
                                         <repo><filename>intel-gpu-jammy.list</filename></repo>
                                 </remove></applicationSource>
             </manifest>""",
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationRemoveSourceParameters(
-                gpg_key_id="46C1680FC119E61A501811823A319F932D945953",
+                gpg_key_name="intel-gpu-jammy.gpg",
                 file_name="intel-gpu-jammy.list",
             ),
         ),

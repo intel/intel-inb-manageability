@@ -113,10 +113,10 @@ def _handle_app_source_command(
         return Result(status=200, message=serialized_list)
 
     if "remove" in app_action:
-        keyid = parsed_head.get_children("applicationSource/remove/gpg")["keyid"]
+        keyname = parsed_head.get_children("applicationSource/remove/gpg")["keyname"]
         filename = parsed_head.get_children("applicationSource/remove/repo")["filename"]
         application_source_manager.remove(
-            ApplicationRemoveSourceParameters(file_name=filename, gpg_key_id=keyid)
+            ApplicationRemoveSourceParameters(file_name=filename, gpg_key_name=keyname)
         )
         return Result(status=200, message="SUCCESS")
 

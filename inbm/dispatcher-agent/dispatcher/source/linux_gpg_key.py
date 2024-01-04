@@ -7,29 +7,25 @@ import subprocess
 import os
 import requests
 
-from inbm_common_lib.shell_runner import PseudoShellRunner
 from .source_exception import SourceError
 from .constants import LINUX_GPG_KEY_PATH
 
 logger = logging.getLogger(__name__)
 
 
-def remove_gpg_key(gpg_key_id: str) -> None:
-    """Linux - Removes a GPG key
+def remove_gpg_key_if_exists(gpg_key_name: str) -> None:
+    """Linux - Removes a GPG key file if it exists
 
-    @param gpg_key_id: ID of GPG key to remove
+    @param gpg_key_name: name of GPG key file to remove (file under LINUX_GPG_KEY_PATH)
     """
     try:
-        stdout, stderr, exit_code = PseudoShellRunner().run(f"gpg --list-keys {gpg_key_id}")
-
-        # If the key exists, try to remove it
-        if exit_code == 0:
-            stdout, stderr, exit_code = PseudoShellRunner().run(f"gpg --delete-key {gpg_key_id}")
-            if exit_code != 0:
-                raise SourceError("Error deleting GPG key: " + (stderr or stdout))
+        key_path = os.path.join(LINUX_GPG_KEY_PATH, gpg_key_name)
+        if os.path.exists(key_path):
+            os.remove(key_path)
+        # it's OK if the key is not there
 
     except OSError as e:
-        raise SourceError(f"Error checking or deleting GPG key: {e}") from e
+        raise SourceError(f"Error checking or deleting GPG key: {gpg_key_name}") from e
 
 
 def add_gpg_key(remote_key_path: str, key_store_name: str) -> None:
@@ -38,7 +34,7 @@ def add_gpg_key(remote_key_path: str, key_store_name: str) -> None:
     Raises SourceError if there are any problems.
 
     @param remote_key_path: Remote location of the GPG key to download
-    @param key_store_name: Name to use to store the GPG under /usr/share/keyrings/
+    @param key_store_name: Name to use to store the GPG under LINUX_GPG_KEY_PATH
     """
 
     try:

@@ -147,10 +147,10 @@ class TestXmlParser(TestCase):
     <applicationSource>
         <remove>
             <gpg>
-                <keyid></keyid>
+                <keyname>name.gpg</keyname>
             </gpg>
             <repo>
-                <filename></filename>
+                <filename>name.list</filename>
             </repo>
         </remove>
     </applicationSource>

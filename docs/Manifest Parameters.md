@@ -1006,7 +1006,7 @@ The query command can be used to gather information about the system and the Vis
 | `<applicationSource>`                    | `<applicationSource>`                    |         R         |                 |
 | `<remove>`                               | `<remove>`                               |         R         |                 |
 | `<gpg>`                                  | `<gpg>`                                  |         R         |                 |
-| `<keyid></keyid>`                        | `<keyid></keyid>`                        |         R         |                 | 
+| `<keyname></keyname>`                        | `<keyname></keyname>`                        |         R         |                 | 
 | `</gpg>`                                 | `<gpg>`                                  |         R         |                 |
 | `<repo>`                                 | `</repo>`                                |         R         |                 |
 | `<filename></filename>`                  | `<filename></filename>`                  |         R         |                 |
@@ -1026,7 +1026,7 @@ The query command can be used to gather information about the system and the Vis
     <applicationSource>
         <remove>
             <gpg>
-                <keyid></keyid>
+                <keyname></keyname>
             </gpg>
             <repo>
                 <filename></filename>

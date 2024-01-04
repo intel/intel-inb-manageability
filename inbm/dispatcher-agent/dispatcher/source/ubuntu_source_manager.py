@@ -18,7 +18,7 @@ from dispatcher.source.constants import (
     SourceParameters,
 )
 from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
-from dispatcher.source.linux_gpg_key import remove_gpg_key, add_gpg_key
+from dispatcher.source.linux_gpg_key import remove_gpg_key_if_exists, add_gpg_key
 
 from inbm_common_lib.utility import (
     get_canonical_representation_of_path,
@@ -138,7 +138,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         @parameters: dataclass parameters for ApplicationRemoveSourceParameters
         """
         # Remove the GPG key
-        remove_gpg_key(parameters.gpg_key_id)
+        remove_gpg_key_if_exists(parameters.gpg_key_name)
 
         # Remove the file under /etc/apt/sources.list.d
         try:

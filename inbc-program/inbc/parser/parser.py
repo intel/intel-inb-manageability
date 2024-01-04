@@ -85,10 +85,10 @@ class ArgsParser(object):
 
         # Application Remove Command
         app_remove_parser = app_subparsers.add_parser('remove')
-        app_remove_parser.add_argument('--gpgKeyId', '--gki', required=True,
+        app_remove_parser.add_argument('--gpgKeyName', '--gkn', required=True,
                                        type=lambda x: validate_string_less_than_n_characters(
                                            x, 'str', 50),
-                                       help='GPG Key ID of the source to remove.')
+                                       help='GPG key name of the source to remove.')
         app_remove_parser.add_argument('--filename', '-f', required=True,
                                        type=lambda x: validate_string_less_than_n_characters(
                                            x, 'str', 200),

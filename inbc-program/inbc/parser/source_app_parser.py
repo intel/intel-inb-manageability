@@ -40,7 +40,7 @@ def application_add(args: argparse.Namespace) -> str:
 
 def application_remove(args: argparse.Namespace) -> str:
     arguments = {
-        'keyid': args.gpgKeyId,
+        'keyname': args.gpgKeyName,
         'filename': args.filename
     }
 
@@ -48,7 +48,7 @@ def application_remove(args: argparse.Namespace) -> str:
                 '<manifest><type>source</type>' +
                 '<applicationSource>' +
                 '<remove><gpg>'
-                f'{create_xml_tag(arguments, "keyid")}' +
+                f'{create_xml_tag(arguments, "keyname")}' +
                 '</gpg><repo>' +
                 f'{create_xml_tag(arguments, "filename")}'
                 '</repo>'

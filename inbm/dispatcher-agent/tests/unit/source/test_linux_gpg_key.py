@@ -3,24 +3,30 @@ from unittest.mock import mock_open, patch
 
 from requests import RequestException
 from dispatcher.dispatcher_exception import DispatcherException
-from dispatcher.source.linux_gpg_key import add_gpg_key, remove_gpg_key
+from dispatcher.source.linux_gpg_key import add_gpg_key, remove_gpg_key_if_exists
 from dispatcher.source.source_exception import SourceError
 
 
 class TestLinuxGpgKey:
-    @patch("dispatcher.source.linux_gpg_key.PseudoShellRunner.run", return_value=("", "", 0))
-    def test_remove_gpg_key_successful(self, mock_run):
-        try:
-            remove_gpg_key("123456A0")
-        except DispatcherException:
-            self.fail("Remove GPG key raised SourceError unexpectedly!")
+    def test_remove_gpg_key_success(self, mocker):
+        mocker.patch("os.path.join", return_value="dummy/path/to/key")
+        mocker.patch("os.path.exists", return_value=True)
+        mock_remove = mocker.patch("os.remove")
 
-    @patch("dispatcher.source.linux_gpg_key.PseudoShellRunner.run", return_value=("", "", 2))
-    def test_not_raise_when_list_fails(self, mock_run):
-        try:
-            remove_gpg_key("123456A0")
-        except SourceError:
-            self.fail("Remove GPG key raised SourceError unexpectedly!")
+        remove_gpg_key_if_exists("mock_key_name")
+
+        mock_remove.assert_called_once_with("dummy/path/to/key")
+
+    def test_remove_gpg_key_os_error(self, mocker):
+        mocker.patch("os.path.join", return_value="dummy/path/to/key")
+        mocker.patch("os.path.exists", return_value=True)
+
+        mocker.patch("os.remove", side_effect=OSError("Mock OS Error"))
+
+        with pytest.raises(SourceError) as e:
+            remove_gpg_key_if_exists("mock_key_name")
+
+        assert "Error checking or deleting GPG key: mock_key_name" in str(e.value)
 
     def test_add_gpg_key_success(self, mocker):
         mock_get = mocker.patch("dispatcher.source.linux_gpg_key.requests.get", autospec=True)

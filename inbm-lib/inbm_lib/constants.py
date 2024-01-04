@@ -22,7 +22,7 @@ DOCKER_CHROOT_PREFIX = "/usr/bin/docker run -e DEBIAN_FRONTEND=noninteractive --
 CHROOT_PREFIX = "/usr/sbin/chroot /host "
 
 # XML parse time limit
-PARSE_TIME_SECS = 5
+PARSE_TIME_SECS = 10
 
 # TRTL install location
 TRTL_PATH = get_canonical_representation_of_path('/usr/bin/trtl')

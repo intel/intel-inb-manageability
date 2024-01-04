@@ -45,20 +45,20 @@ class TestSourceApplicationParser(TestCase):
     def test_parse_remove_arguments_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'application', 'remove',
-             '--gpgKeyId', '46C1680FC119E61A501811823A319F932D945953',
+             '--gpgKeyName', 'intel-gpu-jammy.gpg',
              '--filename', 'intel-gpu-jammy.list'])
-        self.assertEqual(f.gpgKeyId, '46C1680FC119E61A501811823A319F932D945953')
+        self.assertEqual(f.gpgKeyName, 'intel-gpu-jammy.gpg')
         self.assertEqual(f.filename, 'intel-gpu-jammy.list')
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_remove_manifest_successfully(self, m_connect):
         p = self.arg_parser.parse_args(
             ['source', 'application', 'remove',
-             '--gpgKeyId', '46C1680FC119E61A501811823A319F932D945953',
+             '--gpgKeyName', 'intel-gpu-jammy.gpg',
              '--filename', 'intel-gpu-jammy.list'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
-                   '<remove><gpg><keyid>46C1680FC119E61A501811823A319F932D945953</keyid></gpg>' \
+                   '<remove><gpg><keyname>intel-gpu-jammy.gpg</keyname></gpg>' \
                    '<repo><filename>intel-gpu-jammy.list</filename></repo></remove></applicationSource></manifest>'
         self.assertEqual(p.func(p), expected)
 
