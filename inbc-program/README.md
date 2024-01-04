@@ -421,7 +421,7 @@ inbc source application add {--gpgKeyUri, -gku=GPG_KEY_URI} {--gpgKeyName, -gkn=
 ### Examples
 #### Add an application source
 ```
-sudo inbc source application add --gpgKeyUri https://dl-ssl.google.com/linux/linux_signing_key.pub --gpgKeyName /usr/share/keyrings/google-chrome.gpg --sources "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"  --filename google-chrome.list
+sudo inbc source application add --gpgKeyUri https://dl-ssl.google.com/linux/linux_signing_key.pub --gpgKeyName google-chrome.gpg --sources "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"  --filename google-chrome.list
 ```
 
 ## SOURCE APPLICATION UPDATE

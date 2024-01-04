@@ -1,14 +1,15 @@
 """
-    Copyright (C) 2023 Intel Corporation
+    Copyright (C) 2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
 import subprocess
-
+import os
 import requests
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from dispatcher.source.source_exception import SourceError
+from .source_exception import SourceError
+from .constants import LINUX_GPG_KEY_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -31,13 +32,13 @@ def remove_gpg_key(gpg_key_id: str) -> None:
         raise SourceError(f"Error checking or deleting GPG key: {e}") from e
 
 
-def add_gpg_key(remote_key_path: str, key_store_path: str) -> None:
+def add_gpg_key(remote_key_path: str, key_store_name: str) -> None:
     """Linux - Adds a GPG key from a remote source
 
     Raises SourceError if there are any problems.
 
     @param remote_key_path: Remote location of the GPG key to download
-    @param key_store_path: Path on local machine to store the GPG key
+    @param key_store_name: Name to use to store the GPG under /usr/share/keyrings/
     """
 
     try:
@@ -47,19 +48,21 @@ def add_gpg_key(remote_key_path: str, key_store_path: str) -> None:
 
         decoded_ascii = response.content.decode("utf-8", errors="strict")
 
+        key_path = os.path.join(LINUX_GPG_KEY_PATH, key_store_name)
+
         # Use gpg to dearmor the key and save it to the key store path
         subprocess.run(
-            ["/usr/bin/gpg", "--dearmor", "--output", key_store_path],
+            ["/usr/bin/gpg", "--dearmor", "--output", key_path],
             input=decoded_ascii,
             check=True,
             text=True,
             shell=False,
         )
 
-        logger.info(f"GPG key added to {key_store_path}")
+        logger.info(f"GPG key added to {key_store_name}")
 
     except requests.exceptions.RequestException as e:
         raise SourceError(f"Error getting GPG key from remote source: {e}")
 
     except subprocess.CalledProcessError as e:
-        raise SourceError(f"Error running gpg to dearmor key: {e}")
+        raise SourceError(f"Error running gpg command to dearmor key: {e}")

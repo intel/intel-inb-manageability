@@ -1,5 +1,5 @@
 """
-    Copyright (C) 2023 Intel Corporation
+    Copyright (C) 2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 
 UBUNTU_APT_SOURCES_LIST = "/etc/apt/sources.list"
 UBUNTU_APT_SOURCES_LIST_D = "/etc/apt/sources.list.d"
+LINUX_GPG_KEY_PATH = '/usr/share/keyrings'
 
 
 @dataclass(kw_only=True, frozen=True)

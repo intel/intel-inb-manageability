@@ -1,5 +1,5 @@
 """
-    Copyright (C) 2023 Intel Corporation
+    Copyright (C) 2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -20,7 +20,6 @@ from dispatcher.source.constants import (
 from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
 from dispatcher.source.linux_gpg_key import remove_gpg_key, add_gpg_key
 
-from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import (
     get_canonical_representation_of_path,
     remove_file,
