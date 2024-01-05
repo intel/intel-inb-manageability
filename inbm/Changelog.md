@@ -8,8 +8,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
  - RTC 536078 - Added package list option to inbc, cloud, and internal manifest. This allows SOTA to run an install/upgrade command on a set of individual packages rather than all installed packages.
 
-#Added
-- RTC 536603, 536604 -[source] Create os and application based manifest
+### Added
+ - RTC 536601 - Added 'source' command to INBM. This command manages `/etc/apt/sources.list` and `/etc/apt/sources.list.d/*` and associated gpg keys on Ubuntu.
 
 ### Fixed
  - RTC 534426 - Could not write to /var/log/inbm-update-status.log on Yocto due to /var/log being a symlink to /var/volatile/log.
