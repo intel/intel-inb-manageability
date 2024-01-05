@@ -1,7 +1,7 @@
 """
     Source Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2023 Intel Corporation
+    # Copyright (C) 2020-2024 Intel Corporation
     # SPDX-License-Identifier: Apache-2.0
 """
 from typing import Any
@@ -33,7 +33,6 @@ class SourceCommand(Command):
 
         @param payload: payload received in which to search
         """
-        # TODO: Add responses to wait for
         super().search_response(payload)
 
     def search_event(self, payload: Any, topic: str) -> None:

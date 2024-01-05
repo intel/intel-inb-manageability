@@ -1,3 +1,4 @@
+import pytest
 from datetime import datetime
 from unittest import TestCase
 from inbc.parser.parser import ArgsParser
@@ -138,22 +139,21 @@ class TestInbc(TestCase):
     @patch('inbc.command.ota_command.FotaCommand.invoke_update')
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_invalid_fota_date_format(self, mock_stderr, mock_trigger) -> None:
-        with self.assertRaises(SystemExit):
+        with pytest.raises(SystemExit):
             self.arg_parser.parse_args(
                 ['fota', '-u', 'https://abc.com/test.tar', '-r', '12-31-2024',
                  '-m', 'Intel', '--target', '123ABC', '456DEF'])
-        self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
+        assert "Not a valid date - format YYYY-MM-DD:" in str(mock_stderr.getvalue())
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_too_long_fota_signature(self, mock_stderr, mock_reconnect) -> None:
-        with self.assertRaises(SystemExit):
+        with pytest.raises(SystemExit):
             self.arg_parser.parse_args(['fota', '-u', 'https://abc.com/test.tar',
                                         '-r', '2024-12-31',
                                         '-m', 'Intel',
                                         '-s', OVER_ONE_THOUSAND_CHARACTER_STRING])
-        self.assertRegexpMatches(mock_stderr.getvalue(
-        ), r"Signature is greater than allowed string size")
+        assert "Signature is greater than allowed string size" in str(mock_stderr.getvalue())
 
     @patch('threading.Thread.start')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
@@ -179,18 +179,18 @@ class TestInbc(TestCase):
 
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_invalid_pota_sota_release_date_format(self, mock_stderr) -> None:
-        with self.assertRaises(SystemExit):
+        with pytest.raises(SystemExit):
             self.arg_parser.parse_args(
                 ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '-r', '2024-12-31', '-sr', '12-31-2024'])
-        self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
+        assert "Not a valid date - format YYYY-MM-DD:" in str(mock_stderr.getvalue())
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_invalid_pota_fota_release_date_format(self, mock_stderr, mock_reconnect) -> None:
-        with self.assertRaises(SystemExit):
+        with pytest.raises(SystemExit):
             self.arg_parser.parse_args(
                 ['pota', '-fp', './fip.bin', '-sp', './temp/test.mender', '-r', '12-25-2021'])
-        self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
+        assert "Not a valid date - format YYYY-MM-DD:" in str(mock_stderr.getvalue())
 
     def test_create_ubuntu_update_manifest(self) -> None:
         s = self.arg_parser.parse_args(['sota'])
@@ -252,10 +252,10 @@ class TestInbc(TestCase):
 
     @patch('sys.stderr', new_callable=StringIO)
     def test_raise_invalid_sota_release_date_format(self, mock_stderr) -> None:
-        with self.assertRaises(SystemExit):
+        with pytest.raises(SystemExit) :
             self.arg_parser.parse_args(
                 ['sota', '-u', 'https://abc.com/test.mender', '-r', '12-31-2024'])
-        self.assertRegexpMatches(mock_stderr.getvalue(), r"Not a valid date - format YYYY-MM-DD:")
+        assert "Not a valid date - format YYYY-MM-DD:" in str(mock_stderr.getvalue())
 
     @patch('inbc.parser.ota_parser._gather_system_details',
            return_value=PlatformInformation(datetime(2011, 10, 13), 'Intel Corporation', 'ADLSFWI1.R00',

@@ -1,10 +1,10 @@
 import shutil
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, mock_open
 from unittest import TestCase
 
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import clean_input, get_canonical_representation_of_path, canonicalize_uri, \
-    validate_file_type, remove_file, copy_file, move_file
+    validate_file_type, remove_file, copy_file, move_file, create_file_with_contents
 
 
 class TestUtility(TestCase):
@@ -94,3 +94,18 @@ class TestUtility(TestCase):
     def test_raises_when_move_src_is_symlink(self, mock_is_symlink: Mock) -> None:
         with self.assertRaises(IOError):
             move_file('/home/usr', '/etc')
+
+    def test_create_file_with_contents_successfully(self) -> None:
+        try:
+            m = mock_open()
+            lines = ['line1', 'line2']
+            with patch('builtins.open', m) as m_open:
+                create_file_with_contents('/etc/apt/sources.list.d/docker.list', lines)
+            
+            m_open.assert_called_once_with('/etc/apt/sources.list.d/docker.list', 'w')
+            
+            handle = m()
+            handle.writelines.assert_called_once_with([line + "\n" for line in lines])
+
+        except IOError as e:
+            self.fail(f"Unexpected exception raised during test: {e}")

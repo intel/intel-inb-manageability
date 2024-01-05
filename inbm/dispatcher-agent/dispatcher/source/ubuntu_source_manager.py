@@ -1,12 +1,13 @@
 """
-    Copyright (C) 2023 Intel Corporation
+    Copyright (C) 2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
 import glob
 import logging
 import os
-from dispatcher.dispatcher_exception import DispatcherException
+
+from dispatcher.source.source_exception import SourceError
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST,
     UBUNTU_APT_SOURCES_LIST_D,
@@ -17,7 +18,14 @@ from dispatcher.source.constants import (
     SourceParameters,
 )
 from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
-from inbm_common_lib.shell_runner import PseudoShellRunner
+from dispatcher.source.linux_gpg_key import remove_gpg_key_if_exists, add_gpg_key
+
+from inbm_common_lib.utility import (
+    get_canonical_representation_of_path,
+    remove_file,
+    move_file,
+    create_file_with_contents,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +35,14 @@ class UbuntuOsSourceManager(OsSourceManager):
         pass
 
     def add(self, parameters: SourceParameters) -> None:
-        """Adds a source in the Ubuntu OS source file /etc/apt/sources.list"""
-        # TODO: Add functionality to add a source file in Ubuntu to /etc/apt/sources.list file
-        logger.debug(f"sources: {parameters.sources}")
+        """Adds sources in the Ubuntu OS source file /etc/apt/sources.list"""
+
+        try:
+            with open(UBUNTU_APT_SOURCES_LIST, "a") as file:
+                for source in parameters.sources:
+                    file.write(f"{source}\n")
+        except OSError as e:
+            raise SourceError(f"Error adding sources: {e}") from e
 
     def list(self) -> list[str]:
         """List deb and deb-src lines in /etc/apt/sources.list"""
@@ -44,8 +57,7 @@ class UbuntuOsSourceManager(OsSourceManager):
                 line for line in lines if line.startswith("deb ") or line.startswith("deb-src ")
             ]
         except OSError as e:
-            logger.error(f"Error opening source file: {e}")
-            raise DispatcherException(f"Error opening source file: {e}") from e
+            raise SourceError(f"Error opening source file: {e}") from e
 
     def remove(self, parameters: SourceParameters) -> None:
         """Removes a source in the Ubuntu OS source file /etc/apt/sources.list"""
@@ -66,14 +78,19 @@ class UbuntuOsSourceManager(OsSourceManager):
                         logger.debug(f"Removed source: {line}")
 
         except OSError as e:
-            # Wrap any OSError exceptions in a DispatcherException and re-raise.
-            logger.error(f"Error occurred while trying to remove sources: {e}")
-            raise DispatcherException(f"Error occurred while trying to remove sources: {e}") from e
+            raise SourceError(f"Error occurred while trying to remove sources: {e}") from e
 
     def update(self, parameters: SourceParameters) -> None:
-        """Updates a source in the Ubuntu OS source file /etc/apt/sources.list"""
-        # TODO: Add functionality to update a source in Ubuntu file under /etc/apt/sources.list file
-        logger.debug(f"sources: {parameters.sources}")
+        """Updates a source in the Ubuntu OS source file /etc/apt/sources.list
+
+        This will overwrite the file and add the listed sources."""
+
+        try:
+            with open(UBUNTU_APT_SOURCES_LIST, "w") as file:
+                for source in parameters.sources:
+                    file.write(f"{source}\n")
+        except OSError as e:
+            raise SourceError(f"Error adding sources: {e}") from e
 
 
 class UbuntuApplicationSourceManager(ApplicationSourceManager):
@@ -81,8 +98,16 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         pass
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
-        """Adds new application source along with its key"""
-        pass
+        # Step 1: Add key
+        add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
+
+        # Step 2: Add the source
+        try:
+            create_file_with_contents(
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
+            )
+        except (IOError, OSError) as e:
+            raise SourceError(f"Error adding application source list: {e}")
 
     def list(self) -> list[ApplicationSourceList]:
         """List Ubuntu Application source lists under /etc/apt/sources.list.d"""
@@ -106,36 +131,38 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
                     sources.append(new_source)
             return sources
         except OSError as e:
-            logger.error(f"Error listing application sources: {e}")
-            raise DispatcherException(f"Error listing application sources: {e}") from e
+            raise SourceError(f"Error listing application sources: {e}") from e
 
     def remove(self, parameters: ApplicationRemoveSourceParameters) -> None:
-        """Removes a source file from the Ubuntu source file list under /etc/apt/sources.list.d"""
+        """Removes a source file from the Ubuntu source file list under /etc/apt/sources.list.d
+        @parameters: dataclass parameters for ApplicationRemoveSourceParameters
+        """
         # Remove the GPG key
-        try:
-            stdout, stderr, exit_code = PseudoShellRunner().run(
-                f"gpg --list-keys {parameters.gpg_key_id}"
-            )
-
-            # If the key exists, try to remove it
-            if exit_code == 0:
-                stdout, stderr, exit_code = PseudoShellRunner().run(
-                    f"gpg --delete-key {parameters.gpg_key_id}"
-                )
-                if exit_code != 0:
-                    raise DispatcherException("Error deleting GPG key: " + (stderr or stdout))
-
-        except OSError as e:
-            logger.error(f"Error checking or deleting GPG key: {e}")
-            raise DispatcherException(f"Error checking or deleting GPG key: {e}") from e
+        remove_gpg_key_if_exists(parameters.gpg_key_name)
 
         # Remove the file under /etc/apt/sources.list.d
         try:
-            os.remove(UBUNTU_APT_SOURCES_LIST_D + "/" + parameters.file_name)
+            if (
+                os.path.sep in parameters.file_name
+                or parameters.file_name == ".."
+                or parameters.file_name == "."
+            ):
+                raise SourceError(f"Invalid file name: {parameters.file_name}")
+
+            if not remove_file(
+                get_canonical_representation_of_path(
+                    os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name)
+                )
+            ):
+                raise SourceError(f"Error removing file: {parameters.file_name}")
         except OSError as e:
-            raise DispatcherException(f"Error removing file: {e}") from e
+            raise SourceError(f"Error removing file: {e}") from e
 
     def update(self, parameters: ApplicationUpdateSourceParameters) -> None:
         """Updates a source file in Ubuntu OS source file list under /etc/apt/sources.list.d"""
-        # TODO: Add functionality to update a Ubuntu source file under /etc/apt/sources.list.d
-        logger.debug(f"file_name: {parameters.file_name}, source: {parameters.sources[0]}")
+        try:
+            create_file_with_contents(
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
+            )
+        except IOError as e:
+            raise SourceError(f"Error occurred while trying to update sources: {e}") from e

@@ -20,6 +20,7 @@ launchers/update-system.sh
 launchers/install-framework-slow.sh
 
 launchers/setup-servers.sh  # This should happen after any docker uninstalls.
+launchers/source-test.sh
 launchers/aota-test.sh
 launchers/sota-quick-tests.sh
 launchers/fota-test.sh

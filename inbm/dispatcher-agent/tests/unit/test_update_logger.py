@@ -4,8 +4,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from dispatcher.update_logger import UpdateLogger
-from inbm_lib.constants import LOG_FILE, OTA_PENDING, OTA_SUCCESS, OTA_FAIL, FORMAT_VERSION
-from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX
+from inbm_lib.constants import LOG_FILE, OTA_PENDING, OTA_SUCCESS, FAIL, FORMAT_VERSION
 
 SOTA_MANIFEST = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd></sota></type></ota></manifest>'
 
@@ -22,7 +21,7 @@ class TestUpdateLogger(TestCase):
 
     @patch('dispatcher.update_logger.UpdateLogger.write_log_file')
     def test_save_log(self, mock_write_log_file) -> None:
-        expected_status = OTA_FAIL
+        expected_status = FAIL
         self.update_logger._time = datetime.datetime(2023, 12, 25, 00, 00, 00, 000000)
         expected_error = '{"status": 302, "message": "OTA FAILURE"}'
         expected_metadata = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>ota</type><ota><header><type>aota</type><repo>remote</repo></header><type><aota name="application-update"><cmd>update</cmd><app>application</app><fetch>http://security.ubuntu.com/ubuntu/pool/main/n/net-tools/net-tools_1.60-25ubuntu2.1_amd64.deb</fetch><deviceReboot>no</deviceReboot></aota></type></ota></manifest>'

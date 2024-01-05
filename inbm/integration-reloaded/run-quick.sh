@@ -18,6 +18,7 @@ trap general 0
 
 launchers/install-framework-quick.sh
 launchers/update-system.sh
+launchers/source-test.sh
 launchers/aota-test.sh
 launchers/sota-quick-tests.sh
 launchers/fota-test.sh

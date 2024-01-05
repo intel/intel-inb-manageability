@@ -56,6 +56,8 @@ RUN source /venv-py3/bin/activate && \
 
 FROM venv-py3 as test-inbm-lib
 WORKDIR /src/inbm-lib
+# for unit test
+COPY inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/manifest_schema.xsd /src/inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/manifest_schema.xsd 
 RUN source /venv-py3/bin/activate && \
     cd /src/inbm-lib && \
     set -o pipefail && \

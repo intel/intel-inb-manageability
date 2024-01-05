@@ -4,3 +4,5 @@
 coverage.xml
 *.cover
 **/cover/
+inbm_lib
+inbm_common_lib

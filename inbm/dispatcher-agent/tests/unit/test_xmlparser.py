@@ -103,11 +103,13 @@ class TestXmlParser(TestCase):
     <applicationSource>
         <add>
             <gpg>
-                <path></path>
+                <uri></uri>
                 <keyname></keyname>
             </gpg>
             <repo>
-                <source></source>
+                <repos>
+                    <source_pkg></source_pkg>
+                </repos>
                 <filename></filename>
             </repo>
         </add>
@@ -124,10 +126,12 @@ class TestXmlParser(TestCase):
     <type>source</type>
     <applicationSource>
         <update>
-            <repos>
-                <source_pkg></source_pkg>  
-                <source_pkg></source_pkg>  
-            </repos>
+            <repo>
+                <repos>
+                    <source_pkg>foo</source_pkg>  
+                </repos>
+                <filename>bar</filename>
+            </repo>
         </update>
     </applicationSource>
 </manifest>
@@ -143,10 +147,10 @@ class TestXmlParser(TestCase):
     <applicationSource>
         <remove>
             <gpg>
-                <keyid></keyid>
+                <keyname>name.gpg</keyname>
             </gpg>
             <repo>
-                <filename></filename>
+                <filename>name.list</filename>
             </repo>
         </remove>
     </applicationSource>

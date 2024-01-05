@@ -6,7 +6,7 @@
 1. [Introduction](#introduction)
 2. [Prerequisites](#prerequisites)
 3. [Notes](#-notes)
-4. [MQTT Communication](#mqtt-communication)
+4. [MQTT Communication](#mqtt-communication-)
    1. [Publish Channels](#publish-channels)
    2. [Subscribe Channels](#subscribe-channels)
 5. [Commands](#commands)
@@ -19,6 +19,14 @@
    7. [Configuration Set](#set)
    8. [Restart](#restart)
    9. [Query](#query)
+   10. [Source Application Add](#source-application-add)
+   11. [Source Application Remove](#source-application-remove)
+   12. [Source Application Update](#source-application-update)
+   13. [Source Application List](#source-application-list)
+   14. [Source OS Add](#source-os-add)
+   15. [Source OS Remove](#source-os-remove)
+   16. [Source OS Update](#source-os-update)
+   15. [Source OS List](#source-os-list)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -352,7 +360,7 @@ Remove is only applicable to two config tags, which are trustedRepositories and 
 
 ### Usage
 ```
-inbc remove
+inbc remove 
    {--path, -p KEY_PATH;...} 
 ```
 
@@ -402,6 +410,152 @@ inbc query --option hw
 #### Return only 'sw' attributes
 ```
 inbc query --option sw
+```
+
+## SOURCE APPLICATION ADD
+### Description
+Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.list.d</em> to store the update source information.
+This list file is used during 'sudo apt update' to update the application
+
+### Usage
+```
+inbc source application add 
+   {--gpgKeyUri, -gku=GPG_KEY_URI}
+   {--gpgKeyName, -gkn=GPG_KEY_NAME}
+   {--sources, -s=SOURCES}
+   {--filename, -f=FILENAME}
+```
+
+### Example
+#### Add an application source
+```
+inbc source application add 
+   --gpgKeyUri https://dl-ssl.google.com/linux/linux_signing_key.pub 
+   --gpgKeyName google-chrome.gpg 
+   --sources "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"  
+   --filename google-chrome.list
+```
+
+## SOURCE APPLICATION REMOVE
+### Description
+Removes the GPG key file from under <em>/usr/share/keyrings</em>.  Removes the source file from under /etc/apt/sources.list.d/.
+
+### Usage
+```
+inbc source application remove 
+   {--gpgKeyName, -gkn=GPG_KEY_NAME} 
+   {--filename, -f=FILE_NAME}
+```
+
+### Example
+#### Remove an application source
+```commandline
+inbc source application remove 
+    --gpgKeyName google-chrome.gpg 
+    --filename google-chrome.list
+```
+
+## SOURCE APPLICATION UPDATE
+### Description
+Updates Application sources that are used to update the system
+NOTE: Currently this only works on Ubuntu
+
+### Usage
+```
+inbc source application update 
+   {--filename, -f=FILEPATH} 
+   {--sources, -s=SOURCES}
+```
+
+### Examples
+#### Update an application source file
+```
+inbc source application update 
+   --filename google-chrome.list 
+   --sources "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test" "debsrc [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test2"
+```
+
+## SOURCE APPLICATION LIST
+### Description
+Lists Application sources
+NOTE: Currently this only works on Ubuntu
+
+### Usage
+```
+inbc source application list
+```
+
+### Examples
+#### Lists all application source files
+```
+inbc source application list
+```
+
+## SOURCE OS ADD
+### Description
+Appends new source(s) to the <em>/etc/apt/sources.list</em> file
+
+### Usage
+```
+inbc source os add 
+   {--sources, -s=SOURCES}
+```
+
+### Example
+#### Adds two sources
+```
+inbc source os add 
+   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+```
+
+## SOURCE OS REMOVE
+### Description
+Removes the provided source(s) from the <em>/etc/apt/sources.list</em> file, if they are present.
+
+### Usage
+```
+inbc source os remove 
+   {--sources, -s=SOURCES}
+```
+
+### Example
+#### Removes the two provided source(s) from the <em>/etc/apt/sources.list</em> file
+```
+inbc source os remove 
+   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+```
+
+## SOURCE OS UPDATE
+### Description
+Creates a new <em>/etc/apt/sources.list</em> file with only the sources provided
+
+### Usage
+```
+inbc source os update 
+   {--sources, -s=SOURCES}
+```
+
+### Example
+#### Creates a new <em>/etc/apt/sources.list</em> file with only the two provided sources
+```
+inbc source os update 
+   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+```
+
+## SOURCE OS LIST
+### Description
+Lists OS sources
+NOTE: Currently this only works on Ubuntu
+
+### Usage
+```commandline
+inbc source os list
+```
+
+### Examples
+#### Lists all OS source files
+```
+inbc source os list
 ```
 
 # Status Codes

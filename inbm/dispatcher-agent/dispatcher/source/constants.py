@@ -1,15 +1,15 @@
 """
-    Copyright (C) 2023 Intel Corporation
+    Copyright (C) 2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
 
 from enum import Enum, unique
 from dataclasses import dataclass, field
-from typing import List
 
 UBUNTU_APT_SOURCES_LIST = "/etc/apt/sources.list"
 UBUNTU_APT_SOURCES_LIST_D = "/etc/apt/sources.list.d"
+LINUX_GPG_KEY_PATH = "/usr/share/keyrings"
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -18,27 +18,29 @@ class ApplicationSourceList:
     sources: list[str]
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class SourceParameters:
-    sources: List[str] = field(default_factory=lambda: [])
+    sources: list[str] = field(default_factory=lambda: [])
 
 
-@dataclass(kw_only=True)
-class ApplicationAddSourceParameters(SourceParameters):
-    gpg_key_path: str
+@dataclass(kw_only=True, frozen=True)
+class ApplicationAddSourceParameters:
+    gpg_key_uri: str
+    gpg_key_name: str
+    file_name: str
+    sources: list[str] = field(default_factory=lambda: [])
+
+
+@dataclass(kw_only=True, frozen=True)
+class ApplicationRemoveSourceParameters:
     gpg_key_name: str
     file_name: str
 
 
-@dataclass(kw_only=True)
-class ApplicationRemoveSourceParameters:
-    gpg_key_id: str
+@dataclass(kw_only=True, frozen=True)
+class ApplicationUpdateSourceParameters:
     file_name: str
-
-
-@dataclass(kw_only=True)
-class ApplicationUpdateSourceParameters(SourceParameters):
-    file_name: str
+    sources: list[str] = field(default_factory=lambda: [])
 
 
 @unique

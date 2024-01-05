@@ -30,12 +30,13 @@ from inbm_common_lib.constants import REMOTE_SOURCE, UNKNOWN
 from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_lib.constants import QUERY_CMD_CHANNEL, OTA_SUCCESS, OTA_FAIL
+from inbm_lib.constants import QUERY_CMD_CHANNEL, OTA_SUCCESS, FAIL
 
 from .aota.aota_error import AotaError
+from .source.source_exception import SourceError
 from .common import dispatcher_state
 from .common.result_constants import CODE_OK, CODE_BAD_REQUEST, CODE_MULTIPLE, \
-    CONFIG_LOAD_FAIL_WRONG_PATH, CODE_FOUND
+    CODE_FOUND
 from .config_dbs import ConfigDbs
 from .constants import *
 from .device_manager.device_manager import get_device_manager
@@ -337,21 +338,26 @@ class Dispatcher:
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
             result = Result(CODE_BAD_REQUEST, f'Error during install: {error}')
-            self._update_logger.status = OTA_FAIL
+            self._update_logger.status = FAIL
+            self._update_logger.error = str(error)
+        except SourceError as error:
+            logger.error(error)
+            result = Result(CODE_BAD_REQUEST, f'Error changing sources files: {error}')
+            self._update_logger.status = FAIL
             self._update_logger.error = str(error)
         except XmlException as error:
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
-            self._update_logger.status = OTA_FAIL
+            self._update_logger.status = FAIL
             self._update_logger.error = str(error)
         except (AotaError, FotaError, SotaError) as e:
             result = Result(CODE_BAD_REQUEST, str(e))
-            self._update_logger.status = OTA_FAIL
+            self._update_logger.status = FAIL
             self._update_logger.error = str(e)
         finally:
             logger.info('Install result: %s', str(result))
             self._send_result(str(result))
             if result.status != CODE_OK and parsed_head:
-                self._update_logger.status = OTA_FAIL
+                self._update_logger.status = FAIL
                 self._update_logger.error = str(result)
                 self.invoke_workload_orchestration_check(True, type_of_manifest, parsed_head)
 
@@ -650,8 +656,8 @@ class Dispatcher:
             self._telemetry(
                 'On Boot, Diagnostics reports some services not up after previous SOTA')
             self.invoke_sota(action='diagnostic_system_unhealthy', snapshot=None)
-            self._update_logger.update_log(OTA_FAIL)
-            logger.info(OTA_FAIL)
+            self._update_logger.update_log(FAIL)
+            logger.info(FAIL)
 
     def check_fota_state(self, fota_state: dispatcher_state.DispatcherState) -> None:
         """This method checks the FOTA info in dispatcher state file and validates the release date
@@ -661,7 +667,7 @@ class Dispatcher:
         @params fota_state: The consumed information from the dispatcher state file.
         """
         # If all the checks pass, the OTA status changes to SUCCESS at the end.
-        self._update_logger.update_log(OTA_FAIL)
+        self._update_logger.update_log(FAIL)
 
         os_type = platform.system()
         platform_info = PlatformInformation()

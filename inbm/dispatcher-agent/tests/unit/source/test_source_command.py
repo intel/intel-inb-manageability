@@ -7,7 +7,14 @@ import os
 
 import pytest
 from dispatcher.common.result_constants import Result
-from dispatcher.source.constants import ApplicationRemoveSourceParameters, OsType, SourceParameters
+from dispatcher.source.constants import (
+    ApplicationAddSourceParameters,
+    ApplicationRemoveSourceParameters,
+    ApplicationSourceList,
+    ApplicationUpdateSourceParameters,
+    OsType,
+    SourceParameters,
+)
 from dispatcher.source.source_command import do_source_command
 from inbm_lib.xmlhandler import XmlHandler
 
@@ -45,8 +52,8 @@ def xml_handler_factory():
                 <applicationSource><list/></applicationSource>
             </manifest>""",
             "dispatcher.source.source_command.create_application_source_manager",
-            {"foo.list": ["source1", "source2"]},
-            '{"foo.list": ["source1", "source2"]}',
+            [ApplicationSourceList(name="source_name", sources=["line1", "line2"])],
+            '[{"name": "source_name", "sources": ["line1", "line2"]}]',
         ),
     ],
 )
@@ -84,14 +91,14 @@ def test_do_source_command_list(
             """<?xml version="1.0" encoding="utf-8"?>
             <manifest>
                 <type>source</type>
-                <applicationSource><remove><gpg><keyid>46C1680FC119E61A501811823A319F932D945953</keyid></gpg>
+                <applicationSource><remove>  <gpg><keyname>intel-gpu-jammy.gpg</keyname></gpg>
                                         <repo><filename>intel-gpu-jammy.list</filename></repo>
                                 </remove></applicationSource>
             </manifest>""",
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationRemoveSourceParameters(
-                gpg_key_id="46C1680FC119E61A501811823A319F932D945953",
+                gpg_key_name="intel-gpu-jammy.gpg",
                 file_name="intel-gpu-jammy.list",
             ),
         ),
@@ -110,4 +117,131 @@ def test_do_source_command_remove(
     result = do_source_command(xml_handler, os_type)
 
     mock_manager.remove.assert_called_once_with(expected_call)
+    assert result == Result(status=200, message="SUCCESS")
+
+
+@pytest.mark.parametrize(
+    "xml, manager_mock, os_type, expected_call",
+    [
+        (
+            """<?xml version="1.0" encoding="UTF-8"?>
+            <manifest>
+                <type>source</type>
+                <osSource>
+                    <add>
+                        <repos>
+                            <source_pkg>sourceA</source_pkg>
+                            <source_pkg>sourceB</source_pkg>
+                        </repos>
+                    </add>
+                </osSource>
+            </manifest>""",
+            "dispatcher.source.source_command.create_os_source_manager",
+            OsType.Ubuntu,
+            SourceParameters(sources=["sourceA", "sourceB"]),
+        ),
+        (
+            """<?xml version="1.0" encoding="UTF-8"?>
+            <manifest>
+                <type>source</type>
+                <applicationSource>
+                    <add>
+                        <gpg>
+                            <uri>gpguri</uri>
+                            <keyname>keyname</keyname>
+                        </gpg>
+                        <repo>
+                            <repos>
+                                <source_pkg>sourceA</source_pkg>
+                                <source_pkg>sourceB</source_pkg>
+                            </repos>
+                            <filename>repofilename</filename>
+                        </repo>
+                    </add>
+                </applicationSource>
+            </manifest>""",
+            "dispatcher.source.source_command.create_application_source_manager",
+            OsType.Ubuntu,
+            ApplicationAddSourceParameters(
+                file_name="repofilename",
+                gpg_key_name="keyname",
+                gpg_key_uri="gpguri",
+                sources=["sourceA", "sourceB"],
+            ),
+        ),
+    ],
+)
+def test_do_source_command_add(
+    mocker, xml_handler_factory, xml, manager_mock, os_type, expected_call
+):
+    xml_handler = xml_handler_factory(xml)
+
+    mock_manager = mocker.Mock()
+    mock_manager.add.return_value = None
+
+    mocker.patch(manager_mock, return_value=mock_manager)
+
+    result = do_source_command(xml_handler, os_type)
+
+    mock_manager.add.assert_called_once_with(expected_call)
+    assert result == Result(status=200, message="SUCCESS")
+
+
+@pytest.mark.parametrize(
+    "xml, manager_mock, os_type, expected_call",
+    [
+        (
+            """<?xml version="1.0" encoding="UTF-8"?>
+            <manifest>
+                <type>source</type>
+                <osSource>
+                    <update>
+                        <repos>
+                            <source_pkg>source1</source_pkg>  
+                            <source_pkg>source2</source_pkg>  
+                        </repos>
+                    </update>
+                </osSource>
+            </manifest>""",
+            "dispatcher.source.source_command.create_os_source_manager",
+            OsType.Ubuntu,
+            SourceParameters(sources=["source1", "source2"]),
+        ),
+        (
+            """<?xml version="1.0" encoding="UTF-8"?>
+            <manifest>
+                <type>source</type>
+                <applicationSource>
+                    <update>
+                        <repo>
+                            <repos>
+                                <source_pkg>source1</source_pkg>
+                                <source_pkg>source2</source_pkg>
+                            </repos>
+                            <filename>filename</filename>  
+                        </repo>
+                    </update>
+                </applicationSource>
+            </manifest>""",
+            "dispatcher.source.source_command.create_application_source_manager",
+            OsType.Ubuntu,
+            ApplicationUpdateSourceParameters(
+                file_name="filename", sources=["source1", "source2"]
+            ),
+        ),
+    ],
+)
+def test_do_source_command_update(
+    mocker, xml_handler_factory, xml, manager_mock, os_type, expected_call
+):
+    xml_handler = xml_handler_factory(xml)
+
+    mock_manager = mocker.Mock()
+    mock_manager.update.return_value = None
+
+    mocker.patch(manager_mock, return_value=mock_manager)
+
+    result = do_source_command(xml_handler, os_type)
+
+    mock_manager.update.assert_called_once_with(expected_call)
     assert result == Result(status=200, message="SUCCESS")

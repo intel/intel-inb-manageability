@@ -43,15 +43,20 @@ class Broker(IBroker):
         except ValueError:
             mqtt_port = DEFAULT_MQTT_PORT
 
-        self.mqttc = MQTT(PROG,
-                          MQTT_HOST,
-                          mqtt_port,
-                          MQTT_KEEPALIVE_INTERVAL,
-                          ca_certs=CA_CERTS,
-                          env_config=True,
-                          tls=tls,
-                          client_certs=CLIENT_CERTS,
-                          client_keys=CLIENT_KEYS)
+        try:
+            self.mqttc = MQTT(PROG,
+                              MQTT_HOST,
+                              mqtt_port,
+                              MQTT_KEEPALIVE_INTERVAL,
+                              ca_certs=CA_CERTS,
+                              env_config=True,
+                              tls=tls,
+                              client_certs=CLIENT_CERTS,
+                              client_keys=CLIENT_KEYS)
+        except AttributeError as e:
+            logger.exception("MQTT error:  Check that MQTT Service is running")
+            raise
+
         self.mqttc.start()
         self._subscribe()
         self._command = create_command_factory(cmd_type, self)
