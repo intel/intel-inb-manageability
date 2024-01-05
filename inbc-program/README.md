@@ -414,7 +414,7 @@ inbc query --option sw
 
 ## SOURCE APPLICATION ADD
 ### Description
-Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.d</em> to store the update source information.
+Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.list.d</em> to store the update source information.
 This list file is used during 'sudo apt update' to update the application
 
 ### Usage
@@ -438,12 +438,12 @@ inbc source application add
 
 ## SOURCE APPLICATION REMOVE
 ### Description
-Removes the GPG key file from under <em>/usr/share/keyrings</em>.  Removes the source file from under /etc/apt/sources.d/.
+Removes the GPG key file from under <em>/usr/share/keyrings</em>.  Removes the source file from under /etc/apt/sources.list.d/.
 
 ### Usage
 ```
 inbc source application remove 
-   {--gpgKeyName, -gkn=GPG_KYE_NAME} 
+   {--gpgKeyName, -gkn=GPG_KEY_NAME} 
    {--filename, -f=FILE_NAME}
 ```
 
