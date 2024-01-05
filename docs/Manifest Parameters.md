@@ -918,10 +918,10 @@ The query command can be used to gather information about the system and the Vis
 | `<type></type>`                          | `<type>source</type>`                                                                          |         R         |                 |
 | `<applicationSource>`                    | `<applicationSource>`                                                                          |         R         |                 |
 | `<add>`                                  | `<add>`                                                                                        |         R         |                 |
-| `<gpg>`                                  | `<gpg>`                                                                                        |         R         |                 |
-| `<uri></uri>`                            | `<uri>https://dl-ssl.google.com/linux/linux_signing_key.pub</uri>`                             |         R         |                 |
-| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`                                                         |         R         |                 | 
-| `</gpg>`                                 | `</gpg>`                                                                                       |         R         |                 |
+| `<gpg>`                                  | `<gpg>`                                                                                        |         O         |                 |
+| `<uri></uri>`                            | `<uri>https://dl-ssl.google.com/linux/linux_signing_key.pub</uri>`                             |         O         |                 |
+| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`                                                         |         O         |                 | 
+| `</gpg>`                                 | `</gpg>`                                                                                       |         O         |                 |
 | `<repo>`                                 | `<repo>`                                                                                       |         R         |                 |
 | `<repos>`                                | `<repos>`                                                                                      |         R         |                 |
 | `<source_pkg>`                           | `<source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main</source_pkg>` |         R         |                 |
@@ -935,7 +935,7 @@ The query command can be used to gather information about the system and the Vis
 
 
 
-#### Source application add Manifest Example
+#### Source Application Add Manifest Example using remote GPG key
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -966,7 +966,6 @@ The query command can be used to gather information about the system and the Vis
 | `<type></type>`                          | `<type>source</type>`                                                                          |         R         |       |
 | `<applicationSource>`                    | `<applicationSource>`                                                                          |         R         |       |
 | `<update>`                               | `<update>`                                                                                     |         R         |       |
-| `<gpg>`                                  | `<gpg>`                                                                                        |         R         |       |
 | `<repo>`                                 | `<repo>`                                                                                       |         R         |       |
 | `<repos>`                                | `<repos>`                                                                                      |         R         |       |
 | `<source_pkg>`                           | `<source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main</source_pkg>` |         R         |       |
@@ -1006,9 +1005,9 @@ The query command can be used to gather information about the system and the Vis
 | `<type></type>`                          | `<type>source</type>`                    |         R         |       |
 | `<applicationSource>`                    | `<applicationSource>`                    |         R         |       |
 | `<remove>`                               | `<remove>`                               |         R         |       |
-| `<gpg>`                                  | `<gpg>`                                  |         R         |       |
-| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`   |         R         |       | 
-| `</gpg>`                                 | `<gpg>`                                  |         R         |       |
+| `<gpg>`                                  | `<gpg>`                                  |         O         |       |
+| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`   |         O         |       | 
+| `</gpg>`                                 | `<gpg>`                                  |         O         |       |
 | `<repo>`                                 | `<repo>`                                 |         R         |       |
 | `<filename></filename>`                  | `<filename>google-chrom.list</filename>` |         R         |       |
 | `</repo>`                                | `</repo>`                                |         R         |       |
@@ -1019,7 +1018,7 @@ The query command can be used to gather information about the system and the Vis
 
 
 
-#### Source Application Remove Manifest Example
+#### Source Application Remove Manifest Example (Including GPG key)
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -1029,6 +1028,21 @@ The query command can be used to gather information about the system and the Vis
             <gpg>
                 <keyname>google-chrome.gpg</keyname>
             </gpg>
+            <repo>
+                <filename>google-chrome.list</filename>
+            </repo>
+        </remove>
+    </applicationSource>
+</manifest>
+```
+
+#### Source Application Remove Manifest Example (Excluding GPG key)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <remove>
             <repo>
                 <filename>google-chrome.list</filename>
             </repo>

@@ -319,7 +319,7 @@
                             <xs:element name="add" minOccurs="1" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="gpg" minOccurs="1" maxOccurs="1">
+                                        <xs:element name="gpg" minOccurs="0" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element name="uri" type="PathMax1500Chars" minOccurs="1" maxOccurs="1"/>
@@ -367,7 +367,7 @@
                             <xs:element name="remove" minOccurs="1" maxOccurs="1">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="gpg" minOccurs="1" maxOccurs="1">
+                                        <xs:element name="gpg" minOccurs="0" maxOccurs="1">
                                             <xs:complexType>
                                                 <xs:sequence>
                                                     <xs:element name="keyname" type="Max50Chars" minOccurs="1" maxOccurs="1"/>

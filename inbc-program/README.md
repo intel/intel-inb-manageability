@@ -427,7 +427,7 @@ inbc source application add
 ```
 
 ### Example
-#### Add an application source
+#### Add an Application Source (with remote GPG key)
 ```
 inbc source application add 
    --gpgKeyUri https://dl-ssl.google.com/linux/linux_signing_key.pub 
@@ -436,22 +436,35 @@ inbc source application add
    --filename google-chrome.list
 ```
 
+#### Add an Application Source (using deb822 format)
+```
+inbc source application add 
+   --sources "Types: deb\nURIs: https://files.internal.ledgepark.intel.com\nSuites: ledgepark\nComponents: release\nSigned-By:\n-----BEGIN PGP PUBLIC KEY BLOCK-----\n.\nthegibberishasciikeydatagoesherethegibberishasciikeydatagoeshere\nthegibberishasciikeydatagoesherethegibberishasciikeydatagoeshere\nthegibberishasciikeydatagoesherethegibberishasciikeydatagoeshere=/Xiv\n-----END PGP PUBLIC KEY BLOCK-----\n"  
+   --filename google-chrome.list
+```
+
 ## SOURCE APPLICATION REMOVE
 ### Description
-Removes the GPG key file from under <em>/usr/share/keyrings</em>.  Removes the source file from under /etc/apt/sources.list.d/.
+Removes the source file from under /etc/apt/sources.list.d/.  Optionally removes the GPG key file from under <em>/usr/share/keyrings</em>. 
 
 ### Usage
 ```
 inbc source application remove 
-   {--gpgKeyName, -gkn=GPG_KEY_NAME} 
+   [--gpgKeyName, -gkn=GPG_KEY_NAME]
    {--filename, -f=FILE_NAME}
 ```
 
 ### Example
-#### Remove an application source
+#### Remove an application source (Both GPG key and File)
 ```commandline
 inbc source application remove 
     --gpgKeyName google-chrome.gpg 
+    --filename google-chrome.list
+```
+
+#### Remove an application source (File only)
+```commandline
+inbc source application remove 
     --filename google-chrome.list
 ```
 
