@@ -119,7 +119,7 @@ class TestBiosFactory(TestCase):
         mock_shutil.assert_called_once()
         mock_delete_pkg.assert_has_calls([mock.call(self._uri)])
 
-    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
+    @patch('dispatcher.fota.bios_factory.extract_guids', return_value=["6B29FC40-CA47-1067-B31D-00DD010662D"])
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
@@ -139,7 +139,7 @@ class TestBiosFactory(TestCase):
 
         mock_delete.assert_called_once()
 
-    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
+    @patch('dispatcher.fota.bios_factory.extract_guids', return_value=["6B29FC40-CA47-1067-B31D-00DD010662D"])
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
@@ -179,7 +179,7 @@ class TestBiosFactory(TestCase):
             self.assertEqual(
                 str(e), "Firmware Update Aborted: Firmware tool: firmware update not supported")
 
-    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
+    @patch('dispatcher.fota.bios_factory.extract_guids', return_value=["6B29FC40-CA47-1067-B31D-00DD010662D"])
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
@@ -342,7 +342,7 @@ class TestBiosFactory(TestCase):
                                                                                                   self._repo_name)
         mock_ext.assert_called_once()
 
-    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
+    @patch('dispatcher.fota.bios_factory.extract_guids', return_value=["6B29FC40-CA47-1067-B31D-00DD010662D"])
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
@@ -360,7 +360,7 @@ class TestBiosFactory(TestCase):
             self.assertEqual(
                 str(e), "Error: Firmware command failed")
 
-    @patch('dispatcher.fota.bios_factory.extract_guid', return_value="6B29FC40-CA47-1067-B31D-00DD010662D")
+    @patch('dispatcher.fota.bios_factory.extract_guids', return_value=["6B29FC40-CA47-1067-B31D-00DD010662D"])
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=('', '', 0))
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack', return_value=('capsule.efi', None))
     @patch('dispatcher.fota.bios_factory.BiosFactory.delete_files')
