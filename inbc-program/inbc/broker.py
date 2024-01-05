@@ -55,6 +55,7 @@ class Broker(IBroker):
                               client_keys=CLIENT_KEYS)
         except AttributeError as e:
             logger.exception("MQTT error:  Check that MQTT Service is running")
+            raise
 
         self.mqttc.start()
         self._subscribe()
