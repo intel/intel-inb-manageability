@@ -1009,7 +1009,7 @@ The query command can be used to gather information about the system and the Vis
 | `<gpg>`                                  | `<gpg>`                                  |         R         |       |
 | `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`   |         R         |       | 
 | `</gpg>`                                 | `<gpg>`                                  |         R         |       |
-| `<repo>`                                 | `</repo>`                                |         R         |       |
+| `<repo>`                                 | `<repo>`                                 |         R         |       |
 | `<filename></filename>`                  | `<filename>google-chrom.list</filename>` |         R         |       |
 | `</repo>`                                | `</repo>`                                |         R         |       |
 | `</remove>`                              | `</remove>`                              |         R         |       |
@@ -1072,7 +1072,7 @@ The query command can be used to gather information about the system and the Vis
 | `<type></type>`                          | `<type>source</type>`                                                                             |         R         |       |
 | `<osSource>`                             | `<osSource>`                                                                                      |         R         |       |
 | `<add>`                                  | `<add>`                                                                                           |         R         |       |
-| `<repos>`                                | `</repos>`                                                                                        |         R         |       |
+| `<repos>`                                | `<repos>`                                                                                         |         R         |       |
 | `<source_pkg>`                           | `<source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted</source_pkg>  ` |         R         |       |
 | `</repos>`                               | `</repos>`                                                                                        |         R         |       |
 | `</add>`                                 | `</add>`                                                                                          |         R         |       |
@@ -1106,7 +1106,7 @@ The query command can be used to gather information about the system and the Vis
 | `<type></type>`                          | `<type>source</type>`                                                                             |         R         |       |
 | `<osSource>`                             | `<osSource>`                                                                                      |         R         |       |
 | `<update>`                               | `<update>`                                                                                        |         R         |       |
-| `<repos>`                                | `</repos>`                                                                                        |         R         |       |
+| `<repos>`                                | `<repos>`                                                                                         |         R         |       |
 | `<source_pkg>`                           | `<source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted</source_pkg>  ` |         R         |       |
 | `</repos>`                               | `</repos>`                                                                                        |         R         |       |
 | `</update>`                              | `</update>`                                                                                       |         R         |       |  
