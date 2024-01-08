@@ -54,7 +54,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
     Handle the os source commands.
 
     @param parsed_head: XmlHandler with command information
-    @param os_type: os type
+    @param os_type: OS type
     @param os_action: The action to be performed
     @return Result
     """
@@ -94,8 +94,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
 
 
 def _handle_app_source_command(
-    parsed_head: XmlHandler, os_type: OsType, app_action: dict
-) -> Result:
+        parsed_head: XmlHandler, os_type: OsType, app_action: dict) -> Result:
     """
     Handle the application source commands.
 

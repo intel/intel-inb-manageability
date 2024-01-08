@@ -414,16 +414,16 @@ inbc query --option sw
 
 ## SOURCE APPLICATION ADD
 ### Description
-Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.list.d</em> to store the update source information.
-This list file is used during 'sudo apt update' to update the application
+Optionally Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.list.d</em> to store the update source information.
+This list file is used during 'sudo apt update' to update the application.  <em>Deb882</em> format may be used instead of downloading a GPG key.
 
 ### Usage
 ```
-inbc source application add 
-   {--gpgKeyUri, -gku=GPG_KEY_URI}
-   {--gpgKeyName, -gkn=GPG_KEY_NAME}
+inbc source application add
    {--sources, -s=SOURCES}
    {--filename, -f=FILENAME}
+   [--gpgKeyUri, -gku=GPG_KEY_URI]
+   [--gpgKeyName, -gkn=GPG_KEY_NAME]
 ```
 
 ### Example
@@ -449,20 +449,20 @@ Removes the source file from under /etc/apt/sources.list.d/.  Optionally removes
 
 ### Usage
 ```
-inbc source application remove 
-   [--gpgKeyName, -gkn=GPG_KEY_NAME]
+inbc source application remove    
    {--filename, -f=FILE_NAME}
+   [--gpgKeyName, -gkn=GPG_KEY_NAME]
 ```
 
 ### Example
-#### Remove an application source (Both GPG key and File)
+#### Remove an application source (Both GPG key and Source File)
 ```commandline
 inbc source application remove 
     --gpgKeyName google-chrome.gpg 
     --filename google-chrome.list
 ```
 
-#### Remove an application source (File only)
+#### Remove an application source (Source File only)
 ```commandline
 inbc source application remove 
     --filename google-chrome.list

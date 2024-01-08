@@ -23,7 +23,6 @@ from dispatcher.source.linux_gpg_key import remove_gpg_key_if_exists, add_gpg_ke
 from inbm_common_lib.utility import (
     get_canonical_representation_of_path,
     remove_file,
-    move_file,
     create_file_with_contents,
 )
 
@@ -98,8 +97,10 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         pass
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
-        # Step 1: Add key
-        add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
+        """Adds a source file and optional GPG key to be used during Ubuntu application updates."""
+        # Step 1: Add key (Optional)
+        if parameters.gpg_key_name and parameters.gpg_key_uri:
+            add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
 
         # Step 2: Add the source
         try:
@@ -134,11 +135,13 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
             raise SourceError(f"Error listing application sources: {e}") from e
 
     def remove(self, parameters: ApplicationRemoveSourceParameters) -> None:
-        """Removes a source file from the Ubuntu source file list under /etc/apt/sources.list.d
+        """Removes a source file from the Ubuntu source file list under /etc/apt/sources.list.d.  Optionally
+        removes the gpg key from /usr/share/keyrings
         @parameters: dataclass parameters for ApplicationRemoveSourceParameters
         """
-        # Remove the GPG key
-        remove_gpg_key_if_exists(parameters.gpg_key_name)
+        if parameters.gpg_key_name:
+            # Remove the GPG key (Optional)
+            remove_gpg_key_if_exists(parameters.gpg_key_name)
 
         # Remove the file under /etc/apt/sources.list.d
         try:
