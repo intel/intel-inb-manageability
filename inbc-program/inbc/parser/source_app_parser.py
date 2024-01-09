@@ -4,9 +4,12 @@
    SPDX-License-Identifier: Apache-2.0
 """
 import argparse
+import logging
 
 from ..inbc_exception import InbcException
 from ..xml_tag import create_xml_tag
+
+logger = logging.getLogger(__name__)
 
 
 def application_add(args: argparse.Namespace) -> str:

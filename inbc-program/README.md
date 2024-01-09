@@ -439,8 +439,8 @@ inbc source application add
 #### Add an Application Source (using deb822 format)
 ```
 inbc source application add 
-   --sources "Types: deb\nURIs: https://files.internal.ledgepark.intel.com\nSuites: ledgepark\nComponents: release\nSigned-By:\n-----BEGIN PGP PUBLIC KEY BLOCK-----\n.\nthegibberishasciikeydatagoesherethegibberishasciikeydatagoeshere\nthegibberishasciikeydatagoesherethegibberishasciikeydatagoeshere\nthegibberishasciikeydatagoesherethegibberishasciikeydatagoeshere=/Xiv\n-----END PGP PUBLIC KEY BLOCK-----\n"  
-   --filename google-chrome.list
+   --sources "X-Repolib-Name: Google Chrome" "Enabled: yes" "Types: deb" "URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub" "Suites: stable" "Components: main"
+   --filename google-chrome.sources
 ```
 
 ## SOURCE APPLICATION REMOVE

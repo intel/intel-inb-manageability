@@ -213,7 +213,7 @@ class TestUbuntuApplicationSourceManager:
                 file_name="intel-gpu-jammy.list",
                 sources="X-Repolib-Name: Google Chrome"
                         "Enabled: yes"
-                        "Types:deb"
+                        "Types: deb"
                         "URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub"
                         "Suites: stable"
                         "Components: main",

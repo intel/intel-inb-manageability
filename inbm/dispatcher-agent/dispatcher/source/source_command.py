@@ -120,8 +120,16 @@ def _handle_app_source_command(
         return Result(status=200, message="SUCCESS")
 
     if "add" in app_action:
-        gpg_key_uri = parsed_head.get_children("applicationSource/add/gpg")["uri"]
-        gpg_key_name = parsed_head.get_children("applicationSource/add/gpg")["keyname"]
+        gpg_key_uri = None
+        gpg_key_name = None
+
+        try:
+            gpg_key_uri = parsed_head.get_children("applicationSource/add/gpg")["uri"]
+            gpg_key_name = parsed_head.get_children("applicationSource/add/gpg")["keyname"]
+        except XmlException:
+            # These children may not be present
+            logger.info(f"Optional GPG key parameters not present in manifest")
+
         repo_filename = parsed_head.get_children("applicationSource/add/repo")["filename"]
 
         add_source_pkgs: list[str] = []

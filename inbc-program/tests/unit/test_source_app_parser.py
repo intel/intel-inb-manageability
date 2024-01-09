@@ -26,16 +26,24 @@ class TestSourceApplicationParser(TestCase):
                                      'deb-src http://example.com/ focal-security main'])
         self.assertEqual(f.filename, 'intel-gpu-jammy.list')
 
-    def test_parse_add_arguments_without_gpg_successfully(self):
+    def test_parse_add_arguments_deb822_format_separate_lines_successfully(self):
         f = self.arg_parser.parse_args(
             ['source', 'application', 'add',
-             '--sources', 'deb http://example.com/ focal main restricted universe',
-             'deb-src http://example.com/ focal-security main',
+             '--sources', 'X-Repolib-Name: Google Chrome',
+                          'Enabled: yes',
+                          'Types: deb',
+                          'URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub',
+                          'Suites: stable',
+                          'Components: main',
              '--filename', 'intel-gpu-jammy.list'])
         self.assertEqual(f.gpgKeyUri, None)
         self.assertEqual(f.gpgKeyName, None)
-        self.assertEqual(f.sources, ['deb http://example.com/ focal main restricted universe',
-                                     'deb-src http://example.com/ focal-security main'])
+        self.assertEqual(f.sources, ['X-Repolib-Name: Google Chrome',
+                                     'Enabled: yes',
+                                     'Types: deb',
+                                     'URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub',
+                                     'Suites: stable',
+                                     'Components: main'])
         self.assertEqual(f.filename, 'intel-gpu-jammy.list')
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
@@ -63,6 +71,28 @@ class TestSourceApplicationParser(TestCase):
                            match="Source requires either both gpgKeyUri and gpgKeyName "
                                  "to be provided, or neither of them."):
             Inbc(p, 'source', False)
+
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    def test_create_add_deb_822_format_manifest_successfully(self, m_connect):
+        p = self.arg_parser.parse_args(
+            ['source', 'application', 'add',
+             '--sources', 'X-Repolib-Name: Google Chrome',
+                          'Enabled: yes',
+                          'Types: deb',
+                          'URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub',
+                          'Suites: stable',
+                          'Components: main',
+             '--filename', 'intel-gpu-jammy.list'])
+        Inbc(p, 'source', False)
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
+                   '<add><repo><repos><source_pkg>X-Repolib-Name: Google Chrome</source_pkg>' \
+                   '<source_pkg>Enabled: yes</source_pkg>' \
+                   '<source_pkg>Types: deb</source_pkg>'\
+                   '<source_pkg>URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub</source_pkg>' \
+                   '<source_pkg>Suites: stable</source_pkg>' \
+                   '<source_pkg>Components: main</source_pkg>' \
+                   '</repos><filename>intel-gpu-jammy.list</filename></repo></add></applicationSource></manifest>'
+        self.assertEqual(p.func(p), expected)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     def test_create_add_all_param_manifest_successfully(self, m_connect):
