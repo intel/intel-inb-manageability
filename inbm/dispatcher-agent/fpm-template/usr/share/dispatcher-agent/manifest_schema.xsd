@@ -460,6 +460,7 @@
                 <xs:element name="fetch" type="URLMax700Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="file" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="version" type="MinDecimalZero" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="signature" type="SigMax1000Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="sigversion" type="sigversion" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="containerTag" type="Max200Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="deviceReboot" type="Max50Chars" minOccurs="0" maxOccurs="1"/>

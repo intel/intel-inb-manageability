@@ -176,8 +176,9 @@ class AotaParser(OtaParser):
             logger.info("Config Params not passed correctly"
                         " in manifest, rejected update")
             raise XmlException
-        kwargs.update({'signature': self._signature, 'config_params': config_params,
+        kwargs.update({'config_params': config_params,
                        'hash_algorithm': self._hash_algorithm,
+                       'signature': self._signature,
                        'app_type': app,
                        'cmd': cmd,
                        'container_tag': container_tag,
