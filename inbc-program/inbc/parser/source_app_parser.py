@@ -36,7 +36,7 @@ def application_add(args: argparse.Namespace) -> str:
     manifest += '<repo><repos>'
 
     for source in args.sources:
-        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+        manifest += '<source_pkg>' + source + '</source_pkg>'
 
     manifest += ('</repos>'
                  f'{create_xml_tag(arguments, "filename")}</repo>'
