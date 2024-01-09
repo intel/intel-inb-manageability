@@ -50,6 +50,11 @@ class AotaCommand(ABC):
                  dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
 
+        if 'signature' in parsed_manifest and parsed_manifest['signature'] is not None:
+            self._signature = parsed_manifest['signature']
+        if 'hash_algorithm' in parsed_manifest and parsed_manifest['signature'] is not None:
+            self._hash_algorithm = parsed_manifest['hash_algorithm']
+            
         if 'container_tag' in parsed_manifest and parsed_manifest['container_tag'] is not None:
             self._container_tag = _get_parsed_values(parsed_manifest['container_tag'])
         else:

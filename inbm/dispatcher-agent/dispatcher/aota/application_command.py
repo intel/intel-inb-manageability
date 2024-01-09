@@ -18,8 +18,8 @@ from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX, OTA_SUCCESS
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.common.result_constants import CODE_OK
-from dispatcher.constants import UMASK_OTA, REPO_CACHE
-from dispatcher.packagemanager.package_manager import get
+from dispatcher.constants import OTA_PACKAGE_CERT_PATH, UMASK_OTA, REPO_CACHE
+from dispatcher.packagemanager.package_manager import get, verify_signature
 
 from .checker import check_application_command_supported, check_url, check_resource
 from .aota_command import AotaCommand
@@ -151,6 +151,21 @@ class CentOsApplication(Application):
 
         logger.debug(f"driver path = {driver_path}")
         try:
+            if os.path.exists(OTA_PACKAGE_CERT_PATH):
+                if self._signature is not None:
+                    verify_signature(dispatcher_broker=self._dispatcher_broker,
+                                    hash_algorithm=self._hash_algorithm,
+                                    path_to_file=driver_path,
+                                    signature=self._signature)
+                else:
+                    logger.error("Signature required to proceed with OTA update.")
+                    raise AotaError(
+                        "Device is provisioned with OTA package check certificate. Cannot proceed without signature.")
+            else:
+                no_signature_warning = 'WARNING: Device not provisioned for signature check.  Skipping signature check.'
+                logger.warning(no_signature_warning)
+                self._dispatcher_broker.telemetry(no_signature_warning)
+
             if not self._is_rpm_file_type(driver_path):
                 raise AotaError('Invalid file type')
 
@@ -212,13 +227,29 @@ class UbuntuApplication(Application):
         super().__init__(dispatcher_broker, parsed_manifest, dbs, update_logger=update_logger)
 
     def update(self):  # pragma: no cover
-        super().update()
+        super().update()        
         application_repo = self._download_package()
-        install_cmd = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
-        if ' ' in install_cmd or install_cmd.isspace():
-            logger.debug(f"INSTALL : {install_cmd}")
-            raise AotaError(f"File path cannot contain spaces - {install_cmd}")
-        base_command = f"/usr/bin/dpkg -i {install_cmd}"
+        path_to_pkg = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
+        if ' ' in path_to_pkg or path_to_pkg.isspace():
+            logger.debug(f"INSTALL : {path_to_pkg}")
+            raise AotaError(f"File path cannot contain spaces - {path_to_pkg}")
+
+        if os.path.exists(OTA_PACKAGE_CERT_PATH):
+            if self._signature is not None:
+                verify_signature(dispatcher_broker=self._dispatcher_broker,
+                                 hash_algorithm=self._hash_algorithm,
+                                 path_to_file=path_to_pkg,
+                                 signature=self._signature)
+            else:
+                logger.error("Signature required to proceed with OTA update.")
+                raise AotaError(
+                    "Device is provisioned with OTA package check certificate. Cannot proceed without signature.")
+        else:
+            no_signature_warning = 'WARNING: Device not provisioned for signature check.  Skipping signature check.'
+            logger.warning(no_signature_warning)
+            self._dispatcher_broker.telemetry(no_signature_warning)
+
+        base_command = f"/usr/bin/dpkg -i {path_to_pkg}"
 
         is_docker_app = os.environ.get("container", False)
         if is_docker_app:
