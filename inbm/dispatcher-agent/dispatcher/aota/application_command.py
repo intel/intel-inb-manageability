@@ -52,6 +52,38 @@ class Application(AotaCommand):
 
     def verify_command(self, cmd: str) -> None:
         check_application_command_supported(cmd)
+    
+    def run_signature_check(self, path_to_file: str) -> None:
+        """
+        Runs the signature check on the given file to authenticate the OTA update package.
+
+        This method checks if the device is provisioned with an OTA package check certificate.
+        If the device is provisioned and a signature is provided, it will verify the signature
+        of the file using the specified hash algorithm. If the signature verification fails or
+        if a signature is not provided while the device is provisioned, it raises an AotaError.
+        
+        If the device is not provisioned for signature verification, a warning is logged, and
+        the signature check is skipped.
+
+        @param path_to_file: The file path to the OTA update package that needs to be verified.
+        
+        @return: None. It may raise an AotaError if a required signature is not provided or
+        if verification fails.
+        """
+        if os.path.exists(OTA_PACKAGE_CERT_PATH):
+            if self._signature is not None:
+                verify_signature(dispatcher_broker=self._dispatcher_broker,
+                                hash_algorithm=self._hash_algorithm,
+                                path_to_file=path_to_file,
+                                signature=self._signature)
+            else:
+                logger.error("Signature required to proceed with OTA update.")
+                raise AotaError(
+                    "Device is provisioned with OTA package check certificate. Cannot proceed without signature.")
+        else:
+            no_signature_warning = 'WARNING: Device not provisioned for signature check.  Skipping signature check.'
+            logger.warning(no_signature_warning)
+            self._dispatcher_broker.telemetry(no_signature_warning)
 
     def cleanup(self) -> None:
         if self.repo_to_clean_up is not None and self.resource is not None:
@@ -151,21 +183,8 @@ class CentOsApplication(Application):
 
         logger.debug(f"driver path = {driver_path}")
         try:
-            if os.path.exists(OTA_PACKAGE_CERT_PATH):
-                if self._signature is not None:
-                    verify_signature(dispatcher_broker=self._dispatcher_broker,
-                                    hash_algorithm=self._hash_algorithm,
-                                    path_to_file=driver_path,
-                                    signature=self._signature)
-                else:
-                    logger.error("Signature required to proceed with OTA update.")
-                    raise AotaError(
-                        "Device is provisioned with OTA package check certificate. Cannot proceed without signature.")
-            else:
-                no_signature_warning = 'WARNING: Device not provisioned for signature check.  Skipping signature check.'
-                logger.warning(no_signature_warning)
-                self._dispatcher_broker.telemetry(no_signature_warning)
-
+            self.run_signature_check(driver_path)
+            
             if not self._is_rpm_file_type(driver_path):
                 raise AotaError('Invalid file type')
 
@@ -234,20 +253,7 @@ class UbuntuApplication(Application):
             logger.debug(f"INSTALL : {path_to_pkg}")
             raise AotaError(f"File path cannot contain spaces - {path_to_pkg}")
 
-        if os.path.exists(OTA_PACKAGE_CERT_PATH):
-            if self._signature is not None:
-                verify_signature(dispatcher_broker=self._dispatcher_broker,
-                                 hash_algorithm=self._hash_algorithm,
-                                 path_to_file=path_to_pkg,
-                                 signature=self._signature)
-            else:
-                logger.error("Signature required to proceed with OTA update.")
-                raise AotaError(
-                    "Device is provisioned with OTA package check certificate. Cannot proceed without signature.")
-        else:
-            no_signature_warning = 'WARNING: Device not provisioned for signature check.  Skipping signature check.'
-            logger.warning(no_signature_warning)
-            self._dispatcher_broker.telemetry(no_signature_warning)
+        self.run_signature_check(path_to_file=path_to_pkg)
 
         base_command = f"/usr/bin/dpkg -i {path_to_pkg}"
 
