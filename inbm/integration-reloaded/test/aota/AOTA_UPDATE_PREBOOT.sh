@@ -15,6 +15,7 @@ echo "Starting APPLICATION UPDATE preboot test." | systemd-cat
 
 test_echo AOTA UPDATE
 
+chmod a+r /vagrant/nginx-data/*
 inbc aota --uri http://127.0.0.1:80/sample-application-1.0-1.deb -a "application" -c "update"
 
 test_echo Application Update preboot test via INBC.
