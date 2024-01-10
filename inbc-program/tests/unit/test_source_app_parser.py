@@ -82,7 +82,7 @@ class TestSourceApplicationParser(TestCase):
                           'URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub',
                           'Suites: stable',
                           'Components: main',
-             '--filename', 'intel-gpu-jammy.list'])
+             '--filename', 'google-chrome.sources'])
         Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<add><repo><repos><source_pkg>X-Repolib-Name: Google Chrome</source_pkg>' \
@@ -91,7 +91,7 @@ class TestSourceApplicationParser(TestCase):
                    '<source_pkg>URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub</source_pkg>' \
                    '<source_pkg>Suites: stable</source_pkg>' \
                    '<source_pkg>Components: main</source_pkg>' \
-                   '</repos><filename>intel-gpu-jammy.list</filename></repo></add></applicationSource></manifest>'
+                   '</repos><filename>google-chrome.sources</filename></repo></add></applicationSource></manifest>'
         self.assertEqual(p.func(p), expected)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')

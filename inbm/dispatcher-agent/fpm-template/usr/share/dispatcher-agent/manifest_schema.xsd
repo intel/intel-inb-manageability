@@ -333,7 +333,7 @@
                                                     <xs:element name="repos" minOccurs="1" maxOccurs="1">
                                                         <xs:complexType>
                                                             <xs:sequence>
-                                                                <xs:element name="source_pkg" type="Max200Chars" minOccurs="1" maxOccurs="40"/>
+                                                                <xs:element name="source_pkg" type="Max200Chars" minOccurs="1" maxOccurs="45"/>
                                                             </xs:sequence>
                                                         </xs:complexType>
                                                     </xs:element>
@@ -353,7 +353,7 @@
                                                     <xs:element name="repos" minOccurs="1" maxOccurs="1">
                                                         <xs:complexType>
                                                             <xs:sequence>
-                                                                <xs:element name="source_pkg" type="Max200Chars" minOccurs="1" maxOccurs="10"/>
+                                                                <xs:element name="source_pkg" type="Max200Chars" minOccurs="1" maxOccurs="45"/>
                                                             </xs:sequence>
                                                         </xs:complexType>
                                                     </xs:element>

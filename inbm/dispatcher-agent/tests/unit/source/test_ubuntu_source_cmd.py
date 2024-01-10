@@ -210,7 +210,7 @@ class TestUbuntuApplicationSourceManager:
     def test_add_app_deb_822_format_successfully(self):
         try:
             params = ApplicationAddSourceParameters(
-                file_name="intel-gpu-jammy.list",
+                file_name="google-chrome.sources",
                 sources="X-Repolib-Name: Google Chrome"
                         "Enabled: yes"
                         "Types: deb"
