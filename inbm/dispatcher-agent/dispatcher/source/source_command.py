@@ -18,6 +18,10 @@ from dispatcher.source.constants import (
 from dispatcher.source.source_manager_factory import create_os_source_manager
 from dispatcher.source.source_manager_factory import create_application_source_manager
 from inbm_lib.xmlhandler import XmlException, XmlHandler
+from dispatcher.packagemanager.package_manager import verify_source
+from dispatcher.dispatcher_broker import DispatcherBroker
+from inbm_common_lib.utility import CanonicalUri
+from dispatcher.dispatcher_exception import DispatcherException
 
 logger = logging.getLogger(__name__)
 
@@ -41,11 +45,17 @@ def do_source_command(parsed_head: XmlHandler, os_type: OsType) -> Result:
 
     try:
         app_action = parsed_head.get_children("applicationSource")
+	url = parsed_head.get_children("applicationSource/add/gpg")["uri"]
+	if not isinstance(url, CanonicalUri):
+     		return Result(status=400, message="Internal error: url improperly passed to download function")
+	source = uri.value[:-(len(url.value.split('/')[-1]) + 1)]
+	verify_source(source=source, dispatcher_broker=dispatcher_broker)
         if app_action:
             return _handle_app_source_command(parsed_head, os_type, app_action)
     except XmlException as e:
         return Result(status=400, message=f"unable to handle source command XML: {e}")
-
+    except DispatcherException as err:
+        return Result(status=400, message="Source URI verification check failed")
     return Result(status=400, message="unknown source command")
 
 
