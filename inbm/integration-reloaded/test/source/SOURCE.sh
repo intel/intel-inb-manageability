@@ -58,7 +58,7 @@ fi
 inbc source application list 2>&1 | grep "$OPERA_KEY_NAME"
 inbc source application remove --gpgKeyName "$OPERA_KEY_NAME" --filename "$OPERA_LIST"
 
-inbc source application add --filename $CHROME_SOURCES_FILE --sources \"Enabled: yes\" \"Types: deb\" \"URIs: http://dl.google.com/linux/chrome/deb/\" \"Suites: stable\" \"Components: main\""
+inbc source application add --filename $CHROME_SOURCES_FILE --sources \"Enabled: yes\" \"Types: deb\" \"URIs: http://dl.google.com/linux/chrome/deb/\" \"Suites: stable\" \"Components: main\"
 
 if [ ! -e "/etc/apt/sources.list.d/$CHROME_SOURCES" ]; then
     echo "Error: The file '/etc/apt/sources.list.d/$CHROME_SOURCES' does not exist!"
