@@ -65,11 +65,11 @@ class ArgsParser(object):
 
         # Application Add Command
         app_add_parser = app_subparsers.add_parser('add')
-        app_add_parser.add_argument('--gpgKeyUri', '-gku', required=True,
+        app_add_parser.add_argument('--gpgKeyUri', '-gku', required=False,
                                     type=lambda x: validate_string_less_than_n_characters(
                                         x, 'str', 1500),
                                     help='Uri from which to download GPG key')
-        app_add_parser.add_argument('--gpgKeyName', '-gkn', required=True,
+        app_add_parser.add_argument('--gpgKeyName', '-gkn', required=False,
                                     type=lambda x: validate_string_less_than_n_characters(
                                         x, 'str', 200),
                                     help='Name to store the GPG key information')
@@ -85,7 +85,7 @@ class ArgsParser(object):
 
         # Application Remove Command
         app_remove_parser = app_subparsers.add_parser('remove')
-        app_remove_parser.add_argument('--gpgKeyName', '-gkn', required=True,
+        app_remove_parser.add_argument('--gpgKeyName', '-gkn', required=False,
                                        type=lambda x: validate_string_less_than_n_characters(
                                            x, 'str', 50),
                                        help='GPG key name of the source to remove.')

@@ -16,6 +16,7 @@ OPERA_KEY_NAME="opera.gpg"
 OPERA_SOURCES="deb [arch=amd64 signed-by=/usr/share/keyrings/$OPERA_KEY_NAME] https://deb.opera.com/opera-stable/ stable non-free"
 OPERA_LIST="opera.list"
 NEW_APP_SOURCE="deb newsource"
+CHROME_SOURCES_FILE="google-chrome.sources"
 
 cp "$APT_SOURCES" "$BAK_APT_SOURCES"
 
@@ -56,12 +57,26 @@ fi
 inbc source application list 2>&1 | grep "$OPERA_KEY_NAME"
 inbc source application remove --gpgKeyName "$OPERA_KEY_NAME" --filename "$OPERA_LIST"
 
+inbc source application add --filename $CHROME_SOURCES_FILE --sources \"Enabled: yes\" \"Types: deb\" \"URIs: http://dl.google.com/linux/chrome/deb/\" \"Suites: stable\" \"Components: main\"
+
+if [ ! -e "/etc/apt/sources.list.d/$CHROME_SOURCES_FILE" ]; then
+    echo "Error: The file '/etc/apt/sources.list.d/$CHROME_SOURCES_FILE' does not exist!"
+    exit 1
+fi
+inbc source application remove --filename "$CHROME_SOURCES_FILE"
+
 if inbc source application list 2>&1 | grep -q "$OPERA_KEY_NAME"; then
     echo "Error: $OPERA_KEY_NAME should not be present in the application list after removal"
     exit 1
 fi
 
+if inbc source application list 2>&1 | grep -q "$CHROME_SOURCES_FILE"; then
+    echo "Error: $CHROME_SOURCES_FILE should not be present in the application list after removal"
+    exit 1
+fi
+
 inbc source application add --gpgKeyUri "$OPERA_KEY_URI" --gpgKeyName "$OPERA_KEY_NAME" --sources "$OPERA_SOURCES" --filename "$OPERA_LIST"
+
 inbc source application update --sources "$NEW_APP_SOURCE" --filename "$OPERA_LIST"
 inbc source application list 2>&1 | grep "$NEW_APP_SOURCE"
 

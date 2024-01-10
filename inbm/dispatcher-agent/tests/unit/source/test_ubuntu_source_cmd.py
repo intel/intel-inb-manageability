@@ -8,6 +8,7 @@ from dispatcher.source.constants import (
     ApplicationRemoveSourceParameters,
     SourceParameters,
     ApplicationUpdateSourceParameters,
+    ApplicationAddSourceParameters
 )
 from dispatcher.source.ubuntu_source_manager import (
     UbuntuApplicationSourceManager,
@@ -192,14 +193,44 @@ class TestUbuntuOSSourceManager:
 
 
 class TestUbuntuApplicationSourceManager:
-    @patch("dispatcher.source.ubuntu_source_manager.move_file")
-    def test_update_app_source_successfully(self, mock_move):
+    def test_add_app_with_gpg_key_successfully(self):
+        try:
+            params = ApplicationAddSourceParameters(
+                file_name="intel-gpu-jammy.list",
+                sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
+                gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
+                gpg_key_name="google-chrome.gpg"
+            )
+            command = UbuntuApplicationSourceManager()
+            with patch("builtins.open", new_callable=mock_open()):
+                command.add(params)
+        except SourceError as err:
+            assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"
+
+    def test_add_app_deb_822_format_successfully(self):
+        try:
+            params = ApplicationAddSourceParameters(
+                file_name="google-chrome.sources",
+                sources="X-Repolib-Name: Google Chrome"
+                        "Enabled: yes"
+                        "Types: deb"
+                        "URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub"
+                        "Suites: stable"
+                        "Components: main",
+            )
+            command = UbuntuApplicationSourceManager()
+            with patch("builtins.open", new_callable=mock_open()):
+                command.add(params)
+        except SourceError as err:
+            assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"
+
+    def test_update_app_source_successfully(self):
         try:
             params = ApplicationUpdateSourceParameters(
                 file_name="intel-gpu-jammy.list", sources=APP_SOURCE
             )
             command = UbuntuApplicationSourceManager()
-            with patch("builtins.open", new_callable=mock_open()) as m:
+            with patch("builtins.open", new_callable=mock_open()):
                 command.update(params)
         except SourceError as err:
             assert False, f"'UbuntuApplicationSourceManager.update' raised an exception {err}"

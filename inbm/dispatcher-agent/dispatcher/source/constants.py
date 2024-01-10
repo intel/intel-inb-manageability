@@ -6,6 +6,7 @@
 
 from enum import Enum, unique
 from dataclasses import dataclass, field
+from typing import Optional
 
 UBUNTU_APT_SOURCES_LIST = "/etc/apt/sources.list"
 UBUNTU_APT_SOURCES_LIST_D = "/etc/apt/sources.list.d"
@@ -25,16 +26,16 @@ class SourceParameters:
 
 @dataclass(kw_only=True, frozen=True)
 class ApplicationAddSourceParameters:
-    gpg_key_uri: str
-    gpg_key_name: str
     file_name: str
     sources: list[str] = field(default_factory=lambda: [])
+    gpg_key_uri: Optional[str] = field(default=None)
+    gpg_key_name: Optional[str] = field(default=None)
 
 
 @dataclass(kw_only=True, frozen=True)
 class ApplicationRemoveSourceParameters:
-    gpg_key_name: str
     file_name: str
+    gpg_key_name: Optional[str] = field(default=None)
 
 
 @dataclass(kw_only=True, frozen=True)

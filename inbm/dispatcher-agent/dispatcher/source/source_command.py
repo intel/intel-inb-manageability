@@ -54,7 +54,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
     Handle the os source commands.
 
     @param parsed_head: XmlHandler with command information
-    @param os_type: os type
+    @param os_type: OS type
     @param os_action: The action to be performed
     @return Result
     """
@@ -94,8 +94,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
 
 
 def _handle_app_source_command(
-    parsed_head: XmlHandler, os_type: OsType, app_action: dict
-) -> Result:
+        parsed_head: XmlHandler, os_type: OsType, app_action: dict) -> Result:
     """
     Handle the application source commands.
 
@@ -113,7 +112,12 @@ def _handle_app_source_command(
         return Result(status=200, message=serialized_list)
 
     if "remove" in app_action:
-        keyname = parsed_head.get_children("applicationSource/remove/gpg")["keyname"]
+        keyname = None
+        try:
+            keyname = parsed_head.get_children("applicationSource/remove/gpg")["keyname"]
+        except XmlException:
+            # These children may not be present
+            logger.info(f"Optional GPG key parameters not present in manifest")
         filename = parsed_head.get_children("applicationSource/remove/repo")["filename"]
         application_source_manager.remove(
             ApplicationRemoveSourceParameters(file_name=filename, gpg_key_name=keyname)
@@ -121,8 +125,16 @@ def _handle_app_source_command(
         return Result(status=200, message="SUCCESS")
 
     if "add" in app_action:
-        gpg_key_uri = parsed_head.get_children("applicationSource/add/gpg")["uri"]
-        gpg_key_name = parsed_head.get_children("applicationSource/add/gpg")["keyname"]
+        gpg_key_uri = None
+        gpg_key_name = None
+
+        try:
+            gpg_key_uri = parsed_head.get_children("applicationSource/add/gpg")["uri"]
+            gpg_key_name = parsed_head.get_children("applicationSource/add/gpg")["keyname"]
+        except XmlException:
+            # These children may not be present
+            logger.info(f"Optional GPG key parameters not present in manifest")
+
         repo_filename = parsed_head.get_children("applicationSource/add/repo")["filename"]
 
         add_source_pkgs: list[str] = []

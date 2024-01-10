@@ -4,11 +4,19 @@
    SPDX-License-Identifier: Apache-2.0
 """
 import argparse
+import logging
 
+from ..inbc_exception import InbcException
 from ..xml_tag import create_xml_tag
+
+logger = logging.getLogger(__name__)
 
 
 def application_add(args: argparse.Namespace) -> str:
+    if (args.gpgKeyUri and args.gpgKeyName is None) or (args.gpgKeyName and args.gpgKeyUri is None):
+        raise InbcException(
+            "Source requires either both gpgKeyUri and gpgKeyName to be provided, or neither of them.")
+
     arguments = {
         'uri': args.gpgKeyUri,
         'keyname': args.gpgKeyName,
@@ -19,15 +27,16 @@ def application_add(args: argparse.Namespace) -> str:
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>source</type>' +
-                '<applicationSource>' +
-                '<add><gpg>'
-                '{0}' +
-                '{1}'
-                '</gpg><repo><repos>').format(create_xml_tag(arguments, "uri"),
-                                              create_xml_tag(arguments, "keyname"))
+                '<applicationSource>' + '<add>')
+
+    if args.gpgKeyUri and args.gpgKeyName:
+        manifest += ('<gpg>' + '{0}' + '{1}' + '</gpg>').format(create_xml_tag(arguments, "uri"),
+                                                                create_xml_tag(arguments, "keyname"))
+
+    manifest += '<repo><repos>'
 
     for source in args.sources:
-        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+        manifest += '<source_pkg>' + source + '</source_pkg>'
 
     manifest += ('</repos>'
                  f'{create_xml_tag(arguments, "filename")}</repo>'
@@ -47,13 +56,16 @@ def application_remove(args: argparse.Namespace) -> str:
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
                 '<applicationSource>' +
-                '<remove><gpg>'
-                f'{create_xml_tag(arguments, "keyname")}' +
-                '</gpg><repo>' +
-                f'{create_xml_tag(arguments, "filename")}'
-                '</repo>'
-                '</remove></applicationSource>' +
-                '</manifest>')
+                '<remove>')
+
+    if args.gpgKeyName:
+        manifest += f'<gpg>{create_xml_tag(arguments, "keyname")}</gpg>'
+
+    manifest += ('<repo>' +
+                 f'{create_xml_tag(arguments, "filename")}'
+                 '</repo>'
+                 '</remove></applicationSource>' +
+                 '</manifest>')
 
     print(f"manifest {manifest}")
     return manifest
