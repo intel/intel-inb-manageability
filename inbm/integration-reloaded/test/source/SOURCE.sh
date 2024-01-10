@@ -60,13 +60,19 @@ inbc source application remove --gpgKeyName "$OPERA_KEY_NAME" --filename "$OPERA
 
 inbc source application add --filename $CHROME_SOURCES_FILE --sources \"Enabled: yes\" \"Types: deb\" \"URIs: http://dl.google.com/linux/chrome/deb/\" \"Suites: stable\" \"Components: main\"
 
-if [ ! -e "/etc/apt/sources.list.d/$CHROME_SOURCES" ]; then
-    echo "Error: The file '/etc/apt/sources.list.d/$CHROME_SOURCES' does not exist!"
+if [ ! -e "/etc/apt/sources.list.d/$CHROME_SOURCES_FILE" ]; then
+    echo "Error: The file '/etc/apt/sources.list.d/$CHROME_SOURCES_FILE' does not exist!"
     exit 1
 fi
+inbc source application remove --filename "$CHROME_SOURCES_FILE"
 
 if inbc source application list 2>&1 | grep -q "$OPERA_KEY_NAME"; then
     echo "Error: $OPERA_KEY_NAME should not be present in the application list after removal"
+    exit 1
+fi
+
+if inbc source application list 2>&1 | grep -q "$CHROME_SOURCES_FILE"; then
+    echo "Error: $CHROME_SOURCES_FILE should not be present in the application list after removal"
     exit 1
 fi
 
