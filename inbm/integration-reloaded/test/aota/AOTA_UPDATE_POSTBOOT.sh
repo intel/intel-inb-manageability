@@ -27,4 +27,7 @@ echo "Waiting for dispatcher to come up postboot..." | systemd-cat
 sleep 3
 echo "Done waiting for dispatcher." | systemd-cat
 
+dpkg --list | grep sample-application
+dpkg --purge sample-application
+
 cleanup_after_test
