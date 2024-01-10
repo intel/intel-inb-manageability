@@ -61,7 +61,7 @@ inbc source application remove --gpgKeyName "$OPERA_KEY_NAME" --filename "$OPERA
 # Create and execute INBC source application add command for deb822 format
 DEB822="inbc source application add --filename $CHROME_SOURCES_FILE --sources "
 for line in ${CHROME_DEB_822[@]}; do
-  DEB822+='"${line} "'
+  DEB822+="\"${line} \""
 done
 $DEB822
 
