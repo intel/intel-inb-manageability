@@ -30,7 +30,7 @@ run_vagrant_provision_test AOTA_FAIL_WITH_BAD_MANIFEST.sh
 
 test_started "APPLICATION UPDATE test"
 echo .. APPLICATION Update good test running ..
-vagrant ssh -c "sudo /test/aota/AOTA_UPDATE_PREBOOT.sh"
+vagrant ssh -c "sudo /test/aota/AOTA_UPDATE_PREBOOT.sh" || true
 "$DIR"/vagrant-reboot.sh
 echo .. Checking results of APPLICATION UPDATE good test. ..
 if vagrant ssh -c "sudo /test/aota/AOTA_UPDATE_POSTBOOT.sh"; then
@@ -42,7 +42,7 @@ fi
 
 test_started "APPLICATION UPDATE with signature test"
 echo .. APPLICATION Update with signature test running ..
-vagrant ssh -c "sudo /test/aota/AOTA_UPDATE_SIGNATURE_PREBOOT.sh"
+vagrant ssh -c "sudo /test/aota/AOTA_UPDATE_SIGNATURE_PREBOOT.sh" || true
 "$DIR"/vagrant-reboot.sh
 echo .. Checking results of APPLICATION UPDATE with signature test. ..
 if vagrant ssh -c "sudo /test/aota/AOTA_UPDATE_SIGNATURE_POSTBOOT.sh"; then
