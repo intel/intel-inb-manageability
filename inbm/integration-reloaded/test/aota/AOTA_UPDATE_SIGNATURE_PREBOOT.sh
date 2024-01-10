@@ -13,7 +13,7 @@ trap test_failed ERR
 
 echo "Starting APPLICATION UPDATE SIGNATURE preboot test." | systemd-cat
 
-cp ${VAGRANT_INPUT_PATH}/succeed_rpm_cert.pem /etc/intel-manageability/public/dispatcher-agent/ota_signature_cert.pem
+cp /scripts/succeed_rpm_cert.pem /etc/intel-manageability/public/dispatcher-agent/ota_signature_cert.pem
 
 test_echo AOTA APLICATION UPDATE SIGNATURE
 
