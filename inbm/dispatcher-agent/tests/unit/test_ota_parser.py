@@ -36,7 +36,8 @@ class TestOtaParser(TestCase):
     def test_parse_sota_empty_fields_should_include_hash_algorithm(self) -> None:
         result = SotaParser('remote').parse(
             {'cmd': '', 'signature': '', 'release_date': '', 'fetch': 'https://www.google.com/'}, {}, self.parsed)
-        self.assertTrue('hash_algorithm' in result)
+        self.assertIn('hash_algorithm', result)
+        self.assertIsInstance(result['hash_algorithm'], int)
 
     def test_parse_pota_empty_fields_should_include_fota(self) -> None:
         p = PotaParser('remote')
