@@ -1,0 +1,24 @@
+name: DEVELOPER ASSISTANT
+on:
+  pull_request:
+    types:
+      - opened
+  issue_comment:
+ 
+jobs:
+  pr_agent_job:
+    if: ((contains(github.event.comment.body, '/review') ||
+        contains(github.event.comment.body, '/describe')) && github.event.comment.user.login != 'nex-maximus') ||
+        github.event_name == 'pull_request' && github.event.pull_request.user.login != 'nex-maximus'
+    runs-on: [self-hosted, genai_copilot-code-review]
+    steps:
+      - name: PR Agent action step
+        id: pragent
+        run: |
+         cd  ../../../genai_pr_agent
+         chmod +x ./get_pr_agent_details.sh
+         ./get_pr_agent_details.sh
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_ACTION.AUTO_REVIEW: true
+          GITHUB_ACTION.AUTO_DESCRIBE: true
