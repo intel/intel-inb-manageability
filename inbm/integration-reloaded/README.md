@@ -1,20 +1,20 @@
 # Introduction
 
-integration-reloaded is sub-project within 'inb' which helps create a Ubuntu 20.04 or 22.04 server environment 
+integration-reloaded is subproject within 'inb' which helps create a Ubuntu 20.04 or 22.04 server environment 
 with a BTRFS file system (mounted as / )
 
 # Uses
 
 1. It can be used as a test box for testing 'inb' artifacts
 2. Demo machine
-3. Currently being used as a part of iotg-inb's CI system.
+3. It is currently being used as a part of iotg-inb's CI system.
 
 # Local setup
 
-If you want to setup a system ready to go with a click of a button...you will have to perform a one-time setup 
+If you want to set up a system ready to go with a click of a button...you will have to perform a one-time setup 
 on your local dev system
 
-## Pre-requistes:
+## Pre-requisites:
 Installing Vagrant, Vagrant-libvirt, Qmenu-KVM and the plugins etc
 
 1. Download vagrant from vagrant https://www.vagrantup.com/downloads.html and
@@ -22,12 +22,12 @@ Installing Vagrant, Vagrant-libvirt, Qmenu-KVM and the plugins etc
 
 2. Edit the /etc/apt/sources.list and uncomment all the deb-src lines
 
-3. Run the below commands in sequence (preferrably as root)
+3. Run the below commands in sequence (preferably as root)
 ``` 
     apt update
-    apt install qemu qemu-kvm libvirt-bin
+    apt install qemu qemu-kvm libvirt-daemon-system libvirt-clients
     apt-get build-dep vagrant ruby-libvirt
-    apt-get install qemu libvirt-bin ebtables dnsmasq
+    apt-get install qemu libvirt-daemon-system libvirt-clients ebtables dnsmasq
     apt-get install libxslt-dev libvirt-dev zlib1g-dev ruby-dev
 ```
 
@@ -38,8 +38,8 @@ vagrant plugin install vagrant-libvirt
 ```
 
 ## How to use it
-1. Clone the iotg-inb repo
-2. `cd ~/iotg-inb/integration-reloaded`
+1. Clone the `intel-inb-manageability` repo
+2. `cd ~/intel-inb-manageability/inbm/integration-reloaded`
 3. Create a folder in integration-reloaded called `input`
 4. Download all the iotg-inb artifacts in that `input` folder and unzip the artifacts 
 5. export your docker username as DOCKER_USERNAME and your docker password as DOCKER_PASSWORD

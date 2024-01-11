@@ -918,10 +918,10 @@ The query command can be used to gather information about the system and the Vis
 | `<type></type>`                          | `<type>source</type>`                                                                          |         R         |                 |
 | `<applicationSource>`                    | `<applicationSource>`                                                                          |         R         |                 |
 | `<add>`                                  | `<add>`                                                                                        |         R         |                 |
-| `<gpg>`                                  | `<gpg>`                                                                                        |         R         |                 |
-| `<uri></uri>`                            | `<uri>https://dl-ssl.google.com/linux/linux_signing_key.pub</uri>`                             |         R         |                 |
-| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`                                                         |         R         |                 | 
-| `</gpg>`                                 | `</gpg>`                                                                                       |         R         |                 |
+| `<gpg>`                                  | `<gpg>`                                                                                        |         O         |                 |
+| `<uri></uri>`                            | `<uri>https://dl-ssl.google.com/linux/linux_signing_key.pub</uri>`                             |         O         |                 |
+| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`                                                         |         O         |                 | 
+| `</gpg>`                                 | `</gpg>`                                                                                       |         O         |                 |
 | `<repo>`                                 | `<repo>`                                                                                       |         R         |                 |
 | `<repos>`                                | `<repos>`                                                                                      |         R         |                 |
 | `<source_pkg>`                           | `<source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main</source_pkg>` |         R         |                 |
@@ -935,7 +935,7 @@ The query command can be used to gather information about the system and the Vis
 
 
 
-#### Source application add Manifest Example
+#### Source Application Add Manifest Example using remote GPG key
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -958,6 +958,59 @@ The query command can be used to gather information about the system and the Vis
 </manifest>
 ```
 
+#### Source Application Add Manifest Example (deb822 format)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+            <repo>
+                <repos>
+                    <source_pkg>Enabled: yes</source_pkg>
+                    <source_pkg>Types: deb</source_pkg>
+                    <source_pkg>URIs: http://dl.google.com/linux/chrome/deb/</source_pkg>
+                    <source_pkg>Suites: stable</source_pkg>
+                    <source_pkg>Components: main</source_pkg>
+                    <source_pkg>Signed-By:</source_pkg>
+                    <source_pkg> -----BEGIN PGP PUBLIC KEY BLOCK-----</source_pkg>
+                    <source_pkg> Version: GnuPG v1.4.2.2 (GNU/Linux)</source_pkg>
+                    <source_pkg> .</source_pkg>
+                    <source_pkg> mQGiBEXwb0YRBADQva2NLpYXxgjNkbuP0LnPoEXruGmvi3XMIxjEUFuGNCP4Rj/a</source_pkg>
+                    <source_pkg> kv2E5VixBP1vcQFDRJ+p1puh8NU0XERlhpyZrVMzzS/RdWdyXf7E5S8oqNXsoD1z</source_pkg>
+                    <source_pkg> fvmI+i9b2EhHAA19Kgw7ifV8vMa4tkwslEmcTiwiw8lyUl28Wh4Et8SxzwCggDcA</source_pkg>
+                    <source_pkg> feGqtn3PP5YAdD0km4S4XeMEAJjlrqPoPv2Gf//tfznY2UyS9PUqFCPLHgFLe80u</source_pkg>
+                    <source_pkg> QhI2U5jt6jUKN4fHauvR6z3seSAsh1YyzyZCKxJFEKXCCqnrFSoh4WSJsbFNc4PN</source_pkg>
+                    <source_pkg> b0V0SqiTCkWADZyLT5wll8sWuQ5ylTf3z1ENoHf+G3um3/wk/+xmEHvj9HCTBEXP</source_pkg>
+                    <source_pkg> 78X0A/0Tqlhc2RBnEf+AqxWvM8sk8LzJI/XGjwBvKfXe+l3rnSR2kEAvGzj5Sg0X</source_pkg>
+                    <source_pkg> 4XmfTg4Jl8BNjWyvm2Wmjfet41LPmYJKsux3g0b8yzQxeOA4pQKKAU3Z4+rgzGmf</source_pkg>
+                    <source_pkg> HdwCG5MNT2A5XxD/eDd+L4fRx0HbFkIQoAi1J3YWQSiTk15fw7RMR29vZ2xlLCBJ</source_pkg>
+                    <source_pkg> bmMuIExpbnV4IFBhY2thZ2UgU2lnbmluZyBLZXkgPGxpbnV4LXBhY2thZ2VzLWtl</source_pkg>
+                    <source_pkg> eW1hc3RlckBnb29nbGUuY29tPohjBBMRAgAjAhsDBgsJCAcDAgQVAggDBBYCAwEC</source_pkg>
+                    <source_pkg> HgECF4AFAkYVdn8CGQEACgkQoECDD3+sWZHKSgCfdq3HtNYJLv+XZleb6HN4zOcF</source_pkg>
+                    <source_pkg> AJEAniSFbuv8V5FSHxeRimHx25671az+uQINBEXwb0sQCACuA8HT2nr+FM5y/kzI</source_pkg>
+                    <source_pkg> A51ZcC46KFtIDgjQJ31Q3OrkYP8LbxOpKMRIzvOZrsjOlFmDVqitiVc7qj3lYp6U</source_pkg>
+                    <source_pkg> rgNVaFv6Qu4bo2/ctjNHDDBdv6nufmusJUWq/9TwieepM/cwnXd+HMxu1XBKRVk9</source_pkg>
+                    <source_pkg> XyAZ9SvfcW4EtxVgysI+XlptKFa5JCqFM3qJllVohMmr7lMwO8+sxTWTXqxsptJo</source_pkg>
+                    <source_pkg> pZeKz+UBEEqPyw7CUIVYGC9ENEtIMFvAvPqnhj1GS96REMpry+5s9WKuLEaclWpd</source_pkg>
+                    <source_pkg> K3krttbDlY1NaeQUCRvBYZ8iAG9YSLHUHMTuI2oea07Rh4dtIAqPwAX8xn36JAYG</source_pkg>
+                    <source_pkg> 2vgLAAMFB/wKqaycjWAZwIe98Yt0qHsdkpmIbarD9fGiA6kfkK/UxjL/k7tmS4Vm</source_pkg>
+                    <source_pkg> CljrrDZkPSQ/19mpdRcGXtb0NI9+nyM5trweTvtPw+HPkDiJlTaiCcx+izg79Fj9</source_pkg>
+                    <source_pkg> KcofuNb3lPdXZb9tzf5oDnmm/B+4vkeTuEZJ//IFty8cmvCpzvY+DAz1Vo9rA+Zn</source_pkg>
+                    <source_pkg> cpWY1n6z6oSS9AsyT/IFlWWBZZ17SpMHu+h4Bxy62+AbPHKGSujEGQhWq8ZRoJAT</source_pkg>
+                    <source_pkg> G0KSObnmZ7FwFWu1e9XFoUCt0bSjiJWTIyaObMrWu/LvJ3e9I87HseSJStfw6fki</source_pkg>
+                    <source_pkg> 5og9qFEkMrIrBCp3QGuQWBq/rTdMuwNFiEkEGBECAAkFAkXwb0sCGwwACgkQoECD</source_pkg>
+                    <source_pkg> D3+sWZF/WACfeNAu1/1hwZtUo1bR+MWiCjpvHtwAnA1R3IHqFLQ2X3xJ40XPuAyY</source_pkg>
+                    <source_pkg> /FJG</source_pkg>
+                    <source_pkg> %20=Quqp</source_pkg>
+                    <source_pkg> -----END PGP PUBLIC KEY BLOCK-----</source_pkg>
+                </repos>
+                <filename>google-chrome.sources</filename>
+            </repo>
+        </add>
+    </applicationSource>
+</manifest>
+```
+
 #### Source Application Update Manifest Parameters
 | Tag                                      | Example                                                                                        | Required/Optional | Notes |
 |:-----------------------------------------|:-----------------------------------------------------------------------------------------------|:-----------------:|:------|
@@ -966,7 +1019,6 @@ The query command can be used to gather information about the system and the Vis
 | `<type></type>`                          | `<type>source</type>`                                                                          |         R         |       |
 | `<applicationSource>`                    | `<applicationSource>`                                                                          |         R         |       |
 | `<update>`                               | `<update>`                                                                                     |         R         |       |
-| `<gpg>`                                  | `<gpg>`                                                                                        |         R         |       |
 | `<repo>`                                 | `<repo>`                                                                                       |         R         |       |
 | `<repos>`                                | `<repos>`                                                                                      |         R         |       |
 | `<source_pkg>`                           | `<source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main</source_pkg>` |         R         |       |
@@ -999,27 +1051,27 @@ The query command can be used to gather information about the system and the Vis
 ```
 
 #### Source Application Remove Manifest Parameters
-| Tag                                      | Example                                  | Required/Optional | Notes |
-|:-----------------------------------------|:-----------------------------------------|:-----------------:|:------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |       |
-| `<manifest>`                             | `<manifest>`                             |         R         |       |
-| `<type></type>`                          | `<type>source</type>`                    |         R         |       |
-| `<applicationSource>`                    | `<applicationSource>`                    |         R         |       |
-| `<remove>`                               | `<remove>`                               |         R         |       |
-| `<gpg>`                                  | `<gpg>`                                  |         R         |       |
-| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`   |         R         |       | 
-| `</gpg>`                                 | `<gpg>`                                  |         R         |       |
-| `<repo>`                                 | `<repo>`                                 |         R         |       |
-| `<filename></filename>`                  | `<filename>google-chrom.list</filename>` |         R         |       |
-| `</repo>`                                | `</repo>`                                |         R         |       |
-| `</remove>`                              | `</remove>`                              |         R         |       |
-| `</applicationSource>`                   | `</applicationSource>`                   |         R         |       |
-| `</manifest>`                            | `</manifest>`                            |         R         |       |
+| Tag                                      | Example                                   | Required/Optional | Notes |
+|:-----------------------------------------|:------------------------------------------|:-----------------:|:------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`  |         R         |       |
+| `<manifest>`                             | `<manifest>`                              |         R         |       |
+| `<type></type>`                          | `<type>source</type>`                     |         R         |       |
+| `<applicationSource>`                    | `<applicationSource>`                     |         R         |       |
+| `<remove>`                               | `<remove>`                                |         R         |       |
+| `<gpg>`                                  | `<gpg>`                                   |         O         |       |
+| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`    |         O         |       | 
+| `</gpg>`                                 | `<gpg>`                                   |         O         |       |
+| `<repo>`                                 | `<repo>`                                  |         R         |       |
+| `<filename></filename>`                  | `<filename>google-chrome.list</filename>` |         R         |       |
+| `</repo>`                                | `</repo>`                                 |         R         |       |
+| `</remove>`                              | `</remove>`                               |         R         |       |
+| `</applicationSource>`                   | `</applicationSource>`                    |         R         |       |
+| `</manifest>`                            | `</manifest>`                             |         R         |       |
 
 
 
 
-#### Source Application Remove Manifest Example
+#### Source Application Remove Manifest Example (Including GPG key)
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <manifest>
@@ -1031,6 +1083,21 @@ The query command can be used to gather information about the system and the Vis
             </gpg>
             <repo>
                 <filename>google-chrome.list</filename>
+            </repo>
+        </remove>
+    </applicationSource>
+</manifest>
+```
+
+#### Source Application Remove Manifest Example (Excluding GPG key)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <remove>
+            <repo>
+                <filename>google-chrome.sources</filename>
             </repo>
         </remove>
     </applicationSource>
