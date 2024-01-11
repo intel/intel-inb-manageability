@@ -52,7 +52,7 @@ class AotaCommand(ABC):
 
         if 'signature' in parsed_manifest and parsed_manifest['signature'] is not None:
             self._signature = parsed_manifest['signature']
-        if 'hash_algorithm' in parsed_manifest and parsed_manifest['signature'] is not None:
+        if 'hash_algorithm' in parsed_manifest and parsed_manifest['hash_algorithm'] is not None:
             self._hash_algorithm = parsed_manifest['hash_algorithm']
             
         if 'container_tag' in parsed_manifest and parsed_manifest['container_tag'] is not None:
