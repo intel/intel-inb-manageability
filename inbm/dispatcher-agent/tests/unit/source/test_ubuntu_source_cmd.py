@@ -279,6 +279,33 @@ class TestUbuntuApplicationSourceManager:
         except SourceError:
             self.fail("Remove GPG key raised DispatcherException unexpectedly!")
 
+
+    @patch("dispatcher.packagemanager.package_manager.verify_source", side_effect=DispatcherException('error'))
+    def test_failed_add_gpg_key_method(self, mock_verify_source):
+        parameters = ApplicationAddSourceParameters(
+            gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
+            gpg_key_name="name"
+        )
+        command = UbuntuApplicationSourceManager()
+        try:
+            command.add(parameters)
+        except SourceError:
+            self.fail("Source Gpg key URI verification check failed: error")
+
+
+    @patch("dispatcher.packagemanager.package_manager.verify_source")
+    def test_success_add_gpg_key_method(self, mock_verify_source):
+        mock_verify_source.return_value = True 
+        parameters = ApplicationAddSourceParameters(
+            gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
+            gpg_key_name="name"
+        )
+        command = UbuntuApplicationSourceManager()
+        try:
+            command.add(parameters)
+        except SourceError:
+             assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"
+
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key_if_exists")
     def test_raises_when_space_check_fails(self, mock_remove_gpg_key):
         parameters = ApplicationRemoveSourceParameters(

@@ -417,6 +417,12 @@ inbc query --option sw
 Optionally Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.list.d</em> to store the update source information.
 This list file is used during 'sudo apt update' to update the application.  <em>Deb882</em> format may be used instead of downloading a GPG key.
 
+**NOTE:** Make sure to add gpgKeyUri to trustedrepositories using INBC Config Append command before using Inbc source application add command
+          Step 1: Refer to Inbc Config Append command to set gpgKeyUri to trustedRepositories in intel-manageability.conf file
+          Step 2: Use Inbc source appplication add command 
+```
+
+
 ### Usage
 ```
 inbc source application add
@@ -442,7 +448,6 @@ inbc source application add
 
       - Each blank line has a period in it. -> " ."
       - Each line after the Signed-By: starts with a space -> " gibberish"
-
 ```
 inbc source application add 
    --sources 

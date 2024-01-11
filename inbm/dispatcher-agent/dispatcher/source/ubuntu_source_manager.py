@@ -7,6 +7,9 @@ import glob
 import logging
 import os
 
+from dispatcher.packagemanager.package_manager import verify_source
+from dispatcher.dispatcher_broker import DispatcherBroker
+from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.source.source_exception import SourceError
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST,
@@ -94,15 +97,23 @@ class UbuntuOsSourceManager(OsSourceManager):
 
 class UbuntuApplicationSourceManager(ApplicationSourceManager):
     def __init__(self) -> None:
-        pass
+       self.dispatcher_broker= DispatcherBroker() 
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
         """Adds a source file and optional GPG key to be used during Ubuntu application updates."""
-        # Step 1: Add key (Optional)
+        # Step 1: Verify gpg key uri from trusted repo list 
         if parameters.gpg_key_name and parameters.gpg_key_uri:
+            try:
+               url = parameters.gpg_key_uri
+               #URL slicing to remove the last segment (filename) from the URL 
+               source = url[:-(len(url.split('/')[-1]) + 1)]
+               verify_source(source=source, dispatcher_broker=self.dispatcher_broker)
+            except (DispatcherException, IndexError) as err:
+               raise SourceError(f"Source Gpg key URI verification check failed: {err}")
+            # Step 2: Add key (Optional)
             add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
 
-        # Step 2: Add the source
+        # Step 3: Add the source
         try:
             create_file_with_contents(
                 os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
