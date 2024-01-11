@@ -248,7 +248,7 @@ class UbuntuApplication(Application):
     def update(self):  # pragma: no cover
         super().update()        
         application_repo = self._download_package()
-        path_to_pkg = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
+        path_to_pkg = os.path.join(application_repo.get_repo_path(), self.resource) if self.resource else ""
         if ' ' in path_to_pkg or path_to_pkg.isspace():
             logger.debug(f"INSTALL : {path_to_pkg}")
             raise AotaError(f"File path cannot contain spaces - {path_to_pkg}")
