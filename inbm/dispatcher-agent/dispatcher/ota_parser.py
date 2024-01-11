@@ -17,7 +17,7 @@ from .dispatcher_exception import DispatcherException
 from inbm_lib.xmlhandler import XmlException
 from inbm_lib.xmlhandler import XmlHandler
 from inbm_lib.security_masker import mask_security_info
-from inbm_common_lib.constants import LOCAL_SOURCE
+from inbm_common_lib.constants import DEFAULT_HASH_ALGORITHM, LOCAL_SOURCE
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class OtaParser(metaclass=abc.ABCMeta):
         self._username = None
         self._password = None
         self._signature = None
-        self._hash_algorithm: Optional[int] = None
+        self._hash_algorithm: int = DEFAULT_HASH_ALGORITHM
         self._ota_resource_list: Optional[Dict] = None
         self._ota_type = None
 
@@ -55,7 +55,7 @@ class OtaParser(metaclass=abc.ABCMeta):
         self._password = resource.get('password', None)
         self._signature = resource.get('signature', None)
         if self._signature:
-            self._hash_algorithm = int(resource.get('sigversion', 384))
+            self._hash_algorithm = int(resource.get('sigversion', DEFAULT_HASH_ALGORITHM))
 
         return {}
 

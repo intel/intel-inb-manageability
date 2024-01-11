@@ -12,6 +12,7 @@ from threading import Timer
 from typing import Any, Optional, Mapping
 
 from future.moves.urllib.parse import urlparse
+from dispatcher.packagemanager.constants import DEFAULT_HASH_ALGORITHM
 from dispatcher.update_logger import UpdateLogger
 from inbm_lib.constants import OTA_PENDING
 from inbm_common_lib.exceptions import UrlSecurityException
@@ -80,6 +81,8 @@ class FOTA:
 
         self.__signature = parsed_manifest['signature']
         self._hash_algorithm = parsed_manifest['hash_algorithm']
+        if self._hash_algorithm is None:
+            self._hash_algorithm = DEFAULT_HASH_ALGORITHM
 
         self._username = parsed_manifest['username']
         self._password = parsed_manifest['password']

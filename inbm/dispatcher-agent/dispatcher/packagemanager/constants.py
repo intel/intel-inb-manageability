@@ -10,3 +10,6 @@ LINUX_CA_FILE = '/etc/ssl/certs/ca-certificates.crt'
 
 # Buffer size for streaming the downlaod file to check its size
 STREAM_BUFFER = 4000  # 4KB to avoid leaving L1 cache
+
+# Default hash algorithm size
+DEFAULT_HASH_ALGORITHM = 384
