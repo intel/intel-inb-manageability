@@ -101,7 +101,7 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    def test_aota_thread_start_called_without_signature(self,
+    def test_aota_thread_start_called_without_valid_signature(self,
                                       mock_workload_orchestration_func: Any,
                                       mock_send_result: Any,
                                       m_sub: Any,
