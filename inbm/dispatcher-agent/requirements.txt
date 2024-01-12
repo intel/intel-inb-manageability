@@ -12,3 +12,4 @@ certifi==2023.7.22
 pyinstaller==5.13.1
 setuptools==65.5.1
 future==0.18.3
+python-debian==0.1.49

@@ -180,11 +180,11 @@ def canonicalize_uri(url: str) -> CanonicalUri:
 
     WARNING: a string with no forward slashes will have a scheme added. e.g., 'a' -> 'https://a'
 
-    @param url: the url
+    @param url: URL
     @return canonicalized version"""
 
     if url and URL_NULL_CHAR in url:
-        raise UrlSecurityException("Unsafe characters detected in the url. Cannot process the request.")
+        raise UrlSecurityException("Unsafe characters detected in the URL. Cannot process the request.")
 
     return CanonicalUri(value=url_normalize.url_normalize(url))
 
@@ -205,7 +205,9 @@ def is_within_directory(directory: str, target: str) -> bool:
     return prefix == abs_directory
 
 
-def safe_extract(tarball: tarfile.TarFile, path: str = ".", members: Optional[Iterable[tarfile.TarInfo]] = None, *, numeric_owner: bool = False) -> None:
+def safe_extract(tarball: tarfile.TarFile,
+                 path: str = ".",
+                 members: Optional[Iterable[tarfile.TarInfo]] = None, *, numeric_owner: bool = False) -> None:
     """Avoid path traversal when extracting tarball
 
     @param tarball: tarball to extract

@@ -105,7 +105,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         # Step 2: Add the source
         try:
             create_file_with_contents(
-                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.source_list_file_name), parameters.sources
             )
         except (IOError, OSError) as e:
             raise SourceError(f"Error adding application source list: {e}")
@@ -146,18 +146,18 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         # Remove the file under /etc/apt/sources.list.d
         try:
             if (
-                os.path.sep in parameters.file_name
-                or parameters.file_name == ".."
-                or parameters.file_name == "."
+                os.path.sep in parameters.source_list_file_name
+                or parameters.source_list_file_name == ".."
+                or parameters.source_list_file_name == "."
             ):
-                raise SourceError(f"Invalid file name: {parameters.file_name}")
+                raise SourceError(f"Invalid file name: {parameters.source_list_file_name}")
 
             if not remove_file(
                 get_canonical_representation_of_path(
-                    os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name)
+                    os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.source_list_file_name)
                 )
             ):
-                raise SourceError(f"Error removing file: {parameters.file_name}")
+                raise SourceError(f"Error removing file: {parameters.source_list_file_name}")
         except OSError as e:
             raise SourceError(f"Error removing file: {e}") from e
 
@@ -165,7 +165,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         """Updates a source file in Ubuntu OS source file list under /etc/apt/sources.list.d"""
         try:
             create_file_with_contents(
-                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.source_list_file_name), parameters.sources
             )
         except IOError as e:
             raise SourceError(f"Error occurred while trying to update sources: {e}") from e

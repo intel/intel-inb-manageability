@@ -9,6 +9,7 @@ import requests
 
 from .source_exception import SourceError
 from .constants import LINUX_GPG_KEY_PATH
+from inbm_common_lib.utility import remove_file
 
 logger = logging.getLogger(__name__)
 
@@ -21,7 +22,7 @@ def remove_gpg_key_if_exists(gpg_key_name: str) -> None:
     try:
         key_path = os.path.join(LINUX_GPG_KEY_PATH, gpg_key_name)
         if os.path.exists(key_path):
-            os.remove(key_path)
+            remove_file(key_path)
         # it's OK if the key is not there
 
     except OSError as e:
@@ -61,4 +62,4 @@ def add_gpg_key(remote_key_path: str, key_store_name: str) -> None:
         raise SourceError(f"Error getting GPG key from remote source: {e}")
 
     except subprocess.CalledProcessError as e:
-        raise SourceError(f"Error running gpg command to dearmor key: {e}")
+        raise SourceError(f"Error running GPG command to dearmor key: {e}")
