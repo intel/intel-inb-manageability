@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - dependabot: Bump cryptography from 41.0.4 to 41.0.6 in /inbm/dispatcher-agen (addresses CVE-2023-49083, CVE-2023-5678, CVE-2023-5363)
  - update included reference certifi source code from 2020.12.05 to 2023.7.22, which was not a security issue per se but was flagged in BDBA as it contains CVE-2022-23491 and CVE-2023-37920
  - dependabot: Bump pyinstaller from 5.13.0 to 5.13.1 in all agents/programs (addresses CVE-2023-49797)
+ - RTC 537811: Bump cryptography from 41.0.6 to 41.0.7 in /inbm/dispatcher-agent (addresses CVE-2023-5678)
 
 ## 4.1.4 - 2023-10-11
 
