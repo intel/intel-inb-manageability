@@ -192,7 +192,7 @@ class TestUbuntuOSSourceManager:
             assert "Error adding sources: Mocked error" in str(excinfo.value)
 
 
-class TestUbuntuApplicationSourceManager:    
+class TestUbuntuApplicationSourceManager:
     def test_add_app_with_gpg_key_successfully(self):
         try:
             params = ApplicationAddSourceParameters(
@@ -203,7 +203,7 @@ class TestUbuntuApplicationSourceManager:
             )
             command = UbuntuApplicationSourceManager()
             with (patch("builtins.open", new_callable=mock_open()),
-                patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):
+                  patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):
                 command.add(params)
         except SourceError as err:
             assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"

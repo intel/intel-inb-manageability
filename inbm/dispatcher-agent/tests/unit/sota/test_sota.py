@@ -131,7 +131,7 @@ class TestSota(testtools.TestCase):
             mock_reboot.assert_called_once()
         except SotaError as e:
             assert (str(e) == "SOTA cache directory cannot be created" or
-                str(e) == "Final result in SOTA execution: SOTA fail")
+                    str(e) == "Final result in SOTA execution: SOTA fail")
 
     @patch("inbm_lib.detect_os.detect_os")
     @patch("dispatcher.sota.sota.print_execution_summary")

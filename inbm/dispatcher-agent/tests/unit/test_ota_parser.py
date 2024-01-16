@@ -26,7 +26,7 @@ class TestOtaParser(TestCase):
         result = AotaParser('remote').parse(
             {'cmd': 'cmd_1', 'app': 'app_1', 'fetch': 'http://www.google.com/'}, {}, self.parsed)
         self.assertTrue('google' in str(result))
-    
+
     def test_parse_aota_with_signature_returns_correct_signature(self) -> None:
         result = AotaParser('remote').parse(
             {'cmd': 'cmd_1', 'app': 'app_1', 'fetch': 'http://www.google.com/', 'signature': 'abcdefg', 'sigversion': '384'}, {}, self.parsed)
@@ -43,7 +43,7 @@ class TestOtaParser(TestCase):
         p = PotaParser('remote')
         result = p.parse(
             {'fota': '', 'sota': '', 'targetType': 'node', 'targets': ' ', 'fetch': 'https://www.google.com/'}, {}, self.parsed)
-        self.assertTrue('fota' in result)    
+        self.assertTrue('fota' in result)
 
 
 class MockXmlFunctions(XmlHandler):

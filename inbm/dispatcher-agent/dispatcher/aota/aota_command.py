@@ -57,7 +57,7 @@ class AotaCommand(ABC):
             self._hash_algorithm = parsed_manifest['hash_algorithm']
         else:
             self._hash_algorithm = DEFAULT_HASH_ALGORITHM
-            
+
         if 'container_tag' in parsed_manifest and parsed_manifest['container_tag'] is not None:
             self._container_tag = _get_parsed_values(parsed_manifest['container_tag'])
         else:

@@ -52,7 +52,7 @@ class Application(AotaCommand):
 
     def verify_command(self, cmd: str) -> None:
         check_application_command_supported(cmd)
-    
+
     def run_signature_check(self, path_to_file: str) -> None:
         """
         Runs the signature check on the given file to authenticate the OTA update package.
@@ -61,21 +61,21 @@ class Application(AotaCommand):
         If the device is provisioned and a signature is provided, it will verify the signature
         of the file using the specified hash algorithm. If the signature verification fails or
         if a signature is not provided while the device is provisioned, it raises an AotaError.
-        
+
         If the device is not provisioned for signature verification, a warning is logged, and
         the signature check is skipped.
 
         @param path_to_file: The file path to the OTA update package that needs to be verified.
-        
+
         @return: None. It may raise an AotaError if a required signature is not provided or
         if verification fails.
         """
         if os.path.exists(OTA_PACKAGE_CERT_PATH):
             if self._signature is not None:
                 verify_signature(dispatcher_broker=self._dispatcher_broker,
-                                hash_algorithm=self._hash_algorithm,
-                                path_to_file=path_to_file,
-                                signature=self._signature)
+                                 hash_algorithm=self._hash_algorithm,
+                                 path_to_file=path_to_file,
+                                 signature=self._signature)
             else:
                 logger.error("Signature required to proceed with OTA update.")
                 raise AotaError(
@@ -184,7 +184,7 @@ class CentOsApplication(Application):
         logger.debug(f"driver path = {driver_path}")
         try:
             self.run_signature_check(driver_path)
-            
+
             if not self._is_rpm_file_type(driver_path):
                 raise AotaError('Invalid file type')
 
@@ -246,9 +246,10 @@ class UbuntuApplication(Application):
         super().__init__(dispatcher_broker, parsed_manifest, dbs, update_logger=update_logger)
 
     def update(self):  # pragma: no cover
-        super().update()        
+        super().update()
         application_repo = self._download_package()
-        path_to_pkg = os.path.join(application_repo.get_repo_path(), self.resource) if self.resource else ""
+        path_to_pkg = os.path.join(application_repo.get_repo_path(),
+                                   self.resource) if self.resource else ""
         if ' ' in path_to_pkg or path_to_pkg.isspace():
             logger.debug(f"INSTALL : {path_to_pkg}")
             raise AotaError(f"File path cannot contain spaces - {path_to_pkg}")
