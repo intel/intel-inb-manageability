@@ -17,8 +17,9 @@ from dispatcher.source.constants import (
     ApplicationUpdateSourceParameters,
     SourceParameters,
 )
-from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
-from dispatcher.source.linux_gpg_key import remove_gpg_key_if_exists, add_gpg_key
+from .constants import LINUX_GPG_KEY_PATH
+from .source_manager import ApplicationSourceManager, OsSourceManager
+from .linux_gpg_key import add_gpg_key
 
 from inbm_common_lib.utility import (
     get_canonical_representation_of_path,
@@ -141,7 +142,9 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         """
         if parameters.gpg_key_name:
             # Remove the GPG key (Optional)
-            remove_gpg_key_if_exists(parameters.gpg_key_name)
+            path = os.path.join(LINUX_GPG_KEY_PATH, parameters.gpg_key_name)
+            if not remove_file(path):
+                logger.warning(f"Unable to remove GPG key: {path}")
 
         # Remove the file under /etc/apt/sources.list.d
         try:

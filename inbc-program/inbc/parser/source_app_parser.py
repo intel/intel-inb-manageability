@@ -35,7 +35,7 @@ def application_add(args: argparse.Namespace) -> str:
 
     manifest += '<repo><repos>'
 
-    source_tags = [f'<source_pkg>{source}</source_pkg>' for source in args.sources]
+    source_tags = (f'<source_pkg>{source}</source_pkg>' for source in args.sources)
     manifest += ''.join(source_tags)
 
     manifest += ('</repos>'

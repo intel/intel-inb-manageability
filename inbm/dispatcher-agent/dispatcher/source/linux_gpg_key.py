@@ -9,24 +9,8 @@ import requests
 
 from .source_exception import SourceError
 from .constants import LINUX_GPG_KEY_PATH
-from inbm_common_lib.utility import remove_file
 
 logger = logging.getLogger(__name__)
-
-
-def remove_gpg_key_if_exists(gpg_key_name: str) -> None:
-    """Linux - Removes a GPG key file if it exists
-
-    @param gpg_key_name: name of GPG key file to remove (file under LINUX_GPG_KEY_PATH)
-    """
-    try:
-        key_path = os.path.join(LINUX_GPG_KEY_PATH, gpg_key_name)
-        if os.path.exists(key_path):
-            remove_file(key_path)
-        # it's OK if the key is not there
-
-    except OSError as e:
-        raise SourceError(f"Error checking or deleting GPG key: {gpg_key_name}") from e
 
 
 def add_gpg_key(remote_key_path: str, key_store_name: str) -> None:
