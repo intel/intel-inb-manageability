@@ -19,14 +19,18 @@
    7. [Configuration Set](#set)
    8. [Restart](#restart)
    9. [Query](#query)
-   10. [Source Application Add](#source-application-add)
-   11. [Source Application Remove](#source-application-remove)
-   12. [Source Application Update](#source-application-update)
-   13. [Source Application List](#source-application-list)
-   14. [Source OS Add](#source-os-add)
-   15. [Source OS Remove](#source-os-remove)
-   16. [Source OS Update](#source-os-update)
-   15. [Source OS List](#source-os-list)
+   10. [Source Application Add (Ubuntu)](#source-application-add-ubuntu)
+   11. [Source Application Remove (Ubuntu)](#source-application-remove-ubuntu)
+   12. [Source Application Update (Ubuntu)](#source-application-update-ubuntu)
+   13. [Source Application List (Ubuntu)](#source-application-list-ubuntu)
+   14. [Source OS Add (Ubuntu)](#source-os-add-ubuntu)
+   15. [Source OS Remove (Ubuntu)](#source-os-remove-ubuntu)
+   16. [Source OS Update (Ubuntu)](#source-os-update-ubuntu)
+   17. [Source OS List (Ubuntu)](#source-os-list-ubuntu)
+   18. [Source Cert Add (Ubuntu)](#source-cert-add-ubuntu)
+   19. [Source Cert Remove (Ubuntu)](#source-cert-remove-ubuntu)
+   20. [Source Cert Update (Ubuntu)](#source-cert-update-ubuntu)
+   21. [Source Cert List (Ubuntu)](#source-cert-list-ubuntu)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    
@@ -412,7 +416,7 @@ inbc query --option hw
 inbc query --option sw
 ```
 
-## SOURCE APPLICATION ADD
+## SOURCE APPLICATION ADD (Ubuntu)
 ### Description
 Optionally Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.list.d</em> to store the update source information.
 This list file is used during 'sudo apt update' to update the application.  <em>Deb882</em> format may be used instead of downloading a GPG key.
@@ -436,7 +440,7 @@ inbc source application add
    --filename google-chrome.list
 ```
 
-#### Add an Application Source (using deb822 format)
+#### Add an Application Source (Ubuntu) (using deb822 format)
 
 **NOTE:** In the Signed-By: Section, use the following guidelines.
 
@@ -486,7 +490,7 @@ inbc source application add
    --filename google-chrome.sources
 ```
 
-## SOURCE APPLICATION REMOVE
+## SOURCE APPLICATION REMOVE (Ubuntu)
 ### Description
 Removes the source file from under /etc/apt/sources.list.d/.  Optionally removes the GPG key file from under <em>/usr/share/keyrings</em>. 
 
@@ -505,13 +509,13 @@ inbc source application remove
     --filename google-chrome.list
 ```
 
-#### Remove an application source (deb822 format)
+#### Remove an application source (Ubuntu) (deb822 format)
 ```commandline
 inbc source application remove 
     --filename google-chrome.sources
 ```
 
-## SOURCE APPLICATION UPDATE
+## SOURCE APPLICATION UPDATE (Ubuntu)
 ### Description
 Updates Application sources that are used to update the system
 NOTE: Currently this only works on Ubuntu
@@ -531,7 +535,7 @@ inbc source application update
    --sources "deb [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test" "debsrc [arch=amd64] https://dl.google.com/linux/chrome/deb/ stable test2"
 ```
 
-## SOURCE APPLICATION LIST
+## SOURCE APPLICATION LIST (Ubuntu)
 ### Description
 Lists Application sources
 
@@ -546,7 +550,7 @@ inbc source application list
 inbc source application list
 ```
 
-## SOURCE OS ADD
+## SOURCE OS ADD (Ubuntu)
 ### Description
 Appends new source(s) to the <em>/etc/apt/sources.list</em> file
 
@@ -563,7 +567,7 @@ inbc source os add
    --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
-## SOURCE OS REMOVE
+## SOURCE OS REMOVE (Ubuntu)
 ### Description
 Removes the provided source(s) from the <em>/etc/apt/sources.list</em> file, if they are present.
 
@@ -580,7 +584,7 @@ inbc source os remove
    --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
-## SOURCE OS UPDATE
+## SOURCE OS UPDATE (Ubuntu)
 ### Description
 Creates a new <em>/etc/apt/sources.list</em> file with only the sources provided
 
@@ -597,12 +601,12 @@ inbc source os update
    --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
-## SOURCE OS LIST
+## SOURCE OS LIST (Ubuntu)
 ### Description
 Lists OS sources
 
 ### Usage
-```commandline
+```
 inbc source os list
 ```
 
@@ -610,6 +614,144 @@ inbc source os list
 #### Lists all OS source files
 ```
 inbc source os list
+```
+
+## SOURCE CERT ADD (Ubuntu)
+### Description
+Adds a CA Certificate to the _/etc/ssl/certs_ directory.
+
+### Usage
+```
+inbc source cert add
+   {--cert, -c=CERT}
+   {--filename, -f=FILENAME}
+```
+
+### Example
+#### Add a certificate
+```
+inbc source cert add
+   --filename example.crt
+   --Cert "-----BEGIN CERTIFICATE-----"
+      "MIIF/TCCA+WgAwIBAgITEwDUCI4G8jP3hk98fgACANQIjjANBgkqhkiG9w0BAQsF"
+      "ADBQMQswCQYDVQQGEwJVUzEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xJTAj"
+      "BgNVBAMTHEludGVsIEludGVybmFsIElzc3VpbmcgQ0EgNUEwHhcNMjMwMjE4MDEx"
+      "MzMzWhcNMjQwMjEzMDExMzMzWjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2Fs"
+      "aWZvcm5pYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExGjAYBgNVBAoTEUludGVsIENv"
+      "cnBvcmF0aW9uMSAwHgYDVQQDExd0ZWxlbWV0cnkuYXBwLmludGVsLmNvbTCCASIw"
+      "DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAN8eBDZW4AfyvcKSopuEF1bYCmV/"
+      "ba9PkL3CouaRYGZHV3mkXoxCNg+PeTKlbkHW8PEWNjVRoi8jnexlzUqLTlQ2bkM7"
+      "rJPuzR7iR5zci2KPFoHrJeWCsAOQj0lC73RQ3valn7Ex6xH8bFhv6OhklCXkgpGS"
+      "VxBZVzBPQR6YxbO+u25V8BRvsA0KkTX89qnkbXmH0/fOw8yUNpZ5CMxdiT/pTICR"
+      "YnzOfy6GxCtwdSGlReesBJpVbFPJVYmPJhEm5UUoH0X0wD9Uc967MLGi5sjVVxOq"
+      "qBBJ6JGywpzqYSGYm6+O7hsQA3cUxZQslsJbWgt0LtfatIr16y/KoZJYxjkCAwEA"
+      "AaOCAagwggGkMB0GA1UdDgQWBBS7/cLQNf+W0SC75d7X8oiywNAyUTAfBgNVHSME"
+      "GDAWgBRpkJZpxwBpltt7XZqP9jrqKJStJjA6BgNVHR8EMzAxMC+gLaArhilodHRw"
+      "Oi8vcGtpLmludGVsLmNvbS9jcmwvSW50ZWxDQTVBKDIpLmNybDBFBggrBgEFBQcB"
+      "AQQ5MDcwNQYIKwYBBQUHMAKGKWh0dHA6Ly9wa2kuaW50ZWwuY29tL2NydC9JbnRl"
+      "bENBNUEoMikuY3J0MAsGA1UdDwQEAwIFoDA9BgkrBgEEAYI3FQcEMDAuBiYrBgEE"
+      "AYI3FQiGw4x1hJnlUYP9gSiFjp9TgpHACWeC7d1OgbvMdwIBZAIBITAdBgNVHSUE"
+      "FjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwJwYJKwYBBAGCNxUKBBowGDAKBggrBgEF"
+      "BQcDATAKBggrBgEFBQcDAjBLBgNVHREERDBCghd0ZWxlbWV0cnkuYXBwLmludGVs"
+      "LmNvbYIndGVsZW1ldHJ5LmFwcHMxLW9yLWludC5pY2xvdWQuaW50ZWwuY29tMA0G"
+      "CSqGSIb3DQEBCwUAA4ICAQAbNfjUKcjBVg4mo8iULIRw/s4P0LvXTK17/XfddVA7"
+      "K0QIZwTjIkzElviov+ZRWgdyGNxTO8DZYgp2pGHWsGL019lRnxzd8rKRYHTX8Uuv"
+      "IZC3u9CzFIug4AUm7z2n9oOPiG9f57Yj1DPGSEpOuWlJWMqz6RFMdt6P31y8ZFfi"
+      "JTDzAz+iKSRJZMd8JXmowzE7mOqc5MalQ/3uwNypNiw+m9/dcGx5aDPbk9KButvD"
+      "QweLPA2SicXLIDkK7IbcSJk/a5Q5HcaMFg0aojEPMt0bdsRzzU+hUX5T90it73FM"
+      "UZCm23c2Ts7driW7sM3Are87vgSkcZQmZ/+ypHPF1mEdlifJNyUpQ/tLYZmYzRwt"
+      "WEHrOyxeDb9xlgx/KwIR9VSR26uWOovDQOhUtsCPF6PWJP1xE53uHb3NtEwRiuXg"
+      "3zJxmO6MxgmJgQTN9QIPkv6cAlUobObYLjDVejw0kFvnS4/uX6x0ZhqmvNwkKjFN"
+      "FHzcjlb7fbAS6kfjWzUHUvA29b8k3yJ0B3HKVR/T9w/6GSRcoFWin+51pGL/kckD"
+      "Ekv7PDpE+idGVq+T9Rd5U3G+RYWMMYAirTNlqvY7aDq2itxcjMB5zCxtr8k2Utkb"
+      "/C0MOtewruf09JYeZZSNfP9NF0YlSaQlqZCC8AmPdV8w786ezZg56hRXxg0Wmw1M"
+      "AQ=="
+      "-----END CERTIFICATE-----"
+```
+
+## SOURCE CERT REMOVE (Ubuntu)
+### Description
+Removes a CA Certificate from the _/etc/ssl/certs/_ directory. 
+
+### Usage
+```
+inbc source cert remove    
+   {--filename, -f=FILE_NAME}
+```
+
+### Example
+#### Remove a certificate
+```
+inbc source cert remove 
+    --filename example.crt
+```
+
+## SOURCE CERT UPDATE (Ubuntu)
+### Description
+Removes the certificate in the provided file, and creates a new certificate using the provided cert information.
+
+### Usage
+```
+inbc source cert update
+   {--filename, -f=FILE_NAME}
+   {--cert, -c=CERT}
+```
+
+### Examples
+#### Update an application source file
+```
+inbc source cert update
+   --filename example.crt
+   --cert "-----BEGIN CERTIFICATE-----"
+      "MIIF/TCCA+WgAwIBAgITEwDUCI4G8jP3hk98fgACANQIjjANBgkqhkiG9w0BAQsF"
+      "ADBQMQswCQYDVQQGEwJVUzEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xJTAj"
+      "BgNVBAMTHEludGVsIEludGVybmFsIElzc3VpbmcgQ0EgNUEwHhcNMjMwMjE4MDEx"
+      "MzMzWhcNMjQwMjEzMDExMzMzWjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2Fs"
+      "aWZvcm5pYTEUMBIGA1UEBxMLU2FudGEgQ2xhcmExGjAYBgNVBAoTEUludGVsIENv"
+      "cnBvcmF0aW9uMSAwHgYDVQQDExd0ZWxlbWV0cnkuYXBwLmludGVsLmNvbTCCASIw"
+      "DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAN8eBDZW4AfyvcKSopuEF1bYCmV/"
+      "ba9PkL3CouaRYGZHV3mkXoxCNg+PeTKlbkHW8PEWNjVRoi8jnexlzUqLTlQ2bkM7"
+      "rJPuzR7iR5zci2KPFoHrJeWCsAOQj0lC73RQ3valn7Ex6xH8bFhv6OhklCXkgpGS"
+      "VxBZVzBPQR6YxbO+u25V8BRvsA0KkTX89qnkbXmH0/fOw8yUNpZ5CMxdiT/pTICR"
+      "YnzOfy6GxCtwdSGlReesBJpVbFPJVYmPJhEm5UUoH0X0wD9Uc967MLGi5sjVVxOq"
+      "qBBJ6JGywpzqYSGYm6+O7hsQA3cUxZQslsJbWgt0LtfatIr16y/KoZJYxjkCAwEA"
+      "AaOCAagwggGkMB0GA1UdDgQWBBS7/cLQNf+W0SC75d7X8oiywNAyUTAfBgNVHSME"
+      "GDAWgBRpkJZpxwBpltt7XZqP9jrqKJStJjA6BgNVHR8EMzAxMC+gLaArhilodHRw"
+      "Oi8vcGtpLmludGVsLmNvbS9jcmwvSW50ZWxDQTVBKDIpLmNybDBFBggrBgEFBQcB"
+      "AQQ5MDcwNQYIKwYBBQUHMAKGKWh0dHA6Ly9wa2kuaW50ZWwuY29tL2NydC9JbnRl"
+      "bENBNUEoMikuY3J0MAsGA1UdDwQEAwIFoDA9BgkrBgEEAYI3FQcEMDAuBiYrBgEE"
+      "AYI3FQiGw4x1hJnlUYP9gSiFjp9TgpHACWeC7d1OgbvMdwIBZAIBITAdBgNVHSUE"
+      "FjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwJwYJKwYBBAGCNxUKBBowGDAKBggrBgEF"
+      "BQcDATAKBggrBgEFBQcDAjBLBgNVHREERDBCghd0ZWxlbWV0cnkuYXBwLmludGVs"
+      "LmNvbYIndGVsZW1ldHJ5LmFwcHMxLW9yLWludC5pY2xvdWQuaW50ZWwuY29tMA0G"
+      "CSqGSIb3DQEBCwUAA4ICAQAbNfjUKcjBVg4mo8iULIRw/s4P0LvXTK17/XfddVA7"
+      "K0QIZwTjIkzElviov+ZRWgdyGNxTO8DZYgp2pGHWsGL019lRnxzd8rKRYHTX8Uuv"
+      "IZC3u9CzFIug4AUm7z2n9oOPiG9f57Yj1DPGSEpOuWlJWMqz6RFMdt6P31y8ZFfi"
+      "JTDzAz+iKSRJZMd8JXmowzE7mOqc5MalQ/3uwNypNiw+m9/dcGx5aDPbk9KButvD"
+      "QweLPA2SicXLIDkK7IbcSJk/a5Q5HcaMFg0aojEPMt0bdsRzzU+hUX5T90it73FM"
+      "UZCm23c2Ts7driW7sM3Are87vgSkcZQmZ/+ypHPF1mEdlifJNyUpQ/tLYZmYzRwt"
+      "WEHrOyxeDb9xlgx/KwIR9VSR26uWOovDQOhUtsCPF6PWJP1xE53uHb3NtEwRiuXg"
+      "3zJxmO6MxgmJgQTN9QIPkv6cAlUobObYLjDVejw0kFvnS4/uX6x0ZhqmvNwkKjFN"
+      "FHzcjlb7fbAS6kfjWzUHUvA29b8k3yJ0B3HKVR/T9w/6GSRcoFWin+51pGL/kckD"
+      "Ekv7PDpE+idGVq+T9Rd5U3G+RYWMMYAirTNlqvY7aDq2itxcjMB5zCxtr8k2Utkb"
+      "/C0MOtewruf09JYeZZSNfP9NF0YlSaQlqZCC8AmPdV8w786ezZg56hRXxg0Wmw1M"
+      "AQ=="
+      "-----END CERTIFICATE-----"
+```
+
+## SOURCE CERT LIST (Ubuntu)
+### Description
+Lists Cert files in the _/etc/sll/certs/_ directory.
+
+### Usage
+```commandline
+inbc source cert list
+```
+
+### Examples
+#### Lists name of all cert files
+```
+inbc source cert list
 ```
 
 # Status Codes
