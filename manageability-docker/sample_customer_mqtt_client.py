@@ -16,8 +16,6 @@ from typing import Dict, Optional, Callable
 import json
 
 
-
-
 CUSTOM_CMD_CHANNEL = "manageability/cmd/custom"
 DEFAULT_MQTT_HOST = 'localhost'
 DEFAULT_MQTT_PORT = 8883
