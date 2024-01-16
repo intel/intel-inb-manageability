@@ -2,6 +2,7 @@ from unittest import mock
 import pytest
 from unittest.mock import mock_open, patch
 from dispatcher.source.source_exception import SourceError
+from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST_D,
     UBUNTU_APT_SOURCES_LIST,
@@ -289,7 +290,7 @@ class TestUbuntuApplicationSourceManager:
         command = UbuntuApplicationSourceManager()
         try:
             command.add(parameters)
-        except SourceError:
+        except (DispatcherException, SourceError):
             self.fail("Source Gpg key URI verification check failed: error")
 
 
