@@ -31,7 +31,10 @@ trap test_failed ERR
 
 echo "Starting source test." | systemd-cat
 
-# OS tests
+# Adding to trusted repo
+inbc append --path  trustedRepositories:https://deb.opera.com/
+
+#OS tests
 inbc source os add --sources "$FAKE_SOURCE"
 grep "$FAKE_SOURCE" "$APT_SOURCES"
 inbc source os list 2>&1 | grep "$FAKE_SOURCE"
