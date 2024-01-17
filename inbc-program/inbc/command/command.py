@@ -1,7 +1,7 @@
 """
     Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2023 Intel Corporation
+    # Copyright (C) 2020-2024 Intel Corporation
     # SPDX-License-Identifier: Apache-2.0
 """
 
