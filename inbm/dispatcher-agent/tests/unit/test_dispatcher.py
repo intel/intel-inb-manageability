@@ -101,13 +101,36 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
-    def test_aota_thread_start_called(self,
-                                      mock_workload_orchestration_func: Any,
-                                      mock_send_result: Any,
-                                      m_sub: Any,
-                                      m_connect: Any,
-                                      m_thread_start: Any,
-                                      mock_logging: Any) -> None:
+    def test_aota_thread_start_called_without_valid_signature(self,
+                                                              mock_workload_orchestration_func: Any,
+                                                              mock_send_result: Any,
+                                                              m_sub: Any,
+                                                              m_connect: Any,
+                                                              m_thread_start: Any,
+                                                              mock_logging: Any) -> None:
+        xml = '<?xml version="1.0" encoding="UTF-8"?>' \
+              '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample AOTA</name><description>' \
+              'Sample AOTA manifest file</description><type>aota</type><repo>remote</repo>' \
+              '</header><type><aota name="sample.rpm"><cmd>load</cmd><app>docker</app><fetch>http://www.example.com/</fetch>' \
+              '<version>1.0</version><containerTag>defg</containerTag><signature>abcdefg</signature><sigversion>384</sigversion>' \
+              '</aota></type></ota></manifest>'
+        d = TestDispatcher._build_dispatcher()
+        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        mock_workload_orchestration_func.assert_called()
+        assert m_thread_start.called
+
+    @patch('dispatcher.ota_thread.AotaThread.start')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+    @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+    def test_aota_thread_start_called_with_signature(self,
+                                                     mock_workload_orchestration_func: Any,
+                                                     mock_send_result: Any,
+                                                     m_sub: Any,
+                                                     m_connect: Any,
+                                                     m_thread_start: Any,
+                                                     mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample AOTA</name><description>' \
               'Sample AOTA manifest file</description><type>aota</type><repo>remote</repo>' \

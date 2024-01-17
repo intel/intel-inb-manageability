@@ -14,4 +14,5 @@ cd "$DIR"
 
 
 launchers/vagrant-up.sh
+launchers/setup-servers.sh
 launchers/install-framework-quicker.sh
