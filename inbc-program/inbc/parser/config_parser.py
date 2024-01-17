@@ -1,6 +1,6 @@
 """Parser class to parse the system argument
 
-   Copyright (C) 2020-2023 Intel Corporation
+   Copyright (C) 2020-2024 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 """
 import argparse
