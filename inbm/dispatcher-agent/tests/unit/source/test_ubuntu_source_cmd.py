@@ -300,10 +300,9 @@ class TestUbuntuApplicationSourceManager:
         )
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         command = UbuntuApplicationSourceManager(broker)
-        try:
+        with pytest.raises(SourceError) as ex:
             command.add(parameters)
-        except (DispatcherException, SourceError):
-            assert True, f("'Source Gpg key URI verification check failed: error")
+        assert str(ex.value) == 'Source Gpg key URI verification check failed: error'
 
 
     @patch("dispatcher.source.ubuntu_source_manager.verify_source")
