@@ -1,7 +1,7 @@
 """
     Docker and Docker compose related functions used throughout the AOTA module
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -10,6 +10,7 @@ import os
 import time
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Mapping
+from dispatcher.packagemanager.constants import DEFAULT_HASH_ALGORITHM
 
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -49,6 +50,13 @@ class AotaCommand(ABC):
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
+
+        if 'signature' in parsed_manifest and parsed_manifest['signature'] is not None:
+            self._signature = parsed_manifest['signature']
+        if 'hash_algorithm' in parsed_manifest and parsed_manifest['hash_algorithm'] is not None:
+            self._hash_algorithm = parsed_manifest['hash_algorithm']
+        else:
+            self._hash_algorithm = DEFAULT_HASH_ALGORITHM
 
         if 'container_tag' in parsed_manifest and parsed_manifest['container_tag'] is not None:
             self._container_tag = _get_parsed_values(parsed_manifest['container_tag'])

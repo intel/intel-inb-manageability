@@ -1,7 +1,7 @@
 """
     AOTA Application Command Concrete Classes
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -18,8 +18,8 @@ from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX, OTA_SUCCESS
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.common.result_constants import CODE_OK
-from dispatcher.constants import UMASK_OTA, REPO_CACHE
-from dispatcher.packagemanager.package_manager import get
+from dispatcher.constants import OTA_PACKAGE_CERT_PATH, UMASK_OTA, REPO_CACHE
+from dispatcher.packagemanager.package_manager import get, verify_signature
 
 from .checker import check_application_command_supported, check_url, check_resource
 from .aota_command import AotaCommand
@@ -52,6 +52,38 @@ class Application(AotaCommand):
 
     def verify_command(self, cmd: str) -> None:
         check_application_command_supported(cmd)
+
+    def run_signature_check(self, path_to_file: str) -> None:
+        """
+        Runs the signature check on the given file to authenticate the OTA update package.
+
+        This method checks if the device is provisioned with an OTA package check certificate.
+        If the device is provisioned and a signature is provided, it will verify the signature
+        of the file using the specified hash algorithm. If the signature verification fails or
+        if a signature is not provided while the device is provisioned, it raises an AotaError.
+
+        If the device is not provisioned for signature verification, a warning is logged, and
+        the signature check is skipped.
+
+        @param path_to_file: The file path to the OTA update package that needs to be verified.
+
+        @return: None. It may raise an AotaError if a required signature is not provided or
+        if verification fails.
+        """
+        if os.path.exists(OTA_PACKAGE_CERT_PATH):
+            if self._signature is not None:
+                verify_signature(dispatcher_broker=self._dispatcher_broker,
+                                 hash_algorithm=self._hash_algorithm,
+                                 path_to_file=path_to_file,
+                                 signature=self._signature)
+            else:
+                logger.error("Signature required to proceed with OTA update.")
+                raise AotaError(
+                    "Device is provisioned with OTA package check certificate. Cannot proceed without signature.")
+        else:
+            no_signature_warning = 'WARNING: Device not provisioned for signature check.  Skipping signature check.'
+            logger.warning(no_signature_warning)
+            self._dispatcher_broker.telemetry(no_signature_warning)
 
     def cleanup(self) -> None:
         if self.repo_to_clean_up is not None and self.resource is not None:
@@ -151,6 +183,8 @@ class CentOsApplication(Application):
 
         logger.debug(f"driver path = {driver_path}")
         try:
+            self.run_signature_check(driver_path)
+
             if not self._is_rpm_file_type(driver_path):
                 raise AotaError('Invalid file type')
 
@@ -214,11 +248,15 @@ class UbuntuApplication(Application):
     def update(self):  # pragma: no cover
         super().update()
         application_repo = self._download_package()
-        install_cmd = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
-        if ' ' in install_cmd or install_cmd.isspace():
-            logger.debug(f"INSTALL : {install_cmd}")
-            raise AotaError(f"File path cannot contain spaces - {install_cmd}")
-        base_command = f"/usr/bin/dpkg -i {install_cmd}"
+        path_to_pkg = os.path.join(application_repo.get_repo_path(),
+                                   self.resource) if self.resource else ""
+        if ' ' in path_to_pkg or path_to_pkg.isspace():
+            logger.debug(f"INSTALL : {path_to_pkg}")
+            raise AotaError(f"File path cannot contain spaces - {path_to_pkg}")
+
+        self.run_signature_check(path_to_file=path_to_pkg)
+
+        base_command = f"/usr/bin/dpkg -i {path_to_pkg}"
 
         is_docker_app = os.environ.get("container", False)
         if is_docker_app:

@@ -4,7 +4,7 @@ set -euxo pipefail # DO NOT REMOVE -- used to fail test if intermediate command 
 
 source /scripts/test_util.sh
 
-echo Checking APPLICATION UPDATE POSTBOOT TEST
+echo Checking APPLICATION UPDATE POSTBOOT SIGNATURE TEST
 
 echo Checking uptime - this should be a fresh boot!
 uptime
@@ -27,7 +27,11 @@ echo "Waiting for dispatcher to come up postboot..." | systemd-cat
 sleep 3
 echo "Done waiting for dispatcher." | systemd-cat
 
+
+# remove device key
+rm -f /etc/intel-manageability/public/dispatcher-agent/ota_signature_cert.pem
+
+# check that sample-application is installed
 dpkg --list | grep sample-application
-dpkg --purge sample-application
 
 cleanup_after_test

@@ -221,6 +221,7 @@ inbc aota {--app, -a APP_TYPE} {--command, -c COMMAND}
    [--file, -f FILE]
    [--reboot, -rb REBOOT; default="no"]
    [--username, -un USERNAME]
+   [--signature, -s SIGNATURE]
    [--dockerusername, -du DOCKERUSERNAME]
    [--dockerregistry, -dr DOCKERREGISTRY]
 ```
@@ -231,7 +232,13 @@ Note: when the arguments --username/--dockerusername are used, passwords need to
 #### Application Update
 ```
 inbc aota
-     --uri <remote URI to AOTA file>/update.deb
+     --uri <remote URI to AOTA file>/update.deb -a application -c update
+```
+
+#### Application update requiring a signature
+```
+inbc aota
+     --uri <remote URI to AOTA file>/update.deb --signature HASH_SIGNATURE_VALUE -a application -c update
 ```
 
 #### Docker pull

@@ -16,7 +16,7 @@
 | MTLS   | Mutual Transport Layer Security                                                                                                                                                                                 |
 | OS     | Operating System                                                                                                                                                                                                |
 | OTA    | Over-the-air                                                                                                                                                                                                    |
-|  PEM   | Privacy Enhanced Mail                                                                                                                                                                                           |
+| PEM    | Privacy Enhanced Mail                                                                                                                                                                                           |
 | POTA   | Platform Over-the-Air (SOTA and FOTA combined)                                                                                                                                                                  |
 | SMBIOS | System Management BIOS                                                                                                                                                                                          |
 | SoC    | System on a Chip                                                                                                                                                                                                |

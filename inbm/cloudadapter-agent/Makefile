@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2023 Intel Corporation
+# Copyright (C) 2017-2024 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 .PHONY: tests # `make tests` doesn't run because of the tests directory
