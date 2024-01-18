@@ -101,7 +101,7 @@ def _handle_app_source_command(
     Handle the application source commands.
 
     @param parsed_head: XmlHandler with command information
-    @param os_type: os type
+    @param os_type: OS type
     @param app_action: The action to be performed
     @param dispatcher_broker: MQTT
     @return Result
@@ -123,7 +123,7 @@ def _handle_app_source_command(
             logger.info(f"Optional GPG key parameters not present in manifest")
         filename = parsed_head.get_children("applicationSource/remove/repo")["filename"]
         application_source_manager.remove(
-            ApplicationRemoveSourceParameters(file_name=filename, gpg_key_name=keyname)
+            ApplicationRemoveSourceParameters(source_list_file_name=filename, gpg_key_name=keyname)
         )
         return Result(status=200, message="SUCCESS")
 
@@ -147,7 +147,7 @@ def _handle_app_source_command(
 
         application_source_manager.add(
             ApplicationAddSourceParameters(
-                file_name=repo_filename,
+                source_list_file_name=repo_filename,
                 gpg_key_name=gpg_key_name,
                 gpg_key_uri=gpg_key_uri,
                 sources=add_source_pkgs,
@@ -164,7 +164,7 @@ def _handle_app_source_command(
 
         application_source_manager.update(
             ApplicationUpdateSourceParameters(
-                file_name=repo_filename,
+                source_list_file_name=repo_filename,
                 sources=update_source_pkgs,
             )
         )

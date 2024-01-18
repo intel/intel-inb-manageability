@@ -8,12 +8,13 @@ import logging
 
 from ..inbc_exception import InbcException
 from ..xml_tag import create_xml_tag
+from inbm_common_lib.utility import clean_input
 
 logger = logging.getLogger(__name__)
 
 
 def application_add(args: argparse.Namespace) -> str:
-    if (args.gpgKeyUri and args.gpgKeyName is None) or (args.gpgKeyName and args.gpgKeyUri is None):
+    if bool(args.gpgKeyUri) != bool(args.gpgKeyName):
         raise InbcException(
             "Source requires either both gpgKeyUri and gpgKeyName to be provided, or neither of them.")
 
@@ -35,8 +36,8 @@ def application_add(args: argparse.Namespace) -> str:
 
     manifest += '<repo><repos>'
 
-    for source in args.sources:
-        manifest += '<source_pkg>' + source + '</source_pkg>'
+    source_tags = (f'<source_pkg>{clean_input(source)}</source_pkg>' for source in args.sources)
+    manifest += ''.join(source_tags)
 
     manifest += ('</repos>'
                  f'{create_xml_tag(arguments, "filename")}</repo>'
@@ -82,7 +83,7 @@ def application_update(args: argparse.Namespace) -> str:
                 '<update><repo><repos>')
 
     for source in args.sources:
-        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+        manifest += '<source_pkg>' + clean_input(source.strip()) + '</source_pkg>'
 
     manifest += (f'</repos>{create_xml_tag(arguments, "filename")}' +
                  '</repo></update></applicationSource>' +
