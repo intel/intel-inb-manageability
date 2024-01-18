@@ -8,6 +8,7 @@ import logging
 import json
 from dispatcher.common.result_constants import Result
 from typing import Optional, Any
+from dispatcher.dispatcher_broker import DispatcherBroker
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
@@ -23,7 +24,7 @@ from inbm_lib.xmlhandler import XmlException, XmlHandler
 logger = logging.getLogger(__name__)
 
 
-def do_source_command(parsed_head: XmlHandler, os_type: OsType, dispatcher_broker: Optional[Any]) -> Result:
+def do_source_command(parsed_head: XmlHandler, os_type: OsType, dispatcher_broker: DispatcherBroker) -> Result:
     """
     Run a source command.
 
@@ -95,7 +96,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
 
 
 def _handle_app_source_command(
-        parsed_head: XmlHandler, os_type: OsType, app_action: dict, dispatcher_broker: Optional[Any]) -> Result:
+        parsed_head: XmlHandler, os_type: OsType, app_action: dict, dispatcher_broker: DispatcherBroker) -> Result:
     """
     Handle the application source commands.
 
