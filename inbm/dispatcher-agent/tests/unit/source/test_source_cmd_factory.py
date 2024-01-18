@@ -29,5 +29,5 @@ def test_create_application_source_manager_ubuntu():
 def test_create_application_source_manager_unsupported():
     mock_disp_broker_obj = MockDispatcherBroker.build_mock_dispatcher_broker()
     with pytest.raises(ValueError) as excinfo:
-        create_application_source_manager("UnsupportedOS")
+        create_application_source_manager("UnsupportedOS", mock_disp_broker_obj)
     assert "Unsupported OS type" in str(excinfo.value)

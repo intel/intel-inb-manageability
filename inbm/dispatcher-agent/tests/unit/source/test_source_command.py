@@ -7,6 +7,7 @@ import os
 
 import pytest
 from dispatcher.common.result_constants import Result
+from ..common.mock_resources import MockDispatcherBroker
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
@@ -66,8 +67,8 @@ def test_do_source_command_list(
     mock_source_manager.list.return_value = return_value
 
     mocker.patch(patch_target, return_value=mock_source_manager)
-
-    result = do_source_command(xml_handler, OsType.Ubuntu)
+    broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+    result = do_source_command(xml_handler, OsType.Ubuntu, broker)
 
     assert result == Result(status=200, message=expected_message)
     mock_source_manager.list.assert_called_once()
@@ -113,8 +114,8 @@ def test_do_source_command_remove(
     mock_manager.remove.return_value = None
 
     mocker.patch(manager_mock, return_value=mock_manager)
-
-    result = do_source_command(xml_handler, os_type)
+    broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+    result = do_source_command(xml_handler, os_type, broker)
 
     mock_manager.remove.assert_called_once_with(expected_call)
     assert result == Result(status=200, message="SUCCESS")
@@ -180,8 +181,8 @@ def test_do_source_command_add(
     mock_manager.add.return_value = None
 
     mocker.patch(manager_mock, return_value=mock_manager)
-
-    result = do_source_command(xml_handler, os_type)
+    broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+    result = do_source_command(xml_handler, os_type, broker)
 
     mock_manager.add.assert_called_once_with(expected_call)
     assert result == Result(status=200, message="SUCCESS")
@@ -240,8 +241,8 @@ def test_do_source_command_update(
     mock_manager.update.return_value = None
 
     mocker.patch(manager_mock, return_value=mock_manager)
-
-    result = do_source_command(xml_handler, os_type)
+    broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+    result = do_source_command(xml_handler, os_type, broker)
 
     mock_manager.update.assert_called_once_with(expected_call)
     assert result == Result(status=200, message="SUCCESS")
