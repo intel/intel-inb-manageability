@@ -426,6 +426,7 @@ This list file is used during 'sudo apt update' to update the application.  <em>
 
 **NOTE:** Make sure to add gpgKeyUri to trustedrepositories using INBC Config Append command before using Inbc source application add command
           Step 1: Refer to Inbc Config Append command to set gpgKeyUri to trustedRepositories in intel-manageability.conf file
+                  Example: inbc append --path  trustedRepositories:https://deb.opera.com/
           Step 2: Use Inbc source appplication add command 
 ```
 
