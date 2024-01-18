@@ -348,7 +348,7 @@ class TestUbuntuApplicationSourceManager:
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key_if_exists")
     def test_raises_on_os_error(self, mock_remove_gpg_key, mock_remove_file, mock_os_error):
         parameters = ApplicationRemoveSourceParameters(
-            gpg_key_name="example_source.gpg", file_name="example_source.list"
+            gpg_key_name="example_source.gpg", source_list_file_name="example_source.list"
         )
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         command = UbuntuApplicationSourceManager(broker)
