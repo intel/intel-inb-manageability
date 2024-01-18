@@ -23,7 +23,7 @@ from inbm_lib.xmlhandler import XmlException, XmlHandler
 logger = logging.getLogger(__name__)
 
 
-def do_source_command(parsed_head: XmlHandler, os_type: OsType, dispatcher_broker: Optional[Any] = None) -> Result:
+def do_source_command(parsed_head: XmlHandler, os_type: OsType, dispatcher_broker: Optional[Any]) -> Result:
     """
     Run a source command.
 
@@ -95,7 +95,7 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
 
 
 def _handle_app_source_command(
-        parsed_head: XmlHandler, os_type: OsType, app_action: dict, dispatcher_broker: Optional[Any] = None) -> Result:
+        parsed_head: XmlHandler, os_type: OsType, app_action: dict, dispatcher_broker: Optional[Any]) -> Result:
     """
     Handle the application source commands.
 
