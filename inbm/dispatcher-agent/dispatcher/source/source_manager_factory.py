@@ -8,6 +8,7 @@ import logging
 
 from dispatcher.source.constants import OsType
 from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
+from typing import Optional, Any
 from dispatcher.source.ubuntu_source_manager import (
     UbuntuApplicationSourceManager,
     UbuntuOsSourceManager,
@@ -23,8 +24,8 @@ def create_os_source_manager(os_type: OsType) -> OsSourceManager:
     raise ValueError(f"Unsupported OS type: {os_type}.")
 
 
-def create_application_source_manager(os_type: OsType) -> ApplicationSourceManager:
+def create_application_source_manager(os_type: OsType, dispatcher_broker: Optional[Any] = None) -> ApplicationSourceManager:
     """Return correct OS application manager based on OS type"""
     if os_type is OsType.Ubuntu:
-        return UbuntuApplicationSourceManager()
+        return UbuntuApplicationSourceManager(dispatcher_broker)
     raise ValueError(f"Unsupported OS type: {os_type}.")

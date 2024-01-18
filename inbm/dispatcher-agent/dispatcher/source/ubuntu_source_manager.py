@@ -96,8 +96,8 @@ class UbuntuOsSourceManager(OsSourceManager):
 
 
 class UbuntuApplicationSourceManager(ApplicationSourceManager):
-    def __init__(self) -> None:
-       self.dispatcher_broker= DispatcherBroker() 
+    def __init__(self, broker: DispatcherBroker) -> None:
+        self._dispatcher_broker = broker
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
         """Adds a source file and optional GPG key to be used during Ubuntu application updates."""
@@ -107,7 +107,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
                url = parameters.gpg_key_uri
                #URL slicing to remove the last segment (filename) from the URL 
                source = url[:-(len(url.split('/')[-1]) + 1)]
-               verify_source(source=source, dispatcher_broker=self.dispatcher_broker)
+               verify_source(source=source, dispatcher_broker=self._dispatcher_broker)
             except (DispatcherException, IndexError) as err:
                raise SourceError(f"Source Gpg key URI verification check failed: {err}")
             # Step 2: Add key (Optional)

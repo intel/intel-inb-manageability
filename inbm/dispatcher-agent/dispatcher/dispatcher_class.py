@@ -16,6 +16,7 @@ from queue import Queue
 from threading import Thread, active_count
 from time import sleep
 from typing import Tuple
+from typing import Optional, Any
 
 from dispatcher.config.config_operation import ConfigOperation
 from dispatcher.source.source_command import do_source_command
@@ -293,7 +294,7 @@ class Dispatcher:
             elif type_of_manifest == 'source':
                 logger.debug('Running source command')
                 # FIXME: actually detect OS
-                result = do_source_command(parsed_head, source.constants.OsType.Ubuntu)
+                result = do_source_command(parsed_head, source.constants.OsType.Ubuntu, self._dispatcher_broker)
             elif type_of_manifest == 'ota':
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
