@@ -199,7 +199,6 @@ class TestUbuntuApplicationSourceManager:
     def test_add_app_with_gpg_key_successfully(self, mock_verify_source):
         try:
             params = ApplicationAddSourceParameters(
-                file_name="intel-gpu-jammy.list",
                 sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
                 gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
                 gpg_key_name="google-chrome.gpg"
@@ -293,7 +292,6 @@ class TestUbuntuApplicationSourceManager:
     @patch("dispatcher.source.ubuntu_source_manager.verify_source", side_effect=DispatcherException('error'))
     def test_failed_add_gpg_key_method(self, mock_verify_source):
         parameters = ApplicationAddSourceParameters(
-            file_name="intel-gpu-jammy.list",
             sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
             gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
             gpg_key_name="name"
@@ -309,7 +307,6 @@ class TestUbuntuApplicationSourceManager:
     def test_success_add_gpg_key_method(self, mock_verify_source):
         mock_verify_source.return_value = True 
         parameters = ApplicationAddSourceParameters(
-            file_name="intel-gpu-jammy.list",
             sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
             gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
             gpg_key_name="name"
