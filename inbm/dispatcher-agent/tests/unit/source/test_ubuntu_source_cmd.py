@@ -205,7 +205,7 @@ class TestUbuntuApplicationSourceManager:
             with patch("builtins.open", new_callable=mock_open()):
                 command.add(params)
         except SourceError as err:
-            assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"
+            pytest.fail(f"'UbuntuApplicationSourceManager.add' raised an exception {err}")
 
     def test_add_app_deb_822_format_successfully(self):
         try:
@@ -222,7 +222,7 @@ class TestUbuntuApplicationSourceManager:
             with patch("builtins.open", new_callable=mock_open()):
                 command.add(params)
         except SourceError as err:
-            assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"
+            pytest.fail(f"'UbuntuApplicationSourceManager.add' raised an exception {err}")
 
     def test_update_app_source_successfully(self):
         try:
@@ -233,7 +233,7 @@ class TestUbuntuApplicationSourceManager:
             with patch("builtins.open", new_callable=mock_open()):
                 command.update(params)
         except SourceError as err:
-            assert False, f"'UbuntuApplicationSourceManager.update' raised an exception {err}"
+            pytest.fail(f"'UbuntuApplicationSourceManager.update' raised an exception {err}")
 
     # def test_raises_exception_on_io_error_during_update_app_source_ubuntu(self):
     #     params = ApplicationUpdateSourceParameters(file_name="intel-gpu-jammy.list",

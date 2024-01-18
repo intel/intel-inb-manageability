@@ -21,7 +21,7 @@ class ApplicationSourceList:
 
 @dataclass(kw_only=True, frozen=True)
 class SourceParameters:
-    sources: list[str] = field(default_factory=lambda: [])
+    sources: List[str] = field(default_factory=list)
 
 
 @dataclass(kw_only=True, frozen=True)

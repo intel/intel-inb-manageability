@@ -47,26 +47,26 @@ class TestSourceApplicationParser(TestCase):
         self.assertEqual(f.filename, 'intel-gpu-jammy.list')
 
     def test_raise_application_add_with_only_one_gpgKeyUri_param(self):
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
-            p = self.arg_parser.parse_args(
-                ['source', 'application', 'add',
-                 '--gpgKeyUri', 'https://repositories.intel.com/gpu/intel-graphics.key',
-                 '--sources', 'deb http://example.com/ focal main restricted universe',
-                 'deb-src http://example.com/ focal-security main',
-                 '--filename', 'intel-gpu-jammy.list'])
+        p = self.arg_parser.parse_args(
+            ['source', 'application', 'add',
+             '--gpgKeyUri', 'https://repositories.intel.com/gpu/intel-graphics.key',
+             '--sources', 'deb http://example.com/ focal main restricted universe',
+             'deb-src http://example.com/ focal-security main',
+             '--filename', 'intel-gpu-jammy.list'])
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             with pytest.raises(InbcException,
                                match="Source requires either both gpgKeyUri and gpgKeyName "
                                      "to be provided, or neither of them."):
                 Inbc(p, 'source', False)
 
     def test_raise_application_add_with_only_one_gpgKeyName_param(self):
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
-            p = self.arg_parser.parse_args(
-                ['source', 'application', 'add',
-                 '--gpgKeyName', 'intel-graphics.gpg',
-                 '--sources', 'deb http://example.com/ focal main restricted universe',
-                 'deb-src http://example.com/ focal-security main',
-                 '--filename', 'intel-gpu-jammy.list'])
+        p = self.arg_parser.parse_args(
+            ['source', 'application', 'add',
+             '--gpgKeyName', 'intel-graphics.gpg',
+             '--sources', 'deb http://example.com/ focal main restricted universe',
+             'deb-src http://example.com/ focal-security main',
+             '--filename', 'intel-gpu-jammy.list'])
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             with pytest.raises(InbcException,
                                match="Source requires either both gpgKeyUri and gpgKeyName "
                                      "to be provided, or neither of them."):
@@ -82,7 +82,7 @@ class TestSourceApplicationParser(TestCase):
              'Suites: stable',
              'Components: main',
              '--filename', 'google-chrome.sources'])
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<add><repo><repos><source_pkg>X-Repolib-Name: Google Chrome</source_pkg>' \
@@ -102,7 +102,7 @@ class TestSourceApplicationParser(TestCase):
              '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main',
              '--filename', 'intel-gpu-jammy.list'])
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<add><gpg><uri>https://repositories.intel.com/gpu/intel-graphics.key</uri>' \
@@ -118,7 +118,7 @@ class TestSourceApplicationParser(TestCase):
              '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main',
              '--filename', 'intel-gpu-jammy.list'])
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<add><repo><repos>' \
@@ -147,7 +147,7 @@ class TestSourceApplicationParser(TestCase):
             ['source', 'application', 'remove',
              '--gpgKeyName', 'intel-gpu-jammy.gpg',
              '--filename', 'intel-gpu-jammy.list'])
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<remove><gpg><keyname>intel-gpu-jammy.gpg</keyname></gpg>' \
@@ -158,7 +158,7 @@ class TestSourceApplicationParser(TestCase):
         p = self.arg_parser.parse_args(
             ['source', 'application', 'remove',
              '--filename', 'intel-gpu-jammy.list'])
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource><remove>' \
                    '<repo><filename>intel-gpu-jammy.list</filename></repo></remove></applicationSource></manifest>'
@@ -180,7 +180,7 @@ class TestSourceApplicationParser(TestCase):
              '--sources', 'deb http://example.com/ focal main restricted universe',
              'deb-src http://example.com/ focal-security main',
              '--filename', 'intel-gpu-jammy.list'])
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<update><repo><repos><source_pkg>deb http://example.com/ focal main restricted universe' \
@@ -191,7 +191,7 @@ class TestSourceApplicationParser(TestCase):
     def test_create_list_manifest_successfully(self):
         p = self.arg_parser.parse_args(
             ['source', 'application', 'list'])
-        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect') as m_connect:
+        with patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect'):
             Inbc(p, 'source', False)
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type><applicationSource>' \
                    '<list/></applicationSource></manifest>'

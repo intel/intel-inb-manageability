@@ -8,6 +8,7 @@ import logging
 
 from ..inbc_exception import InbcException
 from ..xml_tag import create_xml_tag
+from inbm_common_lib.utility import clean_input
 
 logger = logging.getLogger(__name__)
 
@@ -35,7 +36,7 @@ def application_add(args: argparse.Namespace) -> str:
 
     manifest += '<repo><repos>'
 
-    source_tags = (f'<source_pkg>{source}</source_pkg>' for source in args.sources)
+    source_tags = (f'<source_pkg>{clean_input(source)}</source_pkg>' for source in args.sources)
     manifest += ''.join(source_tags)
 
     manifest += ('</repos>'
@@ -82,7 +83,7 @@ def application_update(args: argparse.Namespace) -> str:
                 '<update><repo><repos>')
 
     for source in args.sources:
-        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+        manifest += '<source_pkg>' + clean_input(source.strip()) + '</source_pkg>'
 
     manifest += (f'</repos>{create_xml_tag(arguments, "filename")}' +
                  '</repo></update></applicationSource>' +
