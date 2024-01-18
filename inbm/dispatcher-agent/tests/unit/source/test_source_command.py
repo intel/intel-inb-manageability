@@ -100,7 +100,7 @@ def test_do_source_command_list(
             OsType.Ubuntu,
             ApplicationRemoveSourceParameters(
                 gpg_key_name="intel-gpu-jammy.gpg",
-                file_name="intel-gpu-jammy.list",
+                source_list_file_name="intel-gpu-jammy.list",
             ),
         ),
     ],
@@ -164,7 +164,7 @@ def test_do_source_command_remove(
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationAddSourceParameters(
-                file_name="repofilename",
+                source_list_file_name="repofilename",
                 gpg_key_name="keyname",
                 gpg_key_uri="gpguri",
                 sources=["sourceA", "sourceB"],
@@ -227,7 +227,7 @@ def test_do_source_command_add(
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationUpdateSourceParameters(
-                file_name="filename", sources=["source1", "source2"]
+                source_list_file_name="filename", sources=["source1", "source2"]
             ),
         ),
     ],

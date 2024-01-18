@@ -199,7 +199,7 @@ class TestUbuntuApplicationSourceManager:
     def test_add_app_with_gpg_key_successfully(self, mock_verify_source):
         try:
             params = ApplicationAddSourceParameters(
-                file_name="intel-gpu-jammy.list",
+                source_list_file_name="intel-gpu-jammy.list",
                 sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
                 gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
                 gpg_key_name="google-chrome.gpg"
@@ -210,13 +210,13 @@ class TestUbuntuApplicationSourceManager:
                   patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):
                 command.add(params)
         except SourceError as err:
-            assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"
+            pytest.fail(f"'UbuntuApplicationSourceManager.add' raised an exception {err}")
 
     def test_add_app_deb_822_format_successfully(self):
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         try:
             params = ApplicationAddSourceParameters(
-                file_name="google-chrome.sources",
+                source_list_file_name="google-chrome.sources",
                 sources="X-Repolib-Name: Google Chrome"
                         "Enabled: yes"
                         "Types: deb"
@@ -228,19 +228,19 @@ class TestUbuntuApplicationSourceManager:
             with patch("builtins.open", new_callable=mock_open()):
                 command.add(params)
         except SourceError as err:
-            assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"
+            pytest.fail(f"'UbuntuApplicationSourceManager.add' raised an exception {err}")
 
     def test_update_app_source_successfully(self):
         try:
             broker = MockDispatcherBroker.build_mock_dispatcher_broker()
             params = ApplicationUpdateSourceParameters(
-                file_name="intel-gpu-jammy.list", sources=APP_SOURCE
+                source_list_file_name="intel-gpu-jammy.list", sources=APP_SOURCE
             )
             command = UbuntuApplicationSourceManager(broker)
             with patch("builtins.open", new_callable=mock_open()):
                 command.update(params)
         except SourceError as err:
-            assert False, f"'UbuntuApplicationSourceManager.update' raised an exception {err}"
+            pytest.fail(f"'UbuntuApplicationSourceManager.update' raised an exception {err}")
 
     # def test_raises_exception_on_io_error_during_update_app_source_ubuntu(self):
     #     params = ApplicationUpdateSourceParameters(file_name="intel-gpu-jammy.list",
@@ -275,12 +275,11 @@ class TestUbuntuApplicationSourceManager:
             assert "Error listing application sources" in str(exc_info.value)
 
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=True)
-    @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key_if_exists")
     def test_successfully_remove_gpg_key_and_source_list(
-        self, mock_remove_gpg_key, mock_remove_file
+        self, mock_remove_file
     ):
         parameters = ApplicationRemoveSourceParameters(
-            gpg_key_name="example_source.gpg", file_name="example_source.list"
+            gpg_key_name="example_source.gpg", source_list_file_name="example_source.list"
         )
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         command = UbuntuApplicationSourceManager(broker)
@@ -288,7 +287,6 @@ class TestUbuntuApplicationSourceManager:
             command.remove(parameters)
         except SourceError:
             self.fail("Remove GPG key raised DispatcherException unexpectedly!")
-
 
     @patch("dispatcher.source.ubuntu_source_manager.verify_source", side_effect=DispatcherException('error'))
     def test_failed_add_gpg_key_method(self, mock_verify_source):
@@ -323,7 +321,7 @@ class TestUbuntuApplicationSourceManager:
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key_if_exists")
     def test_raises_when_space_check_fails(self, mock_remove_gpg_key):
         parameters = ApplicationRemoveSourceParameters(
-            gpg_key_name="example_source.gpg", file_name="../example_source.list"
+            gpg_key_name="example_source.gpg", source_list_file_name="../example_source.list"
         )
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         command = UbuntuApplicationSourceManager(broker)
@@ -332,10 +330,9 @@ class TestUbuntuApplicationSourceManager:
         assert str(ex.value) == "Invalid file name: ../example_source.list"
 
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=False)
-    @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key_if_exists")
-    def test_raises_when_unable_to_remove_file(self, mock_remove_gpg_key, mock_remove_file):
+    def test_raises_when_unable_to_remove_file(self, mock_remove_file):
         parameters = ApplicationRemoveSourceParameters(
-            gpg_key_name="example_source.gpg", file_name="example_source.list"
+            gpg_key_name="example_source.gpg", source_list_file_name="example_source.list"
         )
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         command = UbuntuApplicationSourceManager(broker)
@@ -358,3 +355,4 @@ class TestUbuntuApplicationSourceManager:
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
         assert str(ex.value) == "Error removing file: unable to join path"
+

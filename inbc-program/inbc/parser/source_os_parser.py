@@ -4,13 +4,14 @@
    SPDX-License-Identifier: Apache-2.0
 """
 import argparse
+from inbm_common_lib.utility import clean_input
 
 
 def os_add(args: argparse.Namespace) -> str:
     manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type>' \
                '<osSource><add><repos>'
     for source in args.sources:
-        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+        manifest += '<source_pkg>' + clean_input(source.strip()) + '</source_pkg>'
     manifest += '</repos></add></osSource></manifest>'
 
     print("manifest {0}".format(manifest))
@@ -21,7 +22,7 @@ def os_remove(args: argparse.Namespace) -> str:
     manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type>' \
                '<osSource><remove><repos>'
     for source in args.sources:
-        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+        manifest += '<source_pkg>' + clean_input(source.strip()) + '</source_pkg>'
     manifest += '</repos></remove></osSource></manifest>'
 
     print("manifest {0}".format(manifest))
@@ -32,7 +33,7 @@ def os_update(args: argparse.Namespace) -> str:
     manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type>' \
                '<osSource><update><repos>'
     for source in args.sources:
-        manifest += '<source_pkg>' + source.strip() + '</source_pkg>'
+        manifest += '<source_pkg>' + clean_input(source.strip()) + '</source_pkg>'
     manifest += '</repos></update></osSource></manifest>'
 
     print("manifest {0}".format(manifest))
