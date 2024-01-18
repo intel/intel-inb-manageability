@@ -24,7 +24,7 @@ def create_os_source_manager(os_type: OsType) -> OsSourceManager:
     raise ValueError(f"Unsupported OS type: {os_type}.")
 
 
-def create_application_source_manager(os_type: OsType, dispatcher_broker: Optional[Any] = None) -> ApplicationSourceManager:
+def create_application_source_manager(os_type: OsType, dispatcher_broker: Optional[Any]) -> ApplicationSourceManager:
     """Return correct OS application manager based on OS type"""
     if os_type is OsType.Ubuntu:
         return UbuntuApplicationSourceManager(dispatcher_broker)
