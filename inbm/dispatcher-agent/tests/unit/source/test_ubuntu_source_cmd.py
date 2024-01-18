@@ -195,7 +195,6 @@ class TestUbuntuOSSourceManager:
 
 
 class TestUbuntuApplicationSourceManager:
-    #@patch("dispatcher.packagemanager.package_manager.verify_source")
     @patch("dispatcher.source.ubuntu_source_manager.verify_source")
     def test_add_app_with_gpg_key_successfully(self, mock_verify_source):
         try:
@@ -318,10 +317,9 @@ class TestUbuntuApplicationSourceManager:
         )
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         command = UbuntuApplicationSourceManager(broker)
-        try:
+        with (patch("builtins.open", new_callable=mock_open()),
+              patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):    
             command.add(parameters)
-        except SourceError as err:
-             assert False, f"'UbuntuApplicationSourceManager.add' raised an exception {err}"
 
     @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key_if_exists")
     def test_raises_when_space_check_fails(self, mock_remove_gpg_key):
