@@ -1,13 +1,14 @@
 """
     Publishes OTA manifests for targets.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
 import os
 from typing import Any, Optional, Mapping, List, Dict
 from urllib.parse import urlsplit
+from dispatcher.packagemanager.constants import DEFAULT_HASH_ALGORITHM
 
 from inbm_common_lib.utility import get_canonical_representation_of_path, canonicalize_uri, CanonicalUri
 from inbm_common_lib.constants import CONFIG_CHANNEL, CONFIG_LOAD
@@ -46,7 +47,7 @@ class OtaTarget:
         self._username = parsed_manifest.get('username', None)
         self._password = parsed_manifest.get('password', None)
         self._signature = parsed_manifest.get('signature', None)
-        self._hash_algorithm = parsed_manifest.get('hash_algorithm', None)
+        self._hash_algorithm = parsed_manifest.get('hash_algorithm', DEFAULT_HASH_ALGORITHM)
         if self._ota_type == OtaType.POTA.name:
             [parsed_manifest.pop('ota_type')]  # type: ignore
         self._parsed_manifest = parsed_manifest

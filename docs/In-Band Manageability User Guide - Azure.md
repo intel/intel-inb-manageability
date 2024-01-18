@@ -5,11 +5,11 @@
 
 1. [Introduction](#introduction)
     1. [Audience](#audience)
-3. [Azure&reg; Overview](#azure-overview)
-    1. [Getting Started with Azure&reg;](#getting-started-with-azure)
-        1. [Creating Azure&reg; portal account](#creating-azure-portal-account)
-        2. [Setting up an Azure&reg; IoT Central Application ](#setting-up-an-azure-iot-central-application)
-        3. [Accessing Azure&reg;](#accessing-azure)
+3. [Azure&reg; Overview](#azurereg-overview)
+    1. [Getting Started with Azure&reg;](#getting-started-with-azurereg)
+        1. [Creating Azure&reg; portal account](#creating-azurereg-portal-account)
+        2. [Setting up an Azure&reg; IoT Central Application ](#setting-up-an-azurereg-iot-central-application-)
+        3. [Accessing Azure&reg;](#accessing-azurereg)
         4. [Setting up the application for X509 based device enrollment](#setting-up-the-application-for-x509-based-device-enrollment)
     2. [Creating a Device and Obtaining Device Credentials](#creating-a-device-and-obtaining-device-credentials)
         1. [Shared Access Signature (SAS) authentication:](#shared-access-signature-sas-authentication)
@@ -22,7 +22,7 @@
     2. [Navigating the Device Interface](#navigating-the-device-interface)
 6. [Performing batch operations](#performing-batch-operations)
 7. [OTA Updates](#ota-updates)
-    1. [Trusted Repositories ](#trusted-repositories)
+    1. [Trusted Repositories ](#trusted-repositories-)
     2. [Preparing OTA Update Packages](#preparing-ota-update-packages)
         1. [Creating FOTA Package](#creating-fota-package)
         2. [Creating SOTA Package](#creating-sota-package)
@@ -36,15 +36,15 @@
     3. [AOTA Docker-Compose Operations](#aota-docker-compose-operations)
         1. [Docker Compose Up](#docker-compose-up)
         2. [Docker-Compose Down](#docker-compose-down)
-    4. [Docker-Compose Pull](#docker-compose-pull)
-        1. [Docker-Compose List](#docker-compose-list)
+    4. [Docker-Compose Pull](#docker-compose-pull-)
+        1. [Docker-Compose List](#docker-compose-list-)
         2. [Docker-Compose Remove](#docker-compose-remove)
     5. [AOTA Docker Operations](#aota-docker-operations)
         1. [Docker Import](#docker-import)
         2. [Docker Load](#docker-load)
         3. [Docker Pull](#docker-pull)
         4. [Docker Remove](#docker-remove)
-        5. [Docker Stats](#docker-stats)
+        5. [Docker Stats](#docker-stats-)
     6. [AOTA Application Operations](#aota-application-operations)
         1. [Application Update](#application-update)
         2. [AOTA Docker/Docker-Compose Operations via Manifest](#aota-dockerdocker-compose-operations-via-manifest)
@@ -55,7 +55,7 @@
         1. [SOTA Update Via ‘Trigger SOTA’ Button Click (Debian Package Manager, Ubuntu OS)](#sota-update-via-trigger-sota-button-click-debian-package-manager-ubuntu-os)
         2. [SOTA Update Via ‘Trigger SOTA’ Button Click (Mender)](#sota-update-via-trigger-sota-button-click-mender)
         3. [SOTA Update via Manifest](#sota-update-via-manifest)
-    9. [Configuration Update ](#configuration-update)
+    9. [Configuration Update ](#configuration-update-)
         1. [Configuration Set](#configuration-set)
         2. [Configuration Get](#configuration-get)
         3. [Configuration Load](#configuration-load)
@@ -634,8 +634,47 @@ certificate (cert.pem). While triggering OTA command from cloud fill the
 signature field in the OTA form before clicking ‘Execute’ to trigger
 OTA.
 
-1. While creating a signature INB, use shar-256 or sha-384 based
-    encryption mechanism. <span class="underline"> </span>
+While creating a signature INB, use SHA-256 or SHA-384 based
+    encryption mechanism.
+
+Here is a sample Python 3 script that demonstrates how a signature is created. It takes
+in three parameters: the first is the path to the private key from which to make the signature;
+the second is the path to the file being signed; and the third (optional) is a password used to
+read the private key.
+
+You must install the `cryptography` package via pip to run this script.
+
+```python
+import hashlib
+import sys
+from binascii import hexlify
+
+from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.serialization import load_pem_private_key
+
+file_name = package_name = password = None
+num_params = len(sys.argv)
+if num_params < 3:
+    print('Invalid number of params')
+    exit(1)
+else:
+    file_name = sys.argv[1]
+    package_name = sys.argv[2]
+    if num_params == 4:
+        password = sys.argv[3].encode('utf-8')
+
+with open(package_name, 'rb') as package:
+    checksum = hashlib.sha384(package.read()).hexdigest()
+
+with open(file_name, 'rb') as f:
+    priv_key = load_pem_private_key(f.read(), password=password, backend=default_backend())
+
+signature = priv_key.sign(checksum.encode('utf-8'), padding.PSS(mgf=padding.MGF1(hashes.SHA384()), salt_length=padding.PSS.MAX_LENGTH), hashes.SHA384())
+
+print((hexlify(signature)).decode('utf-8', errors='strict'))
+```
 
 ## OTA Commands
 

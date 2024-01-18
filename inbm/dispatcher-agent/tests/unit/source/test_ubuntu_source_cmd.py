@@ -202,7 +202,8 @@ class TestUbuntuApplicationSourceManager:
                 gpg_key_name="google-chrome.gpg"
             )
             command = UbuntuApplicationSourceManager()
-            with patch("builtins.open", new_callable=mock_open()):
+            with (patch("builtins.open", new_callable=mock_open()),
+                  patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):
                 command.add(params)
         except SourceError as err:
             pytest.fail(f"'UbuntuApplicationSourceManager.add' raised an exception {err}")

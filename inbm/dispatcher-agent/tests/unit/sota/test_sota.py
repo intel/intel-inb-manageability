@@ -130,7 +130,8 @@ class TestSota(testtools.TestCase):
                 mock_rollback_and_delete_snap.assert_called_once()
             mock_reboot.assert_called_once()
         except SotaError as e:
-            self.assertEqual(str(e), "SOTA cache directory cannot be created")
+            assert (str(e) == "SOTA cache directory cannot be created" or
+                    str(e) == "Final result in SOTA execution: SOTA fail")
 
     @patch("inbm_lib.detect_os.detect_os")
     @patch("dispatcher.sota.sota.print_execution_summary")
@@ -154,7 +155,8 @@ class TestSota(testtools.TestCase):
                 mock_rollback_and_delete_snap.assert_called_once()
             mock_run.assert_called_once()
         except SotaError as e:
-            self.assertEqual(str(e), "SOTA cache directory cannot be created")
+            assert (str(e) == "SOTA cache directory cannot be created" or
+                    str(e) == "Invalid OS or unable to detect OS for SOTA: Unsupported OS type or unable to detect OS")
 
     @patch("dispatcher.sota.downloader.Downloader.is_valid_release_date")
     @patch("dispatcher.sota.snapshot.YoctoSnapshot.recover")

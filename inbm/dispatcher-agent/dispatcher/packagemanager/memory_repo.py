@@ -1,7 +1,7 @@
 """In-memory implementation of IRepo with simple add, get, list, exists
     functions
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 

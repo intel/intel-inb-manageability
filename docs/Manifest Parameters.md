@@ -265,6 +265,8 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `<description></description>`            | `<description>Yourdescription</description>`             |         O         |                                                                                     |
 | `<type></type>`                          | `<type>aota</type>`                                      |         R         | Always 'aota'                                                                       |
 | `<repo></repo>`                          | `<repo>remote</repo>`                                    |         R         | 'remote' or 'local'                                                                 |
+| `<signature></signature>`               | `<signature>ABCDEFG</signature>`                           |         O         | signature for AOTA package
+| `<sigversion></sigversion>`             | `<sigversion>384</sigversion>`                            |          O        | SHA hash size to use
 | `</header>`                              | `</header>`                                              |         R         |                                                                                     |
 | `<type>`                                 | `<type>`                                                 |         R         |                                                                                     |
 | `<aota name="">`                         | `<aota name=”text”>`                                     |         R         | Text must follow XML standards                                                      |
