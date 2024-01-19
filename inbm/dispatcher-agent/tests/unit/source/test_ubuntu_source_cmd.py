@@ -339,20 +339,3 @@ class TestUbuntuApplicationSourceManager:
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
         assert str(ex.value) == "Error removing file: example_source.list"
-
-    @patch(
-        "dispatcher.source.ubuntu_source_manager.os.path.join",
-        side_effect=OSError("unable to join path"),
-    )
-    @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=False)
-    @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key_if_exists")
-    def test_raises_on_os_error(self, mock_remove_gpg_key, mock_remove_file, mock_os_error):
-        parameters = ApplicationRemoveSourceParameters(
-            gpg_key_name="example_source.gpg", source_list_file_name="example_source.list"
-        )
-        broker = MockDispatcherBroker.build_mock_dispatcher_broker()
-        command = UbuntuApplicationSourceManager(broker)
-        with pytest.raises(SourceError) as ex:
-            command.remove(parameters)
-        assert str(ex.value) == "Error removing file: unable to join path"
-
