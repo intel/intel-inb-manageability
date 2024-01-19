@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2023 Intel Corporation
+# Copyright (c) 2021-2024 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 FROM registry.hub.docker.com/curlimages/curl:7.74.0  as ibmtpm1332

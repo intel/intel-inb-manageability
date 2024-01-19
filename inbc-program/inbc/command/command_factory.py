@@ -1,7 +1,7 @@
 """
     Factory to create the correct Command object
 
-    # Copyright (C) 2020-2023 Intel Corporation
+    # Copyright (C) 2020-2024 Intel Corporation
     # SPDX-License-Identifier: Apache-2.0
 """
 from ..ibroker import IBroker

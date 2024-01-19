@@ -1,6 +1,6 @@
 """Parser class to parse the system argument
 
-   Copyright (C) 2020-2023 Intel Corporation
+   Copyright (C) 2020-2024 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 """
 import argparse
@@ -207,6 +207,7 @@ def aota(args: argparse.Namespace) -> str:
         'cmd': args.command,
         'app': args.app,
         'fetch': args.uri,
+        'signature': args.signature,
         'deviceReboot': args.reboot,
         'username': args.username,
         'password': _get_password(args.username, "Please provide the password: "),
@@ -235,6 +236,7 @@ def aota(args: argparse.Namespace) -> str:
                        "cmd",
                        "app",
                        "fetch",
+                       "signature",
                        "deviceReboot",
                        "username",
                        "password",
