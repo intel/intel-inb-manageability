@@ -318,13 +318,11 @@ class TestUbuntuApplicationSourceManager:
               patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):    
             command.add(parameters)
 
-    @patch("dispatcher.source.ubuntu_source_manager.remove_gpg_key_if_exists")
-    def test_raises_when_space_check_fails(self, mock_remove_gpg_key):
+    def test_raises_when_space_check_fails(self):
         parameters = ApplicationRemoveSourceParameters(
             gpg_key_name="example_source.gpg", source_list_file_name="../example_source.list"
         )
-        broker = MockDispatcherBroker.build_mock_dispatcher_broker()
-        command = UbuntuApplicationSourceManager(broker)
+        command = UbuntuApplicationSourceManager()
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
         assert str(ex.value) == "Invalid file name: ../example_source.list"
