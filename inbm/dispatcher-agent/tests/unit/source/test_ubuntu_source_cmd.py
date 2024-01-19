@@ -2,6 +2,8 @@ from unittest import mock
 import pytest
 from unittest.mock import mock_open, patch
 from dispatcher.source.source_exception import SourceError
+from ..common.mock_resources import MockDispatcherBroker
+from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST_D,
     UBUNTU_APT_SOURCES_LIST,
@@ -193,15 +195,17 @@ class TestUbuntuOSSourceManager:
 
 
 class TestUbuntuApplicationSourceManager:
-    def test_add_app_with_gpg_key_successfully(self):
+    @patch("dispatcher.source.ubuntu_source_manager.verify_source")
+    def test_add_app_with_gpg_key_successfully(self, mock_verify_source):
         try:
             params = ApplicationAddSourceParameters(
-                source_list_file_name="intel-gpu-jammy.list",
+                source_list_file_name="google-chrome.sources",
                 sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
                 gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
                 gpg_key_name="google-chrome.gpg"
             )
-            command = UbuntuApplicationSourceManager()
+            broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+            command = UbuntuApplicationSourceManager(broker)
             with (patch("builtins.open", new_callable=mock_open()),
                   patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):
                 command.add(params)
@@ -209,6 +213,7 @@ class TestUbuntuApplicationSourceManager:
             pytest.fail(f"'UbuntuApplicationSourceManager.add' raised an exception {err}")
 
     def test_add_app_deb_822_format_successfully(self):
+        broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         try:
             params = ApplicationAddSourceParameters(
                 source_list_file_name="google-chrome.sources",
@@ -219,7 +224,7 @@ class TestUbuntuApplicationSourceManager:
                         "Suites: stable"
                         "Components: main",
             )
-            command = UbuntuApplicationSourceManager()
+            command = UbuntuApplicationSourceManager(broker)
             with patch("builtins.open", new_callable=mock_open()):
                 command.add(params)
         except SourceError as err:
@@ -227,10 +232,11 @@ class TestUbuntuApplicationSourceManager:
 
     def test_update_app_source_successfully(self):
         try:
+            broker = MockDispatcherBroker.build_mock_dispatcher_broker()
             params = ApplicationUpdateSourceParameters(
                 source_list_file_name="intel-gpu-jammy.list", sources=APP_SOURCE
             )
-            command = UbuntuApplicationSourceManager()
+            command = UbuntuApplicationSourceManager(broker)
             with patch("builtins.open", new_callable=mock_open()):
                 command.update(params)
         except SourceError as err:
@@ -249,7 +255,8 @@ class TestUbuntuApplicationSourceManager:
         with patch("glob.glob", return_value=["/etc/apt/sources.list.d/example.list"]), patch(
             "builtins.open", mock_open(read_data=sources_list_d_content)
         ):
-            command = UbuntuApplicationSourceManager()
+            broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+            command = UbuntuApplicationSourceManager(broker)
             sources = command.list()
             assert sources[0].name == "example.list"
             assert sources[0].sources == [
@@ -261,7 +268,8 @@ class TestUbuntuApplicationSourceManager:
         with patch("glob.glob", return_value=["/etc/apt/sources.list.d/example.list"]), patch(
             "builtins.open", side_effect=OSError
         ):
-            command = UbuntuApplicationSourceManager()
+            broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+            command = UbuntuApplicationSourceManager(broker)
             with pytest.raises(SourceError) as exc_info:
                 command.list()
             assert "Error listing application sources" in str(exc_info.value)
@@ -273,17 +281,49 @@ class TestUbuntuApplicationSourceManager:
         parameters = ApplicationRemoveSourceParameters(
             gpg_key_name="example_source.gpg", source_list_file_name="example_source.list"
         )
-        command = UbuntuApplicationSourceManager()
+        broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+        command = UbuntuApplicationSourceManager(broker)
         try:
             command.remove(parameters)
         except SourceError:
             self.fail("Remove GPG key raised DispatcherException unexpectedly!")
 
+    @patch("dispatcher.source.ubuntu_source_manager.verify_source", side_effect=DispatcherException('error'))
+    def test_failed_add_gpg_key_method(self, mock_verify_source):
+        parameters = ApplicationAddSourceParameters(
+            source_list_file_name="example_source.list",
+            sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
+            gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
+            gpg_key_name="name"
+        )
+        broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+        command = UbuntuApplicationSourceManager(broker)
+        with pytest.raises(SourceError) as ex:
+            command.add(parameters)
+        assert str(ex.value) == 'Source Gpg key URI verification check failed: error'
+
+
+    @patch("dispatcher.source.ubuntu_source_manager.verify_source")
+    def test_success_add_gpg_key_method(self, mock_verify_source):
+        mock_verify_source.return_value = True 
+        parameters = ApplicationAddSourceParameters(
+            source_list_file_name="example_source.list",
+            sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
+            gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
+            gpg_key_name="name"
+        )
+        broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+        command = UbuntuApplicationSourceManager(broker)
+        with (patch("builtins.open", new_callable=mock_open()),
+              patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):    
+            command.add(parameters)
+
     def test_raises_when_space_check_fails(self):
         parameters = ApplicationRemoveSourceParameters(
             gpg_key_name="example_source.gpg", source_list_file_name="../example_source.list"
         )
-        command = UbuntuApplicationSourceManager()
+        broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+        command = UbuntuApplicationSourceManager(broker)
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
         assert str(ex.value) == "Invalid file name: ../example_source.list"
@@ -293,7 +333,8 @@ class TestUbuntuApplicationSourceManager:
         parameters = ApplicationRemoveSourceParameters(
             gpg_key_name="example_source.gpg", source_list_file_name="example_source.list"
         )
-        command = UbuntuApplicationSourceManager()
+        broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+        command = UbuntuApplicationSourceManager(broker)
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
         assert str(ex.value) == "Error removing file: example_source.list"

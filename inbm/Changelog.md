@@ -10,7 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - RTC 536601 - Added 'source' command to INBM. This command manages `/etc/apt/sources.list` and `/etc/apt/sources.list.d/*` and associated gpg keys on Ubuntu.
+- RTC 537769 -  Added verification of GPG key URIs against a list of trusted repositories for enhanced security
 
+check if sourceApplication Gpg key URL is in trusted repo
 ### Fixed
  - RTC 534426 - Could not write to /var/log/inbm-update-status.log on Yocto due to /var/log being a symlink to /var/volatile/log.
  - RTC 523677 - Improve INBC error logging - invalid child tag not printed

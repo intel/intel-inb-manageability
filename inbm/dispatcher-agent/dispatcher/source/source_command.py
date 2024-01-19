@@ -7,6 +7,8 @@ from dataclasses import asdict
 import logging
 import json
 from dispatcher.common.result_constants import Result
+from typing import Optional, Any
+from dispatcher.dispatcher_broker import DispatcherBroker
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
@@ -22,7 +24,7 @@ from inbm_lib.xmlhandler import XmlException, XmlHandler
 logger = logging.getLogger(__name__)
 
 
-def do_source_command(parsed_head: XmlHandler, os_type: OsType) -> Result:
+def do_source_command(parsed_head: XmlHandler, os_type: OsType, dispatcher_broker: DispatcherBroker) -> Result:
     """
     Run a source command.
 
@@ -42,7 +44,7 @@ def do_source_command(parsed_head: XmlHandler, os_type: OsType) -> Result:
     try:
         app_action = parsed_head.get_children("applicationSource")
         if app_action:
-            return _handle_app_source_command(parsed_head, os_type, app_action)
+            return _handle_app_source_command(parsed_head, os_type, app_action, dispatcher_broker)
     except XmlException as e:
         return Result(status=400, message=f"unable to handle source command XML: {e}")
 
@@ -94,16 +96,17 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
 
 
 def _handle_app_source_command(
-        parsed_head: XmlHandler, os_type: OsType, app_action: dict) -> Result:
+        parsed_head: XmlHandler, os_type: OsType, app_action: dict, dispatcher_broker: DispatcherBroker) -> Result:
     """
     Handle the application source commands.
 
     @param parsed_head: XmlHandler with command information
     @param os_type: OS type
     @param app_action: The action to be performed
+    @param dispatcher_broker: MQTT
     @return Result
     """
-    application_source_manager = create_application_source_manager(os_type)
+    application_source_manager = create_application_source_manager(os_type, dispatcher_broker)
 
     if "list" in app_action:
         serialized_list = json.dumps(
