@@ -427,7 +427,7 @@ This list file is used during 'sudo apt update' to update the application.  <em>
 ### Usage
 ```
 inbc source application add
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
    {--filename, -f=FILENAME}
    [--gpgKeyUri, -gku=GPG_KEY_URI]
    [--gpgKeyName, -gkn=GPG_KEY_NAME]
@@ -527,7 +527,7 @@ NOTE: Currently this only works on Ubuntu
 ```
 inbc source application update 
    {--filename, -f=FILEPATH} 
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
 ```
 
 ### Examples
@@ -560,14 +560,14 @@ Appends new source(s) to the <em>/etc/apt/sources.list</em> file
 ### Usage
 ```
 inbc source os add 
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
 ```
 
 ### Example
 #### Adds two sources
 ```
 inbc source os add 
-   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+   --sources "deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
 ## SOURCE OS REMOVE
@@ -577,14 +577,14 @@ Removes the provided source(s) from the <em>/etc/apt/sources.list</em> file, if 
 ### Usage
 ```
 inbc source os remove 
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
 ```
 
 ### Example
 #### Removes the two provided source(s) from the <em>/etc/apt/sources.list</em> file
 ```
 inbc source os remove 
-   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+   --sources "deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
 ## SOURCE OS UPDATE
@@ -594,14 +594,14 @@ Creates a new <em>/etc/apt/sources.list</em> file with only the sources provided
 ### Usage
 ```
 inbc source os update 
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
 ```
 
 ### Example
 #### Creates a new <em>/etc/apt/sources.list</em> file with only the two provided sources
 ```
 inbc source os update 
-   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+   --sources "deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
 ## SOURCE OS LIST
