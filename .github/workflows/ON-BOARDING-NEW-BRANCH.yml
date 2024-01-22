@@ -3,7 +3,7 @@ on:
   workflow_dispatch
 jobs:
   Checkout:
-    runs-on: [self-hosted, maximus-unit-test]
+    runs-on: [self-hosted, maximus-unit-test-os]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -12,10 +12,14 @@ jobs:
 
   CREATE-PR:
     needs: Checkout
-    runs-on: [self-hosted, maximus-unit-test]
+    runs-on: [self-hosted, maximus-unit-test-os]
     name: Create GenAI Branch and PR
     steps:
       - id: maximus-create-pr-action
-        uses: intel-innersource/frameworks.actions.maximus.genai-gpt/create-pr@feature/genai_ut_eval_release
+        run: |
+          cd  ../../../genai_ut_gen
+          git pull
+          cp /home/runner/scripts/.env .
+          python create_pr.py
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
