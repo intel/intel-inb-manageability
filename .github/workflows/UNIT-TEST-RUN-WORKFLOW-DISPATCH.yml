@@ -19,7 +19,6 @@ jobs:
       - id: maximus-create-env-action
         run: |
           cd ../../../genai_ut_gen
-          git pull 
           bash ./create_user_env.sh
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -34,7 +33,6 @@ jobs:
       - id: genai-maximus-action
         run: |
           cd ../../../genai_ut_gen
-          git pull 
           cp /home/runner/scripts/.env .
           chmod +x ./get_unittest_details.sh
           ./get_unittest_details.sh
