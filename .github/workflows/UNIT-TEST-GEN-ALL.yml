@@ -23,7 +23,8 @@ jobs:
           bash ./create_user_env.sh
     env:
       # <Input relative filepath of your requirements.txt path i.e. dir-name/requirements.txt >
-      REQUIREMENTS_PATH: requirements.txt
+      REQUIREMENTS_PATH: inbm/dispatcher-agent/requirements.txt
+      PYTHON_VERSION: 3.11
 
   GENAI-UNIT-TEST-GENERATE:
     needs: CREATE-USER-RUN-ENV
