@@ -18,7 +18,6 @@ jobs:
       - id: maximus-create-pr-action
         run: |
           cd  ../../../genai_ut_gen
-          git pull
           cp /home/runner/scripts/.env .
           python create_pr.py
     env:
