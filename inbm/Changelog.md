@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?.?.? - ?
 
+###Changed
+ - RTC  536910 - [source] Remove ubuntuAptSource configuration tag and underlying code
 
 ## NEXT - 4.2.0 - 2024-01-23
 

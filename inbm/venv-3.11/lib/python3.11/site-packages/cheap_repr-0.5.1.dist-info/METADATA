@@ -1,0 +1,197 @@
+Metadata-Version: 2.1
+Name: cheap-repr
+Version: 0.5.1
+Summary: Better version of repr/reprlib for short, cheap string representations.
+Home-page: https://github.com/alexmojaki/cheap_repr
+Author: Alex Hall
+Author-email: alex.mojaki@gmail.com
+License: MIT
+Platform: UNKNOWN
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Description-Content-Type: text/markdown
+License-File: LICENSE.txt
+Requires-Dist: qualname ; python_version == "2.7"
+Provides-Extra: tests
+Requires-Dist: pytest ; extra == 'tests'
+Requires-Dist: Django ; extra == 'tests'
+Requires-Dist: pandas (>=0.24.2) ; (platform_python_implementation != "PyPy") and extra == 'tests'
+Requires-Dist: numpy (>=1.16.3) ; (platform_python_implementation != "PyPy") and extra == 'tests'
+Requires-Dist: chainmap ; (python_version == "2.7") and extra == 'tests'
+Requires-Dist: Django (<2) ; (python_version == "2.7") and extra == 'tests'
+Requires-Dist: pandas (<0.25,>=0.24.2) ; (python_version == "2.7" and platform_python_implementation != "PyPy") and extra == 'tests'
+Requires-Dist: numpy (<1.17,>=1.16.3) ; (python_version == "2.7" and platform_python_implementation != "PyPy") and extra == 'tests'
+Requires-Dist: Django (<3) ; (python_version == "3.5") and extra == 'tests'
+Requires-Dist: pandas (<0.26,>=0.24.2) ; (python_version == "3.5" and platform_python_implementation != "PyPy") and extra == 'tests'
+Requires-Dist: numpy (<1.19,>=1.16.3) ; (python_version == "3.5" and platform_python_implementation != "PyPy") and extra == 'tests'
+
+cheap_repr
+==========
+
+[![Build Status](https://github.com/alexmojaki/cheap_repr/workflows/Tests/badge.svg?branch=master)](https://github.com/alexmojaki/cheap_repr/actions) [![Coverage Status](https://coveralls.io/repos/github/alexmojaki/cheap_repr/badge.svg?branch=master)](https://coveralls.io/github/alexmojaki/cheap_repr?branch=master) [![Supports Python versions 2.7 and 3.4+, including PyPy](https://img.shields.io/pypi/pyversions/cheap_repr.svg)](https://pypi.python.org/pypi/cheap_repr) [![Join the chat at https://gitter.im/cheap_repr/Lobby](https://badges.gitter.im/cheap_repr/Lobby.svg)](https://gitter.im/cheap_repr/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+This library provides short, fast, configurable string representations, and an easy API for registering your own. It's an improvement of the standard library module `reprlib` (`repr` in Python 2).
+
+Just use the `cheap_repr` function instead of `repr`:
+
+```python
+>>> from cheap_repr import cheap_repr
+>>> cheap_repr(list(range(100)))
+'[0, 1, 2, ..., 97, 98, 99]'
+```
+
+`cheap_repr` knows how to handle many different types out of the box. You can register a function for any type, and pull requests to make these part of the library are welcome. If it doesn't know how to handle a particular type, the default `repr()` is used, possibly truncated:
+
+```python
+>>> class MyClass(object):
+...     def __init__(self, items):
+...         self.items = items
+...
+...     def __repr__(self):
+...         return 'MyClass(%r)' % self.items
+...
+>>> c = MyClass(list(range(20)))
+>>> c
+MyClass([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
+>>> cheap_repr(c)
+'MyClass([0, 1, 2, 3, 4, 5, 6... 13, 14, 15, 16, 17, 18, 19])'
+```
+
+## Suppression of long reprs
+
+`cheap_repr` is meant to prevent slow, expensive computations of string representations. So if it finds that a particular class can potentially produce very long representations, the class will be *suppressed*, meaning that in future the  `__repr__` won't be calculated at all:
+
+```python
+>>> cheap_repr(MyClass(list(range(1000))))
+'MyClass([0, 1, 2, 3, 4, 5, 6...94, 995, 996, 997, 998, 999])'
+.../cheap_repr/__init__.py:80: ReprSuppressedWarning: MyClass.__repr__ is too long and has been suppressed. Register a repr for the class to avoid this warning and see an informative repr again, or increase cheap_repr.suppression_threshold
+>>> cheap_repr(MyClass(list(range(1000))))
+'<MyClass instance at 0x1034de7f0 (repr suppressed)>'
+```
+
+`cheap_repr.suppression_threshold` refers to the attribute on the function itself, not the module. By default it's 300, meaning that a `repr` longer than 300 characters will trigger the suppression.
+
+## Registering your own repr function
+
+For example:
+
+```python
+>>> from cheap_repr import register_repr
+>>> @register_repr(MyClass)
+... def repr_my_class(x, helper):
+...     return helper.repr_iterable(x.items, 'MyClass([', '])')
+...
+>>> cheap_repr(MyClass(list(range(1000))))
+'MyClass([0, 1, 2, 3, 4, 5, ...])'
+```
+
+In general, write a function that takes two arguments `(x, helper)` and decorate it with `register_repr(cls)`. Then `cheap_repr(x)` where `isinstance(x, cls)` will dispatch to that function, unless there is also a registered function for a subclass which `x` is also an instance of. More precisely, the function corresponding to the first class in the MRO will be used. This is in contrast to the standard library module `reprlib`, which cannot handle subclasses that aren't explicitly 'registered', or classes with the same name.
+
+The `helper` argument is an object with a couple of useful attributes and methods:
+
+- `repr_iterable(iterable, left, right, end=False, length=None)` produces a comma-separated representation of `iterable`, automatically handling nesting and iterables that are too long, surrounded by `left` and `right`. The number of items is limited to `func.maxparts` (see the configuration section below).
+
+   Set `end=True` to include items from both the beginning and end, possibly leaving out items
+ in the middle. Only do this if `iterable` supports efficient slicing at the end, e.g. `iterable[-3:]`.
+
+    Provide the `length` parameter if `len(iterable)` doesn't work. Usually this is not needed.
+- `truncate(string)` returns a version of `string` at most `func.maxparts` characters long, with the middle replaced by `...` if necessary.
+- `level` indicates how much nesting is still allowed in the result. If it's 0, return something minimal such as `[...]` to indicate that the original object is too deep to show all its contents. Otherwise, if you use `cheap_repr` on several items inside `x`, pass `helper.level - 1` as the second argument, e.g. `', '.join(cheap_repr(item, helper.level - 1) for item in x)`.
+
+## Exceptions in repr functions
+
+If an exception occurs in `cheap_repr`, whether from a registered repr function or the usual `__repr__`, the exception will be caught and the cheap repr of the class will be suppressed:
+
+```python
+>>> @register_repr(MyClass)
+... def repr_my_class(x, helper):
+...     return 'MyClass([%r, ...])' % x.items[0]
+...
+>>> cheap_repr(MyClass([]))
+'<MyClass instance at 0x10f44ec50 (exception in repr)>'
+.../cheap_repr/__init__.py:123: ReprSuppressedWarning: Exception 'IndexError: list index out of range' in repr_my_class for object of type MyClass. The repr has been suppressed for this type.
+...
+>>> cheap_repr(MyClass([1, 2, 3]))
+'<MyClass instance at 0x10f44ecc0 (repr suppressed)>'
+```
+
+If you would prefer exceptions to bubble up normally, you can:
+
+1. Set `cheap_repr.raise_exceptions = True` to globally make all exceptions bubble up.
+2. To bubble exceptions from the `__repr__` of a class, call `raise_exceptions_from_default_repr()`.
+3. Set `repr_my_class.raise_exceptions = True` (substituting your own registered repr function) to make exceptions bubble from that function. The way to find the relevant function is in the next section.
+
+## Configuration:
+
+### Configuration for specific functions
+
+To configure a specific function, you set attributes on that function. To find the function corresponding to a class, use `find_repr_function`:
+
+```python
+>>> from cheap_repr import find_repr_function
+>>> find_repr_function(MyClass)
+<function repr_my_class at 0x10f43d8c8>
+```
+
+For most functions, there are two attributes available to configure, but contributors and library writers are encouraged to add arbitrary attributes for their own functions. The first attribute is `raise_exceptions`, described in the previous section.
+
+### maxparts
+
+The other configurable attribute is `maxparts`. All registered repr functions have this attribute. It determines the maximum number of 'parts' (e.g. list elements or string characters, the meaning depends on the function) from the input that the output can display without truncation. The default value is 6. The decorator `@maxparts(n)` conveniently sets the attribute to make writing your own registered functions nicer. For example:
+
+```python
+>>> from cheap_repr import maxparts
+>>> @register_repr(MyClass)
+... @maxparts(2)
+... def repr_my_class(x, helper):
+...     return helper.repr_iterable(x.items, 'MyClass([', '])')
+...
+>>> cheap_repr(MyClass([1, 2, 3, 4]))
+'MyClass([1, 2, ...])'
+>>> find_repr_function(MyClass).maxparts = 3
+>>> cheap_repr(MyClass([1, 2, 3, 4]))
+'MyClass([1, 2, 3, ...])'
+```
+
+### pandas
+
+The functions for `DataFrame`s and `Series` from the `pandas` library don't use `maxparts`.
+For the `DataFrame` function there's `max_rows` and `max_cols`. For the `Series` function there's just `max_rows`.
+
+### level and max_level
+
+`cheap_repr` takes an optional argument `level` which controls the display of nested objects. Typically this decreases through recursive calls, and when it's 0, the contents of the object aren't shown. See 'Registering your own repr function' for more details. This means you can change the amount of nested data in the output of `cheap_repr` by changing the `level` argument. The default value is `cheap_repr.max_level`, which is initially 3. This means that changing `cheap_repr.max_level` will effectively change the `level` argument whenever it isn't explicitly specified.
+
+### Global configuration
+
+These things that can be configured globally:
+
+1. `cheap_repr.suppression_threshold`, discussed in the 'Suppression of long reprs' section.
+2. The handling of exceptions, discussed in the 'Exceptions in repr functions' section, which can be changed by setting `cheap_repr.raise_exceptions = True` or calling `raise_exceptions_from_default_repr()`.
+3. `cheap_repr.max_level`, discussed above.
+
+## Other miscellaneous functions
+
+`basic_repr(x)` returns a string that looks like the default `object.__repr__`. This is handy if you don't want to write your own repr function to register. Simply register this function instead, e.g.
+
+```python
+>>> from cheap_repr import basic_repr
+>>> register_repr(MyClass)(basic_repr)
+>>> cheap_repr(MyClass([1, 2, 3, 4]))
+'<MyClass instance at 0x10f39dda0>'
+```
+
+`normal_repr(x)` returns `repr(x)` - register it with a class to indicate that its own `__repr__` method is already fine. This prevents it from being supressed when its output is a bit long.
+
+`try_register_repr` is handy when you want to register a repr function for a class that may not exist, e.g. if the class is in a third party package that may not be installed. See the docstring for more details.
+
+
