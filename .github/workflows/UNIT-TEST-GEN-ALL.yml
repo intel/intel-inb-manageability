@@ -19,8 +19,7 @@ jobs:
     steps:
       - id: maximus-create-env-action
         run: |
-          cd ../../../genai_ut_gen
-          bash ./create_user_env.sh
+          bash ../../../genai_ut_gen/create_user_env.sh
     env:
       # <Input relative filepath of your requirements.txt path i.e. dir-name/requirements.txt >
       REQUIREMENTS_PATH: inbm/dispatcher-agent/requirements.txt
@@ -33,10 +32,9 @@ jobs:
     steps:
       - id: maximus-ut-gen-action
         run: |
-          cd ../../../genai_ut_gen
-          cp /home/runner/scripts/.env .
-          chmod +x ./get_unittest_details.sh
-          ./get_unittest_details.sh
+          cp /home/runner/scripts/.env ../../../genai_ut_gen/
+          chmod +x ../../../genai_ut_gen/get_unittest_details.sh
+          ../../../genai_ut_gen/get_unittest_details.sh
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       TASK_TYPE: generate
@@ -50,10 +48,9 @@ jobs:
     steps:
       - id: maximus-ut-run-action
         run: |
-          cd ../../../genai_ut_gen
-          cp /home/runner/scripts/.env .
-          chmod +x ./get_unittest_details.sh
-          ./get_unittest_details.sh
+          cp /home/runner/scripts/.env ../../../genai_ut_gen/
+          chmod +x ../../../genai_ut_gen/get_unittest_details.sh
+          ../../../genai_ut_gen/get_unittest_details.sh
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       TASK_TYPE: run
