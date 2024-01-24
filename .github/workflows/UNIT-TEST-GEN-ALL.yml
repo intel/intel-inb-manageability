@@ -56,5 +56,5 @@ jobs:
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       TASK_TYPE: run
-      # INCLUDE_PATHS: <Include your paths here if want to run UT on specific files/dirs>
+      INCLUDE_PATHS: inbm/dispatcher-agent/dispatcher/source/ubuntu_source_manager.py
       # EXCLUDE_PATHS: <Exclude your paths here if want to exclude specific files/dirs>
