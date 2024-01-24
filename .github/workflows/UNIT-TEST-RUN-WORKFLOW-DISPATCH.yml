@@ -22,7 +22,7 @@ jobs:
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       # <Input relative filepath of your requirements.txt path i.e. dir-name/requirements.txt >
-      REQUIREMENTS_PATH: requirements.txt
+      REQUIREMENTS_PATH: inbm/dispatcher-agent/requirements.txt
 
   UNIT-TEST-RUN:
     needs: CREATE-USER-RUN-ENV
@@ -38,5 +38,5 @@ jobs:
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       TASK_TYPE: run
-      # INCLUDE_PATHS: <Include your paths here if want to run UT on specific files/dirs>
+      INCLUDE_PATHS: inbm/dispatcher-agent/dispatcher/source/ubuntu_source_manager.py
       # EXCLUDE_PATHS: <Exclude your paths here if want to exclude specific files/dirs>
