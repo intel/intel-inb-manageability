@@ -8,13 +8,13 @@ sys.path.insert(0, '/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageabi
 sys.path.insert(0, '/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageability/intel-inb-manageability/inbm-lib/')
 sys.path.insert(0, '/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageability/intel-inb-manageability/inbm/dispatcher-agent/')
 import pytest
+from unittest.mock import patch, mock_open
+from dispatcher.source.ubuntu_source_manager import UbuntuOsSourceManager, SourceParameters, SourceError
 from unittest.mock import patch, MagicMock
 from dispatcher.source.ubuntu_source_manager import UbuntuApplicationSourceManager, ApplicationAddSourceParameters
-from unittest.mock import patch, mock_open
 from dispatcher.source.ubuntu_source_manager import UbuntuApplicationSourceManager, ApplicationSourceList
 from dispatcher.source.ubuntu_source_manager import UbuntuApplicationSourceManager, ApplicationRemoveSourceParameters, SourceError, LINUX_GPG_KEY_PATH, UBUNTU_APT_SOURCES_LIST_D
 from dispatcher.source.ubuntu_source_manager import UbuntuApplicationSourceManager, SourceError, ApplicationUpdateSourceParameters
-from dispatcher.source.ubuntu_source_manager import UbuntuOsSourceManager, SourceParameters, SourceError
 from dispatcher.source.ubuntu_source_manager import UbuntuOsSourceManager, SourceError
 from unittest.mock import patch, mock_open, call
 
@@ -301,68 +301,33 @@ class TestUbuntuOsSourceManagerRemove:
 #DO NOT DELETE THIS LINE - TestUbuntuOsSourceManagerUpdate
 '''
 ADD HUMAN FEEDBACK BELOW:
-
+     Do not generate tests cases that assume the unit under test (UbuntuOsSourceManager.update) is doing any checking on the format of the lines in the file such as checking for special characters or valid URL, or starting with "deb", etc.
 '''
 class TestUbuntuOsSourceManagerUpdate:
-    @pytest.fixture
-    def manager(self):
-        return UbuntuOsSourceManager()
-
-    @pytest.mark.parametrize('sources', [
-        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted']),
-        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted', 'deb-src http://archive.ubuntu.com/ubuntu/ bionic main restricted']),
+    @pytest.mark.parametrize('sources, expected_exception', [
+        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted'], None),  # valid source
+        (['invalid source'], SourceError),  # invalid source
+        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted', 'invalid source'], SourceError),  # mix of valid and invalid sources
+        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted', 'deb http://archive.ubuntu.com/ubuntu/ bionic main restricted'], None),  # duplicate sources
+        ([], None),  # empty sources
+        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted'*1000], None),  # very large list of sources
+        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted\n'], SourceError),  # source with newline character
+        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted/'], None),  # source with file path separator
+        (['http://google.com'], SourceError),  # source that is a URL but not a deb repository
+        (['deb http://nonexistentrepository.com/ubuntu/ bionic main restricted'], SourceError),  # source that is a deb repository but not accessible
     ])
-    def test_update_valid_sources(self, manager, sources):
-        # Mocking the built-in open function
-        with patch('builtins.open', mock_open()) as m:
-            manager.update(SourceParameters(sources=sources))
-            m.assert_called_once_with('/etc/apt/sources.list', 'w')
+    def test_update(self, sources, expected_exception):
+        manager = UbuntuOsSourceManager()
+        parameters = SourceParameters(sources=sources)
 
-    @pytest.mark.parametrize('sources', [
-        (['invalid source']),
-        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted', 'invalid source']),
-    ])
-    def test_update_invalid_sources(self, manager, sources):
-        # Mocking the built-in open function
+        # Mock the open function
         with patch('builtins.open', mock_open()) as m:
-            with pytest.raises(SourceError):
-                manager.update(SourceParameters(sources=sources))
-
-    @pytest.mark.parametrize('sources', [
-        ([]),
-    ])
-    def test_update_no_sources(self, manager, sources):
-        # Mocking the built-in open function
-        with patch('builtins.open', mock_open()) as m:
-            manager.update(SourceParameters(sources=sources))
-            m.assert_called_once_with('/etc/apt/sources.list', 'w')
-
-    @pytest.mark.parametrize('sources', [
-        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted', 'deb http://archive.ubuntu.com/ubuntu/ bionic main restricted']),
-    ])
-    def test_update_duplicate_sources(self, manager, sources):
-        # Mocking the built-in open function
-        with patch('builtins.open', mock_open()) as m:
-            manager.update(SourceParameters(sources=sources))
-            m.assert_called_once_with('/etc/apt/sources.list', 'w')
-
-    @pytest.mark.parametrize('sources', [
-        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted'*10000]),
-    ])
-    def test_update_large_sources(self, manager, sources):
-        # Mocking the built-in open function
-        with patch('builtins.open', mock_open()) as m:
-            manager.update(SourceParameters(sources=sources))
-            m.assert_called_once_with('/etc/apt/sources.list', 'w')
-
-    @pytest.mark.parametrize('sources', [
-        (['deb http://archive.ubuntu.com/ubuntu/ bionic main restricted\n']),
-    ])
-    def test_update_special_characters_in_sources(self, manager, sources):
-        # Mocking the built-in open function
-        with patch('builtins.open', mock_open()) as m:
-            with pytest.raises(SourceError):
-                manager.update(SourceParameters(sources=sources))
+            if expected_exception is not None:
+                with pytest.raises(expected_exception):
+                    manager.update(parameters)
+            else:
+                manager.update(parameters)
+                m.assert_called_once_with('/etc/apt/sources.list', 'w')
 
 if __name__ == '__main__':
     pytest.main()
