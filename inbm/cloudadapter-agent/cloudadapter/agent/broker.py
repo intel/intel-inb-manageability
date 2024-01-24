@@ -4,7 +4,7 @@
     An instance of this class will be created to start the agent and listen
     for incoming commands on the command channel
     
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -51,7 +51,7 @@ class Broker:
                           client_certs=str(CLIENT_CERTS),
                           client_keys=str(CLIENT_KEYS))
 
-    def bind_callback(self, topic: Tuple[str, ...], callback: Callable):
+    def bind_callback(self, topic: Tuple[str, ...], callback: Callable) -> None:
         """Bind a callback to process messages from certain topics
         The callback must be a function with the signature: (str, str) -> None
             (str): The specific topic that triggered the callback
@@ -64,7 +64,7 @@ class Broker:
             logger.error("Attempted to subscribe to unsupported topic: %s", topic)
             return
 
-        def threaded(topic: str, payload: str, _):
+        def threaded(topic: str, payload: str, _) -> None:
             make_threaded(callback)(topic, payload)
 
         for t in topic:

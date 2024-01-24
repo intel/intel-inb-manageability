@@ -9,6 +9,8 @@ mkdir -p /var/log/sota_test
 echo "Triggering SOTA integration INB test 1: SOTA UPDATE SUCCESS"
 echo "<START> SOTA UPDATE SUCCESS" | systemd-cat
 
+rm -rf /var/lib/dispatcher/upload/*
+
 inbc sota
 
 RESULT=$?

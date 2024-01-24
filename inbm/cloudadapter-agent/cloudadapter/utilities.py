@@ -1,7 +1,7 @@
 """
 Utility functions and classes used throughout the cloudadapter module
 
-Copyright (C) 2017-2023 Intel Corporation
+Copyright (C) 2017-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -54,7 +54,7 @@ def make_threaded(f: Callable) -> Callable:
 
     @param f: (Callable) The function to put on a daemonic thread
     """
-    def threaded(*args, **kwargs):
+    def threaded(*args, **kwargs) -> None:
         thread = Thread(target=f, args=args, kwargs=kwargs)
         thread.daemon = True
         thread.start()

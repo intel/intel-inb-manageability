@@ -1,0 +1,24 @@
+name: ON-BOARDING-NEW-BRANCH
+on:
+  workflow_dispatch
+jobs:
+  Checkout:
+    runs-on: [self-hosted, maximus-unit-test-os]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+  CREATE-PR:
+    needs: Checkout
+    runs-on: [self-hosted, maximus-unit-test-os]
+    name: Create GenAI Branch and PR
+    steps:
+      - id: maximus-create-pr-action
+        run: |
+          cd  ../../../genai_ut_gen
+          cp /home/runner/scripts/.env .
+          python create_pr.py
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}

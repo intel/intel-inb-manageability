@@ -1,7 +1,7 @@
 """
     AOTA Application Command Concrete Classes
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -15,18 +15,19 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_canonical_representation_of_path, move_file
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX, OTA_SUCCESS
 
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.common.result_constants import CODE_OK
-from dispatcher.constants import UMASK_OTA, REPO_CACHE
-from dispatcher.packagemanager.package_manager import get
+from dispatcher.constants import OTA_PACKAGE_CERT_PATH, UMASK_OTA, REPO_CACHE
+from dispatcher.packagemanager.package_manager import get, verify_signature
 
 from .checker import check_application_command_supported, check_url, check_resource
 from .aota_command import AotaCommand
 from .constants import CENTOS_DRIVER_PATH, SupportedDriver, CMD_SUCCESS, CMD_TERMINATED_BY_SIGTERM
 from .cleaner import cleanup_repo, remove_directory
 from .aota_error import AotaError
+from ..update_logger import UpdateLogger
+from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
 
@@ -34,18 +35,55 @@ logger = logging.getLogger(__name__)
 class Application(AotaCommand):
     """Performs Application updates triggered via AOTA
 
-    @param dispatcher_callbacks callback to the main Dispatcher object
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]],
-                 dbs: ConfigDbs) -> None:
+    def __init__(self,
+                 dispatcher_broker: DispatcherBroker,
+                 parsed_manifest: Mapping[str, Optional[Any]],
+                 dbs: ConfigDbs,
+                 update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        super().__init__(parsed_manifest, dbs)
+        self._update_logger = update_logger
+        self._dispatcher_broker = dispatcher_broker
 
     def verify_command(self, cmd: str) -> None:
         check_application_command_supported(cmd)
+
+    def run_signature_check(self, path_to_file: str) -> None:
+        """
+        Runs the signature check on the given file to authenticate the OTA update package.
+
+        This method checks if the device is provisioned with an OTA package check certificate.
+        If the device is provisioned and a signature is provided, it will verify the signature
+        of the file using the specified hash algorithm. If the signature verification fails or
+        if a signature is not provided while the device is provisioned, it raises an AotaError.
+
+        If the device is not provisioned for signature verification, a warning is logged, and
+        the signature check is skipped.
+
+        @param path_to_file: The file path to the OTA update package that needs to be verified.
+
+        @return: None. It may raise an AotaError if a required signature is not provided or
+        if verification fails.
+        """
+        if os.path.exists(OTA_PACKAGE_CERT_PATH):
+            if self._signature is not None:
+                verify_signature(dispatcher_broker=self._dispatcher_broker,
+                                 hash_algorithm=self._hash_algorithm,
+                                 path_to_file=path_to_file,
+                                 signature=self._signature)
+            else:
+                logger.error("Signature required to proceed with OTA update.")
+                raise AotaError(
+                    "Device is provisioned with OTA package check certificate. Cannot proceed without signature.")
+        else:
+            no_signature_warning = 'WARNING: Device not provisioned for signature check.  Skipping signature check.'
+            logger.warning(no_signature_warning)
+            self._dispatcher_broker.telemetry(no_signature_warning)
 
     def cleanup(self) -> None:
         if self.repo_to_clean_up is not None and self.resource is not None:
@@ -68,10 +106,10 @@ class Application(AotaCommand):
         if self._uri is None:
             raise AotaError("missing URI.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+        check_resource(self.resource, self._uri, self._dispatcher_broker)
 
         logger.debug("AOTA to download a package")
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f'OTA Trigger Install command invoked for package: {self._uri}')
         application_repo = AotaCommand.create_repository_cache_repo()
         get_result = get(url=canonicalize_uri(self._uri),
@@ -79,7 +117,7 @@ class Application(AotaCommand):
                          umask=UMASK_OTA,
                          username=self._username,
                          password=self._password)
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f'Package: {self._uri} Fetch Result: {get_result}')
 
         if get_result.status != CODE_OK:
@@ -89,13 +127,13 @@ class Application(AotaCommand):
     def _reboot(self, cmd: str) -> None:
         if self._device_reboot in ["Yes", "Y", "y", "yes", "YES"]:  # pragma: no cover
             # Save the log before reboot
-            self._dispatcher_callbacks.logger.status = OTA_SUCCESS
-            self._dispatcher_callbacks.logger.error = ""
-            self._dispatcher_callbacks.logger.save_log()
+            self._update_logger.status = OTA_SUCCESS
+            self._update_logger.error = ""
+            self._update_logger.save_log()
 
             logger.debug(f" Application {self.resource} installed. Rebooting...")
-            self._dispatcher_callbacks.broker_core.telemetry('Rebooting...')
-            (output, err, code) = PseudoShellRunner.run(cmd)
+            self._dispatcher_broker.telemetry('Rebooting...')
+            (output, err, code) = PseudoShellRunner().run(cmd)
             if code != CMD_SUCCESS and code != CMD_TERMINATED_BY_SIGTERM:
                 raise AotaError(f'Reboot Failed {err}')
 
@@ -109,9 +147,13 @@ class Application(AotaCommand):
 
 
 class CentOsApplication(Application):
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs) -> None:
+    def __init__(self,
+                 dispatcher_broker: DispatcherBroker,
+                 parsed_manifest: Mapping[str, Optional[Any]],
+                 dbs: ConfigDbs,
+                 update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        super().__init__(dispatcher_broker, parsed_manifest, dbs, update_logger)
 
     def cleanup(self) -> None:
         """Clean up AOTA temporary file and the driver file after use"""
@@ -141,6 +183,8 @@ class CentOsApplication(Application):
 
         logger.debug(f"driver path = {driver_path}")
         try:
+            self.run_signature_check(driver_path)
+
             if not self._is_rpm_file_type(driver_path):
                 raise AotaError('Invalid file type')
 
@@ -190,24 +234,29 @@ class UbuntuApplication(Application):
     Capable of detecting whether running in container (update Ubuntu host)
     and escaping container if needed.
 
-    @param dispatcher_callbacks callback to the main Dispatcher object
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks,
-                 parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs) -> None:
+    def __init__(self,  dispatcher_broker: DispatcherBroker,
+                 parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs,
+                 update_logger: UpdateLogger) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        super().__init__(dispatcher_broker, parsed_manifest, dbs, update_logger=update_logger)
 
     def update(self):  # pragma: no cover
         super().update()
         application_repo = self._download_package()
-        install_cmd = application_repo.get_repo_path() + "/" + self.resource if self.resource else ""
-        if ' ' in install_cmd or install_cmd.isspace():
-            logger.debug(f"INSTALL : {install_cmd}")
-            raise AotaError(f"File path cannot contain spaces - {install_cmd}")
-        base_command = f"/usr/bin/dpkg -i {install_cmd}"
+        path_to_pkg = os.path.join(application_repo.get_repo_path(),
+                                   self.resource) if self.resource else ""
+        if ' ' in path_to_pkg or path_to_pkg.isspace():
+            logger.debug(f"INSTALL : {path_to_pkg}")
+            raise AotaError(f"File path cannot contain spaces - {path_to_pkg}")
+
+        self.run_signature_check(path_to_file=path_to_pkg)
+
+        base_command = f"/usr/bin/dpkg -i {path_to_pkg}"
 
         is_docker_app = os.environ.get("container", False)
         if is_docker_app:

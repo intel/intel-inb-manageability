@@ -1,7 +1,7 @@
 """
     Parses OTA manifests.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -14,11 +14,10 @@ from .constants import OtaType
 from .common.uri_utilities import is_valid_uri
 from .validators import is_valid_config_params
 from .dispatcher_exception import DispatcherException
-from .dispatcher_callbacks import DispatcherCallbacks
 from inbm_lib.xmlhandler import XmlException
 from inbm_lib.xmlhandler import XmlHandler
 from inbm_lib.security_masker import mask_security_info
-from inbm_common_lib.constants import LOCAL_SOURCE
+from inbm_common_lib.constants import DEFAULT_HASH_ALGORITHM, LOCAL_SOURCE
 
 logger = logging.getLogger(__name__)
 
@@ -26,14 +25,13 @@ logger = logging.getLogger(__name__)
 class OtaParser(metaclass=abc.ABCMeta):
     """Base class for parsing OTA."""
 
-    def __init__(self, repo_type: str, callback: DispatcherCallbacks) -> None:
-        self._callback = callback
+    def __init__(self, repo_type: str) -> None:
         self._repo_type = repo_type
         self._uri: Optional[str] = None
         self._username = None
         self._password = None
         self._signature = None
-        self._hash_algorithm: Optional[int] = None
+        self._hash_algorithm: int = DEFAULT_HASH_ALGORITHM
         self._ota_resource_list: Optional[Dict] = None
         self._ota_type = None
 
@@ -57,7 +55,7 @@ class OtaParser(metaclass=abc.ABCMeta):
         self._password = resource.get('password', None)
         self._signature = resource.get('signature', None)
         if self._signature:
-            self._hash_algorithm = int(resource.get('sigversion', 384))
+            self._hash_algorithm = int(resource.get('sigversion', DEFAULT_HASH_ALGORITHM))
 
         return {}
 
@@ -65,11 +63,10 @@ class OtaParser(metaclass=abc.ABCMeta):
 class FotaParser(OtaParser):
     """Parses the FOTA manifest.
 
-    @param callback: callback to dispatcher
     """
 
-    def __init__(self, repo_type: str, callback: DispatcherCallbacks) -> None:
-        super().__init__(repo_type, callback)
+    def __init__(self, repo_type: str) -> None:
+        super().__init__(repo_type)
 
     def parse(self, resource: Dict, kwargs: Dict, parsed: XmlHandler) -> Dict[str, Any]:
         """Parse XML tree of FOTA resource and populate into kwargs
@@ -99,11 +96,10 @@ class FotaParser(OtaParser):
 class SotaParser(OtaParser):
     """Parses the SOTA manifest.
 
-    @param callback: callback to dispatcher
     """
 
-    def __init__(self, repo_type: str, callback: DispatcherCallbacks) -> None:
-        super().__init__(repo_type, callback)
+    def __init__(self, repo_type: str) -> None:
+        super().__init__(repo_type)
 
     def parse(self, resource: Dict, kwargs: Dict, parsed: XmlHandler) -> Dict[str, Any]:
         """Parse XML tree of SOTA resource and populate into kwargs
@@ -119,6 +115,7 @@ class SotaParser(OtaParser):
         release_date = resource.get('release_date', None)
         header = parsed.get_children('ota/header')
         sota_mode = resource.get('mode', None)
+        package_list = resource.get('package_list', '')
         main_ota = header['type']
         device_reboot = resource.get('deviceReboot', "yes")
         try:
@@ -129,7 +126,8 @@ class SotaParser(OtaParser):
         except (KeyError, DispatcherException):
             log_to_file = 'N'
 
-        resource_dict = {'sota_mode': sota_mode, 'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri,
+        resource_dict = {'sota_mode': sota_mode, 'package_list': package_list,
+                         'sota_cmd': sota_cmd, 'log_to_file': log_to_file, 'uri': self._uri,
                          'signature': self._signature,
                          'hash_algorithm': self._hash_algorithm, 'resource': resource, 'username': self._username,
                          'password': self._password, 'release_date': release_date, 'deviceReboot': device_reboot}
@@ -144,11 +142,10 @@ class SotaParser(OtaParser):
 class AotaParser(OtaParser):
     """Parses the AOTA manifest.
 
-    @param callback: callback to dispatcher
     """
 
-    def __init__(self, repo_type: str, callback: DispatcherCallbacks) -> None:
-        super().__init__(repo_type, callback)
+    def __init__(self, repo_type: str) -> None:
+        super().__init__(repo_type)
 
     def parse(self, resource: Dict, kwargs: Dict, parsed: XmlHandler) -> Dict[str, Any]:
         """Parse XML tree of ATA resource and populate into kwargs
@@ -179,8 +176,9 @@ class AotaParser(OtaParser):
             logger.info("Config Params not passed correctly"
                         " in manifest, rejected update")
             raise XmlException
-        kwargs.update({'signature': self._signature, 'config_params': config_params,
+        kwargs.update({'config_params': config_params,
                        'hash_algorithm': self._hash_algorithm,
+                       'signature': self._signature,
                        'app_type': app,
                        'cmd': cmd,
                        'container_tag': container_tag,
@@ -199,11 +197,10 @@ class AotaParser(OtaParser):
 class PotaParser(OtaParser):
     """Parses the POTA manifest.
 
-    @param callback: callback to dispatcher
     """
 
-    def __init__(self, repo_type: str, callback: DispatcherCallbacks) -> None:
-        super().__init__(repo_type, callback)
+    def __init__(self, repo_type: str) -> None:
+        super().__init__(repo_type)
 
     def parse(self, resource: Dict, kwargs: Dict, parsed: XmlHandler) -> Dict[str, Any]:
         """Parse XML tree of FOTA resource and populate into kwargs
@@ -227,10 +224,10 @@ class PotaParser(OtaParser):
                 ota_resource['targetType'] = target_type
                 ota_resource['targets'] = targets
             if key == 'fota':
-                fota_args = FotaParser(self._repo_type, self._callback)
+                fota_args = FotaParser(self._repo_type)
                 kwargs.update({key: fota_args.parse(ota_resource, kwargs, parsed)})
             elif key == 'sota':
-                sota_args = SotaParser(self._repo_type, self._callback)
+                sota_args = SotaParser(self._repo_type)
                 kwargs.update({key: sota_args.parse(ota_resource, kwargs, parsed)})
         self._ota_resource_list = kwargs
         return kwargs

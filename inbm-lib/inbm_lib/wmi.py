@@ -1,7 +1,7 @@
 """
     Functions for calling and parsing wmic tool output on Windows
 
-    @copyright: Copyright 2020-2023 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2020-2024 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -47,7 +47,7 @@ def wmic_query(system: str, attribute: str) -> Dict[str, str]:
     logger.debug("")
     cmd = f"wmic {system} get {attribute}"
     try:
-        (output, err, code) = PseudoShellRunner.run(cmd)
+        (output, err, code) = PseudoShellRunner().run(cmd)
     except BaseException as exception:
         logger.error(f"wmic could not be run: {exception}")
         raise WmiException from exception

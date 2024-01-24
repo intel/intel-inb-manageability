@@ -1,7 +1,7 @@
 """
     Retrieves attached disk information.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from typing import List, Optional
@@ -9,9 +9,7 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 import platform
 
 
-
-
-def parse_lsblk(lsblk_output) -> Optional[List]:
+def parse_lsblk(lsblk_output: str) -> Optional[List]:
     """Parse output of lsblk command with name, size, and ssd status of attached disks.
     @param lsblk_output: text output of lsblk command
 
@@ -40,6 +38,6 @@ def get_lsblk_output() -> Optional[str]:
     @return: Command output or None if anything printed on stderr
     """
     if platform.system() == 'Linux':
-        (out, err, code) = PseudoShellRunner.run("lsblk -b -d -o name,size,rota")
+        (out, err, code) = PseudoShellRunner().run("lsblk -b -d -o name,size,rota")
         return out if err == "" and code == 0 else None
     return None

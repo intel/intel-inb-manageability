@@ -30,7 +30,7 @@ Reference URL for issue tracking (JIRA/HSD/Github): **\<URL to be filled>**
 - [ ] PR change contains code related to security
 - [ ] PR introduces changes that breaks compatibility with other modules (If YES, please provide description)
 - [ ] Specific instructions or information for code reviewers (If any):
-- [ ] Run 'go fmt' or autopep8 as applicable.
+- [ ] Run 'go fmt' or format-python.sh as applicable.
 - [ ] New/modified methods and functions should have type annotations on signatures as applicable
 - [ ] New/modified methods must have appropriate doc strings (language dependent)
 

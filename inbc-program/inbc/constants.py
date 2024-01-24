@@ -1,6 +1,6 @@
 """ Constants and other config variables used throughout the INBC module.
 
-    Copyright (C) 2020-2023 Intel Corporation
+    Copyright (C) 2020-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -16,6 +16,7 @@ MQTT_HOST = 'localhost'
 
 # Timer
 MAX_TIME_LIMIT = 120
+SOURCE_TIME_LIMIT = 30
 FOTA_TIME_LIMIT = 260
 AOTA_TIME_LIMIT = 500
 SOTA_TIME_LIMIT = 900

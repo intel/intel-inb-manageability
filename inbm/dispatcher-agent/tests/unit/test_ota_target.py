@@ -2,7 +2,7 @@ import mock
 import os
 
 from unittest import TestCase
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 from unit.common.mock_resources import *
 from dispatcher.common.result_constants import PUBLISH_SUCCESS
 from dispatcher.ota_target import OtaTarget
@@ -22,7 +22,7 @@ TEST_POTA_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
     '<biosversion>5.12</biosversion><sigversion>384</sigversion><signature>signature</signature>' \
     '<manufacturer>Default string</manufacturer><product>Default string</product>' \
     '<productversion>1</productversion><vendor>American Megatrends Inc.</vendor><releasedate>2018-02-08</releasedate>'\
-    '<boot>boot</boot><guid>guid</guid><size>size</size><tooloptions>/p /b</tooloptions>'\
+    '<boot>boot</boot><guid>6B29FC40-CA47-1067-B31D-00DD010662DA</guid><size>size</size><tooloptions>/p /b</tooloptions>'\
     '<username>user1</username><password>pwd</password></fota>' \
     ' <sota><cmd logtofile="y">update</cmd><fetch>http://nat-ubuntu.jf.intel.com:8000/file.mender</fetch>' \
     '<signature>signature</signature><username>user</username><password>pwd</password>'\
@@ -56,30 +56,28 @@ pota_parsed_manifest = {'ota_type': 'pota', 'fota': {'uri': 'http://nat-ubuntu.j
 
 class TestPublishTargetOta(TestCase):
 
-    @mock.patch('dispatcher.dispatcher_callbacks.DispatcherBroker', autospec=True)
+    @mock.patch('dispatcher.dispatcher_broker.DispatcherBroker', autospec=True)
     def setUp(self, mock_broker):
         self.mocked_broker = mock_broker.return_value
 
     @patch('dispatcher.ota_target.download')
     @patch('dispatcher.ota_target.OtaTarget._modify_manifest')
     def test_ota_target(self, mock_modify, mock_download) -> None:
-        mock_callback = Mock()
-        t = OtaTarget(TEST_XML, parsed_manifest, "FOTA", mock_callback)
+
+        t = OtaTarget(TEST_XML, parsed_manifest, "FOTA", Mock())
         status = t.install()
         mock_modify.assert_called_once()
         mock_download.assert_called_once()
-        self.assertEquals(status, PUBLISH_SUCCESS)
+        self.assertEqual(status, PUBLISH_SUCCESS)
 
     @patch('inbm_lib.xmlhandler.XmlHandler.__init__')
     @patch('inbm_lib.xmlhandler.XmlHandler.add_attribute')
     @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
     @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
     @patch('dispatcher.ota_target.download')
-    @patch('dispatcher.dispatcher_callbacks.DispatcherCallbacks')
-    def test_publish_fota(self, mock_callback, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
-        mock_callback = Mock()
+    def test_publish_fota(self, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
         mock_xmlhandler.return_value = None
-        t = OtaTarget(TEST_XML, parsed_manifest, "FOTA", mock_callback)
+        t = OtaTarget(TEST_XML, parsed_manifest, "FOTA", Mock())
         t.install()
         mock_download.assert_called_once()
 
@@ -88,25 +86,21 @@ class TestPublishTargetOta(TestCase):
     @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
     @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
     @patch('dispatcher.ota_target.download')
-    @patch('dispatcher.dispatcher_callbacks.DispatcherCallbacks')
     @patch('dispatcher.ota_target.OtaTarget._modify_manifest')
-    def test_publish_pota(self, mock_modify_manifest, mock_callback, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
-        mock_callback = Mock()
+    def test_publish_pota(self, mock_modify_manifest, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
         mock_xmlhandler.return_value = None
-        t = OtaTarget(TEST_POTA_XML, pota_parsed_manifest, "POTA", mock_callback)
+        t = OtaTarget(TEST_POTA_XML, pota_parsed_manifest, "POTA", Mock())
         t.install()
         mock_download.assert_called()
         self.assertEqual(mock_download.call_count, 2)
         mock_modify_manifest.assert_called_once()
 
-    def test_modify_manifest_without_credential_info(self):
-        mock_callback = Mock()
-        t = OtaTarget(TEST_XML, parsed_manifest, "FOTA", mock_callback)
+    def test_modify_manifest_without_credential_info(self) -> None:
+        t = OtaTarget(TEST_XML, parsed_manifest, "FOTA", Mock())
         m = t._modify_manifest(schema_location=TEST_SCHEMA_LOCATION)
         self.assertEqual(m, MODIFIED_TEST_XML)
 
-    def test_modify_manifest_with_credential_info(self):
-        mock_callback = Mock()
-        t = OtaTarget(TEST_XML_WITH_CREDENTIALS, parsed_manifest, "FOTA", mock_callback)
+    def test_modify_manifest_with_credential_info(self) -> None:
+        t = OtaTarget(TEST_XML_WITH_CREDENTIALS, parsed_manifest, "FOTA", Mock())
         m = t._modify_manifest(schema_location=TEST_SCHEMA_LOCATION)
         self.assertEqual(m, MODIFIED_TEST_XML)

@@ -14,6 +14,8 @@ The following outlines the manifest parameters used to perform the supported OTA
 9. [Configuration LOAD](#Load)
 10. [Configuration APPEND](#Append)
 11. [Configuration REMOVE](#Remove)
+12. [Source Application](#Application)
+13. [Source OS](#OS)
 
 ## Manifest Rules 
 
@@ -41,18 +43,18 @@ The following outlines the manifest parameters used to perform the supported OTA
 
 | Tag                                      | Example                                             | Required /Optional | Notes                                                                                                                                                       |
 |:-----------------------------------------|:----------------------------------------------------|:------------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`            |         R          ||
-| `<manifest>`                             | `<manifest>`                                        |         R          ||
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`            |         R          |                                                                                                                                                             |
+| `<manifest>`                             | `<manifest>`                                        |         R          |                                                                                                                                                             |
 | `<type></type>`                          | `<type>ota</type>`                                  |         R          | Always OTA                                                                                                                                                  |
-| `<ota>`                                  | `<ota>`                                             |         R          ||
-| `<header>`                               | `<header>`                                          |         R          ||
-| `<id></id>`                              | `<id>yourID</id>`                                   |         O          ||
+| `<ota>`                                  | `<ota>`                                             |         R          |                                                                                                                                                             |
+| `<header>`                               | `<header>`                                          |         R          |                                                                                                                                                             |
+| `<id></id>`                              | `<id>yourID</id>`                                   |         O          |                                                                                                                                                             |
 | `<name></name>`                          | `<name>YourName</name>`                             |         O          | Endpoint Manufacturer Name                                                                                                                                  |
-| `<description></description>`            | `<description>YourDescription</description`>        |         O          ||
-| `<type></type>`                          | `<type>fota</type>`                                 |         R          ||
+| `<description></description>`            | `<description>YourDescription</description`>        |         O          |                                                                                                                                                             |
+| `<type></type>`                          | `<type>fota</type>`                                 |         R          |                                                                                                                                                             |
 | `<repo></repo>`                          | `<repo>remote</repo>`                               |         O          | [local or remote].  If file is already downloaded on the system, then use _**local**_.  If it needs to be fetched from remote repository, use **_remote_**. |
-| `</header>`                              | `</header>`                                         |         R          ||
-| `<type>`                                 | `<type>`                                            |         R          ||
+| `</header>`                              | `</header>`                                         |         R          |                                                                                                                                                             |
+| `<type>`                                 | `<type>`                                            |         R          |                                                                                                                                                             |
 | `<fota name=''>`                         | `<fota name='text'>`                                |         R          | Text must be compliant with XML Standards                                                                                                                   |
 | `<fetch></fetch>`                        | `<fetch>http://yoururl:80/BIOSUPDATE.tar</fetch>`   |         R          | FOTA path created in repository                                                                                                                             |
 | `<signature></signature>`                | `<signature>ABC123</signature>`                     |         O          | Digital signature of *.tar file.                                                                                                                            |
@@ -65,10 +67,10 @@ The following outlines the manifest parameters used to perform the supported OTA
 | `<guid></guid>`                          | `<guid>7acbd1a5a-33a4-48c3ab11-a4c33b3d0e56</guid>` |         O          | Check for ‘System Firmware Type’ on running cmd:fwupdate -l                                                                                                 |
 | `<username></username>`                  | `<username>user</username>`                         |         O          | Username used during fetch from remote repository                                                                                                           |
 | `<password><password>`                   | `<password>pwd</password>`                          |         O          | Password used during fetch from remote repository                                                                                                           |
-| `</fota>`                                | `</fota>`                                           |         R          ||
-| `</type>`                                | `</type>`                                           |         R          ||
-| `</ota>`                                 | `</ota>`                                            |         R          ||
-| `</manifest>`                            | `</manifest>`                                       |         R          ||
+| `</fota>`                                | `</fota>`                                           |         R          |                                                                                                                                                             |
+| `</type>`                                | `</type>`                                           |         R          |                                                                                                                                                             |
+| `</ota>`                                 | `</ota>`                                            |         R          |                                                                                                                                                             |
+| `</manifest>`                            | `</manifest>`                                       |         R          |                                                                                                                                                             |
 
 The following table references each XML tag within a manifest that triggers the FOTA update. Using the following XML tags in the order of
 description will trigger a FOTA update via Manifest.
@@ -103,28 +105,28 @@ description will trigger a FOTA update via Manifest.
 
 | Tag                                      | Example                                      | Required/Optional | Notes                                                                                                                                                       |
 |:-----------------------------------------|:---------------------------------------------|:-----------------:|:------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`     |         R         ||
-| `<manifest>`                             | `<manifest`>                                 |         R         ||
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`     |         R         |                                                                                                                                                             |
+| `<manifest>`                             | `<manifest`>                                 |         R         |                                                                                                                                                             |
 | `<type></type>`                          | `<type>ota</type>`                           |         R         | Always OTA                                                                                                                                                  |
-| `<header>`                               | `<header>`                                   |         R         ||
-| `<id></id>`                              | `<id>Example</id>`                           |         O         ||
-| `<name></name>`                          | `<name>Example</name>`                       |         O         ||
-| `<description></description>`            | `<description>Example</description>`         |         O         ||
-| `<type></type>`                          | `<type>sota</type>`                          |         R         ||
+| `<header>`                               | `<header>`                                   |         R         |                                                                                                                                                             |
+| `<id></id>`                              | `<id>Example</id>`                           |         O         |                                                                                                                                                             |
+| `<name></name>`                          | `<name>Example</name>`                       |         O         |                                                                                                                                                             |
+| `<description></description>`            | `<description>Example</description>`         |         O         |                                                                                                                                                             |
+| `<type></type>`                          | `<type>sota</type>`                          |         R         |                                                                                                                                                             |
 | `<repo></repo>`                          | `<repo>remote</repo>`                        |         R         | [local or remote].  If file is already downloaded on the system, then use _**local**_.  If it needs to be fetched from remote repository, use **_remote_**. |
-| `</header>`                              | `</header>`                                  |         R         ||
-| `<type>`                                 | `<type>`                                     |         R         ||
-| `<sota>`                                 | `<sota>`                                     |         R         ||
-| `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`            |         R         ||
-| `<mode></mode>`                          | `<mode>full</mode>`                          |         O         | Valid values: [full, no-download, download-only]
+| `</header>`                              | `</header>`                                  |         R         |                                                                                                                                                             |
+| `<type>`                                 | `<type>`                                     |         R         |                                                                                                                                                             |
+| `<sota>`                                 | `<sota>`                                     |         R         |                                                                                                                                                             |
+| `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`            |         R         |                                                                                                                                                             |
+| `<mode></mode>`                          | `<mode>full</mode>`                          |         O         | Valid values: [full, no-download, download-only]                                                                                                            |
 | `<fetch></fetch>`                        | `<fetch>https://yoururl/file.mender</fetch>` |         O         | Used to download mender file from remote repository. (use repo=remote)                                                                                      |
 | `<username></username>`                  | `<username>xx</username>`                    |         O         | Username for remote repository                                                                                                                              |                                                                 |
 | `<password></password>`                  | `<password>xxx</password>`                   |         O         | Password for remote repository                                                                                                                              |                                                                 |
 | `<release_date></release_ date>`         | `<release_date>2020-01-01</release_date>`    |         O         | The release date provided should be in ‘YYYY-MM-DD’ format.                                                                                                 |
-| `</sota>`                                | `</sota>`                                    |         R         ||
-| `</type>`                                | `</type>`                                    |         R         ||
-| `</ota>`                                 | `</ota>`                                     |         R         ||
-| `</manifest>`                            | `</manifest`>                                |         R         ||
+| `</sota>`                                | `</sota>`                                    |         R         |                                                                                                                                                             |
+| `</type>`                                | `</type>`                                    |         R         |                                                                                                                                                             |
+| `</ota>`                                 | `</ota>`                                     |         R         |                                                                                                                                                             |
+| `</manifest>`                            | `</manifest`>                                |         R         |                                                                                                                                                             |
 
 ### Sample SOTA Manifest - Ubuntu: 
 ```xml
@@ -204,7 +206,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `</fota>`                                | `</fota>`                                           |         R         |                                                                        |
 | `<sota>`                                 | `<sota>`                                            |         R         |                                                                        |
 | `<cmd></cmd>`                            | `<cmd logtofile=”Y”>update</cmd>`                   |         R         |                                                                        
-| `<mode></mode>`                          | `<mode>full</mode>`                                 |         O         |  Valid values: [full, no-download, download-only]                      |                                                              
+| `<mode></mode>`                          | `<mode>full</mode>`                                 |         O         | Valid values: [full, no-download, download-only]                       |                                                              
 | `<fetch></fetch>`                        | `<fetch>https://yoururl/file.mender</fetch>`        |         O         | Used to download mender file from remote repository. (use repo=remote) |
 | `<path></path>`                          | `<path>/var/cache/file.mender</path>`               |         O         | Used to update using a local mender file  .  (use repo=local)          |
 | `<username></username>`                  | `<username>xx</username>`                           |         O         | Username for remote repository                                         |                                                                 |
@@ -263,6 +265,8 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 | `<description></description>`            | `<description>Yourdescription</description>`             |         O         |                                                                                     |
 | `<type></type>`                          | `<type>aota</type>`                                      |         R         | Always 'aota'                                                                       |
 | `<repo></repo>`                          | `<repo>remote</repo>`                                    |         R         | 'remote' or 'local'                                                                 |
+| `<signature></signature>`               | `<signature>ABCDEFG</signature>`                           |         O         | signature for AOTA package
+| `<sigversion></sigversion>`             | `<sigversion>384</sigversion>`                            |          O        | SHA hash size to use
 | `</header>`                              | `</header>`                                              |         R         |                                                                                     |
 | `<type>`                                 | `<type>`                                                 |         R         |                                                                                     |
 | `<aota name="">`                         | `<aota name=”text”>`                                     |         R         | Text must follow XML standards                                                      |
@@ -298,7 +302,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
             <aota name='samplerpm'>
                 <cmd>update</cmd>
                 <app>application </app>
-                <fetch>yoururl/package.deb/fetch>
+                <fetch>yoururl/package.deb</fetch>
                 <deviceReboot>yes</deviceReboot>
             </aota>
         </type>
@@ -712,7 +716,7 @@ The query command can be used to gather information about the system and the Vis
 | `<manifest>`                             | `<manifest>`                                 |         R         |                                                                                                                 |
 | `<type></type>`                          | `<type>config</type>`                        |         R         | Always 'config'                                                                                                 |
 | `<config>`                               | `<config>`                                   |         R         |                                                                                                                 |
-| `<cmd></cmd>`                            | `<cmd>get_elemeent</cmd>`                    |         R         |                                                                                                                 |
+| `<cmd></cmd>`                            | `<cmd>get_element</cmd>`                     |         R         |                                                                                                                 |
 | `<configtype>`                           | `<configtype>`                               |         R         |                                                                                                                 |
 | `<get>`                                  | `<get>`                                      |         R         |                                                                                                                 |
 | `<path></path>`                          | `<path>minStorageMB;minMemoryMB</path>`      |         R         |                                                                                                                 |
@@ -757,7 +761,7 @@ The query command can be used to gather information about the system and the Vis
 | `<manifest>`                             | `<manifest>`                                    |         R         |                                                                                                                 |
 | `<type></type>`                          | `<type>config</type>`                           |         R         | Always 'config'                                                                                                 |
 | `<config>`                               | `<config>`                                      |         R         |                                                                                                                 |
-| `<cmd></cmd>`                            | `<cmd>set_elemeent</cmd>`                       |         R         |                                                                                                                 |
+| `<cmd></cmd>`                            | `<cmd>set_element</cmd>`                        |         R         |                                                                                                                 |
 | `<configtype>`                           | `<configtype>`                                  |         R         |                                                                                                                 |
 | `<set>`                                  | `<set>`                                         |         R         |                                                                                                                 |
 | `<path></path>`                          | `<path>minStorageMB:100;minMemoryMB:200</path>` |         R         |                                                                                                                 |
@@ -903,5 +907,353 @@ The query command can be used to gather information about the system and the Vis
             </remove>
         </configtype>
     </config>
+</manifest>
+```
+
+## Application
+
+#### Source Application Add Manifest Parameters
+| Tag                                      | Example                                                                                        | Required/Optional | Notes           |
+|:-----------------------------------------|:-----------------------------------------------------------------------------------------------|:-----------------:|:----------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`                                                       |         R         |                 |
+| `<manifest>`                             | `<manifest>`                                                                                   |         R         |                 |
+| `<type></type>`                          | `<type>source</type>`                                                                          |         R         |                 |
+| `<applicationSource>`                    | `<applicationSource>`                                                                          |         R         |                 |
+| `<add>`                                  | `<add>`                                                                                        |         R         |                 |
+| `<gpg>`                                  | `<gpg>`                                                                                        |         O         |                 |
+| `<uri></uri>`                            | `<uri>https://dl-ssl.google.com/linux/linux_signing_key.pub</uri>`                             |         O         |                 |
+| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`                                                         |         O         |                 | 
+| `</gpg>`                                 | `</gpg>`                                                                                       |         O         |                 |
+| `<repo>`                                 | `<repo>`                                                                                       |         R         |                 |
+| `<repos>`                                | `<repos>`                                                                                      |         R         |                 |
+| `<source_pkg>`                           | `<source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main</source_pkg>` |         R         |                 |
+| `</repos>`                               | `</repos>`                                                                                     |         R         |                 |
+| `<filename></filename>`                  | `<filename>google-chrome.list</filename>`                                                      |         R         |                 |
+| `</repo>`                                | `</repo>`                                                                                      |         R         |                 |
+| `</add>`                                 | `</add>`                                                                                       |         R         |                 |
+| `</applicationSource>`                   | `</applicationSource>`                                                                         |         R         |                 |
+| `</manifest>`                            | `</manifest>`                                                                                  |         R         |                 |
+
+
+
+
+#### Source Application Add Manifest Example using remote GPG key
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <add>
+            <gpg>
+                <uri>https://dl-ssl.google.com/linux/linux_signing_key.pub</uri>
+                <keyname>google-chrome.gpg</keyname>
+            </gpg>
+            <repo>
+                <repos>
+                    <source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main</source_pkg>
+                    <source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable second</source_pkg>
+                </repos>
+                <filename>google-chrome.list</filename>
+            </repo>
+        </add>
+    </applicationSource>
+</manifest>
+```
+
+#### Source Application Add Manifest Example (deb822 format)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+            <repo>
+                <repos>
+                    <source_pkg>Enabled: yes</source_pkg>
+                    <source_pkg>Types: deb</source_pkg>
+                    <source_pkg>URIs: http://dl.google.com/linux/chrome/deb/</source_pkg>
+                    <source_pkg>Suites: stable</source_pkg>
+                    <source_pkg>Components: main</source_pkg>
+                    <source_pkg>Signed-By:</source_pkg>
+                    <source_pkg> -----BEGIN PGP PUBLIC KEY BLOCK-----</source_pkg>
+                    <source_pkg> Version: GnuPG v1.4.2.2 (GNU/Linux)</source_pkg>
+                    <source_pkg> .</source_pkg>
+                    <source_pkg> mQGiBEXwb0YRBADQva2NLpYXxgjNkbuP0LnPoEXruGmvi3XMIxjEUFuGNCP4Rj/a</source_pkg>
+                    <source_pkg> kv2E5VixBP1vcQFDRJ+p1puh8NU0XERlhpyZrVMzzS/RdWdyXf7E5S8oqNXsoD1z</source_pkg>
+                    <source_pkg> fvmI+i9b2EhHAA19Kgw7ifV8vMa4tkwslEmcTiwiw8lyUl28Wh4Et8SxzwCggDcA</source_pkg>
+                    <source_pkg> feGqtn3PP5YAdD0km4S4XeMEAJjlrqPoPv2Gf//tfznY2UyS9PUqFCPLHgFLe80u</source_pkg>
+                    <source_pkg> QhI2U5jt6jUKN4fHauvR6z3seSAsh1YyzyZCKxJFEKXCCqnrFSoh4WSJsbFNc4PN</source_pkg>
+                    <source_pkg> b0V0SqiTCkWADZyLT5wll8sWuQ5ylTf3z1ENoHf+G3um3/wk/+xmEHvj9HCTBEXP</source_pkg>
+                    <source_pkg> 78X0A/0Tqlhc2RBnEf+AqxWvM8sk8LzJI/XGjwBvKfXe+l3rnSR2kEAvGzj5Sg0X</source_pkg>
+                    <source_pkg> 4XmfTg4Jl8BNjWyvm2Wmjfet41LPmYJKsux3g0b8yzQxeOA4pQKKAU3Z4+rgzGmf</source_pkg>
+                    <source_pkg> HdwCG5MNT2A5XxD/eDd+L4fRx0HbFkIQoAi1J3YWQSiTk15fw7RMR29vZ2xlLCBJ</source_pkg>
+                    <source_pkg> bmMuIExpbnV4IFBhY2thZ2UgU2lnbmluZyBLZXkgPGxpbnV4LXBhY2thZ2VzLWtl</source_pkg>
+                    <source_pkg> eW1hc3RlckBnb29nbGUuY29tPohjBBMRAgAjAhsDBgsJCAcDAgQVAggDBBYCAwEC</source_pkg>
+                    <source_pkg> HgECF4AFAkYVdn8CGQEACgkQoECDD3+sWZHKSgCfdq3HtNYJLv+XZleb6HN4zOcF</source_pkg>
+                    <source_pkg> AJEAniSFbuv8V5FSHxeRimHx25671az+uQINBEXwb0sQCACuA8HT2nr+FM5y/kzI</source_pkg>
+                    <source_pkg> A51ZcC46KFtIDgjQJ31Q3OrkYP8LbxOpKMRIzvOZrsjOlFmDVqitiVc7qj3lYp6U</source_pkg>
+                    <source_pkg> rgNVaFv6Qu4bo2/ctjNHDDBdv6nufmusJUWq/9TwieepM/cwnXd+HMxu1XBKRVk9</source_pkg>
+                    <source_pkg> XyAZ9SvfcW4EtxVgysI+XlptKFa5JCqFM3qJllVohMmr7lMwO8+sxTWTXqxsptJo</source_pkg>
+                    <source_pkg> pZeKz+UBEEqPyw7CUIVYGC9ENEtIMFvAvPqnhj1GS96REMpry+5s9WKuLEaclWpd</source_pkg>
+                    <source_pkg> K3krttbDlY1NaeQUCRvBYZ8iAG9YSLHUHMTuI2oea07Rh4dtIAqPwAX8xn36JAYG</source_pkg>
+                    <source_pkg> 2vgLAAMFB/wKqaycjWAZwIe98Yt0qHsdkpmIbarD9fGiA6kfkK/UxjL/k7tmS4Vm</source_pkg>
+                    <source_pkg> CljrrDZkPSQ/19mpdRcGXtb0NI9+nyM5trweTvtPw+HPkDiJlTaiCcx+izg79Fj9</source_pkg>
+                    <source_pkg> KcofuNb3lPdXZb9tzf5oDnmm/B+4vkeTuEZJ//IFty8cmvCpzvY+DAz1Vo9rA+Zn</source_pkg>
+                    <source_pkg> cpWY1n6z6oSS9AsyT/IFlWWBZZ17SpMHu+h4Bxy62+AbPHKGSujEGQhWq8ZRoJAT</source_pkg>
+                    <source_pkg> G0KSObnmZ7FwFWu1e9XFoUCt0bSjiJWTIyaObMrWu/LvJ3e9I87HseSJStfw6fki</source_pkg>
+                    <source_pkg> 5og9qFEkMrIrBCp3QGuQWBq/rTdMuwNFiEkEGBECAAkFAkXwb0sCGwwACgkQoECD</source_pkg>
+                    <source_pkg> D3+sWZF/WACfeNAu1/1hwZtUo1bR+MWiCjpvHtwAnA1R3IHqFLQ2X3xJ40XPuAyY</source_pkg>
+                    <source_pkg> /FJG</source_pkg>
+                    <source_pkg> %20=Quqp</source_pkg>
+                    <source_pkg> -----END PGP PUBLIC KEY BLOCK-----</source_pkg>
+                </repos>
+                <filename>google-chrome.sources</filename>
+            </repo>
+        </add>
+    </applicationSource>
+</manifest>
+```
+
+#### Source Application Update Manifest Parameters
+| Tag                                      | Example                                                                                        | Required/Optional | Notes |
+|:-----------------------------------------|:-----------------------------------------------------------------------------------------------|:-----------------:|:------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`                                                       |         R         |       |
+| `<manifest>`                             | `<manifest>`                                                                                   |         R         |       |
+| `<type></type>`                          | `<type>source</type>`                                                                          |         R         |       |
+| `<applicationSource>`                    | `<applicationSource>`                                                                          |         R         |       |
+| `<update>`                               | `<update>`                                                                                     |         R         |       |
+| `<repo>`                                 | `<repo>`                                                                                       |         R         |       |
+| `<repos>`                                | `<repos>`                                                                                      |         R         |       |
+| `<source_pkg>`                           | `<source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main</source_pkg>` |         R         |       |
+| `</repos>`                               | `</repos>`                                                                                     |         R         |       |
+| `<filename></filename>`                  | `<filename>google-chrome.list</filename>`                                                      |         R         |       |
+| `</repo>`                                | `</repo>`                                                                                      |         R         |       |
+| `</update>`                              | `</update>`                                                                                    |         R         |       |  
+| `</applicationSource>`                   | `</applicationSource>`                                                                         |         R         |       |
+| `</manifest>`                            | `</manifest>`                                                                                  |         R         |       |
+
+
+
+
+#### Source Application Update Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <update>
+            <repo>
+                <repos>
+                    <source_pkg>deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main</source_pkg>  
+                </repos>
+                <filename>google-chrome.list</filename>
+            </repo>
+        </update>
+    </applicationSource>
+</manifest>
+```
+
+#### Source Application Remove Manifest Parameters
+| Tag                                      | Example                                   | Required/Optional | Notes |
+|:-----------------------------------------|:------------------------------------------|:-----------------:|:------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`  |         R         |       |
+| `<manifest>`                             | `<manifest>`                              |         R         |       |
+| `<type></type>`                          | `<type>source</type>`                     |         R         |       |
+| `<applicationSource>`                    | `<applicationSource>`                     |         R         |       |
+| `<remove>`                               | `<remove>`                                |         R         |       |
+| `<gpg>`                                  | `<gpg>`                                   |         O         |       |
+| `<keyname></keyname>`                    | `<keyname>google-chrome.gpg</keyname>`    |         O         |       | 
+| `</gpg>`                                 | `<gpg>`                                   |         O         |       |
+| `<repo>`                                 | `<repo>`                                  |         R         |       |
+| `<filename></filename>`                  | `<filename>google-chrome.list</filename>` |         R         |       |
+| `</repo>`                                | `</repo>`                                 |         R         |       |
+| `</remove>`                              | `</remove>`                               |         R         |       |
+| `</applicationSource>`                   | `</applicationSource>`                    |         R         |       |
+| `</manifest>`                            | `</manifest>`                             |         R         |       |
+
+
+
+
+#### Source Application Remove Manifest Example (Including GPG key)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <remove>
+            <gpg>
+                <keyname>google-chrome.gpg</keyname>
+            </gpg>
+            <repo>
+                <filename>google-chrome.list</filename>
+            </repo>
+        </remove>
+    </applicationSource>
+</manifest>
+```
+
+#### Source Application Remove Manifest Example (Excluding GPG key)
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <remove>
+            <repo>
+                <filename>google-chrome.sources</filename>
+            </repo>
+        </remove>
+    </applicationSource>
+</manifest>
+```
+
+#### Source Application List Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |       |
+| `<manifest>`                             | `<manifest>`                             |         R         |       |
+| `<type></type>`                          | `<type>source</type>`                    |         R         |       |
+| `<applicationSource>`                    | `<applicationSource>`                    |         R         |       |
+| `<list/>`                                | `<list/>`                                |         R         |       |
+| `</applicationSource>`                   | `</applicationSource>`                   |         R         |       |
+| `</manifest>`                            | `</manifest>`                            |         R         |       |
+
+
+
+
+#### Source application list Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <list/>
+    </applicationSource>
+</manifest>
+```
+
+## OS
+
+#### Source OS Add Manifest Parameters
+| Tag                                      | Example                                                                                           | Required/Optional | Notes |
+|:-----------------------------------------|:--------------------------------------------------------------------------------------------------|:-----------------:|:------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`                                                          |         R         |       |
+| `<manifest>`                             | `<manifest>`                                                                                      |         R         |       |
+| `<type></type>`                          | `<type>source</type>`                                                                             |         R         |       |
+| `<osSource>`                             | `<osSource>`                                                                                      |         R         |       |
+| `<add>`                                  | `<add>`                                                                                           |         R         |       |
+| `<repos>`                                | `<repos>`                                                                                         |         R         |       |
+| `<source_pkg>`                           | `<source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted</source_pkg>  ` |         R         |       |
+| `</repos>`                               | `</repos>`                                                                                        |         R         |       |
+| `</add>`                                 | `</add>`                                                                                          |         R         |       |
+| `</osSource>`                            | `</osSource>`                                                                                     |         R         |       |
+| `</manifest>`                            | `</manifest>`                                                                                     |         R         |       |
+
+
+
+
+#### Source OS Add Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <add>
+            <repos>
+                <source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted</source_pkg>  
+                <source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security universe</source_pkg>
+            </repos>
+        </add>
+    </osSource>
+</manifest>
+```
+
+#### Source os Update Manifest Parameters
+| Tag                                      | Example                                                                                           | Required/Optional | Notes |
+|:-----------------------------------------|:--------------------------------------------------------------------------------------------------|:-----------------:|:------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`                                                          |         R         |       |
+| `<manifest>`                             | `<manifest>`                                                                                      |         R         |       |
+| `<type></type>`                          | `<type>source</type>`                                                                             |         R         |       |
+| `<osSource>`                             | `<osSource>`                                                                                      |         R         |       |
+| `<update>`                               | `<update>`                                                                                        |         R         |       |
+| `<repos>`                                | `<repos>`                                                                                         |         R         |       |
+| `<source_pkg>`                           | `<source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted</source_pkg>  ` |         R         |       |
+| `</repos>`                               | `</repos>`                                                                                        |         R         |       |
+| `</update>`                              | `</update>`                                                                                       |         R         |       |  
+| `</osSource>`                            | `</osSource>`                                                                                     |         R         |       |
+| `</manifest>`                            | `</manifest>`                                                                                     |         R         |       |
+
+
+
+
+#### Source OS Update Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <update>
+            <repos>
+                <source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted</source_pkg>  
+                <source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security universe</source_pkg>
+            </repos>
+        </update>
+    </osSource>
+</manifest>
+```
+
+#### Source OS Remove Manifest Parameters
+| Tag                                      | Example                                                                                         | Required/Optional | Notes |
+|:-----------------------------------------|:------------------------------------------------------------------------------------------------|:-----------------:|:------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`                                                        |         R         |       |
+| `<manifest>`                             | `<manifest>`                                                                                    |         R         |       |
+| `<type></type>`                          | `<type>source</type>`                                                                           |         R         |       |
+| `<osSource>`                             | `<osSource>`                                                                                    |         R         |       |
+| `<remove>`                               | `<remove>`                                                                                      |         R         |       |
+| `<repos>`                                | `<repos>`                                                                                       |         R         |       |
+| `<source_pkg></source_pkg>`              | `<source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted</source_pkg>` |         R         |       |
+| `</repos>`                               | `</repos>`                                                                                      |         R         |       |
+| `</remove>`                              | `</remove>`                                                                                     |         R         |       |
+| `</osSource>`                            | `</osSource>`                                                                                   |         R         |       |
+| `</manifest>`                            | `</manifest>`                                                                                   |         R         |       |
+
+
+#### Source OS Remove Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <remove>
+            <repos>
+                <source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted</source_pkg>  
+                <source_pkg>deb http://archive.ubuntu.com/ubuntu/ jammy-security universe</source_pkg>
+            </repos>
+        </remove>
+    </osSource>
+</manifest>
+```
+
+#### Source os List Manifest Parameters
+| Tag                                      | Example                                  | Required/Optional | Notes |
+|:-----------------------------------------|:-----------------------------------------|:-----------------:|:------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>` |         R         |       |
+| `<manifest>`                             | `<manifest>`                             |         R         |       |
+| `<type>source</type>`                    | `<type>source</type>`                    |         R         |       |
+| `<osSource>`                             | `<osSource>`                             |         R         |       |
+| `<list/>`                                | `<list/>`                                |         R         |       |
+| `</osSource>`                            | `</osSource>`                            |         R         |       |
+| `</manifest>`                            | `</manifest>`                            |         R         |       |
+
+
+
+
+#### Source OS List Manifest Example
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <list/>
+    </osSource>
 </manifest>
 ```

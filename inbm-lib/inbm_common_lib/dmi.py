@@ -1,7 +1,7 @@
 """
     Use Linux dmi path to gather system information.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import os
@@ -11,6 +11,8 @@ from typing import Optional, Any
 
 from .platform_info import PlatformInformation
 from .constants import *
+
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -69,15 +71,15 @@ def _read_file(path: str, not_found_default: str) -> str:
         raise ValueError(f'Error {e} on reading the file {path}')
 
 
-def is_dmi_path_exists(dispatcher_callbacks: Optional[Any] = None) -> bool:
+def is_dmi_path_exists(dispatcher_broker: Optional[Any] = None) -> bool:
     """The method verifies to see if DMI path exists or not
 
     @return: returns false if there is no dmi path otherwise true
     """
     if not os.path.isdir(DMI_PATH):
         logger.error("DMI path does not exist")
-        if dispatcher_callbacks:
-            dispatcher_callbacks.broker_core.telemetry(
+        if dispatcher_broker:
+            dispatcher_broker.telemetry(
                 "DMI path {} does not exist". format(DMI_PATH))
         return False
     return True

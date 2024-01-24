@@ -1,7 +1,7 @@
 """
     Handles polling and publishing telemetry data.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import os
@@ -25,7 +25,10 @@ def are_docker_and_trtl_on_system() -> bool:
     if platform.system() == 'Windows':
         return False
     else:  # Linux
-        (out, err, code) = PseudoShellRunner.run("systemctl is-active --quiet docker")
+        try:
+            (out, err, code) = PseudoShellRunner().run("systemctl is-active --quiet docker")
+        except FileNotFoundError:  # if systemctl is not on the system
+            return False
         docker_present = True if err == "" and code == 0 else False
         trtl_present = os.path.exists(TRTL_PATH)
         return docker_present and trtl_present

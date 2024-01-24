@@ -1,12 +1,11 @@
 """
     Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2023 Intel Corporation
+    # Copyright (C) 2020-2024 Intel Corporation
     # SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
-import time
 from typing import Any, Optional
 from abc import ABC, abstractmethod
 from inbc import shared
@@ -40,35 +39,47 @@ class Command(ABC):
         self._broker = broker
         self._cmd_type = cmd_type
 
-    def stop_timer(self):
+    def stop_timer(self) -> None:
         """Stops the timer which is waiting for the command to execute."""
         self._update_timer.stop()
 
     @abstractmethod
-    def trigger_manifest(self, args: Any, topic: str) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
+        Subclasses will override this method to provide specific implementations.
+
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic to publish the manifest.
+        """
+        pass
+
+    def _send_manifest(self, args: Any, topic: str) -> None:
+        """Send a manifest.
+
+        This is a default concrete implementation that takes in a topic. It is intended
+        to be called from a subclass.
+
+        @param args: arguments passed to command-line tool.
+        @param topic: topic on which to send the manifest
         """
         manifest = args.func(args)
         self._broker.publish(topic, manifest)
         self._update_timer.start()
 
     @abstractmethod
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
         """
         if self._cmd_type != "query":
-            if search_keyword(payload, ["SUCCESSFUL"]):
+            if search_keyword(payload, ["SUCCESSFUL", '"status": 200']):
                 self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
             else:
                 self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
 
     @abstractmethod
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -80,7 +91,7 @@ class Command(ABC):
         if search_keyword(payload, ["/usr/bin/mender -install"]):
             print("\n Flashing mender file. This will take several minutes...")
 
-    def _search_for_busy(self, payload: str) -> None:
+    def _search_for_busy(self, payload: Any) -> None:
         if search_keyword(payload, [OTA_IN_PROGRESS]):
             self.terminate_operation(COMMAND_FAIL, InbcCode.HOST_BUSY.value)
 
@@ -113,15 +124,14 @@ class RestartCommand(Command):
         """
         super().__init__(MAX_TIME_LIMIT, broker, RESTART)
 
-    def trigger_manifest(self, args: Any, topic: str = RESTART_CHANNEL) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke restart.
 
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic to publish the manifest.
         """
-        super().trigger_manifest(args, RESTART_CHANNEL)
+        super()._send_manifest(args, RESTART_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -135,7 +145,7 @@ class RestartCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -153,15 +163,14 @@ class QueryCommand(Command):
         super().__init__(MAX_TIME_LIMIT, broker, QUERY)
         self._success_code: Optional[int] = None
 
-    def trigger_manifest(self, args: Any, topic: str = QUERY_CHANNEL) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke query request.
 
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic to publish the manifest.
         """
-        super().trigger_manifest(args, HOST_QUERY_CHANNEL)
+        super()._send_manifest(args, HOST_QUERY_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -174,7 +183,7 @@ class QueryCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_host_response(self, payload: str) -> None:
+    def search_host_response(self, payload: Any) -> None:
         """INBC will not exit immediately, it will wait for query result.
 
         @param payload: payload received in which to search
@@ -187,7 +196,7 @@ class QueryCommand(Command):
             self._success_code = InbcCode.FAIL.value
             self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search

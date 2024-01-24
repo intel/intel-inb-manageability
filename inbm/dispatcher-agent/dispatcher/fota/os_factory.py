@@ -1,7 +1,7 @@
 """
     FOTA update tool which is called from the dispatcher during installation
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -10,7 +10,6 @@ from inbm_lib.detect_os import OsType
 from .installer import *
 from .rebooter import *
 from .upgrade_checker import *
-from ..dispatcher_callbacks import DispatcherCallbacks
 from ..packagemanager.irepo import IRepo
 
 logger = logging.getLogger(__name__)
@@ -21,11 +20,9 @@ class OsFactory(ABC):
     on the platform.
 
     @param ota_element: ota element derived from the manifest
-    @param callback: DispatcherCallbacks instance
     """
 
-    def __init__(self, ota_element: Dict, callback: DispatcherCallbacks) -> None:
-        self._dispatcher_callbacks = callback
+    def __init__(self, ota_element: Dict) -> None:
         self._ota_element = ota_element
 
     @abstractmethod
@@ -46,12 +43,12 @@ class OsFactory(ABC):
     def create_rebooter(self) -> Rebooter: pass
 
     @staticmethod
-    def get_factory(os_type: str, ota_element: Any, callback: DispatcherCallbacks) -> "OsFactory":
+    def get_factory(os_type: str, ota_element: Any,  dispatcher_broker: DispatcherBroker) -> "OsFactory":
         logger.debug("")
         if os_type == OsType.Linux.name:
-            return LinuxFactory(ota_element, callback)
+            return LinuxFactory(ota_element, dispatcher_broker)
         if os_type == OsType.Windows.name:
-            return WindowsFactory(ota_element, callback)
+            return WindowsFactory(ota_element, dispatcher_broker)
         raise ValueError(f'Unsupported OS type: {os_type}.')
 
 
@@ -60,20 +57,21 @@ class LinuxFactory(OsFactory):
     on the platform.  This instance is for Linux.
     """
 
-    def __init__(self, ota_element: Dict, dispatcher_callbacks: DispatcherCallbacks) -> None:
-        super().__init__(ota_element, dispatcher_callbacks)
+    def __init__(self, ota_element: Dict,  dispatcher_broker: DispatcherBroker) -> None:
+        super().__init__(ota_element)
+        self._dispatcher_broker = dispatcher_broker
 
     def create_upgrade_checker(self) -> UpgradeChecker:
         logger.debug(" ")
-        return LinuxUpgradeChecker(self._ota_element, self._dispatcher_callbacks)
+        return LinuxUpgradeChecker(self._ota_element, self._dispatcher_broker)
 
     def create_installer(self, repo: IRepo, fw_conf: str, fw_conf_schema: str) -> Installer:
         logger.debug(" ")
-        return LinuxInstaller(self._dispatcher_callbacks, repo, fw_conf, fw_conf_schema)
+        return LinuxInstaller(self._dispatcher_broker, repo, fw_conf, fw_conf_schema)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug(" ")
-        return LinuxRebooter(self._dispatcher_callbacks)
+        return LinuxRebooter(self._dispatcher_broker)
 
 
 class WindowsFactory(OsFactory):
@@ -81,17 +79,18 @@ class WindowsFactory(OsFactory):
     on the platform.  This instance is for Windows.
     """
 
-    def __init__(self, ota_element: Dict, callback: DispatcherCallbacks) -> None:
-        super().__init__(ota_element, callback)
+    def __init__(self, ota_element: Dict,  dispatcher_broker: DispatcherBroker) -> None:
+        super().__init__(ota_element)
+        self._dispatcher_broker = dispatcher_broker
 
     def create_upgrade_checker(self) -> UpgradeChecker:
         logger.debug(" ")
-        return WindowsUpgradeChecker(self._ota_element, self._dispatcher_callbacks)
+        return WindowsUpgradeChecker(self._ota_element, self._dispatcher_broker)
 
     def create_installer(self, repo: IRepo, fw_conf: str, fw_conf_schema: str) -> Installer:
         logger.debug(" ")
-        return WindowsInstaller(self._dispatcher_callbacks, repo, fw_conf, fw_conf_schema)
+        return WindowsInstaller(self._dispatcher_broker, repo, fw_conf, fw_conf_schema)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug(" ")
-        return WindowsRebooter(self._dispatcher_callbacks)
+        return WindowsRebooter(self._dispatcher_broker)

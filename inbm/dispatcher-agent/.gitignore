@@ -39,7 +39,6 @@ htmlcov/
 .coverage
 .coverage.*
 .cache
-nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
@@ -102,4 +101,5 @@ fpm-files/
 # test coverage report
 cover/
 
-pyproject.toml
+inbm_lib
+inbm_common_lib

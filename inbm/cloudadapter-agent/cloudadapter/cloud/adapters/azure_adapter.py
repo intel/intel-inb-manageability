@@ -4,7 +4,7 @@ creation of the cloud connection, termination, creating commands etc.
 
 Connects to Azure IoT Central via the General Cloud MQTT client
 
-Copyright (C) 2017-2023 Intel Corporation
+Copyright (C) 2017-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -216,7 +216,7 @@ class AzureAdapter(Adapter):
 
         sign_key = f"{resource}\n{expiration}".encode('utf-8')
         try:
-            signature = b64encode(HMAC(b64decode(device_key), sign_key,  # type: ignore
+            signature = b64encode(HMAC(b64decode(device_key), sign_key,
                                        sha256).digest())
         except ValueError as e:
             raise AdapterConfigureError(f"Error generating SAS Token: {str(e)}")

@@ -1,7 +1,7 @@
 """
     Runs shell commands used by the common manageability library
     
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import platform
@@ -26,16 +26,14 @@ class PseudoShellRunner:
     """Required to run shell commands"""
 
     @staticmethod
-    # should be Popen[bytes] but not yet supported in this Python version
-    def get_process(cmd: Union[str, List[str]]) -> Any:
+    def get_process(cmd: Union[str, List[str]]) -> subprocess.Popen[bytes]:
         """Returns a shell to process a command
 
         @param cmd: command to execute
         """
         return Popen(cmd, shell=False, stdout=PIPE, preexec_fn=os.setsid)
 
-    @classmethod
-    def create_log_file(cls, cmd: str, log_path: Optional[str]) -> Tuple[Optional[BinaryIO], Optional[str]]:
+    def create_log_file(self, cmd: str, log_path: Optional[str]) -> Tuple[Optional[BinaryIO], Optional[str]]:
         """Creates the log file in mentioned path
 
         @param cmd: string format of cmd
@@ -63,22 +61,20 @@ class PseudoShellRunner:
 
         if log_path is not None:
             abs_log_path = os.path.join(
-                log_path, PseudoShellRunner._sanitize(filename))
+                log_path, PseudoShellRunner()._sanitize(filename))
             logfile = builtins.open(abs_log_path, 'wb')
             return logfile, abs_log_path
         else:
             return None, None
 
-    @classmethod
-    def _sanitize(cls, filename: str) -> str:
+    def _sanitize(self, filename: str) -> str:
         """Remove unsafe characters from string filename and return result
 
         @param filename: name of the file to save logs
         """
         return filename.replace(" ", "_").replace("/", "_")
 
-    @classmethod
-    def run_with_log_path(cls,
+    def run_with_log_path(self,
                           cmd: str,
                           log_path: Optional[str],
                           cwd: Optional[str] = None) -> Tuple[str, Optional[str], int, Optional[str]]:
@@ -92,7 +88,7 @@ class PseudoShellRunner:
         @param cwd: if not None, run process from this working directory
         @return: Result of subprocess along with output, error (possibly None), exit status, and absolute log path
         """
-        shlex_split_cmd = cls.interpret_shell_like_command(cmd)
+        shlex_split_cmd = PseudoShellRunner().interpret_shell_like_command(cmd)
 
         logger.debug(
             "run_with_log_path calling subprocess.Popen " +
@@ -117,7 +113,7 @@ class PseudoShellRunner:
                 stderr=subprocess.PIPE)
 
         if log_path or cmd.find("do-release") >= 0:
-            (logfile, abs_log_path) = PseudoShellRunner.create_log_file(cmd, log_path)
+            (logfile, abs_log_path) = PseudoShellRunner().create_log_file(cmd, log_path)
             if logfile is not None:
                 if proc.stdout is not None:
                     for line in proc.stdout:
@@ -140,8 +136,7 @@ class PseudoShellRunner:
 
         return decoded_out, decoded_err, proc.returncode, abs_log_path
 
-    @classmethod
-    def run(cls, cmd: str, cwd: Optional[str] = None) -> Tuple[str, Optional[str], int]:
+    def run(self, cmd: str, cwd: Optional[str] = None) -> Tuple[str, Optional[str], int]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -151,11 +146,10 @@ class PseudoShellRunner:
         @param cwd: if not None, run process from this working directory
         @return: Result of subprocess along with output, error (possibly None) & exit status
         """
-        (out, err, code, _) = PseudoShellRunner.run_with_log_path(cmd, log_path=None, cwd=cwd)
+        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd)
         return out, err, code
 
-    @classmethod
-    def interpret_shell_like_command(cls, cmd: str) -> List[str]:
+    def interpret_shell_like_command(self, cmd: str) -> List[str]:
         """Take a command intended for a shell and perform minimal
         transformation to allow it to run with shell=False.  Command
         will be split with quoting support and if the command can be found
@@ -165,10 +159,10 @@ class PseudoShellRunner:
         @return: array suitable for Popen with shell=False
         """
 
-        def which(program):
+        def which(program: str) -> Optional[str]:
             import os
 
-            def is_exe(fpath):
+            def is_exe(fpath: str) -> bool:
                 return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
 
             fpath, fname = os.path.split(program)

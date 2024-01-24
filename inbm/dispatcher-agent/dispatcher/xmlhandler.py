@@ -1,7 +1,7 @@
 """
     Module that handles parsing of XML files
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import io
@@ -126,9 +126,12 @@ class XmlHandler:
                 children[each.tag] = each.text
             elif len(each):
                 children[each.tag] = str(each.tag)
-                logger.debug(f'The element {each.tag} has {len(each)} children.')
+                logger.debug(f'The element {each.text} has {len(each)} children.')
             else:
-                raise XmlException('Empty tag encountered. XML rejected')
+                # empty tags are OK. for example, <package_list></package_list> in a SOTA
+                # command just means 'upgrade all packages'
+                children[each.tag] = ''
+                logger.debug(f'Empty tag {each.tag} encountered, but allowed.')
 
         return children
 
@@ -145,7 +148,7 @@ class XmlHandler:
 
         @param xpath: path to key
         @param attribute_name: name of attribute
-        @return: attribute str if found else None
+        @return: value if found else None
         """
         logger.debug("XML get attr")
         element = self._root.find(xpath)
@@ -154,7 +157,7 @@ class XmlHandler:
         else:
             raise XmlException("Could not find element in get_attribute")
 
-    def add_attribute(self, xpath, attribute_name, attribute_value) -> bytes:
+    def add_attribute(self, xpath, attribute_name: str, attribute_value) -> bytes:
         """Add a new key value to the given path.
 
         @param xpath: path to key
@@ -175,7 +178,7 @@ class XmlHandler:
             except TypeError as e:
                 # workaround for https://github.com/tiran/defusedxml/issues/54
                 if 'expected an Element' in str(e):
-                    element._children.append(subtag)  # type: ignore
+                    element._children.append(subtag)
                 else:
                     raise e
             return tostring(self._root, encoding='utf-8')
@@ -187,7 +190,7 @@ class XmlHandler:
 
         @param xpath: path to key
         @param attribute_value: value of attribute to set
-        @return: Xml in bytes
+        @return: XML in bytes
         @raises: XmlException when failed to update
         """
         try:
@@ -205,7 +208,7 @@ class XmlHandler:
         """Remove the attribute from xml if found.
 
         @param xpath: path to key
-        @return: Xml in bytes
+        @return: XML in bytes
         @raises: XmlException when failed to update
         """
         try:
@@ -223,7 +226,7 @@ class XmlHandler:
 
     def get_root_elements(self, key: str, attr: str) -> list:
         """This function retrieves all the elements matching
-        the specified element and it's attribute
+        the specified element, and it's attribute
         @param key: element name
         @param attr: element's attribute name
         @return: list
@@ -239,8 +242,8 @@ class XmlHandler:
             raise XmlException(f"ERROR while fetching elements from root : {e}")
 
     def _getroot(self, xml: str) -> Any:
-        """This function validates and returns the root of the xml
-        @param xml: xml contents
+        """This function validates and returns the root of the XML
+        @param xml: XML contents
         @return: root path
         """
         logger.debug(f"XML : {mask_security_info(xml)}")

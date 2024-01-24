@@ -103,7 +103,8 @@ class MQTTConnection(Connection):
         try:
             client = mqtt.Client(client_id=client_id, protocol=mqtt.MQTTv311)
             client.username_pw_set(self._username, self._password)
-            client.connect = partial(client.connect, host=self._hostname, port=self._port)
+            client.connect = (  # type: ignore[method-assign]
+                partial(client.connect, host=self._hostname, port=self._port))
             client.on_connect = self._on_connect
             client.on_disconnect = self._on_disconnect
             return client
@@ -138,7 +139,7 @@ class MQTTConnection(Connection):
         self._connect_waiter.reset()
 
         try:  # A lot of different socket errors can happen here
-            self._client.connect()
+            self._client.connect()  # type: ignore[call-arg]
         except Exception as e:
             raise ConnectError(str(e))
 
@@ -161,13 +162,13 @@ class MQTTConnection(Connection):
             raise DisconnectError("Could not stop the connection thread!")
 
     def subscribe(self, topic: Optional[str], callback: Callable) -> None:
-        def wrapped(client, userdata, message):
+        def wrapped(client, userdata, message) -> None:
             topic = message.topic
             payload = message.payload
             callback(topic, payload)
 
         with self._subscribe_lock:
-            if topic == "":
+            if topic == "" or topic is None:
                 logger.info("(disabled) not subscribing")
                 return
             # Attempt to subscribe

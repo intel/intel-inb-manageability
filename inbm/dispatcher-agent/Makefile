@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2023 Intel Corporation
+# Copyright (C) 2017-2024 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 .PHONY: tests # `make tests` doesn't run because of the tests directory
@@ -32,7 +32,7 @@ run:
 	PYTHONDONTWRITEBYTECODE=x PYTHONPATH=$(LOCAL_PIP_PATH) python3 -m $(AGENT).$(AGENT)
 
 tests:
-	PYTHONDONTWRITEBYTECODE=x pynose --with-coverage --cover-erase --cover-inclusive --cover-html --cover-package=$(AGENT)
+	PYTHONPATH="${PYTHONPATH}:$(shell pwd):$(shell pwd)/../../inbm-lib" PYTHONDONTWRITEBYTECODE=x pytest -n 3 --cov=$(AGENT) --cov-report=term-missing tests/unit
 
 deb-eval-py3:
 	./package-py3.sh deb EVAL

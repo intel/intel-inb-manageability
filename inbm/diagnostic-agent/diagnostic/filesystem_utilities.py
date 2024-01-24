@@ -1,7 +1,7 @@
 """
     Filesystem utilities--e.g., calculate free space on a filesystem.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -51,9 +51,9 @@ def _calculate_btrfs_free_space(path: str) -> int:
         cmd = 'btrfs filesystem usage -b /'
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
-            (out, err, code) = PseudoShellRunner.run(CHROOT_PREFIX + cmd)
+            (out, err, code) = PseudoShellRunner().run(CHROOT_PREFIX + cmd)
         else:
-            (out, err, code) = PseudoShellRunner.run(cmd)
+            (out, err, code) = PseudoShellRunner().run(cmd)
         if code == 0:
             logger.debug('The output of BTRFS filesystem usage command: {}'.format(str(out)))
             fsregex = re.search(r"min: (\d+)", out, re.MULTILINE)

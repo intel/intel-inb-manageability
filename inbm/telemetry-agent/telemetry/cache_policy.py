@@ -1,12 +1,10 @@
 """
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
 
-
 from typing import List, Any
-
 
 
 def trim_cache(input_collection: List[Any], max_cache_size: int) -> List[Any]:

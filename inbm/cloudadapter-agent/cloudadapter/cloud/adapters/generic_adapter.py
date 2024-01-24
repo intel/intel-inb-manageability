@@ -4,7 +4,7 @@ creation of the cloud connection, termination, creating commands etc.
 
 Connects to a custom cloud client via the General Cloud MQTT client
 
-Copyright (C) 2017-2023 Intel Corporation
+Copyright (C) 2017-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 from ...exceptions import AdapterConfigureError, ClientBuildError
@@ -15,7 +15,7 @@ from .adapter import Adapter
 
 
 class GenericAdapter(Adapter):
-    def __init__(self, config: dict):
+    def __init__(self, config: dict) -> None:
         super().__init__(config)
 
     def configure(self, config: dict) -> CloudClient:

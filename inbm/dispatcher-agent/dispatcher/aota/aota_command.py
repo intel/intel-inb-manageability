@@ -1,7 +1,7 @@
 """
     Docker and Docker compose related functions used throughout the AOTA module
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -10,6 +10,7 @@ import os
 import time
 from abc import ABC, abstractmethod
 from typing import Any, Optional, Mapping
+from dispatcher.packagemanager.constants import DEFAULT_HASH_ALGORITHM
 
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -19,11 +20,11 @@ from inbm_lib.constants import DOCKER_STATS
 from dispatcher.common.result_constants import INSTALL_FAILURE, CODE_OK
 from dispatcher.config_dbs import ConfigDbs
 from dispatcher.constants import TELEMETRY_UPDATE_CHANNEL, UMASK_OTA
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.packageinstaller.package_installer import TrtlContainer
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.packagemanager.package_manager import get
 from .aota_error import AotaError
+from ..dispatcher_broker import DispatcherBroker
 
 from .checker import check_url, check_docker_parameters, check_no_username_password_on_http, \
     check_compose_command_supported, check_docker_command_supported, check_resource
@@ -41,18 +42,22 @@ def _get_parsed_values(value: str) -> Optional[str]:
 class AotaCommand(ABC):
     """Base class to all the AOTA apps(docker,compose,application)
 
-    @param dispatcher_callbacks callback to the main Dispatcher object
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
     def __init__(self,
-                 dispatcher_callbacks: DispatcherCallbacks,
                  parsed_manifest: Mapping[str, Optional[Any]],
                  dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
 
-        self._dispatcher_callbacks = dispatcher_callbacks
+        if 'signature' in parsed_manifest and parsed_manifest['signature'] is not None:
+            self._signature = parsed_manifest['signature']
+        if 'hash_algorithm' in parsed_manifest and parsed_manifest['hash_algorithm'] is not None:
+            self._hash_algorithm = parsed_manifest['hash_algorithm']
+        else:
+            self._hash_algorithm = DEFAULT_HASH_ALGORITHM
+
         if 'container_tag' in parsed_manifest and parsed_manifest['container_tag'] is not None:
             self._container_tag = _get_parsed_values(parsed_manifest['container_tag'])
         else:
@@ -166,23 +171,27 @@ class AotaCommand(ABC):
             raise AotaError("Docker Password is required for Docker Login.")
         (out, err, code) = self._trtl.login(
             self._docker_registry, self._docker_username, self._docker_password)
-        logger.debug(f'Docker Login Result: {code} {err}')  # type: ignore
+        logger.debug(f'Docker Login Result: {code} {err}')
 
         if code != 0:
-            raise AotaError(f'Docker Login Failed {err}')  # type: ignore
+            raise AotaError(f'Docker Login Failed {err}')
 
 
 class Docker(AotaCommand):
     """Performs Docker operations based on the cmd triggered via AOTA
 
-    @param dispatcher_callbacks callback to the main Dispatcher object
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs) -> None:
+    def __init__(self,
+                 dispatcher_broker: DispatcherBroker,
+                 parsed_manifest: Mapping[str, Optional[Any]],
+                 dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        super().__init__(parsed_manifest, dbs)
+        self._dispatcher_broker = dispatcher_broker
 
     def verify_command(self, cmd: str) -> None:
         check_docker_command_supported(cmd)
@@ -200,7 +209,7 @@ class Docker(AotaCommand):
         logger.debug(f"Docker List command: container_tag->{self._container_tag}")
         err, output = self._trtl.list(self._container_tag)
         if err is None:
-            self._dispatcher_callbacks.broker_core.telemetry(str(output))
+            self._dispatcher_broker.telemetry(str(output))
         else:
             raise AotaError(f'Docker List Failed {err}')
 
@@ -213,7 +222,7 @@ class Docker(AotaCommand):
         logger.debug(f'docker stats: {running_container_stats}')
 
         container_cpu_stats = DOCKER_STATS + ":" + str(running_container_stats)
-        self._dispatcher_callbacks.broker_core.telemetry(container_cpu_stats)
+        self._dispatcher_broker.telemetry(container_cpu_stats)
 
     def remove(self) -> None:
         super().remove()
@@ -256,21 +265,21 @@ class Docker(AotaCommand):
         if self._uri is None:
             raise AotaError("Fetch URI is required for Docker Load command.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+        check_resource(self.resource, self._uri, self._dispatcher_broker)
 
         if self.resource:
             ext = self.resource[-4:]
             if ext != '.tgz' and ext != '.tar':
                 raise AotaError('Invalid package type; should be .tar or .tgz')
 
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             'OTA Trigger Install command invoked for package: {}'.format(
                 self._uri))
         # Fetch resource
         repository_cache_repo = AotaCommand.create_repository_cache_repo()
         self.repo_to_clean_up = repository_cache_repo
         result = get(url=canonicalize_uri(self._uri), repo=repository_cache_repo, umask=UMASK_OTA)
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f'Package: {self._uri} Fetch Result: {result}')
 
         if result.status != CODE_OK:
@@ -279,7 +288,7 @@ class Docker(AotaCommand):
         container = TrtlContainer(
             self._trtl,
             self._container_tag,
-            self._dispatcher_callbacks,
+            self._dispatcher_broker,
             self._dbs)
 
         result = container.image_load(
@@ -299,12 +308,12 @@ class Docker(AotaCommand):
         if self._uri is None:
             raise AotaError("Fetch URI is required for Docker Import command.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+        check_resource(self.resource, self._uri, self._dispatcher_broker)
 
         container = TrtlContainer(
             self._trtl,
             self._container_tag,
-            self._dispatcher_callbacks,
+            self._dispatcher_broker,
             self._dbs)
 
         result = container.image_import(self._uri)
@@ -319,14 +328,18 @@ class Docker(AotaCommand):
 class DockerCompose(AotaCommand):
     """Performs Docker Compose operations based on the cmd triggered via AOTA
 
-    @param dispatcher_callbacks callback to the main Dispatcher object
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param parsed_manifest: parameters from OTA manifest
     @param dbs: Config.dbs value
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, parsed_manifest: Mapping[str, Optional[Any]], dbs: ConfigDbs) -> None:
+    def __init__(self,
+                 dispatcher_broker: DispatcherBroker,
+                 parsed_manifest: Mapping[str, Optional[Any]],
+                 dbs: ConfigDbs) -> None:
         # security assumption: parsed_manifest is already validated
-        super().__init__(dispatcher_callbacks, parsed_manifest, dbs)
+        super().__init__(parsed_manifest, dbs)
+        self._dispatcher_broker = dispatcher_broker
 
     def verify_command(self, cmd: str) -> None:
         check_compose_command_supported(cmd)
@@ -350,12 +363,12 @@ class DockerCompose(AotaCommand):
         if self._uri is None:
             raise AotaError("fetch URI is required.")
 
-        check_resource(self.resource, self._uri, self._dispatcher_callbacks)
+        check_resource(self.resource, self._uri, self._dispatcher_broker)
 
         if self._docker_registry and self._docker_username and self._docker_password:
             self.docker_login()
 
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f'OTA Trigger Install command invoked for package: {self._uri}')
         docker_compose_repo = DirectoryRepo(DOCKER_COMPOSE_CACHE)
         self.repo_to_clean_up = docker_compose_repo
@@ -364,7 +377,7 @@ class DockerCompose(AotaCommand):
                          umask=UMASK_OTA,
                          username=self._username,
                          password=self._password)
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f'Package: {self._uri} Fetch Result: {get_result}')
         if get_result.status != CODE_OK:
             raise AotaError("Unable to download docker-compose container.")
@@ -425,7 +438,7 @@ class DockerCompose(AotaCommand):
         if self._uri is None:
             raise AotaError("Fetch URI is required.")
 
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             'OTA Trigger Install command invoked for package: {}'.format(
                 self._uri))
         docker_compose_repo = DirectoryRepo(DOCKER_COMPOSE_CACHE)
@@ -435,7 +448,7 @@ class DockerCompose(AotaCommand):
                          umask=UMASK_OTA,
                          username=self._username,
                          password=self._password)
-        self._dispatcher_callbacks.broker_core.telemetry(
+        self._dispatcher_broker.telemetry(
             f'Package: {self._uri} Fetch Result: {get_result}')
 
         if get_result.status != CODE_OK:
@@ -455,6 +468,6 @@ class DockerCompose(AotaCommand):
         (code, message) = self._trtl.list(self._container_tag)
 
         if code is None:
-            self._dispatcher_callbacks.broker_core.telemetry("Container List: " + message)
+            self._dispatcher_broker.telemetry("Container List: " + message)
         else:
             raise AotaError(message)

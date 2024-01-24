@@ -1,11 +1,14 @@
 #Production
 
 psutil==5.9.5
-cryptography==41.0.4
-jsonschema==4.1.2
+types-psutil==5.9.5.17
+cryptography==41.0.6
+jsonschema==4.20.0
+types-jsonschema==4.20.0.0
 shortuuid==1.0.1
 requests==2.31.0
-urllib3==1.26.17
+urllib3==1.26.18
 certifi==2023.7.22
-pyinstaller==5.13.0
+pyinstaller==5.13.1
 setuptools==65.5.1
+future==0.18.3

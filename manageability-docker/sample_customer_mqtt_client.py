@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-# Copyright (C) 2021-2023 Intel Corporation
+# Copyright (C) 2021-2024 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 # -*- coding: utf-8 -*-
@@ -14,8 +14,6 @@ import paho.mqtt.client as mqtt
 from typing import Dict, Optional, Callable
 
 import json
-
-
 
 
 CUSTOM_CMD_CHANNEL = "manageability/cmd/custom"
@@ -114,7 +112,7 @@ class MQTT:
 
         self._mqttc.loop_stop()
 
-    def publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:
+    def publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
         """Publish a MQTT message to the specified topic, encoded as utf-8
 
         @param topic: MQTT topic to publish message on

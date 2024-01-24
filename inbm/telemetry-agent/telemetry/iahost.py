@@ -1,7 +1,7 @@
 """
     Retrieves attached disk information.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import platform
@@ -9,7 +9,6 @@ import os
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 from telemetry.constants import RM_PATH
-
 
 
 def is_iahost() -> bool:

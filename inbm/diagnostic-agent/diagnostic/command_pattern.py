@@ -1,7 +1,7 @@
 """
     Implementation of Command Pattern to check health of system
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -225,11 +225,13 @@ class SoftwareChecker(Command):
                     self._result['message'] = 'Trtl not present '
                     return self._result
             else:
-                command = f"systemctl is-active --quiet {s}"
-                (out, err, code) = PseudoShellRunner().run(command)
-                if code != 0:
-                    self._result['message'] = s + ' not present'
-                    self._result['rc'] = code
+                # skip any systemctl checks if we're running in a container
+                if os.getenv('container') != 'docker':
+                    command = f"systemctl is-active --quiet {s}"
+                    (out, err, code) = PseudoShellRunner().run(command)
+                    if code != 0:
+                        self._result['message'] = s + ' not present'
+                        self._result['rc'] = code
 
         return self._result
 
@@ -240,7 +242,7 @@ class ContainerHealthChecker(Command):
     @param value: None
     """
 
-    def __init__(self, value=None):
+    def __init__(self, value: Any = None) -> None:
         super().__init__("container_health_check", value)
 
     def execute(self) -> Dict[str, Union[str, int]]:

@@ -2,7 +2,7 @@
 """
     Acts as the client in the command pattern for the diagnostic-agent
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -62,7 +62,7 @@ class DiagnosticChecker:
         self.dbs_timer: Optional[RepeatingTimer] = None
         self.event_watcher: Optional[EventWatcher] = None
 
-    def stop_timer(self):
+    def stop_timer(self) -> None:
         """Stops the DBS timer when the diagnostic-agent is stopped."""
         if self.dbs_timer:
             self.dbs_timer.stop()

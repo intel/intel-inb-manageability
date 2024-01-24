@@ -2,13 +2,13 @@
 """
     Broker for MQTT communication of the agent.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
 import json
 
-from typing import Optional
+from typing import Any, Optional
 
 from diagnostic.ibroker import IBroker
 from diagnostic.diagnostic_checker import DiagnosticChecker
@@ -32,7 +32,7 @@ class Broker(IBroker):  # pragma: no cover
 
         self._initialize_broker()
 
-    def publish(self, channel: str, message: str):
+    def publish(self, channel: str, message: str) -> None:
         """Publish message on MQTT channel
 
         @param channel: channel to publish upon
@@ -61,7 +61,7 @@ class Broker(IBroker):  # pragma: no cover
         except Exception as exception:
             logger.exception('Subscribe failed: %s', exception)
 
-    def _on_update(self, topic: str, payload: str, qos: int) -> None:
+    def _on_update(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for messages received on Configuration Update Channel
         @param topic: channel message received
         @param payload: message received
@@ -72,7 +72,7 @@ class Broker(IBroker):  # pragma: no cover
             self.diagnostic_checker.set_configuration_value(json.loads(
                 payload), topic.split('/')[-2] + '/' + topic.split('/')[-1])
 
-    def _on_command(self, topic: str, payload: str, qos: int) -> None:
+    def _on_command(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for messages received on Command Channel
         @param topic: channel message received
         @param payload: message received
@@ -90,7 +90,7 @@ class Broker(IBroker):  # pragma: no cover
             logger.error(
                 f'Unable to parse command/request ID. Verify request is in the correct format. {error}')
 
-    def _on_message(self, topic: str, payload: str, qos: int) -> None:
+    def _on_message(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for messages received on State Channel
         @param topic: channel message received
         @param payload: message received

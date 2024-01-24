@@ -2,11 +2,12 @@
     Helper class to pass common Dispatcher MQTT broker interface to OTA threads
     without introducing a dependency on all of Dispatcher
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
-from typing import Optional, Callable
+import os
+from typing import Any, Optional, Callable
 
 from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS
 from dispatcher.dispatcher_exception import DispatcherException
@@ -45,7 +46,7 @@ class DispatcherBroker:
         else:
             self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
 
-    def mqtt_publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
+    def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.
 
         @param topic: topic to publish

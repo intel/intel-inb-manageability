@@ -1,16 +1,18 @@
 """
     MQTT client class which uses the Eclipse Paho client library
 
-    @copyright: Copyright 2017-2023 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2017-2024 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
 
 import logging
 import os
+import socket
 import ssl
 
 import paho.mqtt.client as mqtt
-from typing import Dict, Optional, Callable
+from paho.mqtt.client import Client, MQTTMessage
+from typing import Any, Dict, Optional, Callable
 
 from inbm_lib.security_masker import mask_security_info
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_CERTS
@@ -97,11 +99,11 @@ class MQTT:
                                     keyfile=mqtt_client_keys, cert_reqs=ssl.CERT_REQUIRED, ciphers=cipher)
             self._mqttc.connect(mqtt_host, mqtt_port, keep_alive)
             logger.info('Connected to MQTT broker: %s on port: %d', mqtt_host, mqtt_port)
-        except mqtt.socket.error:
+        except socket.error:
             logger.error('Ensure MQTT service is running!')
             raise
 
-        self.topics: Dict = {}
+        self.topics: dict[str, Callable[[str, Any, int], None]] = {}
 
     def loop_once(self, timeout: float = 1.0, max_packets: int = 1) -> None:
         """Loop the MQTT client once
@@ -122,7 +124,7 @@ class MQTT:
 
         self._mqttc.loop_stop()
 
-    def publish(self, topic: str, payload: str, qos: int = 0, retain: bool = False) -> None:
+    def publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:
         """Publish a MQTT message to the specified topic, encoded as utf-8
 
         @param topic: MQTT topic to publish message on
@@ -135,7 +137,7 @@ class MQTT:
                     mask_security_info(payload), topic, retain)
         self._mqttc.publish(topic, payload.encode('utf-8'), qos, retain)
 
-    def subscribe(self, topic: str, callback: Callable[[str, str, int], None], qos=0) -> None:
+    def subscribe(self, topic: str, callback: Callable[[str, Any, int], None], qos: int = 0) -> None:
         """Subscribe to an MQTT topic
 
         @param topic: MQTT topic to publish message on
@@ -147,7 +149,7 @@ class MQTT:
             logger.info('Topic: %s has already been subscribed to')
             return
 
-        def _message_callback(client, userdata, message):
+        def _message_callback(client: Client, userdata: Any, message: MQTTMessage) -> None:
             """Add callback to callback list"""
             callback(message.topic, message.payload.decode(encoding='utf-8', errors='strict'),
                      message.qos)

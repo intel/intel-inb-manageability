@@ -1,6 +1,6 @@
 """Command-line INBC tool to invoke Software update on the device with manageability framework.
 
-Copyright (C) 2020-2023 Intel Corporation
+Copyright (C) 2020-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
@@ -12,7 +12,7 @@ from typing import Any
 from time import sleep
 from inbc import shared
 from inbc.broker import Broker
-from inbc.parser import ArgsParser
+from inbc.parser.parser import ArgsParser
 from inbc.inbc_exception import InbcException, InbcCode
 
 from inbm_lib.request_message_constants import *
@@ -33,11 +33,11 @@ class Inbc(object):
         self._broker = Broker(cmd_type, parsed_args, tls)
         print("INBC command-line utility tool")
 
-    def stop(self):
+    def stop(self) -> None:
         self._broker.stop_broker()
 
 
-def _sig_handler(signo, _) -> None:
+def _sig_handler(signo: int, _: Any) -> None:
     if signo in (signal.SIGINT, signal.SIGTERM):
         shared.running = False
 

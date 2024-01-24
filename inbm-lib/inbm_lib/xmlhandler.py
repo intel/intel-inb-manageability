@@ -1,7 +1,7 @@
 """
     Module that handles parsing of XML files
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import io
@@ -23,7 +23,7 @@ from defusedxml import DefusedXmlException, DTDForbidden, EntitiesForbidden, Ext
 from .constants import PARSE_TIME_SECS
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from typing import Dict, Union, Any
+from typing import Dict, Tuple, Union, Any
 
 logger = logging.getLogger(__name__)
 
@@ -107,29 +107,46 @@ class XmlHandler:
         if element is None:
             raise XmlException('Cannot find element at specified '
                                'path: {}'.format(xpath))
-        return element
+        return element  # type: ignore[no-any-return]  # not practical to type this
 
-    def get_children(self, xpath) -> Dict[str, Any]:
+    def get_children_tuples(self, xpath: str) -> list[Tuple[str, Any]]:
         """Find all elements matching XPath from parsed XML
 
         @param xpath: Valid XPath expression
-        @return: Values of the matched elements as a List
+        @return: Values of the matched elements as a list of key/value tuples
         @raises XmlException
         """
-        children = {}
+        children: list[Tuple[str, Any]] = []
         elements = self._root.find(xpath)
 
         if elements is None:
             raise XmlException(f'Cannot find children at specified path: {xpath}')
         for each in elements:
             if each.text:
-                children[each.tag] = each.text
+                children.append((each.tag, each.text))
             elif len(each):
-                children[each.tag] = str(each.tag)
+                children.append((each.tag, str(each.tag)))
                 logger.debug(f'The element {each.tag} has {len(each)} children.')
             else:
-                raise XmlException('Empty tag encountered. XML rejected')
+                # empty tags are OK. for example, <package_list></package_list> in a SOTA
+                # command just means 'upgrade all packages'
+                children.append((each.tag, ''))
+                logger.debug(f'Empty tag {each.tag} encountered, but allowed.')
 
+        return children
+
+    def get_children(self, xpath: str) -> dict[str, Any]:
+        """Find all elements matching XPath from parsed XML
+
+        @param xpath: Valid XPath expression
+        @return: Values of the matched elements as a dict. Duplicate tags will only show the last entry.
+        @raises XmlException
+        """
+        children: dict[str, Any] = {}
+
+        tuples = self.get_children_tuples(xpath)
+        for key, value in tuples:
+            children[key] = value
         return children
 
     def find_element(self, xpath: str) -> Any:
@@ -150,11 +167,12 @@ class XmlHandler:
         logger.debug("XML get attr")
         element = self._root.find(xpath)
         if element is not None:
-            return element.attrib[attribute_name]
+            # not practical to type this
+            return element.attrib[attribute_name]  # type: ignore[no-any-return]
         else:
             raise XmlException("Could not find element in get_attribute")
 
-    def add_attribute(self, xpath, attribute_name, attribute_value) -> bytes:
+    def add_attribute(self, xpath: str, attribute_name: str, attribute_value: str) -> bytes:
         """Add a new key value to the given path.
 
         @param xpath: path to key
@@ -175,14 +193,15 @@ class XmlHandler:
             except TypeError as e:
                 # workaround for https://github.com/tiran/defusedxml/issues/54
                 if 'expected an Element' in str(e):
-                    element._children.append(subtag)  # type: ignore
+                    element._children.append(subtag)
                 else:
                     raise e
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while add : {e}")
 
-    def set_attribute(self, xpath, attribute_value) -> bytes:
+    def set_attribute(self, xpath: str, attribute_value: str) -> bytes:
         """Set a new value to the given path.
 
         @param xpath: path to key
@@ -197,11 +216,12 @@ class XmlHandler:
                 element.text = attribute_value
             else:
                 raise XmlException("The path doesn't contain the element specified")
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while set : {e}")
 
-    def remove_attribute(self, xpath) -> bytes:
+    def remove_attribute(self, xpath: str) -> bytes:
         """Remove the attribute from xml if found.
 
         @param xpath: path to key
@@ -217,11 +237,12 @@ class XmlHandler:
 
                 parent = parent_map[element]
                 parent.remove(element)
-            return tostring(self._root, encoding='utf-8')
+            # not practical to type this
+            return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while remove : {e}")
 
-    def get_root_elements(self, key: str, attr: str) -> list:
+    def get_root_elements(self, key: str, attr: str) -> list[str]:
         """This function retrieves all the elements matching
         the specified element and it's attribute
         @param key: element name

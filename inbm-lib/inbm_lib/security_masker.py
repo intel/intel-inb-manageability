@@ -1,9 +1,12 @@
 """
     Masks passwords and user names in log files, etc.
 
-    @copyright: Copyright 2017-2023 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2017-2024 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
+
+
+from typing import Any
 
 
 DOCKER_PASSWORD_TAG_BEGIN = '<dockerPassword>'  # noqa: S105
@@ -21,7 +24,7 @@ USERNAME_TAG_END = '</username>'
 MASK = 'XXXXX'
 
 
-def mask_security_info(payload: str) -> str:
+def mask_security_info(payload: Any) -> str:
     """Mask username and password in payload with XXXXX
 
     @param payload: Payload (XML)
@@ -30,7 +33,7 @@ def mask_security_info(payload: str) -> str:
     return _mask_username(masked)
 
 
-def _mask_password(payload: str) -> str:
+def _mask_password(payload: Any) -> str:
     """Mask <password> and <dockerPassword> fields in payload with XXXXX.
 
     @param payload: Payload (XML)
@@ -47,7 +50,7 @@ def _mask_password(payload: str) -> str:
         s > 0 else remove_docker_pwd
 
 
-def _mask_username(payload: str) -> str:
+def _mask_username(payload: Any) -> str:
     """Mask <username> and <dockerUsername> fields in payload with XXXXX.
 
     @param payload: Payload (XML)

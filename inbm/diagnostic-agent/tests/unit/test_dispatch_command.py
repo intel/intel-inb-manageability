@@ -3,7 +3,7 @@ from unittest import TestCase
 import os
 import psutil
 from diagnostic.dispatch_command import dispatch_command
-from mock import Mock, patch
+from unittest.mock import Mock, patch
 
 UNKNOWN_CLOUD_CONNECTOR_SENT = 'Unknown cloud connector sent'
 ARBITRARY_STRING_1 = 'abcdefg'

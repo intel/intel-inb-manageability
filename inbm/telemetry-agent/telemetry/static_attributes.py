@@ -1,7 +1,7 @@
 """
     Handles polling and publishing telemetry data.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from . import lsblk
@@ -9,8 +9,6 @@ from inbm_common_lib.constants import UNKNOWN
 import psutil
 import platform
 import json
-
-
 
 
 def get_os_information() -> str:

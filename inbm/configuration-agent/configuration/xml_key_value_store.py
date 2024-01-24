@@ -1,7 +1,7 @@
 """
     Module that handles parsing of XML files
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import io
@@ -169,7 +169,7 @@ class XmlKeyValueStore(IKeyValueStore):
                 paths += xpath + '/' + ele + ':' + value + ';'
             return paths
 
-    def get_children(self, xpath):
+    def get_children(self, xpath: str) -> dict[str, str]:
         """Find all elements matching XPath from parsed XML
 
         @param xpath: Valid XPath expression
@@ -201,7 +201,7 @@ class XmlKeyValueStore(IKeyValueStore):
         paths = self.set_element(element_header, value_string=element_value)
         return paths
 
-    def remove(self, path, value=None, value_string=None):
+    def remove(self, path: str, value: Optional[str] = None, value_string: Optional[str] = None) -> str:
         """Remove method gets the existing values of the element in xml and 
         removes the value from the existing values.
 
@@ -210,6 +210,8 @@ class XmlKeyValueStore(IKeyValueStore):
         @param value_string: multiple variable value string separated by ;
         """
         logger.debug("")
+        if value_string is None:
+            value_string = ""
         path_values = self.get_element(path, value_string)
         element_header_path = path_values.strip('{').strip('}').split(":", 1)[0]
         element_name = element_header_path.split("/", 1)[1]
@@ -269,7 +271,7 @@ class XmlKeyValueStore(IKeyValueStore):
             logger.debug(f"Unable to write at specified path: {file_path}")
             raise XmlException('Unable to write configuration changes')
 
-    def _validate_file(self):
+    def _validate_file(self) -> None:
         try:
             self._validate(self._xml)
         except XmlException as e:

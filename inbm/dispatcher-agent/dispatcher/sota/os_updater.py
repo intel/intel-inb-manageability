@@ -2,7 +2,7 @@
     SOTA updates factory class. Used to trigger
     package installation, updates, security updates etc
     
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -12,7 +12,7 @@ import re
 import os
 from pathlib import Path
 from typing import List, Optional, Union
-from abc import ABC, abstractmethod
+from abc import ABC, ABCMeta, abstractmethod
 
 from inbm_common_lib.utility import CanonicalUri
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -36,15 +36,23 @@ MENDER_UPDATE_SCRIPT_EHL = "/etc/mender/scripts/ArtifactInstall_Leave_00_relabel
 MENDER_ARTIFACT_INSTALL_COMMAND = MENDER_UPDATE_SCRIPT_EHL
 
 
-def mender_install_argument():
-    (out, err, code) = PseudoShellRunner.run(MENDER_FILE_PATH + " -help")
+def mender_install_argument() -> str:
+    """Determine the correct command-line argument to trigger an installation in the Mender utility.
+
+    This function executes a shell command to retrieve the help text of the Mender utility and
+    searches for the existence of a '-install' argument. Depending on the output, it returns
+    the appropriate argument for initiating an installation.
+
+    @return: '-install' if the Mender utility help text mentions this argument, otherwise 'install'.
+    """
+    (out, err, code) = PseudoShellRunner().run(MENDER_FILE_PATH + " -help")
     if "-install" in out or ((err is not None) and "-install" in err):
         return "-install"
     else:
         return "install"
 
 
-class OsUpdater(ABC):  # pragma: no cover
+class OsUpdater(metaclass=ABCMeta):  # pragma: no cover
     """Abstract class for handling OS update related tasks for the system."""
 
     def __init__(self) -> None:
@@ -84,19 +92,24 @@ class OsUpdater(ABC):  # pragma: no cover
         return CommandList(commands).cmd_list
 
     @abstractmethod
-    def no_download(self):
+    def no_download(self) -> list[str]:
+        """Calculates commands needed for a no-download install.
+
+        @return: returns list of commands that need to be run, if any
+        """
         pass
 
     @abstractmethod
-    def download_only(self):
+    def download_only(self) -> list[str]:
         pass
 
 
 class DebianBasedUpdater(OsUpdater):
     """DebianBasedUpdater class, child of OsUpdater"""
 
-    def __init__(self) -> None:
+    def __init__(self, package_list: list[str]) -> None:
         super().__init__()
+        self._package_list = package_list
 
     def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
         """Concrete class method to create command list to update from a remote source for Debian OS.
@@ -108,24 +121,42 @@ class DebianBasedUpdater(OsUpdater):
         logger.debug("")
         os.environ["DEBIAN_FRONTEND"] = "noninteractive"
         is_docker_app = os.environ.get("container", False)
+
         if is_docker_app:
+            # if any packages are specified, use 'install' instead of 'upgrade' and include packages
+            if self._package_list == []:
+                install_cmd_docker = \
+                    "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"
+            else:
+                install_cmd_docker = \
+                    "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install " + \
+                    ' '.join(self._package_list)
             logger.debug("APP ENV : {}".format(is_docker_app))
             # get all packages ready for install (requires network and does
-            # not require host PID/DOCKER_CHROOT_PREFIX), then run the install locally
+            # not require host PID/CHROOT_PREFIX), then run the install locally
             # (does not require network but does require host PID/DOCKER_CHROOT_PREFIX)
+
             cmds = [CHROOT_PREFIX + "/usr/bin/apt-get update",  # needs network
                     CHROOT_PREFIX + "/usr/bin/apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -f -yq --download-only install",  # needs network
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",  # local 
-                    CHROOT_PREFIX + "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",
-                    CHROOT_PREFIX + "/usr/bin/dpkg --configure -a --force-confdef --force-confold",
-                    CHROOT_PREFIX + "/usr/bin/apt-get -yq --download-only -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade",  # needs network
-                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]  # local 
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'  install",  # local
+                    DOCKER_CHROOT_PREFIX + \
+                    "/usr/bin/dpkg-query -f '${binary:Package}\\n' -W",  # local
+                    CHROOT_PREFIX + "/usr/bin/dpkg --configure -a --force-confdef --force-confold",  # needs network
+                    DOCKER_CHROOT_PREFIX + install_cmd_docker,  # local
+                    DOCKER_CHROOT_PREFIX + "/usr/bin/apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]  # local
         else:
+            # if any packages are specified, use 'install' instead of 'upgrade' and include packages
+            if self._package_list == []:
+                install_cmd = "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"
+            else:
+                install_cmd = "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install " \
+                    + ' '.join(self._package_list)
+
             cmds = ["apt-get update",
                     "dpkg-query -f '${binary:Package}\\n' -W",
                     "dpkg --configure -a --force-confdef --force-confold",
                     "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
-                    "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]
+                    install_cmd]
         return CommandList(cmds).cmd_list
 
     def update_local_source(self, file_path: str) -> List[str]:
@@ -149,9 +180,9 @@ class DebianBasedUpdater(OsUpdater):
         if is_docker_app:
             logger.debug("APP ENV : {}".format(is_docker_app))
 
-            (upgrade, _, _) = PseudoShellRunner.run(DOCKER_CHROOT_PREFIX + cmd)
+            (upgrade, _, _) = PseudoShellRunner().run(DOCKER_CHROOT_PREFIX + cmd)
         else:
-            (upgrade, _, _) = PseudoShellRunner.run(cmd)
+            (upgrade, _, _) = PseudoShellRunner().run(cmd)
         return DebianBasedUpdater._get_estimated_size_from_apt_get_upgrade(upgrade)
 
     @staticmethod
@@ -177,16 +208,23 @@ class DebianBasedUpdater(OsUpdater):
             logger.info('Update size could not be extracted!')
             return 0
 
-    def no_download(self):
+    def no_download(self) -> list[str]:
         """Update command overridden from factory. It builds the commands for Ubuntu update
         of no-download command
 
-        @return: returns commands
+        @return: returns list of commands that need to be run
         """
+
+        # if any packages are specified, use 'install' instead of 'upgrade' and include packages
+        if self._package_list == []:
+            install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --no-download --fix-missing -yq upgrade"
+        else:
+            install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --no-download --fix-missing -yq install " \
+                + ' '.join(self._package_list)
 
         cmds = ["dpkg --configure -a --force-confdef --force-confold",
                 "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -yq -f install",
-                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade --no-download --fix-missing -yq"]
+                install_cmd]
         return CommandList(cmds).cmd_list
 
     def download_only(self):
@@ -196,9 +234,15 @@ class DebianBasedUpdater(OsUpdater):
         @return: returns commands
         """
 
+        if self._package_list == []:
+            install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --download-only --fix-missing -yq upgrade"
+        else:
+            install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --download-only --fix-missing -yq install " \
+                + ' '.join(self._package_list)
+
         cmds = ["apt-get update",
                 "dpkg-query -f '${binary:Package}\\n' -W",
-                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade --download-only --fix-missing -yq"]
+                install_cmd]
         return CommandList(cmds).cmd_list
 
 
@@ -243,11 +287,13 @@ class YoctoX86_64Updater(OsUpdater):
         """
         return 0
 
-    def no_download(self):
-        pass
+    def no_download(self) -> list[str]:
+        """Returns empty list for Yocto--not applicable"""
+        return []
 
-    def download_only(self):
-        pass
+    def download_only(self) -> list[str]:
+        """Returns empty list for Yocto--not applicable"""
+        return []
 
 
 class YoctoARMUpdater(OsUpdater):
@@ -290,11 +336,13 @@ class YoctoARMUpdater(OsUpdater):
         """
         return 0
 
-    def no_download(self):
-        pass
+    def no_download(self) -> list[str]:
+        """Returns empty list for Yocto -- not applicable"""
+        return []
 
-    def download_only(self):
-        pass
+    def download_only(self) -> list[str]:
+        """Returns empty list for Yocto--not applicable"""
+        return []
 
 
 class WindowsUpdater(OsUpdater):
@@ -327,8 +375,8 @@ class WindowsUpdater(OsUpdater):
         """
         return 0
 
-    def no_download(self):
-        pass
+    def no_download(self) -> list[str]:
+        raise NotImplementedError()
 
-    def download_only(self):
-        pass
+    def download_only(self) -> list[str]:
+        raise NotImplementedError()

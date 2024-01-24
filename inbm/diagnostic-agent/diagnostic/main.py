@@ -2,7 +2,7 @@
 """
     Agent which monitors and reports the state of critical components of the framework
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -24,11 +24,11 @@ from inbm_lib.windows_service import WindowsService
 
 class LoggingPath:  # pragma: no cover
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @classmethod
-    def get_log_config_path(cls):
+    def get_log_config_path(cls) -> str:
         try:
             return os.environ['LOGGERCONFIG']
         except KeyError:

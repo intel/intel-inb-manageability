@@ -1,7 +1,7 @@
 """
     Broker service for INBC tool
 
-    Copyright (C) 2020-2023 Intel Corporation
+    Copyright (C) 2020-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -43,20 +43,24 @@ class Broker(IBroker):
         except ValueError:
             mqtt_port = DEFAULT_MQTT_PORT
 
-        self.mqttc = MQTT(PROG,
-                          MQTT_HOST,
-                          mqtt_port,
-                          MQTT_KEEPALIVE_INTERVAL,
-                          ca_certs=CA_CERTS,
-                          env_config=True,
-                          tls=tls,
-                          client_certs=CLIENT_CERTS,
-                          client_keys=CLIENT_KEYS)
+        try:
+            self.mqttc = MQTT(PROG,
+                              MQTT_HOST,
+                              mqtt_port,
+                              MQTT_KEEPALIVE_INTERVAL,
+                              ca_certs=CA_CERTS,
+                              env_config=True,
+                              tls=tls,
+                              client_certs=CLIENT_CERTS,
+                              client_keys=CLIENT_KEYS)
+        except AttributeError as e:
+            logger.exception("MQTT error:  Check that MQTT Service is running")
+            raise
+
         self.mqttc.start()
         self._subscribe()
         self._command = create_command_factory(cmd_type, self)
-        # Topics are coded in the methods.  Abstract method is requiring param 2, but it's not used.
-        self._command.trigger_manifest(parsed_args, "topic")
+        self._command.invoke_update(parsed_args)
 
     def publish(self, topic: str, message: str, retain: bool = False) -> None:
         """Publishes message via MQTT
@@ -83,7 +87,7 @@ class Broker(IBroker):
             logger.exception('Subscribe failed: %s', exception)
             logger.debug('Setting up broker fail.')
 
-    def _on_response(self, topic: str, payload: str, qos: int) -> None:
+    def _on_response(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for RESPONSE_CHANNEL
 
         @param topic: topic on which message was published
@@ -93,7 +97,7 @@ class Broker(IBroker):
         logger.info('Message received: %s on topic: %s', payload, topic)
         self._command.search_response(payload)
 
-    def _on_event(self, topic: str, payload: str, qos: int) -> None:
+    def _on_event(self, topic: str, payload: Any, qos: int) -> None:
         """Callback for EVENT_CHANNEL
         @param topic: topic on which message was published
         @param payload: message payload

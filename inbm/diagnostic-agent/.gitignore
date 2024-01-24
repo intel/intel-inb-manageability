@@ -40,7 +40,6 @@ htmlcov/
 .coverage.*
 .coveragerc
 .cache
-nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
@@ -105,5 +104,3 @@ virtual-env/
 
 # vs code
 .vscode/
-
-pyproject.toml

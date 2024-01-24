@@ -2,6 +2,13 @@
 
 set -eo pipefail
 
+trap_error() {
+  echo "Command '$BASH_COMMAND' failed on line $BASH_LINENO.  Status=$?" >&2
+  exit $?
+}
+
+trap trap_error ERR
+
 # Ensure we're running as root
 if [ "$EUID" -ne 0 ]; then
   echo "Please run as root"

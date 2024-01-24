@@ -6,7 +6,7 @@ from dispatcher.packagemanager.memory_repo import MemoryRepo
 
 class TestLocalRepo(TestCase):
 
-    def test_hash_finder(self):
+    def test_hash_finder(self) -> None:
         repo = MemoryRepo("test_hash_finder")
         contents = b"0123456789"
         repo.add("test.rpm", contents)

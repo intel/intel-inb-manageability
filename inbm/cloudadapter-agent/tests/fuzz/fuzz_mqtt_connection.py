@@ -30,7 +30,7 @@ def TestOneInput(input_bytes):
         raise
 
 
-def main():
+def main() -> None:
     atheris.Setup(sys.argv, TestOneInput)
     atheris.Fuzz()
 

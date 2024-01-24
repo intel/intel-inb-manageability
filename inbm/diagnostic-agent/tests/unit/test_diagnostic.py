@@ -6,7 +6,7 @@ from ddt import data, ddt, unpack
 from diagnostic.constants import CMD_CHANNEL, STATE_CHANNEL, CONFIGURATION_UPDATE_CHANNEL, \
     MIN_MEMORY_MB, MIN_STORAGE_MB, DOCKER_BENCH_SECURITY_INTERVAL_SEC, MIN_POWER_PERCENT, NETWORK_CHECK
 from diagnostic.main import Diagnostic, LoggingPath
-from mock import patch, ANY
+from unittest.mock import patch, ANY
 
 from diagnostic.constants import DEFAULT_MIN_MEMORY_MB
 from diagnostic.constants import DEFAULT_MIN_POWER_PERCENT

@@ -1,7 +1,7 @@
 """
     Config Command classes to represent command entered by user.
 
-    # Copyright (C) 2020-2023 Intel Corporation
+    # Copyright (C) 2020-2024 Intel Corporation
     # SPDX-License-Identifier: Apache-2.0
 """
 
@@ -26,15 +26,14 @@ class ConfigCommand(Command):
         """
         super().__init__(MAX_TIME_LIMIT, broker, command)
 
-    def trigger_manifest(self, args: Any, topic: str):
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments from user
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, topic)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -47,7 +46,7 @@ class ConfigCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -64,22 +63,21 @@ class GetConfigCommand(ConfigCommand):
        """
         super().__init__(broker, 'get')
 
-    def trigger_manifest(self, args: Any, topic: str) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke command.
 
         @param args: arguments from user
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -96,22 +94,21 @@ class SetConfigCommand(ConfigCommand):
        """
         super().__init__(broker, 'set')
 
-    def trigger_manifest(self, args: Any, topic: str) -> None:
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke command.
 
         @param args: arguments from user
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -128,22 +125,21 @@ class LoadConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_LOAD)
 
-    def trigger_manifest(self, args: Any, topic: str = CONFIG_CHANNEL + CONFIG_LOAD):
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments from user
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -159,21 +155,19 @@ class AppendConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_APPEND)
 
-    def trigger_manifest(self, args: Any, topic: str):
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke config Append.
         @param args: arguments from user
-        @param topic: MQTT topic
         """
-        channel = INBM_INSTALL_CHANNEL
-        super().trigger_manifest(args, channel)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
         @param payload: payload received in which to search
         @param topic: topic from which message was received
@@ -188,20 +182,19 @@ class RemoveConfigCommand(ConfigCommand):
         """
         super().__init__(broker, CONFIG_REMOVE)
 
-    def trigger_manifest(self, args: Any, topic: str):
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke config Remove.
         @param args: arguments from user
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
         @param payload: payload received in which to search
         """
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
         @param payload: payload received in which to search
         @param topic: topic from which message was received

@@ -5,7 +5,7 @@
     to run as a Windows service.  On other OSes, these methods will be ignored and the base class
     will be a stub.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0 
 """
 import abc
@@ -28,7 +28,8 @@ if platform.system() == 'Windows' and 'unittest' not in sys.modules.keys():
     import win32service
     import win32timezone  # needed for pyinstaller to handle transitive import
 
-    class WindowsService(win32serviceutil.ServiceFramework, ABC):
+    # ignore type errors for Windows libraries
+    class WindowsService(win32serviceutil.ServiceFramework, ABC):  # type: ignore[misc]
         # Inherit from this class to create a service
 
         def __init__(self, args: List[str]) -> None:

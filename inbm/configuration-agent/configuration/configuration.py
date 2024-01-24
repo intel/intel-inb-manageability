@@ -2,7 +2,7 @@
 """
     Central configuration-agent/configuration service for the manageability framework 
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -25,7 +25,7 @@ from inbm_lib.windows_service import WindowsService
 
 class LoggingPath:
 
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @classmethod
@@ -82,7 +82,7 @@ class Configuration(WindowsService):
 
         self.running = True
 
-        def _sig_handler(signo, _):
+        def _sig_handler(signo, _) -> None:
             if signo in (signal.SIGINT, signal.SIGTERM):
                 self.running = False
 

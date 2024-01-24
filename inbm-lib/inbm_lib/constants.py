@@ -1,6 +1,6 @@
 """
     Constants used by the common manageability library
-    @copyright: Copyright 2017-2023 Intel Corporation All Rights Reserved.
+    @copyright: Copyright 2017-2024 Intel Corporation All Rights Reserved.
     @license: SPDX-License-Identifier: Apache-2.0
 """
 from inbm_common_lib.utility import get_canonical_representation_of_path
@@ -22,7 +22,7 @@ DOCKER_CHROOT_PREFIX = "/usr/bin/docker run -e DEBIAN_FRONTEND=noninteractive --
 CHROOT_PREFIX = "/usr/sbin/chroot /host "
 
 # XML parse time limit
-PARSE_TIME_SECS = 5
+PARSE_TIME_SECS = 10
 
 # TRTL install location
 TRTL_PATH = get_canonical_representation_of_path('/usr/bin/trtl')
@@ -61,6 +61,11 @@ POTA = "pota"
 RESTART = "restart"
 QUERY = "query"
 
+# Source command and types.  Used by INBC and Dispatcher
+SOURCE = "source"
+APPLICATION = "application"
+OS = "os"
+
 OTA_UPDATE = "install"
 PROVISION = 'provision'
 REQUEST_CHANNEL = 'ma/request/'
@@ -77,7 +82,7 @@ LOG_FILE = str(LOG_PATH / "inbm-update-status.log")
 
 # OTA STATUS
 OTA_SUCCESS = "SUCCESS"
-OTA_FAIL = "FAIL"
+FAIL = "FAIL"
 OTA_PENDING = "PENDING"
 
 FORMAT_VERSION = "v1"

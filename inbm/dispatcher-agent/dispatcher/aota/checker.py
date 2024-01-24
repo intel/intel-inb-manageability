@@ -1,7 +1,7 @@
 """
     Performs checks during the application over the air update (AOTA)
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -11,8 +11,8 @@ from typing import Optional
 from urllib.parse import urlparse
 
 from dispatcher.dispatcher_exception import DispatcherException
-from dispatcher.dispatcher_callbacks import DispatcherCallbacks
 from dispatcher.packagemanager.package_manager import verify_source
+from ..dispatcher_broker import DispatcherBroker
 from .constants import DockerCommands, ComposeCommands, ApplicationCommands
 from .aota_error import AotaError
 from ..common import uri_utilities
@@ -30,7 +30,8 @@ def check_url(url: Optional[str]) -> None:
         raise AotaError("missing URL.")
 
 
-def check_resource(resource: Optional[str], uri: Optional[str], dispatcher_callbacks: DispatcherCallbacks) -> None:
+def check_resource(resource: Optional[str], uri: Optional[str],
+                   dispatcher_broker: DispatcherBroker) -> None:
     if resource is None or resource == '':
         raise AotaError('Invalid resource URL.')
 
@@ -39,12 +40,12 @@ def check_resource(resource: Optional[str], uri: Optional[str], dispatcher_callb
 
     try:
         if is_local_file(uri):
-            verify_source(source=uri, dispatcher_callbacks=dispatcher_callbacks, source_file=True)
+            verify_source(source=uri, dispatcher_broker=dispatcher_broker, source_file=True)
         else:
             source = uri_utilities.get_uri_prefix(uri)
-            verify_source(source=source, dispatcher_callbacks=dispatcher_callbacks)
+            verify_source(source=source, dispatcher_broker=dispatcher_broker)
     except DispatcherException as err:
-        dispatcher_callbacks.broker_core.telemetry(str(err))
+        dispatcher_broker.telemetry(str(err))
         raise AotaError('Source verification check failed')
 
 

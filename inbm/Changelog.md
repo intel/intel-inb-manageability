@@ -3,6 +3,34 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## NEXT - 4.2.0 - 2024-01-23
+
+### Changed
+ - RTC 536078 - Added package list option to inbc, cloud, and internal manifest. This allows SOTA to run an install/upgrade command on a set of individual packages rather than all installed packages.
+
+### Added
+ - RTC 536601 - Added 'source' command to INBM. This command manages `/etc/apt/sources.list` and `/etc/apt/sources.list.d/*` and associated gpg keys on Ubuntu.
+- RTC 537769 -  Added verification of GPG key URIs against a list of trusted repositories for enhanced security
+
+check if sourceApplication Gpg key URL is in trusted repo
+### Fixed
+ - RTC 534426 - Could not write to /var/log/inbm-update-status.log on Yocto due to /var/log being a symlink to /var/volatile/log.
+ - RTC 523677 - Improve INBC error logging - invalid child tag not printed
+ - RTC 522583 - Fix missing SOTA logs
+ - RTC 534998 - Fix SOTA failure due to snapshot error 
+ - Fixed some mismatched types in abstract classes vs subtypes in dispatcher agent
+ - Fixed some container mode issues
+
+### Security
+ - RTC 533615 - Validate GUID format in manifest using XML schema.  
+ -              Ensure the GUID in the manifest if provided matches one of the GUIDs on the system before performing a FOTA.
+ - dependabot: update golang.org/x/net from 0.14.0 to 0.17.0 in /inbm/trtl (addresses CVE-2023-39325, CVE-2023-44487)
+ - update pypi urllib3 from 1.26.17 to 1.26.18 (addresses CVE-2023-45803 in urllib3)
+ - dependabot: bump github.com/docker/docker from 24.0.5+incompatible to 24.0.7+incompatible in /inbm/trtl (addresses GHSA-jq35-85cj-fj4p)
+ - update included reference certifi source code from 2020.12.05 to 2023.7.22, which was not a security issue per se but was flagged in BDBA as it contains CVE-2022-23491 and CVE-2023-37920
+ - dependabot: Bump pyinstaller from 5.13.0 to 5.13.1 in all agents/programs (addresses CVE-2023-49797)
+ - RTC 536046 - Add a workflow to perform signature checks for AOTA packages if user enrolled a key during provisioning
+
 ## 4.1.4 - 2023-10-11
 
 ### Fixed
@@ -18,7 +46,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## 4.1.3 - 2023-09-05
 
 ### Fixed
- - RTC 532663 - [INBM][UCC][Bug] During every windows reboot there will be a temporary folder created
+ - RTC 532663 - [INBM][UCC][Bug] During every Windows reboot there will be a temporary folder created
  - RTC 531795 - [Bug] inbc defaults to deviceReboot=yes even with download-only mode
  - RTC 531796 - [Bug] dispatcher reboots device after failed update even in download-only mode
  - RTC [533020] - Fix SOTA to  handle dpkg interactive prompt

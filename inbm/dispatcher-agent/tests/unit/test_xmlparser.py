@@ -69,6 +69,157 @@ class TestXmlParser(TestCase):
     def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
 
+    def test_os_source_with_no_command_fails_validation(self) -> None:
+        try:
+            # this should not pass--there is no command
+            parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
+                <manifest><type>source</type>\
+                    <osSource>\
+                    </osSource>\
+                </manifest>'
+            parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+            # query parsed to make sure we get the data
+        except XmlException as e:
+            # this is fine
+            return
+        # if no exception, this is not fine
+        self.fail("should not pass")
+
+    def test_application_source_with_list_passes_validation(self) -> None:
+        parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
+            <manifest><type>source</type>\
+                <applicationSource>\
+                <list/>\
+                </applicationSource>\
+            </manifest>'
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_application_source_with_add_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <add>
+            <gpg>
+                <uri></uri>
+                <keyname></keyname>
+            </gpg>
+            <repo>
+                <repos>
+                    <source_pkg></source_pkg>
+                </repos>
+                <filename></filename>
+            </repo>
+        </add>
+    </applicationSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_application_source_with_update_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <update>
+            <repo>
+                <repos>
+                    <source_pkg>foo</source_pkg>  
+                </repos>
+                <filename>bar</filename>
+            </repo>
+        </update>
+    </applicationSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_application_source_with_remove_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <applicationSource>
+        <remove>
+            <gpg>
+                <keyname>name.gpg</keyname>
+            </gpg>
+            <repo>
+                <filename>name.list</filename>
+            </repo>
+        </remove>
+    </applicationSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_os_source_with_list_passes_validation(self) -> None:
+        parsed_xml = '<?xml version="1.0" encoding="UTF-8"?>\
+            <manifest><type>source</type>\
+                <osSource>\
+                <list/>\
+                </osSource>\
+            </manifest>'
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_os_source_with_add_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <add>
+            <repos>
+                <source_pkg></source_pkg>
+            </repos>
+        </add>
+    </osSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_os_source_with_update_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <update>
+            <repos>
+                <source_pkg></source_pkg>  
+            </repos>
+        </update>
+    </osSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
+    def test_os_source_with_remove_passes_validation(self) -> None:
+        parsed_xml = """\
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest>
+    <type>source</type>
+    <osSource>
+        <remove>
+            <repos>
+                <source_pkg></source_pkg>
+            </repos>
+        </remove>
+    </osSource>
+</manifest>
+"""
+        parsed = XmlHandler(parsed_xml, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        # query parsed to make sure we get the data
+
     def test_parser_creation_failure(self) -> None:
         with self.assertRaises(XmlException):
             XmlHandler(xml=BAD_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
@@ -97,35 +248,32 @@ class TestXmlParser(TestCase):
             parsed = XmlHandler(EMPTY_TAG_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
             parsed.get_children('ota/type/fetch')
         except XmlException as e:
-            self.assertEquals("Cannot find children at specified path: ota/type/fetch", str(e))
+            self.assertEqual("Cannot find children at specified path: ota/type/fetch", str(e))
 
     def test_empty_tag_failure2(self) -> None:
-        try:
-            parsed = XmlHandler(EMPTY_TAG_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
-            parsed.get_children('ota/type/aota')
-        except XmlException as e:
-            self.assertEquals("Empty tag encountered. XML rejected", str(e))
+        parsed = XmlHandler(EMPTY_TAG_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        parsed.get_children('ota/type/aota')
 
     def test_get_element(self) -> None:
-        self.assertEquals('sampleId', self.good.get_element('ota/header/id'))
+        self.assertEqual('sampleId', self.good.get_element('ota/header/id'))
 
     def test_get_children(self) -> None:
-        self.assertEquals(
+        self.assertEqual(
             {'app': 'docker', 'cmd': 'load', 'fetch': 'sample',
              'containerTag': 'defg', },
             self.good.get_children('ota/type/aota'))
 
     def test_set_attribute(self) -> None:
-        self.assertEquals("remote", self.test.get_element("ota/header/repo"))
+        self.assertEqual("remote", self.test.get_element("ota/header/repo"))
         self.test.set_attribute("ota/header/repo", "local")
-        self.assertEquals("local", self.test.get_element("ota/header/repo"))
+        self.assertEqual("local", self.test.get_element("ota/header/repo"))
 
     def test_add_attribute(self) -> None:
         self.test.add_attribute("ota/type/fota", "path", "/new/path/added")
-        self.assertEquals("/new/path/added", self.test.get_element("ota/type/fota/path"))
+        self.assertEqual("/new/path/added", self.test.get_element("ota/type/fota/path"))
 
     def test_remove_attribute(self) -> None:
-        self.assertEquals("Intel", self.test.get_element("ota/type/fota/vendor"))
+        self.assertEqual("Intel", self.test.get_element("ota/type/fota/vendor"))
         self.test.remove_attribute("ota/type/fota/vendor")
         self.assertRaises(XmlException, self.test.get_element, "ota/type/fota/vendor")
 

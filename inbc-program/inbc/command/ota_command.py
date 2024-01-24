@@ -1,7 +1,7 @@
 """
     OTA Command classes to represent command entered by user.
 
-    Copyright (C) 2020-2023 Intel Corporation
+    Copyright (C) 2020-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 from typing import Any
@@ -27,15 +27,14 @@ class PotaCommand(Command):
         """
         super().__init__(POTA_TIME_LIMIT, broker, POTA)
 
-    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL):
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -47,7 +46,7 @@ class PotaCommand(Command):
             self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
         super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -64,15 +63,14 @@ class AotaCommand(Command):
         """
         super().__init__(AOTA_TIME_LIMIT, broker, AOTA)
 
-    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL):
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -85,7 +83,7 @@ class AotaCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -102,15 +100,15 @@ class SotaCommand(Command):
         """
         super().__init__(SOTA_TIME_LIMIT, broker, SOTA)
 
-    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL):
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
         @param topic: MQTT topic
         """
-        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -123,7 +121,7 @@ class SotaCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search
@@ -144,15 +142,14 @@ class FotaCommand(Command):
         """
         super().__init__(FOTA_TIME_LIMIT, broker, FOTA)
 
-    def trigger_manifest(self, args: Any, topic: str = INSTALL_CHANNEL):
+    def invoke_update(self, args: Any) -> None:
         """Trigger the command-line utility tool to invoke update.
 
         @param args: arguments passed to command-line tool.
-        @param topic: MQTT topic
         """
-        super().trigger_manifest(args, INBM_INSTALL_CHANNEL)
+        super()._send_manifest(args, INBM_INSTALL_CHANNEL)
 
-    def search_response(self, payload: str) -> None:
+    def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
 
         @param payload: payload received in which to search
@@ -168,7 +165,7 @@ class FotaCommand(Command):
         else:
             super().search_response(payload)
 
-    def search_event(self, payload: str, topic: str) -> None:
+    def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
         @param payload: payload received in which to search

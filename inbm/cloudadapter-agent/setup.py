@@ -1,4 +1,4 @@
-# Copyright (C) 2017-2023 Intel Corporation
+# Copyright (C) 2017-2024 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 from setuptools import setup, find_packages
@@ -14,6 +14,6 @@ setup(
     license='Intel Proprietary (see \'licenses\' directory)',
     packages=find_packages(exclude=['*.*', 'mqttclient']),
     include_package_data=True,
-    install_requires=['pynose', 'packaging', 'future'],
-    test_suite='nose.collector',
-    tests_require=['pynose'])
+    install_requires=['pytest', 'pytest-cov', 'pytest-mock', 'packaging', 'future'],
+    test_suite='pytest',
+    tests_require=['pytest', 'pytest-cov', 'pytest-mock'])

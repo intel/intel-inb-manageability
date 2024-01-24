@@ -215,7 +215,7 @@ RUN cp -v docker-sample-container/docker/certs/succeed_rpm_key.pem /output
 
 FROM base as fpm
 WORKDIR /
-RUN wget https://github.com/certifi/python-certifi/archive/refs/tags/2020.12.05.zip -O python-certifi-src-2020.12.05.zip
+RUN wget https://github.com/certifi/python-certifi/archive/refs/tags/2023.07.22.zip -O python-certifi-src-2023.07.22.zip
 COPY inbm/fpm /src/fpm
 WORKDIR /src/fpm
 COPY --from=inb-provision-certs /output/inb-provision-certs /src/fpm/mqtt/template/usr/bin/inb-provision-certs
@@ -224,7 +224,7 @@ COPY --from=inb-provision-ota-cert /output/inb-provision-ota-cert /src/fpm/mqtt/
 RUN mkdir -p /src/fpm/mqtt/template/usr/share/intel-manageability
 COPY third-party-programs.txt /src/fpm/mqtt/template/usr/share/intel-manageability/third-party-programs.txt
 COPY inbm/version.txt /src/version.txt
-RUN mv /python-certifi-src-2020.12.05.zip /src/fpm/mqtt/template/usr/share/intel-manageability && \
+RUN mv /python-certifi-src-2023.07.22.zip /src/fpm/mqtt/template/usr/share/intel-manageability && \
     echo "The certifi source code is governed by the terms of the Mozilla Public License 2.0." >/src/fpm/mqtt/template/usr/share/intel-manageability/python-certifi-src-NOTICE.txt
 RUN perl -pi -e 'chomp if eof' /src/version.txt
 RUN rm -rf output/ && \

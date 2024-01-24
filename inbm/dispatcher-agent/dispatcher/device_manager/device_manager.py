@@ -1,7 +1,7 @@
 """
     Superclass responsible for device power and decommissioning.
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -20,24 +20,24 @@ from ..device_manager.constants import (
 logger = logging.getLogger(__name__)
 
 
-class DeviceManager(abc.ABC):
+class DeviceManager(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
-    def restart(self):
+    def restart(self) -> str:
         """Restart the device
 
         @return: (str) Message on success
         """
 
     @abc.abstractmethod
-    def shutdown(self):
+    def shutdown(self) -> str:
         """Shutdown the device
 
         @return: (str) Message on success
         """
 
     @abc.abstractmethod
-    def decommission(self):
+    def decommission(self) -> str:
         """Decommission the device
 
         @return: (str) Message on success

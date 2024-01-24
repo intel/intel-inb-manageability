@@ -1,7 +1,7 @@
 """
     FOTA update tool which is called from the dispatcher during installation
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -22,13 +22,13 @@ from inbm_lib.constants import DOCKER_CHROOT_PREFIX
 from . import constants
 from typing import Tuple, Optional, Dict
 
+from .guid import extract_guids
 from .constants import WINDOWS_NUC_PLATFORM
 from .fota_error import FotaError
-from ..dispatcher_callbacks import DispatcherCallbacks
+from ..dispatcher_broker import DispatcherBroker
 from ..packagemanager.irepo import IRepo
 from abc import ABC
 from inbm_common_lib.utility import get_canonical_representation_of_path
-
 
 logger = logging.getLogger(__name__)
 
@@ -68,13 +68,13 @@ class BiosFactory(ABC):
     """Abstract Factory for creating the concrete classes based on the BIOS
     on the platform.
 
-    @param dispatcher_callbacks: callback to dispatcher
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param repo: string representation of dispatcher's repository path
     @param params: platform product parameters
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
-        self._dispatcher_callbacks = dispatcher_callbacks
+    def __init__(self,  dispatcher_broker: DispatcherBroker, repo: IRepo, params: Dict) -> None:
         self._repo = repo
         self._runner = PseudoShellRunner()
         self._fw_file: Optional[str] = None
@@ -86,8 +86,10 @@ class BiosFactory(ABC):
         self._fw_tool_args = params.get('firmware_tool_args', '')
         self._fw_dest = params.get('firmware_dest_path', None)
         self._fw_tool_check_args = params.get('firmware_tool_check_args', None)
+        self._dispatcher_broker = dispatcher_broker
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename
@@ -98,12 +100,13 @@ class BiosFactory(ABC):
         pass
 
     @staticmethod
-    def get_factory(platform_product: Optional[str], params: Dict, callback: DispatcherCallbacks, repo: IRepo) -> "BiosFactory":
+    def get_factory(platform_product: Optional[str], params: Dict,
+                    dispatcher_broker: DispatcherBroker, repo: IRepo) -> "BiosFactory":
         """Checks if the current platform is supported or not
 
         @param platform_product: platform product name
         @param params: platform product parameters from the fota conf file 
-        @param callback: callback to dispatcher
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param repo: string representation of dispatcher's repository path
         @raises: FotaError
         """
@@ -111,13 +114,13 @@ class BiosFactory(ABC):
         fw_dest = params.get('firmware_dest_path', None)
         if platform.system() == "Linux":
             if fw_dest:
-                return LinuxFileFirmware(callback, repo, params)
+                return LinuxFileFirmware(dispatcher_broker, repo, params)
             else:
-                return LinuxToolFirmware(callback, repo, params)
+                return LinuxToolFirmware(dispatcher_broker, repo, params)
         elif platform.system() == 'Windows':
             if (platform_product is not None) and (WINDOWS_NUC_PLATFORM in platform_product):
                 logger.debug("Windows NUC product name detected")
-                return WindowsBiosNUC(callback, repo, params)
+                return WindowsBiosNUC(repo,  params, dispatcher_broker)
             else:
                 raise FotaError("The current Windows system is unsupported.")
         else:
@@ -146,13 +149,13 @@ class BiosFactory(ABC):
         """Extract the tar file
 
         @param repo_name: path to the downloaded package
-        @param pkg_filename: downloaded package
+        @param pkg_filename: downloaded package name
         @raises: FotaError
         """
         logger.debug(f"repo_name:{repo_name}, pkg_filename:{pkg_filename}")
         cmd = "tar -xvf " + str(Path(repo_name) / pkg_filename) + \
-            " --no-same-owner -C " + repo_name
-        (out, err, code) = PseudoShellRunner.run(cmd)
+              " --no-same-owner -C " + repo_name
+        (out, err, code) = PseudoShellRunner().run(cmd)
         fw_file, cert_file = BiosFactory.get_files(out)
         if code == 0 and not err:
             return fw_file, cert_file
@@ -160,7 +163,8 @@ class BiosFactory(ABC):
             e = f"Firmware Update Aborted: Invalid File sent. error: {err}"
             raise FotaError(e)
 
-    def delete_files(self, pkg_filename: Optional[str], fw_filename: Optional[str], cert_filename: Optional[str]) -> None:
+    def delete_files(self, pkg_filename: Optional[str], fw_filename: Optional[str],
+                     cert_filename: Optional[str]) -> None:
         """Deletes the downloaded and extracted files
 
         @param pkg_filename: downloaded package filename
@@ -180,56 +184,39 @@ class LinuxToolFirmware(BiosFactory):
     """Derived class constructor invoking base class constructor for 
     Linux devices that use Firmware tool to perform the update.
 
-    @param dispatcher_callbacks: callback to dispatcher
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param repo: string representation of dispatcher's repository path
     @param params: platform product parameters from the fota conf file 
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
-        super().__init__(dispatcher_callbacks, repo, params)
+    def __init__(self,
+                 dispatcher_broker: DispatcherBroker,
+                 repo: IRepo,
+                 params: Dict) -> None:
+        super().__init__(dispatcher_broker, repo, params)
 
-    def _parse_guid(self, output: str) -> Optional[str]:
-        """Method to parse the shell command output to retrieve the value of system firmware type
-
-        @param output: shell command output of ehl firmware tool
-        @return: string value if system firmware type is present if not return None
-        """
-        for line in output.splitlines():
-            if "System Firmware type" in line or "system-firmware type" in line:
-                return line.split(',')[1].split()[0].strip('{').strip('}')
-        return None
-
-    def _extract_guid(self, runner: PseudoShellRunner) -> Optional[str]:
-        """Method to get system firmware type
-
-        @param runner: To run shell commands
-        @return: None or guid
-        """
-        cmd = self._fw_tool + " -l"
-        (out, err, code) = runner.run(cmd)
-        if code != 0:
-            raise FotaError("Firmware Update Aborted: failed to list GUIDs: {}".format(str(err)))
-        guid = self._parse_guid(out)
-        logger.debug("GUID : " + str(guid))
-        if not guid:
-            raise FotaError("Firmware Update Aborted: No System Firmware type GUID found")
-        return guid
-
-    def _apply_firmware(self, repo_name: str, fw_file: Optional[str], guid: Optional[str], tool_options: Optional[str], runner: PseudoShellRunner) -> None:
+    def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
+                        tool_options: Optional[str], runner: PseudoShellRunner) -> None:
         """Updates firmware on the platform by calling the firmware update tool
 
         @param repo_name: path to downloaded package
         @param fw_file: firmware file name
-        @param guid: system fw type
+        @param manifest_guid: GUID provided by the user in the manifest
         @param tool_options: tool_options used along with fw tool
         @param runner: To run shell commands
         @raises FotaError: on failed firmware attempt
         """
+        guid = ''
         if self._guid_required:
-            if not guid:
-                guid = self._extract_guid(runner)
-        else:
-            guid = ''
+            # get the GUID from the system using FW tool
+            extracted_guids = extract_guids(
+                self._fw_tool, ["System Firmware type", "system-firmware type"])
+            if manifest_guid:
+                if manifest_guid not in extracted_guids:
+                    raise FotaError(
+                        f"GUID in manifest does not match any system firmware GUID on the system")
+                else:
+                    guid = manifest_guid
 
         if not tool_options:
             tool_options = ''
@@ -242,7 +229,7 @@ class LinuxToolFirmware(BiosFactory):
         logger.debug(f"Using fw tool: {self._fw_tool}")
         logger.debug("Applying Firmware...")
         if self._fw_tool == AFULNX_64:
-            self._dispatcher_callbacks.broker_core.telemetry(
+            self._dispatcher_broker.telemetry(
                 "Device will be rebooting upon successful firmware install.")
         is_docker_app = os.environ.get("container", False)
         if is_docker_app:
@@ -251,7 +238,7 @@ class LinuxToolFirmware(BiosFactory):
         else:
             (out, err, code) = runner.run(cmd)
         if code == 0:
-            self._dispatcher_callbacks.broker_core.telemetry("Apply firmware command successful.")
+            self._dispatcher_broker.telemetry("Apply firmware command successful.")
         else:
             logger.debug(out)
             logger.debug(err)
@@ -259,7 +246,8 @@ class LinuxToolFirmware(BiosFactory):
                 err = "Firmware command failed"
             raise FotaError(f"Error: {err}")
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename
@@ -297,15 +285,16 @@ class LinuxFileFirmware(BiosFactory):
     """Derived class constructor invoking base class constructor for 
     Linux devices that use Firmware file to update firmware.
 
-        @param dispatcher_callbacks: callback to dispatcher
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param repo: string representation of dispatcher's repository path
         @param params: platform product parameters from the FOTA conf file
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
-        super().__init__(dispatcher_callbacks, repo, params)
+    def __init__(self,  dispatcher_broker: DispatcherBroker, repo: IRepo, params: Dict) -> None:
+        super().__init__(dispatcher_broker, repo, params)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and applies firmware update and deletes the
         files after the update
 
@@ -334,14 +323,15 @@ class LinuxFileFirmware(BiosFactory):
 class WindowsBiosNUC(BiosFactory):
     """Derived class constructor invoking base class constructor for variable assignment
 
-    @param dispatcher_callbacks: callback to dispatcher
     @param repo: string representation of dispatcher's repository path
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     """
 
-    def __init__(self, dispatcher_callbacks: DispatcherCallbacks, repo: IRepo, params: Dict) -> None:
-        super().__init__(dispatcher_callbacks, repo, params)
+    def __init__(self,  repo: IRepo, params: Dict, dispatcher_broker: DispatcherBroker) -> None:
+        super().__init__(dispatcher_broker, repo, params)
 
-    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None, guid: Optional[str] = None) -> None:
+    def install(self, pkg_filename: str, repo_name: str, tool_options: Optional[str] = None,
+                guid: Optional[str] = None) -> None:
         """Extracts files from the downloaded package and delete the files after the update
 
         @param pkg_filename: downloaded package filename
