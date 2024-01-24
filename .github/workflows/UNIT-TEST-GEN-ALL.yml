@@ -32,9 +32,10 @@ jobs:
     steps:
       - id: maximus-ut-gen-action
         run: |
-          cp /home/runner/scripts/.env ../../../genai_ut_gen/
-          chmod +x ../../../genai_ut_gen/get_unittest_details.sh
-          ../../../genai_ut_gen/get_unittest_details.sh
+          cd ../../../genai_ut_gen
+          cp /home/runner/scripts/.env .
+          chmod +x ./get_unittest_details.sh
+          ./get_unittest_details.sh
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       TASK_TYPE: generate
@@ -48,9 +49,10 @@ jobs:
     steps:
       - id: maximus-ut-run-action
         run: |
-          cp /home/runner/scripts/.env ../../../genai_ut_gen/
-          chmod +x ../../../genai_ut_gen/get_unittest_details.sh
-          ../../../genai_ut_gen/get_unittest_details.sh
+          cd ../../../genai_ut_gen
+          cp /home/runner/scripts/.env .
+          chmod +x ./get_unittest_details.sh
+          ./get_unittest_details.sh
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       TASK_TYPE: run
