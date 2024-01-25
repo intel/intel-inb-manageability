@@ -50,6 +50,8 @@ The below tables represent the different sections of the configuration file.
 | certFile             |     /etc/ssl/certs/csl-ca-cert.pem     | path the cert file |
 
 ### SOTA
+Note: ubuntuAptSource tag is no longer used in/After 4.2.0 Version 
+
 | Key                    |     Default Value      | Description                                                                              |
 |:-----------------------|:----------------------:|:-----------------------------------------------------------------------------------------|
 | ubuntuAptSource        | http://yoururl/ubuntu/ | Location used to update Ubuntu                                                           |

@@ -534,6 +534,8 @@ To send the whole manifest with edited parameters at once,
 -   To overwrite the existing configuration file with a new one then use
     the **Load Element Manifest**.
 
+Note: ubuntuAptSource tag is no longer used in/After 4.2.0 Version
+
 The following commands are useful to append, remove values for
 parameters that have multiple values. Parameters that have multiple
 values are **trustedRepositories**, **sotaSW** and **ubuntuAptSource**.
