@@ -102,7 +102,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
         """Adds a source file and optional GPG key to be used during Ubuntu application updates."""
-        # Step 1: Verify gpg key uri from trusted repo list 
+        # Step 1: Verify GPG key URI from trusted repo list
         if parameters.gpg_key_name and parameters.gpg_key_uri:
             try:
                url = parameters.gpg_key_uri
@@ -110,7 +110,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
                source = url[:-(len(url.split('/')[-1]) + 1)]
                verify_source(source=source, dispatcher_broker=self._dispatcher_broker)
             except (DispatcherException, IndexError) as err:
-               raise SourceError(f"Source Gpg key URI verification check failed: {err}")
+               raise SourceError(f"Source GPG key URI verification check failed: {err}")
             # Step 2: Add key (Optional)
             add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
 

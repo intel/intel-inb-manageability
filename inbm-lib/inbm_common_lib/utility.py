@@ -13,7 +13,7 @@ import logging
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, Optional, Union
 
 from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -124,7 +124,7 @@ def remove_file(path: Union[str, Path]) -> bool:
         return False
 
 
-def create_file_with_contents(path: Union[str, Path], contents: List[str]) -> None:
+def create_file_with_contents(path: Union[str, Path], contents: list[str]) -> None:
     """ Create a file and add the contents by line
 
     @param path: location of file to create
@@ -138,7 +138,7 @@ def create_file_with_contents(path: Union[str, Path], contents: List[str]) -> No
         raise IOError(f"Error while writing file: {str(e)}")
 
 
-def remove_file_list(path: List[str]) -> None:
+def remove_file_list(path: list[str]) -> None:
     """ Remove file from the given path list
 
     @param path: list of string representing the location of file
@@ -222,7 +222,7 @@ def safe_extract(tarball: tarfile.TarFile,
     tarball.extractall(path, members, numeric_owner=numeric_owner) 
 
 
-def validate_file_type(path: List[str]) -> None:
+def validate_file_type(path: list[str]) -> None:
     """ Method to check target file's type. Example of supported file list:
 
     If the file is tarball, the content is extracted and all files will be identified.
@@ -233,8 +233,8 @@ def validate_file_type(path: List[str]) -> None:
     """
     logger.debug("Supported file type prefixes: {0}".format(VALID_MAGIC_FILE_TYPE_PREFIXES))
 
-    tarball_list: List[str] = [x for x in path if (not str(x).endswith('.mender') and tarfile.is_tarfile(x))]
-    extracted_file_list: List[str] = []
+    tarball_list: list[str] = [x for x in path if (not str(x).endswith('.mender') and tarfile.is_tarfile(x))]
+    extracted_file_list: list[str] = []
 
     for tarball in tarball_list:
         with tarfile.open(tarball) as tar:
