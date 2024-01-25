@@ -1170,7 +1170,7 @@ Events Log in the dashboard below the OTA buttons.
 
 **Required Fields**: Command and Path
 
-Note: ubuntuAptSource tag is no longer used in/After 4.2.0 Version
+Note: ubuntuAptSource tag is no longer used from 4.3.0 Version
 
 **NOTE:**
 > - Append is only applicable to three configuration tags i.e
