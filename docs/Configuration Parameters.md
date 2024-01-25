@@ -49,7 +49,6 @@ The below tables represent the different sections of the configuration file.
 | token                | /etc/opt/csl/csl-node/long-lived-token | path to token      |
 | certFile             |     /etc/ssl/certs/csl-ca-cert.pem     | path the cert file |
 
-### SOTA
 Note: ubuntuAptSource tag is no longer used in/After 4.2.0 Version 
 
 | Key                    |     Default Value      | Description                                                                              |
