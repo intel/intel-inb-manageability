@@ -200,7 +200,7 @@ class TestUbuntuApplicationSourceManager:
         try:
             params = ApplicationAddSourceParameters(
                 source_list_file_name="google-chrome.sources",
-                sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
+                sources=["deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"],
                 gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
                 gpg_key_name="google-chrome.gpg"
             )
@@ -217,12 +217,12 @@ class TestUbuntuApplicationSourceManager:
         try:
             params = ApplicationAddSourceParameters(
                 source_list_file_name="google-chrome.sources",
-                sources="X-Repolib-Name: Google Chrome"
-                        "Enabled: yes"
-                        "Types: deb"
-                        "URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub"
-                        "Suites: stable"
-                        "Components: main",
+                sources=["X-Repolib-Name: Google Chrome",
+                        "Enabled: yes",
+                        "Types: deb",
+                        "URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub",
+                        "Suites: stable",
+                        "Components: main"],
             )
             command = UbuntuApplicationSourceManager(broker)
             with patch("builtins.open", new_callable=mock_open()):
@@ -292,7 +292,7 @@ class TestUbuntuApplicationSourceManager:
     def test_failed_add_gpg_key_method(self, mock_verify_source):
         parameters = ApplicationAddSourceParameters(
             source_list_file_name="example_source.list",
-            sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
+            sources=["deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"],
             gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
             gpg_key_name="name"
         )
@@ -300,7 +300,7 @@ class TestUbuntuApplicationSourceManager:
         command = UbuntuApplicationSourceManager(broker)
         with pytest.raises(SourceError) as ex:
             command.add(parameters)
-        assert str(ex.value) == 'Source Gpg key URI verification check failed: error'
+        assert str(ex.value) == 'Source GPG key URI verification check failed: error'
 
 
     @patch("dispatcher.source.ubuntu_source_manager.verify_source")
@@ -308,7 +308,7 @@ class TestUbuntuApplicationSourceManager:
         mock_verify_source.return_value = True 
         parameters = ApplicationAddSourceParameters(
             source_list_file_name="example_source.list",
-            sources="deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
+            sources=["deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"],
             gpg_key_uri="https://dl-ssl.google.com/linux/linux_signing_key.pub",
             gpg_key_name="name"
         )
@@ -318,15 +318,15 @@ class TestUbuntuApplicationSourceManager:
               patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):    
             command.add(parameters)
 
-    def test_raises_when_space_check_fails(self):
+    def test_raises_when_name_check_fails(self):
         parameters = ApplicationRemoveSourceParameters(
-            gpg_key_name="example_source.gpg", source_list_file_name="../example_source.list"
+            gpg_key_name="example_source.gpg", source_list_file_name="invalid/chars*in:name.list"
         )
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         command = UbuntuApplicationSourceManager(broker)
         with pytest.raises(SourceError) as ex:
             command.remove(parameters)
-        assert str(ex.value) == "Invalid file name: ../example_source.list"
+        assert str(ex.value) == "Invalid file name: invalid/chars*in:name.list"
 
     @patch("dispatcher.source.ubuntu_source_manager.remove_file", return_value=False)
     def test_raises_when_unable_to_remove_file(self, mock_remove_file):
