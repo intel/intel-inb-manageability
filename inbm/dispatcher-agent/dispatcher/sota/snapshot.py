@@ -243,10 +243,9 @@ class DebianBasedSnapshot(Snapshot):
         dispatcher_state.clear_dispatcher_state()
         if self.snap_num:
             self._rollback_and_delete_snap()            
-            if rebooter.is_reboot(self._device_reboot):
-                time.sleep(time_to_wait_before_reboot)
-                logger.debug("Rebooting to recover from failed SOTA...")
-                rebooter.reboot()
+            time.sleep(time_to_wait_before_reboot)
+            logger.debug("Rebooting to recover from failed SOTA...")
+            rebooter.reboot()
         else:
             logger.info("No snapshot. Cancel reboot.")
 
@@ -393,9 +392,8 @@ class YoctoSnapshot(Snapshot):
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
-        if rebooter.is_reboot(self._device_reboot):
-            time.sleep(time_to_wait_before_reboot)
-            rebooter.reboot()
+        time.sleep(time_to_wait_before_reboot)
+        rebooter.reboot()
 
     def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
@@ -406,9 +404,8 @@ class YoctoSnapshot(Snapshot):
         """
         logger.debug("time_to_wait_before_reboot = " + str(time_to_wait_before_reboot))
         dispatcher_state.clear_dispatcher_state()
-        if rebooter.is_reboot(self._device_reboot):
-            time.sleep(time_to_wait_before_reboot)
-            rebooter.reboot()
+        time.sleep(time_to_wait_before_reboot)
+        rebooter.reboot()
 
     def update_system(self) -> None:
         """If the system supports it, check whether the system was updated, after rebooting.

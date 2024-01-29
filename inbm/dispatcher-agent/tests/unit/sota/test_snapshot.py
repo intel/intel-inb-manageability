@@ -189,7 +189,7 @@ class TestYoctoSnapshot(unittest.TestCase):
         dispatcher_broker = Mock()
 
         yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_broker, "1", True, "Y")
-        failed = False
+        failed = False  
         try:
             yocto_snapshot.take_snapshot()
         except SotaError:
