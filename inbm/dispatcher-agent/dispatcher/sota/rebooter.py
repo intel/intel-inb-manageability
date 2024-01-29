@@ -30,6 +30,9 @@ class Rebooter:
         logger.debug("")
         self._dispatcher_broker.telemetry("Rebooting ")
         time.sleep(2)
+        
+    def is_reboot(self, device_reboot: str) -> bool:
+        return False if device_reboot in ["No", "N", "n", "no", "NO"] else True
 
 
 class LinuxRebooter(Rebooter):

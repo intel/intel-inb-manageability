@@ -41,11 +41,12 @@ class Snapshot(metaclass=ABCMeta):  # pragma: no cover
     """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,  snap_num: Optional[str],
-                 proceed_without_rollback: bool) -> None:
+                 proceed_without_rollback: bool, device_reboot: str) -> None:
         self.trtl = trtl
         self.sota_cmd = sota_cmd
         self.snap_num = snap_num
         self.proceed_without_rollback = proceed_without_rollback
+        self._device_reboot = device_reboot
 
     @abstractmethod
     def take_snapshot(self) -> None:
@@ -106,9 +107,10 @@ class DebianBasedSnapshot(Snapshot):
         """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,
-                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
+                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str], 
+                 proceed_without_rollback: bool, device_reboot: str) -> None:
         super().__init__(trtl, sota_cmd,
-                         snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback, device_reboot)
         self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
@@ -225,8 +227,9 @@ class DebianBasedSnapshot(Snapshot):
             self._rollback_and_delete_snap()
         else:
             time.sleep(time_to_wait_before_reboot)
-        logger.debug("Rebooting to recover from failed SOTA...")
-        rebooter.reboot()
+            if rebooter.is_reboot(self._device_reboot):
+                logger.debug("Rebooting to recover from failed SOTA...")
+                rebooter.reboot()
 
     def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
@@ -239,9 +242,11 @@ class DebianBasedSnapshot(Snapshot):
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
         if self.snap_num:
-            self._rollback_and_delete_snap()
-            time.sleep(time_to_wait_before_reboot)
-            rebooter.reboot()
+            self._rollback_and_delete_snap()            
+            if rebooter.is_reboot(self._device_reboot):
+                time.sleep(time_to_wait_before_reboot)
+                logger.debug("Rebooting to recover from failed SOTA...")
+                rebooter.reboot()
         else:
             logger.info("No snapshot. Cancel reboot.")
 
@@ -263,9 +268,9 @@ class WindowsSnapshot(Snapshot):  # pragma: no cover
         """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,  snap_num: Optional[str],
-                 proceed_without_rollback: bool) -> None:
+                 proceed_without_rollback: bool, device_reboot: str) -> None:
         super().__init__(trtl, sota_cmd,
-                         snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback, device_reboot)
 
     def take_snapshot(self) -> None:
         """Takes a Snapshot through Trtl before running commands. if Snapshot fails,
@@ -327,9 +332,9 @@ class YoctoSnapshot(Snapshot):
    """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,
-                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
+                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool, device_reboot: str) -> None:
         super().__init__(trtl, sota_cmd,
-                         snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback, device_reboot)
         self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
@@ -388,8 +393,9 @@ class YoctoSnapshot(Snapshot):
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
-        time.sleep(time_to_wait_before_reboot)
-        rebooter.reboot()
+        if rebooter.is_reboot(self._device_reboot):
+            time.sleep(time_to_wait_before_reboot)
+            rebooter.reboot()
 
     def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
@@ -400,8 +406,9 @@ class YoctoSnapshot(Snapshot):
         """
         logger.debug("time_to_wait_before_reboot = " + str(time_to_wait_before_reboot))
         dispatcher_state.clear_dispatcher_state()
-        time.sleep(time_to_wait_before_reboot)
-        rebooter.reboot()
+        if rebooter.is_reboot(self._device_reboot):
+            time.sleep(time_to_wait_before_reboot)
+            rebooter.reboot()
 
     def update_system(self) -> None:
         """If the system supports it, check whether the system was updated, after rebooting.

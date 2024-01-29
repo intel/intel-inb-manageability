@@ -24,7 +24,7 @@ class TestSnapshot(unittest.TestCase):
     def test_ubuntu_delete_snap(self, order, rc, err, mock_del_snap) -> None:
         factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
-        snapshot = factory.create_snapshotter("update", '1', False)
+        snapshot = factory.create_snapshotter("update", '1', False, 'Y')
         mock_del_snap.return_value = (rc, err)
         val = snapshot.commit()
         mock_del_snap.assert_called_once()
@@ -40,7 +40,7 @@ class TestSnapshot(unittest.TestCase):
     def test_ubuntu_snapshot(self, order, rc, err, mock_trtl_single_snapshot, mock_state) -> None:
         factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
-        snapshot = factory.create_snapshotter("update", '1', False)
+        snapshot = factory.create_snapshotter("update", '1', False, 'Y')
         with patch('builtins.open', new_callable=mock_open()) as m:
             if order == 1:
                 mock_trtl_single_snapshot.return_value = (rc, err)
@@ -55,7 +55,7 @@ class TestSnapshot(unittest.TestCase):
     def test_Ubuntu_snapshot_raises1(self, rc, err, mock_pickle_dump, mock_trtl_single_snapshot) -> None:
         factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
-        snapshot = factory.create_snapshotter("update", '1', False)
+        snapshot = factory.create_snapshotter("update", '1', False, 'Y')
         with patch('builtins.open', new_callable=mock_open()) as m:
             mock_trtl_single_snapshot.return_value = (rc, err)
             with self.assertRaises(SotaError):
@@ -69,7 +69,7 @@ class TestSnapshot(unittest.TestCase):
         with patch('builtins.open', new_callable=mock_open()) as m:
             factory = SotaOsFactory(
                 MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
-            snapshot = factory.create_snapshotter("update", '1', False)
+            snapshot = factory.create_snapshotter("update", '1', False, 'Y')
             mock_trtl_single_snapshot.return_value = (rc, err)
             try:
                 snapshot.take_snapshot()
@@ -86,7 +86,7 @@ class TestUbuntuSnapshot(unittest.TestCase):
         trtl = Mock()
         trtl.single_snapshot.return_value = "1", "Error!"
 
-        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_broker, "1", True)
+        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_broker, "1", True, 'Y')
         ubuntu_snapshot.take_snapshot()
         assert dispatcher_broker.telemetry.call_count > 0
 
@@ -101,7 +101,7 @@ class TestUbuntuSnapshot(unittest.TestCase):
         trtl = Mock()
         trtl.single_snapshot.return_value = "1", None
 
-        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_broker, "1", True)
+        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_broker, "1", True, 'Y')
         ubuntu_snapshot.take_snapshot()
 
         assert dispatcher_broker.telemetry.call_count > 0
@@ -113,7 +113,7 @@ class TestUbuntuSnapshot(unittest.TestCase):
         dispatcher_broker = Mock()
         trtl = Mock()
 
-        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_broker, "", True)
+        ubuntu_snapshot = DebianBasedSnapshot(trtl, "command", dispatcher_broker, "", True, "Y")
         ubuntu_snapshot._rollback_and_delete_snap()
 
         assert dispatcher_broker.telemetry.call_count > 0
@@ -124,7 +124,7 @@ class TestUbuntuSnapshot(unittest.TestCase):
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
     def test_revert_succeeds(self, mock_dispatcher_state) -> None:
         rebooter = Mock()
-        ubuntu_snapshot = DebianBasedSnapshot(Mock(), "command", Mock(), "", True)
+        ubuntu_snapshot = DebianBasedSnapshot(Mock(), "command", Mock(), "", True, "Y")
         ubuntu_snapshot._rollback_and_delete_snap = Mock()  # type: ignore[method-assign]
         ubuntu_snapshot.snap_num = "1"
         ubuntu_snapshot.revert(rebooter, 0)
@@ -143,7 +143,7 @@ class TestYoctoSnapshot(unittest.TestCase):
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
 
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_broker, "1", True)
+        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_broker, "1", True, "Y")
         yocto_snapshot.take_snapshot()
 
         assert dispatcher_broker.telemetry.call_count > 0
@@ -160,7 +160,7 @@ class TestYoctoSnapshot(unittest.TestCase):
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
 
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", Mock(), "1", True)
+        yocto_snapshot = YoctoSnapshot(Mock(), "command", Mock(), "1", True, "Y")
         yocto_snapshot.take_snapshot()
         mock_consume_disp_file.assert_called_once()
         mock_write_state_file.assert_called_once()
@@ -174,7 +174,7 @@ class TestYoctoSnapshot(unittest.TestCase):
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
 
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", Mock(), "1", True)
+        yocto_snapshot = YoctoSnapshot(Mock(), "command", Mock(), "1", True, "Y")
         yocto_snapshot.take_snapshot()
         mock_consume_disp_file.assert_not_called()
         mock_write_state_file.assert_called_once()
@@ -188,7 +188,7 @@ class TestYoctoSnapshot(unittest.TestCase):
         dispatcher_callbacks = Mock()
         dispatcher_broker = Mock()
 
-        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_broker, "1", True)
+        yocto_snapshot = YoctoSnapshot(Mock(), "command", dispatcher_broker, "1", True, "Y")
         failed = False
         try:
             yocto_snapshot.take_snapshot()
