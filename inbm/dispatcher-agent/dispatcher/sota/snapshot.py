@@ -242,9 +242,8 @@ class DebianBasedSnapshot(Snapshot):
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
         if self.snap_num:
-            self._rollback_and_delete_snap()            
+            self._rollback_and_delete_snap()
             time.sleep(time_to_wait_before_reboot)
-            logger.debug("Rebooting to recover from failed SOTA...")
             rebooter.reboot()
         else:
             logger.info("No snapshot. Cancel reboot.")
