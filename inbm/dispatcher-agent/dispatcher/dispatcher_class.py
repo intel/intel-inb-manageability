@@ -210,7 +210,7 @@ class Dispatcher:
                         create_snapshotter('update',
                                            snap_num='1',
                                            proceed_without_rollback=True, 
-                                           device_reboot='N').commit()
+                                           device_reboot='Y').commit()
                 except OSError:
                     # harmless here--mender commit is speculative
                     pass
