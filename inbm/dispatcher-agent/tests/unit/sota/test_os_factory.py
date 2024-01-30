@@ -33,16 +33,19 @@ class TestOsFactory(TestCase):
         self.assertRaises(ValueError, factory.get_os, "MacOS")
 
     def test_create_ubuntu_snapshot_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu').create_snapshotter('update', '1', False)) \
-            is DebianBasedSnapshot
+        ubuntu_os = SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu')
+        snapshotter = ubuntu_os.create_snapshotter('update', '1', False, True)
+        self.assertIsInstance(snapshotter, DebianBasedSnapshot)
 
     def test_create_yocto_snapshot_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('YoctoX86_64').create_snapshotter('update', '1', False)) \
-            is YoctoSnapshot
+        yocto_os = SotaOsFactory(self.mock_disp_broker, None, []).get_os('YoctoX86_64')
+        snapshotter = yocto_os.create_snapshotter('update', '1', False, True)
+        self.assertIsInstance(snapshotter, YoctoSnapshot)
 
     def test_create_windows_snapshot_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Windows').create_snapshotter('update', '1', False)) \
-            is WindowsSnapshot
+        windows_os = SotaOsFactory(self.mock_disp_broker, None, []).get_os('Windows')
+        snapshotter = windows_os.create_snapshotter('update', '1', False, True)
+        self.assertIsInstance(snapshotter, WindowsSnapshot)
 
     def test_create_ubuntu_updater_checker(self) -> None:
         assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu').create_os_updater()) \

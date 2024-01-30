@@ -99,13 +99,15 @@ class ISotaOs(ABC):
         pass
 
     @abstractmethod
-    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
+    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
+                           proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
         """Create a snapshotter object
 
         @param sota_cmd: Command to create a snapshot
         @param snap_num: Snapshot number
         @param proceed_without_rollback: True to not rollback the system in event of an error;
         False to rollback.
+        @param reboot_device: If True, reboot device on success or failure, otherwise, do not reboot.
         """
         pass
 
@@ -137,10 +139,12 @@ class YoctoX86_64(ISotaOs):
         logger.debug("")
         return YoctoX86_64Updater()
 
-    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
+    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
+                           proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num, proceed_without_rollback)
+        return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num,
+                             proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
         logger.debug("")
@@ -165,10 +169,12 @@ class YoctoARM(ISotaOs):
         logger.debug("")
         return YoctoARMUpdater()
 
-    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
+    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
+                           proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num, proceed_without_rollback)
+        return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_broker,
+                             snap_num, proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
         logger.debug("")
@@ -203,10 +209,12 @@ class DebianBasedSotaOs(ISotaOs):
         logger.debug("")
         return DebianBasedUpdater(self._package_list)
 
-    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
+    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
+                           proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return DebianBasedSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num, proceed_without_rollback)
+        return DebianBasedSnapshot(trtl, sota_cmd, self._dispatcher_broker,
+                                   snap_num, proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
         return DebianBasedDownloader()
@@ -232,10 +240,12 @@ class Windows(ISotaOs):
         logger.debug("")
         return WindowsUpdater()
 
-    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str], proceed_without_rollback: bool) -> Snapshot:
+    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
+                           proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner())
-        return WindowsSnapshot(trtl, sota_cmd, snap_num, proceed_without_rollback)
+        return WindowsSnapshot(trtl, sota_cmd, snap_num,
+                               proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
         return WindowsDownloader()

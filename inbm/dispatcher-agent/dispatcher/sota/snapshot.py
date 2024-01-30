@@ -38,14 +38,16 @@ class Snapshot(metaclass=ABCMeta):  # pragma: no cover
     @param sota_cmd: SOTA command (update)
     @param snap_num: snapshot number
     @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
+    @param reboot_device: If True, reboot device on success or failure, otherwise, do not reboot.
     """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,  snap_num: Optional[str],
-                 proceed_without_rollback: bool) -> None:
+                 proceed_without_rollback: bool, reboot_device: bool) -> None:
         self.trtl = trtl
         self.sota_cmd = sota_cmd
         self.snap_num = snap_num
         self.proceed_without_rollback = proceed_without_rollback
+        self._reboot_device = reboot_device
 
     @abstractmethod
     def take_snapshot(self) -> None:
@@ -103,12 +105,14 @@ class DebianBasedSnapshot(Snapshot):
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param snap_num: snapshot number
         @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
+        @param reboot_device: If True, reboot device on success or failure, otherwise, do not reboot.
         """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,
-                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
+                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str],
+                 proceed_without_rollback: bool, reboot_device: bool) -> None:
         super().__init__(trtl, sota_cmd,
-                         snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback, reboot_device)
         self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
@@ -227,8 +231,9 @@ class DebianBasedSnapshot(Snapshot):
             rebooter.reboot()
         else:
             time.sleep(time_to_wait_before_reboot)
-        #logger.debug("Rebooting to recover from failed SOTA...")
-        #rebooter.reboot()
+            if self._reboot_device:
+                logger.debug("Rebooting to recover from failed SOTA...")
+                rebooter.reboot()
 
     def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
@@ -262,12 +267,13 @@ class WindowsSnapshot(Snapshot):  # pragma: no cover
         @param sota_cmd: SOTA command (update)
         @param snap_num: snapshot number
         @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
+        @param reboot_device: If True, reboot device on success or failure, otherwise, do not reboot.
         """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,  snap_num: Optional[str],
-                 proceed_without_rollback: bool) -> None:
+                 proceed_without_rollback: bool, reboot_device: bool) -> None:
         super().__init__(trtl, sota_cmd,
-                         snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback, reboot_device)
 
     def take_snapshot(self) -> None:
         """Takes a Snapshot through Trtl before running commands. if Snapshot fails,
@@ -329,9 +335,10 @@ class YoctoSnapshot(Snapshot):
    """
 
     def __init__(self, trtl: Trtl, sota_cmd: str,
-                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str], proceed_without_rollback: bool) -> None:
+                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str],
+                 proceed_without_rollback: bool, reboot_device: bool) -> None:
         super().__init__(trtl, sota_cmd,
-                         snap_num, proceed_without_rollback)
+                         snap_num, proceed_without_rollback, reboot_device)
         self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
