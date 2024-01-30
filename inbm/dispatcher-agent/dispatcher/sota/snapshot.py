@@ -223,10 +223,12 @@ class DebianBasedSnapshot(Snapshot):
         dispatcher_state.clear_dispatcher_state()
         if self.snap_num:
             self._rollback_and_delete_snap()
+            logger.debug("Rebooting to recover from failed SOTA...")
+            rebooter.reboot()
         else:
             time.sleep(time_to_wait_before_reboot)
-        logger.debug("Rebooting to recover from failed SOTA...")
-        rebooter.reboot()
+        #logger.debug("Rebooting to recover from failed SOTA...")
+        #rebooter.reboot()
 
     def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
