@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
  - RTC 536078 - Added package list option to inbc, cloud, and internal manifest. This allows SOTA to run an install/upgrade command on a set of individual packages rather than all installed packages.
- - RTC  536910 - [source] Removal of ubuntuAptSource tag and code  with adoption of the new 'source' mechanism. 
+ - RTC  536910 - [Breaking Change] Removal of ubuntuAptSource tag and code  with adoption of the new 'source' mechanism. 
 
 
 ### Added
