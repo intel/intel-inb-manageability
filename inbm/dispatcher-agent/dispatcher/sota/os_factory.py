@@ -36,7 +36,7 @@ class SotaOsFactory:
     """
 
     def __init__(self,  dispatcher_broker: DispatcherBroker,
-                 sota_repos: Optional[str], package_list: list[str]) -> None:
+                 sota_repos: Optional[str] = None, package_list: list[str] = []) -> None:
         """Initializes OsFactory.
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
@@ -57,7 +57,7 @@ class SotaOsFactory:
             raise ValueError('Unsupported OS type.')
 
     def get_os(self, os_type) -> "ISotaOs":
-        """Gets the concrete Os-based class for the current operating system
+        """Gets the concrete OS-based class for the current operating system
 
         @return concrete class for the operating system
         """

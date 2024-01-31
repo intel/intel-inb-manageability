@@ -356,7 +356,7 @@ class SOTA:
                     self._update_logger.status = OTA_PENDING
                     self._update_logger.error = ""
                 self._update_logger.save_log()
-                if self.sota_mode == 'download-only' or not self._is_reboot_device():
+                if (self.sota_mode == 'download-only') or (not self._is_reboot_device()):
                     self._dispatcher_broker.telemetry("No reboot (SOTA pass)")
                 else:
                     self._dispatcher_broker.telemetry("Going to reboot (SOTA pass)")
@@ -373,7 +373,7 @@ class SOTA:
                 raise SotaError(SOTA_FAILURE)
 
     def _is_reboot_device(self) -> bool:
-        return False if self._reboot_device in ["No", "N", "n", "no", "NO"] else True
+        return self._reboot_device not in ["No", "N", "n", "no", "NO"]
     
     def check(self) -> None:
         """Perform manifest checking before SOTA"""

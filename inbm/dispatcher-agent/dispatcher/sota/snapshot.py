@@ -223,16 +223,15 @@ class DebianBasedSnapshot(Snapshot):
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
         """
-        logger.debug("time_to_wait_before_reboot = " + str(time_to_wait_before_reboot))
         dispatcher_state.clear_dispatcher_state()
         if self.snap_num:
             self._rollback_and_delete_snap()
             logger.debug("Rebooting to recover from failed SOTA...")
             rebooter.reboot()
-        else:
-            time.sleep(time_to_wait_before_reboot)
+        else:            
             if self._reboot_device:
-                logger.debug("Rebooting to recover from failed SOTA...")
+                logger.debug(f"Rebooting to recover from failed SOTA...time_to_wait_before_reboot = {str(time_to_wait_before_reboot)}")
+                time.sleep(time_to_wait_before_reboot)
                 rebooter.reboot()
 
     def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:

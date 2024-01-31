@@ -68,7 +68,7 @@ class TestSnapshot(unittest.TestCase):
     def test_Ubuntu_snapshot_raises2(self, rc, err, mock_trtl_single_snapshot) -> None:
         with patch('builtins.open', new_callable=mock_open()) as m:
             factory = SotaOsFactory(
-                MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Ubuntu')
+                MockDispatcherBroker.build_mock_dispatcher_broker()).get_os('Ubuntu')
             snapshot = factory.create_snapshotter("update", '1', False, True)
             mock_trtl_single_snapshot.return_value = (rc, err)
             try:
