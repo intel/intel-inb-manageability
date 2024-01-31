@@ -893,8 +893,7 @@ Note: ubuntuAptSource tag is no longer used from 4.2.0 Version
 
 #### Configuration Remove Manifest Example
 * *Remove* is only applicable to three configuration tags, for
-    example, **trustedRepositories**, **sotaSW** and
-    **ubuntuAptSource**.
+    example, **trustedRepositories** and **sotaSW** 
 * Path takes in key value pair format, example: trustedRepositories:https://dummyURL.com
 
 ```xml
