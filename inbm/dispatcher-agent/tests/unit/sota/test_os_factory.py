@@ -26,54 +26,58 @@ class TestOsFactory(TestCase):
                     []).get_os('YoctoX86_64')) is YoctoX86_64
 
     def test_get_factory_windows(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Windows')) is Windows
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('Windows')) is Windows
 
     def test_raise_error_unsupported_OsFactory(self) -> None:
-        factory = SotaOsFactory(self.mock_disp_broker, None, [])
-        self.assertRaises(ValueError, factory.get_os, "MacOS")
+        factory = SotaOsFactory(self.mock_disp_broker)
+        with self.assertRaises(ValueError):
+                factory.get_os("MacOS")
 
     def test_create_ubuntu_snapshot_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu').create_snapshotter('update', '1', False)) \
-            is DebianBasedSnapshot
+        ubuntu_os = SotaOsFactory(self.mock_disp_broker).get_os('Ubuntu')
+        snapshotter = ubuntu_os.create_snapshotter('update', '1', False, True)
+        self.assertIsInstance(snapshotter, DebianBasedSnapshot)
 
     def test_create_yocto_snapshot_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('YoctoX86_64').create_snapshotter('update', '1', False)) \
-            is YoctoSnapshot
+        yocto_os = SotaOsFactory(self.mock_disp_broker).get_os('YoctoX86_64')
+        snapshotter = yocto_os.create_snapshotter('update', '1', False, True)
+        self.assertIsInstance(snapshotter, YoctoSnapshot)
 
     def test_create_windows_snapshot_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Windows').create_snapshotter('update', '1', False)) \
-            is WindowsSnapshot
+        windows_os = SotaOsFactory(self.mock_disp_broker).get_os('Windows')
+        snapshotter = windows_os.create_snapshotter('update', '1', False, True)
+        self.assertIsInstance(snapshotter, WindowsSnapshot)
 
     def test_create_ubuntu_updater_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu').create_os_updater()) \
-            is DebianBasedUpdater
+        updater = SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu').create_os_updater()
+        self.assertIsInstance(updater, DebianBasedUpdater)
 
     def test_create_yocto_updater_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('YoctoX86_64').create_os_updater()) \
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('YoctoX86_64').create_os_updater()) \
             is YoctoX86_64Updater
 
     def test_create_ubuntu_setup_helper_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu').create_setup_helper()) \
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('Ubuntu').create_setup_helper()) \
             is DebianBasedSetupHelper
 
     def test_create_yocto_setup_helper_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('YoctoX86_64').create_setup_helper()) \
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('YoctoX86_64').create_setup_helper()) \
             is YoctoSetupHelper
 
     def test_create_windows_setup_helper_checker(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Windows').create_setup_helper()) \
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('Windows').create_setup_helper()) \
             is WindowsSetupHelper
 
     def test_create_ubuntu_downloader(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu').create_downloader()) \
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('Ubuntu').create_downloader()) \
             is DebianBasedDownloader
 
     def test_create_yocto_downloader(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('YoctoX86_64').create_downloader()) \
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('YoctoX86_64').create_downloader()) \
             is YoctoDownloader
 
     def test_create_windows_downloader(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker, None, []).get_os('Windows').create_downloader()) \
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('Windows').create_downloader()) \
             is WindowsDownloader
 
     @patch('platform.system')
