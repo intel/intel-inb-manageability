@@ -226,7 +226,7 @@ class XmlHandler:
 
     def get_root_elements(self, key: str, attr: str) -> list:
         """This function retrieves all the elements matching
-        the specified element, and it's attribute
+        the specified element, and its attribute
         @param key: element name
         @param attr: element's attribute name
         @return: list
