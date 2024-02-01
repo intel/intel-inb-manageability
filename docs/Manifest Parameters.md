@@ -853,8 +853,10 @@ The query command can be used to gather information about the system and the Vis
 
 #### Configuration Append Manifest Example
 
+Note: ubuntuAptSource tag is no longer used. 
+
 * Append is only applicable to three configuration tags, for example,
-    **trustedRepositories**, **sotaSW** and **ubuntuAptSource**
+    **trustedRepositories** and **sotaSW** 
 * Path takes in key value pair format, example: trustedRepositories:  https://dummyURL.com
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -891,8 +893,7 @@ The query command can be used to gather information about the system and the Vis
 
 #### Configuration Remove Manifest Example
 * *Remove* is only applicable to three configuration tags, for
-    example, **trustedRepositories**, **sotaSW** and
-    **ubuntuAptSource**.
+    example, **trustedRepositories** and **sotaSW** 
 * Path takes in key value pair format, example: trustedRepositories:https://dummyURL.com
 
 ```xml

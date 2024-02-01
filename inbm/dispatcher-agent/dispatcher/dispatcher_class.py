@@ -569,12 +569,6 @@ class Dispatcher:
                 else:
                     self.proceed_without_rollback = cleaned_payload
 
-            if config_name == "ubuntuAptSource":
-                if cleaned_payload is None:
-                    logger.error("No ubuntuAptSource selected!")
-                else:
-                    self._sota_repos = cleaned_payload
-
         try:
             logger.debug('Subscribing to: %s', STATE_CHANNEL)
             self._dispatcher_broker.mqtt_subscribe(STATE_CHANNEL, self._on_message)
