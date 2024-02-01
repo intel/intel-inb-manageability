@@ -2,7 +2,7 @@
 
 psutil==5.9.5
 types-psutil==5.9.5.17
-cryptography==41.0.7
+cryptography==42.0.2
 jsonschema==4.20.0
 types-jsonschema==4.20.0.0
 shortuuid==1.0.1

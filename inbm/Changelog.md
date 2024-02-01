@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?.?.? - ?
 
+### Security
+ - RTC 537811 - Bump cryptography from 41.0.6 to 42.0.2 in /inbm/dispatcher-agent (addresses CVE-2023-5678, CVE-2023-6129)
+
 ## 4.2.0 - 2024-01-23
 
 ### Changed
