@@ -49,7 +49,7 @@ The below tables represent the different sections of the configuration file.
 | token                | /etc/opt/csl/csl-node/long-lived-token | path to token      |
 | certFile             |     /etc/ssl/certs/csl-ca-cert.pem     | path the cert file |
 
-Note: ubuntuAptSource tag is no longer used from 4.2.0 Version 
+Note: ubuntuAptSource tag is no longer used. 
 
 | Key                    |     Default Value      | Description                                                                              |
 |:-----------------------|:----------------------:|:-----------------------------------------------------------------------------------------|

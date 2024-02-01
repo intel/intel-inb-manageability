@@ -853,7 +853,7 @@ The query command can be used to gather information about the system and the Vis
 
 #### Configuration Append Manifest Example
 
-Note: ubuntuAptSource tag is no longer used from 4.2.0 Version
+Note: ubuntuAptSource tag is no longer used. 
 
 * Append is only applicable to three configuration tags, for example,
     **trustedRepositories** and **sotaSW** 
