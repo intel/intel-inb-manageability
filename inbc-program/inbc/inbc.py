@@ -1,6 +1,6 @@
 """Command-line INBC tool to invoke Software update on the device with manageability framework.
 
-Copyright (C) 2020-2023 Intel Corporation
+Copyright (C) 2020-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 

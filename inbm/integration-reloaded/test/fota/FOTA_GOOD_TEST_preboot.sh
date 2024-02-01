@@ -12,7 +12,7 @@ trap print_all_error ERR
 test_echo "Copying new dmi Bios info"
 cp /scripts/dmi_bios_info/* /scripts/dmi_id_bios_info/
 
-cp ${VAGRANT_INPUT_PATH}/succeed_rpm_cert.pem /etc/intel-manageability/public/dispatcher-agent/ota_signature_cert.pem
+cp /scripts/succeed_rpm_cert.pem /etc/intel-manageability/public/dispatcher-agent/ota_signature_cert.pem
 
 FOTA_GOOD_XML="<?xml version='1.0' encoding='utf-8'?><manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample</name><description>Sample</description><type>fota</type><repo>remote</repo></header><type><fota name='sample'><fetch>http://127.0.0.1:80/BIOSUPDATE.tar</fetch><signature>`python3 /scripts/create_signature.py ${VAGRANT_INPUT_PATH}/succeed_rpm_key.pem ${VAGRANT_INPUT_PATH}/${BIOSUPDATE_TAR}  1234`</signature><biosversion>A..ZZZZ.B11.1</biosversion><vendor>Intel Corp.</vendor><manufacturer>testmanufacturer</manufacturer><product>Broxton P</product><releasedate>2017-06-23</releasedate><path>/boot/efi/</path></fota></type></ota></manifest>"
 

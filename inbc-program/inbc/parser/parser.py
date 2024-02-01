@@ -1,6 +1,6 @@
 """Parser class to parse the system argument
 
-   Copyright (C) 2020-2023 Intel Corporation
+   Copyright (C) 2020-2024 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 """
 import logging
@@ -159,6 +159,8 @@ class ArgsParser(object):
                                  choices=['update', 'pull', 'up',
                                           'down', 'import', 'load', 'remove'],
                                  help='Type of information [ update , pull, up, down, import, load, remove]')
+        aota_parser.add_argument('--signature', '-s', default="", required=False, help='Signature string',
+                                 type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         aota_parser.add_argument('--reboot', '-rb', default='no', required=False, choices=['yes', 'no'],
                                  help='Type of information [ yes | no ]')
         aota_parser.add_argument('--username', '-un', required=False, help='Username on the remote server',

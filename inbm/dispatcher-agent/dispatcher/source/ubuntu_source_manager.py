@@ -7,6 +7,9 @@ import glob
 import logging
 import os
 
+from dispatcher.packagemanager.package_manager import verify_source
+from dispatcher.dispatcher_broker import DispatcherBroker
+from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.source.source_exception import SourceError
 from dispatcher.source.constants import (
     UBUNTU_APT_SOURCES_LIST,
@@ -17,8 +20,9 @@ from dispatcher.source.constants import (
     ApplicationUpdateSourceParameters,
     SourceParameters,
 )
-from dispatcher.source.source_manager import ApplicationSourceManager, OsSourceManager
-from dispatcher.source.linux_gpg_key import remove_gpg_key_if_exists, add_gpg_key
+from .constants import LINUX_GPG_KEY_PATH
+from .source_manager import ApplicationSourceManager, OsSourceManager
+from .linux_gpg_key import add_gpg_key
 
 from inbm_common_lib.utility import (
     get_canonical_representation_of_path,
@@ -93,19 +97,27 @@ class UbuntuOsSourceManager(OsSourceManager):
 
 
 class UbuntuApplicationSourceManager(ApplicationSourceManager):
-    def __init__(self) -> None:
-        pass
+    def __init__(self, broker: DispatcherBroker) -> None:
+        self._dispatcher_broker = broker
 
     def add(self, parameters: ApplicationAddSourceParameters) -> None:
         """Adds a source file and optional GPG key to be used during Ubuntu application updates."""
-        # Step 1: Add key (Optional)
+        # Step 1: Verify GPG key URI from trusted repo list
         if parameters.gpg_key_name and parameters.gpg_key_uri:
+            try:
+               url = parameters.gpg_key_uri
+               #URL slicing to remove the last segment (filename) from the URL 
+               source = url[:-(len(url.split('/')[-1]) + 1)]
+               verify_source(source=source, dispatcher_broker=self._dispatcher_broker)
+            except (DispatcherException, IndexError) as err:
+               raise SourceError(f"Source GPG key URI verification check failed: {err}")
+            # Step 2: Add key (Optional)
             add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
 
-        # Step 2: Add the source
+        # Step 3: Add the source
         try:
             create_file_with_contents(
-                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.source_list_file_name), parameters.sources
             )
         except (IOError, OSError) as e:
             raise SourceError(f"Error adding application source list: {e}")
@@ -141,23 +153,25 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         """
         if parameters.gpg_key_name:
             # Remove the GPG key (Optional)
-            remove_gpg_key_if_exists(parameters.gpg_key_name)
+            path = os.path.join(LINUX_GPG_KEY_PATH, parameters.gpg_key_name)
+            if not remove_file(path):
+                logger.warning(f"Unable to remove GPG key: {path}")
 
         # Remove the file under /etc/apt/sources.list.d
         try:
             if (
-                os.path.sep in parameters.file_name
-                or parameters.file_name == ".."
-                or parameters.file_name == "."
+                os.path.sep in parameters.source_list_file_name
+                or parameters.source_list_file_name == ".."
+                or parameters.source_list_file_name == "."
             ):
-                raise SourceError(f"Invalid file name: {parameters.file_name}")
+                raise SourceError(f"Invalid file name: {parameters.source_list_file_name}")
 
             if not remove_file(
                 get_canonical_representation_of_path(
-                    os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name)
+                    os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.source_list_file_name)
                 )
             ):
-                raise SourceError(f"Error removing file: {parameters.file_name}")
+                raise SourceError(f"Error removing file: {parameters.source_list_file_name}")
         except OSError as e:
             raise SourceError(f"Error removing file: {e}") from e
 
@@ -165,7 +179,7 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         """Updates a source file in Ubuntu OS source file list under /etc/apt/sources.list.d"""
         try:
             create_file_with_contents(
-                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.file_name), parameters.sources
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.source_list_file_name), parameters.sources
             )
         except IOError as e:
             raise SourceError(f"Error occurred while trying to update sources: {e}") from e

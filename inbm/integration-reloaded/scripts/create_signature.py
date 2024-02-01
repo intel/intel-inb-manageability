@@ -18,11 +18,11 @@ else:
     if num_params == 4:
         password = sys.argv[3].encode('utf-8')
 
-with open(package_name) as package:
-    checksum = hashlib.sha384(package.read().encode('utf-8')).hexdigest()
+with open(package_name, 'rb') as package:
+    checksum = hashlib.sha384(package.read()).hexdigest()
 
-with open(file_name) as f:
-    priv_key = load_pem_private_key(f.read().encode('utf-8'), password=password, backend=default_backend())
+with open(file_name, 'rb') as f:
+    priv_key = load_pem_private_key(f.read(), password=password, backend=default_backend())
 
 signature = priv_key.sign(checksum.encode('utf-8'), padding.PSS(mgf=padding.MGF1(hashes.SHA384()), salt_length=padding.PSS.MAX_LENGTH), hashes.SHA384())
 

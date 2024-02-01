@@ -1,7 +1,7 @@
 """
     Module that handles parsing of XML files
 
-    Copyright (C) 2017-2023 Intel Corporation
+    Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 import io
@@ -148,7 +148,7 @@ class XmlHandler:
 
         @param xpath: path to key
         @param attribute_name: name of attribute
-        @return: attribute str if found else None
+        @return: value if found else None
         """
         logger.debug("XML get attr")
         element = self._root.find(xpath)
@@ -190,7 +190,7 @@ class XmlHandler:
 
         @param xpath: path to key
         @param attribute_value: value of attribute to set
-        @return: Xml in bytes
+        @return: XML in bytes
         @raises: XmlException when failed to update
         """
         try:
@@ -208,7 +208,7 @@ class XmlHandler:
         """Remove the attribute from xml if found.
 
         @param xpath: path to key
-        @return: Xml in bytes
+        @return: XML in bytes
         @raises: XmlException when failed to update
         """
         try:
@@ -226,7 +226,7 @@ class XmlHandler:
 
     def get_root_elements(self, key: str, attr: str) -> list:
         """This function retrieves all the elements matching
-        the specified element and it's attribute
+        the specified element, and its attribute
         @param key: element name
         @param attr: element's attribute name
         @return: list
@@ -242,8 +242,8 @@ class XmlHandler:
             raise XmlException(f"ERROR while fetching elements from root : {e}")
 
     def _getroot(self, xml: str) -> Any:
-        """This function validates and returns the root of the xml
-        @param xml: xml contents
+        """This function validates and returns the root of the XML
+        @param xml: XML contents
         @return: root path
         """
         logger.debug(f"XML : {mask_security_info(xml)}")

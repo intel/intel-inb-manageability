@@ -42,6 +42,13 @@ class TestInbc(TestCase):
         self.assertEqual(f.reboot, 'no')
         self.assertEqual(f.username, 'username')
 
+    def test_aota_with_signature(self) -> None:
+        arg_parser = ArgsParser()
+        f = arg_parser.parse_args(
+            ['aota', '-u', 'https://abc.com/test.deb', '--signature', 'ABCDEFG', '-a', 'application', '-c', 'update'])
+        self.assertEqual(f.uri, 'https://abc.com/test.deb')
+        self.assertEqual(f.signature, 'ABCDEFG')
+
     def test_fota_manifest_pass(self) -> None:
         f = self.arg_parser.parse_args(
             ['fota', '-un', 'username', '-to', '/b /p', '-u', 'https://abc.com/test.tar'])
@@ -207,6 +214,17 @@ class TestInbc(TestCase):
                    '><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>download-only</mode>' \
                    '<package_list>hello,cowsay</package_list><deviceReboot>no</deviceReboot></sota></type>' \
                    '</ota></manifest>'
+        self.assertEqual(s.func(s), expected)
+
+    def test_create_aota_deb_update_manifest_with_signature(self) -> None:
+        s = self.arg_parser.parse_args(
+            ['aota', '--uri', 'http://www.example.com/', '--signature', 'ABCDEFG', '-a', 'application', '-c', 'update'])
+        expected = (
+            '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header>'
+            '<type>aota</type><repo>remote</repo></header><type><aota><cmd>update</cmd>'
+            '<app>application</app><fetch>http://www.example.com/</fetch>'
+            '<signature>ABCDEFG</signature><deviceReboot>no</deviceReboot></aota></type></ota></manifest>'
+        )
         self.assertEqual(s.func(s), expected)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')

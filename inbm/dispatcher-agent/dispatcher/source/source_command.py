@@ -7,6 +7,8 @@ from dataclasses import asdict
 import logging
 import json
 from dispatcher.common.result_constants import Result
+from typing import Optional, Any
+from dispatcher.dispatcher_broker import DispatcherBroker
 from dispatcher.source.constants import (
     ApplicationAddSourceParameters,
     ApplicationRemoveSourceParameters,
@@ -22,12 +24,13 @@ from inbm_lib.xmlhandler import XmlException, XmlHandler
 logger = logging.getLogger(__name__)
 
 
-def do_source_command(parsed_head: XmlHandler, os_type: OsType) -> Result:
+def do_source_command(parsed_head: XmlHandler, os_type: OsType, dispatcher_broker: DispatcherBroker) -> Result:
     """
     Run a source command.
 
     @param parsed_head: XmlHandler corresponding to the manifest tag
     @param os_type: os type
+    @param dispatcher_broker: MQTT broker for Dispatcher agent
     @return Result
     """
     logger.debug(f"do_source_command: {parsed_head}")
@@ -42,7 +45,7 @@ def do_source_command(parsed_head: XmlHandler, os_type: OsType) -> Result:
     try:
         app_action = parsed_head.get_children("applicationSource")
         if app_action:
-            return _handle_app_source_command(parsed_head, os_type, app_action)
+            return _handle_app_source_command(parsed_head, os_type, app_action, dispatcher_broker)
     except XmlException as e:
         return Result(status=400, message=f"unable to handle source command XML: {e}")
 
@@ -94,16 +97,17 @@ def _handle_os_source_command(parsed_head: XmlHandler, os_type: OsType, os_actio
 
 
 def _handle_app_source_command(
-        parsed_head: XmlHandler, os_type: OsType, app_action: dict) -> Result:
+        parsed_head: XmlHandler, os_type: OsType, app_action: dict, dispatcher_broker: DispatcherBroker) -> Result:
     """
     Handle the application source commands.
 
     @param parsed_head: XmlHandler with command information
-    @param os_type: os type
+    @param os_type: OS type
     @param app_action: The action to be performed
+    @param dispatcher_broker: MQTT
     @return Result
     """
-    application_source_manager = create_application_source_manager(os_type)
+    application_source_manager = create_application_source_manager(os_type, dispatcher_broker)
 
     if "list" in app_action:
         serialized_list = json.dumps(
@@ -120,7 +124,7 @@ def _handle_app_source_command(
             logger.info(f"Optional GPG key parameters not present in manifest")
         filename = parsed_head.get_children("applicationSource/remove/repo")["filename"]
         application_source_manager.remove(
-            ApplicationRemoveSourceParameters(file_name=filename, gpg_key_name=keyname)
+            ApplicationRemoveSourceParameters(source_list_file_name=filename, gpg_key_name=keyname)
         )
         return Result(status=200, message="SUCCESS")
 
@@ -144,7 +148,7 @@ def _handle_app_source_command(
 
         application_source_manager.add(
             ApplicationAddSourceParameters(
-                file_name=repo_filename,
+                source_list_file_name=repo_filename,
                 gpg_key_name=gpg_key_name,
                 gpg_key_uri=gpg_key_uri,
                 sources=add_source_pkgs,
@@ -161,7 +165,7 @@ def _handle_app_source_command(
 
         application_source_manager.update(
             ApplicationUpdateSourceParameters(
-                file_name=repo_filename,
+                source_list_file_name=repo_filename,
                 sources=update_source_pkgs,
             )
         )

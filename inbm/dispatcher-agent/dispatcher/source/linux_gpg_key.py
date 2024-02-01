@@ -13,21 +13,6 @@ from .constants import LINUX_GPG_KEY_PATH
 logger = logging.getLogger(__name__)
 
 
-def remove_gpg_key_if_exists(gpg_key_name: str) -> None:
-    """Linux - Removes a GPG key file if it exists
-
-    @param gpg_key_name: name of GPG key file to remove (file under LINUX_GPG_KEY_PATH)
-    """
-    try:
-        key_path = os.path.join(LINUX_GPG_KEY_PATH, gpg_key_name)
-        if os.path.exists(key_path):
-            os.remove(key_path)
-        # it's OK if the key is not there
-
-    except OSError as e:
-        raise SourceError(f"Error checking or deleting GPG key: {gpg_key_name}") from e
-
-
 def add_gpg_key(remote_key_path: str, key_store_name: str) -> None:
     """Linux - Adds a GPG key from a remote source
 
@@ -61,4 +46,4 @@ def add_gpg_key(remote_key_path: str, key_store_name: str) -> None:
         raise SourceError(f"Error getting GPG key from remote source: {e}")
 
     except subprocess.CalledProcessError as e:
-        raise SourceError(f"Error running gpg command to dearmor key: {e}")
+        raise SourceError(f"Error running GPG command to dearmor key: {e}")

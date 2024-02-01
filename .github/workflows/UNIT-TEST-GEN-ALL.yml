@@ -1,0 +1,60 @@
+name: UNIT-TEST-GEN-ALL
+on:
+  workflow_dispatch:
+  # pull_request:
+jobs:
+  Checkout:
+    if: startsWith(github.ref, 'refs/heads/NEX_MAXIMUS_UT/')
+    runs-on: [self-hosted, maximus-unit-test-os]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+  CREATE-USER-RUN-ENV:
+    needs: Checkout
+    runs-on: [self-hosted, maximus-unit-test-os]
+    name: Create User Run Environment
+    steps:
+      - id: maximus-create-env-action
+        run: |
+          cd ../../../genai_ut_gen
+          bash ./create_user_env.sh
+    env:
+      # <Input relative filepath of your requirements.txt path i.e. dir-name/requirements.txt >
+      REQUIREMENTS_PATH: requirements.txt
+
+  GENAI-UNIT-TEST-GENERATE:
+    needs: CREATE-USER-RUN-ENV
+    runs-on: [self-hosted, maximus-unit-test-os]
+    name: Generate Unit Tests using GenAI
+    steps:
+      - id: maximus-ut-gen-action
+        run: |
+          cd ../../../genai_ut_gen
+          cp /home/runner/scripts/.env .
+          chmod +x ./get_unittest_details.sh
+          ./get_unittest_details.sh
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}
+      TASK_TYPE: generate
+      # INCLUDE_PATHS: <Include your paths here if want to generate UT on specific files/dirs>
+      # EXCLUDE_PATHS: <Exclude your paths here if want to exclude specific files/dirs>
+
+  UNIT-TEST-RUN:
+    needs: GENAI-UNIT-TEST-GENERATE
+    runs-on: [self-hosted, maximus-unit-test-os]
+    name: Run Unit Tests
+    steps:
+      - id: maximus-ut-run-action
+        run: |
+          cd ../../../genai_ut_gen
+          cp /home/runner/scripts/.env .
+          chmod +x ./get_unittest_details.sh
+          ./get_unittest_details.sh
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}
+      TASK_TYPE: run
+      # INCLUDE_PATHS: <Include your paths here if want to run UT on specific files/dirs>
+      # EXCLUDE_PATHS: <Exclude your paths here if want to exclude specific files/dirs>

@@ -221,6 +221,7 @@ inbc aota {--app, -a APP_TYPE} {--command, -c COMMAND}
    [--file, -f FILE]
    [--reboot, -rb REBOOT; default="no"]
    [--username, -un USERNAME]
+   [--signature, -s SIGNATURE]
    [--dockerusername, -du DOCKERUSERNAME]
    [--dockerregistry, -dr DOCKERREGISTRY]
 ```
@@ -231,7 +232,13 @@ Note: when the arguments --username/--dockerusername are used, passwords need to
 #### Application Update
 ```
 inbc aota
-     --uri <remote URI to AOTA file>/update.deb
+     --uri <remote URI to AOTA file>/update.deb -a application -c update
+```
+
+#### Application update requiring a signature
+```
+inbc aota
+     --uri <remote URI to AOTA file>/update.deb --signature HASH_SIGNATURE_VALUE -a application -c update
 ```
 
 #### Docker pull
@@ -417,10 +424,17 @@ inbc query --option sw
 Optionally Downloads and encrypts GPG key and stores it on the system under <em>/usr/share/keyrings</em>.  Creates a file under <em>/etc/apt/sources.list.d</em> to store the update source information.
 This list file is used during 'sudo apt update' to update the application.  <em>Deb882</em> format may be used instead of downloading a GPG key.
 
+**NOTE:** Make sure to add gpgKeyUri to trustedrepositories using INBC Config Append command before using Inbc source application add command
+          Step 1: Refer to Inbc Config Append command to set gpgKeyUri to trustedRepositories in intel-manageability.conf file
+                  Example: inbc append --path  trustedRepositories:https://deb.opera.com/
+          Step 2: Use Inbc source appplication add command 
+```
+
+
 ### Usage
 ```
 inbc source application add
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
    {--filename, -f=FILENAME}
    [--gpgKeyUri, -gku=GPG_KEY_URI]
    [--gpgKeyName, -gkn=GPG_KEY_NAME]
@@ -442,7 +456,6 @@ inbc source application add
 
       - Each blank line has a period in it. -> " ."
       - Each line after the Signed-By: starts with a space -> " gibberish"
-
 ```
 inbc source application add 
    --sources 
@@ -520,7 +533,7 @@ NOTE: Currently this only works on Ubuntu
 ```
 inbc source application update 
    {--filename, -f=FILEPATH} 
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
 ```
 
 ### Examples
@@ -553,14 +566,14 @@ Appends new source(s) to the <em>/etc/apt/sources.list</em> file
 ### Usage
 ```
 inbc source os add 
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
 ```
 
 ### Example
 #### Adds two sources
 ```
 inbc source os add 
-   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+   --sources "deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
 ## SOURCE OS REMOVE
@@ -570,14 +583,14 @@ Removes the provided source(s) from the <em>/etc/apt/sources.list</em> file, if 
 ### Usage
 ```
 inbc source os remove 
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
 ```
 
 ### Example
 #### Removes the two provided source(s) from the <em>/etc/apt/sources.list</em> file
 ```
 inbc source os remove 
-   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+   --sources "deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
 ## SOURCE OS UPDATE
@@ -587,14 +600,14 @@ Creates a new <em>/etc/apt/sources.list</em> file with only the sources provided
 ### Usage
 ```
 inbc source os update 
-   {--sources, -s=SOURCES}
+   {--sources, -s SOURCES}
 ```
 
 ### Example
 #### Creates a new <em>/etc/apt/sources.list</em> file with only the two provided sources
 ```
 inbc source os update 
-   --sources="deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
+   --sources "deb http://archive.ubuntu.com/ubuntu/ jammy-security main restricted" "deb http://archive.ubuntu.com/ubuntu/ jammy-security universe"
 ```
 
 ## SOURCE OS LIST
