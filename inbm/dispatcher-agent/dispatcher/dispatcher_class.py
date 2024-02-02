@@ -243,10 +243,11 @@ class Dispatcher:
         if cmd == "shutdown":
             message = self.device_manager.shutdown()
         elif cmd == "restart":
+            logger.info("Restart command received.  Restarting system...")
             message = self.device_manager.restart()
             if message == SUCCESS_RESTART:
                 state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd'}
-                dispatcher_state.write_dispatcher_state_to_state_file(state)
+                dispatcher_state.write_dispatcher_state_to_state_file(state)                
         elif cmd == "query":
             self._dispatcher_broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
             return PUBLISH_SUCCESS

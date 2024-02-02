@@ -33,7 +33,7 @@ from .dynamic_attributes import get_cpu_percent, get_available_memory, get_perce
     get_core_temp_celsius, get_network_telemetry, get_battery_status
 from .command import Command
 from .telemetry_exception import TelemetryException
-from inbm_lib.version import get_friendly_inbm_version_commit, get_friendly_inbm_vision_version_commit
+from inbm_lib.version import get_friendly_inbm_version_commit
 from telemetry import software_bom_list
 
 logger = logging.getLogger(__name__)
@@ -217,8 +217,7 @@ def get_dynamic_telemetry(is_docker_installed: bool, rm_active: bool = False) ->
            'percentDiskUsed': get_percent_disk_used(),
            'coreTempCelsius': get_core_temp_celsius(),
            'networkInformation': get_network_telemetry(),
-           'friendlyINBMVersionCommit': get_friendly_inbm_version_commit(),
-           'friendlyINBMVisionVersionCommit': get_friendly_inbm_vision_version_commit()}
+           'friendlyINBMVersionCommit': get_friendly_inbm_version_commit()}
 
     if rm_active:
         dynamic_telemetry['resourceMonitoring'] = get_pms_rm_telemetry()
@@ -304,11 +303,9 @@ def get_query_related_info(option: str, info: Dict) -> Dict:
                 del info['values'][elem]
     elif option == "version":
         info = {}
-        info['INBMVersionCommit'] = get_friendly_inbm_version_commit()
-        info['INBMVisionVersionCommit'] = get_friendly_inbm_vision_version_commit()
+        info['INBMVersionCommit'] = get_friendly_inbm_version_commit()        
     elif option == "all":
         info['INBMVersionCommit'] = get_friendly_inbm_version_commit()
-        info['INBMVisionVersionCommit'] = get_friendly_inbm_vision_version_commit()
     return info
 
 
