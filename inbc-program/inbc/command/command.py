@@ -16,12 +16,12 @@ from ..inbc_exception import InbcCode
 from ..utility import search_keyword
 
 from inbm_lib.timer import Timer
-from inbm_lib.constants import RESTART, QUERY, QUERY_CHANNEL, RESTART_CHANNEL
+from inbm_lib.constants import RESTART, QUERY
 from inbm_common_lib.request_message_constants import COMMAND_SUCCESSFUL, DYNAMIC_TELEMETRY, \
     RESTART_SUCCESS, RESTART_FAILURE, QUERY_SUCCESS, QUERY_FAILURE, OTA_IN_PROGRESS, \
     QUERY_HOST_SUCCESS, QUERY_HOST_FAILURE, QUERY_HOST_KEYWORD
 from inbm_common_lib.request_message_constants import DBS_LOG, DOCKER_NAME, DOCKER_MESSAGE
-from inbm_lib.constants import HOST_QUERY_CHANNEL
+from inbm_lib.constants import HOST_QUERY_CHANNEL, RESTART_CMD_CHANNEL
 
 logger = logging.getLogger(__name__)
 
@@ -129,7 +129,7 @@ class RestartCommand(Command):
 
         @param args: arguments passed to command-line tool.
         """
-        super()._send_manifest(args, RESTART_CHANNEL)
+        super()._send_manifest(args, RESTART_CMD_CHANNEL)
 
     def search_response(self, payload: Any) -> None:
         """Search for keywords in response message
