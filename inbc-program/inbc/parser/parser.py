@@ -326,16 +326,12 @@ def restart(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest string
     """
-    raise InbcException('Restart command is not supported.')
-
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>cmd</type>' +
                 '<cmd>restart</cmd>' +
-                '<restart>' +
-                '</restart>' +
                 '</manifest>')
     print("manifest {0}".format(manifest))
     return manifest
@@ -345,7 +341,7 @@ def query(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest string
     """
     arguments = {
         'option': args.option

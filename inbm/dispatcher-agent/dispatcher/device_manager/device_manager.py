@@ -50,6 +50,7 @@ class LinuxDeviceManager(DeviceManager):
         self.runner = PseudoShellRunner()
 
     def restart(self) -> str:
+        logger.debug("Restart Linux system command received")
         (out, err, code) = self.runner.run(LINUX_POWER + LINUX_RESTART)
         if code != 0:
             raise DispatcherException(f"Restart FAILED. Error:{err}")
