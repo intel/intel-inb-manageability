@@ -218,11 +218,11 @@ class TestUbuntuApplicationSourceManager:
             params = ApplicationAddSourceParameters(
                 source_list_file_name="google-chrome.sources",
                 sources=["X-Repolib-Name: Google Chrome",
-                        "Enabled: yes",
-                        "Types: deb",
-                        "URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub",
-                        "Suites: stable",
-                        "Components: main"],
+                         "Enabled: yes",
+                         "Types: deb",
+                         "URIs: https://dl-ssl.google.com/linux/linux_signing_key.pub",
+                         "Suites: stable",
+                         "Components: main"],
             )
             command = UbuntuApplicationSourceManager(broker)
             with patch("builtins.open", new_callable=mock_open()):
@@ -302,10 +302,9 @@ class TestUbuntuApplicationSourceManager:
             command.add(parameters)
         assert str(ex.value) == 'Source GPG key URI verification check failed: error'
 
-
     @patch("dispatcher.source.ubuntu_source_manager.verify_source")
     def test_success_add_gpg_key_method(self, mock_verify_source):
-        mock_verify_source.return_value = True 
+        mock_verify_source.return_value = True
         parameters = ApplicationAddSourceParameters(
             source_list_file_name="example_source.list",
             sources=["deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"],
@@ -315,7 +314,7 @@ class TestUbuntuApplicationSourceManager:
         broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         command = UbuntuApplicationSourceManager(broker)
         with (patch("builtins.open", new_callable=mock_open()),
-              patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):    
+              patch("dispatcher.source.ubuntu_source_manager.add_gpg_key")):
             command.add(parameters)
 
     def test_raises_when_name_check_fails(self):

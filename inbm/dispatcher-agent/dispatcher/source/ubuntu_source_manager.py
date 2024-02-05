@@ -105,19 +105,20 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         # Step 1: Verify GPG key URI from trusted repo list
         if parameters.gpg_key_name and parameters.gpg_key_uri:
             try:
-               url = parameters.gpg_key_uri
-               #URL slicing to remove the last segment (filename) from the URL 
-               source = url[:-(len(url.split('/')[-1]) + 1)]
-               verify_source(source=source, dispatcher_broker=self._dispatcher_broker)
+                url = parameters.gpg_key_uri
+                # URL slicing to remove the last segment (filename) from the URL
+                source = url[:-(len(url.split('/')[-1]) + 1)]
+                verify_source(source=source, dispatcher_broker=self._dispatcher_broker)
             except (DispatcherException, IndexError) as err:
-               raise SourceError(f"Source GPG key URI verification check failed: {err}")
+                raise SourceError(f"Source GPG key URI verification check failed: {err}")
             # Step 2: Add key (Optional)
             add_gpg_key(parameters.gpg_key_uri, parameters.gpg_key_name)
 
         # Step 3: Add the source
         try:
             create_file_with_contents(
-                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.source_list_file_name), parameters.sources
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D,
+                             parameters.source_list_file_name), parameters.sources
             )
         except (IOError, OSError) as e:
             raise SourceError(f"Error adding application source list: {e}")
@@ -179,7 +180,8 @@ class UbuntuApplicationSourceManager(ApplicationSourceManager):
         """Updates a source file in Ubuntu OS source file list under /etc/apt/sources.list.d"""
         try:
             create_file_with_contents(
-                os.path.join(UBUNTU_APT_SOURCES_LIST_D, parameters.source_list_file_name), parameters.sources
+                os.path.join(UBUNTU_APT_SOURCES_LIST_D,
+                             parameters.source_list_file_name), parameters.sources
             )
         except IOError as e:
             raise SourceError(f"Error occurred while trying to update sources: {e}") from e

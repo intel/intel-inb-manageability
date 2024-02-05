@@ -303,7 +303,7 @@ def get_query_related_info(option: str, info: Dict) -> Dict:
                 del info['values'][elem]
     elif option == "version":
         info = {}
-        info['INBMVersionCommit'] = get_friendly_inbm_version_commit()        
+        info['INBMVersionCommit'] = get_friendly_inbm_version_commit()
     elif option == "all":
         info['INBMVersionCommit'] = get_friendly_inbm_version_commit()
     return info

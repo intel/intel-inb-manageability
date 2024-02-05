@@ -228,9 +228,10 @@ class DebianBasedSnapshot(Snapshot):
             self._rollback_and_delete_snap()
             logger.debug("Rebooting to recover from failed SOTA...")
             rebooter.reboot()
-        else:            
+        else:
             if self._reboot_device:
-                logger.debug(f"Rebooting to recover from failed SOTA...time_to_wait_before_reboot = {str(time_to_wait_before_reboot)}")
+                logger.debug(
+                    f"Rebooting to recover from failed SOTA...time_to_wait_before_reboot = {str(time_to_wait_before_reboot)}")
                 time.sleep(time_to_wait_before_reboot)
                 rebooter.reboot()
 
