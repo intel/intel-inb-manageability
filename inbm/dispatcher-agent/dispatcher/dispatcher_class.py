@@ -247,7 +247,7 @@ class Dispatcher:
             message = self.device_manager.restart()
             if message == SUCCESS_RESTART:
                 state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd'}
-                dispatcher_state.write_dispatcher_state_to_state_file(state)                
+                dispatcher_state.write_dispatcher_state_to_state_file(state)
         elif cmd == "query":
             self._dispatcher_broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
             return PUBLISH_SUCCESS
@@ -295,7 +295,8 @@ class Dispatcher:
             elif type_of_manifest == 'source':
                 logger.debug('Running source command')
                 # FIXME: actually detect OS
-                result = do_source_command(parsed_head, source.constants.OsType.Ubuntu, self._dispatcher_broker)
+                result = do_source_command(
+                    parsed_head, source.constants.OsType.Ubuntu, self._dispatcher_broker)
             elif type_of_manifest == 'ota':
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')

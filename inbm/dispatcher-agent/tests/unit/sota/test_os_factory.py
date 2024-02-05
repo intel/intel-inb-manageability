@@ -31,7 +31,7 @@ class TestOsFactory(TestCase):
     def test_raise_error_unsupported_OsFactory(self) -> None:
         factory = SotaOsFactory(self.mock_disp_broker)
         with self.assertRaises(ValueError):
-                factory.get_os("MacOS")
+            factory.get_os("MacOS")
 
     def test_create_ubuntu_snapshot_checker(self) -> None:
         ubuntu_os = SotaOsFactory(self.mock_disp_broker).get_os('Ubuntu')
@@ -49,7 +49,8 @@ class TestOsFactory(TestCase):
         self.assertIsInstance(snapshotter, WindowsSnapshot)
 
     def test_create_ubuntu_updater_checker(self) -> None:
-        updater = SotaOsFactory(self.mock_disp_broker, None, []).get_os('Ubuntu').create_os_updater()
+        updater = SotaOsFactory(self.mock_disp_broker, None, []
+                                ).get_os('Ubuntu').create_os_updater()
         self.assertIsInstance(updater, DebianBasedUpdater)
 
     def test_create_yocto_updater_checker(self) -> None:

@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?.?.? - ?
 
+### Fixed
+ - RTC 538468 - paho-mqtt upgrade broke cloudadapter's mqtt connections. Fixed proxy setting code to not override all sockets with proxy as paho-mqtt 1.6.0 relies on listening/connecting to localhost to set up sockets, and this doesn't work with a global proxy on all sockets.
+
 ### Security
  - RTC 537811 - Bump cryptography from 41.0.6 to 42.0.2 in /inbm/dispatcher-agent (addresses CVE-2023-5678, CVE-2023-6129)
 

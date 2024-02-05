@@ -125,7 +125,7 @@ class SOTA:
             # If an exception occurs during string conversion, raise that exception
             raise SotaError('package_list is not a string in manifest') from e
 
-        self._reboot_device = parsed_manifest['deviceReboot']        
+        self._reboot_device = parsed_manifest['deviceReboot']
         self._install_check_service = install_check_service
 
         if self._repo_type == LOCAL_SOURCE:
@@ -374,7 +374,7 @@ class SOTA:
 
     def _is_reboot_device(self) -> bool:
         return self._reboot_device not in ["No", "N", "n", "no", "NO"]
-    
+
     def check(self) -> None:
         """Perform manifest checking before SOTA"""
         logger.debug("")

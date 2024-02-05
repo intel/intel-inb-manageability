@@ -11,6 +11,7 @@ def _read_inbm_version_file() -> Optional[str]:
     except OSError:
         return None
 
+
 def get_inbm_version() -> Optional[str]:
     """Get INBM version from version file
     @return: version string, or None if unable
