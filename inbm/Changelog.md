@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?.?.? - ?
 
+### Fixed
+ - RTC 538468 - paho-mqtt upgrade broke cloudadapter's mqtt connections. Fixed proxy setting code to not override all sockets with proxy as paho-mqtt 1.6.0 relies on listening/connecting to localhost to set up sockets, and this doesn't work with a global proxy on all sockets.
 
 ## NEXT - 4.2.0 - 2024-01-23
 
