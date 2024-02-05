@@ -8,14 +8,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
  - RTC 538468 - paho-mqtt upgrade broke cloudadapter's mqtt connections. Fixed proxy setting code to not override all sockets with proxy as paho-mqtt 1.6.0 relies on listening/connecting to localhost to set up sockets, and this doesn't work with a global proxy on all sockets.
 
-## NEXT - 4.2.0 - 2024-01-23
+### Security
+ - RTC 537811 - Bump cryptography from 41.0.6 to 42.0.2 in /inbm/dispatcher-agent (addresses CVE-2023-5678, CVE-2023-6129)
+
+## 4.2.0 - 2024-01-23
 
 ### Changed
  - RTC 536078 - Added package list option to inbc, cloud, and internal manifest. This allows SOTA to run an install/upgrade command on a set of individual packages rather than all installed packages.
+ - (BREAKING CHANGE) RTC 536910 - [source] Remove ubuntuAptSource INBM configuration tag and underlying code; replaced with source command.
 
 ### Added
  - RTC 536601 - Added 'source' command to INBM. This command manages `/etc/apt/sources.list` and `/etc/apt/sources.list.d/*` and associated gpg keys on Ubuntu.
-- RTC 537769 -  Added verification of GPG key URIs against a list of trusted repositories for enhanced security
+ - RTC 537769 -  Added verification of GPG key URIs against a list of trusted repositories for enhanced security
 
 check if sourceApplication Gpg key URL is in trusted repo
 ### Fixed

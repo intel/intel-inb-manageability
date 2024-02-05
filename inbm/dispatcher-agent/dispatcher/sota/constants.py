@@ -14,8 +14,6 @@ MENDER_FILE_PATH = get_canonical_representation_of_path('/usr/bin/mender')
 # Mender artifact path
 MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifact_info")
 
-GET_UBUNTU_PKG_REPO = "dispatcher/sota/ubuntuAptSource"
-
 SOTA_STATE = 'normal'
 
 LOGPATH = '/var/lib/dispatcher/upload'

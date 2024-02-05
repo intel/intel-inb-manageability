@@ -40,10 +40,6 @@ FORCE_YOCTO_PATH = get_canonical_representation_of_path('/etc/force_yocto')
 # Path to inbm version files
 INBM_VERSION_FILE = get_canonical_representation_of_path(
     '/usr/share/intel-manageability/inbm-version.txt')
-INBM_VISION_VERSION_FILE_HOST = get_canonical_representation_of_path(
-    '/usr/share/intel-manageability/inbm-vision-host-version.txt')
-INBM_VISION_VERSION_FILE_NODE = get_canonical_representation_of_path(
-    '/usr/share/intel-manageability/inbm-vision-node-version.txt')
 
 # CentOS version path
 CENTOS_VERSION_PATH = get_canonical_representation_of_path('/etc/centos-release')
@@ -51,6 +47,9 @@ CENTOS_VERSION_PATH = get_canonical_representation_of_path('/etc/centos-release'
 # QUERY
 QUERY_CMD_CHANNEL = 'dispatcher/query'
 HOST_QUERY_CHANNEL = 'manageability/request/query'
+
+# RESTART
+RESTART_CMD_CHANNEL = 'manageability/request/restart'
 
 # OTA types
 AOTA = "aota"
@@ -65,14 +64,6 @@ QUERY = "query"
 SOURCE = "source"
 APPLICATION = "application"
 OS = "os"
-
-OTA_UPDATE = "install"
-PROVISION = 'provision'
-REQUEST_CHANNEL = 'ma/request/'
-INSTALL_CHANNEL = REQUEST_CHANNEL + OTA_UPDATE
-RESTART_CHANNEL = REQUEST_CHANNEL + RESTART
-QUERY_CHANNEL = REQUEST_CHANNEL + QUERY
-PROVISION_CHANNEL = REQUEST_CHANNEL + PROVISION
 
 # Device local cache
 CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool/')

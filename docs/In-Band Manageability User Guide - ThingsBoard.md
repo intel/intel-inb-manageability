@@ -1170,10 +1170,11 @@ Events Log in the dashboard below the OTA buttons.
 
 **Required Fields**: Command and Path
 
+Note: ubuntuAptSource tag is no longer used.
 
 **NOTE:**
 > - Append is only applicable to three configuration tags i.e
-> `trustedRepositories`, `sotaSW` and `ubuntuAptSource`
+> `trustedRepositories` and `sotaSW` 
 >
 > - Path takes in key value pair format, example:
 > `trustedRepositories:https://abc.com/`
