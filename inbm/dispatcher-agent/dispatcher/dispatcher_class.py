@@ -43,7 +43,6 @@ from .constants import *
 from .device_manager.device_manager import get_device_manager
 from .fota.fota_error import FotaError
 from .ota_factory import OtaFactory
-from .ota_target import *
 from .ota_thread import ota_lock
 from .ota_util import create_ota_resource_list
 from .remediationmanager.remediation_manager import RemediationManager
