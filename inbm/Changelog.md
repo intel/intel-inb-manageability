@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?.?.? - ?
 
+### Changed
+ - Added --build-windows and --build-check flags to build scripts to allow optional skipping of Windows build and unit tests/mypy checks. One example scenario where this would be useful would be building an official version that has already been validated and unit tests already run, to reduce build time. Another scenario would be to skip the Windows build if the user only needs a Linux build.
+
 ### Fixed
  - RTC 538468 - paho-mqtt upgrade broke cloudadapter's mqtt connections. Fixed proxy setting code to not override all sockets with proxy as paho-mqtt 1.6.0 relies on listening/connecting to localhost to set up sockets, and this doesn't work with a global proxy on all sockets.
 
