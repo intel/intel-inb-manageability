@@ -2,6 +2,7 @@ include(`image.main.m4')
 
 # base windows/wine build image
 FROM registry.hub.docker.com/library/ubuntu:22.04 as base-windows
+RUN echo Refresh docker cache 20240206
 
 ENV DEBIAN_FRONTEND noninteractive
 
