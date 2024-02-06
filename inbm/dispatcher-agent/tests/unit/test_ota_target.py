@@ -7,8 +7,6 @@ from unit.common.mock_resources import *
 from dispatcher.common.result_constants import PUBLISH_SUCCESS
 from dispatcher.ota_target import OtaTarget
 
-from inbm_common_lib.constants import CONFIG_CHANNEL
-
 TEST_XML = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><id>sampleID</id>' \
            '<type>fota</type><repo>remote</repo></header>' \
            '<type><fota name="sample"><targetType>host</targetType><fetch>https://abc.tar</fetch>' \
@@ -71,9 +69,9 @@ class TestPublishTargetOta(TestCase):
         self.assertEqual(status, PUBLISH_SUCCESS)
 
     @patch('inbm_lib.xmlhandler.XmlHandler.__init__')
-    @patch('inbm_lib.xmlhandler.XmlHandler.add_attribute')
+    @patch('inbm_lib.xmlhandler.XmlHandler.add_element')
     @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
-    @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
+    @patch('inbm_lib.xmlhandler.XmlHandler.remove_element')
     @patch('dispatcher.ota_target.download')
     def test_publish_fota(self, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:
         mock_xmlhandler.return_value = None
@@ -82,9 +80,9 @@ class TestPublishTargetOta(TestCase):
         mock_download.assert_called_once()
 
     @patch('inbm_lib.xmlhandler.XmlHandler.__init__')
-    @patch('inbm_lib.xmlhandler.XmlHandler.add_attribute')
+    @patch('inbm_lib.xmlhandler.XmlHandler.add_element')
     @patch('inbm_lib.xmlhandler.XmlHandler.set_attribute')
-    @patch('inbm_lib.xmlhandler.XmlHandler.remove_attribute')
+    @patch('inbm_lib.xmlhandler.XmlHandler.remove_element')
     @patch('dispatcher.ota_target.download')
     @patch('dispatcher.ota_target.OtaTarget._modify_manifest')
     def test_publish_pota(self, mock_modify_manifest, mock_download, mock_rmv, mock_set, mock_add, mock_xmlhandler) -> None:

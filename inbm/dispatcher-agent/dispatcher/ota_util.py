@@ -6,6 +6,7 @@
 """
 
 from inbm_lib.xmlhandler import *
+from typing import Dict, Any
 
 
 def create_ota_resource_list(parsed_head: XmlHandler, resource: Dict) -> Dict[str, Any]:

@@ -1,8 +1,9 @@
 import os
-import unittest
 from unittest import TestCase
 from unittest.mock import mock_open
-from xml.etree.ElementTree import ElementTree
+# This is a test file.  It shouldn't be included in bandit tests, but is with the default configuration
+# used to test.
+from xml.etree.ElementTree import ElementTree # nosec: B405
 
 from configuration.xml_key_value_store import XmlException, XmlKeyValueStore
 from configuration.configuration_exception import ConfigurationException

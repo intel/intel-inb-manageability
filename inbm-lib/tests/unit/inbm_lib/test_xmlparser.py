@@ -136,12 +136,12 @@ class TestXmlParser(TestCase):
         self.assertEqual("local", self.test.get_element("ota/header/repo"))
 
     def test_add_attribute(self) -> None:
-        self.test.add_attribute("ota/type/fota", "path", "/new/path/added")
+        self.test.add_element("ota/type/fota", "path", "/new/path/added")
         self.assertEqual("/new/path/added", self.test.get_element("ota/type/fota/path"))
 
-    def test_remove_attribute(self) -> None:
+    def test_remove_element(self) -> None:
         self.assertEqual("Intel", self.test.get_element("ota/type/fota/vendor"))
-        self.test.remove_attribute("ota/type/fota/vendor")
+        self.test.remove_element("ota/type/fota/vendor")
         self.assertRaises(XmlException, self.test.get_element, "ota/type/fota/vendor")
 
     def test_get_element_throws_exception(self) -> None:

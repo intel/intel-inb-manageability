@@ -3,7 +3,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 import logging
-import subprocess
+import subprocess # nosec B404
 import os
 import requests
 

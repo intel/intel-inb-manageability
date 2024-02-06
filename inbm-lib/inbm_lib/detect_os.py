@@ -8,7 +8,7 @@ from enum import Enum
 from os import path
 import os
 import platform
-from subprocess import SubprocessError
+from subprocess import SubprocessError # nosec
 from typing import Optional
 
 from .constants import MENDER_FILE_PATH, SYSTEM_IS_YOCTO_PATH, FORCE_YOCTO_PATH, CENTOS_VERSION_PATH
