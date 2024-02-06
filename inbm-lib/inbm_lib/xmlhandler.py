@@ -12,7 +12,7 @@ import logging
 # following line is only used for type checking; we used defusedxml for
 # actual processing
 # As of Feb 2024, we still have to use xml.etree.  There is no equivalent in defusedxml
-from xml.etree.ElementTree import Element, SubElement # nosec: S405, B405
+from xml.etree.ElementTree import Element, SubElement  # nosec: S405, B405
 from defusedxml.ElementTree import XMLParser, parse, ParseError, tostring
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from .security_masker import mask_security_info
@@ -184,8 +184,9 @@ class XmlHandler:
         logger.debug("XML add element")
         element = self._root.find(xpath)
         if element is None:
-            raise XmlException(f"cannot add attribute '{element_name}' to XML path '{xpath}'.  Unable to find path in XML document.")
-        
+            raise XmlException(
+                f"cannot add attribute '{element_name}' to XML path '{xpath}'.  Unable to find path in XML document.")
+
         try:
             sub_element = Element(element_name)
             sub_element.text = element_value

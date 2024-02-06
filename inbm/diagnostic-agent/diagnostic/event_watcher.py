@@ -7,7 +7,7 @@
 
 import logging
 
-from subprocess import Popen # nosec: B404
+from subprocess import Popen  # nosec: B404
 from threading import Thread, Lock
 from typing import Any, Optional, List
 

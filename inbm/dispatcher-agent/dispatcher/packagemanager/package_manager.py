@@ -8,6 +8,7 @@
 """
 
 import hashlib
+import http.client
 import json
 import logging
 import os
@@ -395,9 +396,12 @@ def get(url: CanonicalUri,
             repo.add_from_requests_response(
                 urlparse(url.value).path.split('/')[-1], response, umask=umask)
     except HTTPError as e:
-        if e.response:
+        if e.response is not None:
             status_code = e.response.status_code
-            reason = e.response.reason
+            if not response.reason:
+                reason = http.client.responses.get(e.response.status_code, "Unknown Status Code")
+            else:
+                reason = e.response.reason
         else:
             status_code = 0
             reason = "(no response--unable to look up reason)"

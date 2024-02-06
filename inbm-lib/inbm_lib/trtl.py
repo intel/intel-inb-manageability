@@ -15,7 +15,7 @@ from typing import Optional, Tuple
 import logging
 
 from .constants import DOCKER, COMPOSE, TRTL_PATH
-from subprocess import Popen, PIPE # nosec: B405, B404
+from subprocess import Popen, PIPE  # nosec: B405, B404
 import shlex
 import time
 
