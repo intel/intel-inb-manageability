@@ -121,8 +121,9 @@ class Application(AotaCommand):
             f'Package: {self._uri} Fetch Result: {get_result}')
 
         if get_result.status != CODE_OK:
-            raise AotaError(f"Unable to download application package. Status = {get_result.status}, message = {get_result.message}.")
-        
+            raise AotaError(
+                f"Unable to download application package. Status = {get_result.status}, message = {get_result.message}.")
+
         return application_repo
 
     def _reboot(self, cmd: str) -> None:

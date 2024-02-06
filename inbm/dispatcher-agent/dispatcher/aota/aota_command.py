@@ -283,7 +283,8 @@ class Docker(AotaCommand):
             f'Package: {self._uri} Fetch Result: {result}')
 
         if result.status != CODE_OK:
-            raise AotaError(f"Unable to download docker image. Status = {result.status}, message = {result.message}.")
+            raise AotaError(
+                f"Unable to download docker image. Status = {result.status}, message = {result.message}.")
 
         container = TrtlContainer(
             self._trtl,
@@ -379,10 +380,11 @@ class DockerCompose(AotaCommand):
                          password=self._password)
         self._dispatcher_broker.telemetry(
             f'Package: {self._uri} Fetch Result: {get_result}')
-        
+
         if get_result.status != CODE_OK:
-            raise AotaError(f"Unable to download docker-compose container. Status = {get_result.status}, message = {get_result.message}.")
-        
+            raise AotaError(
+                f"Unable to download docker-compose container. Status = {get_result.status}, message = {get_result.message}.")
+
         (result, message, code) = self._trtl.up(self._container_tag, self._dockerComposeFile)
         if code != 0:
             raise AotaError(message)
@@ -454,7 +456,8 @@ class DockerCompose(AotaCommand):
             f'Package: {self._uri} Fetch Result: {get_result}')
 
         if get_result.status != CODE_OK:
-            raise AotaError(f"Unable to download docker-compose container. Status = {get_result.status}, message = {get_result.message}.")
+            raise AotaError(
+                f"Unable to download docker-compose container. Status = {get_result.status}, message = {get_result.message}.")
 
     def list(self):
         """This method list the containers
