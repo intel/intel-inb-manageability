@@ -200,36 +200,3 @@ class OtaTarget:
         new_xml = parsed.remove_element(username)
         new_xml = parsed.remove_element(password)
         return new_xml
-
-
-# def target_config_load_operation(xml: str, dispatcher_broker: DispatcherBroker, file_path: str) -> None:
-#     """This function handles the config operation on the targets by publishing
-#     the modified xml
-#
-#     @param xml: xml to be modified
-#     @param dispatcher_broker: DispatcherBroker
-#     @param file_path: File location to load a conf file, used only for load operation
-#     @return Result: PUBLISH_SUCCESS
-#     @raises DispatcherException: if invalid cmd is sent. Expected is 'load'.
-#     """
-#     logger.debug("")
-#     xml_to_publish = _modify_xml_config_load(xml, file_path)
-#     dispatcher_broker.mqtt_publish(CONFIG_CHANNEL + CONFIG_LOAD, xml_to_publish)
-#
-#
-# def _modify_xml_config_load(xml: str, file_path: str) -> str:
-#     """Modifies the xml to be published to targets
-#
-#     @param xml: xml to be modified
-#     @param file_path: new xml file location to be added to the manifest
-#     @return str: New xml to be published
-#     @raises DispatcherException: when xml operations couldn't be performed
-#     """
-#     try:
-#         parsed = XmlHandler(xml=xml, is_file=False,
-#                             schema_location=get_canonical_representation_of_path(SCHEMA_LOCATION))
-#         new_xml = parsed.remove_element("config/configtype/load/fetch")
-#         new_xml = parsed.add_element("config/configtype/load", "path", file_path)
-#     except XmlException as e:
-#         raise DispatcherException(f"ERROR : {e}")
-#     return new_xml.decode('utf-8', errors='strict')
