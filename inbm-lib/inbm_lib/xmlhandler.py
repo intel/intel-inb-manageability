@@ -11,8 +11,8 @@ import logging
 
 # following line is only used for type checking; we used defusedxml for
 # actual processing
-from xml.etree.ElementTree import Element  # noqa: S405
-import defusedxml.ElementTree as element_tree
+# As of Feb 2024, we still have to use xml.etree.  There is no equivalent in defusedxml
+from xml.etree.ElementTree import Element, SubElement # nosec: S405, B405
 from defusedxml.ElementTree import XMLParser, parse, ParseError, tostring
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from .security_masker import mask_security_info
@@ -23,7 +23,7 @@ from defusedxml import DefusedXmlException, DTDForbidden, EntitiesForbidden, Ext
 from .constants import PARSE_TIME_SECS
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from typing import Dict, Tuple, Union, Any
+from typing import Tuple, Union, Any
 
 logger = logging.getLogger(__name__)
 
@@ -172,28 +172,29 @@ class XmlHandler:
         else:
             raise XmlException("Could not find element in get_attribute")
 
-    def add_attribute(self, xpath: str, attribute_name: str, attribute_value: str) -> bytes:
+    def add_element(self, xpath: str, element_name: str, element_value: str) -> bytes:
         """Add a new key value to the given path.
 
         @param xpath: path to key
-        @param attribute_name: name of attribute
-        @param attribute_value: value of attribute
-        @return: Xml in bytes
+        @param element_name: name of element
+        @param element_value: value of element
+        @return: XML length in bytes
         @raises: XmlException when failed to update XML
         """
+        logger.debug("XML add element")
+        element = self._root.find(xpath)
+        if element is None:
+            raise XmlException(f"cannot add attribute '{element_name}' to XML path '{xpath}'.  Unable to find path in XML document.")
+        
         try:
-            logger.debug("XML add attr")
-            element = self._root.find(xpath)
-            if element is None:
-                raise XmlException("cannot add find element in add_attribute")
-            subtag = Element(attribute_name)
-            subtag.text = attribute_value
+            sub_element = Element(element_name)
+            sub_element.text = element_value
             try:
-                element.append(subtag)
+                element.append(sub_element)
             except TypeError as e:
                 # workaround for https://github.com/tiran/defusedxml/issues/54
                 if 'expected an Element' in str(e):
-                    element._children.append(subtag)
+                    element._children.append(sub_element)
                 else:
                     raise e
             # not practical to type this
@@ -221,15 +222,15 @@ class XmlHandler:
         except (XmlException, ValueError, TypeError, KeyError) as e:
             raise XmlException(f"ERROR while set : {e}")
 
-    def remove_attribute(self, xpath: str) -> bytes:
-        """Remove the attribute from xml if found.
+    def remove_element(self, xpath: str) -> bytes:
+        """Remove the element from xml if found.
 
-        @param xpath: path to key
-        @return: Xml in bytes
+        @param xpath: path to element
+        @return: XML in bytes
         @raises: XmlException when failed to update
         """
         try:
-            logger.debug("XML remove attr")
+            logger.debug("XML remove element")
             element = self._root.find(xpath)
             if element is not None:
                 # maps child -> parent
@@ -240,11 +241,11 @@ class XmlHandler:
             # not practical to type this
             return tostring(self._root, encoding='utf-8')  # type: ignore[no-any-return]
         except (XmlException, ValueError, TypeError, KeyError) as e:
-            raise XmlException(f"ERROR while remove : {e}")
+            raise XmlException(f"ERROR while removing XML element '{xpath}' : {e}")
 
     def get_root_elements(self, key: str, attr: str) -> list[str]:
         """This function retrieves all the elements matching
-        the specified element and it's attribute
+        the specified element, and it's attribute
         @param key: element name
         @param attr: element's attribute name
         @return: list

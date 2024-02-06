@@ -14,7 +14,8 @@ class TestTrtl(TestCase):
 
     @staticmethod
     def __setup_trtl_test() -> Tuple[int, TestRunner]:
-        return_code = random.randint(10, 30)
+        # This is a test file.  It's alright to run a randomizer
+        return_code = random.randint(10, 30) # nosec: B311
         runner = TestRunner("", "", return_code)
         return return_code, runner
 
@@ -42,7 +43,8 @@ class TestTrtl(TestCase):
         self.assertTrue(err is not None)
 
     def test_stats(self) -> None:
-        return_code = random.randint(10, 30)
+        # This is a test file.  It's alright to run a randomizer
+        return_code = random.randint(10, 30) # nosec: B311
         runner = TestRunner("ContainerStats=abc", "", return_code)
         result = Trtl(runner, "docker").stats()
         self.assertEqual("/usr/bin/trtl -type=docker -cmd=stats", runner.last_cmd())
