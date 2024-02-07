@@ -23,9 +23,9 @@ func TestReturnErrorUserNameTooLong(t *testing.T) {
 }
 
 func TestReturnErrorServerNameTooLong(t *testing.T) {
-	expected := errors.New("error: docker registry servername can not exceed 63 characters")
+	expected := errors.New("error: docker registry servername can not exceed 253 characters")
 	actual := isRegistryCredentialsSafe("username", 
-	"servernameservernameservernameservernameservernameservernameservername")
+	"servernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservername")
 	if actual.Error() != expected.Error() {
 		t.Errorf("wrong error: %v", actual)
 	}

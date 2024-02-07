@@ -30,7 +30,7 @@ var composePullWithFile = dockercompose.PullWithFile
 
 // Maximum lengths as defined by Docker
 var dockerRegistryUserNameLengthLimit = 30
-var dockerRegistryServerNameLengthLimit = 63
+var dockerRegistryServerNameLengthLimit = 253
 
 // ComposeInfo is a struct that contains ComposeInfo-specific instance information
 type ComposeInfo struct{}
