@@ -28,6 +28,9 @@ var composeImagesRemoveAll = dockercompose.ImageRemoveAll
 var composePull = dockercompose.Pull
 var composePullWithFile = dockercompose.PullWithFile
 
+var dockerRegistryUserNameLengthLimit = 30
+var dockerRegistryServerNameLengthLimit = 63
+
 // ComposeInfo is a struct that contains ComposeInfo-specific instance information
 type ComposeInfo struct{}
 
@@ -42,7 +45,7 @@ func (compose *ComposeInfo) Down(instanceName string) {
 	}
 }
 
-// Down stops containers and removes containers, networks, volumes, and images created by Up using
+// DownWithFile stops containers and removes containers, networks, volumes, and images created by Up using
 //the designated YML file
 func (compose *ComposeInfo) DownWithFile(instanceName string, fileName string) {
 	if err := composeDownWithFile(util.ExecCommandWrap{}, instanceName, fileName); err != nil {
@@ -50,7 +53,7 @@ func (compose *ComposeInfo) DownWithFile(instanceName string, fileName string) {
 	}
 }
 
-// Lists all the running containers of a specific image name
+// List lists all the running containers of a specific image name
 func (compose *ComposeInfo) List(instanceName string) {
 	if err := composeList(util.ExecCommandWrap{}, instanceName); err != nil {
 		osExit(1)
@@ -58,13 +61,18 @@ func (compose *ComposeInfo) List(instanceName string) {
 }
 
 // Check if docker username or docker registry strings are safe with good characters
-func is_username_registry_safe(username string, serverName string) bool {
+func isRegistryCredentialsSafe(username string, serverName string) bool {
+		if len(username) > dockerRegistryUserNameLengthLimit {			
+			return false
+		}
+		if len(serverName) > dockerRegistryServerNameLengthLimit {
+			return false
+		}
         re := regexp.MustCompile("^[a-zA-Z0-9_.\\-:]*$")
         if (!re.MatchString(username)) || (!re.MatchString(serverName)) {
                 return false
         }
         return true
-
 }
 
 // Login authenticates a docker private registry with the given authentication credentials
@@ -73,7 +81,7 @@ func (compose *ComposeInfo) Login(username string, serverName string) {
 	// Dispatcher-agent, but because all commands are tied to the app type it will call the Compose Login instead
 	// of the Docker one.
 
-	if !is_username_registry_safe(username, serverName) {
+	if !isRegistryCredentialsSafe(username, serverName) {
             fmt.Fprintf(os.Stderr, "Error: No special characters allowed in username/registry. List of good characters include: [a-z], [A-Z], [0-9], . , - , _, :")
                 osExit(1)
         }
