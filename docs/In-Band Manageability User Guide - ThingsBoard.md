@@ -88,6 +88,8 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
 
     ❗ In a sandbox environment, choose the `Community` edition
 
+    ❗ Please note: a common error when installing a new ThingsBoard&reg; instance is to skip creating the ThingsBoard&reg; database.  For example, in PostgreSQL, it is necessary to first remove any existing database with `DROP DATABASE thingsboard;` and then create a fresh database with `CREATE DATABASE thingsboard;` in `psql`. Please refer to the ThingsBoard&reg; installation instructions. When upgrading rather than installing ThingsBoard&reg;, do not drop the old database unless it is OK to delete it.
+
 - In order to run a ThingsBoard&reg; server instance on the same device as
     Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboardreg-server-port)
 	
