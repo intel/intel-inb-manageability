@@ -62,18 +62,21 @@ func (compose *ComposeInfo) List(instanceName string) {
 }
 
 // Check if docker username or docker registry strings are safe with good characters
-func isRegistryCredentialsSafe(username string, serverName string) bool {
+func isRegistryCredentialsSafe(username string, serverName string) error {
 		if len(username) > dockerRegistryUserNameLengthLimit {			
-			return false
+			return fmt.Errorf("error: docker registry username can not exceed %d characters", dockerRegistryUserNameLengthLimit)
 		}
+
 		if len(serverName) > dockerRegistryServerNameLengthLimit {
-			return false
+			return fmt.Errorf("error: docker registry servername can not exceed %d characters", dockerRegistryServerNameLengthLimit)
 		}
+
         re := regexp.MustCompile("^[a-zA-Z0-9_.\\-:]*$")
         if (!re.MatchString(username)) || (!re.MatchString(serverName)) {
-                return false
+                return fmt.Errorf("error: no special characters allowed in username/registry. List of good characters include: [a-z], [A-Z], [0-9], . , - , _, : ")
         }
-        return true
+
+        return nil
 }
 
 // Login authenticates a docker private registry with the given authentication credentials
@@ -82,8 +85,8 @@ func (compose *ComposeInfo) Login(username string, serverName string) {
 	// Dispatcher-agent, but because all commands are tied to the app type it will call the Compose Login instead
 	// of the Docker one.
 
-	if !isRegistryCredentialsSafe(username, serverName) {
-            fmt.Fprintf(os.Stderr, "Error: No special characters allowed in username/registry. List of good characters include: [a-z], [A-Z], [0-9], . , - , _, :")
+	if err := isRegistryCredentialsSafe(username, serverName); err != nil {
+            fmt.Fprintf(os.Stderr, err.Error())
                 osExit(1)
         }
 

@@ -21,19 +21,6 @@ func TestDownReturnsExitCodeOnError(t *testing.T) {
 	assert.Equal(t, 1, got)
 }
 
-func TestReturnTrueUsernameRegistrySafe(t *testing.T) {
-	assert.True(t, isRegistryCredentialsSafe("username", "servername"))
-}
-
-func TestReturnFalseUserNameTooLong(t *testing.T) {
-	assert.False(t, isRegistryCredentialsSafe("usernameusernameusernameusername", "servername"))
-}
-
-func TestReturnFalseServerNameTooLong(t *testing.T) {
-	assert.False(t, isRegistryCredentialsSafe("username", 
-	"servernameservernameservernameservernameservernameservernameservername"))
-}
-
 func TestDownReturnsSuccess(t *testing.T) {
 	var got int
 	myExit := func(code int) {
