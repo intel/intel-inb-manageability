@@ -28,6 +28,7 @@ var composeImagesRemoveAll = dockercompose.ImageRemoveAll
 var composePull = dockercompose.Pull
 var composePullWithFile = dockercompose.PullWithFile
 
+// Maximum lengths as defined by Docker
 var dockerRegistryUserNameLengthLimit = 30
 var dockerRegistryServerNameLengthLimit = 63
 
