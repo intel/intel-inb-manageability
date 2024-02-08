@@ -171,7 +171,7 @@ class DebianBasedSnapshot(Snapshot):
         a.) After reboot by SOTA, and diagnostic reports bad report for system health
         """
         logger.debug("")
-        if self.snap_num and self.snap_num is not "0":
+        if self.snap_num and self.snap_num != "0":
             self._dispatcher_broker.telemetry("SOTA attempting rollback")
             rc, err = self.trtl.sota_rollback(self.snap_num)
         else:
@@ -224,7 +224,7 @@ class DebianBasedSnapshot(Snapshot):
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
         """
         dispatcher_state.clear_dispatcher_state()
-        if self.snap_num and self.snap_num is not "0":
+        if self.snap_num and self.snap_num != "0":
             self._rollback_and_delete_snap()
             logger.debug("Rebooting to recover from failed SOTA...")
             rebooter.reboot()
@@ -245,7 +245,7 @@ class DebianBasedSnapshot(Snapshot):
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
-        if self.snap_num and self.snap_num is not "0":
+        if self.snap_num and self.snap_num != "0":
             self._rollback_and_delete_snap()
             time.sleep(time_to_wait_before_reboot)
             rebooter.reboot()
