@@ -80,7 +80,7 @@ class BiosFactory(ABC):
         self._fw_file: Optional[str] = None
         self._cert_filename: Optional[str] = None
         self._config_params = params
-        self._guid_required = params.get('guid', False)
+        self._guid_required = params.get('guid', None)
         self._fw_tool = params.get('firmware_tool', None)
         self._fw_file_type = params.get('firmware_file_type', None)
         self._fw_tool_args = params.get('firmware_tool_args', '')
@@ -210,7 +210,7 @@ class LinuxToolFirmware(BiosFactory):
             return extracted_guids[0]
 
 
-def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
+    def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
                         tool_options: Optional[str], runner: PseudoShellRunner) -> None:
         """Updates firmware on the platform by calling the firmware update tool
 
