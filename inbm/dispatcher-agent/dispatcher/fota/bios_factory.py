@@ -192,7 +192,7 @@ class LinuxToolFirmware(BiosFactory):
     def __init__(self,
                  dispatcher_broker: DispatcherBroker,
                  repo: IRepo,
-                 param: Dict) -> None:
+                 params: Dict) -> None:
         super().__init__(dispatcher_broker, repo, params)
 
     def _get_guid_from_system(self, manifest_guid: Optional[str]) -> str:
