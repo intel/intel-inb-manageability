@@ -192,10 +192,10 @@ class LinuxToolFirmware(BiosFactory):
     def __init__(self,
                  dispatcher_broker: DispatcherBroker,
                  repo: IRepo,
-                 params: Dict) -> None:
+                 param: Dict) -> None:
         super().__init__(dispatcher_broker, repo, params)
 
-    def _get_guid_from_system(self, manifest_guid: str) -> str:
+    def _get_guid_from_system(self, manifest_guid: Optional[str]) -> str:
         logger.debug("GUID required")
         # get the GUID from the system using FW tool
         extracted_guids = extract_guids(
