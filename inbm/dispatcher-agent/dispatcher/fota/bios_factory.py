@@ -50,7 +50,6 @@ def extract_ext(file_name: str) -> Optional[str]:
     @param file_name: name of the file that is downloaded
     @return: returns as a package or a cert otherwise None
     """
-    logger.debug("inside extract")
     logger.debug(f"file_name={file_name}")
     ext = file_name.rsplit('.', 1)[-1]
 
@@ -196,7 +195,6 @@ class LinuxToolFirmware(BiosFactory):
         super().__init__(dispatcher_broker, repo, params)
 
     def _get_guid_from_system(self, manifest_guid: Optional[str]) -> str:
-        logger.debug("GUID required")
         # get the GUID from the system using FW tool
         extracted_guids = extract_guids(
             self._fw_tool, ["System Firmware type", "system-firmware type"])
