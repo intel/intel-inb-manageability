@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
  - RTC 538468 - paho-mqtt upgrade broke cloudadapter's mqtt connections. Fixed proxy setting code to not override all sockets with proxy as paho-mqtt 1.6.0 relies on listening/connecting to localhost to set up sockets, and this doesn't work with a global proxy on all sockets.
  - RTC 538549 - improved errors when unable to fetch from URLs. For example, if INBM receives a "404 Not Found" it will return this as part of its error instead of simply returning a generic error message about being unable to fetch the URL.
+ - RTC 538524 - GUID missing when not provided by manifest when running fwupdate tool
  - RTC 530960 - Fix SOTA snapshot conditions to not reboot twice on EXT4 system  
 
 ### Security
