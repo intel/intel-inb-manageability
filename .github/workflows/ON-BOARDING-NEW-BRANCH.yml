@@ -1,6 +1,7 @@
 name: ON-BOARDING-NEW-BRANCH
 on:
   workflow_dispatch
+permissions: read-all
 jobs:
   Checkout:
     runs-on: [self-hosted, maximus-unit-test-os]
@@ -11,6 +12,9 @@ jobs:
           fetch-depth: 0
 
   CREATE-PR:
+    permissions:
+      contents: write
+      pull-requests: write
     needs: Checkout
     runs-on: [self-hosted, maximus-unit-test-os]
     name: Create GenAI Branch and PR
