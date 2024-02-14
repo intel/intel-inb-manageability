@@ -93,13 +93,15 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
 - In order to run a ThingsBoard&reg; server instance on the same device as
     Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboardreg-server-port). In particular, avoid setting the ThingsBoard port to 8883 as it will conflict with the INBM MQTT port.
 
-#### NOTE: ThingsBoard is currently compatible with the following:
-* ThingsBoard 3.4.2
-* ThingsBoard 3.3.1
+#### Compatibility and Installation Instructions for ThingsBoard
 
-ThingsBoard does not directly provide documentation for old releases but the install guide for ThingsBoard 3.4.1 CE for Ubuntu can be found here (this has been tested with 3.4.2--simply replace any '3.4.1' in the guide with '3.4.2'): https://web.archive.org/web/20221006202514/https:/thingsboard.io/docs/user-guide/install/ubuntu/
+Please be aware that ThingsBoard is compatible with the following versions:
+- ThingsBoard 3.4.2
+- ThingsBoard 3.3.1
 
-The above link will also work for ThingsBoard 3.3.1; in the install guide, simply replace '3.4.1' with '3.3.1' in the listed steps.
+It's important to note that ThingsBoard provides documentation primarily for the latest releases. For legacy versions, documentation may not be directly available from our official resources. However, an installation guide intended for ThingsBoard 3.4.1 CE on Ubuntu is applicable for versions 3.4.2 and 3.3.1, with minor adjustments. To adapt the guide for version 3.4.2, users are instructed to replace '3.4.1' with '3.4.2'. The mentioned guide is accessible through the following link hosted on web.archive.org, which captures previous versions of our website: [Installation Guide](https://web.archive.org/web/20221006202514/https:/thingsboard.io/docs/user-guide/install/ubuntu/).
+
+For those installing ThingsBoard version 3.3.1, the same guide applies. Simply substitute '3.4.1' with '3.3.1' in the relevant sections of the guide. This approach ensures a comprehensive installation process for these particular versions.
 
 #### Setting up ThingsBoard TLS
 
