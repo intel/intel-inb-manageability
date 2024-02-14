@@ -95,11 +95,11 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
 
 #### Compatibility and Installation Instructions for ThingsBoard
 
-Please be aware that ThingsBoard is compatible with the following versions:
+Please be aware that Intel Manageability is compatible with the following ThingsBoard versions:
 - ThingsBoard 3.4.2
 - ThingsBoard 3.3.1
 
-It's important to note that ThingsBoard provides documentation primarily for the latest releases. For legacy versions, documentation may not be directly available from our official resources. However, an installation guide intended for ThingsBoard 3.4.1 CE on Ubuntu is applicable for versions 3.4.2 and 3.3.1, with minor adjustments. To adapt the guide for version 3.4.2, users are instructed to replace '3.4.1' with '3.4.2'. The mentioned guide is accessible through the following link hosted on web.archive.org, which captures previous versions of our website: [Installation Guide](https://web.archive.org/web/20221006202514/https:/thingsboard.io/docs/user-guide/install/ubuntu/).
+ThingsBoard provides documentation only for the latest releases. For legacy versions, documentation may not be directly available from our official resources. However, an installation guide intended for ThingsBoard 3.4.1 CE on Ubuntu is applicable for versions 3.4.2 and 3.3.1, with minor adjustments. To adapt the guide for version 3.4.2, users are instructed to replace '3.4.1' with '3.4.2'. The mentioned guide is accessible through the following link hosted on web.archive.org, which captures previous versions of our website: [Installation Guide](https://web.archive.org/web/20221006202514/https:/thingsboard.io/docs/user-guide/install/ubuntu/).
 
 For those installing ThingsBoard version 3.3.1, the same guide applies. Simply substitute '3.4.1' with '3.3.1' in the relevant sections of the guide. This approach ensures a comprehensive installation process for these particular versions.
 
