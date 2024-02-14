@@ -91,11 +91,15 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
     ❗ Please note: a common error when installing a new ThingsBoard&reg; instance is to skip creating the ThingsBoard&reg; database.  For example, in PostgreSQL, it is necessary to first remove any existing database with `DROP DATABASE thingsboard;` and then create a fresh database with `CREATE DATABASE thingsboard;` in `psql`. Please refer to the ThingsBoard&reg; installation instructions. When upgrading rather than installing ThingsBoard&reg;, do not drop the old database unless it is OK to delete it.
 
 - In order to run a ThingsBoard&reg; server instance on the same device as
-    Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboardreg-server-port)
-	
-#### NOTE: Thingsboard is currently compatible with the following:
-* Thingsboard 3.4.2
-* Thingsboard 3.3.1
+    Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboardreg-server-port). In particular, avoid setting the ThingsBoard port to 8883 as it will conflict with the INBM MQTT port.
+
+#### NOTE: ThingsBoard is currently compatible with the following:
+* ThingsBoard 3.4.2
+* ThingsBoard 3.3.1
+
+ThingsBoard does not directly provide documentation for old releases but the install guide for ThingsBoard 3.4.1 CE for Ubuntu can be found here (this has been tested with 3.4.2--simply replace any '3.4.1' in the guide with '3.4.2'): https://web.archive.org/web/20221006202514/https:/thingsboard.io/docs/user-guide/install/ubuntu/
+
+The above link will also work for ThingsBoard 3.3.1; in the install guide, simply replace '3.4.1' with '3.3.1' in the listed steps.
 
 #### Setting up ThingsBoard TLS
 
