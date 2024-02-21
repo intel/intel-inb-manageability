@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - ?.?.? - ?
 
 ### Changed
+
+### Fixed
+
+### Security
+
+## 4.2.1 - 2024-02-16
+
+### Changed
  - Added --build-windows and --build-check flags to build scripts to allow optional skipping of Windows build and unit tests/mypy checks. One example scenario where this would be useful would be building an official version that has already been validated and unit tests already run, to reduce build time. Another scenario would be to skip the Windows build if the user only needs a Linux build.
 
 ### Fixed
