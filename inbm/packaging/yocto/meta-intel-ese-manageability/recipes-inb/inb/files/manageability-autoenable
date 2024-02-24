@@ -39,8 +39,6 @@ if [ ! $PCIE_EP_STATUS == "" ]; then
 	# PV3 upgrade. Any version prior to PV3 may have TPM temporarily disabled. This
 	# will force a reprovision with TPM=auto in that case so it has a chance to be re-enabled
 	# if it is functioning on the system.
-	#   In HDDL mode, we don't have any secrets other than TLS keys, so we don't lose any
-	# credentials doing this and we can regenerate TLS keys on reboot.
 
         if [ ! -f /etc/intel-manageability/PV3_UPGRADED ]; then
 	    rm -f /etc/intel-manageability/AUTO_ENABLED || true # Allow auto-enable to work below
@@ -60,5 +58,4 @@ if [ ! $PCIE_EP_STATUS == "" ]; then
         SKIP_DOCKER_CONFIGURATION=1 NO_CLOUD=1 NO_OTA_CERT=1 PROVISION_TPM=auto /usr/bin/provision-tc
         systemctl enable inbm-node.service
 	touch /etc/intel-manageability/AUTO_ENABLED  # This is run AFTER node is enabled (but not started) and provision-tc succeeds, in case there is an error starting node.
-    fi
 fi

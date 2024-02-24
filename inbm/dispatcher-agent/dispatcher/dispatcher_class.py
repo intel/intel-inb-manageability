@@ -404,7 +404,6 @@ class Dispatcher:
         @param kwargs: arguments dictionary to be updated after parsing resources
         @param parsed_head: Parsed head of the manifest xml
         """
-        logger.debug("Validate POTA!")
         for ota in sorted(ota_list.keys()):
             logger.debug(f"ota = {ota}")
             logger.debug("")
