@@ -111,7 +111,6 @@ class Dispatcher:
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
         self.dbs_remove_image_on_failed_container = True
-        self.host_with_nodes = HOST_WITH_NODES_DEFAULT
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.diag_health_report = {'rc': -1,
                                    'cmd': 'diagnostic OR MQTT',
@@ -312,9 +311,7 @@ class Dispatcher:
                 self._update_logger.ota_type = ota_type
                 self._update_logger.metadata = xml
 
-                logger.info("Before POTA test!")
                 if ota_type == OtaType.POTA.name.lower():
-                    logger.info("POTA!")
                     ota_list = create_ota_resource_list(parsed_head, resource)
                     # Perform manifest checking first before OTA
                     self._validate_pota_manifest(

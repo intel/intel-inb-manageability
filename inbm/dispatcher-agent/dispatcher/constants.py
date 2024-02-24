@@ -16,7 +16,6 @@ DEFAULT_LOGGING_PATH = str(INTEL_MANAGEABILITY_ETC_PATH_PREFIX /
                            'public' / 'dispatcher-agent' / 'logging.ini')
 
 PROCEED_WITHOUT_ROLLBACK_DEFAULT = False
-HOST_WITH_NODES_DEFAULT = False
 
 # Workload Orchestration
 ORCHESTRATOR_RESPONSE_DEFAULT = False
@@ -70,7 +69,6 @@ SUCCESS_RESTART = "Restart Command Success"
 
 # File permission masks
 UMASK_CONFIGURATION_FILE = 0o113  # 0o113 means prohibit execute by user or group, allow only read for other
-UMASK_PROVISION_FILE = 0o113  # 0o113 means prohibit execute by user or group, allow only read for other
 UMASK_OTA = 0o117  # 0o117 means prohibit execute by user or group, prohibit all for other
 
 

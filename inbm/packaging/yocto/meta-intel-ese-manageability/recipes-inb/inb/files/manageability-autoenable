@@ -34,12 +34,7 @@ else
   PCIE_EP_STATUS=""
 fi
 
-# Status is okay if it is in HDDL mode.
 if [ ! $PCIE_EP_STATUS == "" ]; then
-    IS_HDDL=$(cat $PCIE_EP_STATUS | tr -d '\0')
-    echo $IS_HDDL
-    if [ $IS_HDDL == "okay" ]; then
-        echo HDDL mode enabled.
 
 	# PV3 upgrade. Any version prior to PV3 may have TPM temporarily disabled. This
 	# will force a reprovision with TPM=auto in that case so it has a chance to be re-enabled
@@ -65,11 +60,5 @@ if [ ! $PCIE_EP_STATUS == "" ]; then
         SKIP_DOCKER_CONFIGURATION=1 NO_CLOUD=1 NO_OTA_CERT=1 PROVISION_TPM=auto /usr/bin/provision-tc
         systemctl enable inbm-node.service
 	touch /etc/intel-manageability/AUTO_ENABLED  # This is run AFTER node is enabled (but not started) and provision-tc succeeds, in case there is an error starting node.
-
-        # Finally, we start inbm-node.service.
-        # TODO: BC needs a provision-bc script. This is temporary:
-        if [ -f /usr/bin/inbm-node ] ; then
-            systemctl start inbm-node.service
-        fi
     fi
 fi

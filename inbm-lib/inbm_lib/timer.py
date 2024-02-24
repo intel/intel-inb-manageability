@@ -9,7 +9,7 @@
 import logging
 from time import sleep
 from threading import Thread
-from typing import Any, Callable
+from typing import Any
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -21,19 +21,17 @@ class Timer(object):
 
     @param count_down_time: time to count down (in seconds)
     @param callback_method: calling object
-    @param node_id: string representing node device id
     @param is_daemon: Set thread deamon.  Default on threads is None.
     If not None, daemon explicitly sets whether the thread is daemonic.
     If None (the default), the daemonic property is inherited from the current thread.
     """
 
     def __init__(self, count_down_time: int, callback_method: Any = None,
-                 node_id: Optional[str] = None, is_daemon: Optional[bool] = None) -> None:
+                is_daemon: Optional[bool] = None) -> None:
         """If user doesn't pass callback method, user can check timeout value"""
         self._running = True
         self.count_down_time = count_down_time
         self.callback = callback_method
-        self.node_id = node_id
         self.current_time = 0
         self.timer = Thread(target=self._start_internal_timer)
         if is_daemon:
@@ -64,7 +62,4 @@ class Timer(object):
 
         if self._running:
             if self.callback is not None:
-                if self.node_id:
-                    self.callback(self.node_id)
-                else:
-                    self.callback()
+                self.callback()

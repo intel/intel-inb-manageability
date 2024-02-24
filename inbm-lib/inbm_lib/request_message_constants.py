@@ -27,9 +27,3 @@ CONFIGURATION_LOAD_UNSUCCESSFUL = "Configuration load: unsuccessful"
 CONFIGURATION_FAILURE_MESSAGE_LIST = [CONFIGURATION_FAILURE, CONFIGURATION_GET_FAILURE, CONFIGURATION_SET_FAILURE,
                                       CONFIGURATION_LOAD_FAILURE, CONFIGURATION_UNSUCCESSFUL,
                                       CONFIGURATION_LOAD_UNSUCCESSFUL]
-
-NODE_NOT_FOUND = "No active nodes found"
-
-# Other message
-NUM_TARGET = "OTA_TARGETS:"
-NO_DEVICE_FOUND = "No xlink PCIe device found. Please install xlink driver. Will detect again in 30 seconds."
