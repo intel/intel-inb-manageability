@@ -6,7 +6,6 @@
 import argparse
 
 from ..xml_tag import create_xml_tag
-from ..utility import _get_password
 from ..inbc_exception import InbcException
 
 
@@ -14,14 +13,11 @@ def load(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest
     """
 
     arguments = {
-        'fetch': args.uri,
-        'signature': args.signature,
-        'username': args.username,
-        'password': _get_password(args.username, "Please provide the password: ")
+        'fetch': args.uri
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -32,15 +28,11 @@ def load(args: argparse.Namespace) -> str:
                 '<configtype>' +
                 '<load>' +
                 '{0}' +
-                '{1}' +
-                '{2}' +
                 '</load>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
-        create_xml_tag(arguments, "path"),
-        create_xml_tag(arguments, "fetch"),
-        create_xml_tag(arguments, "signature")
+        create_xml_tag(arguments, "fetch")
     )
     print("manifest {0}".format(manifest))
     return manifest
@@ -50,7 +42,7 @@ def get(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest
     """
 
     arguments = {
@@ -79,7 +71,7 @@ def set(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest
     """
 
     arguments = {
@@ -107,7 +99,7 @@ def set(args: argparse.Namespace) -> str:
 def append(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest
     """
     if not args.path:
         raise InbcException('argument --path/-p: required.')
@@ -137,7 +129,7 @@ def append(args: argparse.Namespace) -> str:
 def remove(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest
     """
     if not args.path:
         raise InbcException('argument --path/-p: required .')
