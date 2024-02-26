@@ -611,7 +611,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 ### Query Manifest Parameters 
 
-The query command can be used to gather information about the system and the Vision cards.
+The query command can be used to gather information about the system.
 
 | XML Tags                                 | Definition                                   | Required/Optional | Notes                                                                                           |
 |:-----------------------------------------|:---------------------------------------------|:-----------------:|:------------------------------------------------------------------------------------------------|
