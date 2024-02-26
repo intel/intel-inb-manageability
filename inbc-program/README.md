@@ -383,7 +383,7 @@ inbc remove --path  trustedRepositories:https://abc.com/
 
 ## RESTART
 ### Description
-Restart nodes
+Restart
 
 ### Usage
 ```
