@@ -808,6 +808,7 @@ The query command can be used to gather information about the system.
 | `<configtype>`                           | `<configtype>`                                                |         R         |                                                     |
 | `<load>`                                 | `<load>`                                                      |         R         |                                                     |
 | `<fetch></fetch>`                        | `<fetch>http://yoururl:port/intel_manageability.conf</fetch>` |         R         |                                                     |
+| `<signature></signature>`                | `<signature>ABC123</signature`                                |         O         | Digistal signature                                  |
 | `</load>`                                | `</load>`                                                     |         R         |                                                     |
 | `</configtype>`                          | `</configtype>`                                               |         R         |                                                     |
 | `</config>`                              | `</config>`                                                   |         R         |                                                     |
