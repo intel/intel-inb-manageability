@@ -300,15 +300,16 @@ inbc aota --app compose --command down --version 1.0 --containertag compose-up
 ### Description
 Load a new configuration file.   This will replace the existing configuration file with the new file.
 
-📝 The configuration file you provide needs to be named *intel_manageability.conf*. If you wish to send with
-    signature; then TAR both the PEM file and the *intel_manageability.conf* in a TAR file.
+📝 The configuration file you provide needs to be named *intel_manageability.conf*.
 
 
 ### Usage
 ``` 
 inbc load
    [--uri, -u URI]
+   {--signature, -s SIGNATURE}
 ```
+
 ### Examples
 #### Load new Configuration File
 ```

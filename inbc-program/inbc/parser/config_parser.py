@@ -17,7 +17,8 @@ def load(args: argparse.Namespace) -> str:
     """
 
     arguments = {
-        'fetch': args.uri
+        'fetch': args.uri,
+        'signature': args.signature
     }
 
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
@@ -28,11 +29,13 @@ def load(args: argparse.Namespace) -> str:
                 '<configtype>' +
                 '<load>' +
                 '{0}' +
+                '{1}'
                 '</load>' +
                 '</configtype>' +
                 '</config>' +
                 '</manifest>').format(
-        create_xml_tag(arguments, "fetch")
+        create_xml_tag(arguments, "fetch"),
+        create_xml_tag(arguments, "signature")
     )
     print("manifest {0}".format(manifest))
     return manifest
