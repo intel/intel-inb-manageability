@@ -432,8 +432,6 @@ This list file is used during 'sudo apt update' to update the application.  <em>
           Step 1: Refer to Inbc Config Append command to set gpgKeyUri to trustedRepositories in intel-manageability.conf file
                   Example: inbc append --path  trustedRepositories:https://deb.opera.com/
           Step 2: Use Inbc source appplication add command 
-```
-
 
 ### Usage
 ```
@@ -458,8 +456,9 @@ inbc source application add
 
 **NOTE:** In the Signed-By: Section, use the following guidelines.
 
-      - Each blank line has a period in it. -> " ."
-      - Each line after the Signed-By: starts with a space -> " gibberish"
+   - Each blank line has a period in it. -> " ."
+   - Each line after the Signed-By: starts with a space -> " gibberish"
+      
 ```
 inbc source application add 
    --sources 
