@@ -66,7 +66,7 @@ EMPTY_TAG_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
 TEST_XML = '<?xml version="1.0" encoding="utf-8"?>' \
     '<manifest><type>ota</type><ota><header><id>sampleID</id><name>Sample FOTA</name><description>' \
     'Sample</description><type>fota</type><repo>remote</repo></header><type><fota name="sample">' \
-    '<targetType>host</targetType><fetch>https://abc.tar</fetch><biosversion>2018.03</biosversion>' \
+    '<fetch>https://abc.tar</fetch><biosversion>2018.03</biosversion>' \
     '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
     '2020-11-16</releasedate></fota></type></ota></manifest> '
 

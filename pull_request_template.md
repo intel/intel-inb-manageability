@@ -17,7 +17,7 @@ Reference URL for issue tracking (JIRA/HSD/Github): **\<URL to be filled>**
 - [ ] Added label to the Pull Request for easier discoverability and search
 - [ ] RTC or HSD number will be included in final merge. HSD must always be included if available.
 - [ ] Changelogs are updated (or N/A if not customer visible)
-- [ ] inbm/log_changes.txt and inbm-vision/log_changes.txt are updated for potentially Validation-breaking log changes (or N/A if none)
+- [ ] inbm/log_changes.txt are updated for potentially Validation-breaking log changes (or N/A if none)
 
 ### CODE MAINTAINABILITY
 - [ ] **_Commit Message meets guidelines as indicated in the URL\*_**

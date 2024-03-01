@@ -114,7 +114,7 @@ SOTA on Ubuntu is supported in 3 modes:
 2. No download - Retrieves and installs packages.
 3. Download only - Retrieve packages (will not unpack or install).
 
-By default when SOTA is performaing an install, it will upgrade all eligible packages. The user can optionally specify a list of packages to upgrade (or install if not present) via the [--package-list, -p=PACKAGES] option.
+By default, when SOTA is performing an installation, it will upgrade all eligible packages. The user can optionally specify a list of packages to upgrade (or install if not present) via the [--package-list, -p=PACKAGES] option.
 
 
 ### Usage
@@ -300,12 +300,16 @@ inbc aota --app compose --command down --version 1.0 --containertag compose-up
 ### Description
 Load a new configuration file.   This will replace the existing configuration file with the new file.
 
+📝 The configuration file you provide needs to be named *intel_manageability.conf*.
+
+
 ### Usage
 ``` 
 inbc load
-   {--path, -p FILE_PATH}
    [--uri, -u URI]
+   {--signature, -s SIGNATURE}
 ```
+
 ### Examples
 #### Load new Configuration File
 ```
@@ -380,7 +384,7 @@ inbc remove --path  trustedRepositories:https://abc.com/
 
 ## RESTART
 ### Description
-Restart nodes
+Restart
 
 ### Usage
 ```

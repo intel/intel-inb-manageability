@@ -262,8 +262,6 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
-        load_parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         load_parser.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         load_parser.set_defaults(func=load)

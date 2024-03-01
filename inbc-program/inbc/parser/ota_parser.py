@@ -20,7 +20,7 @@ def sota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated XML manifest string
+    @return: Generated XML manifest
     """
     if not args.uri:
         # Update on local Ubuntu system.  Does update through ubuntu without fetching a package.
@@ -86,7 +86,7 @@ def fota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated XML manifest string
+    @return: Generated XML manifest
     """
 
     p = _gather_system_details()
@@ -139,7 +139,7 @@ def pota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated xml manifest
     """
     os_type = detect_os()
     p = _gather_system_details()
@@ -201,7 +201,7 @@ def aota(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated XML manifest string
+    @return: Generated XML manifest
     """
     arguments = {
         'cmd': args.command,
