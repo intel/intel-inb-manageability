@@ -29,7 +29,7 @@ def load(args: argparse.Namespace) -> str:
                 '<configtype>' +
                 '<load>' +
                 '{0}' +
-                '{1}'
+                '{1}' +
                 '</load>' +
                 '</configtype>' +
                 '</config>' +
