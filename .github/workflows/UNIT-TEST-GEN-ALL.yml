@@ -24,7 +24,7 @@ jobs:
           bash ./create_user_env.sh
     env:
       # <Input relative filepath of your requirements.txt path i.e. dir-name/requirements.txt >
-      REQUIREMENTS_PATH: requirements.txt
+      REQUIREMENTS_PATH: inbm/dispatcher-agent/requirements.txt
 
   GENAI-UNIT-TEST-GENERATE:
     permissions:
@@ -43,7 +43,8 @@ jobs:
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       TASK_TYPE: generate
-      # INCLUDE_PATHS: <Include your paths here if want to generate UT on specific files/dirs>
+      TESTS_OUTPUT_PATH: inbm/dispatcher-agent/tests/ai
+      INCLUDE_PATHS: inbm/dispatcher-agent/dispatcher/sota/snapshot.py
       # EXCLUDE_PATHS: <Exclude your paths here if want to exclude specific files/dirs>
 
   UNIT-TEST-RUN:
