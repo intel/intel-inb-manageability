@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
 
 ### Security
+ - Bump cryptography to 42.0.4, resolving CVE-2024-26130
 
 ## 4.2.1 - 2024-02-16
 
