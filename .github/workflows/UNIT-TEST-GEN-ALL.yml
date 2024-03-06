@@ -64,5 +64,7 @@ jobs:
     env:
       GITHUB_CONTEXT: ${{ toJson(github) }}
       TASK_TYPE: run
+      TESTS_OUTPUT_PATH: inbm/dispatcher-agent/tests/ai
+      INCLUDE_PATHS: inbm/dispatcher-agent/dispatcher/sota/snapshot.py
       # INCLUDE_PATHS: <Include your paths here if want to run UT on specific files/dirs>
       # EXCLUDE_PATHS: <Exclude your paths here if want to exclude specific files/dirs>
