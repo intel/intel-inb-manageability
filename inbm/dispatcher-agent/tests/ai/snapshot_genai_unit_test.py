@@ -1,9 +1,9 @@
 import sys
+sys.path.append('/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageability/intel-inb-manageability/inbm-lib/')
 sys.path.append('/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageability/intel-inb-manageability/inbm/')
 sys.path.append('/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageability/intel-inb-manageability/inbm/dispatcher-agent/')
 sys.path.append('/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageability/intel-inb-manageability/inbm/dispatcher-agent/dispatcher/')
 sys.path.append('/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageability/intel-inb-manageability/inbm/dispatcher-agent/dispatcher/sota/')
-sys.path.append('/home/runner/GITHUB_ACTION_RUNNERS/_work/intel-inb-manageability/intel-inb-manageability/inbm-lib/')
 import pytest
 from unittest.mock import MagicMock, patch
 from dispatcher.sota.snapshot import DebianBasedSnapshot
