@@ -1095,5 +1095,45 @@ class TestDebianBasedSnapshotCommit:
             trtl.delete_snapshot.assert_called_once_with(snap_num)
         dispatcher_broker.telemetry.assert_called()
 
+#DO NOT DELETE THIS LINE - TestSnapshotCommit
+'''
+ADD HUMAN FEEDBACK BELOW:
+
+'''
+class TestDebianBasedSnapshotCommit:
+
+    @pytest.mark.parametrize('snap_num, delete_snapshot_return, expected_result', [
+        # Normal scenario: snapshot exists and can be deleted successfully
+        ('123', (0, None), 0),
+        ('0', (0, None), 0),
+
+        # Error scenario: snapshot does not exist or cannot be deleted
+        ('123', (1, 'Error message'), 1),
+        (None, (1, 'Error message'), 1),
+
+        # Edge case: snapshot number is an unexpected value
+        ('', (0, None), 0),
+        ('abc', (1, 'Error message'), 1),
+    ])
+    def test_commit(self, snap_num, delete_snapshot_return, expected_result):
+        # Create a mock Trtl instance
+        trtl = MagicMock()
+        trtl.delete_snapshot.return_value = delete_snapshot_return
+
+        # Create a mock DispatcherBroker instance
+        dispatcher_broker = MagicMock()
+
+        # Create a DebianBasedSnapshot instance with the mock Trtl and DispatcherBroker instances
+        snapshot = DebianBasedSnapshot(trtl, 'update', dispatcher_broker, snap_num, False, False)
+
+        # Call the commit method and check the result
+        result = snapshot.commit()
+        assert result == expected_result
+
+        # Check that the Trtl and DispatcherBroker methods were called with the correct arguments
+        if snap_num is not None and snap_num != '0':
+            trtl.delete_snapshot.assert_called_once_with(snap_num)
+        dispatcher_broker.telemetry.assert_called()
+
 if __name__ == '__main__':
     pytest.main()
