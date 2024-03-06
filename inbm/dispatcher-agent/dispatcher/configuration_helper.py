@@ -8,7 +8,7 @@
 import logging
 import os
 
-from typing import Tuple, Optional, Any
+from typing import Optional
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import get_canonical_representation_of_path
