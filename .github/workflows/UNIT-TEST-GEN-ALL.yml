@@ -20,8 +20,7 @@ jobs:
     steps:
       - id: maximus-create-env-action
         run: |
-          cd ../../../genai_ut_gen
-          bash ./create_user_env.sh
+          bash ../../../genai_ut_gen/create_user_env.sh
     env:
       # <Input relative filepath of your requirements.txt path i.e. dir-name/requirements.txt >
       REQUIREMENTS_PATH: inbm/dispatcher-agent/requirements.txt
