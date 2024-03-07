@@ -8,7 +8,7 @@
                 ],
                 "exclude_specific_functions": [],
                 "include_all_functions": false,
-                "exclude_all_functions": true
+                "exclude_all_functions": false
             }
         ]
     }
