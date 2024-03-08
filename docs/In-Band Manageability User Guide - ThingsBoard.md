@@ -91,11 +91,17 @@ To set up a ThingsBoard&reg; installation, follow the steps below:
     ❗ Please note: a common error when installing a new ThingsBoard&reg; instance is to skip creating the ThingsBoard&reg; database.  For example, in PostgreSQL, it is necessary to first remove any existing database with `DROP DATABASE thingsboard;` and then create a fresh database with `CREATE DATABASE thingsboard;` in `psql`. Please refer to the ThingsBoard&reg; installation instructions. When upgrading rather than installing ThingsBoard&reg;, do not drop the old database unless it is OK to delete it.
 
 - In order to run a ThingsBoard&reg; server instance on the same device as
-    Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboardreg-server-port)
-	
-#### NOTE: Thingsboard is currently compatible with the following:
-* Thingsboard 3.4.2
-* Thingsboard 3.3.1
+    Intel Manageability, see [**Changing ThingsBoard&reg; Server Port**](#changing-thingsboardreg-server-port). In particular, avoid setting the ThingsBoard port to 8883 as it will conflict with the INBM MQTT port.
+
+#### Compatibility and Installation Instructions for ThingsBoard
+
+Please be aware that Intel Manageability is compatible with the following ThingsBoard versions:
+- ThingsBoard 3.4.2
+- ThingsBoard 3.3.1
+
+ThingsBoard provides documentation only for the latest releases. For legacy versions, documentation may not be directly available from our official resources. However, an installation guide intended for ThingsBoard 3.4.1 CE on Ubuntu is applicable for versions 3.4.2 and 3.3.1, with minor adjustments. To adapt the guide for version 3.4.2, users are instructed to replace '3.4.1' with '3.4.2'. The mentioned guide is accessible through the following link hosted on web.archive.org, which captures previous versions of our website: [Installation Guide](https://web.archive.org/web/20221006202514/https:/thingsboard.io/docs/user-guide/install/ubuntu/).
+
+For those installing ThingsBoard version 3.3.1, the same guide applies. Simply substitute '3.4.1' with '3.3.1' in the relevant sections of the guide. This approach ensures a comprehensive installation process for these particular versions.
 
 #### Setting up ThingsBoard TLS
 
