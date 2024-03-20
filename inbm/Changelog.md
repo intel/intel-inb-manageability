@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Security
  - Bump cryptography to 42.0.4, resolving CVE-2024-26130
+ - Bump github.com/docker/docker from 24.0.7+incompatible to 24.0.9+incompatible in /inbm/trtl, resolving CVE-2024-21626 and CVE-2024-24557 (NOTE: trtl does not use runc or Docker Engine, so these CVEs would not actually apply to this project)
 
 ## 4.2.1 - 2024-02-16
 
