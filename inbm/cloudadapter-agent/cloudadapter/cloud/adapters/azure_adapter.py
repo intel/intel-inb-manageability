@@ -89,7 +89,7 @@ class AzureAdapter(Adapter):
                 "format": "{\"{key}\": \"{value}\"}"
             },
             "attribute": {
-                "pub": "$iothub/twin/PATCH/properties/reported/",
+                "pub": "$iothub/twin/PATCH/properties/reported/?$rid=0",
                 "format": "{\"{key}\": \"{value}\"}"
             },
             "method": {
