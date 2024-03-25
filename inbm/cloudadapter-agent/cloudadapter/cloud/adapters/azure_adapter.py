@@ -68,7 +68,7 @@ class AzureAdapter(Adapter):
         event_pub = f"devices/{device_id}/messages/events/"
         config = {
             "mqtt": {
-                "username": f"{hostname}/{device_id}/?api-version=2018-06-30",
+                "username": f"{hostname}/{device_id}/?api-version=2021-04-12",
                 "password": device_sas_key,
                 "hostname": hostname,
                 "client_id": device_id,
@@ -135,7 +135,7 @@ class AzureAdapter(Adapter):
         """
         # Set up the initial HTTP request
         endpoint = f"{AZURE_DPS_ENDPOINT}/{scope_id}/registrations/{device_id}/"
-        registration = "register?api-version=2019-03-31"
+        registration = "register?api-version=2021-06-01"
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json; charset=utf-8",
@@ -178,7 +178,7 @@ class AzureAdapter(Adapter):
         # Continue checking device's registration status until it resolves
         while result_data.get("status") == "assigning" and result.ok:
             operation_id = result_data.get("operationId")
-            operation = f"operations/{operation_id}?api-version=2019-03-31"
+            operation = f"operations/{operation_id}?api-version=2021-06-01"
 
             result = requests.get(endpoint + operation, headers=headers,
                                   cert=device_auth_set.get('certs', None))
