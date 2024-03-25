@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - Removed remaining Bit Creek code including 'Target' references from the manifest schema.
 
 ### Fixed
+ - RTC 539880 - Fix encountered disconnected with code 7 after successfully provision to Azure cloud
 
 ### Security
  - Bump cryptography to 42.0.4, resolving CVE-2024-26130
