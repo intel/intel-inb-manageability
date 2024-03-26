@@ -1,7 +1,7 @@
 SUMMARY = "Intel(R) In-Band Manageability framework"
 PR = "r1"
 LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE.Intel;md5=f8dd78b147cad11ff835ec2ffe71aa58"
+LIC_FILES_CHKSUM = "file://LICENSE.Intel;md5=b43b5d9a493ceccc5ceee752331a09d3"
 
 SRC_URI = "file://${INB_TGZ_PATH}/mqtt-${PV}-1.tar.gz;subdir=${BP} \
         file://LICENSE.Intel;subdir=${BP} \
