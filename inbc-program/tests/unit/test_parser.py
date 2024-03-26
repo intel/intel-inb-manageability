@@ -85,11 +85,12 @@ class TestInbc(TestCase):
                    '</configtype></config></manifest>'
         self.assertEqual(remove.func(remove), expected)
 
-    def test_raise_not_supported_restart_manifest(self) -> None:
-        restart = self.arg_parser.parse_args(['restart'])
-        with self.assertRaisesRegex(InbcException, 'Restart command is not supported.'):
-            restart.func(restart)
-
+    def test_create_restart_manifest(self):
+        s = self.arg_parser.parse_args(['restart'])
+        
+        expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>cmd</type><cmd>restart</cmd></manifest>'
+        assert expected == s.func(s)
+        
     def test_query_manifest(self) -> None:
         s = self.arg_parser.parse_args(['query', '-o', 'all'])
 

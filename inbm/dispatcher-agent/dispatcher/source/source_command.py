@@ -30,6 +30,7 @@ def do_source_command(parsed_head: XmlHandler, os_type: OsType, dispatcher_broke
 
     @param parsed_head: XmlHandler corresponding to the manifest tag
     @param os_type: os type
+    @param dispatcher_broker: MQTT broker for Dispatcher agent
     @return Result
     """
     logger.debug(f"do_source_command: {parsed_head}")

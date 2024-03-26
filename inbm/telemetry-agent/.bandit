@@ -1,3 +1,0 @@
-[bandit]
-exclude: /telemetry/tests
-skips: ["-S101"]

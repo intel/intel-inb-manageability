@@ -1,7 +1,7 @@
 # base image with all dependencies for building
 FROM registry.hub.docker.com/library/ubuntu:20.04 as base
+RUN echo 'force cache refresh 20240212'
 include(`commands.base-setup.m4')
-
 
 # build a virtual environment for each agent to build from
 

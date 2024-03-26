@@ -73,7 +73,6 @@
                             <xs:enumeration value="shutdown"/>
                             <xs:enumeration value="restart"/>
                             <xs:enumeration value="decommission"/>
-                            <xs:enumeration value="provisionNode"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>
@@ -92,25 +91,9 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
-                            <xs:element name="targetType" minOccurs="0" maxOccurs="1">
-                                <xs:simpleType>
-                                    <xs:restriction base="xs:string">
-                                        <xs:enumeration value="vision"/>
-                                        <xs:enumeration value="node"/>
-                                        <xs:enumeration value="node_client"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
-                            </xs:element>
                             <xs:element name="configtype">
                                 <xs:complexType>
                                     <xs:sequence>
-                                        <xs:element name="targets" minOccurs="0" maxOccurs="1">
-                                            <xs:complexType>
-                                                <xs:all>
-                                                    <xs:element name="target" type="Max50Chars" minOccurs="1"/>
-                                                </xs:all>
-                                            </xs:complexType>
-                                        </xs:element>
                                         <xs:choice>
                                             <xs:element ref="get"/>
                                             <xs:element ref="set"/>
@@ -133,25 +116,6 @@
                     </xs:complexType>
                 </xs:element>
 
-                <xs:element name="provisionNode" minOccurs="0">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="fetch" type="URLMax700Chars"/>
-                            <xs:element name="signature" type="SigMax1000Chars" minOccurs="0" maxOccurs="1"/>
-                            <xs:element name="hash_algorithm" minOccurs="0" maxOccurs="1">
-                                <xs:simpleType>
-                                    <xs:restriction base="xs:string">
-                                        <xs:enumeration value="384"/>
-                                        <xs:enumeration value="512"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
-                            </xs:element>
-                            <xs:element name="username" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
-                            <xs:element name="password" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
-
                 <xs:element name="query" minOccurs="0">
                     <xs:complexType>
                         <xs:sequence>
@@ -170,45 +134,11 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
-                            <xs:element name="targetType" minOccurs="0" maxOccurs="1">
-                                <xs:simpleType>
-                                    <xs:restriction base="xs:string">
-                                        <xs:enumeration value="vision"/>
-                                        <xs:enumeration value="node"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
-                            </xs:element>
-                            <xs:element name="targets" minOccurs="0" maxOccurs="1">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name="target" type="Max50Chars" minOccurs="1" maxOccurs="50"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
 
-                <xs:element name="restart" minOccurs="0">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="targetType" minOccurs="0" maxOccurs="1">
-                                <xs:simpleType>
-                                    <xs:restriction base="xs:string">
-                                        <xs:enumeration value="node"/>
-                                    </xs:restriction>
-                                </xs:simpleType>
-                            </xs:element>
-                            <xs:element name="targets" minOccurs="0" maxOccurs="1">
-                                <xs:complexType>
-                                    <xs:sequence>
-                                        <xs:element name="target" type="Max50Chars" minOccurs="1" maxOccurs="50"/>
-                                    </xs:sequence>
-                                </xs:complexType>
-                            </xs:element>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
+                <xs:element name="restart" minOccurs="0"></xs:element>
 
                 <xs:element name="ota" minOccurs="0">
                     <xs:complexType>
@@ -477,21 +407,6 @@
     <xs:element name="fota">
         <xs:complexType>
             <xs:all>
-                <xs:element name="targetType" minOccurs="0" maxOccurs="1">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                            <xs:enumeration value="host"/>
-                            <xs:enumeration value="node"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:element name="targets" minOccurs="0" maxOccurs="1">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="target" type="Max50Chars" minOccurs="1" maxOccurs="30"/>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
                 <xs:element name="fetch" type="URLMax700Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="biosversion" type="Max50Chars"/>
                 <xs:element name="sigversion" type="sigversion" minOccurs="0" maxOccurs="1"/>
@@ -569,21 +484,6 @@
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="package_list" type="PackageList" minOccurs="0" maxOccurs="1"/>
-		        <xs:element name="targetType" minOccurs="0" maxOccurs="1">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                            <xs:enumeration value="host"/>
-                            <xs:enumeration value="node"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:element name="targets" minOccurs="0" maxOccurs="1">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="target" type="Max50Chars" minOccurs="1" maxOccurs="50"/>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
                 <xs:element name="fetch" type="URLMax700Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="signature" type="SigMax1000Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="username" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
@@ -598,21 +498,6 @@
     <xs:element name="pota">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="targetType" minOccurs="0" maxOccurs="1">
-                    <xs:simpleType>
-                        <xs:restriction base="xs:string">
-                            <xs:enumeration value="host"/>
-                            <xs:enumeration value="node"/>
-                        </xs:restriction>
-                    </xs:simpleType>
-                </xs:element>
-                <xs:element name="targets" minOccurs="0" maxOccurs="1">
-                    <xs:complexType>
-                        <xs:sequence>
-                            <xs:element name="target" type="Max50Chars" minOccurs="1" maxOccurs="50"/>
-                        </xs:sequence>
-                    </xs:complexType>
-                </xs:element>
                 <xs:element ref="fota"/>
                 <xs:element ref="sota"/>
             </xs:sequence>

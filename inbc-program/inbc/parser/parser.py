@@ -262,8 +262,6 @@ class ArgsParser(object):
                                  type=lambda x: validate_string_less_than_n_characters(
                                      x, 'URL', 1000),
                                  help='Remote URI from where to retrieve package')
-        load_parser.add_argument('--username', '-un', required=False, help='Username on the remote server',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
         load_parser.add_argument('--signature', '-s', default='None', required=False, help='Signature string',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Signature', 1000))
         load_parser.set_defaults(func=load)
@@ -326,16 +324,12 @@ def restart(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest string
     """
-    raise InbcException('Restart command is not supported.')
-
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest>' +
                 '<type>cmd</type>' +
                 '<cmd>restart</cmd>' +
-                '<restart>' +
-                '</restart>' +
                 '</manifest>')
     print("manifest {0}".format(manifest))
     return manifest
@@ -345,7 +339,7 @@ def query(args: argparse.Namespace) -> str:
     """Creates manifest in XML format.
 
     @param args: Arguments provided by the user from command line
-    @return: Generated xml manifest string
+    @return: Generated XML manifest string
     """
     arguments = {
         'option': args.option

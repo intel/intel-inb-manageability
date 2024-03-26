@@ -125,7 +125,7 @@ class SOTA:
             # If an exception occurs during string conversion, raise that exception
             raise SotaError('package_list is not a string in manifest') from e
 
-        self._device_reboot = parsed_manifest['deviceReboot']
+        self._reboot_device = parsed_manifest['deviceReboot']
         self._install_check_service = install_check_service
 
         if self._repo_type == LOCAL_SOURCE:
@@ -239,7 +239,7 @@ class SOTA:
         if self.sota_cmd == 'rollback':
             self.snap_num = setup_helper.get_snapper_snapshot_number()
         snapshot = self.factory.create_snapshotter(
-            self.sota_cmd, self.snap_num, self.proceed_without_rollback)
+            self.sota_cmd, self.snap_num, self.proceed_without_rollback, self._is_reboot_device())
         rebooter = self.factory.create_rebooter()
 
         if self.sota_state == 'diagnostic_system_unhealthy':
@@ -356,7 +356,7 @@ class SOTA:
                     self._update_logger.status = OTA_PENDING
                     self._update_logger.error = ""
                 self._update_logger.save_log()
-                if self.sota_mode == 'download-only' or self._device_reboot in ["No", "N", "n", "no", "NO"]:  # pragma: no cover
+                if (self.sota_mode == 'download-only') or (not self._is_reboot_device()):
                     self._dispatcher_broker.telemetry("No reboot (SOTA pass)")
                 else:
                     self._dispatcher_broker.telemetry("Going to reboot (SOTA pass)")
@@ -371,6 +371,9 @@ class SOTA:
                 self._dispatcher_broker.telemetry(SOTA_FAILURE)
                 self._dispatcher_broker.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)
+
+    def _is_reboot_device(self) -> bool:
+        return self._reboot_device not in ["No", "N", "n", "no", "NO"]
 
     def check(self) -> None:
         """Perform manifest checking before SOTA"""

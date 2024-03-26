@@ -611,7 +611,7 @@ The POTA manifest is used to perform both a FOTA and SOTA update at the same tim
 
 ### Query Manifest Parameters 
 
-The query command can be used to gather information about the system and the Vision cards.
+The query command can be used to gather information about the system.
 
 | XML Tags                                 | Definition                                   | Required/Optional | Notes                                                                                           |
 |:-----------------------------------------|:---------------------------------------------|:-----------------:|:------------------------------------------------------------------------------------------------|
@@ -798,20 +798,21 @@ The query command can be used to gather information about the system and the Vis
 ## Load
 
 #### Configuration LOAD Manifest Parameters
-| Tag                                      | Example                                                       | Required/Optional | Notes           |
-|:-----------------------------------------|:--------------------------------------------------------------|:-----------------:|:----------------|
-| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`                      |         R         |                 |
-| `<manifest>`                             | `<manifest>`                                                  |         R         |                 |
-| `<type></type>`                          | `<type>config</type>`                                         |         R         | Always 'config' |
-| `<config>`                               | `<ota>`                                                       |         R         |                 |
-| `<cmd></cmd>`                            | `<cmd>load</cmd>`                                             |         R         |                 |
-| `<configtype>`                           | `<configtype>`                                                |         R         |                 |
-| `<load>`                                 | `<load>`                                                      |         R         |                 |
-| `<fetch></fetch>`                        | `<fetch>http://yoururl:port/intel_manageability.conf</fetch>` |         R         |                 |
-| `</load>`                                | `</load>`                                                     |         R         |                 |
-| `</configtype>`                          | `</configtype>`                                               |         R         |                 |
-| `</config>`                              | `</config>`                                                   |         R         |                 |
-| `</manifest>`                            | `</manifest>`                                                 |         R         |                 |
+| Tag                                      | Example                                                       | Required/Optional | Notes                                               |
+|:-----------------------------------------|:--------------------------------------------------------------|:-----------------:|:----------------------------------------------------|
+| `<?xml version='1.0' encoding='utf-8'?>` | `<?xml version='1.0' encoding='utf-8'?>`                      |         R         |                                                     |
+| `<manifest>`                             | `<manifest>`                                                  |         R         |                                                     |
+| `<type></type>`                          | `<type>config</type>`                                         |         R         | Always 'config'                                     |
+| `<config>`                               | `<ota>`                                                       |         R         |                                                     |
+| `<cmd></cmd>`                            | `<cmd>load</cmd>`                                             |         R         |                                                     |
+| `<configtype>`                           | `<configtype>`                                                |         R         |                                                     |
+| `<load>`                                 | `<load>`                                                      |         R         |                                                     |
+| `<fetch></fetch>`                        | `<fetch>http://yoururl:port/intel_manageability.conf</fetch>` |         R         |                                                     |
+| `<signature></signature>`                | `<signature>ABC123</signature`                                |         O         | Digistal signature                                  |
+| `</load>`                                | `</load>`                                                     |         R         |                                                     |
+| `</configtype>`                          | `</configtype>`                                               |         R         |                                                     |
+| `</config>`                              | `</config>`                                                   |         R         |                                                     |
+| `</manifest>`                            | `</manifest>`                                                 |         R         |                                                     |
 
 
 * The configuration file you provide in Fetch needs to be named *intel_manageability.conf*. If you wish to send with
@@ -853,8 +854,10 @@ The query command can be used to gather information about the system and the Vis
 
 #### Configuration Append Manifest Example
 
+Note: ubuntuAptSource tag is no longer used. 
+
 * Append is only applicable to three configuration tags, for example,
-    **trustedRepositories**, **sotaSW** and **ubuntuAptSource**
+    **trustedRepositories** and **sotaSW** 
 * Path takes in key value pair format, example: trustedRepositories:  https://dummyURL.com
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -891,8 +894,7 @@ The query command can be used to gather information about the system and the Vis
 
 #### Configuration Remove Manifest Example
 * *Remove* is only applicable to three configuration tags, for
-    example, **trustedRepositories**, **sotaSW** and
-    **ubuntuAptSource**.
+    example, **trustedRepositories** and **sotaSW** 
 * Path takes in key value pair format, example: trustedRepositories:https://dummyURL.com
 
 ```xml

@@ -7,12 +7,15 @@
 import platform
 import os
 import shlex
-import subprocess
-import sys
+
 import logging
 import builtins
 from datetime import datetime
-from subprocess import Popen, PIPE
+
+# We run the process with shell=False, This class is used to run 
+# what has to be ran with Popen securely or with low risk
+from subprocess import Popen, PIPE # nosec: B404
+import subprocess # nosec: B404
 
 from typing import Tuple, Optional, Union, BinaryIO, List, Any
 from .constants import AFULNX_64

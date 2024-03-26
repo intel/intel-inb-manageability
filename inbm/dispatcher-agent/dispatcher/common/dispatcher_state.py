@@ -12,9 +12,9 @@ import logging
 import os
 
 # pickle is only used to read from a trusted state file
-import pickle  # noqa: S403
+import pickle  # nosec: B301, B403
 
-from typing import Dict, Any, Optional, TypedDict
+from typing import Dict, Any, TypedDict
 
 from .constants import DISPATCHER_STATE_FILE
 from ..dispatcher_exception import DispatcherException
@@ -70,7 +70,7 @@ def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:
         fd = builtins.open(DISPATCHER_STATE_FILE, 'rb')
         logger.debug("attempting to unpickle from state file")
         # override S301 because we are unpickling from trusted file
-        state = pickle.load(fd)  # noqa: S301
+        state = pickle.load(fd)  # nosec
         logger.debug("unpickling succeeded")
         logger.debug(f"Disp State file info: {state}")
     except (OSError, pickle.UnpicklingError, AttributeError, FileNotFoundError) as e:
@@ -96,7 +96,7 @@ def write_dispatcher_state_to_state_file(state: DispatcherState) -> None:  # pra
         if is_dispatcher_state_file_exists():
             with builtins.open(DISPATCHER_STATE_FILE, 'rb') as fd:
                 # we are reading from a trusted state file here
-                val = pickle.load(fd)  # noqa: S301
+                val = pickle.load(fd)  # nosec B301
                 val.update(state)
                 state = val
             logger.debug(f"STATE WRITTEN: {state}")

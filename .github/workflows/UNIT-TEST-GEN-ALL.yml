@@ -2,6 +2,7 @@ name: UNIT-TEST-GEN-ALL
 on:
   workflow_dispatch:
   # pull_request:
+permissions: read-all
 jobs:
   Checkout:
     if: startsWith(github.ref, 'refs/heads/NEX_MAXIMUS_UT/')
@@ -26,6 +27,9 @@ jobs:
       REQUIREMENTS_PATH: requirements.txt
 
   GENAI-UNIT-TEST-GENERATE:
+    permissions:
+      contents: write
+      pull-requests: write
     needs: CREATE-USER-RUN-ENV
     runs-on: [self-hosted, maximus-unit-test-os]
     name: Generate Unit Tests using GenAI
@@ -43,6 +47,9 @@ jobs:
       # EXCLUDE_PATHS: <Exclude your paths here if want to exclude specific files/dirs>
 
   UNIT-TEST-RUN:
+    permissions:
+      contents: write
+      pull-requests: write
     needs: GENAI-UNIT-TEST-GENERATE
     runs-on: [self-hosted, maximus-unit-test-os]
     name: Run Unit Tests

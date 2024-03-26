@@ -11,17 +11,33 @@ var mockedExitStatus = 0
 var mockedStdout string
 var mockedStderr string
 
-func Test_is_username_registry_safe_pass(t *testing.T) {
-     result := is_username_registry_safe("user_name.", "server-name:")
-     assert.Equal(t, true, result)
+func TestReturnNilRegistrySafe(t *testing.T) {
+	assert.Equal(t, isRegistryCredentialsSafe("username", "servername"), nil)}
+
+func TestReturnErrorUserNameTooLong(t *testing.T) {
+	expected := errors.New("error: docker registry username can not exceed 30 characters")
+	actual := isRegistryCredentialsSafe("usernameusernameusernameusername", "servername")
+	if actual.Error() != expected.Error() {
+		t.Errorf("wrong error: %v", actual)
+	}
 }
 
-func Test_is_username_registry_safe_fail(t *testing.T) {
-    result :=is_username_registry_safe("username*", "servername")
-    assert.Equal(t, false, result)
-
+func TestReturnErrorServerNameTooLong(t *testing.T) {
+	expected := errors.New("error: docker registry servername can not exceed 253 characters")
+	actual := isRegistryCredentialsSafe("username", 
+	"servernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservernameservername")
+	if actual.Error() != expected.Error() {
+		t.Errorf("wrong error: %v", actual)
+	}
 }
 
+func TestReturnErrorServerNameInvalid(t *testing.T) {
+	expected := errors.New("error: no special characters allowed in username/registry. List of good characters include: [a-z], [A-Z], [0-9], . , - , _, : ")
+	actual := isRegistryCredentialsSafe("username", "^servername")
+	if actual.Error() != expected.Error() {
+		t.Errorf("wrong error: %v", actual)
+	}
+}
 
 func fakeComposeLogsSuccess(util.ExecCommandWrapper, string, string, string) error {
 	return nil

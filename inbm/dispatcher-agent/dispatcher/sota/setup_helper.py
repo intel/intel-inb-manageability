@@ -15,7 +15,7 @@ import os
 from typing import Any, Optional
 
 from ..dispatcher_broker import DispatcherBroker
-from .constants import GET_UBUNTU_PKG_REPO, APT_SOURCES_LIST_PATH, MENDER_FILE_PATH
+from .constants import APT_SOURCES_LIST_PATH, MENDER_FILE_PATH
 from ..common import dispatcher_state
 
 logger = logging.getLogger(__name__)
@@ -55,7 +55,6 @@ class DebianBasedSetupHelper(SetupHelper):
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         """
 
-        self._list_path = GET_UBUNTU_PKG_REPO
         self._sota_repos = sota_repos
         super().__init__()
 

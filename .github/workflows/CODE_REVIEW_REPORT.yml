@@ -1,0 +1,23 @@
+name: CODE REVIEW REPORT
+on:
+  #pull_request:
+  #    types: [opened, edited, reopened, synchronize]
+  issue_comment:
+permissions: read-all
+jobs:
+  pr_agent_report:
+    permissions:
+      contents: write
+      pull-requests: write
+    if: (contains(github.event.comment.body, '/generate_report') && github.event.comment.user.login != 'nex-maximus') ||
+        github.event_name == 'pull_request' && github.event.pull_request.user.login != 'nex-maximus'
+    runs-on: [self-hosted, maximus-unit-test]
+    steps:
+      - name: PR Agent action step
+        id: pragent
+        run: |
+         cd  ../../../genai_pr_agent
+         chmod +x ./get_pr_eval_report.sh
+         ./get_pr_eval_report.sh
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}

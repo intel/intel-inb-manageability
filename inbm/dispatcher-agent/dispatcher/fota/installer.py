@@ -78,7 +78,7 @@ class Installer(ABC):
                 if ' ' in tool_name or tool_name.isspace():
                     raise FotaError(f"FOTA tool name cannot contain spaces - {tool_name}")
 
-            logger.debug(f"Guid required:{is_guid_required}")
+            logger.debug(f"GUID required:{is_guid_required}")
             logger.debug(f"Tool options required:{tool_opt_required}")
 
             if is_guid_required == 'true':

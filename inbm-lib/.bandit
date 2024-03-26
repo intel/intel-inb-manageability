@@ -1,3 +1,0 @@
-[bandit]
-exclude: /inbm_lib/tests
-skips: ["-S101", "-S105", "-S311", "-S404", "-S603"]

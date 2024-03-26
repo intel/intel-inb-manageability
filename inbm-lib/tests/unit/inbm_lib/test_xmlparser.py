@@ -66,7 +66,7 @@ EMPTY_TAG_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
 TEST_XML = '<?xml version="1.0" encoding="utf-8"?>' \
     '<manifest><type>ota</type><ota><header><id>sampleID</id><name>Sample FOTA</name><description>' \
     'Sample</description><type>fota</type><repo>remote</repo></header><type><fota name="sample">' \
-    '<targetType>host</targetType><fetch>https://abc.tar</fetch><biosversion>2018.03</biosversion>' \
+    '<fetch>https://abc.tar</fetch><biosversion>2018.03</biosversion>' \
     '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
     '2020-11-16</releasedate></fota></type></ota></manifest> '
 
@@ -136,12 +136,12 @@ class TestXmlParser(TestCase):
         self.assertEqual("local", self.test.get_element("ota/header/repo"))
 
     def test_add_attribute(self) -> None:
-        self.test.add_attribute("ota/type/fota", "path", "/new/path/added")
+        self.test.add_element("ota/type/fota", "path", "/new/path/added")
         self.assertEqual("/new/path/added", self.test.get_element("ota/type/fota/path"))
 
-    def test_remove_attribute(self) -> None:
+    def test_remove_element(self) -> None:
         self.assertEqual("Intel", self.test.get_element("ota/type/fota/vendor"))
-        self.test.remove_attribute("ota/type/fota/vendor")
+        self.test.remove_element("ota/type/fota/vendor")
         self.assertRaises(XmlException, self.test.get_element, "ota/type/fota/vendor")
 
     def test_get_element_throws_exception(self) -> None:

@@ -21,10 +21,12 @@ def test_create_os_source_manager_unsupported():
         create_os_source_manager("UnsupportedOS")
     assert "Unsupported OS type" in str(excinfo.value)
 
+
 def test_create_application_source_manager_ubuntu():
     mock_disp_broker_obj = MockDispatcherBroker.build_mock_dispatcher_broker()
     command = create_application_source_manager(OsType.Ubuntu, mock_disp_broker_obj)
     assert isinstance(command, UbuntuApplicationSourceManager)
+
 
 def test_create_application_source_manager_unsupported():
     mock_disp_broker_obj = MockDispatcherBroker.build_mock_dispatcher_broker()

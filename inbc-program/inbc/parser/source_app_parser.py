@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 def application_add(args: argparse.Namespace) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest
+    """
     if bool(args.gpgKeyUri) != bool(args.gpgKeyName):
         raise InbcException(
             "Source requires either both gpgKeyUri and gpgKeyName to be provided, or neither of them.")
@@ -49,6 +54,11 @@ def application_add(args: argparse.Namespace) -> str:
 
 
 def application_remove(args: argparse.Namespace) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest
+    """
     arguments = {
         'keyname': args.gpgKeyName,
         'filename': args.filename
@@ -73,6 +83,11 @@ def application_remove(args: argparse.Namespace) -> str:
 
 
 def application_update(args: argparse.Namespace) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest
+    """
     arguments = {
         'sources': args.sources,
         'filename': args.filename
@@ -94,6 +109,11 @@ def application_update(args: argparse.Namespace) -> str:
 
 
 def application_list(args: argparse.Namespace) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest
+    """
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
                 '<applicationSource>' +

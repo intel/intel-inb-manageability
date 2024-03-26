@@ -1,6 +1,7 @@
 name: UNIT-TEST-RUN-WORKFLOW-DISPATCH
 on:
   workflow_dispatch
+permissions: read-all
 jobs:
   Checkout:
     if: startsWith(github.ref, 'refs/heads/NEX_MAXIMUS_UT/')
@@ -26,6 +27,9 @@ jobs:
       REQUIREMENTS_PATH: requirements.txt
 
   UNIT-TEST-RUN:
+    permissions:
+      contents: write
+      pull-requests: write
     needs: CREATE-USER-RUN-ENV
     runs-on: [self-hosted, maximus-unit-test-os]
     name: Run Unit Tests

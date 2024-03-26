@@ -9,7 +9,6 @@ import logging
 
 from .fota_error import FotaError
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +27,7 @@ def extract_guids(fw_tool: str, types: list[str]) -> list[str]:
         raise FotaError("Firmware Update Aborted: failed to list GUIDs: {}".format(str(err)))
     guids = _parse_guids(out, types)
     logger.debug("GUIDs: " + str(guids))
-    if guids == []:
+    if not guids:
         raise FotaError("Firmware Update Aborted: No GUIDs found matching types: " + str(types))
     return guids
 
