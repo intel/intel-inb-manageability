@@ -207,7 +207,6 @@ class LinuxToolFirmware(BiosFactory):
         else:
             return extracted_guids[0]
 
-
     def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
                         tool_options: Optional[str], runner: PseudoShellRunner) -> None:
         """Updates firmware on the platform by calling the firmware update tool
