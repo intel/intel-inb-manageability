@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - ?
 
+## Changed
+ - Moved service files from /lib to /usr/lib for all Linux OSes
+
 ## 4.2.2 - 2024-03-26
 
 ### Changed
