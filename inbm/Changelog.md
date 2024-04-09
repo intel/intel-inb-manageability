@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Changed
  - Moved service files from /lib to /usr/lib for all Linux OSes
 
-## NEXT - ?.?.? - ?
+## 4.2.2 - 2024-03-26
 
 ### Changed
  - Removed remaining Bit Creek code including 'Target' references from the manifest schema.
