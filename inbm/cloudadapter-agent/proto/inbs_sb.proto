@@ -8,7 +8,9 @@ service INBSService {
 }
 
 message PingRequest {
+  string request_id = 1;
 }
 
 message PingResponse {  
+  string request_id = 1;
 }
