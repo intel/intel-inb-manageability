@@ -5,6 +5,7 @@ INBS is different because it is using gRPC instead of MQTT.
 
 import queue
 import threading
+import time
 from typing import Callable, Optional, Any
 from datetime import datetime
 from ..adapters.proto import inbs_sb_pb2_grpc, inbs_sb_pb2
@@ -93,7 +94,7 @@ class InbsCloudClient(CloudClient):
             except queue.Empty:
                 continue
             except grpc.RpcError as e:
-                print(f"RPC error: {e}")
+                logger.error(f"gRPC error in _ping_pong: {e}")
                 break
 
     def connect(self):
@@ -105,19 +106,41 @@ class InbsCloudClient(CloudClient):
         self.background_thread.start()
 
     def _run(self):
-        try:                  
-            request_queue = queue.Queue()              
-            stream = self.stub.Ping(self._ping_pong(request_queue))
-            for ping in stream:
-                if self._stop_event.is_set():
+        # Initial backoff delay in seconds, for example, 1 second.
+        backoff = 1
+        # Maximum backoff delay, for example, 32 seconds.
+        max_backoff = 32
+
+        while not self._stop_event.is_set():
+            try:                  
+                request_queue: queue.Queue = queue.Queue()              
+                self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
+                self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
+                stream = self.stub.Ping(self._ping_pong(request_queue))
+                for ping in stream:
+                    if self._stop_event.is_set():
+                        break
+                    logger.debug(f"Received ping over gRPC")
+                    request_queue.put(ping)
+                    # If the code reaches this point without an exception,
+                    # reset the backoff delay.
+                    backoff = 1
+
+            except grpc.RpcError as e:
+                if not self._stop_event.is_set():
+                    logger.error(f"gRPC stream closed with error: {e}. Reconnecting in {backoff} seconds...")
+                    time.sleep(backoff)
+                    # Increase the backoff for the next attempt, up to a maximum.
+                    backoff = min(backoff * 2, max_backoff)
+                else:
+                    logger.debug("gRPC Stream closed by stop event.")
                     break
-                logger.debug(f"Received ping over gRPC")
-                request_queue.put(ping)
-        except grpc.RpcError as e:
-            if not self._stop_event.is_set():
-                logger.error(f"gRPC stream closed with error: {e}")
-            else:
-                logger.debug("gRPC Stream closed by disconnect.")
+            except Exception as e:
+                logger.error(f"Unexpected error: {e}. Reconnecting in {backoff} seconds...")
+                time.sleep(backoff)
+                # Increase the backoff for the next attempt, up to a maximum.
+                backoff = min(backoff * 2, max_backoff)
+
         logger.debug("Exiting gRPC _run thread")
 
     def disconnect(self):
