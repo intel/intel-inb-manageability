@@ -48,8 +48,8 @@ func (c *iNBSServiceClient) Ping(ctx context.Context, opts ...grpc.CallOption) (
 }
 
 type INBSService_PingClient interface {
-	Send(*PingRequest) error
-	Recv() (*PingResponse, error)
+	Send(*PingResponse) error
+	Recv() (*PingRequest, error)
 	grpc.ClientStream
 }
 
@@ -57,12 +57,12 @@ type iNBSServicePingClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNBSServicePingClient) Send(m *PingRequest) error {
+func (x *iNBSServicePingClient) Send(m *PingResponse) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *iNBSServicePingClient) Recv() (*PingResponse, error) {
-	m := new(PingResponse)
+func (x *iNBSServicePingClient) Recv() (*PingRequest, error) {
+	m := new(PingRequest)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -103,8 +103,8 @@ func _INBSService_Ping_Handler(srv interface{}, stream grpc.ServerStream) error 
 }
 
 type INBSService_PingServer interface {
-	Send(*PingResponse) error
-	Recv() (*PingRequest, error)
+	Send(*PingRequest) error
+	Recv() (*PingResponse, error)
 	grpc.ServerStream
 }
 
@@ -112,12 +112,12 @@ type iNBSServicePingServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNBSServicePingServer) Send(m *PingResponse) error {
+func (x *iNBSServicePingServer) Send(m *PingRequest) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *iNBSServicePingServer) Recv() (*PingRequest, error) {
-	m := new(PingRequest)
+func (x *iNBSServicePingServer) Recv() (*PingResponse, error) {
+	m := new(PingResponse)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import (
 	"net"
 	"time"
 
-	pb "tester/pb"
+	pb "inbc-mock/pb"
 
 	"google.golang.org/grpc"
 )

@@ -32,8 +32,7 @@ class InbsCloudClient(CloudClient):
         @return: Client ID
         """
 
-        # FIXME return actual client ID
-        pass
+        raise NotImplementedError("get_client_id not yet implemented")
 
     def publish_telemetry(self, key: str, value: str, time: datetime) -> None:
         """Publishes telemetry to the cloud
@@ -44,8 +43,7 @@ class InbsCloudClient(CloudClient):
         @exception PublishError: If publish fails
         """
         
-        # FIXME implement
-        pass
+        raise NotImplementedError("publish_telemetry not yet implemented")
 
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
@@ -55,8 +53,7 @@ class InbsCloudClient(CloudClient):
         @exception PublishError: If publish fails
         """
         
-        # FIXME implement
-        pass
+        raise NotImplementedError("publish_event not yet implemented")
 
     def publish_attribute(self, key: str, value: str) -> None:
         """Publishes a device attribute to the cloud
@@ -66,8 +63,7 @@ class InbsCloudClient(CloudClient):
         @exception PublishError: If publish fails
         """
         
-        # FIXME implement
-        pass
+        raise NotImplementedError("publish_attribute not yet implemented")
 
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud
@@ -79,10 +75,15 @@ class InbsCloudClient(CloudClient):
         @param callback: callback to trigger
         """
 
-        # FIXME implement
+        # for now ignore all callbacks; only Ping is supported
         pass
 
     def _ping_pong(self, request_queue: queue.Queue):
+        """Generator function to respond to PingRequests with PingResponses
+
+        @param request_queue: Queue with PingRequests that will be supplied from another thread
+
+        When a PingResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event."""
         while not self._stop_event.is_set():
             try:
                 item = request_queue.get()
@@ -98,6 +99,7 @@ class InbsCloudClient(CloudClient):
                 break
 
     def connect(self):
+        """Connect to cloud."""
         self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
         self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
 
@@ -106,10 +108,9 @@ class InbsCloudClient(CloudClient):
         self.background_thread.start()
 
     def _run(self):
-        # Initial backoff delay in seconds, for example, 1 second.
-        backoff = 1
-        # Maximum backoff delay, for example, 32 seconds.
-        max_backoff = 32
+        """INBS cloud loop. Intended to be used inside a background thread."""       
+        backoff = 1  # Initial backoff delay in seconds        
+        max_backoff = 32  # Maximum backoff delay in seconds
 
         while not self._stop_event.is_set():
             try:                  
@@ -120,12 +121,13 @@ class InbsCloudClient(CloudClient):
                 for ping in stream:
                     if self._stop_event.is_set():
                         break
+                    if ping is None:
+                        break
                     logger.debug(f"Received ping over gRPC")
                     request_queue.put(ping)
                     # If the code reaches this point without an exception,
                     # reset the backoff delay.
                     backoff = 1
-
             except grpc.RpcError as e:
                 if not self._stop_event.is_set():
                     logger.error(f"gRPC stream closed with error: {e}. Reconnecting in {backoff} seconds...")
@@ -144,7 +146,8 @@ class InbsCloudClient(CloudClient):
         logger.debug("Exiting gRPC _run thread")
 
     def disconnect(self):
-        # Signal the thread to stop and join it to wait for its termination
+        """Signal all background INBS threads to stop. Wait for them to terminate."""
+
         self._stop_event.set()
         if self.background_thread is not None:
             self.background_thread.join()
