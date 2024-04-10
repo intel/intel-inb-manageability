@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from proto import inbs_sb_pb2 as proto_dot_inbs__sb__pb2
+from . import inbs_sb_pb2 as proto_dot_inbs__sb__pb2
 
 
 class INBSServiceStub(object):
@@ -16,8 +16,8 @@ class INBSServiceStub(object):
         """
         self.Ping = channel.stream_stream(
                 '/inbs.INBSService/Ping',
-                request_serializer=proto_dot_inbs__sb__pb2.PingRequest.SerializeToString,
-                response_deserializer=proto_dot_inbs__sb__pb2.PingResponse.FromString,
+                request_serializer=proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
+                response_deserializer=proto_dot_inbs__sb__pb2.PingRequest.FromString,
                 )
 
 
@@ -36,8 +36,8 @@ def add_INBSServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'Ping': grpc.stream_stream_rpc_method_handler(
                     servicer.Ping,
-                    request_deserializer=proto_dot_inbs__sb__pb2.PingRequest.FromString,
-                    response_serializer=proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
+                    request_deserializer=proto_dot_inbs__sb__pb2.PingResponse.FromString,
+                    response_serializer=proto_dot_inbs__sb__pb2.PingRequest.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -61,7 +61,7 @@ class INBSService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/inbs.INBSService/Ping',
-            proto_dot_inbs__sb__pb2.PingRequest.SerializeToString,
-            proto_dot_inbs__sb__pb2.PingResponse.FromString,
+            proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
+            proto_dot_inbs__sb__pb2.PingRequest.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

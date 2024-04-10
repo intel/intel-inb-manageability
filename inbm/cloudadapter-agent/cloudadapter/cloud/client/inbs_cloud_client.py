@@ -3,19 +3,27 @@ Modification of Cloud Client class that works for INBS.
 INBS is different because it is using gRPC instead of MQTT.
 """
 
-from typing import Callable, Optional
+import queue
+import threading
+from typing import Callable, Optional, Any
 from datetime import datetime
+from ..adapters.proto import inbs_sb_pb2_grpc, inbs_sb_pb2
+import logging
+
+import grpc
 from .cloud_client import CloudClient
 
+logger = logging.getLogger(__name__)
 
 class InbsCloudClient(CloudClient):
 
-    def __init__(self) -> None:
+    def __init__(self, grpc_hostname: str, grpc_port: str) -> None:
         """Constructor for InbsCloudClient
         """
-
-        # FIXME implement
-        pass
+        
+        self._grpc_hostname = grpc_hostname
+        self._grpc_port = grpc_port
+        self._stop_event = threading.Event()
 
     def get_client_id(self) -> Optional[str]:
         """A readonly property
@@ -73,14 +81,48 @@ class InbsCloudClient(CloudClient):
         # FIXME implement
         pass
 
-    def connect(self) -> None:
-        """Establish a connection to the cloud service"""
-        
-        # FIXME implement
-        pass
+    def _ping_pong(self, request_queue: queue.Queue):
+        while not self._stop_event.is_set():
+            try:
+                item = request_queue.get()
+                if item is None:
+                    break
+                
+                logger.debug("Responding to ping over gRPC")
+                yield inbs_sb_pb2.PingResponse()
+            except queue.Empty:
+                continue
+            except grpc.RpcError as e:
+                print(f"RPC error: {e}")
+                break
 
-    def disconnect(self) -> None:
-        """Disconnect from the cloud service"""
-        
-        # FIXME implement
-        pass
+    def connect(self):
+        self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
+        self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
+
+        # Start the background thread
+        self.background_thread = threading.Thread(target=self._run)
+        self.background_thread.start()
+
+    def _run(self):
+        try:                  
+            request_queue = queue.Queue()              
+            stream = self.stub.Ping(self._ping_pong(request_queue))
+            for ping in stream:
+                if self._stop_event.is_set():
+                    break
+                logger.debug(f"Received ping over gRPC")
+                request_queue.put(ping)
+        except grpc.RpcError as e:
+            if not self._stop_event.is_set():
+                logger.error(f"gRPC stream closed with error: {e}")
+            else:
+                logger.debug("gRPC Stream closed by disconnect.")
+        logger.debug("Exiting gRPC _run thread")
+
+    def disconnect(self):
+        # Signal the thread to stop and join it to wait for its termination
+        self._stop_event.set()
+        if self.background_thread is not None:
+            self.background_thread.join()
+        logger.debug("Disconnected from the INBS gRPC server.")

@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package inbs;
+
+service INBSService {
+  // Bi-directional streaming method
+  rpc Ping(stream PingResponse) returns (stream PingRequest);
+}
+
+message PingRequest {
+}
+
+message PingResponse {  
+}
