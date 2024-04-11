@@ -10,6 +10,7 @@ from time import time
 
 from cloudadapter.cloud.adapters.inbs_adapter import InbsAdapter
 
+
 class TestInbsAdapter(unittest.TestCase):
 
     def setUp(self) -> None:

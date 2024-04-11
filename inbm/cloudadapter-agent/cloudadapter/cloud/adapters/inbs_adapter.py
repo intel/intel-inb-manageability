@@ -26,8 +26,9 @@ class InbsAdapter(Adapter):
 
         @param configs: schema conforming JSON config data
         @exception AdapterConfigureError: If configuration fails
-        """                
-        self._client = InbsCloudClient(configs.get("hostname"), configs.get("port"))  # type: ignore
+        """
+        self._client = InbsCloudClient(configs.get(
+            "hostname"), configs.get("port"))  # type: ignore
         return self._client
 
     def bind_callback(self, name: str, callback: Callable) -> None:

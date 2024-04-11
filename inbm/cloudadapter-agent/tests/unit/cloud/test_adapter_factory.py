@@ -44,7 +44,7 @@ class TestAdapterFactory(unittest.TestCase):
         }
         adapter_factory.get_adapter()
         assert MockAzureAdapter.call_count == 1
-    
+
     @mock.patch('cloudadapter.cloud.adapter_factory.InbsAdapter')
     @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
     def test_get_adapter_inbs_succeeds(self, mock_load_adapter_config, MockInbsAdapter) -> None:

@@ -16,12 +16,13 @@ from .cloud_client import CloudClient
 
 logger = logging.getLogger(__name__)
 
+
 class InbsCloudClient(CloudClient):
 
     def __init__(self, grpc_hostname: str, grpc_port: str) -> None:
         """Constructor for InbsCloudClient
         """
-        
+
         self._grpc_hostname = grpc_hostname
         self._grpc_port = grpc_port
         self._stop_event = threading.Event()
@@ -42,7 +43,7 @@ class InbsCloudClient(CloudClient):
         @param time: timestamp for this telemetry publish
         @exception PublishError: If publish fails
         """
-        
+
         raise NotImplementedError("publish_telemetry not yet implemented")
 
     def publish_event(self, key: str, value: str) -> None:
@@ -52,7 +53,7 @@ class InbsCloudClient(CloudClient):
         @param value: event to publish
         @exception PublishError: If publish fails
         """
-        
+
         raise NotImplementedError("publish_event not yet implemented")
 
     def publish_attribute(self, key: str, value: str) -> None:
@@ -62,7 +63,7 @@ class InbsCloudClient(CloudClient):
         @param value: value to set for the attribute
         @exception PublishError: If publish fails
         """
-        
+
         raise NotImplementedError("publish_attribute not yet implemented")
 
     def bind_callback(self, name: str, callback: Callable) -> None:
@@ -89,16 +90,17 @@ class InbsCloudClient(CloudClient):
                 item = request_queue.get()
                 if item is None:
                     break
-                
-                logger.debug("Responding to ping over gRPC")
-                yield inbs_sb_pb2.PingResponse()
+
+                request_id = item.request_id
+                logger.debug(f"Responding to ping over gRPC: request_id {request_id}")
+                yield inbs_sb_pb2.PingResponse(request_id=request_id)
             except queue.Empty:
                 continue
             except grpc.RpcError as e:
                 logger.error(f"gRPC error in _ping_pong: {e}")
                 break
 
-    def connect(self):
+    def connect(self):  # pragma: no cover  # multithreaded operation not unit testable
         """Connect to cloud."""
         self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
         self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
@@ -107,14 +109,14 @@ class InbsCloudClient(CloudClient):
         self.background_thread = threading.Thread(target=self._run)
         self.background_thread.start()
 
-    def _run(self):
-        """INBS cloud loop. Intended to be used inside a background thread."""       
-        backoff = 1  # Initial backoff delay in seconds        
+    def _run(self):  # pragma: no cover  # multithreaded operation not unit testable
+        """INBS cloud loop. Intended to be used inside a background thread."""
+        backoff = 1  # Initial backoff delay in seconds
         max_backoff = 32  # Maximum backoff delay in seconds
 
         while not self._stop_event.is_set():
-            try:                  
-                request_queue: queue.Queue = queue.Queue()              
+            try:
+                request_queue: queue.Queue = queue.Queue()
                 self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
                 self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
                 stream = self.stub.Ping(self._ping_pong(request_queue))
@@ -130,7 +132,8 @@ class InbsCloudClient(CloudClient):
                     backoff = 1
             except grpc.RpcError as e:
                 if not self._stop_event.is_set():
-                    logger.error(f"gRPC stream closed with error: {e}. Reconnecting in {backoff} seconds...")
+                    logger.error(
+                        f"gRPC stream closed with error: {e}. Reconnecting in {backoff} seconds...")
                     time.sleep(backoff)
                     # Increase the backoff for the next attempt, up to a maximum.
                     backoff = min(backoff * 2, max_backoff)
@@ -145,7 +148,7 @@ class InbsCloudClient(CloudClient):
 
         logger.debug("Exiting gRPC _run thread")
 
-    def disconnect(self):
+    def disconnect(self):  # pragma: no cover  # multithreaded operation not unit testable
         """Signal all background INBS threads to stop. Wait for them to terminate."""
 
         self._stop_event.set()

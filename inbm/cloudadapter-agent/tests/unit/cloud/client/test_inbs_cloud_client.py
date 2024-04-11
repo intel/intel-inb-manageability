@@ -12,6 +12,7 @@ from cloudadapter.cloud.client.inbs_cloud_client import grpc
 from unittest.mock import patch, MagicMock
 from datetime import datetime
 
+
 class TestInbsCloudClient(unittest.TestCase):
 
     @patch("cloudadapter.cloud.client.inbs_cloud_client.grpc.insecure_channel")
@@ -19,7 +20,8 @@ class TestInbsCloudClient(unittest.TestCase):
     def setUp(self, mock_stub, mock_channel):
         self.grpc_hostname = "localhost"
         self.grpc_port = "50051"
-        self.inbs_client = InbsCloudClient(grpc_hostname=self.grpc_hostname, grpc_port=self.grpc_port)
+        self.inbs_client = InbsCloudClient(
+            grpc_hostname=self.grpc_hostname, grpc_port=self.grpc_port)
         self.mock_channel = mock_channel
         self.mock_stub = mock_stub
 
@@ -31,10 +33,11 @@ class TestInbsCloudClient(unittest.TestCase):
     def test_get_client_id_raises_not_implemented(self):
         with self.assertRaises(NotImplementedError):
             client_id = self.inbs_client.get_client_id()
-    
+
     def test_publish_telemetry_raises_not_implemented(self):
         with self.assertRaises(NotImplementedError):
-            self.inbs_client.publish_telemetry(key="example_key", value="example_value", time=datetime.now())
+            self.inbs_client.publish_telemetry(
+                key="example_key", value="example_value", time=datetime.now())
 
     def test_publish_event_raises_not_implemented(self):
         with self.assertRaises(NotImplementedError):
@@ -48,12 +51,14 @@ class TestInbsCloudClient(unittest.TestCase):
     def test_ping_pong_yield_response_on_ping_request(self, mock_queue):
         ping_pong_gen = self.inbs_client._ping_pong(mock_queue)
         mock_request = MagicMock()
+        mock_request.request_id = "abcdefg"
         mock_queue.get.return_value = mock_request
         self.inbs_client._stop_event.clear()  # ensuring stop event is not set for the test
 
         response = next(ping_pong_gen)
         self.assertIsInstance(response, inbs_sb_pb2.PingResponse)
-    
+        self.assertEqual(response.request_id, "abcdefg")
+
     @patch("cloudadapter.cloud.client.inbs_cloud_client.time.sleep", side_effect=InterruptedError)
     @patch("grpc.insecure_channel")
     @patch("cloudadapter.cloud.adapters.proto.inbs_sb_pb2_grpc.INBSServiceStub")

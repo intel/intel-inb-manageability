@@ -7,6 +7,7 @@ import (
 
 	pb "inbc-mock/pb"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc"
 )
 
@@ -26,18 +27,26 @@ func (s *server) Ping(stream pb.INBSService_PingServer) error {
 			return ctx.Err()
 		default:
 			// Sending a Ping to the client
-			err := stream.Send(&pb.PingResponse{})
+			requestId := uuid.New().String()
+			err := stream.Send(&pb.PingRequest{
+				RequestId: requestId,
+			})
 			if err != nil {
 				log.Fatalf("Failed to send a ping: %v", err)
 			}
-			log.Println("Ping sent to client")
+			log.Println("Ping sent to client with request ID " + requestId)
 
 			// Receiving and logging PingResponse from client
-			_, err = stream.Recv()
+			response, err := stream.Recv()
 			if err != nil {
 				log.Fatalf("Failed to receive ping response: %v", err)
 			}
-			log.Println("Received ping response from client")
+
+			if requestId != response.GetRequestId() {
+				log.Fatalf("Response request ID " + response.GetRequestId() + " does not match ping request ID " + requestId)
+			}
+
+			log.Println("Received ping response from client with request ID " + response.GetRequestId())
 
 			// Wait for a second before next ping
 			time.Sleep(1 * time.Second)
