@@ -149,7 +149,7 @@ class TestInbc(TestCase):
         with pytest.raises(SystemExit):
             self.arg_parser.parse_args(
                 ['fota', '-u', 'https://abc.com/test.tar', '-r', '12-31-2024',
-                 '-m', 'Intel', '--target', '123ABC', '456DEF'])
+                 '-m', 'Intel'])
         assert "Not a valid date - format YYYY-MM-DD:" in str(mock_stderr.getvalue())
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.reconnect')

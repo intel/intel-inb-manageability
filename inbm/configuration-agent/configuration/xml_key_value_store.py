@@ -10,7 +10,7 @@ import os.path
 
 # This import is necessary for type checking to work but we do not use it
 # independently of defusedxml
-from xml.etree.ElementTree import Element  # noqa: S405
+from xml.etree.ElementTree import Element  # nosec
 import defusedxml
 import xmlschema
 from defusedxml import DefusedXmlException, DTDForbidden, EntitiesForbidden, ExternalReferenceForbidden, \

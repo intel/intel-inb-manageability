@@ -7,7 +7,6 @@ from dispatcher.aota.aota_command import Docker, DockerCompose
 from dispatcher.aota.aota_command import DirectoryRepo
 from dispatcher.aota.aota_error import AotaError
 from dispatcher.aota.constants import SupportedDriver
-from dispatcher.aota.checker import check_resource
 from ..common.mock_resources import *
 from unittest.mock import patch
 from typing import Any

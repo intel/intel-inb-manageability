@@ -49,8 +49,8 @@ The below tables represent the different sections of the configuration file.
 | token                | /etc/opt/csl/csl-node/long-lived-token | path to token      |
 | certFile             |     /etc/ssl/certs/csl-ca-cert.pem     | path the cert file |
 
-### SOTA
+Note: ubuntuAptSource tag is no longer used. 
+
 | Key                    |     Default Value      | Description                                                                              |
 |:-----------------------|:----------------------:|:-----------------------------------------------------------------------------------------|
-| ubuntuAptSource        | http://yoururl/ubuntu/ | Location used to update Ubuntu                                                           |
 | proceedWithoutRollback |          true          | Whether SOTA update should go through even when rollback is not supported on the system. |

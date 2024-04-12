@@ -8,6 +8,11 @@ from inbm_common_lib.utility import clean_input
 
 
 def os_add(args: argparse.Namespace) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest
+    """
     manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type>' \
                '<osSource><add><repos>'
     for source in args.sources:
@@ -19,6 +24,11 @@ def os_add(args: argparse.Namespace) -> str:
 
 
 def os_remove(args: argparse.Namespace) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest
+    """
     manifest = '<?xml version="1.0" encoding="utf-8"?><manifest><type>source</type>' \
                '<osSource><remove><repos>'
     for source in args.sources:
@@ -41,6 +51,11 @@ def os_update(args: argparse.Namespace) -> str:
 
 
 def os_list(args: argparse.Namespace) -> str:
+    """Creates manifest in XML format.
+
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest
+    """
     manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
                 '<manifest><type>source</type>' +
                 '<osSource>' +

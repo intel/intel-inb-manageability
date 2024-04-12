@@ -15,11 +15,11 @@ from logging.config import fileConfig
 from queue import Queue
 from threading import Thread, active_count
 from time import sleep
-from typing import Tuple
-from typing import Optional, Any
+from typing import Optional, Any, Mapping, Tuple
 
 from dispatcher.config.config_operation import ConfigOperation
 from dispatcher.source.source_command import do_source_command
+from dispatcher.common.result_constants import Result, PUBLISH_SUCCESS, OTA_FAILURE
 
 from .install_check_service import InstallCheckService
 
@@ -27,12 +27,15 @@ from inbm_lib import wmi
 from inbm_lib.detect_os import detect_os, LinuxDistType, OsType
 from inbm_lib.wmi_exception import WmiException
 from inbm_lib.validate_package_list import parse_and_validate_package_list
+from inbm_lib.constants import QUERY_CMD_CHANNEL, OTA_SUCCESS, FAIL
 from inbm_common_lib.constants import REMOTE_SOURCE, UNKNOWN
 from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info
 from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_lib.constants import QUERY_CMD_CHANNEL, OTA_SUCCESS, FAIL
+from inbm_common_lib.exceptions import UrlSecurityException
 
+from .dispatcher_broker import DispatcherBroker
+from .dispatcher_exception import DispatcherException
 from .aota.aota_error import AotaError
 from .source.source_exception import SourceError
 from .common import dispatcher_state
@@ -43,7 +46,6 @@ from .constants import *
 from .device_manager.device_manager import get_device_manager
 from .fota.fota_error import FotaError
 from .ota_factory import OtaFactory
-from .ota_target import *
 from .ota_thread import ota_lock
 from .ota_util import create_ota_resource_list
 from .remediationmanager.remediation_manager import RemediationManager
@@ -91,7 +93,7 @@ def _check_type_validate_manifest(xml: str,
 
 
 class Dispatcher:
-    def __init__(self, args: List[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
+    def __init__(self, args: list[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
         log_config_path = get_log_config_path()
         msg = f"Looking for logging configuration file at {log_config_path}"
         print(msg)
@@ -109,7 +111,6 @@ class Dispatcher:
         self.device_manager = get_device_manager()
         self.config_dbs = ConfigDbs.WARN
         self.dbs_remove_image_on_failed_container = True
-        self.host_with_nodes = HOST_WITH_NODES_DEFAULT
         self.proceed_without_rollback = PROCEED_WITHOUT_ROLLBACK_DEFAULT
         self.diag_health_report = {'rc': -1,
                                    'cmd': 'diagnostic OR MQTT',
@@ -210,7 +211,7 @@ class Dispatcher:
                         create_snapshotter('update',
                                            snap_num='1',
                                            proceed_without_rollback=True,
-                                           ).commit()
+                                           reboot_device=True).commit()
                 except OSError:
                     # harmless here--mender commit is speculative
                     pass
@@ -243,6 +244,7 @@ class Dispatcher:
         if cmd == "shutdown":
             message = self.device_manager.shutdown()
         elif cmd == "restart":
+            logger.info("Restart command received.  Restarting system...")
             message = self.device_manager.restart()
             if message == SUCCESS_RESTART:
                 state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd'}
@@ -294,7 +296,8 @@ class Dispatcher:
             elif type_of_manifest == 'source':
                 logger.debug('Running source command')
                 # FIXME: actually detect OS
-                result = do_source_command(parsed_head, source.constants.OsType.Ubuntu, self._dispatcher_broker)
+                result = do_source_command(
+                    parsed_head, source.constants.OsType.Ubuntu, self._dispatcher_broker)
             elif type_of_manifest == 'ota':
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
@@ -302,39 +305,30 @@ class Dispatcher:
                 repo_type = header['repo']
                 resource = parsed_head.get_children(f'ota/type/{ota_type}')
                 kwargs = {'ota_type': ota_type}
-                target_type = resource.get('targetType', None)
-
-                if target_type is None:
-                    target_type = TargetType.none.name
-                logger.debug(f"Target type: {target_type}")
 
                 # Record OTA data for logging.
                 self._update_logger.set_time()
                 self._update_logger.ota_type = ota_type
                 self._update_logger.metadata = xml
 
-                if target_type is TargetType.none.name and ota_type == OtaType.POTA.name.lower():
+                if ota_type == OtaType.POTA.name.lower():
                     ota_list = create_ota_resource_list(parsed_head, resource)
                     # Perform manifest checking first before OTA
                     self._validate_pota_manifest(
-                        repo_type, target_type, kwargs, parsed_head, ota_list)
+                        repo_type, kwargs, parsed_head, ota_list)
 
                     for ota in sorted(ota_list.keys()):
                         kwargs['ota_type'] = ota
                         result = self._do_ota_update(
-                            xml, ota, repo_type, target_type, ota_list[ota], kwargs, parsed_head)
+                            ota, repo_type, ota_list[ota], kwargs, parsed_head)
                         if result == Result(CODE_BAD_REQUEST, "FAILED TO INSTALL") or result == OTA_FAILURE:
                             break
                 else:
                     result = self._do_ota_update(
-                        xml, ota_type, repo_type, target_type, resource, kwargs, parsed_head)
+                        ota_type, repo_type, resource, kwargs, parsed_head)
 
             elif type_of_manifest == 'config':
                 logger.debug('Running configuration command sent down ')
-                target_type = parsed_head.find_element('config/targetType')
-                if target_type is None:
-                    target_type = TargetType.none.name
-                logger.debug(f"target_type : {target_type}")
                 result = self._do_config_operation(parsed_head)
         except (DispatcherException, UrlSecurityException) as error:
             logger.error(error)
@@ -372,14 +366,12 @@ class Dispatcher:
             self._update_logger.save_log()
             return result
 
-    def _do_ota_update(self, xml: str, ota_type: str, repo_type: str, target_type: Optional[str], resource: Dict,
-                       kwargs: Dict, parsed_head: XmlHandler) -> Result:
+    def _do_ota_update(self, ota_type: str, repo_type: str, resource: dict,
+                       kwargs: dict, parsed_head: XmlHandler) -> Result:
         """Performs OTA updates by creating a thread based on OTA factory detected from the manifest
 
-        @param xml: manifest in XML format
         @param ota_type: Type of OTA requested (AOTA/FOTA/SOTA)
         @param repo_type: Type of repo to fetch files (local/remote)
-        @param target_type: Target on which the config operation needs to be performed
         @param resource: resource to parse
         @param kwargs: arguments dictionary to be updated after parsing resources
         @param parsed_head: Parsed head of the manifest xml
@@ -404,35 +396,31 @@ class Dispatcher:
         t = factory.create_thread(parsed_manifest)
         return t.start()
 
-    def _validate_pota_manifest(self, repo_type: str, target_type: Optional[str],
-                                kwargs: Dict, parsed_head: XmlHandler, ota_list: Dict) -> None:
+    def _validate_pota_manifest(self, repo_type: str,
+                                kwargs: dict, parsed_head: XmlHandler, ota_list: dict) -> None:
         """Validate POTA manifest by checking FOTA and SOTA information before starting OTA.
 
         @param repo_type: Type of repo to fetch files (local/remote)
-        @param target_type: Target on which the config operation needs to be performed
         @param kwargs: arguments dictionary to be updated after parsing resources
         @param parsed_head: Parsed head of the manifest xml
         """
-        logger.debug("")
         for ota in sorted(ota_list.keys()):
-            # target_type is only used for Accelerator Manageability Framework
             logger.debug(f"ota = {ota}")
-            if target_type is TargetType.none.name:
-                logger.debug("")
-                factory = OtaFactory.get_factory(
-                    ota.upper(),
-                    repo_type,
-                    self._dispatcher_broker,
-                    self.proceed_without_rollback,
-                    self._sota_repos,
-                    self._install_check_service,
-                    self._update_logger,
-                    self.config_dbs)
-                p = factory.create_parser()
-                # NOTE: p.parse can raise one of the *otaError exceptions
-                parsed_manifest = p.parse(ota_list[ota], kwargs, parsed_head)
-                t = factory.create_thread(parsed_manifest)
-                t.check()
+            logger.debug("")
+            factory = OtaFactory.get_factory(
+                ota.upper(),
+                repo_type,
+                self._dispatcher_broker,
+                self.proceed_without_rollback,
+                self._sota_repos,
+                self._install_check_service,
+                self._update_logger,
+                self.config_dbs)
+            p = factory.create_parser()
+            # NOTE: p.parse can raise one of the *otaError exceptions
+            parsed_manifest = p.parse(ota_list[ota], kwargs, parsed_head)
+            t = factory.create_thread(parsed_manifest)
+            t.check()
             logger.debug(f'{ota} checks complete.')
 
     def check_username_password(self, parsed_manifest: Mapping[str, Optional[Any]]) -> None:
@@ -464,14 +452,6 @@ class Dispatcher:
             raise DispatcherException(f'No Password sent in manifest for {ota}')
         elif (usr is None) and pwd:
             raise DispatcherException(f'No Username sent in manifest for {ota}')
-
-    def _do_install_on_target(self, ota_type: str, xml: str, repo_type: str, parsed_manifest: Mapping[str, Optional[Any]]):
-        logger.debug("")
-        t = OtaTarget(xml, parsed_manifest, ota_type,
-                      self._dispatcher_broker)
-        target_ota_status = t.install()
-        logger.debug(f"Install on Target STATUS: {target_ota_status}")
-        return target_ota_status
 
     def _on_cloud_request(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from cloud
@@ -568,12 +548,6 @@ class Dispatcher:
                     logger.error("No proceedWithoutRollback selected!")
                 else:
                     self.proceed_without_rollback = cleaned_payload
-
-            if config_name == "ubuntuAptSource":
-                if cleaned_payload is None:
-                    logger.error("No ubuntuAptSource selected!")
-                else:
-                    self._sota_repos = cleaned_payload
 
         try:
             logger.debug('Subscribing to: %s', STATE_CHANNEL)

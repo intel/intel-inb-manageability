@@ -1,5 +1,5 @@
 """
-    Copyright (C) 2023 Intel Corporation
+    Copyright (C) 2023-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -164,9 +164,9 @@ def test_do_source_command_remove(
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationAddSourceParameters(
-                source_list_file_name="repofilename",
                 gpg_key_name="keyname",
                 gpg_key_uri="gpguri",
+                source_list_file_name="repofilename",
                 sources=["sourceA", "sourceB"],
             ),
         ),
@@ -227,7 +227,7 @@ def test_do_source_command_add(
             "dispatcher.source.source_command.create_application_source_manager",
             OsType.Ubuntu,
             ApplicationUpdateSourceParameters(
-                source_list_file_name="filename", sources=["source1", "source2"]
+                sources=["source1", "source2"], source_list_file_name="filename"
             ),
         ),
     ],

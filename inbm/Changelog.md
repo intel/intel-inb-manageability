@@ -3,14 +3,41 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - 4.2.0 - 2024-01-23
+## NEXT - 4.2.2 - 2024-03-26
+
+### Changed
+ - Removed remaining Bit Creek code including 'Target' references from the manifest schema.
+
+### Fixed
+ - RTC 539880 - Fix encountered disconnected with code 7 after successfully provision to Azure cloud
+
+### Security
+ - Bump cryptography to 42.0.4, resolving CVE-2024-26130
+ - Bump github.com/docker/docker from 24.0.7+incompatible to 24.0.9+incompatible in /inbm/trtl, resolving CVE-2024-21626 and CVE-2024-24557 (NOTE: trtl does not use runc or Docker Engine, so these CVEs would not actually apply to this project)
+
+## 4.2.1 - 2024-02-16
+
+### Changed
+ - Added --build-windows and --build-check flags to build scripts to allow optional skipping of Windows build and unit tests/mypy checks. One example scenario where this would be useful would be building an official version that has already been validated and unit tests already run, to reduce build time. Another scenario would be to skip the Windows build if the user only needs a Linux build.
+
+### Fixed
+ - RTC 538468 - paho-mqtt upgrade broke cloudadapter's mqtt connections. Fixed proxy setting code to not override all sockets with proxy as paho-mqtt 1.6.0 relies on listening/connecting to localhost to set up sockets, and this doesn't work with a global proxy on all sockets.
+ - RTC 538549 - improved errors when unable to fetch from URLs. For example, if INBM receives a "404 Not Found" it will return this as part of its error instead of simply returning a generic error message about being unable to fetch the URL.
+ - RTC 538524 - GUID missing when not provided by manifest when running fwupdate tool
+ - RTC 530960 - Fix SOTA snapshot conditions to not reboot twice on EXT4 system  
+
+### Security
+ - RTC 537811 - Bump cryptography from 41.0.6 to 42.0.2 in /inbm/dispatcher-agent (addresses CVE-2023-5678, CVE-2023-6129)
+
+## 4.2.0 - 2024-01-23
 
 ### Changed
  - RTC 536078 - Added package list option to inbc, cloud, and internal manifest. This allows SOTA to run an install/upgrade command on a set of individual packages rather than all installed packages.
+ - (BREAKING CHANGE) RTC 536910 - [source] Remove ubuntuAptSource INBM configuration tag and underlying code; replaced with source command.
 
 ### Added
  - RTC 536601 - Added 'source' command to INBM. This command manages `/etc/apt/sources.list` and `/etc/apt/sources.list.d/*` and associated gpg keys on Ubuntu.
-- RTC 537769 -  Added verification of GPG key URIs against a list of trusted repositories for enhanced security
+ - RTC 537769 -  Added verification of GPG key URIs against a list of trusted repositories for enhanced security
 
 check if sourceApplication Gpg key URL is in trusted repo
 ### Fixed

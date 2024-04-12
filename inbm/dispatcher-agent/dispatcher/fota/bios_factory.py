@@ -50,7 +50,6 @@ def extract_ext(file_name: str) -> Optional[str]:
     @param file_name: name of the file that is downloaded
     @return: returns as a package or a cert otherwise None
     """
-    logger.debug("inside extract")
     logger.debug(f"file_name={file_name}")
     ext = file_name.rsplit('.', 1)[-1]
 
@@ -195,6 +194,20 @@ class LinuxToolFirmware(BiosFactory):
                  params: Dict) -> None:
         super().__init__(dispatcher_broker, repo, params)
 
+    def _get_guid_from_system(self, manifest_guid: Optional[str]) -> str:
+        # get the GUID from the system using FW tool
+        extracted_guids = extract_guids(
+            self._fw_tool, ["System Firmware type", "system-firmware type"])
+        if manifest_guid:
+            if manifest_guid not in extracted_guids:
+                raise FotaError(
+                    f"GUID in manifest does not match any system firmware GUID on the system")
+            else:
+                return manifest_guid
+        else:
+            return extracted_guids[0]
+
+
     def _apply_firmware(self, repo_name: str, fw_file: Optional[str], manifest_guid: Optional[str],
                         tool_options: Optional[str], runner: PseudoShellRunner) -> None:
         """Updates firmware on the platform by calling the firmware update tool
@@ -208,15 +221,7 @@ class LinuxToolFirmware(BiosFactory):
         """
         guid = ''
         if self._guid_required:
-            # get the GUID from the system using FW tool
-            extracted_guids = extract_guids(
-                self._fw_tool, ["System Firmware type", "system-firmware type"])
-            if manifest_guid:
-                if manifest_guid not in extracted_guids:
-                    raise FotaError(
-                        f"GUID in manifest does not match any system firmware GUID on the system")
-                else:
-                    guid = manifest_guid
+            guid = self._get_guid_from_system(manifest_guid)
 
         if not tool_options:
             tool_options = ''

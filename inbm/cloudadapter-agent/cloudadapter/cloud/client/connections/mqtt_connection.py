@@ -95,8 +95,10 @@ class MQTTConnection(Connection):
         @param config: (ProxyConfig) Config to use
         """
         if config.endpoint:
-            socks.set_default_proxy(socks.PROXY_TYPE_HTTP, *config.endpoint)
-            socket.socket = socks.socksocket  # type: ignore
+            proxy_addr, proxy_port = config.endpoint
+            self._client.proxy_set(proxy_type=socks.HTTP,
+                                   proxy_addr=proxy_addr,
+                                   proxy_port=proxy_port)
 
     def _create_mqtt_client(self, client_id: Optional[str] = "") -> Client:
         """Create an MQTT client"""

@@ -29,11 +29,12 @@ class TestRunner(PseudoShellRunner):
 class TestTestRunner(TestCase):
 
     def test_test_runner(self) -> None:
-        output = str(random.randint(1000, 2000))
-        return_code = random.randint(10, 30)
+        # This is a test file.  It's alright to run a randomizer
+        output = str(random.randint(1000, 2000)) # nosec: B311
+        return_code = random.randint(10, 30) # nosec: B311
         r = TestRunner(output, "", return_code)
         self.assertEqual(None, r.last_cmd())
-        cmd = str(random.randint(1000, 2000))
+        cmd = str(random.randint(1000, 2000)) # nosec: B311
         self.assertEqual((output, "", return_code), r.run(cmd))
         self.assertEqual(cmd, r.last_cmd())
 

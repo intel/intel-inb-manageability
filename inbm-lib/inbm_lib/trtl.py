@@ -15,7 +15,7 @@ from typing import Optional, Tuple
 import logging
 
 from .constants import DOCKER, COMPOSE, TRTL_PATH
-from subprocess import Popen, PIPE
+from subprocess import Popen, PIPE  # nosec: B405, B404
 import shlex
 import time
 
@@ -193,7 +193,7 @@ class Trtl:
     @staticmethod
     def _send_password(cmd: str, password: str) -> Tuple[str, Optional[str], int]:
 
-        p = Popen(shlex.split(str(cmd)), stdout=PIPE, stdin=PIPE, stderr=PIPE)
+        p = Popen(shlex.split(str(cmd)), shell=False, stdout=PIPE, stdin=PIPE, stderr=PIPE)
         pwd = bytes(password + '\n', 'utf-8')
         (out, err) = p.communicate(input=pwd)
         str_out = out.decode(encoding='utf-8', errors='strict')

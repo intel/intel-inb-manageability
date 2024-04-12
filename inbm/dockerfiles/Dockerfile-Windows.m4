@@ -2,12 +2,13 @@ include(`image.main.m4')
 
 # base windows/wine build image
 FROM registry.hub.docker.com/library/ubuntu:22.04 as base-windows
+RUN echo Refresh docker cache 20240212
 
 ENV DEBIAN_FRONTEND noninteractive
 
 ARG WINE_VERSION=winehq-stable
-ARG PYTHON_VERSION=3.11.5
-ARG PYINSTALLER_VERSION=5.13.1
+ARG PYTHON_VERSION=3.11.7
+ARG PYINSTALLER_VERSION=6.4.0
 
 # we need wine for this all to work, so we'll use the PPA
 RUN set -x \

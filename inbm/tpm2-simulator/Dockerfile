@@ -22,6 +22,7 @@ RUN apt-get update &&\
         sudo &&  \
     apt-get clean
 
+RUN gem install dotenv -v 2.8.1
 RUN gem install --no-document fpm -v 1.14.0
 
 # Intel-tpm2-specific deps
