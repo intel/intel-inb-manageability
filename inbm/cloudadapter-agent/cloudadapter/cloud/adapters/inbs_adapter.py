@@ -8,6 +8,7 @@ Copyright (C) 2017-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
+from ...exceptions import AdapterConfigureError
 from ...cloud.client.inbs_cloud_client import InbsCloudClient
 from ..client.cloud_client import CloudClient
 from .adapter import Adapter
@@ -27,8 +28,26 @@ class InbsAdapter(Adapter):
         @param configs: schema conforming JSON config data
         @exception AdapterConfigureError: If configuration fails
         """
-        self._client = InbsCloudClient(configs.get(
-            "hostname"), configs.get("port"))  # type: ignore
+        hostname = configs.get("hostname")
+        if not hostname:
+            raise AdapterConfigureError("Missing hostname")
+        
+        port = configs.get("port")
+        if not port:
+            raise AdapterConfigureError("Missing port")
+        
+        inband_id = configs.get("inband-id")
+        if not inband_id:
+            raise AdapterConfigureError("Missing in-band ID")
+        
+        token = configs.get("token")
+        if not token:
+            raise AdapterConfigureError("Missing token")
+                
+        self._client = InbsCloudClient(hostname=hostname, 
+                                       port=port,
+                                       inband_id=inband_id,
+                                       token=token)  # type: ignore
         return self._client
 
     def bind_callback(self, name: str, callback: Callable) -> None:

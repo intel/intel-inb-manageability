@@ -19,13 +19,23 @@ logger = logging.getLogger(__name__)
 
 class InbsCloudClient(CloudClient):
 
-    def __init__(self, grpc_hostname: str, grpc_port: str) -> None:
+    def __init__(self, 
+                 hostname: str, 
+                 port: str,
+                 inband_id: str,
+                 token: str) -> None:
         """Constructor for InbsCloudClient
         """
 
-        self._grpc_hostname = grpc_hostname
-        self._grpc_port = grpc_port
+        self._grpc_hostname = hostname
+        self._grpc_port = port
+        self._metadata = [
+            ("inband-id", inband_id),
+            ("token", token)
+        ]
+
         self._stop_event = threading.Event()
+
 
     def get_client_id(self) -> Optional[str]:
         """A readonly property
@@ -103,6 +113,7 @@ class InbsCloudClient(CloudClient):
     def connect(self):  # pragma: no cover  # multithreaded operation not unit testable
         """Connect to cloud."""
         self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
+
         self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
 
         # Start the background thread
@@ -119,7 +130,7 @@ class InbsCloudClient(CloudClient):
                 request_queue: queue.Queue = queue.Queue()
                 self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
                 self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
-                stream = self.stub.Ping(self._ping_pong(request_queue))
+                stream = self.stub.Ping(self._ping_pong(request_queue), metadata=self._metadata)
                 for ping in stream:
                     if self._stop_event.is_set():
                         break
