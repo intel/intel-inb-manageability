@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 class InbsCloudClient(CloudClient):
 
-    def __init__(self, 
-                 hostname: str, 
+    def __init__(self,
+                 hostname: str,
                  port: str,
                  inband_id: str,
                  token: str) -> None:
@@ -35,7 +35,6 @@ class InbsCloudClient(CloudClient):
         ]
 
         self._stop_event = threading.Event()
-
 
     def get_client_id(self) -> Optional[str]:
         """A readonly property

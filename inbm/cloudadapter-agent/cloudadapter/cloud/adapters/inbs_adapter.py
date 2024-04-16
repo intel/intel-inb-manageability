@@ -31,20 +31,20 @@ class InbsAdapter(Adapter):
         hostname = configs.get("hostname")
         if not hostname:
             raise AdapterConfigureError("Missing hostname")
-        
+
         port = configs.get("port")
         if not port:
             raise AdapterConfigureError("Missing port")
-        
+
         inband_id = configs.get("inband-id")
         if not inband_id:
             raise AdapterConfigureError("Missing in-band ID")
-        
+
         token = configs.get("token")
         if not token:
             raise AdapterConfigureError("Missing token")
-                
-        self._client = InbsCloudClient(hostname=hostname, 
+
+        self._client = InbsCloudClient(hostname=hostname,
                                        port=port,
                                        inband_id=inband_id,
                                        token=token)  # type: ignore
