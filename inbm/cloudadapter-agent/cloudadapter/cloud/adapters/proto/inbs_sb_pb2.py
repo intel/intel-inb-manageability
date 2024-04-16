@@ -12,18 +12,19 @@ from google.protobuf.internal import builder as _builder
 _sym_db = _symbol_database.Default()
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-    b'\n\x13proto/inbs_sb.proto\x12\x04inbs\"!\n\x0bPingRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\"\"\n\x0cPingResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t2@\n\x0bINBSService\x12\x31\n\x04Ping\x12\x12.inbs.PingResponse\x1a\x11.inbs.PingRequest(\x01\x30\x01\x62\x06proto3')
+
+
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/inbs_sb.proto\x12\x04inbs\"!\n\x0bPingRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\"\"\n\x0cPingResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t2B\n\rINBSSBService\x12\x31\n\x04Ping\x12\x12.inbs.PingResponse\x1a\x11.inbs.PingRequest(\x01\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.inbs_sb_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
-    DESCRIPTOR._options = None
-    _globals['_PINGREQUEST']._serialized_start = 29
-    _globals['_PINGREQUEST']._serialized_end = 62
-    _globals['_PINGRESPONSE']._serialized_start = 64
-    _globals['_PINGRESPONSE']._serialized_end = 98
-    _globals['_INBSSERVICE']._serialized_start = 100
-    _globals['_INBSSERVICE']._serialized_end = 164
+  DESCRIPTOR._options = None
+  _globals['_PINGREQUEST']._serialized_start=29
+  _globals['_PINGREQUEST']._serialized_end=62
+  _globals['_PINGRESPONSE']._serialized_start=64
+  _globals['_PINGRESPONSE']._serialized_end=98
+  _globals['_INBSSBSERVICE']._serialized_start=100
+  _globals['_INBSSBSERVICE']._serialized_end=166
 # @@protoc_insertion_point(module_scope)

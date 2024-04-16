@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package inbs;
 
-service INBSService {
+service INBSSBService {
   // Bi-directional streaming method
   rpc Ping(stream PingResponse) returns (stream PingRequest);
 }

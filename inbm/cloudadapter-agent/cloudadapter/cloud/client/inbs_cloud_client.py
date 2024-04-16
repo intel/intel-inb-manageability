@@ -113,7 +113,7 @@ class InbsCloudClient(CloudClient):
         """Connect to cloud."""
         self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
 
-        self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
+        self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
 
         # Start the background thread
         self.background_thread = threading.Thread(target=self._run)
@@ -128,7 +128,7 @@ class InbsCloudClient(CloudClient):
             try:
                 request_queue: queue.Queue = queue.Queue()
                 self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
-                self.stub = inbs_sb_pb2_grpc.INBSServiceStub(self.channel)
+                self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
                 stream = self.stub.Ping(self._ping_pong(request_queue), metadata=self._metadata)
                 for ping in stream:
                     if self._stop_event.is_set():

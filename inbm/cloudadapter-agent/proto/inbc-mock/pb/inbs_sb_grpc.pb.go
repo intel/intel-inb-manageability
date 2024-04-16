@@ -19,49 +19,49 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	INBSService_Ping_FullMethodName = "/inbs.INBSService/Ping"
+	INBSSBService_Ping_FullMethodName = "/inbs.INBSSBService/Ping"
 )
 
-// INBSServiceClient is the client API for INBSService service.
+// INBSSBServiceClient is the client API for INBSSBService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type INBSServiceClient interface {
+type INBSSBServiceClient interface {
 	// Bi-directional streaming method
-	Ping(ctx context.Context, opts ...grpc.CallOption) (INBSService_PingClient, error)
+	Ping(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_PingClient, error)
 }
 
-type iNBSServiceClient struct {
+type iNBSSBServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewINBSServiceClient(cc grpc.ClientConnInterface) INBSServiceClient {
-	return &iNBSServiceClient{cc}
+func NewINBSSBServiceClient(cc grpc.ClientConnInterface) INBSSBServiceClient {
+	return &iNBSSBServiceClient{cc}
 }
 
-func (c *iNBSServiceClient) Ping(ctx context.Context, opts ...grpc.CallOption) (INBSService_PingClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INBSService_ServiceDesc.Streams[0], INBSService_Ping_FullMethodName, opts...)
+func (c *iNBSSBServiceClient) Ping(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_PingClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INBSSBService_ServiceDesc.Streams[0], INBSSBService_Ping_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &iNBSServicePingClient{stream}
+	x := &iNBSSBServicePingClient{stream}
 	return x, nil
 }
 
-type INBSService_PingClient interface {
+type INBSSBService_PingClient interface {
 	Send(*PingResponse) error
 	Recv() (*PingRequest, error)
 	grpc.ClientStream
 }
 
-type iNBSServicePingClient struct {
+type iNBSSBServicePingClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNBSServicePingClient) Send(m *PingResponse) error {
+func (x *iNBSSBServicePingClient) Send(m *PingResponse) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *iNBSServicePingClient) Recv() (*PingRequest, error) {
+func (x *iNBSSBServicePingClient) Recv() (*PingRequest, error) {
 	m := new(PingRequest)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -69,54 +69,54 @@ func (x *iNBSServicePingClient) Recv() (*PingRequest, error) {
 	return m, nil
 }
 
-// INBSServiceServer is the server API for INBSService service.
-// All implementations must embed UnimplementedINBSServiceServer
+// INBSSBServiceServer is the server API for INBSSBService service.
+// All implementations must embed UnimplementedINBSSBServiceServer
 // for forward compatibility
-type INBSServiceServer interface {
+type INBSSBServiceServer interface {
 	// Bi-directional streaming method
-	Ping(INBSService_PingServer) error
-	mustEmbedUnimplementedINBSServiceServer()
+	Ping(INBSSBService_PingServer) error
+	mustEmbedUnimplementedINBSSBServiceServer()
 }
 
-// UnimplementedINBSServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedINBSServiceServer struct {
+// UnimplementedINBSSBServiceServer must be embedded to have forward compatible implementations.
+type UnimplementedINBSSBServiceServer struct {
 }
 
-func (UnimplementedINBSServiceServer) Ping(INBSService_PingServer) error {
+func (UnimplementedINBSSBServiceServer) Ping(INBSSBService_PingServer) error {
 	return status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
-func (UnimplementedINBSServiceServer) mustEmbedUnimplementedINBSServiceServer() {}
+func (UnimplementedINBSSBServiceServer) mustEmbedUnimplementedINBSSBServiceServer() {}
 
-// UnsafeINBSServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to INBSServiceServer will
+// UnsafeINBSSBServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to INBSSBServiceServer will
 // result in compilation errors.
-type UnsafeINBSServiceServer interface {
-	mustEmbedUnimplementedINBSServiceServer()
+type UnsafeINBSSBServiceServer interface {
+	mustEmbedUnimplementedINBSSBServiceServer()
 }
 
-func RegisterINBSServiceServer(s grpc.ServiceRegistrar, srv INBSServiceServer) {
-	s.RegisterService(&INBSService_ServiceDesc, srv)
+func RegisterINBSSBServiceServer(s grpc.ServiceRegistrar, srv INBSSBServiceServer) {
+	s.RegisterService(&INBSSBService_ServiceDesc, srv)
 }
 
-func _INBSService_Ping_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(INBSServiceServer).Ping(&iNBSServicePingServer{stream})
+func _INBSSBService_Ping_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(INBSSBServiceServer).Ping(&iNBSSBServicePingServer{stream})
 }
 
-type INBSService_PingServer interface {
+type INBSSBService_PingServer interface {
 	Send(*PingRequest) error
 	Recv() (*PingResponse, error)
 	grpc.ServerStream
 }
 
-type iNBSServicePingServer struct {
+type iNBSSBServicePingServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNBSServicePingServer) Send(m *PingRequest) error {
+func (x *iNBSSBServicePingServer) Send(m *PingRequest) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *iNBSServicePingServer) Recv() (*PingResponse, error) {
+func (x *iNBSSBServicePingServer) Recv() (*PingResponse, error) {
 	m := new(PingResponse)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
@@ -124,17 +124,17 @@ func (x *iNBSServicePingServer) Recv() (*PingResponse, error) {
 	return m, nil
 }
 
-// INBSService_ServiceDesc is the grpc.ServiceDesc for INBSService service.
+// INBSSBService_ServiceDesc is the grpc.ServiceDesc for INBSSBService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var INBSService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "inbs.INBSService",
-	HandlerType: (*INBSServiceServer)(nil),
+var INBSSBService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "inbs.INBSSBService",
+	HandlerType: (*INBSSBServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
 			StreamName:    "Ping",
-			Handler:       _INBSService_Ping_Handler,
+			Handler:       _INBSSBService_Ping_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

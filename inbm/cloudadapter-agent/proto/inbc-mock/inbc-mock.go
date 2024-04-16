@@ -14,9 +14,9 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// server is used to implement inbs.INBSServiceServer.
+// server is used to implement inbs.INBSSBServiceServer.
 type server struct {
-	pb.UnimplementedINBSServiceServer
+	pb.UnimplementedINBSSBServiceServer
 }
 
 func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
@@ -36,8 +36,8 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 	return handler(srv, stream)
 }
 
-// Ping implements inbs.INBSServiceServer
-func (s *server) Ping(stream pb.INBSService_PingServer) error {
+// Ping implements inbs.INBSSBServiceServer
+func (s *server) Ping(stream pb.INBSSBService_PingServer) error {
 	ctx := stream.Context()
 
 	// Extract metadata from the context
@@ -100,7 +100,7 @@ func main() {
 		grpc.StreamInterceptor(authStreamInterceptor),
 	}
 	s := grpc.NewServer(opts...)
-	pb.RegisterINBSServiceServer(s, &server{})
+	pb.RegisterINBSSBServiceServer(s, &server{})
 	log.Printf("Server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)

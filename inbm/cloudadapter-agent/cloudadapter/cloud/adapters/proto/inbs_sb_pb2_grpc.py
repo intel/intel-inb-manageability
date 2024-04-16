@@ -5,7 +5,7 @@ import grpc
 from . import inbs_sb_pb2 as proto_dot_inbs__sb__pb2
 
 
-class INBSServiceStub(object):
+class INBSSBServiceStub(object):
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -15,13 +15,13 @@ class INBSServiceStub(object):
             channel: A grpc.Channel.
         """
         self.Ping = channel.stream_stream(
-            '/inbs.INBSService/Ping',
-            request_serializer=proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
-            response_deserializer=proto_dot_inbs__sb__pb2.PingRequest.FromString,
-        )
+                '/inbs.INBSSBService/Ping',
+                request_serializer=proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
+                response_deserializer=proto_dot_inbs__sb__pb2.PingRequest.FromString,
+                )
 
 
-class INBSServiceServicer(object):
+class INBSSBServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def Ping(self, request_iterator, context):
@@ -32,37 +32,36 @@ class INBSServiceServicer(object):
         raise NotImplementedError('Method not implemented!')
 
 
-def add_INBSServiceServicer_to_server(servicer, server):
+def add_INBSSBServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-        'Ping': grpc.stream_stream_rpc_method_handler(
-            servicer.Ping,
-            request_deserializer=proto_dot_inbs__sb__pb2.PingResponse.FromString,
-            response_serializer=proto_dot_inbs__sb__pb2.PingRequest.SerializeToString,
-        ),
+            'Ping': grpc.stream_stream_rpc_method_handler(
+                    servicer.Ping,
+                    request_deserializer=proto_dot_inbs__sb__pb2.PingResponse.FromString,
+                    response_serializer=proto_dot_inbs__sb__pb2.PingRequest.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-        'inbs.INBSService', rpc_method_handlers)
+            'inbs.INBSSBService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
+
  # This class is part of an EXPERIMENTAL API.
-
-
-class INBSService(object):
+class INBSSBService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
     def Ping(request_iterator,
-             target,
-             options=(),
-             channel_credentials=None,
-             call_credentials=None,
-             insecure=False,
-             compression=None,
-             wait_for_ready=None,
-             timeout=None,
-             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/inbs.INBSService/Ping',
-                                               proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
-                                               proto_dot_inbs__sb__pb2.PingRequest.FromString,
-                                               options, channel_credentials,
-                                               insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(request_iterator, target, '/inbs.INBSSBService/Ping',
+            proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
+            proto_dot_inbs__sb__pb2.PingRequest.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
