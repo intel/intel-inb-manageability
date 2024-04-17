@@ -15,6 +15,10 @@ class TestInbsAdapter(unittest.TestCase):
 
     def setUp(self) -> None:
         self.CONFIG: dict[str, str] = {
+            "hostname": "localhost",
+            "port": "50051",
+            "node-id": "node_id",
+            "token": "token",
         }
 
         self.inbs_adapter = InbsAdapter(self.CONFIG)

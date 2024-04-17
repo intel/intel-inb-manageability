@@ -29,6 +29,7 @@ class InbsCloudClient(CloudClient):
 
         self._grpc_hostname = hostname
         self._grpc_port = port
+        self._client_id = node_id
         self._metadata = [
             ("node-id", node_id),
             ("token", token)
@@ -42,7 +43,7 @@ class InbsCloudClient(CloudClient):
         @return: Client ID
         """
 
-        raise NotImplementedError("get_client_id not yet implemented")
+        return self._client_id
 
     def publish_telemetry(self, key: str, value: str, time: datetime) -> None:
         """Publishes telemetry to the cloud

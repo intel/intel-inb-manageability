@@ -9,8 +9,10 @@ from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
 from cloudadapter.cloud.adapters.proto import inbs_sb_pb2
 import unittest
 from cloudadapter.cloud.client.inbs_cloud_client import grpc
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch, MagicMock, Mock
 from datetime import datetime
+import pytest
+import queue
 
 
 class TestInbsCloudClient(unittest.TestCase):
@@ -18,21 +20,26 @@ class TestInbsCloudClient(unittest.TestCase):
     @patch("cloudadapter.cloud.client.inbs_cloud_client.grpc.insecure_channel")
     @patch("cloudadapter.cloud.adapters.proto.inbs_sb_pb2_grpc.INBSSBServiceStub")
     def setUp(self, mock_stub, mock_channel):
-        self.grpc_hostname = "localhost"
-        self.grpc_port = "50051"
+        self.hostname = "localhost"
+        self.port = "50051"
+        self.node_id = "node_id"
+        self.token = "token"
         self.inbs_client = InbsCloudClient(
-            grpc_hostname=self.grpc_hostname, grpc_port=self.grpc_port)
+            hostname=self.hostname,
+            port=self.port,
+            node_id=self.node_id,
+            token=self.token)
         self.mock_channel = mock_channel
         self.mock_stub = mock_stub
 
     def test_constructor_initializes_values(self):
-        self.assertEqual(self.inbs_client._grpc_hostname, self.grpc_hostname)
-        self.assertEqual(self.inbs_client._grpc_port, self.grpc_port)
-        self.assertFalse(self.inbs_client._stop_event.is_set())
+        self.assertEqual(self.inbs_client._grpc_hostname, self.hostname)
+        self.assertEqual(self.inbs_client._grpc_port, self.port)
+        self.assertEqual(self.inbs_client._client_id, self.node_id)
+        self.assertEqual(self.inbs_client._metadata, [("node-id", self.node_id), ("token", self.token)])
 
-    def test_get_client_id_raises_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            client_id = self.inbs_client.get_client_id()
+    def test_get_client_id_raises_not_implemented(self):        
+        client_id = self.inbs_client.get_client_id()
 
     def test_publish_telemetry_raises_not_implemented(self):
         with self.assertRaises(NotImplementedError):
@@ -47,18 +54,32 @@ class TestInbsCloudClient(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             self.inbs_client.publish_attribute(key="example_attribute", value="attribute_value")
 
-    @patch("cloudadapter.cloud.client.inbs_cloud_client.queue.Queue")
-    def test_ping_pong_yield_response_on_ping_request(self, mock_queue):
-        ping_pong_gen = self.inbs_client._ping_pong(mock_queue)
-        mock_request = MagicMock()
-        mock_request.request_id = "abcdefg"
-        mock_queue.get.return_value = mock_request
-        self.inbs_client._stop_event.clear()  # ensuring stop event is not set for the test
+    def test_single_ping_request(self):
+        # Mocks
+        request_queue = queue.Queue()
+        stop_event = Mock()
+        stop_event.is_set.return_value = False
+        
+        # Set up the INBMRequest with PingRequest
+        ping_request = inbs_sb_pb2.INBMRequest(request_id="123", ping_request=inbs_sb_pb2.PingRequest())
+        request_queue.put(ping_request)
+        # Signal end of queue processing (in real code this isn't needed, here to stop the generator)
+        request_queue.put(None)
+                
+        self.inbs_client._stop_event = stop_event
+        
+        # Run test
+        generator = self.inbs_client._handle_inbm_command(request_queue)
+        response = next(generator)
 
-        response = next(ping_pong_gen)
-        self.assertIsInstance(response, inbs_sb_pb2.PingResponse)
-        self.assertEqual(response.request_id, "abcdefg")
+        # Check the response correctness
+        self.assertEqual(response.request_id, "123")
+        self.assertTrue(hasattr(response, 'ping_response'))
 
+        # Cleanup, ensure nothing else is left in the generator
+        with self.assertRaises(StopIteration):
+            next(generator)
+            
     @patch("cloudadapter.cloud.client.inbs_cloud_client.time.sleep", side_effect=InterruptedError)
     @patch("grpc.insecure_channel")
     @patch("cloudadapter.cloud.adapters.proto.inbs_sb_pb2_grpc.INBSSBServiceStub")
