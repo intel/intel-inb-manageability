@@ -47,7 +47,7 @@ class InbsAdapter(Adapter):
         self._client = InbsCloudClient(hostname=hostname,
                                        port=port,
                                        node_id=node_id,
-                                       token=token)  # type: ignore
+                                       token=token)
         return self._client
 
     def bind_callback(self, name: str, callback: Callable) -> None:
