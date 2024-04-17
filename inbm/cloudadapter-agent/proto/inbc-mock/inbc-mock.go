@@ -36,8 +36,7 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 	return handler(srv, stream)
 }
 
-// Ping implements inbs.INBSSBServiceServer
-func (s *server) Ping(stream pb.INBSSBService_PingServer) error {
+func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 	ctx := stream.Context()
 
 	// Extract metadata from the context
@@ -48,14 +47,14 @@ func (s *server) Ping(stream pb.INBSSBService_PingServer) error {
 	}
 
 	// Retrieve the inband-id from metadata
-	inbandIDVals, ok := md["inband-id"]
-	if !ok || len(inbandIDVals) == 0 {
-		log.Fatalf("inband-id is required in metadata")
-		return status.Errorf(codes.Unauthenticated, "inband-id is required")
+	nodeIDVals, ok := md["node-id"]
+	if !ok || len(nodeIDVals) == 0 {
+		log.Fatalf("node-id is required in metadata")
+		return status.Errorf(codes.Unauthenticated, "node-id is required")
 	}
-	inbandID := inbandIDVals[0] // Using the first value
+	nodeID := nodeIDVals[0] // Using the first value
 
-	log.Printf("Received connection with inband-id: %s", inbandID)
+	log.Printf("Received connection with inband-id: %s", nodeID)
 
 	// Loop until the context is done (connection closed)
 	for {
@@ -65,25 +64,32 @@ func (s *server) Ping(stream pb.INBSSBService_PingServer) error {
 		default:
 			// Sending a Ping to the client
 			requestId := uuid.New().String()
-			err := stream.Send(&pb.PingRequest{
+			err := stream.Send(&pb.INBMRequest{
 				RequestId: requestId,
+				Payload: &pb.INBMRequest_PingRequest{
+					PingRequest: &pb.PingRequest{},
+				},
 			})
 			if err != nil {
 				log.Fatalf("Failed to send a ping: %v", err)
 			}
 			log.Println("Ping sent to client with request ID " + requestId)
 
-			// Receiving and logging PingResponse from client
+			// Receiving and logging INBMResponse from client
 			response, err := stream.Recv()
 			if err != nil {
-				log.Fatalf("Failed to receive ping response: %v", err)
+				log.Fatalf("Failed to receive INBM response: %v", err)
 			}
 
 			if requestId != response.GetRequestId() {
-				log.Fatalf("Response request ID " + response.GetRequestId() + " does not match ping request ID " + requestId)
+				log.Fatalf("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
+			}
+			// check that the response payload is a ping type
+			if _, ok := response.GetPayload().(*pb.INBMResponse_PingResponse); !ok {
+				log.Fatalf("Response payload is not a PingResponse")
 			}
 
-			log.Println("Received ping response from client with request ID " + response.GetRequestId())
+			log.Println("Received response from client with request ID " + response.GetRequestId())
 
 			// Wait for a second before next ping
 			time.Sleep(1 * time.Second)

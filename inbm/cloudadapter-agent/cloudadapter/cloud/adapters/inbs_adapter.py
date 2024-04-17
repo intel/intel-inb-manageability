@@ -36,9 +36,9 @@ class InbsAdapter(Adapter):
         if not port:
             raise AdapterConfigureError("Missing port")
 
-        inband_id = configs.get("inband-id")
-        if not inband_id:
-            raise AdapterConfigureError("Missing in-band ID")
+        node_id = configs.get("node-id")
+        if not node_id:
+            raise AdapterConfigureError("Missing node-id")
 
         token = configs.get("token")
         if not token:
@@ -46,7 +46,7 @@ class InbsAdapter(Adapter):
 
         self._client = InbsCloudClient(hostname=hostname,
                                        port=port,
-                                       inband_id=inband_id,
+                                       node_id=node_id,
                                        token=token)  # type: ignore
         return self._client
 

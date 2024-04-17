@@ -22,7 +22,7 @@ class InbsCloudClient(CloudClient):
     def __init__(self,
                  hostname: str,
                  port: str,
-                 inband_id: str,
+                 node_id: str,
                  token: str) -> None:
         """Constructor for InbsCloudClient
         """
@@ -30,7 +30,7 @@ class InbsCloudClient(CloudClient):
         self._grpc_hostname = hostname
         self._grpc_port = port
         self._metadata = [
-            ("inband-id", inband_id),
+            ("node-id", node_id),
             ("token", token)
         ]
 
@@ -88,12 +88,12 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         pass
 
-    def _ping_pong(self, request_queue: queue.Queue):
-        """Generator function to respond to PingRequests with PingResponses
+    def _handle_inbm_command(self, request_queue: queue.Queue):
+        """Generator function to respond to INBMRequests with INBMResponses
 
-        @param request_queue: Queue with PingRequests that will be supplied from another thread
+        @param request_queue: Queue with INBMRequests that will be supplied from another thread
 
-        When a PingResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event."""
+        When an INBMResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event."""
         while not self._stop_event.is_set():
             try:
                 item = request_queue.get()
@@ -101,12 +101,25 @@ class InbsCloudClient(CloudClient):
                     break
 
                 request_id = item.request_id
-                logger.debug(f"Responding to ping over gRPC: request_id {request_id}")
-                yield inbs_sb_pb2.PingResponse(request_id=request_id)
+                logger.debug(f"Processing gRPC request: request_id {request_id}")
+
+                payload_type = item.WhichOneof('payload')
+                if payload_type:
+                    payload_data = getattr(item, payload_type)
+                    if payload_type == 'ping_request':
+                        # Handle PingRequest and create a corresponding PingResponse
+                        yield inbs_sb_pb2.INBMResponse(request_id=request_id, ping_response=inbs_sb_pb2.PingResponse())
+                    else:
+                        # Log an error if the payload is not recognized (not a PingRequest)
+                        logger.error(f"Received unexpected payload type: {payload_type} for request_id {request_id}")
+                        break
+                else:
+                    logger.error(f"No payload found for request_id {request_id}")
+
             except queue.Empty:
-                continue
+                continue  # No available item in the queue, continue to the next iteration
             except grpc.RpcError as e:
-                logger.error(f"gRPC error in _ping_pong: {e}")
+                logger.error(f"gRPC error in _handle_inbm_command: {e}")
                 break
 
     def connect(self):  # pragma: no cover  # multithreaded operation not unit testable
@@ -129,14 +142,14 @@ class InbsCloudClient(CloudClient):
                 request_queue: queue.Queue = queue.Queue()
                 self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
                 self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
-                stream = self.stub.Ping(self._ping_pong(request_queue), metadata=self._metadata)
-                for ping in stream:
+                stream = self.stub.INBMCommand(self._handle_inbm_command(request_queue), metadata=self._metadata)
+                for command in stream:
                     if self._stop_event.is_set():
                         break
-                    if ping is None:
+                    if command is None:
                         break
-                    logger.debug(f"Received ping over gRPC")
-                    request_queue.put(ping)
+                    logger.debug(f"Received command over gRPC")
+                    request_queue.put(command)
                     # If the code reaches this point without an exception,
                     # reset the backoff delay.
                     backoff = 1

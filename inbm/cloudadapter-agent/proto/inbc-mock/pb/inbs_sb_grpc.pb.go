@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	INBSSBService_Ping_FullMethodName = "/inbs.INBSSBService/Ping"
+	INBSSBService_INBMCommand_FullMethodName = "/inbs.INBSSBService/INBMCommand"
 )
 
 // INBSSBServiceClient is the client API for INBSSBService service.
@@ -27,7 +27,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type INBSSBServiceClient interface {
 	// Bi-directional streaming method
-	Ping(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_PingClient, error)
+	INBMCommand(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_INBMCommandClient, error)
 }
 
 type iNBSSBServiceClient struct {
@@ -38,31 +38,31 @@ func NewINBSSBServiceClient(cc grpc.ClientConnInterface) INBSSBServiceClient {
 	return &iNBSSBServiceClient{cc}
 }
 
-func (c *iNBSSBServiceClient) Ping(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_PingClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INBSSBService_ServiceDesc.Streams[0], INBSSBService_Ping_FullMethodName, opts...)
+func (c *iNBSSBServiceClient) INBMCommand(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_INBMCommandClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INBSSBService_ServiceDesc.Streams[0], INBSSBService_INBMCommand_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &iNBSSBServicePingClient{stream}
+	x := &iNBSSBServiceINBMCommandClient{stream}
 	return x, nil
 }
 
-type INBSSBService_PingClient interface {
-	Send(*PingResponse) error
-	Recv() (*PingRequest, error)
+type INBSSBService_INBMCommandClient interface {
+	Send(*INBMResponse) error
+	Recv() (*INBMRequest, error)
 	grpc.ClientStream
 }
 
-type iNBSSBServicePingClient struct {
+type iNBSSBServiceINBMCommandClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNBSSBServicePingClient) Send(m *PingResponse) error {
+func (x *iNBSSBServiceINBMCommandClient) Send(m *INBMResponse) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *iNBSSBServicePingClient) Recv() (*PingRequest, error) {
-	m := new(PingRequest)
+func (x *iNBSSBServiceINBMCommandClient) Recv() (*INBMRequest, error) {
+	m := new(INBMRequest)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (x *iNBSSBServicePingClient) Recv() (*PingRequest, error) {
 // for forward compatibility
 type INBSSBServiceServer interface {
 	// Bi-directional streaming method
-	Ping(INBSSBService_PingServer) error
+	INBMCommand(INBSSBService_INBMCommandServer) error
 	mustEmbedUnimplementedINBSSBServiceServer()
 }
 
@@ -82,8 +82,8 @@ type INBSSBServiceServer interface {
 type UnimplementedINBSSBServiceServer struct {
 }
 
-func (UnimplementedINBSSBServiceServer) Ping(INBSSBService_PingServer) error {
-	return status.Errorf(codes.Unimplemented, "method Ping not implemented")
+func (UnimplementedINBSSBServiceServer) INBMCommand(INBSSBService_INBMCommandServer) error {
+	return status.Errorf(codes.Unimplemented, "method INBMCommand not implemented")
 }
 func (UnimplementedINBSSBServiceServer) mustEmbedUnimplementedINBSSBServiceServer() {}
 
@@ -98,26 +98,26 @@ func RegisterINBSSBServiceServer(s grpc.ServiceRegistrar, srv INBSSBServiceServe
 	s.RegisterService(&INBSSBService_ServiceDesc, srv)
 }
 
-func _INBSSBService_Ping_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(INBSSBServiceServer).Ping(&iNBSSBServicePingServer{stream})
+func _INBSSBService_INBMCommand_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(INBSSBServiceServer).INBMCommand(&iNBSSBServiceINBMCommandServer{stream})
 }
 
-type INBSSBService_PingServer interface {
-	Send(*PingRequest) error
-	Recv() (*PingResponse, error)
+type INBSSBService_INBMCommandServer interface {
+	Send(*INBMRequest) error
+	Recv() (*INBMResponse, error)
 	grpc.ServerStream
 }
 
-type iNBSSBServicePingServer struct {
+type iNBSSBServiceINBMCommandServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNBSSBServicePingServer) Send(m *PingRequest) error {
+func (x *iNBSSBServiceINBMCommandServer) Send(m *INBMRequest) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *iNBSSBServicePingServer) Recv() (*PingResponse, error) {
-	m := new(PingResponse)
+func (x *iNBSSBServiceINBMCommandServer) Recv() (*INBMResponse, error) {
+	m := new(INBMResponse)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -133,8 +133,8 @@ var INBSSBService_ServiceDesc = grpc.ServiceDesc{
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Ping",
-			Handler:       _INBSSBService_Ping_Handler,
+			StreamName:    "INBMCommand",
+			Handler:       _INBSSBService_INBMCommand_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},

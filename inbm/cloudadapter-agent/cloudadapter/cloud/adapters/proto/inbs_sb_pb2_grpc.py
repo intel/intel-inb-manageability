@@ -14,17 +14,17 @@ class INBSSBServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.Ping = channel.stream_stream(
-                '/inbs.INBSSBService/Ping',
-                request_serializer=proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
-                response_deserializer=proto_dot_inbs__sb__pb2.PingRequest.FromString,
+        self.INBMCommand = channel.stream_stream(
+                '/inbs.INBSSBService/INBMCommand',
+                request_serializer=proto_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
+                response_deserializer=proto_dot_inbs__sb__pb2.INBMRequest.FromString,
                 )
 
 
 class INBSSBServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
-    def Ping(self, request_iterator, context):
+    def INBMCommand(self, request_iterator, context):
         """Bi-directional streaming method
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -34,10 +34,10 @@ class INBSSBServiceServicer(object):
 
 def add_INBSSBServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'Ping': grpc.stream_stream_rpc_method_handler(
-                    servicer.Ping,
-                    request_deserializer=proto_dot_inbs__sb__pb2.PingResponse.FromString,
-                    response_serializer=proto_dot_inbs__sb__pb2.PingRequest.SerializeToString,
+            'INBMCommand': grpc.stream_stream_rpc_method_handler(
+                    servicer.INBMCommand,
+                    request_deserializer=proto_dot_inbs__sb__pb2.INBMResponse.FromString,
+                    response_serializer=proto_dot_inbs__sb__pb2.INBMRequest.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -50,7 +50,7 @@ class INBSSBService(object):
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
-    def Ping(request_iterator,
+    def INBMCommand(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -60,8 +60,8 @@ class INBSSBService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/inbs.INBSSBService/Ping',
-            proto_dot_inbs__sb__pb2.PingResponse.SerializeToString,
-            proto_dot_inbs__sb__pb2.PingRequest.FromString,
+        return grpc.experimental.stream_stream(request_iterator, target, '/inbs.INBSSBService/INBMCommand',
+            proto_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
+            proto_dot_inbs__sb__pb2.INBMRequest.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
