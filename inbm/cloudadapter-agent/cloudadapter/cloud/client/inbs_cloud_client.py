@@ -54,7 +54,7 @@ class InbsCloudClient(CloudClient):
         @exception PublishError: If publish fails
         """
 
-        raise NotImplementedError("publish_telemetry not yet implemented")
+        pass  # INBS is not yet ready to receive telemetry
 
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
@@ -64,7 +64,7 @@ class InbsCloudClient(CloudClient):
         @exception PublishError: If publish fails
         """
 
-        raise NotImplementedError("publish_event not yet implemented")
+        pass  # INBS is not yet ready to receive events
 
     def publish_attribute(self, key: str, value: str) -> None:
         """Publishes a device attribute to the cloud
@@ -74,7 +74,7 @@ class InbsCloudClient(CloudClient):
         @exception PublishError: If publish fails
         """
 
-        raise NotImplementedError("publish_attribute not yet implemented")
+        pass  # INBS is not yet ready to receive attributes
 
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud
@@ -112,7 +112,8 @@ class InbsCloudClient(CloudClient):
                         yield inbs_sb_pb2.INBMResponse(request_id=request_id, ping_response=inbs_sb_pb2.PingResponse())
                     else:
                         # Log an error if the payload is not recognized (not a PingRequest)
-                        logger.error(f"Received unexpected payload type: {payload_type} for request_id {request_id}")
+                        logger.error(
+                            f"Received unexpected payload type: {payload_type} for request_id {request_id}")
                         break
                 else:
                     logger.error(f"No payload found for request_id {request_id}")
@@ -143,7 +144,8 @@ class InbsCloudClient(CloudClient):
                 request_queue: queue.Queue = queue.Queue()
                 self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
                 self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
-                stream = self.stub.INBMCommand(self._handle_inbm_command(request_queue), metadata=self._metadata)
+                stream = self.stub.INBMCommand(self._handle_inbm_command(
+                    request_queue), metadata=self._metadata)
                 for command in stream:
                     if self._stop_event.is_set():
                         break

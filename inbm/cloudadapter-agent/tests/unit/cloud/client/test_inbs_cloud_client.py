@@ -36,38 +36,41 @@ class TestInbsCloudClient(unittest.TestCase):
         self.assertEqual(self.inbs_client._grpc_hostname, self.hostname)
         self.assertEqual(self.inbs_client._grpc_port, self.port)
         self.assertEqual(self.inbs_client._client_id, self.node_id)
-        self.assertEqual(self.inbs_client._metadata, [("node-id", self.node_id), ("token", self.token)])
+        self.assertEqual(self.inbs_client._metadata, [
+                         ("node-id", self.node_id), ("token", self.token)])
 
-    def test_get_client_id_raises_not_implemented(self):        
+    def test_get_client_id(self):
         client_id = self.inbs_client.get_client_id()
+        self.assertEqual(client_id, self.node_id)
 
-    def test_publish_telemetry_raises_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            self.inbs_client.publish_telemetry(
-                key="example_key", value="example_value", time=datetime.now())
+    def test_publish_telemetry(self):
+        # this is  not expected to do anything yet
+        self.inbs_client.publish_telemetry(
+            key="example_key", value="example_value", time=datetime.now())
 
-    def test_publish_event_raises_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            self.inbs_client.publish_event(key="example_event", value="event_value")
+    def test_publish_event(self):
+        # this is not expected to do anything yet
+        self.inbs_client.publish_event(key="example_event", value="event_value")
 
-    def test_publish_attribute_raises_not_implemented(self):
-        with self.assertRaises(NotImplementedError):
-            self.inbs_client.publish_attribute(key="example_attribute", value="attribute_value")
+    def test_publish_attribute(self):
+        # this is not expected to do anything yet
+        self.inbs_client.publish_attribute(key="example_attribute", value="attribute_value")
 
     def test_single_ping_request(self):
         # Mocks
         request_queue = queue.Queue()
         stop_event = Mock()
         stop_event.is_set.return_value = False
-        
+
         # Set up the INBMRequest with PingRequest
-        ping_request = inbs_sb_pb2.INBMRequest(request_id="123", ping_request=inbs_sb_pb2.PingRequest())
+        ping_request = inbs_sb_pb2.INBMRequest(
+            request_id="123", ping_request=inbs_sb_pb2.PingRequest())
         request_queue.put(ping_request)
         # Signal end of queue processing (in real code this isn't needed, here to stop the generator)
         request_queue.put(None)
-                
+
         self.inbs_client._stop_event = stop_event
-        
+
         # Run test
         generator = self.inbs_client._handle_inbm_command(request_queue)
         response = next(generator)
@@ -79,7 +82,7 @@ class TestInbsCloudClient(unittest.TestCase):
         # Cleanup, ensure nothing else is left in the generator
         with self.assertRaises(StopIteration):
             next(generator)
-            
+
     @patch("cloudadapter.cloud.client.inbs_cloud_client.time.sleep", side_effect=InterruptedError)
     @patch("grpc.insecure_channel")
     @patch("cloudadapter.cloud.adapters.proto.inbs_sb_pb2_grpc.INBSSBServiceStub")
