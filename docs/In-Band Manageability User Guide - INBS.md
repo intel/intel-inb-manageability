@@ -15,7 +15,7 @@ Follow these steps to configure INBS as your cloud provider during the provision
    sudo NO_CLOUD=x provision-tc
    ```
 
-2. Configure the `adapter.cfg` file for the Cloud Adapter. On Linux systems, this file is typically found at `/etc/intel-manageability/secretcloudadapter-agent/adapter.cfg`.
+2. Configure the `adapter.cfg` file for the Cloud Adapter. On Linux systems, this file is typically found at `/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg`.
 
 Below is an example configuration for your cloud settings:
 
@@ -30,6 +30,8 @@ Below is an example configuration for your cloud settings:
   }
 }
 ```
+
+3. Restart the cloudadapter agent: `sudo systemctl restart inbm-cloudadapter`
 
 ### Configuration Parameters
 - **hostname**: The address of the INBS server, which could be an IP address or a domain name.
