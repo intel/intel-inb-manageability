@@ -5,7 +5,7 @@ Copyright (C) 2017-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
-from cloudadapter.cloud.adapters.inbs_adapter import InbsAdapter
+from .adapters.inbs_adapter import InbsAdapter
 from .adapters.azure_adapter import AzureAdapter
 from .adapters.generic_adapter import GenericAdapter
 from ..constants import ADAPTER_CONFIG_PATH

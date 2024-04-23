@@ -28,7 +28,9 @@ class TestInbsCloudClient(unittest.TestCase):
             hostname=self.hostname,
             port=self.port,
             node_id=self.node_id,
-            token=self.token)
+            tls_enabled=False,
+            tls_cert=None,
+            token=None)
         self.mock_channel = mock_channel
         self.mock_stub = mock_stub
 
@@ -37,7 +39,7 @@ class TestInbsCloudClient(unittest.TestCase):
         self.assertEqual(self.inbs_client._grpc_port, self.port)
         self.assertEqual(self.inbs_client._client_id, self.node_id)
         self.assertEqual(self.inbs_client._metadata, [
-                         ("node-id", self.node_id), ("token", self.token)])
+                         ("node-id", self.node_id)])
 
     def test_get_client_id(self):
         client_id = self.inbs_client.get_client_id()

@@ -36,6 +36,12 @@ class InbsAdapter(Adapter):
         port = configs.get("port")
         if not port:
             raise AdapterConfigureError("Missing port")
+        try:
+            port_int = int(port)
+            if not (0 < port_int < 65536):
+                raise AdapterConfigureError("Port number must be between 1 and 65535")
+        except ValueError:
+            raise AdapterConfigureError("Port must be an integer")
 
         node_id = configs.get("node_id")
         if not node_id:
@@ -53,7 +59,8 @@ class InbsAdapter(Adapter):
             token: str | None = None
             token_path: str = configs.get("token_path")  # type: ignore
             if (not token_path or not os.path.exists(token_path)):
-                raise AdapterConfigureError("TLS is enabled but missing or incorrect token file path")
+                raise AdapterConfigureError(
+                    "TLS is enabled but missing or incorrect token file path")
             with open(token_path, 'r') as f:
                 token = f.read().strip()
         else:

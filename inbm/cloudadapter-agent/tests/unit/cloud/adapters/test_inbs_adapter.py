@@ -20,13 +20,13 @@ class TestInbsAdapter(unittest.TestCase):
             else:
                 return mock.mock_open(read_data='').return_value
 
-        self.patcher_open = patch('builtins.open', side_effect=read_file_side_effect)  
-        self.mock_open = self.patcher_open.start()  
-        
+        self.patcher_open = patch('builtins.open', side_effect=read_file_side_effect)
+        self.mock_open = self.patcher_open.start()
+
         self.base_config = {
             "hostname": "localhost",
             "port": "50051",
-            "node-id": "node_id",
+            "node_id": "node_id",
         }
         self.config_with_token_path_no_tls = {
             **self.base_config,
@@ -53,25 +53,35 @@ class TestInbsAdapter(unittest.TestCase):
         }
         self.config_with_tls_no_cert = {
             **self.base_config,
-           "tls_enabled": True,
+            "tls_enabled": True,
             "token_path": "/path/to/valid_token.txt"
         }
-    
+
     def tearDown(self):
         self.patcher_open.stop()
 
     def test_configure_succeeds_with_valid_token_and_tls(self):
-            
+
         # Mock the os.path.exists to always return True (e.g., both token and TLS path exist)
-        with patch('os.path.exists', return_value=True):        
+        with patch('os.path.exists', return_value=True):
             inbs_adapter = InbsAdapter(self.config_with_tls)
             self.mock_open.assert_has_calls([mock.call('/path/to/valid_token.txt', 'r'),
-                                        mock.call('/path/to/valid_cert.pem', 'rb')],
-                                        any_order=True)
+                                             mock.call('/path/to/valid_cert.pem', 'rb')],
+                                            any_order=True)
+
+    def test_configure_fails_with_invalid_port(self):
+        # Ensure the configuration fails when the port is not an integer
+        with self.assertRaises(AdapterConfigureError):
+            inbs_adapter = InbsAdapter({**self.base_config, "port": "invalid_port"})
+
+    def test_configure_fails_with_port_out_of_range(self):
+        # Ensure the configuration fails when the port is out of range
+        with self.assertRaises(AdapterConfigureError):
+            inbs_adapter = InbsAdapter({**self.base_config, "port": "65536"})
 
     def test_configure_succeeds_with_valid_token_and_no_tls(self):
         # Test configuration without TLS but with a valid token path (token will be ignored)
-        with patch('os.path.exists', return_value=True):                
+        with patch('os.path.exists', return_value=True):
             inbs_adapter = InbsAdapter(self.config_without_tls)
             self.mock_open.assert_not_called()
 
@@ -84,7 +94,6 @@ class TestInbsAdapter(unittest.TestCase):
         # Ensure the configuration fails if cert is given but TLS is not enabled
         with self.assertRaises(AdapterConfigureError):
             inbs_adapter = InbsAdapter(self.config_with_tls_cert_path_no_tls)
-
 
     def test_configure_fails_with_missing_certificate_for_tls(self):
         # Ensure the configuration fails when the TLS cert file does not exist
@@ -101,9 +110,9 @@ class TestInbsAdapter(unittest.TestCase):
     def test_configure_fails_with_missing_token_for_tls(self):
         # Ensure the configuration fails if TLS is enabled but token is not given
         with self.assertRaises(AdapterConfigureError):
-                inbs_adapter = InbsAdapter(self.config_with_tls_no_token)
+            inbs_adapter = InbsAdapter(self.config_with_tls_no_token)
 
     def test_configure_fails_with_missing_cert_for_tls(self):
         # Ensure the configuration fails if TLS is enabled but cert is not given
         with self.assertRaises(AdapterConfigureError):
-                inbs_adapter = InbsAdapter(self.config_with_tls_no_cert)
+            inbs_adapter = InbsAdapter(self.config_with_tls_no_cert)

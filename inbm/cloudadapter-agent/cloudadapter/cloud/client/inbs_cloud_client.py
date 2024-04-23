@@ -4,6 +4,7 @@ INBS is different because it is using gRPC instead of MQTT.
 """
 
 import queue
+import random
 import threading
 import time
 from typing import Callable, Optional, Any
@@ -145,16 +146,18 @@ class InbsCloudClient(CloudClient):
         """Handle the socket/TLS/HTTP connection to the gRPC server."""
         if self._tls_enabled:
             # Create a secure channel with SSL credentials
-            logger.debug("Connecting to INBS cloud with TLS enabled")
+            logger.debug("Connecting to INBS cloud with TLS enabled...")
             credentials = grpc.ssl_channel_credentials(root_certificates=self._tls_cert)
             self.channel = grpc.secure_channel(
                 f'{self._grpc_hostname}:{self._grpc_port}', credentials)
         else:
-            logger.debug("Connecting to INBS cloud with TLS disabled")
+            logger.debug("Connecting to INBS cloud with TLS disabled...")
             # Create an insecure channel
             self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
 
         self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
+        logger.info(
+            f"Successfully connected to INBS service at {self._grpc_hostname}:{self._grpc_port}")
 
     def connect(self):
         # Start the background thread
@@ -163,8 +166,8 @@ class InbsCloudClient(CloudClient):
 
     def _run(self):  # pragma: no cover  # multithreaded operation not unit testable
         """INBS cloud loop. Intended to be used inside a background thread."""
-        backoff = 1  # Initial backoff delay in seconds
-        max_backoff = 32  # Maximum backoff delay in seconds
+        backoff = 1.0  # Initial backoff delay in seconds
+        max_backoff = 32.0  # Maximum backoff delay in seconds
 
         while not self._stop_event.is_set():
             try:
@@ -181,14 +184,14 @@ class InbsCloudClient(CloudClient):
                     request_queue.put(command)
                     # If the code reaches this point without an exception,
                     # reset the backoff delay.
-                    backoff = 1
+                    backoff = 1.0
             except grpc.RpcError as e:
                 if not self._stop_event.is_set():
                     logger.error(
                         f"gRPC stream closed with error: {e}. Reconnecting in {backoff} seconds...")
                     time.sleep(backoff)
                     # Increase the backoff for the next attempt, up to a maximum.
-                    backoff = min(backoff * 2, max_backoff)
+                    backoff = min(backoff * 2.0 + random.uniform(0, 1), max_backoff)
                 else:
                     logger.debug("gRPC Stream closed by stop event.")
                     break
@@ -196,7 +199,7 @@ class InbsCloudClient(CloudClient):
                 logger.error(f"Unexpected error: {e}. Reconnecting in {backoff} seconds...")
                 time.sleep(backoff)
                 # Increase the backoff for the next attempt, up to a maximum.
-                backoff = min(backoff * 2, max_backoff)
+                backoff = min(backoff * 2.0, max_backoff)
 
         logger.debug("Exiting gRPC _run thread")
 
