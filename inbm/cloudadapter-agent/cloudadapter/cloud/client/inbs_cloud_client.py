@@ -8,6 +8,8 @@ import threading
 import time
 from typing import Callable, Optional, Any
 from datetime import datetime
+
+from cloudadapter.exceptions import AuthenticationError
 from ..adapters.proto import inbs_sb_pb2_grpc, inbs_sb_pb2
 import logging
 
@@ -23,17 +25,33 @@ class InbsCloudClient(CloudClient):
                  hostname: str,
                  port: str,
                  node_id: str,
-                 token: str) -> None:
+                 tls_enabled: bool,
+                 tls_cert: bytes | None,
+                 token: str | None):
         """Constructor for InbsCloudClient
-        """
 
+        @param hostname: The hostname of the gRPC server
+        @param port: The port number of the gRPC server
+        @param node_id: The ID of the client node
+        @param tls_enabled: Boolean to enable TLS
+        @param tls_cert: (optional, only if tls_enabled) TLS cert contents
+        @param token: (optional, only if tls_enabled) The authentication token
+        """
         self._grpc_hostname = hostname
         self._grpc_port = port
         self._client_id = node_id
-        self._metadata = [
-            ("node-id", node_id),
-            ("token", token)
-        ]
+        self._token = token
+        self._tls_enabled = tls_enabled
+        self._tls_cert = tls_cert
+
+        self._metadata: list[tuple[str, str]] = [("node-id", node_id)]
+        if tls_enabled:
+            if token is None:
+                raise AuthenticationError("Token is required when TLS is enabled.")
+            else:
+                self._metadata.append(("token", token))
+            if tls_cert is None:
+                raise AuthenticationError("TLS certificate path is required when TLS is enabled.")
 
         self._stop_event = threading.Event()
 
@@ -106,7 +124,6 @@ class InbsCloudClient(CloudClient):
 
                 payload_type = item.WhichOneof('payload')
                 if payload_type:
-                    payload_data = getattr(item, payload_type)
                     if payload_type == 'ping_request':
                         # Handle PingRequest and create a corresponding PingResponse
                         yield inbs_sb_pb2.INBMResponse(request_id=request_id, ping_response=inbs_sb_pb2.PingResponse())
@@ -124,12 +141,22 @@ class InbsCloudClient(CloudClient):
                 logger.error(f"gRPC error in _handle_inbm_command: {e}")
                 break
 
-    def connect(self):  # pragma: no cover  # multithreaded operation not unit testable
-        """Connect to cloud."""
-        self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
+    def _do_socket_connect(self):
+        """Handle the socket/TLS/HTTP connection to the gRPC server."""
+        if self._tls_enabled:
+            # Create a secure channel with SSL credentials
+            logger.debug("Connecting to INBS cloud with TLS enabled")
+            credentials = grpc.ssl_channel_credentials(root_certificates=self._tls_cert)
+            self.channel = grpc.secure_channel(
+                f'{self._grpc_hostname}:{self._grpc_port}', credentials)
+        else:
+            logger.debug("Connecting to INBS cloud with TLS disabled")
+            # Create an insecure channel
+            self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
 
         self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
 
+    def connect(self):
         # Start the background thread
         self.background_thread = threading.Thread(target=self._run)
         self.background_thread.start()
@@ -141,9 +168,8 @@ class InbsCloudClient(CloudClient):
 
         while not self._stop_event.is_set():
             try:
+                self._do_socket_connect()
                 request_queue: queue.Queue = queue.Queue()
-                self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
-                self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
                 stream = self.stub.INBMCommand(self._handle_inbm_command(
                     request_queue), metadata=self._metadata)
                 for command in stream:

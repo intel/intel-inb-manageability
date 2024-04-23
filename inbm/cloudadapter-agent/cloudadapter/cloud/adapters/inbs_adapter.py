@@ -14,6 +14,7 @@ from ..client.cloud_client import CloudClient
 from .adapter import Adapter
 from typing import Callable
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -36,18 +37,37 @@ class InbsAdapter(Adapter):
         if not port:
             raise AdapterConfigureError("Missing port")
 
-        node_id = configs.get("node-id")
+        node_id = configs.get("node_id")
         if not node_id:
-            raise AdapterConfigureError("Missing node-id")
+            raise AdapterConfigureError("Missing node_id")
 
-        token = configs.get("token")
-        if not token:
-            raise AdapterConfigureError("Missing token")
+        tls_enabled = configs.get("tls_enabled", False)
+        if tls_enabled:
+            tls_cert_path = configs.get("tls_cert_path")
+            if not tls_cert_path or not os.path.exists(tls_cert_path):
+                raise AdapterConfigureError(
+                    "TLS is enabled but missing or incorrect certificate file path")
+            with open(tls_cert_path, 'rb') as f:
+                tls_cert = f.read()
+
+            token: str | None = None
+            token_path: str = configs.get("token_path")  # type: ignore
+            if (not token_path or not os.path.exists(token_path)):
+                raise AdapterConfigureError("TLS is enabled but missing or incorrect token file path")
+            with open(token_path, 'r') as f:
+                token = f.read().strip()
+        else:
+            if configs.get("token_path"):
+                raise AdapterConfigureError("Token path provided but TLS is not enabled")
+            if configs.get("tls_cert_path"):
+                raise AdapterConfigureError("TLS cert path provided but TLS is not enabled")
 
         self._client = InbsCloudClient(hostname=hostname,
                                        port=port,
                                        node_id=node_id,
-                                       token=token)
+                                       token=token if tls_enabled else None,
+                                       tls_enabled=tls_enabled,
+                                       tls_cert=tls_cert if tls_enabled else None)
         return self._client
 
     def bind_callback(self, name: str, callback: Callable) -> None:

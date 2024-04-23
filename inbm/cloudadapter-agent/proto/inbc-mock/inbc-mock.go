@@ -1,8 +1,12 @@
 package main
 
 import (
+	"crypto/tls"
+	"crypto/x509"
+	"flag"
 	"log"
 	"net"
+	"os"
 	"time"
 
 	pb "inbc-mock/pb"
@@ -10,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
@@ -19,6 +24,20 @@ type server struct {
 	pb.UnimplementedINBSSBServiceServer
 }
 
+type loggingListener struct {
+	net.Listener
+}
+
+func (l *loggingListener) Accept() (net.Conn, error) {
+	conn, err := l.Listener.Accept()
+	if err != nil {
+		log.Printf("Failed to accept connection: %v", err)
+	} else {
+		log.Printf("Accepted new connection from %v", conn.RemoteAddr())
+	}
+	return conn, err
+}
+
 func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	md, ok := metadata.FromIncomingContext(stream.Context())
 	if !ok {
@@ -26,14 +45,24 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 		return status.Errorf(codes.InvalidArgument, "Missing metadata")
 	}
 
+	nodeid, ok := md["node-id"]
+	if !ok || len(nodeid) == 0 {
+		log.Print("Missing node-id from metadata")
+		return status.Errorf(codes.Unauthenticated, "Missing node-id in client metadata")
+	}
+
 	token, ok := md["token"]
 	if !ok || len(token) == 0 || token[0] != "good_token" { // Replace with your expected token.
-		log.Print("Invalid token given by client: " + token[0])
+		log.Print("Invalid token given by client, or token missing")
 		return status.Errorf(codes.Unauthenticated, "invalid token")
 	}
 
 	// If the metadata is valid, proceed with handling the stream
-	return handler(srv, stream)
+	err := handler(srv, stream)
+	if err != nil {
+		log.Printf("Error handling stream: %v", err)
+	}
+	return err
 }
 
 func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
@@ -98,17 +127,45 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 }
 
 func main() {
-	lis, err := net.Listen("tcp", ":5678")
+	secure := flag.Bool("secure", false, "Enable secure mode with TLS")
+	certFile := flag.String("cert", "server.crt", "Path to the server TLS certificate file")
+	keyFile := flag.String("key", "server.key", "Path to the server TLS key file")
+	flag.Parse()
+
+	lis, err := net.Listen("tcp", ":5002")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	opts := []grpc.ServerOption{
-		grpc.StreamInterceptor(authStreamInterceptor),
+	loggingLis := &loggingListener{Listener: lis}
+
+	var opts []grpc.ServerOption
+	if *secure {
+		// Set up TLS
+		certificate, err := tls.LoadX509KeyPair(*certFile, *keyFile)
+		if err != nil {
+			log.Fatalf("could not load server key pair: %s", err)
+		}
+		certPool := x509.NewCertPool()
+		ca, err := os.ReadFile(*certFile) // Assuming the certificate file includes the CA too
+		if err != nil {
+			log.Fatalf("could not read CA certificate: %s", err)
+		}
+		if !certPool.AppendCertsFromPEM(ca) {
+			log.Fatalf("failed to append CA certs")
+		}
+
+		creds := credentials.NewTLS(&tls.Config{
+			Certificates: []tls.Certificate{certificate},
+			ClientAuth:   tls.NoClientCert,
+		})
+		opts = append(opts, grpc.Creds(creds))
+		opts = append(opts, grpc.StreamInterceptor(authStreamInterceptor))
 	}
+
 	s := grpc.NewServer(opts...)
 	pb.RegisterINBSSBServiceServer(s, &server{})
 	log.Printf("Server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
+	if err := s.Serve(loggingLis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
 }
