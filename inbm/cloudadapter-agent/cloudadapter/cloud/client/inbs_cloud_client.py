@@ -195,11 +195,6 @@ class InbsCloudClient(CloudClient):
                 else:
                     logger.debug("gRPC Stream closed by stop event.")
                     break
-            except Exception as e:
-                logger.error(f"Unexpected error: {e}. Reconnecting in {backoff} seconds...")
-                time.sleep(backoff)
-                # Increase the backoff for the next attempt, up to a maximum.
-                backoff = min(backoff * 2.0, max_backoff)
 
         logger.debug("Exiting gRPC _run thread")
 
