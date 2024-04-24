@@ -14,7 +14,7 @@ DOCKER_BUILDKIT=1 docker build \
 
 # Suppress output if there is no existing container
 docker kill tpm2-tools-output 2>/dev/null || true
-docker rm tpm2-tools-output 2>/dev/null || true
+docker rm -f tpm2-tools-output
 
 docker run -d --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro --name tpm2-tools-output tpm2-tools
 
