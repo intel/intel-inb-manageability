@@ -109,6 +109,8 @@ Details of provisioning steps are present in the **User Guide**, depending on th
 
 -   [Azure User Guide](In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
 
+-   [INBS User Guide](In-Band%20Manageability%20User%20Guide%20-%20INBS.md)
+
 -   [ThingsBoard User Guide](In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
 
 -   [UCC User Guide](In-Band%20Manageability%20User%20Guide%20-%20UCC.md)
