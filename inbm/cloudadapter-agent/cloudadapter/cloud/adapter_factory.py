@@ -5,6 +5,7 @@ Copyright (C) 2017-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
+from .adapters.inbs_adapter import InbsAdapter
 from .adapters.azure_adapter import AzureAdapter
 from .adapters.generic_adapter import GenericAdapter
 from ..constants import ADAPTER_CONFIG_PATH
@@ -58,6 +59,8 @@ def get_adapter() -> Adapter:
 
     if cloud == "azure":
         return AzureAdapter(config)
+    elif cloud == "inbs":
+        return InbsAdapter(config)
     elif cloud is not None:
         return GenericAdapter(config)
     else:
