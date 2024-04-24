@@ -1,6 +1,6 @@
 # inbs-mock
 
-This serves as a mock INBC that can be used to send ping requests to cloudadapter. The main loop will ping cloudadapter once per second.
+This serves as a mock INBS that can be used to send ping requests to cloudadapter. The main loop will ping cloudadapter once per second.
 
 ## Prerequisites
 
