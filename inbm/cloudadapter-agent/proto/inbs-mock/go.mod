@@ -1,4 +1,4 @@
-module inbc-mock
+module inbs-mock
 
 go 1.22
 

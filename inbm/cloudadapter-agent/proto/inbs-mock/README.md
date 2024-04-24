@@ -1,4 +1,4 @@
-# inbc-mock
+# inbs-mock
 
 This serves as a mock INBC that can be used to send ping requests to cloudadapter. The main loop will ping cloudadapter once per second.
 
@@ -16,7 +16,7 @@ The server can be started in two modes: secure and insecure. By default, the ser
 To run the server in insecure mode, simply start the server without any additional flags:
 
 ```bash
-go run inbc-mock.go
+go run inbs-mock.go
 ```
 
 This will start the server on TCP port 5002, handling incoming gRPC requests without TLS encryption.
@@ -26,7 +26,7 @@ This will start the server on TCP port 5002, handling incoming gRPC requests wit
 To run the server in secure mode, you will need a TLS certificate and corresponding private key. Start the server with the `secure` flag and specify the paths to your TLS files using `cert` and `key`:
 
 ```bash
-go run inbc-mock.go -secure -cert=path/to/your/certfile.crt -key=path/to/your/keyfile.key
+go run inbs-mock.go -secure -cert=path/to/your/certfile.crt -key=path/to/your/keyfile.key
 ```
 
 Ensure that the certificate and key files exist at the specified paths and are valid. This configuration starts the server with TLS encryption, enhancing the communication security between the client and the server.

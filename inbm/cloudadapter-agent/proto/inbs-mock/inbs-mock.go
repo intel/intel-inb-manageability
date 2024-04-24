@@ -9,7 +9,7 @@ import (
 	"os"
 	"time"
 
-	pb "inbc-mock/pb"
+	pb "inbs-mock/pb"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
