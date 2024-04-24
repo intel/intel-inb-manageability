@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
  - Moved service files from /lib to /usr/lib for all Linux OSes
 
+### Security
+ - Bump golang.org/x/net from 0.17.0 to 0.23.0 in /inbm/trtl resolving detected 3rd party CVE: CVE-2023-45288
+
 ## 4.2.2 - 2024-03-26
 
 ### Changed
@@ -19,7 +22,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
  - RTC 539880 - Fix encountered disconnected with code 7 after successfully provision to Azure cloud
 
-### Security
  - Bump cryptography to 42.0.4, resolving CVE-2024-26130
  - Bump github.com/docker/docker from 24.0.7+incompatible to 24.0.9+incompatible in /inbm/trtl, resolving CVE-2024-21626 and CVE-2024-24557 (NOTE: trtl does not use runc or Docker Engine, so these CVEs would not actually apply to this project)
 
