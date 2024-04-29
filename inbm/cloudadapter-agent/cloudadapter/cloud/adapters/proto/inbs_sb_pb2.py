@@ -14,21 +14,27 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/inbs_sb.proto\x12\x04inbs\"W\n\x0bINBMRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12)\n\x0cping_request\x18\x02 \x01(\x0b\x32\x11.inbs.PingRequestH\x00\x42\t\n\x07payload\"Z\n\x0cINBMResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12+\n\rping_response\x18\x02 \x01(\x0b\x32\x12.inbs.PingResponseH\x00\x42\t\n\x07payload\"\r\n\x0bPingRequest\"\x0e\n\x0cPingResponse2I\n\rINBSSBService\x12\x38\n\x0bINBMCommand\x12\x12.inbs.INBMResponse\x1a\x11.inbs.INBMRequest(\x01\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/inbs_sb.proto\x12\x04inbs\"\x99\x01\n\x0bINBMRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12)\n\x0cping_request\x18\x02 \x01(\x0b\x32\x11.inbs.PingRequestH\x00\x12@\n\x18scheduled_update_request\x18\x03 \x01(\x0b\x32\x1c.inbs.ScheduledUpdateRequestH\x00\x42\t\n\x07payload\"\x9e\x01\n\x0cINBMResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12+\n\rping_response\x18\x02 \x01(\x0b\x32\x12.inbs.PingResponseH\x00\x12\x42\n\x19scheduled_update_response\x18\x03 \x01(\x0b\x32\x1d.inbs.ScheduledUpdateResponseH\x00\x42\t\n\x07payload\"\r\n\x0bPingRequest\"\x0e\n\x0cPingResponse\"\xa5\x01\n\x16ScheduledUpdateRequest\x12<\n\x0bupdate_type\x18\x01 \x01(\x0e\x32\'.inbs.ScheduledUpdateRequest.UpdateType\x12\x14\n\nepoch_time\x18\x02 \x01(\x03H\x00\x12\x13\n\timmediate\x18\x03 \x01(\x08H\x00\"\x16\n\nUpdateType\x12\x08\n\x04SOTA\x10\x00\x42\n\n\x08schedule\"\x19\n\x17ScheduledUpdateResponse2I\n\rINBSSBService\x12\x38\n\x0bINBMCommand\x12\x12.inbs.INBMResponse\x1a\x11.inbs.INBMRequest(\x01\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.inbs_sb_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_INBMREQUEST']._serialized_start=29
-  _globals['_INBMREQUEST']._serialized_end=116
-  _globals['_INBMRESPONSE']._serialized_start=118
-  _globals['_INBMRESPONSE']._serialized_end=208
-  _globals['_PINGREQUEST']._serialized_start=210
-  _globals['_PINGREQUEST']._serialized_end=223
-  _globals['_PINGRESPONSE']._serialized_start=225
-  _globals['_PINGRESPONSE']._serialized_end=239
-  _globals['_INBSSBSERVICE']._serialized_start=241
-  _globals['_INBSSBSERVICE']._serialized_end=314
+  _globals['_INBMREQUEST']._serialized_start=30
+  _globals['_INBMREQUEST']._serialized_end=183
+  _globals['_INBMRESPONSE']._serialized_start=186
+  _globals['_INBMRESPONSE']._serialized_end=344
+  _globals['_PINGREQUEST']._serialized_start=346
+  _globals['_PINGREQUEST']._serialized_end=359
+  _globals['_PINGRESPONSE']._serialized_start=361
+  _globals['_PINGRESPONSE']._serialized_end=375
+  _globals['_SCHEDULEDUPDATEREQUEST']._serialized_start=378
+  _globals['_SCHEDULEDUPDATEREQUEST']._serialized_end=543
+  _globals['_SCHEDULEDUPDATEREQUEST_UPDATETYPE']._serialized_start=509
+  _globals['_SCHEDULEDUPDATEREQUEST_UPDATETYPE']._serialized_end=531
+  _globals['_SCHEDULEDUPDATERESPONSE']._serialized_start=545
+  _globals['_SCHEDULEDUPDATERESPONSE']._serialized_end=570
+  _globals['_INBSSBSERVICE']._serialized_start=572
+  _globals['_INBSSBSERVICE']._serialized_end=645
 # @@protoc_insertion_point(module_scope)

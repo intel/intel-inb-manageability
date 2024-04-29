@@ -11,6 +11,7 @@ message INBMRequest {
   string request_id = 1;
   oneof payload {
     PingRequest ping_request = 2;
+    ScheduledUpdateRequest scheduled_update_request = 3;
   }
 }
 
@@ -18,6 +19,7 @@ message INBMResponse {
   string request_id = 1;
   oneof payload {
     PingResponse ping_response = 2;
+    ScheduledUpdateResponse scheduled_update_response = 3;
   }
 }
 
@@ -25,4 +27,18 @@ message PingRequest {
 }
 
 message PingResponse {
+}
+
+message ScheduledUpdateRequest {
+  enum UpdateType {
+    SOTA = 0; // Software Over The Air updates
+  }
+  UpdateType update_type = 1;
+  oneof schedule {
+    int64 epoch_time = 2; // Scheduled time in UNIX epoch seconds
+    bool immediate = 3; // For immediate updates
+  }
+}
+
+message ScheduledUpdateResponse {
 }
