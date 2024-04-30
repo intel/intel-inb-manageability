@@ -9,12 +9,12 @@ service INBSSBService {
 
 message INBMRequest {
   string request_id = 1;
-  INBMRequestPayload payload = 2;
+  INBMRequestPayload request_data = 2;
 }
 
 message INBMResponse {  
   string request_id = 1;
-  INBMResponsePayload payload = 2;
+  INBMResponsePayload response_data = 2;
 }
 
 message INBMRequestPayload {
