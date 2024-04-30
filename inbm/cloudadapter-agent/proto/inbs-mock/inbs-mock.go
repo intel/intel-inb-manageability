@@ -95,8 +95,8 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 			requestId := uuid.New().String()
 			err := stream.Send(&pb.INBMRequest{
 				RequestId: requestId,
-				Payload: &pb.INBMRequest_PingRequest{
-					PingRequest: &pb.PingRequest{},
+				RequestData: &pb.INBMRequestPayload{
+					Payload: &pb.INBMRequestPayload_PingRequest{},
 				},
 			})
 			if err != nil {
@@ -114,7 +114,7 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 				log.Fatalf("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
 			}
 			// check that the response payload is a ping type
-			if _, ok := response.GetPayload().(*pb.INBMResponse_PingResponse); !ok {
+			if _, ok := response.GetResponseData().GetPayload().(*pb.INBMResponsePayload_PingResponse); !ok {
 				log.Fatalf("Response payload is not a PingResponse")
 			}
 

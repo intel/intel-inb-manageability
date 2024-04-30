@@ -60,13 +60,13 @@ class TestInbsCloudClient(unittest.TestCase):
 
     def test_single_ping_request(self):
         # Mocks
-        request_queue = queue.Queue()
+        request_queue: queue.Queue[inbs_sb_pb2.INBMRequest | None] = queue.Queue()
         stop_event = Mock()
         stop_event.is_set.return_value = False
 
         # Set up the INBMRequest with PingRequest
         ping_request = inbs_sb_pb2.INBMRequest(
-            request_id="123", ping_request=inbs_sb_pb2.PingRequest())
+            request_id="123", request_data=inbs_sb_pb2.INBMRequestPayload(ping_request=inbs_sb_pb2.PingRequestPayload())) 
         request_queue.put(ping_request)
         # Signal end of queue processing (in real code this isn't needed, here to stop the generator)
         request_queue.put(None)
@@ -79,7 +79,7 @@ class TestInbsCloudClient(unittest.TestCase):
 
         # Check the response correctness
         self.assertEqual(response.request_id, "123")
-        self.assertTrue(hasattr(response, 'ping_response'))
+        self.assertTrue(hasattr(response.response_data, 'ping_response'))
 
         # Cleanup, ensure nothing else is left in the generator
         with self.assertRaises(StopIteration):

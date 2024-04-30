@@ -108,7 +108,7 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         pass
 
-    def _handle_inbm_command(self, request_queue: queue.Queue):
+    def _handle_inbm_command(self, request_queue: queue.Queue[inbs_sb_pb2.INBMRequest | None]):
         """Generator function to respond to INBMRequests with INBMResponses
 
         @param request_queue: Queue with INBMRequests that will be supplied from another thread
@@ -123,11 +123,13 @@ class InbsCloudClient(CloudClient):
                 request_id = item.request_id
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
 
-                payload_type = item.WhichOneof('payload')
+                payload_type = item.request_data.WhichOneof('payload')
                 if payload_type:
                     if payload_type == 'ping_request':
                         # Handle PingRequest and create a corresponding PingResponse
-                        yield inbs_sb_pb2.INBMResponse(request_id=request_id, ping_response=inbs_sb_pb2.PingResponse())
+                        yield inbs_sb_pb2.INBMResponse(request_id=request_id, 
+                                                       response_data=inbs_sb_pb2.INBMResponsePayload(
+                                                           ping_response=inbs_sb_pb2.PingResponsePayload()))
                     else:
                         # Log an error if the payload is not recognized (not a PingRequest)
                         logger.error(

@@ -1,13 +1,15 @@
 #!/bin/bash
 
 # Assumptions:
-# * grpcio-tools is installed
+# * grpcio-tools is installed via pip
+# * mypy-protobuf is installed via pip
 # * protoc is installed
+# NOTE: to run mypy on generated code, need via pip: mypy>=0.910, types-protobuf>=0.1.14
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
 
-python -m grpc_tools.protoc -I. --python_out=cloudadapter/cloud/adapters --grpc_python_out=cloudadapter/cloud/adapters proto/inbs_sb.proto
+python -m grpc_tools.protoc -I. --python_out=cloudadapter/cloud/adapters --grpc_python_out=cloudadapter/cloud/adapters --mypy_out=cloudadapter/cloud/adapters proto/inbs_sb.proto
 sed -i 's/from proto import/from . import/' cloudadapter/cloud/adapters/proto/*.py
 
 cd "$DIR"/proto/inbs-mock
