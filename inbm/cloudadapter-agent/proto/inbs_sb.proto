@@ -9,27 +9,35 @@ service INBSSBService {
 
 message INBMRequest {
   string request_id = 1;
-  oneof payload {
-    PingRequest ping_request = 2;
-    ScheduledUpdateRequest scheduled_update_request = 3;
-  }
+  INBMRequestPayload payload = 2;
 }
 
 message INBMResponse {  
   string request_id = 1;
+  INBMResponsePayload payload = 2;
+}
+
+message INBMRequestPayload {
   oneof payload {
-    PingResponse ping_response = 2;
-    ScheduledUpdateResponse scheduled_update_response = 3;
+    PingRequestPayload ping_request = 1;
+    ScheduledUpdateRequestPayload scheduled_update_request = 2;
   }
 }
 
-message PingRequest {
+message INBMResponsePayload {
+  oneof payload {
+    PingResponsePayload ping_response = 1;
+    ScheduledUpdateResponsePayload scheduled_update_response = 2;
+  }
 }
 
-message PingResponse {
+message PingRequestPayload {
 }
 
-message ScheduledUpdateRequest {
+message PingResponsePayload {
+}
+
+message ScheduledUpdateRequestPayload {
   enum UpdateType {
     SOTA = 0; // Software Over The Air updates
   }
@@ -40,5 +48,5 @@ message ScheduledUpdateRequest {
   }
 }
 
-message ScheduledUpdateResponse {
+message ScheduledUpdateResponsePayload {
 }
