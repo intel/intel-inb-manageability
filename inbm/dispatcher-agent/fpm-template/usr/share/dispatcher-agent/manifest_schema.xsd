@@ -429,6 +429,13 @@
         </xs:complexType>
     </xs:element>
 
+    <xs:simpleType name="schedule">
+        <xs:choice>
+            <xs:element name="immediate" type:"xs:boolean"/>
+            <xs:element name="epochTime" type:"xs:time"/>
+        </xs:choice>
+    </xs:simpleType>
+
     <xs:simpleType name="sigversion">
         <xs:restriction base="xs:decimal">
             <xs:enumeration value="384"/>
@@ -491,6 +498,7 @@
                 <xs:element name="release_date" type="xs:date" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="path" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="deviceReboot" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="scheduledTime" type="schedule" minOccurs="0" maxOccurs="1"/>
             </xs:all>
         </xs:complexType>
     </xs:element>
