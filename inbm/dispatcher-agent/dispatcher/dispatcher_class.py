@@ -87,9 +87,10 @@ def _check_type_validate_manifest(xml: str,
                         is_file=False,
                         schema_location=schema_location)
     type_of_manifest = parsed.get_element('type')
+    is_scheduled = parsed.is_element_exist('scheduledTime')
     logger.debug(
         f"type_of_manifest: {type_of_manifest!r}. parsed: {mask_security_info(str(parsed))!r}.")
-    return type_of_manifest, parsed
+    return type_of_manifest, parsed, is_scheduled
 
 
 class Dispatcher:
@@ -289,7 +290,7 @@ class Dispatcher:
             type_of_manifest, parsed_head = \
                 _check_type_validate_manifest(xml, schema_location=schema_location)
             self.invoke_workload_orchestration_check(False, type_of_manifest, parsed_head)
-
+            
             if type_of_manifest == 'cmd':
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)

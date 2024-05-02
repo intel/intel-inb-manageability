@@ -429,12 +429,11 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:simpleType name="schedule">
-        <xs:choice>
-            <xs:element name="immediate" type:"xs:boolean"/>
-            <xs:element name="epochTime" type:"xs:time"/>
-        </xs:choice>
-    </xs:simpleType>
+    <xs:complexType name="schedule">
+      <xs:sequence>
+        <xs:element name="start" type="xs:dateTime"/>
+      </xs:sequence>
+    </xs:complexType>
 
     <xs:simpleType name="sigversion">
         <xs:restriction base="xs:decimal">

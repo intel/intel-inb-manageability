@@ -25,6 +25,11 @@ GOOD_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
            '</header><type><aota name="sample"><cmd>load</cmd><app>docker</app><fetch>sample</fetch>' \
            '<containerTag>defg</containerTag>' \
            '</aota></type></ota></manifest>'
+           
+SCHEDULED_XML = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header>' \
+        '<type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd>' \
+        '<mode>full</mode><deviceReboot>no</deviceReboot>' \
+        '<scheduledTime><start>2002-05-30T09:30:10-06:00</start></scheduledTime></sota></type></ota></manifest>'
 
 ENTITY_INJECTION_XML = """<?xml version="1.0" encoding="utf-8"?><!DOCTYPE foo [ <!ENTITY xxe 
 SYSTEM "file:///etc/passwd"> ]><manifest><type>&xxe;</type><ota><header><id>sampleId</id>
@@ -76,7 +81,7 @@ class TestXmlParser(TestCase):
     def setUp(self) -> None:
         self.good = XmlHandler(GOOD_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         self.test = XmlHandler(TEST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
-
+        self.scheduled = XmlHandler(SCHEDULED_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
     def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
 
@@ -146,7 +151,13 @@ class TestXmlParser(TestCase):
 
     def test_get_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.get_element, 'ota/header/bb')
-
+    
+    def test_get_time_when_element_exists(self) -> None:
+        self.assertEqual('2002-05-30T09:30:10-06:00', 
+                         self.scheduled.get_element('/ota/type/sota/scheduledTime/start'))
+        
+    # def test_return_false_element_dne(self) -> None:
+    #     self.assertFalse(self.good.is_element_exist('/ota/type/aota/scheduledTime'))
 
 if __name__ == '__main__':
     unittest.main()

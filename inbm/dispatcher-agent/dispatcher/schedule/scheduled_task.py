@@ -12,7 +12,6 @@ from inbm_common_lib.constants import UNKNOWN
 
 @dataclass(init=True)
 class ScheduledTask:
-    immediate: bool = field(default=False)
     scheduled_time: Union[datetime, str] = field(default=UNKNOWN)
     #TODO: interval:
     manifest: str = field(default=UNKNOWN)
