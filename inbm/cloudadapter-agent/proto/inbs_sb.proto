@@ -41,6 +41,7 @@ message PingResponsePayload {
 }
 
 // TODO: re-add the validate.rules from maintenance manager to the repeated_schedules fields. prerequisite: get the validate.proto import working
+// 
 message SetSOTAScheduleRequestPayload {
   message UpdateSource {
     string kernel_command = 1; // Kernel command line
@@ -51,10 +52,10 @@ message SetSOTAScheduleRequestPayload {
 
   message UpdateSchedule {
     message SingleSchedule {
-      uint64 start_seconds = 1; // start of one-time schedule (required)
-      uint64 end_seconds = 2; // end of one-time schedule (optional)
+      google.protobuf.Timestamp start_time = 1; // Start time for the schedule (required)
+      google.protobuf.Timestamp end_time = 1; // Start time for the schedule (optional)
     }
-    SingleSchedule single_schedule = 1;
+    repeated SingleSchedule single_schedules = 1;
 
     message RepeatedSchedule {
       uint32 duration_seconds = 1;  // between 1 second and 86400 seconds (24 hours worth of seconds)
@@ -71,6 +72,15 @@ message SetSOTAScheduleRequestPayload {
   string installed_packages = 3; // Freeform text, OS-dependent. A list of package names, one per line (newline separated). Should not contain version info.
 }
 
-message SetSOTAScheduleResponsePayload {
+
+message SetSOTAScheduleResponsePayload {  
+  enum StatusType {
+    STATUS_TYPE_UNSPECIFIED = 0;
+    STATUS_TYPE_UP_TO_DATE = 1;
+    STATUS_TYPE_STARTED = 2;
+    STATUS_TYPE_UPDATED = 3;
+    STATUS_TYPE_FAILED = 4;
+  }
+  StatusType status_type = 1;
 }
 
