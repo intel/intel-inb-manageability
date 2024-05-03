@@ -1,6 +1,8 @@
 syntax = "proto3";
 
 package inbs.v1;
+import "google/protobuf/timestamp.proto";
+
 
 // TODO: get this validate.proto import working. Maybe use the 'buf' tool as maintenance manager does?
 // import "validate/validate.proto";
@@ -53,7 +55,7 @@ message SetSOTAScheduleRequestPayload {
   message UpdateSchedule {
     message SingleSchedule {
       google.protobuf.Timestamp start_time = 1; // Start time for the schedule (required)
-      google.protobuf.Timestamp end_time = 1; // Start time for the schedule (optional)
+      google.protobuf.Timestamp end_time = 2; // Start time for the schedule (optional)
     }
     repeated SingleSchedule single_schedules = 1;
 
