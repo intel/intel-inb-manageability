@@ -431,7 +431,8 @@
 
     <xs:complexType name="schedule">
       <xs:sequence>
-        <xs:element name="start" type="xs:dateTime"/>
+        <xs:element name="start" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="end" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
       </xs:sequence>
     </xs:complexType>
 

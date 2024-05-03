@@ -12,7 +12,7 @@ import logging
 # following line is only used for type checking; we used defusedxml for
 # actual processing
 # As of Feb 2024, we still have to use xml.etree.  There is no equivalent in defusedxml
-from xml.etree.ElementTree import Element, SubElement  # nosec: S405, B405
+from xml.etree.ElementTree import Element  # nosec: S405, B405
 from defusedxml.ElementTree import XMLParser, parse, ParseError, tostring
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from .security_masker import mask_security_info
@@ -85,7 +85,7 @@ class XmlHandler:
             with open(get_canonical_representation_of_path(str(self._schema_location))) as schema_file:
                 schema = xmlschema.XMLSchema11(schema_file)
                 schema.validate(xml)
-
+            logger.debug("XML file validated successfully")
             return parsed_doc
         except (xmlschema.XMLSchemaValidationError, ParseError, DefusedXmlException, DTDForbidden,
                 EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, xmlschema.XMLSchemaParseError) as error:
@@ -104,8 +104,8 @@ class XmlHandler:
         """
         logger.debug("")
         try:
-            children = self._root.get_children(xpath)
-            return True
+            element = self._root.findall(xpath)
+            return False if not element else True
         except KeyError:
             return False
  

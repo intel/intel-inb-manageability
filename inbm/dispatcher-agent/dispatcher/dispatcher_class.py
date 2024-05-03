@@ -86,11 +86,10 @@ def _check_type_validate_manifest(xml: str,
     parsed = XmlHandler(xml=xml,
                         is_file=False,
                         schema_location=schema_location)
-    type_of_manifest = parsed.get_element('type')
-    is_scheduled = parsed.is_element_exist('scheduledTime')
+    type_of_manifest = parsed.get_element('type')    
     logger.debug(
         f"type_of_manifest: {type_of_manifest!r}. parsed: {mask_security_info(str(parsed))!r}.")
-    return type_of_manifest, parsed, is_scheduled
+    return type_of_manifest, parsed
 
 
 class Dispatcher:
@@ -290,7 +289,7 @@ class Dispatcher:
             type_of_manifest, parsed_head = \
                 _check_type_validate_manifest(xml, schema_location=schema_location)
             self.invoke_workload_orchestration_check(False, type_of_manifest, parsed_head)
-            
+                     
             if type_of_manifest == 'cmd':
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
@@ -303,6 +302,9 @@ class Dispatcher:
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
+                is_scheduled = parsed_head.is_element_exist("/ota/type/{ota_type}/scheduledTime")
+                if is_scheduled:
+                    return self._schedule_update(xml)                    
                 repo_type = header['repo']
                 resource = parsed_head.get_children(f'ota/type/{ota_type}')
                 kwargs = {'ota_type': ota_type}
@@ -367,6 +369,16 @@ class Dispatcher:
             self._update_logger.save_log()
             return result
 
+    def _schedule_update(self, xml: str) -> Result:
+        """Schedule an OTA update
+
+        @param xml: manifest in XML format
+        @return: Tuple of (status, message)
+        """
+        # TODO: strip out scheduled part of manifest, and save it to DB with schedule
+        return Result(CODE_OK, f"Scheduled Task")
+        
+        
     def _do_ota_update(self, ota_type: str, repo_type: str, resource: dict,
                        kwargs: dict, parsed_head: XmlHandler) -> Result:
         """Performs OTA updates by creating a thread based on OTA factory detected from the manifest
