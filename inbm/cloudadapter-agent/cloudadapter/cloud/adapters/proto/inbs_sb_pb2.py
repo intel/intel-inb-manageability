@@ -14,31 +14,37 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/inbs_sb.proto\x12\x04inbs\"Q\n\x0bINBMRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12.\n\x0crequest_data\x18\x02 \x01(\x0b\x32\x18.inbs.INBMRequestPayload\"T\n\x0cINBMResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x30\n\rresponse_data\x18\x02 \x01(\x0b\x32\x19.inbs.INBMResponsePayload\"\x9a\x01\n\x12INBMRequestPayload\x12\x30\n\x0cping_request\x18\x01 \x01(\x0b\x32\x18.inbs.PingRequestPayloadH\x00\x12G\n\x18scheduled_update_request\x18\x02 \x01(\x0b\x32#.inbs.ScheduledUpdateRequestPayloadH\x00\x42\t\n\x07payload\"\x9f\x01\n\x13INBMResponsePayload\x12\x32\n\rping_response\x18\x01 \x01(\x0b\x32\x19.inbs.PingResponsePayloadH\x00\x12I\n\x19scheduled_update_response\x18\x02 \x01(\x0b\x32$.inbs.ScheduledUpdateResponsePayloadH\x00\x42\t\n\x07payload\"\x14\n\x12PingRequestPayload\"\x15\n\x13PingResponsePayload\"\xb3\x01\n\x1dScheduledUpdateRequestPayload\x12\x43\n\x0bupdate_type\x18\x01 \x01(\x0e\x32..inbs.ScheduledUpdateRequestPayload.UpdateType\x12\x14\n\nepoch_time\x18\x02 \x01(\x03H\x00\x12\x13\n\timmediate\x18\x03 \x01(\x08H\x00\"\x16\n\nUpdateType\x12\x08\n\x04SOTA\x10\x00\x42\n\n\x08schedule\" \n\x1eScheduledUpdateResponsePayload2I\n\rINBSSBService\x12\x38\n\x0bINBMCommand\x12\x12.inbs.INBMResponse\x1a\x11.inbs.INBMRequest(\x01\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/inbs_sb.proto\x12\x07inbs.v1\"T\n\x0bINBMRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x31\n\x0crequest_data\x18\x02 \x01(\x0b\x32\x1b.inbs.v1.INBMRequestPayload\"W\n\x0cINBMResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x33\n\rresponse_data\x18\x02 \x01(\x0b\x32\x1c.inbs.v1.INBMResponsePayload\"\xa1\x01\n\x12INBMRequestPayload\x12\x33\n\x0cping_request\x18\x01 \x01(\x0b\x32\x1b.inbs.v1.PingRequestPayloadH\x00\x12K\n\x19set_sota_schedule_request\x18\x02 \x01(\x0b\x32&.inbs.v1.SetSOTAScheduleRequestPayloadH\x00\x42\t\n\x07payload\"\xa6\x01\n\x13INBMResponsePayload\x12\x35\n\rping_response\x18\x01 \x01(\x0b\x32\x1c.inbs.v1.PingResponsePayloadH\x00\x12M\n\x1aset_sota_schedule_response\x18\x02 \x01(\x0b\x32\'.inbs.v1.SetSOTAScheduleResponsePayloadH\x00\x42\t\n\x07payload\"\x14\n\x12PingRequestPayload\"\x15\n\x13PingResponsePayload\"\xda\x05\n\x1dSetSOTAScheduleRequestPayload\x12J\n\rupdate_source\x18\x01 \x01(\x0b\x32\x33.inbs.v1.SetSOTAScheduleRequestPayload.UpdateSource\x12N\n\x0fupdate_schedule\x18\x02 \x01(\x0b\x32\x35.inbs.v1.SetSOTAScheduleRequestPayload.UpdateSchedule\x12\x1a\n\x12installed_packages\x18\x03 \x01(\t\x1aQ\n\x0cUpdateSource\x12\x16\n\x0ekernel_command\x18\x01 \x01(\t\x12\x13\n\x0bos_repo_url\x18\x02 \x01(\t\x12\x14\n\x0c\x63ustom_repos\x18\x03 \x03(\t\x1a\xad\x03\n\x0eUpdateSchedule\x12]\n\x0fsingle_schedule\x18\x01 \x01(\x0b\x32\x44.inbs.v1.SetSOTAScheduleRequestPayload.UpdateSchedule.SingleSchedule\x12\x62\n\x12repeated_schedules\x18\x02 \x03(\x0b\x32\x46.inbs.v1.SetSOTAScheduleRequestPayload.UpdateSchedule.RepeatedSchedule\x1a<\n\x0eSingleSchedule\x12\x15\n\rstart_seconds\x18\x01 \x01(\x04\x12\x13\n\x0b\x65nd_seconds\x18\x02 \x01(\x04\x1a\x99\x01\n\x10RepeatedSchedule\x12\x18\n\x10\x64uration_seconds\x18\x01 \x01(\r\x12\x14\n\x0c\x63ron_minutes\x18\x02 \x01(\t\x12\x12\n\ncron_hours\x18\x03 \x01(\t\x12\x16\n\x0e\x63ron_day_month\x18\x04 \x01(\t\x12\x12\n\ncron_month\x18\x05 \x01(\t\x12\x15\n\rcron_day_week\x18\x06 \x01(\t\" \n\x1eSetSOTAScheduleResponsePayload2O\n\rINBSSBService\x12>\n\x0bINBMCommand\x12\x15.inbs.v1.INBMResponse\x1a\x14.inbs.v1.INBMRequest(\x01\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.inbs_sb_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_INBMREQUEST']._serialized_start=29
-  _globals['_INBMREQUEST']._serialized_end=110
-  _globals['_INBMRESPONSE']._serialized_start=112
-  _globals['_INBMRESPONSE']._serialized_end=196
-  _globals['_INBMREQUESTPAYLOAD']._serialized_start=199
-  _globals['_INBMREQUESTPAYLOAD']._serialized_end=353
-  _globals['_INBMRESPONSEPAYLOAD']._serialized_start=356
-  _globals['_INBMRESPONSEPAYLOAD']._serialized_end=515
-  _globals['_PINGREQUESTPAYLOAD']._serialized_start=517
-  _globals['_PINGREQUESTPAYLOAD']._serialized_end=537
-  _globals['_PINGRESPONSEPAYLOAD']._serialized_start=539
-  _globals['_PINGRESPONSEPAYLOAD']._serialized_end=560
-  _globals['_SCHEDULEDUPDATEREQUESTPAYLOAD']._serialized_start=563
-  _globals['_SCHEDULEDUPDATEREQUESTPAYLOAD']._serialized_end=742
-  _globals['_SCHEDULEDUPDATEREQUESTPAYLOAD_UPDATETYPE']._serialized_start=708
-  _globals['_SCHEDULEDUPDATEREQUESTPAYLOAD_UPDATETYPE']._serialized_end=730
-  _globals['_SCHEDULEDUPDATERESPONSEPAYLOAD']._serialized_start=744
-  _globals['_SCHEDULEDUPDATERESPONSEPAYLOAD']._serialized_end=776
-  _globals['_INBSSBSERVICE']._serialized_start=778
-  _globals['_INBSSBSERVICE']._serialized_end=851
+  _globals['_INBMREQUEST']._serialized_start=32
+  _globals['_INBMREQUEST']._serialized_end=116
+  _globals['_INBMRESPONSE']._serialized_start=118
+  _globals['_INBMRESPONSE']._serialized_end=205
+  _globals['_INBMREQUESTPAYLOAD']._serialized_start=208
+  _globals['_INBMREQUESTPAYLOAD']._serialized_end=369
+  _globals['_INBMRESPONSEPAYLOAD']._serialized_start=372
+  _globals['_INBMRESPONSEPAYLOAD']._serialized_end=538
+  _globals['_PINGREQUESTPAYLOAD']._serialized_start=540
+  _globals['_PINGREQUESTPAYLOAD']._serialized_end=560
+  _globals['_PINGRESPONSEPAYLOAD']._serialized_start=562
+  _globals['_PINGRESPONSEPAYLOAD']._serialized_end=583
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD']._serialized_start=586
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD']._serialized_end=1316
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD_UPDATESOURCE']._serialized_start=803
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD_UPDATESOURCE']._serialized_end=884
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD_UPDATESCHEDULE']._serialized_start=887
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD_UPDATESCHEDULE']._serialized_end=1316
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD_UPDATESCHEDULE_SINGLESCHEDULE']._serialized_start=1100
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD_UPDATESCHEDULE_SINGLESCHEDULE']._serialized_end=1160
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD_UPDATESCHEDULE_REPEATEDSCHEDULE']._serialized_start=1163
+  _globals['_SETSOTASCHEDULEREQUESTPAYLOAD_UPDATESCHEDULE_REPEATEDSCHEDULE']._serialized_end=1316
+  _globals['_SETSOTASCHEDULERESPONSEPAYLOAD']._serialized_start=1318
+  _globals['_SETSOTASCHEDULERESPONSEPAYLOAD']._serialized_end=1350
+  _globals['_INBSSBSERVICE']._serialized_start=1352
+  _globals['_INBSSBSERVICE']._serialized_end=1431
 # @@protoc_insertion_point(module_scope)

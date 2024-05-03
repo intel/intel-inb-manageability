@@ -1,6 +1,9 @@
 syntax = "proto3";
 
-package inbs;
+package inbs.v1;
+
+// TODO: get this validate.proto import working. Maybe use the 'buf' tool as maintenance manager does?
+// import "validate/validate.proto";
 
 service INBSSBService {
   // Bi-directional streaming method
@@ -20,14 +23,14 @@ message INBMResponse {
 message INBMRequestPayload {
   oneof payload {
     PingRequestPayload ping_request = 1;
-    ScheduledUpdateRequestPayload scheduled_update_request = 2;
+    SetSOTAScheduleRequestPayload set_sota_schedule_request = 2;
   }
 }
 
 message INBMResponsePayload {
   oneof payload {
     PingResponsePayload ping_response = 1;
-    ScheduledUpdateResponsePayload scheduled_update_response = 2;
+    SetSOTAScheduleResponsePayload set_sota_schedule_response = 2;
   }
 }
 
@@ -37,16 +40,37 @@ message PingRequestPayload {
 message PingResponsePayload {
 }
 
-message ScheduledUpdateRequestPayload {
-  enum UpdateType {
-    SOTA = 0; // Software Over The Air updates
+// TODO: re-add the validate.rules from maintenance manager to the repeated_schedules fields. prerequisite: get the validate.proto import working
+message SetSOTAScheduleRequestPayload {
+  message UpdateSource {
+    string kernel_command = 1; // Kernel command line
+    string os_repo_url = 2; // 'DEB822 Source Format' url to the public repository
+    repeated string custom_repos = 3; // 'DEB822 Source Format' entries for Debian style OSs
   }
-  UpdateType update_type = 1;
-  oneof schedule {
-    int64 epoch_time = 2; // Scheduled time in UNIX epoch seconds
-    bool immediate = 3; // For immediate updates
+  UpdateSource update_source = 1;
+
+  message UpdateSchedule {
+    message SingleSchedule {
+      uint64 start_seconds = 1; // start of one-time schedule (required)
+      uint64 end_seconds = 2; // end of one-time schedule (optional)
+    }
+    SingleSchedule single_schedule = 1;
+
+    message RepeatedSchedule {
+      uint32 duration_seconds = 1;  // between 1 second and 86400 seconds (24 hours worth of seconds)
+      string cron_minutes = 2;  // cron style minutes (0-59)
+      string cron_hours = 3; // cron style hours (0-23)
+      string cron_day_month = 4;  // cron style day of month (0-31)
+      string cron_month = 5;  // cron style month (1-12)
+      string cron_day_week = 6;  // cron style day of week (0-6)
+    }
+    repeated RepeatedSchedule repeated_schedules = 2;
   }
+  UpdateSchedule update_schedule = 2;
+
+  string installed_packages = 3; // Freeform text, OS-dependent. A list of package names, one per line (newline separated). Should not contain version info.
 }
 
-message ScheduledUpdateResponsePayload {
+message SetSOTAScheduleResponsePayload {
 }
+
