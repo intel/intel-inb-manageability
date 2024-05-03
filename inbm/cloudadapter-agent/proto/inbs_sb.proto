@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package inbs;
+
+service INBSSBService {
+  // Bi-directional streaming method
+  rpc INBMCommand(stream INBMResponse) returns (stream INBMRequest);
+}
+
+message INBMRequest {
+  string request_id = 1;
+  oneof payload {
+    PingRequest ping_request = 2;
+  }
+}
+
+message INBMResponse {  
+  string request_id = 1;
+  oneof payload {
+    PingResponse ping_response = 2;
+  }
+}
+
+message PingRequest {
+}
+
+message PingResponse {
+}

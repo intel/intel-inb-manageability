@@ -30,10 +30,13 @@ class Client:
         """Construct the Client object
         @exception BadConfigError: If the adapter configuration is bad
         """
+
+        # These statements set up INBM-side communication
         self._broker = Broker()
         self._publisher = Publisher(self._broker)
         self._device_manager = DeviceManager(self._broker)
 
+        # These statements set up the cloud side communication
         self._adapter = adapter_factory.get_adapter()
         self._cloud_publisher = CloudPublisher(self._adapter)
 
@@ -114,7 +117,11 @@ class Client:
         """Connect the cloud to Intel(R) In-Band Manageability
         @exception BadConfigError: If the connection configuration is bad
         """
+
+        # This part sets up INBM->cloud function calls
         self._bind_agent_to_cloud()
+
+        # This part sets up cloud->INBM function calls.
         if is_ucc_mode():
             self._bind_ucc_to_agent()
         else:
