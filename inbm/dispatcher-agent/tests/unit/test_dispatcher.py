@@ -245,6 +245,27 @@ class TestDispatcher(TestCase):
         d.check_dispatcher_state_info()
         self.assertTrue(mock_install.install_check_called())
         mock_invoke_sota.assert_called_once()
+    
+    @patch('dispatcher.ota_thread.SotaThread.start')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
+    @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
+    @patch('dispatcher.schedule.schedule_update')
+    #@patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+    def test_sota_schedule_update(self, mock_schedule,
+                                        mock_send_result,
+                                        m_sub,
+                                        m_connect,
+                                        m_thread_start,
+                                        mock_logging):
+        xml = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header>' \
+        '<type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd>' \
+        '<mode>full</mode><deviceReboot>no</deviceReboot>' \
+        '<scheduledTime><start>2002-05-30T09:30:10-06:00</start></scheduledTime></sota></type></ota></manifest>'
+        d = TestDispatcher._build_dispatcher()
+        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        mock_schedule.assert_called()
+        assert m_thread_start.not_called
 
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})

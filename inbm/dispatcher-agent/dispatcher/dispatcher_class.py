@@ -20,6 +20,7 @@ from typing import Optional, Any, Mapping, Tuple
 from dispatcher.config.config_operation import ConfigOperation
 from dispatcher.source.source_command import do_source_command
 from dispatcher.common.result_constants import Result, PUBLISH_SUCCESS, OTA_FAILURE
+from dispatcher.schedule.schedule import schedule_update
 
 from .install_check_service import InstallCheckService
 
@@ -302,9 +303,13 @@ class Dispatcher:
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
-                is_scheduled = parsed_head.is_element_exist("/ota/type/{ota_type}/scheduledTime")
-                if is_scheduled:
-                    return self._schedule_update(xml)                    
+                
+                # Check if OTA is scheduled
+                if ota_type == OtaType.SOTA.name.lower(): 
+                    is_task_scheduled, message = schedule_update(xpath="/ota/type/{ota_type}/scheduledTime", parsed_xml=parsed_head)                    
+                    if is_task_scheduled:
+                        return Result(CODE_OK, message)
+                
                 repo_type = header['repo']
                 resource = parsed_head.get_children(f'ota/type/{ota_type}')
                 kwargs = {'ota_type': ota_type}
@@ -368,17 +373,7 @@ class Dispatcher:
                 self._update_logger.error = ""
             self._update_logger.save_log()
             return result
-
-    def _schedule_update(self, xml: str) -> Result:
-        """Schedule an OTA update
-
-        @param xml: manifest in XML format
-        @return: Tuple of (status, message)
-        """
-        # TODO: strip out scheduled part of manifest, and save it to DB with schedule
-        return Result(CODE_OK, f"Scheduled Task")
-        
-        
+            
     def _do_ota_update(self, ota_type: str, repo_type: str, resource: dict,
                        kwargs: dict, parsed_head: XmlHandler) -> Result:
         """Performs OTA updates by creating a thread based on OTA factory detected from the manifest

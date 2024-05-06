@@ -5,7 +5,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-from inbm_lib.xmlhandler import XmlHandler
+from inbm_lib.xmlhandler import *
 from typing import Dict, Any
 
 

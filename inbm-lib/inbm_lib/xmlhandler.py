@@ -23,7 +23,7 @@ from defusedxml import DefusedXmlException, DTDForbidden, EntitiesForbidden, Ext
 from .constants import PARSE_TIME_SECS
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from typing import Tuple, Union, Any, Optional
+from typing import Tuple, Union, Any
 
 logger = logging.getLogger(__name__)
 
