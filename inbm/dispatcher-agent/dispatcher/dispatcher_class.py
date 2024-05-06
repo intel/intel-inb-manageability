@@ -300,12 +300,14 @@ class Dispatcher:
                 result = do_source_command(
                     parsed_head, source.constants.OsType.Ubuntu, self._dispatcher_broker)
             elif type_of_manifest == 'ota':
+                logger.debug('Parsing OTA command')
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
                 
                 # Check if OTA is scheduled
-                if ota_type == OtaType.SOTA.name.lower(): 
+                if ota_type == OtaType.SOTA.name.lower():
+                    logger.debug("Check if this is a schedule update request") 
                     is_task_scheduled, message = schedule_update(xpath="/ota/type/{ota_type}/scheduledTime", parsed_xml=parsed_head)                    
                     if is_task_scheduled:
                         return Result(CODE_OK, message)

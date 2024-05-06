@@ -250,8 +250,7 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    @patch('dispatcher.schedule.schedule_update')
-    #@patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
+    @patch('dispatcher.schedule.schedule.schedule_update')
     def test_sota_schedule_update(self, mock_schedule,
                                         mock_send_result,
                                         m_sub,
@@ -263,8 +262,9 @@ class TestDispatcher(TestCase):
         '<mode>full</mode><deviceReboot>no</deviceReboot>' \
         '<scheduledTime><start>2002-05-30T09:30:10-06:00</start></scheduledTime></sota></type></ota></manifest>'
         d = TestDispatcher._build_dispatcher()
-        d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
-        mock_schedule.assert_called()
+        result = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
+        self.assertEqual(200, result.status)
+        mock_schedule.assert_called()        
         assert m_thread_start.not_called
 
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
