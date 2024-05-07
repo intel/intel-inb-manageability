@@ -229,23 +229,39 @@ class SetSOTAScheduleRequestPayload(google.protobuf.message.Message):
         ) -> None: ...
         def ClearField(self, field_name: typing.Literal["repeated_schedules", b"repeated_schedules", "single_schedules", b"single_schedules"]) -> None: ...
 
+    @typing.final
+    class InstalledPackages(google.protobuf.message.Message):
+        DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+        INSTALLED_PACKAGES_FIELD_NUMBER: builtins.int
+        @property
+        def installed_packages(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+            """OS dependent. Should not contain version info."""
+
+        def __init__(
+            self,
+            *,
+            installed_packages: collections.abc.Iterable[builtins.str] | None = ...,
+        ) -> None: ...
+        def ClearField(self, field_name: typing.Literal["installed_packages", b"installed_packages"]) -> None: ...
+
     UPDATE_SOURCE_FIELD_NUMBER: builtins.int
     UPDATE_SCHEDULE_FIELD_NUMBER: builtins.int
     INSTALLED_PACKAGES_FIELD_NUMBER: builtins.int
-    installed_packages: builtins.str
-    """Freeform text, OS-dependent. A list of package names, one per line (newline separated). Should not contain version info."""
     @property
     def update_source(self) -> global___SetSOTAScheduleRequestPayload.UpdateSource: ...
     @property
     def update_schedule(self) -> global___SetSOTAScheduleRequestPayload.UpdateSchedule: ...
+    @property
+    def installed_packages(self) -> global___SetSOTAScheduleRequestPayload.InstalledPackages: ...
     def __init__(
         self,
         *,
         update_source: global___SetSOTAScheduleRequestPayload.UpdateSource | None = ...,
         update_schedule: global___SetSOTAScheduleRequestPayload.UpdateSchedule | None = ...,
-        installed_packages: builtins.str = ...,
+        installed_packages: global___SetSOTAScheduleRequestPayload.InstalledPackages | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["update_schedule", b"update_schedule", "update_source", b"update_source"]) -> builtins.bool: ...
+    def HasField(self, field_name: typing.Literal["installed_packages", b"installed_packages", "update_schedule", b"update_schedule", "update_source", b"update_source"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing.Literal["installed_packages", b"installed_packages", "update_schedule", b"update_schedule", "update_source", b"update_source"]) -> None: ...
 
 global___SetSOTAScheduleRequestPayload = SetSOTAScheduleRequestPayload

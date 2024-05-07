@@ -71,7 +71,10 @@ message SetSOTAScheduleRequestPayload {
   }
   UpdateSchedule update_schedule = 2;
 
-  string installed_packages = 3; // Freeform text, OS-dependent. A list of package names, one per line (newline separated). Should not contain version info.
+  message InstalledPackages {
+    repeated string installed_packages = 1; // OS dependent. Should not contain version info.
+  }
+  InstalledPackages installed_packages = 3; 
 }
 
 
