@@ -11,7 +11,6 @@ import json
 import platform
 import signal
 import sys
-from logging.config import fileConfig
 from queue import Queue
 from threading import Thread, active_count
 from time import sleep
@@ -63,16 +62,6 @@ from . import source
 logger = logging.getLogger(__name__)
 
 
-def get_log_config_path() -> str:
-    """Return the config path for this agent, taken by default from LOGGERCONFIG environment
-    variable and then from a fixed default path.
-    """
-    try:
-        return os.environ['LOGGERCONFIG']
-    except KeyError:
-        return DEFAULT_LOGGING_PATH
-
-
 def _check_type_validate_manifest(xml: str,
                                   schema_location: Optional[str] = None) -> Tuple[str, XmlHandler]:
     """Parse manifest
@@ -95,12 +84,6 @@ def _check_type_validate_manifest(xml: str,
 
 class Dispatcher:
     def __init__(self, args: list[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
-        log_config_path = get_log_config_path()
-        msg = f"Looking for logging configuration file at {log_config_path}"
-        print(msg)
-        fileConfig(log_config_path,
-                   disable_existing_loggers=False)
-
         self._dispatcher_broker = broker
         self._install_check_service = install_check_service
         self.update_queue: Queue[Tuple[str, str]] = Queue(1)

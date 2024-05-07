@@ -42,7 +42,7 @@ dmi_parsed_1 = PlatformInformation(date_time, 'innotek GmbH',
 dmi_unknown = PlatformInformation()
 
 
-@patch('dispatcher.dispatcher_class.get_log_config_path',
+@patch('dispatcher.dispatcher.get_log_config_path',
        return_value=os.path.join(os.path.dirname(__file__),
                                  '../../fpm-template/etc/intel-manageability/public/dispatcher-agent/logging.ini'))
 class TestDispatcher(TestCase):
