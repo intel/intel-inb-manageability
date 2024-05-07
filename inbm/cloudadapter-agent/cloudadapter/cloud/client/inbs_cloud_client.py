@@ -3,6 +3,7 @@ Modification of Cloud Client class that works for INBS.
 INBS is different because it is using gRPC instead of MQTT.
 """
 
+from collections.abc import Generator
 import queue
 import random
 import threading
@@ -108,12 +109,14 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         pass
 
-    def _handle_inbm_command(self, request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]):
+    def _handle_inbm_command(self, 
+                             request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
+                             ) -> Generator[inbs_sb_pb2.HandleINBMCommandResponse, None, None]:
         """Generator function to respond to INBMRequests with INBMResponses
 
-        @param request_queue: Queue with INBMRequests that will be supplied from another thread
+        @param request_queue: Queue with HandleINBMCommandRequests that will be supplied from another thread
 
-        When an INBMResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event."""
+        When a HandleINBMCommandResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event."""
         while not self._stop_event.is_set():
             try:
                 item = request_queue.get()
