@@ -66,7 +66,7 @@ class TestInbsCloudClient(unittest.TestCase):
 
         # Set up the INBMRequest with PingRequest
         ping_request = inbs_sb_pb2.HandleINBMCommandRequest(
-            request_id="123", request_data=inbs_sb_pb2.INBMCommandRequestData(ping_request_data=inbs_sb_pb2.PingRequestData())) 
+            request_id="123", request_data=inbs_sb_pb2.INBMCommandRequestData(ping_request_data=inbs_sb_pb2.PingRequestData()))
         request_queue.put(ping_request)
         # Signal end of queue processing (in real code this isn't needed, here to stop the generator)
         request_queue.put(None)
@@ -79,7 +79,7 @@ class TestInbsCloudClient(unittest.TestCase):
 
         # Check the response correctness
         self.assertEqual(response.request_id, "123")
-        self.assertEqual(response.response_data.WhichOneof('payload') , 'ping_response_data')
+        self.assertEqual(response.response_data.WhichOneof('payload'), 'ping_response_data')
 
         # Cleanup, ensure nothing else is left in the generator
         with self.assertRaises(StopIteration):

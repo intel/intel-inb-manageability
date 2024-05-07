@@ -109,7 +109,7 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         pass
 
-    def _handle_inbm_command(self, 
+    def _handle_inbm_command(self,
                              request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
                              ) -> Generator[inbs_sb_pb2.HandleINBMCommandResponse, None, None]:
         """Generator function to respond to INBMRequests with INBMResponses
@@ -129,9 +129,9 @@ class InbsCloudClient(CloudClient):
                 request_data_type = item.request_data.WhichOneof('payload')
                 if request_data_type:
                     if request_data_type == 'ping_request_data':
-                        yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id, 
-                                                       response_data=inbs_sb_pb2.INBMCommandResponseData(
-                                                           ping_response_data=inbs_sb_pb2.PingResponseData()))
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
+                                                                    response_data=inbs_sb_pb2.INBMCommandResponseData(
+                                                                        ping_response_data=inbs_sb_pb2.PingResponseData()))
                     else:
                         # Log an error if the payload is not recognized (not a PingRequest)
                         logger.error(
@@ -176,7 +176,8 @@ class InbsCloudClient(CloudClient):
         while not self._stop_event.is_set():
             try:
                 self._do_socket_connect()
-                request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None] = queue.Queue()
+                request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest |
+                                           None] = queue.Queue()
                 stream = self.stub.HandleINBMCommand(self._handle_inbm_command(
                     request_queue), metadata=self._metadata)
                 for command in stream:
