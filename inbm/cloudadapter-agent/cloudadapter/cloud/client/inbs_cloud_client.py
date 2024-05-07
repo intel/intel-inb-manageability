@@ -108,7 +108,7 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         pass
 
-    def _handle_inbm_command(self, request_queue: queue.Queue[inbs_sb_pb2.INBMRequest | None]):
+    def _handle_inbm_command(self, request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]):
         """Generator function to respond to INBMRequests with INBMResponses
 
         @param request_queue: Queue with INBMRequests that will be supplied from another thread
@@ -123,17 +123,16 @@ class InbsCloudClient(CloudClient):
                 request_id = item.request_id
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
 
-                payload_type = item.request_data.WhichOneof('payload')
-                if payload_type:
-                    if payload_type == 'ping_request':
-                        # Handle PingRequest and create a corresponding PingResponse
-                        yield inbs_sb_pb2.INBMResponse(request_id=request_id, 
-                                                       response_data=inbs_sb_pb2.INBMResponsePayload(
-                                                           ping_response=inbs_sb_pb2.PingResponsePayload()))
+                request_data_type = item.request_data.WhichOneof('payload')
+                if request_data_type:
+                    if request_data_type == 'ping_request_data':
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id, 
+                                                       response_data=inbs_sb_pb2.INBMCommandResponseData(
+                                                           ping_response_data=inbs_sb_pb2.PingResponseData()))
                     else:
                         # Log an error if the payload is not recognized (not a PingRequest)
                         logger.error(
-                            f"Received unexpected payload type: {payload_type} for request_id {request_id}")
+                            f"Received unexpected payload type: {request_data_type} for request_id {request_id}")
                         break
                 else:
                     logger.error(f"No payload found for request_id {request_id}")
@@ -174,8 +173,8 @@ class InbsCloudClient(CloudClient):
         while not self._stop_event.is_set():
             try:
                 self._do_socket_connect()
-                request_queue: queue.Queue = queue.Queue()
-                stream = self.stub.INBMCommand(self._handle_inbm_command(
+                request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None] = queue.Queue()
+                stream = self.stub.HandleINBMCommand(self._handle_inbm_command(
                     request_queue), metadata=self._metadata)
                 for command in stream:
                     if self._stop_event.is_set():

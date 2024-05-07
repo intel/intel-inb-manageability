@@ -9,42 +9,42 @@ import "google/protobuf/timestamp.proto";
 
 service INBSSBService {
   // Bi-directional streaming method
-  rpc INBMCommand(stream INBMResponse) returns (stream INBMRequest);
+  rpc HandleINBMCommand(stream HandleINBMCommandResponse) returns (stream HandleINBMCommandRequest);
 }
 
-message INBMRequest {
+message HandleINBMCommandRequest {
   string request_id = 1;
-  INBMRequestPayload request_data = 2;
+  INBMCommandRequestData request_data = 2;
 }
 
-message INBMResponse {  
+message HandleINBMCommandResponse {  
   string request_id = 1;
-  INBMResponsePayload response_data = 2;
+  INBMCommandResponseData response_data = 2;
 }
 
-message INBMRequestPayload {
+message INBMCommandRequestData {
   oneof payload {
-    PingRequestPayload ping_request = 1;
-    SetSOTAScheduleRequestPayload set_sota_schedule_request = 2;
+    PingRequestData ping_request_data = 1;
+    SetSOTAScheduleRequestData set_sota_schedule_request_data = 2;
   }
 }
 
-message INBMResponsePayload {
+message INBMCommandResponseData {
   oneof payload {
-    PingResponsePayload ping_response = 1;
-    SetSOTAScheduleResponsePayload set_sota_schedule_response = 2;
+    PingResponseData ping_response_data = 1;
+    SetSOTAScheduleResponseData set_sota_schedule_data = 2;
   }
 }
 
-message PingRequestPayload {
+message PingRequestData {
 }
 
-message PingResponsePayload {
+message PingResponseData {
 }
 
 // TODO: re-add the validate.rules from maintenance manager to the repeated_schedules fields. prerequisite: get the validate.proto import working
 // 
-message SetSOTAScheduleRequestPayload {
+message SetSOTAScheduleRequestData {
   message UpdateSource {
     string kernel_command = 1; // Kernel command line
     string os_repo_url = 2; // 'DEB822 Source Format' url to the public repository
@@ -78,7 +78,7 @@ message SetSOTAScheduleRequestPayload {
 }
 
 
-message SetSOTAScheduleResponsePayload {  
+message SetSOTAScheduleResponseData {  
   enum StatusType {
     STATUS_TYPE_UNSPECIFIED = 0;
     STATUS_TYPE_UP_TO_DATE = 1;

@@ -17,10 +17,10 @@ class INBSSBServiceStub(object):
         Args:
             channel: A grpc.Channel.
         """
-        self.INBMCommand = channel.stream_stream(
-                '/inbs.v1.INBSSBService/INBMCommand',
-                request_serializer=proto_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
-                response_deserializer=proto_dot_inbs__sb__pb2.INBMRequest.FromString,
+        self.HandleINBMCommand = channel.stream_stream(
+                '/inbs.v1.INBSSBService/HandleINBMCommand',
+                request_serializer=proto_dot_inbs__sb__pb2.HandleINBMCommandResponse.SerializeToString,
+                response_deserializer=proto_dot_inbs__sb__pb2.HandleINBMCommandRequest.FromString,
                 )
 
 
@@ -30,7 +30,7 @@ class INBSSBServiceServicer(object):
 
     """
 
-    def INBMCommand(self, request_iterator, context):
+    def HandleINBMCommand(self, request_iterator, context):
         """Bi-directional streaming method
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -40,10 +40,10 @@ class INBSSBServiceServicer(object):
 
 def add_INBSSBServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
-            'INBMCommand': grpc.stream_stream_rpc_method_handler(
-                    servicer.INBMCommand,
-                    request_deserializer=proto_dot_inbs__sb__pb2.INBMResponse.FromString,
-                    response_serializer=proto_dot_inbs__sb__pb2.INBMRequest.SerializeToString,
+            'HandleINBMCommand': grpc.stream_stream_rpc_method_handler(
+                    servicer.HandleINBMCommand,
+                    request_deserializer=proto_dot_inbs__sb__pb2.HandleINBMCommandResponse.FromString,
+                    response_serializer=proto_dot_inbs__sb__pb2.HandleINBMCommandRequest.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -59,7 +59,7 @@ class INBSSBService(object):
     """
 
     @staticmethod
-    def INBMCommand(request_iterator,
+    def HandleINBMCommand(request_iterator,
             target,
             options=(),
             channel_credentials=None,
@@ -69,8 +69,8 @@ class INBSSBService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/inbs.v1.INBSSBService/INBMCommand',
-            proto_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
-            proto_dot_inbs__sb__pb2.INBMRequest.FromString,
+        return grpc.experimental.stream_stream(request_iterator, target, '/inbs.v1.INBSSBService/HandleINBMCommand',
+            proto_dot_inbs__sb__pb2.HandleINBMCommandResponse.SerializeToString,
+            proto_dot_inbs__sb__pb2.HandleINBMCommandRequest.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

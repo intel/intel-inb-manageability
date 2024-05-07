@@ -65,7 +65,7 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 	return err
 }
 
-func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
+func (s *server) INBMCommand(stream pb.INBSSBService_HandleINBMCommandServer) error {
 	ctx := stream.Context()
 
 	// Extract metadata from the context
@@ -93,10 +93,10 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 		default:
 			// Sending a Ping to the client
 			requestId := uuid.New().String()
-			err := stream.Send(&pb.INBMRequest{
+			err := stream.Send(&pb.HandleINBMCommandRequest{
 				RequestId: requestId,
-				RequestData: &pb.INBMRequestPayload{
-					Payload: &pb.INBMRequestPayload_PingRequest{},
+				RequestData: &pb.INBMCommandRequestData{
+					Payload: &pb.INBMCommandRequestData_PingRequestData{},
 				},
 			})
 			if err != nil {
@@ -114,8 +114,8 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 				log.Fatalf("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
 			}
 			// check that the response payload is a ping type
-			if _, ok := response.GetResponseData().GetPayload().(*pb.INBMResponsePayload_PingResponse); !ok {
-				log.Fatalf("Response payload is not a PingResponse")
+			if _, ok := response.GetResponseData().GetPayload().(*pb.INBMCommandResponseData_PingResponseData); !ok {
+				log.Fatalf("Response payload is not a PingResponseData")
 			}
 
 			log.Println("Received response from client with request ID " + response.GetRequestId())
