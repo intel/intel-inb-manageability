@@ -6,6 +6,7 @@ isort:skip_file
 import builtins
 import collections.abc
 import google.protobuf.descriptor
+import google.protobuf.duration_pb2
 import google.protobuf.internal.containers
 import google.protobuf.internal.enum_type_wrapper
 import google.protobuf.message
@@ -185,14 +186,12 @@ class SetSOTAScheduleRequestData(google.protobuf.message.Message):
         class RepeatedSchedule(google.protobuf.message.Message):
             DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-            DURATION_SECONDS_FIELD_NUMBER: builtins.int
+            DURATION_FIELD_NUMBER: builtins.int
             CRON_MINUTES_FIELD_NUMBER: builtins.int
             CRON_HOURS_FIELD_NUMBER: builtins.int
             CRON_DAY_MONTH_FIELD_NUMBER: builtins.int
             CRON_MONTH_FIELD_NUMBER: builtins.int
             CRON_DAY_WEEK_FIELD_NUMBER: builtins.int
-            duration_seconds: builtins.int
-            """between 1 second and 86400 seconds (24 hours worth of seconds)"""
             cron_minutes: builtins.str
             """cron style minutes (0-59)"""
             cron_hours: builtins.str
@@ -203,17 +202,22 @@ class SetSOTAScheduleRequestData(google.protobuf.message.Message):
             """cron style month (1-12)"""
             cron_day_week: builtins.str
             """cron style day of week (0-6)"""
+            @property
+            def duration(self) -> google.protobuf.duration_pb2.Duration:
+                """should be between 1 second and 86400 seconds (24 hours worth of seconds)"""
+
             def __init__(
                 self,
                 *,
-                duration_seconds: builtins.int = ...,
+                duration: google.protobuf.duration_pb2.Duration | None = ...,
                 cron_minutes: builtins.str = ...,
                 cron_hours: builtins.str = ...,
                 cron_day_month: builtins.str = ...,
                 cron_month: builtins.str = ...,
                 cron_day_week: builtins.str = ...,
             ) -> None: ...
-            def ClearField(self, field_name: typing.Literal["cron_day_month", b"cron_day_month", "cron_day_week", b"cron_day_week", "cron_hours", b"cron_hours", "cron_minutes", b"cron_minutes", "cron_month", b"cron_month", "duration_seconds", b"duration_seconds"]) -> None: ...
+            def HasField(self, field_name: typing.Literal["duration", b"duration"]) -> builtins.bool: ...
+            def ClearField(self, field_name: typing.Literal["cron_day_month", b"cron_day_month", "cron_day_week", b"cron_day_week", "cron_hours", b"cron_hours", "cron_minutes", b"cron_minutes", "cron_month", b"cron_month", "duration", b"duration"]) -> None: ...
 
         SINGLE_SCHEDULES_FIELD_NUMBER: builtins.int
         REPEATED_SCHEDULES_FIELD_NUMBER: builtins.int
