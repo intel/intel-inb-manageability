@@ -31,11 +31,6 @@ def make_dispatcher(args: List[str]) -> Dispatcher:
 
     Handle dependency injection in one place"""
     broker = DispatcherBroker()
-    log_config_path = get_log_config_path()
-    msg = f"Looking for logging configuration file at {log_config_path}"
-    print(msg)
-    fileConfig(log_config_path,
-                disable_existing_loggers=False)
 
     return Dispatcher(args=args, broker=broker, install_check_service=InstallCheckService(broker))
 
@@ -62,6 +57,12 @@ class WindowsDispatcherService(WindowsService):
 
 def main() -> None:
     """Function called by __main__."""
+
+    log_config_path = get_log_config_path()
+    msg = f"Looking for logging configuration file at {log_config_path}"
+    print(msg)
+    fileConfig(log_config_path,
+                disable_existing_loggers=False)
 
     if platform.system() == 'Windows':
         import servicemanager
