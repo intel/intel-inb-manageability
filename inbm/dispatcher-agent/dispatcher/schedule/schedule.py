@@ -9,7 +9,8 @@ import logging
 from typing import Any, Tuple
 from inbm_lib.xmlhandler import XmlException
 from .sqlite_manager import SqliteManager
-from inbm_lib.constants import SQL_DATA_FILE
+from .scheduled_task import ScheduledTask
+from ..constants import UDM_DB_FILE
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,11 @@ def schedule_update(xpath: str, parsed_xml: Any) -> Tuple[bool, str]:
             parsed_xml.remove_element(xpath)
         except XmlException as e:
             raise XmlException(f"Error removing scheduledTime element.  Unable to schedule task.: {e}")
-        #TODO: Add schedule to DB
+        
+        task = ScheduledTask(start_time=parsed_xml.get_element_text(xpath + '/start_time'),
+                             end_time=parsed_xml.get_element_text(xpath + '/end_time'),
+                             manifest=parsed_xml)
+        SqliteManager(UDM_DB_FILE).create_task(task)
         return True, "Task Scheduled"
     else:
         return False, "Element not found."

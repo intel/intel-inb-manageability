@@ -29,6 +29,9 @@ IP = 'ip'
 TOKEN = 'token'  # noqa: S105
 CSL_CA = 'certFile'
 
+# UDM Sqlite3 DB FILE
+UDM_DB_FILE = str(INTEL_MANAGEABILITY_ETC_PATH_PREFIX /
+                  'public' / 'dispatcher-agent' / 'udm.db')
 
 # Subscription channels
 TC_REQUEST_CHANNEL = 'manageability/request/+'

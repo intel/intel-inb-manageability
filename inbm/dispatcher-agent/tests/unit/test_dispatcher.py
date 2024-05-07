@@ -250,7 +250,8 @@ class TestDispatcher(TestCase):
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     @patch('dispatcher.dispatcher_class.Dispatcher._send_result')
-    def test_sota_schedule_update(self, mock_send_result,
+    @patch('dispatcher.schedule.schedule.schedule_update')
+    def test_sota_schedule_update(self, mock_schedule, mock_send_result,
                                         m_sub,
                                         m_connect,
                                         m_thread_start,
@@ -262,6 +263,7 @@ class TestDispatcher(TestCase):
         d = TestDispatcher._build_dispatcher()
         result = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
         self.assertEqual(200, result.status)
+        mock_schedule.assert_called()
         assert m_thread_start.not_called
 
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
