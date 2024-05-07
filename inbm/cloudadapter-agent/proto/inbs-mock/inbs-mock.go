@@ -65,7 +65,7 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 	return err
 }
 
-func (s *server) INBMCommand(stream pb.INBSSBService_HandleINBMCommandServer) error {
+func (s *server) HandleINBMCommand(stream pb.INBSSBService_HandleINBMCommandServer) error {
 	ctx := stream.Context()
 
 	// Extract metadata from the context
