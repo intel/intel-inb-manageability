@@ -55,8 +55,8 @@ message SetSOTAScheduleRequestData {
 
   message UpdateSchedule {
     message SingleSchedule {
-      google.protobuf.Timestamp start_time = 1; // Start time for the schedule (required)
-      google.protobuf.Timestamp end_time = 2; // Start time for the schedule (optional)
+      google.protobuf.Timestamp start_time = 1;
+      google.protobuf.Timestamp end_time = 2;
     }
     repeated SingleSchedule single_schedules = 1;
 
