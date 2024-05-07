@@ -77,3 +77,6 @@ FAIL = "FAIL"
 OTA_PENDING = "PENDING"
 
 FORMAT_VERSION = "v1"
+
+# Sqlite datafile
+SQL_DATA_FILE = "inbm_sqlite.db"

@@ -308,9 +308,11 @@ class Dispatcher:
                 # Check if OTA is scheduled
                 if ota_type == OtaType.SOTA.name.lower():
                     logger.debug("Check if this is a schedule update request") 
-                    is_task_scheduled, message = schedule_update(xpath="/ota/type/{ota_type}/scheduledTime", parsed_xml=parsed_head)                    
+                    is_task_scheduled, message = schedule_update(xpath=f"ota/type/{ota_type}/scheduledTime", parsed_xml=parsed_head)
+                    logger.debug(f"is_task_scheduled={is_task_scheduled}, message={message}")
                     if is_task_scheduled:
-                        return Result(CODE_OK, message)
+                        result = Result(CODE_OK, message)
+                        return result
                 
                 repo_type = header['repo']
                 resource = parsed_head.get_children(f'ota/type/{ota_type}')

@@ -14,6 +14,7 @@ from dispatcher.dispatcher_exception import DispatcherException
 class SqliteManager:
     def __init__(self, db_file) -> None:
         self._db_file = db_file
+        self._conn = self._create_connection()
             
     def _create_connection(self) -> sqlite3.Connection:
         """ create a database connection to a SQLite database """
@@ -32,11 +33,10 @@ class SqliteManager:
         :param task: ScheduledTask object
         :return: PK for the scheduled task in the DB
         """
-        conn = self._create_connection()
-        with conn:
+        with self._conn:
             sql = ''' INSERT INTO task(NULL, start_time, end_time, manifest)
                     VALUES(?,?) '''
-            cur = conn.cursor()
+            cur = self._conn.cursor()
 
             cur.execute(sql, (task.start_time, task.end_time, task.manifest))
             return cur.lastrowid                
