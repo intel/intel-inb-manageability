@@ -14,6 +14,7 @@ import xml.etree.ElementTree as ET  # only using this to generate XML, not parse
 
 from cloudadapter.cloud.client.inbs_xml_conversion import convert_schedule_proto_to_xml
 from cloudadapter.exceptions import AuthenticationError
+from cloudadapter.constants import METHOD
 from ..adapters.proto import inbs_sb_pb2_grpc, inbs_sb_pb2
 import logging
 
@@ -24,7 +25,6 @@ logger = logging.getLogger(__name__)
 
 
 class InbsCloudClient(CloudClient):
-
     def __init__(self,
                  hostname: str,
                  port: str,
@@ -47,6 +47,8 @@ class InbsCloudClient(CloudClient):
         self._token = token
         self._tls_enabled = tls_enabled
         self._tls_cert = tls_cert
+
+        self._callbacks: dict[str, Callable] = {}
 
         self._metadata: list[tuple[str, str]] = [("node-id", node_id)]
         if tls_enabled:
@@ -108,18 +110,16 @@ class InbsCloudClient(CloudClient):
         @param callback: callback to trigger
         """
 
-        # for now ignore all callbacks; only Ping is supported
-        pass
+        self._callbacks[name] = callback
 
     def _handle_set_schedule_request(self, request_id: str,
                                      request_data: inbs_sb_pb2.SetScheduleRequestData
                                      ) -> inbs_sb_pb2.HandleINBMCommandResponse:
         # TODO: get last status. need an api in inbm_lib?
         status = inbs_sb_pb2.SetScheduleResponseData.STATUS_TYPE_STARTED
-        request_data_xml = convert_schedule_proto_to_xml(request_data)
-        # TODO: send XML to dispatcher
-        # TODO: get response from dispatcher
-        # TODO: write unit tests for this function
+        request_data_xml: str = convert_schedule_proto_to_xml(request_data)
+        self._callbacks[METHOD.MANIFEST](request_data_xml)  # discard result 'Manifest Update Triggered'; not needed for reply
+        # TODO: do we need a response from dispatcher? cloudadapter is not currently set up to do this; it just sends blindly
 
         return inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
                                                      response_data=inbs_sb_pb2.INBMCommandResponseData(

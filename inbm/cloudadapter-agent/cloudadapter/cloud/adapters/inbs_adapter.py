@@ -68,7 +68,7 @@ class InbsAdapter(Adapter):
                 raise AdapterConfigureError("Token path provided but TLS is not enabled")
             if configs.get("tls_cert_path"):
                 raise AdapterConfigureError("TLS cert path provided but TLS is not enabled")
-
+        
         self._client = InbsCloudClient(hostname=hostname,
                                        port=port,
                                        node_id=node_id,

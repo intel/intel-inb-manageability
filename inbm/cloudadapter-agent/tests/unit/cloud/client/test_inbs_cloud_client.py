@@ -15,7 +15,6 @@ import queue
 import google.protobuf.timestamp_pb2
 import google.protobuf.duration_pb2
 
-
 class TestInbsCloudClient(unittest.TestCase):
 
     @patch("cloudadapter.cloud.client.inbs_cloud_client.grpc.insecure_channel")
@@ -86,8 +85,16 @@ class TestInbsCloudClient(unittest.TestCase):
         with self.assertRaises(StopIteration):
             next(generator)
 
-    # TODO - need to mock status check and comms with dispatcher later
+    # TODO - need to mock status check
     def test_handle_set_schedule_request(self):
+        # set up the triggerota callback to see what is sent to dispatcher
+        triggered_str = ""
+        def triggerota(xml: str) -> str:
+            nonlocal triggered_str
+            triggered_str = xml
+            return "triggerota"
+        self.inbs_client.bind_callback('triggerota', triggerota)
+
         request_id = "123"
         result = self.inbs_client._handle_set_schedule_request(
             request_id,
@@ -108,8 +115,15 @@ class TestInbsCloudClient(unittest.TestCase):
                     )
                 ]
             ),
-        )
+        )        
 
+        self.assertEqual("<ScheduleManifest><update_schedule>"
+                         "<manifests>"
+                         "<manifest_xml>&lt;xml1&gt;&lt;/xml1&gt;</manifest_xml>"
+                         "<manifest_xml>&lt;xml2&gt;&lt;/xml2&gt;</manifest_xml>"
+                         "</manifests>"
+                         "<single_schedule><start_time>1970-01-01T00:00:10Z</start_time><end_time>1970-01-01T00:00:20Z</end_time></single_schedule>"
+                         "</update_schedule></ScheduleManifest>", triggered_str)
         self.assertEqual(result.request_id, request_id)
         self.assertEqual(result.response_data.set_schedule_response_data.status_type,
                          inbs_sb_pb2.SetScheduleResponseData.STATUS_TYPE_STARTED)  # TODO actually mock out status
