@@ -3,7 +3,9 @@ package main
 import (
 	"crypto/tls"
 	"crypto/x509"
+	"errors"
 	"flag"
+	"fmt"
 	"log"
 	"net"
 	"os"
@@ -17,6 +19,7 @@ import (
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // server is used to implement inbs.INBSSBServiceServer.
@@ -65,6 +68,90 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 	return err
 }
 
+func sendSetScheduleRequestToClient(stream pb.INBSSBService_HandleINBMCommandServer) error {
+	requestId := uuid.New().String()
+	err := stream.Send(&pb.HandleINBMCommandRequest{
+		RequestId: requestId,
+		RequestData: &pb.INBMCommandRequestData{
+			Payload: &pb.INBMCommandRequestData_SetScheduleRequestData{
+				SetScheduleRequestData: &pb.SetScheduleRequestData{
+					Tasks: []*pb.INBMScheduledTask{
+						{
+							Manifests: &pb.Manifests{
+								ManifestXml: []string{},
+							},
+							Schedule: &pb.INBMScheduledTask_SingleSchedule{
+								SingleSchedule: &pb.SingleSchedule{
+									StartTime: &timestamppb.Timestamp{
+										Seconds: 1234,
+									},
+									EndTime: &timestamppb.Timestamp{
+										Seconds: 5678,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to send a set schedule request: %w", err)
+	}
+	log.Println("Set schedule request sent to client with request ID " + requestId)
+
+	// Receiving and logging INBMResponse from client
+	response, err := stream.Recv()
+	if err != nil {
+		return fmt.Errorf("Failed to receive INBM response: %w", err)
+	}
+
+	if requestId != response.GetRequestId() {
+		return errors.New("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
+	}
+	// check that the response payload is a ping type
+	if _, ok := response.GetResponseData().GetPayload().(*pb.INBMCommandResponseData_SetScheduleResponseData); !ok {
+		return errors.New("Response payload is not a SetScheduleResponseData")
+	}
+
+	log.Println("Received response from client with request ID " + response.GetRequestId())
+
+	return nil
+}
+
+func sendPingToClient(stream pb.INBSSBService_HandleINBMCommandServer) error {
+	requestId := uuid.New().String()
+	err := stream.Send(&pb.HandleINBMCommandRequest{
+		RequestId: requestId,
+		RequestData: &pb.INBMCommandRequestData{
+			Payload: &pb.INBMCommandRequestData_PingRequestData{},
+		},
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to send a ping: %w", err)
+	}
+	log.Println("Ping sent to client with request ID " + requestId)
+
+	// Receiving and logging INBMResponse from client
+	response, err := stream.Recv()
+	if err != nil {
+		return fmt.Errorf("Failed to receive INBM response: %w", err)
+	}
+
+	if requestId != response.GetRequestId() {
+		return errors.New("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
+	}
+	// check that the response payload is a ping type
+	if _, ok := response.GetResponseData().GetPayload().(*pb.INBMCommandResponseData_PingResponseData); !ok {
+		return errors.New("Response payload is not a PingResponseData")
+	}
+
+	log.Println("Received response from client with request ID " + response.GetRequestId())
+
+	return nil
+}
+
 func (s *server) HandleINBMCommand(stream pb.INBSSBService_HandleINBMCommandServer) error {
 	ctx := stream.Context()
 
@@ -85,6 +172,12 @@ func (s *server) HandleINBMCommand(stream pb.INBSSBService_HandleINBMCommandServ
 
 	log.Printf("Received connection with inband-id: %s", nodeID)
 
+	// Send a single INBM schedule command to the client
+	err := sendSetScheduleRequestToClient(stream)
+	if err != nil {
+		log.Fatalf("Failed to send SetScheduleRequest to client: %v", err)
+	}
+
 	// Loop until the context is done (connection closed)
 	for {
 		select {
@@ -92,34 +185,10 @@ func (s *server) HandleINBMCommand(stream pb.INBSSBService_HandleINBMCommandServ
 			return ctx.Err()
 		default:
 			// Sending a Ping to the client
-			requestId := uuid.New().String()
-			err := stream.Send(&pb.HandleINBMCommandRequest{
-				RequestId: requestId,
-				RequestData: &pb.INBMCommandRequestData{
-					Payload: &pb.INBMCommandRequestData_PingRequestData{},
-				},
-			})
+			err := sendPingToClient(stream)
 			if err != nil {
-				log.Fatalf("Failed to send a ping: %v", err)
+				log.Fatalf("Failed to send ping to client: %v", err)
 			}
-			log.Println("Ping sent to client with request ID " + requestId)
-
-			// Receiving and logging INBMResponse from client
-			response, err := stream.Recv()
-			if err != nil {
-				log.Fatalf("Failed to receive INBM response: %v", err)
-			}
-
-			if requestId != response.GetRequestId() {
-				log.Fatalf("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
-			}
-			// check that the response payload is a ping type
-			if _, ok := response.GetResponseData().GetPayload().(*pb.INBMCommandResponseData_PingResponseData); !ok {
-				log.Fatalf("Response payload is not a PingResponseData")
-			}
-
-			log.Println("Received response from client with request ID " + response.GetRequestId())
-
 			// Wait for a second before next ping
 			time.Sleep(1 * time.Second)
 		}
