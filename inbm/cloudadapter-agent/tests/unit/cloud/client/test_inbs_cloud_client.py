@@ -11,8 +11,9 @@ import unittest
 from cloudadapter.cloud.client.inbs_cloud_client import grpc
 from unittest.mock import patch, MagicMock, Mock
 from datetime import datetime
-import pytest
 import queue
+import google.protobuf.timestamp_pb2
+import google.protobuf.duration_pb2
 
 
 class TestInbsCloudClient(unittest.TestCase):
@@ -84,6 +85,34 @@ class TestInbsCloudClient(unittest.TestCase):
         # Cleanup, ensure nothing else is left in the generator
         with self.assertRaises(StopIteration):
             next(generator)
+    
+    # TODO - need to mock status check and comms with dispatcher later
+    def test_handle_set_schedule_request(self):
+        request_id = "123"
+        result = self.inbs_client._handle_set_schedule_request(
+            request_id,
+            inbs_sb_pb2.SetScheduleRequestData(
+                tasks=[
+                    inbs_sb_pb2.INBMScheduledTask(
+                        manifests=inbs_sb_pb2.Manifests(
+                            manifest_xml=["<xml1></xml1>", "<xml2></xml2>"]
+                        ),
+                        single_schedule=inbs_sb_pb2.SingleSchedule(
+                            start_time=google.protobuf.timestamp_pb2.Timestamp(
+                                seconds=10
+                            ),
+                            end_time=google.protobuf.timestamp_pb2.Timestamp(
+                                seconds=20
+                            ),
+                        ),
+                    )
+                ]
+            ),
+        )
+
+        self.assertEqual(result.request_id, request_id)
+        self.assertEqual(result.response_data.set_schedule_response_data.status_type,
+                         inbs_sb_pb2.SetScheduleResponseData.STATUS_TYPE_STARTED) # TODO actually mock out status
 
     @patch("cloudadapter.cloud.client.inbs_cloud_client.time.sleep", side_effect=InterruptedError)
     @patch("grpc.insecure_channel")

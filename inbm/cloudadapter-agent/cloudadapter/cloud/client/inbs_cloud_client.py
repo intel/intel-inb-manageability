@@ -10,7 +10,9 @@ import threading
 import time
 from typing import Callable, Optional, Any
 from datetime import datetime
+import xml.etree.ElementTree as ET
 
+from cloudadapter.cloud.client.inbs_xml_conversion import convert_schedule_proto_to_xml
 from cloudadapter.exceptions import AuthenticationError
 from ..adapters.proto import inbs_sb_pb2_grpc, inbs_sb_pb2
 import logging
@@ -109,6 +111,21 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         pass
 
+    def _handle_set_schedule_request(self, request_id: str,
+                                     request_data: inbs_sb_pb2.SetScheduleRequestData
+                                     ) -> inbs_sb_pb2.HandleINBMCommandResponse:
+        # TODO: get last status. need an api in inbm_lib?
+        status = inbs_sb_pb2.SetScheduleResponseData.STATUS_TYPE_STARTED
+        request_data_xml = convert_schedule_proto_to_xml(request_data)
+        # TODO: send XML to dispatcher
+        # TODO: get response from dispatcher
+        # TODO: write unit tests for this function
+
+        return inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
+                                                     response_data=inbs_sb_pb2.INBMCommandResponseData(
+                                                         set_schedule_response_data=inbs_sb_pb2.SetScheduleResponseData(
+                                                             status_type=status)))
+
     def _handle_inbm_command(self,
                              request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
                              ) -> Generator[inbs_sb_pb2.HandleINBMCommandResponse, None, None]:
@@ -132,8 +149,10 @@ class InbsCloudClient(CloudClient):
                         yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
                                                                     response_data=inbs_sb_pb2.INBMCommandResponseData(
                                                                         ping_response_data=inbs_sb_pb2.PingResponseData()))
+                    elif request_data_type == 'set_schedule_request_data':
+                        yield self._handle_set_schedule_request(request_id, item.request_data.set_schedule_request_data)
                     else:
-                        # Log an error if the payload is not recognized (not a PingRequest)
+                        # Log an error if the payload is not recognized
                         logger.error(
                             f"Received unexpected payload type: {request_data_type} for request_id {request_id}")
                         break
