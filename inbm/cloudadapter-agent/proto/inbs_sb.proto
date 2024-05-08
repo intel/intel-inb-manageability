@@ -49,10 +49,10 @@ message SetScheduleRequestData {
 }
 
 message INBMScheduledTask {
-  Manifests manifests = 3;
+  Manifests manifests = 1;
   oneof schedule {
-    SingleSchedule single_schedule = 1;
-    RepeatedSchedule repeated_schedule = 2;      
+    SingleSchedule single_schedule = 2;
+    RepeatedSchedule repeated_schedule = 3;
   }
 }
 
