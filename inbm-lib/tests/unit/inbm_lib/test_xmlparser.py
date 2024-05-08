@@ -85,17 +85,69 @@ TEST_XML = '<?xml version="1.0" encoding="utf-8"?>' \
     '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
     '2020-11-16</releasedate></fota></type></ota></manifest> '
 
-GOOD_SCHEDULED_XML = '''<?xml version="1.0" encoding="utf-8"?><manifest><type>schedule</type>
-<schedule><singleSchedule><start_time>2002-05-30T09:30:10</start_time><end_time>2002-05-30T10:30:10</end_time><tasks>
-<task>'<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo>
-</header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot></sota></type></ota>
-</manifest>'</task></tasks></singleSchedule></schedule></manifest>'''
+GOOD_SCHEDULED_XML = '''<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+	<type>schedule</type>
+	<schedule>
+		<singleSchedule>
+			<start_time>2002-05-30T09:30:10</start_time>
+			<end_time>2002-05-30T10:30:10</end_time>
+			<tasks>
+				<task>'
+				    <?xml version="1.0" encoding="utf-8"?>
+					<manifest>
+						<type>ota</type>
+						<ota>
+							<header>
+								<type>sota</type>
+								<repo>remote</repo>
+							</header>
+							<type>
+								<sota>
+									<cmd logtofile="y">update</cmd>
+									<mode>full</mode>
+									<deviceReboot>no</deviceReboot>
+								</sota>
+							</type>
+						</ota>
+					</manifest>'
+				</task>
+			</tasks>
+		</singleSchedule>
+	</schedule>
+</manifest>
+'''
 
-BAD_SCHEDULED_XML = '''<?xml version="1.0" encoding="utf-8"?><manifest><type>schedule</type>
-<schedule><singleSchedule><tasks>
-<task>'<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo>
-</header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot></sota></type></ota>
-</manifest>'</task></tasks></singleSchedule></schedule></manifest>'''
+BAD_SCHEDULED_XML = '''<?xml version="1.0" encoding="utf-8"?>
+<manifest>
+	<type>schedule</type>
+	<schedule>
+		<singleSchedule>
+			<tasks>
+				<task>'
+					<?xml version="1.0" encoding="utf-8"?>
+					<manifest>
+						<type>ota</type>
+						<ota>
+							<header>
+								<type>sota</type>
+								<repo>remote</repo>
+							</header>
+							<type>
+								<sota>
+									<cmd logtofile="y">update</cmd>
+									<mode>full</mode>
+									<deviceReboot>no</deviceReboot>
+								</sota>
+							</type>
+						</ota>
+					</manifest>'
+				</task>
+			</tasks>
+		</singleSchedule>
+	</schedule>
+</manifest>
+'''
 
 class TestXmlParser(TestCase):
 

@@ -77,11 +77,12 @@
     <xs:element name="singleSchedule">
     <xs:complexType>
         <xs:all>
-            <xs:element name="scheduledTime" type="scheduleTime"/>
+            <xs:element name="start_time" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="end_time" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
             <xs:element name="tasks">
                 <xs:complexType>
                     <xs:sequence>
-                        <xs:element name="task" type="xs:string" minOccurs="1"/>
+                        <xs:element name="task" type="xs:anyType" minOccurs="1"/>
                     </xs:sequence>
                 </xs:complexType>
             </xs:element>
@@ -108,12 +109,5 @@
         </xs:all>
         </xs:complexType>
     </xs:element>
-
-    <xs:complexType name="scheduleTime">
-      <xs:sequence>
-        <xs:element name="start" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
-        <xs:element name="end" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
-      </xs:sequence>
-    </xs:complexType>
 
 </xs:schema>
