@@ -15,6 +15,7 @@ import queue
 import google.protobuf.timestamp_pb2
 import google.protobuf.duration_pb2
 
+
 class TestInbsCloudClient(unittest.TestCase):
 
     @patch("cloudadapter.cloud.client.inbs_cloud_client.grpc.insecure_channel")
@@ -89,6 +90,7 @@ class TestInbsCloudClient(unittest.TestCase):
     def test_handle_set_schedule_request(self):
         # set up the triggerota callback to see what is sent to dispatcher
         triggered_str = ""
+
         def triggerota(xml: str) -> str:
             nonlocal triggered_str
             triggered_str = xml
@@ -115,7 +117,7 @@ class TestInbsCloudClient(unittest.TestCase):
                     )
                 ]
             ),
-        )        
+        )
 
         self.assertEqual("<ScheduleManifest><update_schedule>"
                          "<manifests>"

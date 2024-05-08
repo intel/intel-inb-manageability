@@ -118,7 +118,8 @@ class InbsCloudClient(CloudClient):
         # TODO: get last status. need an api in inbm_lib?
         status = inbs_sb_pb2.SetScheduleResponseData.STATUS_TYPE_STARTED
         request_data_xml: str = convert_schedule_proto_to_xml(request_data)
-        self._callbacks[METHOD.MANIFEST](request_data_xml)  # discard result 'Manifest Update Triggered'; not needed for reply
+        # discard result 'Manifest Update Triggered'; not needed for reply
+        self._callbacks[METHOD.MANIFEST](request_data_xml)
         # TODO: do we need a response from dispatcher? cloudadapter is not currently set up to do this; it just sends blindly
 
         return inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
