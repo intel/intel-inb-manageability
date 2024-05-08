@@ -12,7 +12,7 @@ import logging
 # following line is only used for type checking; we used defusedxml for
 # actual processing
 # As of Feb 2024, we still have to use xml.etree.  There is no equivalent in defusedxml
-from xml.etree.ElementTree import Element, SubElement  # nosec: S405, B405
+from xml.etree.ElementTree import Element  # nosec: S405, B405
 from defusedxml.ElementTree import XMLParser, parse, ParseError, tostring
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from .security_masker import mask_security_info
@@ -85,7 +85,7 @@ class XmlHandler:
             with open(get_canonical_representation_of_path(str(self._schema_location))) as schema_file:
                 schema = xmlschema.XMLSchema11(schema_file)
                 schema.validate(xml)
-
+            logger.debug("XML file validated successfully")
             return parsed_doc
         except (xmlschema.XMLSchemaValidationError, ParseError, DefusedXmlException, DTDForbidden,
                 EntitiesForbidden, ExternalReferenceForbidden, NotSupportedError, xmlschema.XMLSchemaParseError) as error:
@@ -95,6 +95,19 @@ class XmlHandler:
         return "<XmlHandler xml=" + self._xml.__repr__() +\
                ", is_file=" + self._is_file.__repr__() +\
                ", schema_location=" + self._schema_location.__repr__() + ">"
+
+    def is_element_exist(self, xpath: str) -> bool:
+        """Find element matching XPath from parsed XML.
+
+        @param xpath: Valid XPath expression
+        @return: Value of the element in the parsed XML object
+        """
+        logger.debug("")
+        try:
+            element = self._root.findall(xpath)
+            return False if not element else True
+        except KeyError:
+            return False
 
     def get_element(self, xpath: str) -> str:
         """Find element matching XPath from parsed XML.

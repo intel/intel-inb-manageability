@@ -29,6 +29,9 @@ IP = 'ip'
 TOKEN = 'token'  # noqa: S105
 CSL_CA = 'certFile'
 
+# UDM Sqlite3 DB FILE
+UDM_DB_FILE = str(INTEL_MANAGEABILITY_ETC_PATH_PREFIX /
+                  'public' / 'dispatcher-agent' / 'udm.db')
 
 # Subscription channels
 TC_REQUEST_CHANNEL = 'manageability/request/+'
@@ -47,6 +50,8 @@ SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
                       'dispatcher-agent' / 'manifest_schema.xsd')
 JSON_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
                            'dispatcher-agent' / 'config_param_schema.json')
+SCHEDULE_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
+                      'dispatcher-agent' / 'schedule_manifest_schema.xsd')
 
 # Client certs and keys path
 CLIENT_CERTS = str(BROKER_ETC_PATH / 'public' /

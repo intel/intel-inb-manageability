@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+     <xs:simpleType name="sourceType">
+          <xs:restriction base="xs:string">
+                <xs:enumeration value="application"/>
+                <xs:enumeration value="os"/>
+    	  </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="Max50Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="50"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="MinDecimalZero">
+         <xs:restriction base="xs:decimal">
+            <xs:minInclusive value="0"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PathMax1500Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="1500"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="SigMax1000Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="1000"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="URLMax700Chars">
+         <xs:restriction base="xs:anyURI">
+             <xs:maxLength value="700"/>
+         </xs:restriction>
+    </xs:simpleType>
+   <xs:simpleType name="Max200Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="200"/>
+         </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="ValidGuidFormat">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The representation of a GUID, generally the id of an element.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PackageList">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="(([a-zA-Z0-9][a-zA-Z0-9+.-]*(:[a-zA-Z0-9][a-zA-Z0-9+.-]*)?)(,[a-zA-Z0-9][a-zA-Z0-9+.-]*(:[a-zA-Z0-9][a-zA-Z0-9+.-]*)?)*)?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="manifest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="type">
+                    <xs:simpleType>
+                        <xs:restriction base="xs:string">
+                            <xs:enumeration value="schedule"/>
+                        </xs:restriction>
+                    </xs:simpleType>
+                </xs:element>
+                <xs:element name="schedule">
+                   <xs:complexType>
+                    <xs:choice>
+                        <xs:element ref="singleSchedule" minOccurs="0"/>
+                        <xs:element ref="repeatedSchedule" minOccurs="0"/>
+                    </xs:choice>
+                </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="singleSchedule">
+    <xs:complexType>
+        <xs:all>
+            <xs:element name="scheduledTime" type="scheduleTime"/>
+            <xs:element name="tasks">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="task" type="xs:string" minOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="repeatedSchedule">
+    <xs:complexType>
+        <xs:all>
+            <xs:element name="duration" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cron_minutes" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cron_hours" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cron_day_month" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cron_month" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="cron_day_week" type="xs:integer" minOccurs="0" maxOccurs="1"/>
+            <xs:element name="tasks">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="task" type="xs:string" minOccurs="1"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:all>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:complexType name="scheduleTime">
+      <xs:sequence>
+        <xs:element name="start" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+        <xs:element name="end" type="xs:dateTime" minOccurs="0" maxOccurs="1"/>
+      </xs:sequence>
+    </xs:complexType>
+
+</xs:schema>

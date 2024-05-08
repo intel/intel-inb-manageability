@@ -19,6 +19,21 @@ TEST_SCHEMA_LOCATION = os.path.join(
                                         'manifest_schema.xsd',
                                     )
 
+TEST_SCHEDULE_SCHEMA_LOCATION = os.path.join(
+                                        os.path.dirname(__file__),
+                                        '..',
+                                        '..',
+                                        '..',
+                                        '..',
+                                        'inbm',
+                                        'dispatcher-agent',
+                                        'fpm-template',
+                                        'usr',
+                                        'share',
+                                        'dispatcher-agent',
+                                        'schedule_manifest_schema.xsd',
+                                    )
+
 GOOD_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
            '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \
            'Sample FOTA manifest file</description><type>aota</type><repo>remote</repo>' \
@@ -70,12 +85,25 @@ TEST_XML = '<?xml version="1.0" encoding="utf-8"?>' \
     '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
     '2020-11-16</releasedate></fota></type></ota></manifest> '
 
+GOOD_SCHEDULED_XML = '''<?xml version="1.0" encoding="utf-8"?><manifest><type>schedule</type>
+<schedule><singleSchedule><start_time>2002-05-30T09:30:10</start_time><end_time>2002-05-30T10:30:10</end_time><tasks>
+<task>'<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo>
+</header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot></sota></type></ota>
+</manifest>'</task></tasks></singleSchedule></schedule></manifest>'''
+
+BAD_SCHEDULED_XML = '''<?xml version="1.0" encoding="utf-8"?><manifest><type>schedule</type>
+<schedule><singleSchedule><tasks>
+<task>'<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo>
+</header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot></sota></type></ota>
+</manifest>'</task></tasks></singleSchedule></schedule></manifest>'''
 
 class TestXmlParser(TestCase):
 
     def setUp(self) -> None:
         self.good = XmlHandler(GOOD_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         self.test = XmlHandler(TEST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+        self.good_schedule_xml = XmlHandler(GOOD_SCHEDULED_XML, is_file=False, schema_location=TEST_SCHEDULE_SCHEMA_LOCATION)
+        self.bad_schedule_xml = XmlHandler(BAD_SCHEDULED_XML, is_file=False, schema_location=TEST_SCHEDULE_SCHEMA_LOCATION)
 
     def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
@@ -146,6 +174,12 @@ class TestXmlParser(TestCase):
 
     def test_get_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.get_element, 'ota/header/bb')
+
+    def test_get_time_when_element_exists(self) -> None:
+        self.assertTrue(self.good_schedule_xml.is_element_exist("schedule/singleSchedule/start_time"))
+
+    def test_return_false_element_dne(self) -> None:
+        self.assertFalse(self.bad_schedule_xml.is_element_exist("schedule/singleSchedule/start_time"))
 
 
 if __name__ == '__main__':

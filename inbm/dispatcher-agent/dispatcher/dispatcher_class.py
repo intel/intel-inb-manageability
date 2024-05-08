@@ -287,16 +287,6 @@ class Dispatcher:
                 # Parse manifest
                 header = parsed_head.get_children('ota/header')
                 ota_type = header['type']
-
-                # Check if OTA is scheduled
-                if ota_type == OtaType.SOTA.name.lower():
-                    logger.debug("Check if this is a schedule update request")
-                    is_task_scheduled, message = schedule_update(xpath=f"ota/type/{ota_type}/scheduledTime", parsed_xml=parsed_head)
-                    logger.debug(f"is_task_scheduled={is_task_scheduled}, message={message}")
-                    if is_task_scheduled:
-                        result = Result(CODE_OK, message)
-                        return result
-
                 repo_type = header['repo']
                 resource = parsed_head.get_children(f'ota/type/{ota_type}')
                 kwargs = {'ota_type': ota_type}
@@ -359,6 +349,26 @@ class Dispatcher:
                 self._update_logger.status = OTA_SUCCESS
                 self._update_logger.error = ""
             self._update_logger.save_log()
+            return result
+
+    def do_schedule(self, xml: str, schema_location: Optional[str] = SCHEDULE_SCHEMA_LOCATION) -> Result:
+        result: Result = Result()
+        logger.debug("do_install")
+        parsed_head = None
+        try:
+            type_of_manifest, parsed_head = \
+                _check_type_validate_manifest(xml, schema_location=schema_location)
+            is_task_scheduled, message = schedule_update(parsed_xml=parsed_head)
+            logger.debug(f"is_task_scheduled={is_task_scheduled}, message={message}")
+            if is_task_scheduled:
+                result = Result(CODE_OK, message)
+            else:
+                result = Result(CODE_BAD_REQUEST, f'Error during schedule: {message}')
+            return result
+        except XmlException as error:
+            result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
+        finally:
+            logger.info('Install result: %s', str(result))
             return result
 
     def _do_ota_update(self, ota_type: str, repo_type: str, resource: dict,
@@ -718,6 +728,10 @@ def handle_updates(dispatcher: Any) -> None:
     message: Tuple[str, str] = dispatcher.update_queue.get()
     request_type: str = message[0]
     manifest: str = message[1]
+
+    if request_type == "schedule":
+        dispatcher.do_schedule(xml=manifest)
+        return
 
     if request_type == "install" or request_type == "query":
         dispatcher.do_install(xml=manifest)
