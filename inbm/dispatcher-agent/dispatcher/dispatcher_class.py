@@ -19,7 +19,7 @@ from typing import Optional, Any, Mapping, Tuple
 from dispatcher.config.config_operation import ConfigOperation
 from dispatcher.source.source_command import do_source_command
 from dispatcher.common.result_constants import Result, PUBLISH_SUCCESS, OTA_FAILURE
-from dispatcher.schedule.manifest_parser import parse
+from .schedule.manifest_parser import parse_schedule
 
 from .install_check_service import InstallCheckService
 
@@ -691,7 +691,7 @@ def handle_updates(dispatcher: Any) -> None:
     manifest: str = message[1]
 
     if request_type == "schedule":
-        manifest_parser.parse(xml=manifest)
+        parse_schedule(xml=manifest)
         return
 
     if request_type == "install" or request_type == "query":

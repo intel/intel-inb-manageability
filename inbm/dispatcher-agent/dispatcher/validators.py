@@ -25,12 +25,12 @@ def get_schema_location(schema_type: str, schema_location: Optional[str] = None)
     return schema_location
 
 def validate_xml_manifest(xml: str,
-                          schema_location: Optional[str] = None) -> Tuple[str, XmlHandler]:
+                          schema_location: Optional[str] = None) -> XmlHandler:
     """Parse manifest
 
     @param xml: manifest in XML format
     @param schema_location: optional location of schema
-    @return: Tuple of (ota-type, resource-name, URL of resource, resource-type)
+    @return: XML manifest head
     """
     # Added schema_location variable for unit tests
     schema_location = get_canonical_representation_of_path(
@@ -38,10 +38,9 @@ def validate_xml_manifest(xml: str,
     parsed = XmlHandler(xml=xml,
                         is_file=False,
                         schema_location=schema_location)
-    type_of_manifest = parsed.get_element('type')
     logger.debug(
-        f"type_of_manifest: {type_of_manifest!r}. parsed: {mask_security_info(str(parsed))!r}.")
-    return type_of_manifest, parsed
+        f"parsed: {mask_security_info(str(parsed))!r}.")
+    return parsed
 
 def _validate_json_schema(schema_type: str, params: str, schema_location: Optional[str] = None) -> str:
     schema_location = get_schema_location(schema_type, schema_location)

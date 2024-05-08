@@ -12,12 +12,12 @@ from ..constants import SCHEDULE_SCHEMA_LOCATION
 
 logger = logging.getLogger(__name__)
 
-def parse(xml: str, schema_location: Optional[str] = SCHEDULE_SCHEMA_LOCATION) -> Result:
+def parse_schedule(xml: str, schema_location: Optional[str] = SCHEDULE_SCHEMA_LOCATION) -> Result:
         result: Result = Result()
 
         parsed_head = None
         try:
-            type_of_manifest, parsed_head = \
+            parsed_head = \
                 validate_xml_manifest(xml, schema_location=schema_location)
             is_task_scheduled, message = schedule_update(parsed_xml=parsed_head)
             logger.debug(f"is_task_scheduled={is_task_scheduled}, message={message}")
@@ -29,5 +29,5 @@ def parse(xml: str, schema_location: Optional[str] = SCHEDULE_SCHEMA_LOCATION) -
         except XmlException as error:
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
         finally:
-            logger.info('Install result: %s', str(result))
+            logger.info('Schedule result: %s', str(result))
             return result
