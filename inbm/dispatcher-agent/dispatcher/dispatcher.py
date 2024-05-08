@@ -6,19 +6,32 @@
 """
 import platform
 import sys
+import os
 from typing import List
 
+from dispatcher.constants import DEFAULT_LOGGING_PATH
 from dispatcher.install_check_service import InstallCheckService
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.dispatcher_broker import DispatcherBroker
+from logging.config import fileConfig
 from inbm_lib.windows_service import WindowsService
 
+
+def get_log_config_path() -> str:
+    """Return the config path for this agent, taken by default from LOGGERCONFIG environment
+    variable and then from a fixed default path.
+    """
+    try:
+        return os.environ['LOGGERCONFIG']
+    except KeyError:
+        return DEFAULT_LOGGING_PATH
 
 def make_dispatcher(args: List[str]) -> Dispatcher:
     """Make a dispatcher with the given args.
 
     Handle dependency injection in one place"""
     broker = DispatcherBroker()
+
     return Dispatcher(args=args, broker=broker, install_check_service=InstallCheckService(broker))
 
 
@@ -44,6 +57,12 @@ class WindowsDispatcherService(WindowsService):
 
 def main() -> None:
     """Function called by __main__."""
+
+    log_config_path = get_log_config_path()
+    msg = f"Looking for logging configuration file at {log_config_path}"
+    print(msg)
+    fileConfig(log_config_path,
+                disable_existing_loggers=False)
 
     if platform.system() == 'Windows':
         import servicemanager
