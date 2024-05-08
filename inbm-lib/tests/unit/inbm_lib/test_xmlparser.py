@@ -19,21 +19,6 @@ TEST_SCHEMA_LOCATION = os.path.join(
                                         'manifest_schema.xsd',
                                     )
 
-TEST_SCHEDULE_SCHEMA_LOCATION = os.path.join(
-                                        os.path.dirname(__file__),
-                                        '..',
-                                        '..',
-                                        '..',
-                                        '..',
-                                        'inbm',
-                                        'dispatcher-agent',
-                                        'fpm-template',
-                                        'usr',
-                                        'share',
-                                        'dispatcher-agent',
-                                        'schedule_manifest_schema.xsd',
-                                    )
-
 GOOD_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
            '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \
            'Sample FOTA manifest file</description><type>aota</type><repo>remote</repo>' \

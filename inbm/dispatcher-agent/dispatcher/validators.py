@@ -8,9 +8,11 @@ import json
 import logging
 import os
 import jsonschema
-from typing import Optional
+from typing import Optional, Tuple
 
+from inbm_lib.xmlhandler import XmlHandler
 from inbm_common_lib.utility import get_canonical_representation_of_path
+from inbm_lib.security_masker import mask_security_info
 
 from .constants import *
 
@@ -22,8 +24,26 @@ def get_schema_location(schema_type: str, schema_location: Optional[str] = None)
         schema_location = JSON_SCHEMA_LOCATION
     return schema_location
 
+def validate_xml_manifest(xml: str,
+                          schema_location: Optional[str] = None) -> Tuple[str, XmlHandler]:
+    """Parse manifest
 
-def validate_schema(schema_type: str, params: str, schema_location: Optional[str] = None) -> str:
+    @param xml: manifest in XML format
+    @param schema_location: optional location of schema
+    @return: Tuple of (ota-type, resource-name, URL of resource, resource-type)
+    """
+    # Added schema_location variable for unit tests
+    schema_location = get_canonical_representation_of_path(
+        schema_location) if schema_location is not None else get_canonical_representation_of_path(SCHEMA_LOCATION)
+    parsed = XmlHandler(xml=xml,
+                        is_file=False,
+                        schema_location=schema_location)
+    type_of_manifest = parsed.get_element('type')
+    logger.debug(
+        f"type_of_manifest: {type_of_manifest!r}. parsed: {mask_security_info(str(parsed))!r}.")
+    return type_of_manifest, parsed
+
+def _validate_json_schema(schema_type: str, params: str, schema_location: Optional[str] = None) -> str:
     schema_location = get_schema_location(schema_type, schema_location)
 
     if not os.path.exists(schema_location):
@@ -49,7 +69,7 @@ def is_valid_config_params(config_params: str, schema_location: Optional[str] = 
     @return (bool): True if schema validated or False on failure or exception
     """
     try:
-        validate_schema('single', config_params, schema_location)
+        _validate_json_schema('single', config_params, schema_location)
     except (ValueError, KeyError, jsonschema.exceptions.ValidationError) as e:
         logger.info("Error received: %s", str(e))
         return False

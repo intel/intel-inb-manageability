@@ -19,7 +19,7 @@ from typing import Optional, Any, Mapping, Tuple
 from dispatcher.config.config_operation import ConfigOperation
 from dispatcher.source.source_command import do_source_command
 from dispatcher.common.result_constants import Result, PUBLISH_SUCCESS, OTA_FAILURE
-from dispatcher.schedule.schedule import schedule_update
+from dispatcher.schedule.manifest_parser import parse
 
 from .install_check_service import InstallCheckService
 
@@ -47,6 +47,7 @@ from .device_manager.device_manager import get_device_manager
 from .fota.fota_error import FotaError
 from .ota_factory import OtaFactory
 from .ota_thread import ota_lock
+from .validators import validate_xml_manifest
 from .ota_util import create_ota_resource_list
 from .remediationmanager.remediation_manager import RemediationManager
 from .sota.os_factory import SotaOsFactory
@@ -60,26 +61,6 @@ from .update_logger import UpdateLogger
 from . import source
 
 logger = logging.getLogger(__name__)
-
-
-def _check_type_validate_manifest(xml: str,
-                                  schema_location: Optional[str] = None) -> Tuple[str, XmlHandler]:
-    """Parse manifest
-
-    @param xml: manifest in XML format
-    @param schema_location: optional location of schema
-    @return: Tuple of (ota-type, resource-name, URL of resource, resource-type)
-    """
-    # Added schema_location variable for unit tests
-    schema_location = get_canonical_representation_of_path(
-        schema_location) if schema_location is not None else get_canonical_representation_of_path(SCHEMA_LOCATION)
-    parsed = XmlHandler(xml=xml,
-                        is_file=False,
-                        schema_location=schema_location)
-    type_of_manifest = parsed.get_element('type')
-    logger.debug(
-        f"type_of_manifest: {type_of_manifest!r}. parsed: {mask_security_info(str(parsed))!r}.")
-    return type_of_manifest, parsed
 
 
 class Dispatcher:
@@ -271,7 +252,7 @@ class Dispatcher:
         parsed_head = None
         try:  # TODO: Split into multiple try/except blocks
             type_of_manifest, parsed_head = \
-                _check_type_validate_manifest(xml, schema_location=schema_location)
+                validate_xml_manifest(xml, schema_location=schema_location)
             self.invoke_workload_orchestration_check(False, type_of_manifest, parsed_head)
 
             if type_of_manifest == 'cmd':
@@ -349,26 +330,6 @@ class Dispatcher:
                 self._update_logger.status = OTA_SUCCESS
                 self._update_logger.error = ""
             self._update_logger.save_log()
-            return result
-
-    def do_schedule(self, xml: str, schema_location: Optional[str] = SCHEDULE_SCHEMA_LOCATION) -> Result:
-        result: Result = Result()
-        logger.debug("do_install")
-        parsed_head = None
-        try:
-            type_of_manifest, parsed_head = \
-                _check_type_validate_manifest(xml, schema_location=schema_location)
-            is_task_scheduled, message = schedule_update(parsed_xml=parsed_head)
-            logger.debug(f"is_task_scheduled={is_task_scheduled}, message={message}")
-            if is_task_scheduled:
-                result = Result(CODE_OK, message)
-            else:
-                result = Result(CODE_BAD_REQUEST, f'Error during schedule: {message}')
-            return result
-        except XmlException as error:
-            result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
-        finally:
-            logger.info('Install result: %s', str(result))
             return result
 
     def _do_ota_update(self, ota_type: str, repo_type: str, resource: dict,
@@ -730,7 +691,7 @@ def handle_updates(dispatcher: Any) -> None:
     manifest: str = message[1]
 
     if request_type == "schedule":
-        dispatcher.do_schedule(xml=manifest)
+        manifest_parser.parse(xml=manifest)
         return
 
     if request_type == "install" or request_type == "query":

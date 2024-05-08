@@ -13,7 +13,7 @@ from .scheduled_task import ScheduledTask
 from ..constants import UDM_DB_FILE
 
 logger = logging.getLogger(__name__)
-
+       
 def schedule_update(parsed_xml: Any) -> Tuple[bool, str]:
     """Schedule a task for later execution
 
