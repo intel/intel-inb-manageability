@@ -10,7 +10,7 @@ import threading
 import time
 from typing import Callable, Optional, Any
 from datetime import datetime
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # only using this to generate XML, not parse it
 
 from cloudadapter.cloud.client.inbs_xml_conversion import convert_schedule_proto_to_xml
 from cloudadapter.exceptions import AuthenticationError

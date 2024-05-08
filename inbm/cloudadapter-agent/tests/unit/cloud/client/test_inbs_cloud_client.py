@@ -85,7 +85,7 @@ class TestInbsCloudClient(unittest.TestCase):
         # Cleanup, ensure nothing else is left in the generator
         with self.assertRaises(StopIteration):
             next(generator)
-    
+
     # TODO - need to mock status check and comms with dispatcher later
     def test_handle_set_schedule_request(self):
         request_id = "123"
@@ -112,7 +112,7 @@ class TestInbsCloudClient(unittest.TestCase):
 
         self.assertEqual(result.request_id, request_id)
         self.assertEqual(result.response_data.set_schedule_response_data.status_type,
-                         inbs_sb_pb2.SetScheduleResponseData.STATUS_TYPE_STARTED) # TODO actually mock out status
+                         inbs_sb_pb2.SetScheduleResponseData.STATUS_TYPE_STARTED)  # TODO actually mock out status
 
     @patch("cloudadapter.cloud.client.inbs_cloud_client.time.sleep", side_effect=InterruptedError)
     @patch("grpc.insecure_channel")

@@ -67,12 +67,13 @@ def _google_timestamp_to_xml_datetime_quantized_seconds(timestamp: google.protob
     # Manually appending 'Z' to represent UTC
     return dt.isoformat() + 'Z'
 
+
 def protobuf_duration_to_xml(duration: google.protobuf.duration_pb2.Duration):
     """Convert Google Protobuf Duration to XML duration string."""
     # Extract seconds and nanoseconds
     seconds = duration.seconds + 0.0
     nanos = duration.nanos
-    
+
     # Calculate total seconds (including nanoseconds part)
     total_seconds = seconds + nanos / 1e9
 
@@ -95,8 +96,8 @@ def protobuf_duration_to_xml(duration: google.protobuf.duration_pb2.Duration):
                       f"{int(minutes)}M" if minutes else "",
                       f"{seconds:.6f}".rstrip('0').rstrip('.') + "S" if seconds else ""]
     duration_str = sign + 'P' + ''.join(duration_parts)
-    
+
     if duration_str.endswith('T'):
         duration_str = duration_str[:-1]  # Remove trailing "T" if no time components
-    
+
     return duration_str

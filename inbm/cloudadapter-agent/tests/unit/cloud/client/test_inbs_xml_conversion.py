@@ -39,7 +39,8 @@ class TestInbsXmlConversion(unittest.TestCase):
                             manifest_xml=["<xml1/>", "<xml2/>"]
                         ),
                         single_schedule=SingleSchedule(
-                            start_time=google.protobuf.timestamp_pb2.Timestamp(seconds=10,nanos=10),
+                            start_time=google.protobuf.timestamp_pb2.Timestamp(
+                                seconds=10, nanos=10),
                             end_time=google.protobuf.timestamp_pb2.Timestamp(seconds=20),
                         )
                     )
@@ -184,6 +185,7 @@ class TestInbsXmlConversion(unittest.TestCase):
 
         result = protobuf_duration_to_xml(duration)
         self.assertEqual(result, expected)
+
 
 if __name__ == '__main__':
     unittest.main()
