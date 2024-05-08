@@ -96,19 +96,6 @@ class XmlHandler:
                ", is_file=" + self._is_file.__repr__() +\
                ", schema_location=" + self._schema_location.__repr__() + ">"
 
-    def is_element_exist(self, xpath: str) -> bool:
-        """Find element matching XPath from parsed XML.
-
-        @param xpath: Valid XPath expression
-        @return: Value of the element in the parsed XML object
-        """
-        logger.debug("")
-        try:
-            element = self._root.findall(xpath)
-            return False if not element else True
-        except KeyError:
-            return False
-
     def get_element(self, xpath: str) -> str:
         """Find element matching XPath from parsed XML.
 

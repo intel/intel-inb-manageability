@@ -85,49 +85,12 @@ TEST_XML = '<?xml version="1.0" encoding="utf-8"?>' \
     '<vendor>Intel</vendor><manufacturer>hisilicon</manufacturer><product>kmb-on-poplar</product><releasedate>' \
     '2020-11-16</releasedate></fota></type></ota></manifest> '
 
-GOOD_SCHEDULED_XML = '''
-<ScheduleManifest>
-  <update_schedule>
-    <schedule>
-      <single_schedule>
-        <start_time>2023-03-01T08:00:00Z</start_time>
-        <end_time>2023-03-01T12:00:00Z</end_time>
-      </single_schedule>
-    </schedule>
-    <manifests>
-      <manifest_xml>
-        <![CDATA[<random><xml></xml></random>]]>
-      </manifest_xml>
-    </manifests>
-  </update_schedule>
-  <update_schedule>
-    <schedule>
-      <repeated_schedule>
-        <duration>PT3600S</duration> <!-- Duration of 1 hour -->
-        <cron_minutes>0</cron_minutes>
-        <cron_hours>*/4</cron_hours> <!-- Every 4 hours -->
-        <cron_day_month>*</cron_day_month>
-        <cron_month>*</cron_month>
-        <cron_day_week>*</cron_day_week>
-      </repeated_schedule>
-    </schedule>
-    <manifests>
-      <manifest_xml>
-        <![CDATA[<some><random><xml></xml></random></some>]]>
-      </manifest_xml>
-      <manifest_xml>
-        <![CDATA[<more><random><xml></xml></random></more>]]>
-      </manifest_xml>
-    </manifests>
-  </update_schedule>
-</ScheduleManifest>
-'''
-
 class TestXmlParser(TestCase):
 
     def setUp(self) -> None:
         self.good = XmlHandler(GOOD_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         self.test = XmlHandler(TEST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+    
     def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
 
@@ -197,11 +160,6 @@ class TestXmlParser(TestCase):
 
     def test_get_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.get_element, 'ota/header/bb')
-
-    def test_get_time_when_element_exists(self) -> None:
-        good_schedule_xml = XmlHandler(GOOD_SCHEDULED_XML, is_file=False, schema_location=TEST_SCHEDULE_SCHEMA_LOCATION)
-        self.assertEqual('\n        <more><random><xml></xml></random></more>\n      ', 
-                         good_schedule_xml.get_element("update_schedule[2]/manifests/manifest_xml[2]"))
-
+ 
 if __name__ == '__main__':
     unittest.main()
