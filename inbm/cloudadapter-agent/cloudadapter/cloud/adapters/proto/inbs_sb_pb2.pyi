@@ -66,20 +66,20 @@ class INBMCommandRequestData(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     PING_REQUEST_DATA_FIELD_NUMBER: builtins.int
-    SET_SOTA_SCHEDULE_REQUEST_DATA_FIELD_NUMBER: builtins.int
+    SET_SCHEDULE_REQUEST_DATA_FIELD_NUMBER: builtins.int
     @property
     def ping_request_data(self) -> global___PingRequestData: ...
     @property
-    def set_sota_schedule_request_data(self) -> global___SetSOTAScheduleRequestData: ...
+    def set_schedule_request_data(self) -> global___SetScheduleRequestData: ...
     def __init__(
         self,
         *,
         ping_request_data: global___PingRequestData | None = ...,
-        set_sota_schedule_request_data: global___SetSOTAScheduleRequestData | None = ...,
+        set_schedule_request_data: global___SetScheduleRequestData | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["payload", b"payload", "ping_request_data", b"ping_request_data", "set_sota_schedule_request_data", b"set_sota_schedule_request_data"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["payload", b"payload", "ping_request_data", b"ping_request_data", "set_sota_schedule_request_data", b"set_sota_schedule_request_data"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["payload", b"payload"]) -> typing.Literal["ping_request_data", "set_sota_schedule_request_data"] | None: ...
+    def HasField(self, field_name: typing.Literal["payload", b"payload", "ping_request_data", b"ping_request_data", "set_schedule_request_data", b"set_schedule_request_data"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["payload", b"payload", "ping_request_data", b"ping_request_data", "set_schedule_request_data", b"set_schedule_request_data"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["payload", b"payload"]) -> typing.Literal["ping_request_data", "set_schedule_request_data"] | None: ...
 
 global___INBMCommandRequestData = INBMCommandRequestData
 
@@ -88,20 +88,20 @@ class INBMCommandResponseData(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     PING_RESPONSE_DATA_FIELD_NUMBER: builtins.int
-    SET_SOTA_SCHEDULE_DATA_FIELD_NUMBER: builtins.int
+    SET_SCHEDULE_RESPONSE_DATA_FIELD_NUMBER: builtins.int
     @property
     def ping_response_data(self) -> global___PingResponseData: ...
     @property
-    def set_sota_schedule_data(self) -> global___SetSOTAScheduleResponseData: ...
+    def set_schedule_response_data(self) -> global___SetScheduleResponseData: ...
     def __init__(
         self,
         *,
         ping_response_data: global___PingResponseData | None = ...,
-        set_sota_schedule_data: global___SetSOTAScheduleResponseData | None = ...,
+        set_schedule_response_data: global___SetScheduleResponseData | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["payload", b"payload", "ping_response_data", b"ping_response_data", "set_sota_schedule_data", b"set_sota_schedule_data"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["payload", b"payload", "ping_response_data", b"ping_response_data", "set_sota_schedule_data", b"set_sota_schedule_data"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["payload", b"payload"]) -> typing.Literal["ping_response_data", "set_sota_schedule_data"] | None: ...
+    def HasField(self, field_name: typing.Literal["payload", b"payload", "ping_response_data", b"ping_response_data", "set_schedule_response_data", b"set_schedule_response_data"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["payload", b"payload", "ping_response_data", b"ping_response_data", "set_schedule_response_data", b"set_schedule_response_data"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["payload", b"payload"]) -> typing.Literal["ping_response_data", "set_schedule_response_data"] | None: ...
 
 global___INBMCommandResponseData = INBMCommandResponseData
 
@@ -126,180 +126,155 @@ class PingResponseData(google.protobuf.message.Message):
 global___PingResponseData = PingResponseData
 
 @typing.final
-class SetSOTAScheduleRequestData(google.protobuf.message.Message):
+class SetScheduleRequestData(google.protobuf.message.Message):
     """TODO: re-add the validate.rules from maintenance manager to the repeated_schedules fields. prerequisite: get the validate.proto import working"""
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    @typing.final
-    class UpdateSource(google.protobuf.message.Message):
-        DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-        KERNEL_COMMAND_FIELD_NUMBER: builtins.int
-        OS_REPO_URL_FIELD_NUMBER: builtins.int
-        CUSTOM_REPOS_FIELD_NUMBER: builtins.int
-        kernel_command: builtins.str
-        """Kernel command line"""
-        os_repo_url: builtins.str
-        """'DEB822 Source Format' url to the public repository"""
-        @property
-        def custom_repos(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
-            """'DEB822 Source Format' entries for Debian style OSs"""
-
-        def __init__(
-            self,
-            *,
-            kernel_command: builtins.str = ...,
-            os_repo_url: builtins.str = ...,
-            custom_repos: collections.abc.Iterable[builtins.str] | None = ...,
-        ) -> None: ...
-        def ClearField(self, field_name: typing.Literal["custom_repos", b"custom_repos", "kernel_command", b"kernel_command", "os_repo_url", b"os_repo_url"]) -> None: ...
-
-    @typing.final
-    class UpdateSchedule(google.protobuf.message.Message):
-        DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-        @typing.final
-        class SingleSchedule(google.protobuf.message.Message):
-            DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-            START_TIME_FIELD_NUMBER: builtins.int
-            END_TIME_FIELD_NUMBER: builtins.int
-            @property
-            def start_time(self) -> google.protobuf.timestamp_pb2.Timestamp:
-                """Start time for the schedule (required)"""
-
-            @property
-            def end_time(self) -> google.protobuf.timestamp_pb2.Timestamp:
-                """Start time for the schedule (optional)"""
-
-            def __init__(
-                self,
-                *,
-                start_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-                end_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-            ) -> None: ...
-            def HasField(self, field_name: typing.Literal["end_time", b"end_time", "start_time", b"start_time"]) -> builtins.bool: ...
-            def ClearField(self, field_name: typing.Literal["end_time", b"end_time", "start_time", b"start_time"]) -> None: ...
-
-        @typing.final
-        class RepeatedSchedule(google.protobuf.message.Message):
-            DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-            DURATION_FIELD_NUMBER: builtins.int
-            CRON_MINUTES_FIELD_NUMBER: builtins.int
-            CRON_HOURS_FIELD_NUMBER: builtins.int
-            CRON_DAY_MONTH_FIELD_NUMBER: builtins.int
-            CRON_MONTH_FIELD_NUMBER: builtins.int
-            CRON_DAY_WEEK_FIELD_NUMBER: builtins.int
-            cron_minutes: builtins.str
-            """cron style minutes (0-59)"""
-            cron_hours: builtins.str
-            """cron style hours (0-23)"""
-            cron_day_month: builtins.str
-            """cron style day of month (0-31)"""
-            cron_month: builtins.str
-            """cron style month (1-12)"""
-            cron_day_week: builtins.str
-            """cron style day of week (0-6)"""
-            @property
-            def duration(self) -> google.protobuf.duration_pb2.Duration:
-                """should be between 1 second and 86400 seconds (24 hours worth of seconds)"""
-
-            def __init__(
-                self,
-                *,
-                duration: google.protobuf.duration_pb2.Duration | None = ...,
-                cron_minutes: builtins.str = ...,
-                cron_hours: builtins.str = ...,
-                cron_day_month: builtins.str = ...,
-                cron_month: builtins.str = ...,
-                cron_day_week: builtins.str = ...,
-            ) -> None: ...
-            def HasField(self, field_name: typing.Literal["duration", b"duration"]) -> builtins.bool: ...
-            def ClearField(self, field_name: typing.Literal["cron_day_month", b"cron_day_month", "cron_day_week", b"cron_day_week", "cron_hours", b"cron_hours", "cron_minutes", b"cron_minutes", "cron_month", b"cron_month", "duration", b"duration"]) -> None: ...
-
-        SINGLE_SCHEDULES_FIELD_NUMBER: builtins.int
-        REPEATED_SCHEDULES_FIELD_NUMBER: builtins.int
-        @property
-        def single_schedules(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___SetSOTAScheduleRequestData.UpdateSchedule.SingleSchedule]: ...
-        @property
-        def repeated_schedules(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___SetSOTAScheduleRequestData.UpdateSchedule.RepeatedSchedule]: ...
-        def __init__(
-            self,
-            *,
-            single_schedules: collections.abc.Iterable[global___SetSOTAScheduleRequestData.UpdateSchedule.SingleSchedule] | None = ...,
-            repeated_schedules: collections.abc.Iterable[global___SetSOTAScheduleRequestData.UpdateSchedule.RepeatedSchedule] | None = ...,
-        ) -> None: ...
-        def ClearField(self, field_name: typing.Literal["repeated_schedules", b"repeated_schedules", "single_schedules", b"single_schedules"]) -> None: ...
-
-    @typing.final
-    class InstalledPackages(google.protobuf.message.Message):
-        DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-        INSTALLED_PACKAGES_FIELD_NUMBER: builtins.int
-        @property
-        def installed_packages(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
-            """OS dependent. Should not contain version info."""
-
-        def __init__(
-            self,
-            *,
-            installed_packages: collections.abc.Iterable[builtins.str] | None = ...,
-        ) -> None: ...
-        def ClearField(self, field_name: typing.Literal["installed_packages", b"installed_packages"]) -> None: ...
-
-    UPDATE_SOURCE_FIELD_NUMBER: builtins.int
-    UPDATE_SCHEDULE_FIELD_NUMBER: builtins.int
-    INSTALLED_PACKAGES_FIELD_NUMBER: builtins.int
+    TASKS_FIELD_NUMBER: builtins.int
     @property
-    def update_source(self) -> global___SetSOTAScheduleRequestData.UpdateSource: ...
-    @property
-    def update_schedule(self) -> global___SetSOTAScheduleRequestData.UpdateSchedule: ...
-    @property
-    def installed_packages(self) -> global___SetSOTAScheduleRequestData.InstalledPackages: ...
+    def tasks(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___INBMScheduledTask]: ...
     def __init__(
         self,
         *,
-        update_source: global___SetSOTAScheduleRequestData.UpdateSource | None = ...,
-        update_schedule: global___SetSOTAScheduleRequestData.UpdateSchedule | None = ...,
-        installed_packages: global___SetSOTAScheduleRequestData.InstalledPackages | None = ...,
+        tasks: collections.abc.Iterable[global___INBMScheduledTask] | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["installed_packages", b"installed_packages", "update_schedule", b"update_schedule", "update_source", b"update_source"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["installed_packages", b"installed_packages", "update_schedule", b"update_schedule", "update_source", b"update_source"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["tasks", b"tasks"]) -> None: ...
 
-global___SetSOTAScheduleRequestData = SetSOTAScheduleRequestData
+global___SetScheduleRequestData = SetScheduleRequestData
 
 @typing.final
-class SetSOTAScheduleResponseData(google.protobuf.message.Message):
+class INBMScheduledTask(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    MANIFESTS_FIELD_NUMBER: builtins.int
+    SINGLE_SCHEDULE_FIELD_NUMBER: builtins.int
+    REPEATED_SCHEDULE_FIELD_NUMBER: builtins.int
+    @property
+    def manifests(self) -> global___Manifests: ...
+    @property
+    def single_schedule(self) -> global___SingleSchedule: ...
+    @property
+    def repeated_schedule(self) -> global___RepeatedSchedule: ...
+    def __init__(
+        self,
+        *,
+        manifests: global___Manifests | None = ...,
+        single_schedule: global___SingleSchedule | None = ...,
+        repeated_schedule: global___RepeatedSchedule | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["manifests", b"manifests", "repeated_schedule", b"repeated_schedule", "schedule", b"schedule", "single_schedule", b"single_schedule"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["manifests", b"manifests", "repeated_schedule", b"repeated_schedule", "schedule", b"schedule", "single_schedule", b"single_schedule"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["schedule", b"schedule"]) -> typing.Literal["single_schedule", "repeated_schedule"] | None: ...
+
+global___INBMScheduledTask = INBMScheduledTask
+
+@typing.final
+class Manifests(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    MANIFEST_XML_FIELD_NUMBER: builtins.int
+    @property
+    def manifest_xml(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
+    def __init__(
+        self,
+        *,
+        manifest_xml: collections.abc.Iterable[builtins.str] | None = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["manifest_xml", b"manifest_xml"]) -> None: ...
+
+global___Manifests = Manifests
+
+@typing.final
+class SingleSchedule(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    START_TIME_FIELD_NUMBER: builtins.int
+    END_TIME_FIELD_NUMBER: builtins.int
+    @property
+    def start_time(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    @property
+    def end_time(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    def __init__(
+        self,
+        *,
+        start_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        end_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["end_time", b"end_time", "start_time", b"start_time"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["end_time", b"end_time", "start_time", b"start_time"]) -> None: ...
+
+global___SingleSchedule = SingleSchedule
+
+@typing.final
+class RepeatedSchedule(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    DURATION_FIELD_NUMBER: builtins.int
+    CRON_MINUTES_FIELD_NUMBER: builtins.int
+    CRON_HOURS_FIELD_NUMBER: builtins.int
+    CRON_DAY_MONTH_FIELD_NUMBER: builtins.int
+    CRON_MONTH_FIELD_NUMBER: builtins.int
+    CRON_DAY_WEEK_FIELD_NUMBER: builtins.int
+    cron_minutes: builtins.str
+    """cron style minutes (0-59)"""
+    cron_hours: builtins.str
+    """cron style hours (0-23)"""
+    cron_day_month: builtins.str
+    """cron style day of month (0-31)"""
+    cron_month: builtins.str
+    """cron style month (1-12)"""
+    cron_day_week: builtins.str
+    """cron style day of week (0-6)"""
+    @property
+    def duration(self) -> google.protobuf.duration_pb2.Duration:
+        """should be between 1 second and 86400 seconds (24 hours worth of seconds)"""
+
+    def __init__(
+        self,
+        *,
+        duration: google.protobuf.duration_pb2.Duration | None = ...,
+        cron_minutes: builtins.str = ...,
+        cron_hours: builtins.str = ...,
+        cron_day_month: builtins.str = ...,
+        cron_month: builtins.str = ...,
+        cron_day_week: builtins.str = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["duration", b"duration"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["cron_day_month", b"cron_day_month", "cron_day_week", b"cron_day_week", "cron_hours", b"cron_hours", "cron_minutes", b"cron_minutes", "cron_month", b"cron_month", "duration", b"duration"]) -> None: ...
+
+global___RepeatedSchedule = RepeatedSchedule
+
+@typing.final
+class SetScheduleResponseData(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     class _StatusType:
         ValueType = typing.NewType("ValueType", builtins.int)
         V: typing_extensions.TypeAlias = ValueType
 
-    class _StatusTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[SetSOTAScheduleResponseData._StatusType.ValueType], builtins.type):
+    class _StatusTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[SetScheduleResponseData._StatusType.ValueType], builtins.type):
         DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-        STATUS_TYPE_UNSPECIFIED: SetSOTAScheduleResponseData._StatusType.ValueType  # 0
-        STATUS_TYPE_UP_TO_DATE: SetSOTAScheduleResponseData._StatusType.ValueType  # 1
-        STATUS_TYPE_STARTED: SetSOTAScheduleResponseData._StatusType.ValueType  # 2
-        STATUS_TYPE_UPDATED: SetSOTAScheduleResponseData._StatusType.ValueType  # 3
-        STATUS_TYPE_FAILED: SetSOTAScheduleResponseData._StatusType.ValueType  # 4
+        STATUS_TYPE_UNSPECIFIED: SetScheduleResponseData._StatusType.ValueType  # 0
+        STATUS_TYPE_UP_TO_DATE: SetScheduleResponseData._StatusType.ValueType  # 1
+        STATUS_TYPE_STARTED: SetScheduleResponseData._StatusType.ValueType  # 2
+        STATUS_TYPE_UPDATED: SetScheduleResponseData._StatusType.ValueType  # 3
+        STATUS_TYPE_FAILED: SetScheduleResponseData._StatusType.ValueType  # 4
 
     class StatusType(_StatusType, metaclass=_StatusTypeEnumTypeWrapper): ...
-    STATUS_TYPE_UNSPECIFIED: SetSOTAScheduleResponseData.StatusType.ValueType  # 0
-    STATUS_TYPE_UP_TO_DATE: SetSOTAScheduleResponseData.StatusType.ValueType  # 1
-    STATUS_TYPE_STARTED: SetSOTAScheduleResponseData.StatusType.ValueType  # 2
-    STATUS_TYPE_UPDATED: SetSOTAScheduleResponseData.StatusType.ValueType  # 3
-    STATUS_TYPE_FAILED: SetSOTAScheduleResponseData.StatusType.ValueType  # 4
+    STATUS_TYPE_UNSPECIFIED: SetScheduleResponseData.StatusType.ValueType  # 0
+    STATUS_TYPE_UP_TO_DATE: SetScheduleResponseData.StatusType.ValueType  # 1
+    STATUS_TYPE_STARTED: SetScheduleResponseData.StatusType.ValueType  # 2
+    STATUS_TYPE_UPDATED: SetScheduleResponseData.StatusType.ValueType  # 3
+    STATUS_TYPE_FAILED: SetScheduleResponseData.StatusType.ValueType  # 4
 
     STATUS_TYPE_FIELD_NUMBER: builtins.int
-    status_type: global___SetSOTAScheduleResponseData.StatusType.ValueType
+    status_type: global___SetScheduleResponseData.StatusType.ValueType
     def __init__(
         self,
         *,
-        status_type: global___SetSOTAScheduleResponseData.StatusType.ValueType = ...,
+        status_type: global___SetScheduleResponseData.StatusType.ValueType = ...,
     ) -> None: ...
     def ClearField(self, field_name: typing.Literal["status_type", b"status_type"]) -> None: ...
 
-global___SetSOTAScheduleResponseData = SetSOTAScheduleResponseData
+global___SetScheduleResponseData = SetScheduleResponseData

@@ -26,14 +26,14 @@ message HandleINBMCommandResponse {
 message INBMCommandRequestData {
   oneof payload {
     PingRequestData ping_request_data = 1;
-    SetSOTAScheduleRequestData set_sota_schedule_request_data = 2;
+    SetScheduleRequestData set_schedule_request_data = 2;
   }
 }
 
 message INBMCommandResponseData {
   oneof payload {
     PingResponseData ping_response_data = 1;
-    SetSOTAScheduleResponseData set_sota_schedule_data = 2;
+    SetScheduleResponseData set_schedule_response_data = 2;
   }
 }
 
@@ -44,42 +44,39 @@ message PingResponseData {
 }
 
 // TODO: re-add the validate.rules from maintenance manager to the repeated_schedules fields. prerequisite: get the validate.proto import working
-// 
-message SetSOTAScheduleRequestData {
-  message UpdateSource {
-    string kernel_command = 1; // Kernel command line
-    string os_repo_url = 2; // 'DEB822 Source Format' url to the public repository
-    repeated string custom_repos = 3; // 'DEB822 Source Format' entries for Debian style OSs
-  }
-  UpdateSource update_source = 1;
+message SetScheduleRequestData {
+  repeated INBMScheduledTask tasks = 1;
+}
 
-  message UpdateSchedule {
-    message SingleSchedule {
-      google.protobuf.Timestamp start_time = 1;
-      google.protobuf.Timestamp end_time = 2;
-    }
-    repeated SingleSchedule single_schedules = 1;
-
-    message RepeatedSchedule {
-      google.protobuf.Duration duration = 1;  // should be between 1 second and 86400 seconds (24 hours worth of seconds)
-      string cron_minutes = 2;  // cron style minutes (0-59)
-      string cron_hours = 3; // cron style hours (0-23)
-      string cron_day_month = 4;  // cron style day of month (0-31)
-      string cron_month = 5;  // cron style month (1-12)
-      string cron_day_week = 6;  // cron style day of week (0-6)
-    }
-    repeated RepeatedSchedule repeated_schedules = 2;
+message INBMScheduledTask {
+  Manifests manifests = 3;
+  oneof schedule {
+    SingleSchedule single_schedule = 1;
+    RepeatedSchedule repeated_schedule = 2;      
   }
-  UpdateSchedule update_schedule = 2;
+}
 
-  message InstalledPackages {
-    repeated string installed_packages = 1; // OS dependent. Should not contain version info.
-  }
-  InstalledPackages installed_packages = 3; 
+message Manifests {
+  repeated string manifest_xml = 1;
+}
+
+message SingleSchedule {
+  google.protobuf.Timestamp start_time = 1;
+  google.protobuf.Timestamp end_time = 2;
+}
+
+message RepeatedSchedule {
+  google.protobuf.Duration duration = 1;  // should be between 1 second and 86400 seconds (24 hours worth of seconds)
+  string cron_minutes = 2;  // cron style minutes (0-59)
+  string cron_hours = 3; // cron style hours (0-23)
+  string cron_day_month = 4;  // cron style day of month (0-31)
+  string cron_month = 5;  // cron style month (1-12)
+  string cron_day_week = 6;  // cron style day of week (0-6)
 }
 
 
-message SetSOTAScheduleResponseData {  
+
+message SetScheduleResponseData {  
   enum StatusType {
     STATUS_TYPE_UNSPECIFIED = 0;
     STATUS_TYPE_UP_TO_DATE = 1;
