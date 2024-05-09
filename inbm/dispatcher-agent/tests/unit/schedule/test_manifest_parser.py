@@ -21,6 +21,10 @@ GOOD_SCHEDULED_XML = '''
   </update_schedule>
   <update_schedule>
     <schedule>
+      <single_schedule>
+        <start_time>2023-03-01T08:00:00Z</start_time>
+        <end_time>2023-03-01T12:00:00Z</end_time>
+      </single_schedule>
       <repeated_schedule>
         <duration>PT3600S</duration> <!-- Duration of 1 hour -->
         <cron_minutes>0</cron_minutes>

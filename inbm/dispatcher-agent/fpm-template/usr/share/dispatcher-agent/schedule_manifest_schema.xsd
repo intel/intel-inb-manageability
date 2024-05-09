@@ -25,10 +25,10 @@
   </xs:complexType>
 
   <xs:complexType name="Schedule">
-    <xs:choice>
-      <xs:element name="single_schedule" type="SingleSchedule"/>
-      <xs:element name="repeated_schedule" type="RepeatedSchedule"/>
-    </xs:choice>
+    <xs:sequence>
+      <xs:element name="single_schedule" type="SingleSchedule" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="repeated_schedule" type="RepeatedSchedule" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="ScheduledTask">
