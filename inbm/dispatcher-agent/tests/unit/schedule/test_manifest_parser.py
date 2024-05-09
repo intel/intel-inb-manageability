@@ -58,5 +58,5 @@ class TestManifestParser(TestCase):
         self.good_schedule_xml = XmlHandler(GOOD_SCHEDULED_XML, is_file=False, schema_location=TEST_SCHEDULE_SCHEMA_LOCATION)
 
     def test_get_time_when_element_exists(self) -> None:
-        self.assertEqual('<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>',
+        self.assertEqual('\n        <?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>\n      ',
                  self.good_schedule_xml.get_element("update_schedule[2]/manifests/manifest_xml[2]"))
