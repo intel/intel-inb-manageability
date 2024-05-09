@@ -41,10 +41,10 @@ def convert_single_schedule_to_xml(schedule: inbs_sb_pb2.SingleSchedule) -> ET.E
     root = ET.Element('single_schedule')
 
     start_time_element = ET.SubElement(root, 'start_time')
-    start_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(schedule.start_time)
+    start_time_element.text = _google_timestamp_to_xml_datetime_format_quantized_seconds(schedule.start_time)
 
     end_time_element = ET.SubElement(root, 'end_time')
-    end_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(schedule.end_time)
+    end_time_element.text = _google_timestamp_to_xml_datetime_format_quantized_seconds(schedule.end_time)
 
     return root
 
@@ -55,7 +55,7 @@ def convert_repeated_schedule_to_xml(schedule: inbs_sb_pb2.RepeatedSchedule) -> 
     root = ET.Element('repeated_schedule')
 
     duration_element = ET.SubElement(root, 'duration')
-    duration_element.text = str(protobuf_duration_to_xml(schedule.duration))
+    duration_element.text = str(protobuf_duration_to_xml_format(schedule.duration))
 
     cron_minutes_element = ET.SubElement(root, 'cron_minutes')
     cron_minutes_element.text = schedule.cron_minutes
@@ -99,7 +99,7 @@ def convert_operation_to_manifests(operation: inbs_sb_pb2.Operation) -> ET.Eleme
     return root
 
 
-def _google_timestamp_to_xml_datetime_quantized_seconds(timestamp: google.protobuf.timestamp_pb2.Timestamp):
+def _google_timestamp_to_xml_datetime_format_quantized_seconds(timestamp: google.protobuf.timestamp_pb2.Timestamp) -> str:
     """Convert google timestamp to xml datetime, quantizing to seconds"""
     dt = datetime.fromtimestamp(timestamp.seconds, tz=timezone.utc)
     # Using replace to remove tzinfo while still maintaining it as UTC time
@@ -108,7 +108,7 @@ def _google_timestamp_to_xml_datetime_quantized_seconds(timestamp: google.protob
     return dt.isoformat() + 'Z'
 
 
-def protobuf_duration_to_xml(duration: google.protobuf.duration_pb2.Duration):
+def protobuf_duration_to_xml_format(duration: google.protobuf.duration_pb2.Duration) -> str:
     """Convert Google Protobuf Duration to XML duration string."""
     # Extract seconds and nanoseconds
     seconds = duration.seconds + 0.0

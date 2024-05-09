@@ -3,8 +3,7 @@ Unit tests for INBS Client XML Conversion
 """
 
 
-from cloudadapter.cloud.client.inbs_xml_conversion import convert_schedule_proto_to_xml, protobuf_duration_to_xml
-from cloudadapter.cloud.adapters.proto.inbs_sb_pb2 import SetScheduleRequestData, INBMScheduledTask, Manifests, SingleSchedule, RepeatedSchedule
+from cloudadapter.cloud.client.inbs_xml_conversion import convert_update_scheduled_tasks_request_to_xml, protobuf_duration_to_xml_format
 import unittest
 import google.protobuf.timestamp_pb2
 import google.protobuf.duration_pb2
@@ -12,11 +11,11 @@ import google.protobuf.duration_pb2
 
 class TestInbsXmlConversion(unittest.TestCase):
     def test_convert_empty_schedule_request(self):
-        xml = convert_schedule_proto_to_xml(SetScheduleRequestData())
+        xml = convert_update_scheduled_tasks_request_to_xml(...)
         assert xml == "<ScheduleManifest />"
 
     def test_convert_task_with_empty_manifests(self):
-        xml = convert_schedule_proto_to_xml(
+        xml = convert_update_scheduled_tasks_request_to_xml(
             SetScheduleRequestData(
                 tasks=[INBMScheduledTask(manifests=Manifests())]
             )
@@ -31,7 +30,7 @@ class TestInbsXmlConversion(unittest.TestCase):
         self.assertEqual(xml, expected_xml)
 
     def test_convert_multiple_manifests(self):
-        xml = convert_schedule_proto_to_xml(
+        xml = convert_update_scheduled_tasks_request_to_xml(
             SetScheduleRequestData(
                 tasks=[
                     INBMScheduledTask(
@@ -63,8 +62,8 @@ class TestInbsXmlConversion(unittest.TestCase):
         )
         self.assertEqual(xml, expected_xml)
 
-    def test_convert_schedule_proto_to_xml(self):
-        xml = convert_schedule_proto_to_xml(
+    def test_convert_update_scheduled_tasks_request_to_xml(self):
+        xml = convert_update_scheduled_tasks_request_to_xml(
             SetScheduleRequestData(
                 tasks=[
                     INBMScheduledTask(
