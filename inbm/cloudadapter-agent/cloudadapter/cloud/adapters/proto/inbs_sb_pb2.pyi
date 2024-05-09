@@ -26,18 +26,23 @@ class HandleINBMCommandRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     REQUEST_ID_FIELD_NUMBER: builtins.int
-    REQUEST_DATA_FIELD_NUMBER: builtins.int
+    PING_REQUEST_FIELD_NUMBER: builtins.int
+    UPDATE_SCHEDULED_TASKS_REQUEST_FIELD_NUMBER: builtins.int
     request_id: builtins.str
     @property
-    def request_data(self) -> global___INBMCommandRequestData: ...
+    def ping_request(self) -> global___PingRequest: ...
+    @property
+    def update_scheduled_tasks_request(self) -> global___UpdateScheduledTasksRequest: ...
     def __init__(
         self,
         *,
         request_id: builtins.str = ...,
-        request_data: global___INBMCommandRequestData | None = ...,
+        ping_request: global___PingRequest | None = ...,
+        update_scheduled_tasks_request: global___UpdateScheduledTasksRequest | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["request_data", b"request_data"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["request_data", b"request_data", "request_id", b"request_id"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["ping_request", b"ping_request", "request", b"request", "update_scheduled_tasks_request", b"update_scheduled_tasks_request"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["ping_request", b"ping_request", "request", b"request", "request_id", b"request_id", "update_scheduled_tasks_request", b"update_scheduled_tasks_request"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["request", b"request"]) -> typing.Literal["ping_request", "update_scheduled_tasks_request"] | None: ...
 
 global___HandleINBMCommandRequest = HandleINBMCommandRequest
 
@@ -46,112 +51,292 @@ class HandleINBMCommandResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     REQUEST_ID_FIELD_NUMBER: builtins.int
-    RESPONSE_DATA_FIELD_NUMBER: builtins.int
+    PING_RESPONSE_FIELD_NUMBER: builtins.int
+    UPDATE_SCHEDULED_TASKS_RESPONSE_FIELD_NUMBER: builtins.int
     request_id: builtins.str
     @property
-    def response_data(self) -> global___INBMCommandResponseData: ...
+    def ping_response(self) -> global___PingResponse: ...
+    @property
+    def update_scheduled_tasks_response(self) -> global___UpdateScheduledTasksResponse: ...
     def __init__(
         self,
         *,
         request_id: builtins.str = ...,
-        response_data: global___INBMCommandResponseData | None = ...,
+        ping_response: global___PingResponse | None = ...,
+        update_scheduled_tasks_response: global___UpdateScheduledTasksResponse | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["response_data", b"response_data"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["request_id", b"request_id", "response_data", b"response_data"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["ping_response", b"ping_response", "response", b"response", "update_scheduled_tasks_response", b"update_scheduled_tasks_response"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["ping_response", b"ping_response", "request_id", b"request_id", "response", b"response", "update_scheduled_tasks_response", b"update_scheduled_tasks_response"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["response", b"response"]) -> typing.Literal["ping_response", "update_scheduled_tasks_response"] | None: ...
 
 global___HandleINBMCommandResponse = HandleINBMCommandResponse
 
 @typing.final
-class INBMCommandRequestData(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    PING_REQUEST_DATA_FIELD_NUMBER: builtins.int
-    SET_SCHEDULE_REQUEST_DATA_FIELD_NUMBER: builtins.int
-    @property
-    def ping_request_data(self) -> global___PingRequestData: ...
-    @property
-    def set_schedule_request_data(self) -> global___SetScheduleRequestData: ...
-    def __init__(
-        self,
-        *,
-        ping_request_data: global___PingRequestData | None = ...,
-        set_schedule_request_data: global___SetScheduleRequestData | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["payload", b"payload", "ping_request_data", b"ping_request_data", "set_schedule_request_data", b"set_schedule_request_data"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["payload", b"payload", "ping_request_data", b"ping_request_data", "set_schedule_request_data", b"set_schedule_request_data"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["payload", b"payload"]) -> typing.Literal["ping_request_data", "set_schedule_request_data"] | None: ...
-
-global___INBMCommandRequestData = INBMCommandRequestData
-
-@typing.final
-class INBMCommandResponseData(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    PING_RESPONSE_DATA_FIELD_NUMBER: builtins.int
-    SET_SCHEDULE_RESPONSE_DATA_FIELD_NUMBER: builtins.int
-    @property
-    def ping_response_data(self) -> global___PingResponseData: ...
-    @property
-    def set_schedule_response_data(self) -> global___SetScheduleResponseData: ...
-    def __init__(
-        self,
-        *,
-        ping_response_data: global___PingResponseData | None = ...,
-        set_schedule_response_data: global___SetScheduleResponseData | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["payload", b"payload", "ping_response_data", b"ping_response_data", "set_schedule_response_data", b"set_schedule_response_data"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["payload", b"payload", "ping_response_data", b"ping_response_data", "set_schedule_response_data", b"set_schedule_response_data"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["payload", b"payload"]) -> typing.Literal["ping_response_data", "set_schedule_response_data"] | None: ...
-
-global___INBMCommandResponseData = INBMCommandResponseData
-
-@typing.final
-class PingRequestData(google.protobuf.message.Message):
+class PingRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     def __init__(
         self,
     ) -> None: ...
 
-global___PingRequestData = PingRequestData
+global___PingRequest = PingRequest
 
 @typing.final
-class PingResponseData(google.protobuf.message.Message):
+class PingResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     def __init__(
         self,
     ) -> None: ...
 
-global___PingResponseData = PingResponseData
+global___PingResponse = PingResponse
 
 @typing.final
-class SetScheduleRequestData(google.protobuf.message.Message):
-    """TODO: re-add the validate.rules from maintenance manager to the repeated_schedules fields. prerequisite: get the validate.proto import working"""
-
+class UpdateScheduledTasksRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     TASKS_FIELD_NUMBER: builtins.int
     @property
-    def tasks(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___INBMScheduledTask]: ...
+    def tasks(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___ScheduledTask]: ...
     def __init__(
         self,
         *,
-        tasks: collections.abc.Iterable[global___INBMScheduledTask] | None = ...,
+        tasks: collections.abc.Iterable[global___ScheduledTask] | None = ...,
     ) -> None: ...
     def ClearField(self, field_name: typing.Literal["tasks", b"tasks"]) -> None: ...
 
-global___SetScheduleRequestData = SetScheduleRequestData
+global___UpdateScheduledTasksRequest = UpdateScheduledTasksRequest
 
 @typing.final
-class INBMScheduledTask(google.protobuf.message.Message):
+class UpdateScheduledTasksResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    MANIFESTS_FIELD_NUMBER: builtins.int
+    def __init__(
+        self,
+    ) -> None: ...
+
+global___UpdateScheduledTasksResponse = UpdateScheduledTasksResponse
+
+@typing.final
+class ScheduledTask(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    OPERATION_FIELD_NUMBER: builtins.int
+    SCHEDULES_FIELD_NUMBER: builtins.int
+    @property
+    def operation(self) -> global___Operation: ...
+    @property
+    def schedules(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___Schedule]: ...
+    def __init__(
+        self,
+        *,
+        operation: global___Operation | None = ...,
+        schedules: collections.abc.Iterable[global___Schedule] | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["operation", b"operation"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["operation", b"operation", "schedules", b"schedules"]) -> None: ...
+
+global___ScheduledTask = ScheduledTask
+
+@typing.final
+class Operation(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    PRE_OPERATIONS_FIELD_NUMBER: builtins.int
+    POST_OPERATIONS_FIELD_NUMBER: builtins.int
+    UPDATE_SYSTEM_SOFTWARE_REQUEST_FIELD_NUMBER: builtins.int
+    @property
+    def pre_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PreOperation]: ...
+    @property
+    def post_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PostOperation]: ...
+    @property
+    def update_system_software_request(self) -> global___UpdateSystemSoftwareRequest:
+        """..."""
+
+    def __init__(
+        self,
+        *,
+        pre_operations: collections.abc.Iterable[global___PreOperation] | None = ...,
+        post_operations: collections.abc.Iterable[global___PostOperation] | None = ...,
+        update_system_software_request: global___UpdateSystemSoftwareRequest | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["operation_type", b"operation_type", "update_system_software_request", b"update_system_software_request"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["operation_type", b"operation_type", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "update_system_software_request", b"update_system_software_request"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["operation_type", b"operation_type"]) -> typing.Literal["update_system_software_request"] | None: ...
+
+global___Operation = Operation
+
+@typing.final
+class PreOperation(google.protobuf.message.Message):
+    """ oneof type {
+     // ...
+     }
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    def __init__(
+        self,
+    ) -> None: ...
+
+global___PreOperation = PreOperation
+
+@typing.final
+class PostOperation(google.protobuf.message.Message):
+    """ oneof type {
+     // ...
+    }
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    def __init__(
+        self,
+    ) -> None: ...
+
+global___PostOperation = PostOperation
+
+@typing.final
+class UpdateSystemSoftwareRequest(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    URL_FIELD_NUMBER: builtins.int
+    RELEASE_DATE_FIELD_NUMBER: builtins.int
+    MODE_FIELD_NUMBER: builtins.int
+    DO_NOT_REBOOT_FIELD_NUMBER: builtins.int
+    PACKAGE_LIST_FIELD_NUMBER: builtins.int
+    do_not_reboot: builtins.bool
+    """Whether to reboot the node after the firmware update attempt"""
+    @property
+    def url(self) -> global___Url:
+        """URL from which to remotely retrieve the package"""
+
+    @property
+    def release_date(self) -> google.protobuf.timestamp_pb2.Timestamp:
+        """Release date of the new SW update."""
+
+    @property
+    def mode(self) -> global___DownloadMode:
+        """Mode for installing the softare update regarding download and install steps."""
+
+    @property
+    def package_list(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]:
+        """List of packages to install if whole package update isn't desired."""
+
+    def __init__(
+        self,
+        *,
+        url: global___Url | None = ...,
+        release_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        mode: global___DownloadMode | None = ...,
+        do_not_reboot: builtins.bool = ...,
+        package_list: collections.abc.Iterable[builtins.str] | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["mode", b"mode", "release_date", b"release_date", "url", b"url"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["do_not_reboot", b"do_not_reboot", "mode", b"mode", "package_list", b"package_list", "release_date", b"release_date", "url", b"url"]) -> None: ...
+
+global___UpdateSystemSoftwareRequest = UpdateSystemSoftwareRequest
+
+@typing.final
+class Url(google.protobuf.message.Message):
+    """Defines the URL structure"""
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    class _Scheme:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _SchemeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Url._Scheme.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        SCHEME_UNSPECIFIED: Url._Scheme.ValueType  # 0
+        """Default value.  This will produce an error"""
+        SCHEME_HTTPS: Url._Scheme.ValueType  # 1
+        """HyperText Transfer Protocol Secure"""
+        SCHEME_FTP: Url._Scheme.ValueType  # 2
+        """File transfer protocol"""
+        SCHEME_FILE: Url._Scheme.ValueType  # 3
+        """Host-Specific File Names"""
+
+    class Scheme(_Scheme, metaclass=_SchemeEnumTypeWrapper): ...
+    SCHEME_UNSPECIFIED: Url.Scheme.ValueType  # 0
+    """Default value.  This will produce an error"""
+    SCHEME_HTTPS: Url.Scheme.ValueType  # 1
+    """HyperText Transfer Protocol Secure"""
+    SCHEME_FTP: Url.Scheme.ValueType  # 2
+    """File transfer protocol"""
+    SCHEME_FILE: Url.Scheme.ValueType  # 3
+    """Host-Specific File Names"""
+
+    SCHEME_FIELD_NUMBER: builtins.int
+    ADDRESS_FIELD_NUMBER: builtins.int
+    USERNAME_FIELD_NUMBER: builtins.int
+    scheme: global___Url.Scheme.ValueType
+    """URL Scheme such as https://"""
+    address: builtins.str
+    """Contains domain, path, port, query, and fragment of the address"""
+    username: builtins.str
+    """Username if required to retrieve the file"""
+    def __init__(
+        self,
+        *,
+        scheme: global___Url.Scheme.ValueType = ...,
+        address: builtins.str = ...,
+        username: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["address", b"address", "scheme", b"scheme", "username", b"username"]) -> None: ...
+
+global___Url = Url
+
+@typing.final
+class DownloadMode(google.protobuf.message.Message):
+    """Specifies the mode for installing the Software update.  This allows for the steps of downloading
+    and installing to be seperated into two different actions.
+    """
+
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    class _Mode:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _ModeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[DownloadMode._Mode.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        MODE_UNSPECIFIED: DownloadMode._Mode.ValueType  # 0
+        MODE_FULL: DownloadMode._Mode.ValueType  # 1
+        """Both download the package and install the package"""
+        MODE_NO_DOWNLOAD: DownloadMode._Mode.ValueType  # 2
+        """Do not download the package.  Only install."""
+        MODE_DOWNLOAD_ONLY: DownloadMode._Mode.ValueType  # 3
+        """Only download the package.  Do not install."""
+
+    class Mode(_Mode, metaclass=_ModeEnumTypeWrapper): ...
+    MODE_UNSPECIFIED: DownloadMode.Mode.ValueType  # 0
+    MODE_FULL: DownloadMode.Mode.ValueType  # 1
+    """Both download the package and install the package"""
+    MODE_NO_DOWNLOAD: DownloadMode.Mode.ValueType  # 2
+    """Do not download the package.  Only install."""
+    MODE_DOWNLOAD_ONLY: DownloadMode.Mode.ValueType  # 3
+    """Only download the package.  Do not install."""
+
+    MODE_FIELD_NUMBER: builtins.int
+    mode: global___DownloadMode.Mode.ValueType
+    """Mode for installing the Software update."""
+    def __init__(
+        self,
+        *,
+        mode: global___DownloadMode.Mode.ValueType = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["mode", b"mode"]) -> None: ...
+
+global___DownloadMode = DownloadMode
+
+@typing.final
+class Schedule(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
     SINGLE_SCHEDULE_FIELD_NUMBER: builtins.int
     REPEATED_SCHEDULE_FIELD_NUMBER: builtins.int
-    @property
-    def manifests(self) -> global___Manifests: ...
     @property
     def single_schedule(self) -> global___SingleSchedule: ...
     @property
@@ -159,31 +344,14 @@ class INBMScheduledTask(google.protobuf.message.Message):
     def __init__(
         self,
         *,
-        manifests: global___Manifests | None = ...,
         single_schedule: global___SingleSchedule | None = ...,
         repeated_schedule: global___RepeatedSchedule | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["manifests", b"manifests", "repeated_schedule", b"repeated_schedule", "schedule", b"schedule", "single_schedule", b"single_schedule"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["manifests", b"manifests", "repeated_schedule", b"repeated_schedule", "schedule", b"schedule", "single_schedule", b"single_schedule"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["repeated_schedule", b"repeated_schedule", "schedule", b"schedule", "single_schedule", b"single_schedule"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["repeated_schedule", b"repeated_schedule", "schedule", b"schedule", "single_schedule", b"single_schedule"]) -> None: ...
     def WhichOneof(self, oneof_group: typing.Literal["schedule", b"schedule"]) -> typing.Literal["single_schedule", "repeated_schedule"] | None: ...
 
-global___INBMScheduledTask = INBMScheduledTask
-
-@typing.final
-class Manifests(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    MANIFEST_XML_FIELD_NUMBER: builtins.int
-    @property
-    def manifest_xml(self) -> google.protobuf.internal.containers.RepeatedScalarFieldContainer[builtins.str]: ...
-    def __init__(
-        self,
-        *,
-        manifest_xml: collections.abc.Iterable[builtins.str] | None = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["manifest_xml", b"manifest_xml"]) -> None: ...
-
-global___Manifests = Manifests
+global___Schedule = Schedule
 
 @typing.final
 class SingleSchedule(google.protobuf.message.Message):
@@ -244,37 +412,3 @@ class RepeatedSchedule(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["cron_day_month", b"cron_day_month", "cron_day_week", b"cron_day_week", "cron_hours", b"cron_hours", "cron_minutes", b"cron_minutes", "cron_month", b"cron_month", "duration", b"duration"]) -> None: ...
 
 global___RepeatedSchedule = RepeatedSchedule
-
-@typing.final
-class SetScheduleResponseData(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    class _StatusType:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
-
-    class _StatusTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[SetScheduleResponseData._StatusType.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-        STATUS_TYPE_UNSPECIFIED: SetScheduleResponseData._StatusType.ValueType  # 0
-        STATUS_TYPE_UP_TO_DATE: SetScheduleResponseData._StatusType.ValueType  # 1
-        STATUS_TYPE_STARTED: SetScheduleResponseData._StatusType.ValueType  # 2
-        STATUS_TYPE_UPDATED: SetScheduleResponseData._StatusType.ValueType  # 3
-        STATUS_TYPE_FAILED: SetScheduleResponseData._StatusType.ValueType  # 4
-
-    class StatusType(_StatusType, metaclass=_StatusTypeEnumTypeWrapper): ...
-    STATUS_TYPE_UNSPECIFIED: SetScheduleResponseData.StatusType.ValueType  # 0
-    STATUS_TYPE_UP_TO_DATE: SetScheduleResponseData.StatusType.ValueType  # 1
-    STATUS_TYPE_STARTED: SetScheduleResponseData.StatusType.ValueType  # 2
-    STATUS_TYPE_UPDATED: SetScheduleResponseData.StatusType.ValueType  # 3
-    STATUS_TYPE_FAILED: SetScheduleResponseData.StatusType.ValueType  # 4
-
-    STATUS_TYPE_FIELD_NUMBER: builtins.int
-    status_type: global___SetScheduleResponseData.StatusType.ValueType
-    def __init__(
-        self,
-        *,
-        status_type: global___SetScheduleResponseData.StatusType.ValueType = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["status_type", b"status_type"]) -> None: ...
-
-global___SetScheduleResponseData = SetScheduleResponseData

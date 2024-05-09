@@ -68,25 +68,39 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 	return err
 }
 
-func sendSetScheduleRequestToClient(stream pb.INBSSBService_HandleINBMCommandServer) error {
+func sendUpdateScheduledTasksRequestsToClient(stream pb.INBSSBService_HandleINBMCommandServer) error {
 	requestId := uuid.New().String()
 	err := stream.Send(&pb.HandleINBMCommandRequest{
 		RequestId: requestId,
-		RequestData: &pb.INBMCommandRequestData{
-			Payload: &pb.INBMCommandRequestData_SetScheduleRequestData{
-				SetScheduleRequestData: &pb.SetScheduleRequestData{
-					Tasks: []*pb.INBMScheduledTask{
-						{
-							Manifests: &pb.Manifests{
-								ManifestXml: []string{},
-							},
-							Schedule: &pb.INBMScheduledTask_SingleSchedule{
-								SingleSchedule: &pb.SingleSchedule{
-									StartTime: &timestamppb.Timestamp{
-										Seconds: 1234,
+		Request: &pb.HandleINBMCommandRequest_UpdateScheduledTasksRequest{
+			UpdateScheduledTasksRequest: &pb.UpdateScheduledTasksRequest{
+				Tasks: []*pb.ScheduledTask{
+					&pb.ScheduledTask{
+						Operation: &pb.Operation{
+							PreOperations:  []*pb.PreOperation{},
+							PostOperations: []*pb.PostOperation{},
+							OperationType: &pb.Operation_UpdateSystemSoftwareRequest{
+								UpdateSystemSoftwareRequest: &pb.UpdateSystemSoftwareRequest{
+									Url:         &pb.Url{},
+									ReleaseDate: nil,
+									Mode: &pb.DownloadMode{
+										Mode: pb.DownloadMode_MODE_DOWNLOAD_ONLY,
 									},
-									EndTime: &timestamppb.Timestamp{
-										Seconds: 5678,
+									DoNotReboot: true,
+									PackageList: []string{},
+								},
+							},
+						},
+						Schedules: []*pb.Schedule{
+							&pb.Schedule{
+								Schedule: &pb.Schedule_SingleSchedule{
+									SingleSchedule: &pb.SingleSchedule{
+										StartTime: &timestamppb.Timestamp{
+											Seconds: 1234,
+										},
+										EndTime: &timestamppb.Timestamp{
+											Seconds: 5678,
+										},
 									},
 								},
 							},
@@ -97,22 +111,22 @@ func sendSetScheduleRequestToClient(stream pb.INBSSBService_HandleINBMCommandSer
 		},
 	})
 	if err != nil {
-		return fmt.Errorf("Failed to send a set schedule request: %w", err)
+		return fmt.Errorf("failed to send a update scheduled tasks request: %w", err)
 	}
-	log.Println("Set schedule request sent to client with request ID " + requestId)
+	log.Println("Update scheduled tasks request sent to client with request ID " + requestId)
 
 	// Receiving and logging INBMResponse from client
 	response, err := stream.Recv()
 	if err != nil {
-		return fmt.Errorf("Failed to receive INBM response: %w", err)
+		return fmt.Errorf("failed to receive client response: %w", err)
 	}
 
 	if requestId != response.GetRequestId() {
 		return errors.New("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
 	}
 	// check that the response payload is a ping type
-	if _, ok := response.GetResponseData().GetPayload().(*pb.INBMCommandResponseData_SetScheduleResponseData); !ok {
-		return errors.New("Response payload is not a SetScheduleResponseData")
+	if _, ok := response.GetResponse().(*pb.HandleINBMCommandResponse_UpdateScheduledTasksResponse); !ok {
+		return errors.New("response payload is not an UpdateScheduledTasksResponse")
 	}
 
 	log.Println("Received response from client with request ID " + response.GetRequestId())
@@ -124,27 +138,25 @@ func sendPingToClient(stream pb.INBSSBService_HandleINBMCommandServer) error {
 	requestId := uuid.New().String()
 	err := stream.Send(&pb.HandleINBMCommandRequest{
 		RequestId: requestId,
-		RequestData: &pb.INBMCommandRequestData{
-			Payload: &pb.INBMCommandRequestData_PingRequestData{},
-		},
+		Request:   &pb.HandleINBMCommandRequest_PingRequest{},
 	})
 	if err != nil {
-		return fmt.Errorf("Failed to send a ping: %w", err)
+		return fmt.Errorf("failed to send a ping: %w", err)
 	}
 	log.Println("Ping sent to client with request ID " + requestId)
 
 	// Receiving and logging INBMResponse from client
 	response, err := stream.Recv()
 	if err != nil {
-		return fmt.Errorf("Failed to receive INBM response: %w", err)
+		return fmt.Errorf("failed to receive INBM response: %w", err)
 	}
 
 	if requestId != response.GetRequestId() {
-		return errors.New("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
+		return errors.New("response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
 	}
 	// check that the response payload is a ping type
-	if _, ok := response.GetResponseData().GetPayload().(*pb.INBMCommandResponseData_PingResponseData); !ok {
-		return errors.New("Response payload is not a PingResponseData")
+	if _, ok := response.GetResponse().(*pb.HandleINBMCommandResponse_PingResponse); !ok {
+		return errors.New("response payload is not a PingResponseData")
 	}
 
 	log.Println("Received response from client with request ID " + response.GetRequestId())
@@ -173,7 +185,7 @@ func (s *server) HandleINBMCommand(stream pb.INBSSBService_HandleINBMCommandServ
 	log.Printf("Received connection with inband-id: %s", nodeID)
 
 	// Send a single INBM schedule command to the client
-	err := sendSetScheduleRequestToClient(stream)
+	err := sendUpdateScheduledTasksRequestsToClient(stream)
 	if err != nil {
 		log.Fatalf("Failed to send SetScheduleRequest to client: %v", err)
 	}

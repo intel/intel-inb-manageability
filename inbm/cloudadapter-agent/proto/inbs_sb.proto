@@ -15,49 +15,99 @@ service INBSSBService {
 
 message HandleINBMCommandRequest {
   string request_id = 1;
-  INBMCommandRequestData request_data = 2;
+  oneof request {
+    PingRequest ping_request = 2;
+    UpdateScheduledTasksRequest update_scheduled_tasks_request = 3;
+  }
 }
 
 message HandleINBMCommandResponse {  
   string request_id = 1;
-  INBMCommandResponseData response_data = 2;
-}
-
-message INBMCommandRequestData {
-  oneof payload {
-    PingRequestData ping_request_data = 1;
-    SetScheduleRequestData set_schedule_request_data = 2;
+  oneof response {
+    PingResponse ping_response = 2;
+    UpdateScheduledTasksResponse update_scheduled_tasks_response = 3;
   }
 }
 
-message INBMCommandResponseData {
-  oneof payload {
-    PingResponseData ping_response_data = 1;
-    SetScheduleResponseData set_schedule_response_data = 2;
+message PingRequest {
+}
+
+message PingResponse {
+}
+
+message UpdateScheduledTasksRequest {
+  repeated ScheduledTask tasks = 1;
+}
+
+message UpdateScheduledTasksResponse {
+}
+
+message ScheduledTask {
+  Operation operation = 1;
+  repeated Schedule schedules = 2;
+}
+
+message Operation {
+  repeated PreOperation pre_operations = 1;
+  repeated PostOperation post_operations = 2;
+  oneof operation_type {
+    UpdateSystemSoftwareRequest update_system_software_request = 3;
+    // ...
   }
 }
 
-message PingRequestData {
+message PreOperation {
+//  oneof type {
+//  // ...
+//  }
 }
 
-message PingResponseData {
+message PostOperation {
+//  oneof type {
+//  // ...
+// }
 }
 
-// TODO: re-add the validate.rules from maintenance manager to the repeated_schedules fields. prerequisite: get the validate.proto import working
-message SetScheduleRequestData {
-  repeated INBMScheduledTask tasks = 1;
+message UpdateSystemSoftwareRequest {
+    Url url = 1; // URL from which to remotely retrieve the package
+    google.protobuf.Timestamp release_date = 2; // Release date of the new SW update.
+    DownloadMode mode = 3; // Mode for installing the softare update regarding download and install steps.
+    bool do_not_reboot = 4;  // Whether to reboot the node after the firmware update attempt
+    repeated string package_list = 5; // List of packages to install if whole package update isn't desired.
 }
 
-message INBMScheduledTask {
-  Manifests manifests = 1;
+// Defines the URL structure
+message Url {
+    enum Scheme {
+        SCHEME_UNSPECIFIED = 0; // Default value.  This will produce an error
+        SCHEME_HTTPS = 1; // HyperText Transfer Protocol Secure
+        SCHEME_FTP = 2; // File transfer protocol
+        SCHEME_FILE = 3; // Host-Specific File Names
+    }
+
+    Scheme scheme = 1; // URL Scheme such as https://
+    string address = 2; // Contains domain, path, port, query, and fragment of the address
+    string username = 3; // Username if required to retrieve the file
+}
+
+// Specifies the mode for installing the Software update.  This allows for the steps of downloading
+// and installing to be seperated into two different actions.
+message DownloadMode {
+    enum Mode {
+        MODE_UNSPECIFIED = 0;
+        MODE_FULL = 1; // Both download the package and install the package
+        MODE_NO_DOWNLOAD = 2; // Do not download the package.  Only install.
+        MODE_DOWNLOAD_ONLY = 3; // Only download the package.  Do not install.
+    }
+
+    Mode mode = 1; // Mode for installing the Software update.
+}
+
+message Schedule {
   oneof schedule {
-    SingleSchedule single_schedule = 2;
-    RepeatedSchedule repeated_schedule = 3;
+    SingleSchedule single_schedule = 1;
+    RepeatedSchedule repeated_schedule = 2;
   }
-}
-
-message Manifests {
-  repeated string manifest_xml = 1;
 }
 
 message SingleSchedule {
@@ -73,17 +123,3 @@ message RepeatedSchedule {
   string cron_month = 5;  // cron style month (1-12)
   string cron_day_week = 6;  // cron style day of week (0-6)
 }
-
-
-
-message SetScheduleResponseData {  
-  enum StatusType {
-    STATUS_TYPE_UNSPECIFIED = 0;
-    STATUS_TYPE_UP_TO_DATE = 1;
-    STATUS_TYPE_STARTED = 2;
-    STATUS_TYPE_UPDATED = 3;
-    STATUS_TYPE_FAILED = 4;
-  }
-  StatusType status_type = 1;
-}
-
