@@ -10,51 +10,65 @@ import google.protobuf.duration_pb2
 from ..adapters.proto import inbs_sb_pb2
 
 
-def convert_schedule_proto_to_xml(request_data: inbs_sb_pb2.SetScheduleRequestData) -> str:
-    """Converts the SetSCheduleRequestData protobuf to XML"""
+def convert_update_scheduled_tasks_request_to_xml(request_data: inbs_sb_pb2.UpdateScheduledTasksRequest, request_id: str) -> str:
+    """Converts the UpdateScheduledTasksRequest protobuf (plus request ID) to Dispatcher XML format.
+    """
 
-    root = ET.Element('ScheduleManifest')
+    root = ET.Element('schedule_request')
+    request_id_element = ET.SubElement(root, 'request_id')
+    request_id_element.text = request_id
 
     for task in request_data.tasks:
         update_schedule = ET.SubElement(root, 'update_schedule')
 
-        # Manifests
-        manifests_element = ET.SubElement(update_schedule, 'manifests')
-        for manifest in task.manifests.manifest_xml:
-            manifest_xml_element = ET.SubElement(manifests_element, 'manifest_xml')
-            manifest_xml_element.text = manifest
-
         # Schedules
-        if task.HasField('single_schedule'):
-            schedule_element = ET.SubElement(update_schedule, 'single_schedule')
-            start_time_element = ET.SubElement(schedule_element, 'start_time')
-            end_time_element = ET.SubElement(schedule_element, 'end_time')
+        for schedule in task.schedules:            
+            if schedule.HasField('single_schedule'):
+                schedule_element = ET.SubElement(update_schedule, 'single_schedule')
+                start_time_element = ET.SubElement(schedule_element, 'start_time')
+                end_time_element = ET.SubElement(schedule_element, 'end_time')
 
-            start_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(
-                task.single_schedule.start_time)
-            end_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(
-                task.single_schedule.end_time)
+                start_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(
+                    schedule.single_schedule.start_time)
+                end_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(
+                    schedule.single_schedule.end_time)
+            elif schedule.HasField('repeated_schedule'):
+                schedule_element = ET.SubElement(update_schedule, 'repeated_schedule')
 
-        elif task.HasField('repeated_schedule'):
-            schedule_element = ET.SubElement(update_schedule, 'repeated_schedule')
+                duration_element = ET.SubElement(schedule_element, 'duration')
+                duration_element.text = str(protobuf_duration_to_xml(schedule.repeated_schedule.duration))
 
-            duration_element = ET.SubElement(schedule_element, 'duration')
-            duration_element.text = str(protobuf_duration_to_xml(task.repeated_schedule.duration))
+                cron_minutes_element = ET.SubElement(schedule_element, 'cron_minutes')
+                cron_minutes_element.text = schedule.repeated_schedule.cron_minutes
 
-            cron_minutes_element = ET.SubElement(schedule_element, 'cron_minutes')
-            cron_minutes_element.text = task.repeated_schedule.cron_minutes
+                cron_hours_element = ET.SubElement(schedule_element, 'cron_hours')
+                cron_hours_element.text = schedule.repeated_schedule.cron_hours
 
-            cron_hours_element = ET.SubElement(schedule_element, 'cron_hours')
-            cron_hours_element.text = task.repeated_schedule.cron_hours
+                cron_day_month_element = ET.SubElement(schedule_element, 'cron_day_month')
+                cron_day_month_element.text = schedule.repeated_schedule.cron_day_month
 
-            cron_day_month_element = ET.SubElement(schedule_element, 'cron_day_month')
-            cron_day_month_element.text = task.repeated_schedule.cron_day_month
+                cron_month_element = ET.SubElement(schedule_element, 'cron_month')
+                cron_month_element.text = schedule.repeated_schedule.cron_month
 
-            cron_month_element = ET.SubElement(schedule_element, 'cron_month')
-            cron_month_element.text = task.repeated_schedule.cron_month
+                cron_day_week_element = ET.SubElement(schedule_element, 'cron_day_week')
+                cron_day_week_element.text = schedule.repeated_schedule.cron_day_week
+        
+        # Operation -> Manifests
+        manifests_element = ET.SubElement(update_schedule, 'manifests')
+        for pre_operation in task.operation.pre_operations:
+            # TODO: encode pre_operation in XML
+            pre_operation_xml_element = ET.SubElement(manifests_element, 'manifest_xml')
+            pre_operation_xml_element.text = ''
 
-            cron_day_week_element = ET.SubElement(schedule_element, 'cron_day_week')
-            cron_day_week_element.text = task.repeated_schedule.cron_day_week
+        # TODO: encode operation in XML
+        operation_xml_element = ET.SubElement(manifests_element, 'manifest_xml')
+        operation_xml_element.text = ''
+
+        for post_operation in task.operation.post_operations:
+            # TODO encode post_operation in XML            
+            post_operation_xml_element = ET.SubElement(manifests_element, 'manifest_xml')
+            post_operation_xml_element.text = ''
+
 
     return ET.tostring(root, encoding="unicode")
 
