@@ -15,32 +15,47 @@ class SqliteManager:
     def __init__(self, db_file) -> None:
         self._db_file = db_file
         self._conn = self._create_connection()
+        self.create_table()
             
     def _create_connection(self) -> sqlite3.Connection:
         """ create a database connection to a SQLite database """
         conn = None
         try:
-            return sqlite3.connect(self._db_file)      
+            conn = sqlite3.connect(self._db_file)
         except (sqlite3.OperationalError, sqlite3.InternalError) as e:
             raise DispatcherException(f"Error connecting to database: {e}")
-        finally:
-            if conn:
-                conn.close()
-                
-    def create_task(self, task: ScheduledTask) -> Optional[int]:
+        return conn
+
+    def create_table(self) -> None:
+        """
+        Method to create a table in the database.
+        """
+        try:
+            cur = self._conn.cursor()
+            # Check if the table already exists, if not, create the table
+            cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='task'")
+            if cur.fetchone() is None:
+                sql = ''' CREATE TABLE task (
+                            start_time text,
+                            end_time text,
+                            manifest text
+                        ); '''
+                self._conn.execute(sql)  # Execute the SQL command
+        except (sqlite3.OperationalError, sqlite3.InternalError) as e:
+            raise DispatcherException(f"Error creating table in database: {e}")
+
+    def create_task(self, task: ScheduledTask) -> None:
         """
         Create a new scheduled task
         :param task: ScheduledTask object
-        :return: PK for the scheduled task in the DB
         """
         try:
             with self._conn:
-                sql = ''' INSERT INTO task(NULL, start_time, end_time, manifest)
-                        VALUES(?,?) '''
-                cur = self._conn.cursor()
-
-                cur.execute(sql, (task.start_time, task.end_time, task.manifest))
-                return cur.lastrowid
+                sql = ''' INSERT INTO task(start_time, end_time, manifest)
+                        VALUES(?,?,?) '''
+                self._conn.execute(sql, (task.start_time, task.end_time, task.manifest))
         except (sqlite3.OperationalError, sqlite3.InternalError) as e:
             raise DispatcherException(f"Error connecting to database: {e}")
-                
+        finally:
+            if self._conn:
+                self._conn.close()
