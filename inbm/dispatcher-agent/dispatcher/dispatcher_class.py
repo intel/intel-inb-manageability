@@ -251,8 +251,9 @@ class Dispatcher:
         logger.debug("do_install")
         parsed_head = None
         try:  # TODO: Split into multiple try/except blocks
-            type_of_manifest, parsed_head = \
+            parsed_head = \
                 validate_xml_manifest(xml, schema_location=schema_location)
+            type_of_manifest = parsed_head.get_element('type')
             self.invoke_workload_orchestration_check(False, type_of_manifest, parsed_head)
 
             if type_of_manifest == 'cmd':
