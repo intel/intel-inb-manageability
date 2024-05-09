@@ -12,7 +12,7 @@ from typing import Callable, Optional, Any
 from datetime import datetime
 import xml.etree.ElementTree as ET  # only using this to generate XML, not parse it
 
-from cloudadapter.cloud.client.inbs_xml_conversion import convert_schedule_proto_to_xml
+from cloudadapter.cloud.client.inbs_xml_conversion import convert_update_scheduled_tasks_request_to_xml
 from cloudadapter.exceptions import AuthenticationError
 from cloudadapter.constants import METHOD
 from ..adapters.proto import inbs_sb_pb2_grpc, inbs_sb_pb2
@@ -112,20 +112,17 @@ class InbsCloudClient(CloudClient):
 
         self._callbacks[name] = callback
 
-    def _handle_set_schedule_request(self, request_id: str,
-                                     request_data: inbs_sb_pb2.SetScheduleRequestData
-                                     ) -> inbs_sb_pb2.HandleINBMCommandResponse:
-        # TODO: get last status. need an api in inbm_lib?
-        status = inbs_sb_pb2.SetScheduleResponseData.STATUS_TYPE_STARTED
-        request_data_xml: str = convert_schedule_proto_to_xml(request_data)
+    def _handle_update_scheduled_tasks_request(self,
+                                     request: inbs_sb_pb2.UpdateScheduledTasksRequest,
+                                     request_id: str
+                                     ) -> inbs_sb_pb2.UpdateScheduledTasksResponse:        
+        request_data_xml: str = ET.tostring(convert_update_scheduled_tasks_request_to_xml(request, request_id),
+                                            encoding='unicode')
         # discard result 'Manifest Update Triggered'; not needed for reply
         self._callbacks[METHOD.MANIFEST](request_data_xml)
         # TODO: do we need a response from dispatcher? cloudadapter is not currently set up to do this; it just sends blindly
 
-        return inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
-                                                     response_data=inbs_sb_pb2.INBMCommandResponseData(
-                                                         set_schedule_response_data=inbs_sb_pb2.SetScheduleResponseData(
-                                                             status_type=status)))
+        return inbs_sb_pb2.UpdateScheduledTasksResponse()
 
     def _handle_inbm_command(self,
                              request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
@@ -144,14 +141,17 @@ class InbsCloudClient(CloudClient):
                 request_id = item.request_id
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
 
-                request_data_type = item.request_data.WhichOneof('payload')
+                request_data_type = item.WhichOneof('request')
                 if request_data_type:
-                    if request_data_type == 'ping_request_data':
+                    if request_data_type == 'ping_request':
                         yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
-                                                                    response_data=inbs_sb_pb2.INBMCommandResponseData(
-                                                                        ping_response_data=inbs_sb_pb2.PingResponseData()))
-                    elif request_data_type == 'set_schedule_request_data':
-                        yield self._handle_set_schedule_request(request_id, item.request_data.set_schedule_request_data)
+                                                                    ping_response=inbs_sb_pb2.PingResponse())
+                    elif request_data_type == 'update_scheduled_tasks_request':
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
+                                                                    update_scheduled_tasks_response=
+                                                                    self._handle_update_scheduled_tasks_request(
+                                                                        request_id=request_id,
+                                                                        request=item.update_scheduled_tasks_request))
                     else:
                         # Log an error if the payload is not recognized
                         logger.error(

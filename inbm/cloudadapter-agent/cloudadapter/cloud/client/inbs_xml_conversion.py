@@ -10,7 +10,7 @@ import google.protobuf.duration_pb2
 from ..adapters.proto import inbs_sb_pb2
 
 
-def convert_update_scheduled_tasks_request_to_xml(request_data: inbs_sb_pb2.UpdateScheduledTasksRequest, request_id: str) -> str:
+def convert_update_scheduled_tasks_request_to_xml(request_data: inbs_sb_pb2.UpdateScheduledTasksRequest, request_id: str) -> ET.Element:
     """Converts the UpdateScheduledTasksRequest protobuf (plus request ID) to Dispatcher XML format.
     """
 
@@ -25,52 +25,78 @@ def convert_update_scheduled_tasks_request_to_xml(request_data: inbs_sb_pb2.Upda
         for schedule in task.schedules:            
             if schedule.HasField('single_schedule'):
                 schedule_element = ET.SubElement(update_schedule, 'single_schedule')
-                start_time_element = ET.SubElement(schedule_element, 'start_time')
-                end_time_element = ET.SubElement(schedule_element, 'end_time')
-
-                start_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(
-                    schedule.single_schedule.start_time)
-                end_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(
-                    schedule.single_schedule.end_time)
+                schedule_element.append(convert_single_schedule_to_xml(schedule.single_schedule))
             elif schedule.HasField('repeated_schedule'):
                 schedule_element = ET.SubElement(update_schedule, 'repeated_schedule')
+                schedule_element.append(convert_repeated_schedule_to_xml(schedule.repeated_schedule))                
 
-                duration_element = ET.SubElement(schedule_element, 'duration')
-                duration_element.text = str(protobuf_duration_to_xml(schedule.repeated_schedule.duration))
+        update_schedule.append(convert_operation_to_manifests(task.operation))
 
-                cron_minutes_element = ET.SubElement(schedule_element, 'cron_minutes')
-                cron_minutes_element.text = schedule.repeated_schedule.cron_minutes
+    return root
 
-                cron_hours_element = ET.SubElement(schedule_element, 'cron_hours')
-                cron_hours_element.text = schedule.repeated_schedule.cron_hours
+def convert_single_schedule_to_xml(schedule: inbs_sb_pb2.SingleSchedule) -> ET.Element:
+    """Converts the SingleSchedule protobuf to XML.
+    """
 
-                cron_day_month_element = ET.SubElement(schedule_element, 'cron_day_month')
-                cron_day_month_element.text = schedule.repeated_schedule.cron_day_month
+    root = ET.Element('single_schedule')
 
-                cron_month_element = ET.SubElement(schedule_element, 'cron_month')
-                cron_month_element.text = schedule.repeated_schedule.cron_month
+    start_time_element = ET.SubElement(root, 'start_time')
+    start_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(schedule.start_time)
 
-                cron_day_week_element = ET.SubElement(schedule_element, 'cron_day_week')
-                cron_day_week_element.text = schedule.repeated_schedule.cron_day_week
-        
-        # Operation -> Manifests
-        manifests_element = ET.SubElement(update_schedule, 'manifests')
-        for pre_operation in task.operation.pre_operations:
-            # TODO: encode pre_operation in XML
-            pre_operation_xml_element = ET.SubElement(manifests_element, 'manifest_xml')
-            pre_operation_xml_element.text = ''
+    end_time_element = ET.SubElement(root, 'end_time')
+    end_time_element.text = _google_timestamp_to_xml_datetime_quantized_seconds(schedule.end_time)
 
-        # TODO: encode operation in XML
-        operation_xml_element = ET.SubElement(manifests_element, 'manifest_xml')
-        operation_xml_element.text = ''
+    return root
 
-        for post_operation in task.operation.post_operations:
-            # TODO encode post_operation in XML            
-            post_operation_xml_element = ET.SubElement(manifests_element, 'manifest_xml')
-            post_operation_xml_element.text = ''
+def convert_repeated_schedule_to_xml(schedule: inbs_sb_pb2.RepeatedSchedule) -> ET.Element:
+    """Converts the RepeatedSchedule protobuf to XML.
+    """
 
+    root = ET.Element('repeated_schedule')
 
-    return ET.tostring(root, encoding="unicode")
+    duration_element = ET.SubElement(root, 'duration')
+    duration_element.text = str(protobuf_duration_to_xml(schedule.duration))
+
+    cron_minutes_element = ET.SubElement(root, 'cron_minutes')
+    cron_minutes_element.text = schedule.cron_minutes
+
+    cron_hours_element = ET.SubElement(root, 'cron_hours')
+    cron_hours_element.text = schedule.cron_hours
+
+    cron_day_month_element = ET.SubElement(root, 'cron_day_month')
+    cron_day_month_element.text = schedule.cron_day_month
+
+    cron_month_element = ET.SubElement(root, 'cron_month')
+    cron_month_element.text = schedule.cron_month
+
+    cron_day_week_element = ET.SubElement(root, 'cron_day_week')
+    cron_day_week_element.text = schedule.cron_day_week
+
+    return root
+
+def convert_operation_to_manifests(operation: inbs_sb_pb2.Operation) -> ET.Element:
+    """Converts the Operation protobuf to a manifests XML element.
+    """
+
+    root = ET.Element('manifests')
+
+    # Operation -> Manifests
+    manifests_element = ET.SubElement(root, 'manifests')
+    for pre_operation in operation.pre_operations:
+        # TODO: encode pre_operation in XML
+        pre_operation_xml_element = ET.SubElement(manifests_element, 'manifest_xml')
+        pre_operation_xml_element.text = ''
+
+    # TODO: encode operation in XML
+    operation_xml_element = ET.SubElement(root, 'manifest_xml')
+    operation_xml_element.text = ''
+
+    for post_operation in operation.post_operations:
+        # TODO encode post_operation in XML            
+        post_operation_xml_element = ET.SubElement(root, 'manifest_xml')
+        post_operation_xml_element.text = ''
+    
+    return root
 
 
 def _google_timestamp_to_xml_datetime_quantized_seconds(timestamp: google.protobuf.timestamp_pb2.Timestamp):
