@@ -4,7 +4,8 @@ from unittest import TestCase
 from inbm_lib.xmlhandler import XmlHandler
 
 GOOD_SCHEDULED_XML = '''
-<ScheduleManifest>
+<schedule_request>
+  <request_id>1234</request_id>
   <update_schedule>
     <schedule>
       <single_schedule>
@@ -38,7 +39,7 @@ GOOD_SCHEDULED_XML = '''
       </manifest_xml>
     </manifests>
   </update_schedule>
-</ScheduleManifest>
+</schedule_request>
 '''
 
 TEST_SCHEDULE_SCHEMA_LOCATION = os.path.join(

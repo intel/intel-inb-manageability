@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-  <!-- Define complex types for each proto message -->
-  
   <xs:complexType name="INBMManifests">
     <xs:sequence>
       <xs:element name="manifest_xml" type="xs:string" maxOccurs="unbounded"/>
@@ -33,8 +31,7 @@
     </xs:choice>
   </xs:complexType>
 
-  <!-- INBMSchedule complex type that uses the earlier defined complex types -->
-  <xs:complexType name="INBMSchedule">
+  <xs:complexType name="ScheduledTask">
     <xs:sequence>
       <xs:element name="schedule" type="Schedule"/>
       <xs:element name="manifests" type="INBMManifests"/>
@@ -42,13 +39,14 @@
   </xs:complexType>
 
   <!-- Root element type -->
-  <xs:complexType name="ScheduleManifestType">
+  <xs:complexType name="ScheduleRequest">
     <xs:sequence>
-      <xs:element name="update_schedule" type="INBMSchedule" maxOccurs="unbounded"/>
+      <xs:element name="request_id" type="xs:string"/>
+      <xs:element name="update_schedule" type="ScheduledTask" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
   <!-- Define the root element using the root element type -->
-  <xs:element name="ScheduleManifest" type="ScheduleManifestType"/>
+  <xs:element name="schedule_request" type="ScheduleRequest"/>
 
 </xs:schema>
