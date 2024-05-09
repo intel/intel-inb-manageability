@@ -9,6 +9,7 @@ from ..common.result_constants import CODE_OK, CODE_BAD_REQUEST, CODE_MULTIPLE
 from dispatcher.validators import validate_xml_manifest
 from .schedule import schedule_update
 from ..constants import SCHEDULE_SCHEMA_LOCATION
+from dispatcher.dispatcher_exception import DispatcherException
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,8 @@ def parse_schedule(xml: str, schema_location: Optional[str] = SCHEDULE_SCHEMA_LO
             return result
         except XmlException as error:
             result = Result(CODE_MULTIPLE, f'Error parsing/validating manifest: {error}')
+        except DispatcherException as error:
+            result = Result(CODE_BAD_REQUEST, f'Error during schedule: {error}')
         finally:
             logger.info('Schedule result: %s', str(result))
             return result

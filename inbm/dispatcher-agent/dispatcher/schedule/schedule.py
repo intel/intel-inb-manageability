@@ -21,9 +21,9 @@ def schedule_update(parsed_xml: Any) -> Tuple[bool, str]:
     """
     logger.debug(f"Received schedule request: {parsed_xml}")
     # TODO: Add more checking, multiple singleSchedule support, add multiple tasks, implement repeatedSchedule
-    if parsed_xml.get_element_text('schedule/singleSchedule'):
-        task = ScheduledTask(start_time=parsed_xml.get_element_text('schedule/singleSchedule/start_time'),
-                             end_time=parsed_xml.get_element_text('schedule/singleSchedule/end_time'),
+    if parsed_xml.get_element('update_schedule/schedule/single_schedule/start_time'):
+        task = ScheduledTask(start_time=parsed_xml.get_element('update_schedule/schedule/single_schedule/start_time'),
+                             end_time=parsed_xml.get_element('update_schedule/schedule/single_schedule/end_time'),
                              manifest=parsed_xml)
         SqliteManager(UDM_DB_FILE).create_task(task)
         return True, "Task Scheduled"

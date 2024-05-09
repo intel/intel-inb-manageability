@@ -33,11 +33,14 @@ class SqliteManager:
         :param task: ScheduledTask object
         :return: PK for the scheduled task in the DB
         """
-        with self._conn:
-            sql = ''' INSERT INTO task(NULL, start_time, end_time, manifest)
-                    VALUES(?,?) '''
-            cur = self._conn.cursor()
+        try:
+            with self._conn:
+                sql = ''' INSERT INTO task(NULL, start_time, end_time, manifest)
+                        VALUES(?,?) '''
+                cur = self._conn.cursor()
 
-            cur.execute(sql, (task.start_time, task.end_time, task.manifest))
-            return cur.lastrowid                
+                cur.execute(sql, (task.start_time, task.end_time, task.manifest))
+                return cur.lastrowid
+        except (sqlite3.OperationalError, sqlite3.InternalError) as e:
+            raise DispatcherException(f"Error connecting to database: {e}")
                 
