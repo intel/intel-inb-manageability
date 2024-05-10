@@ -145,15 +145,12 @@ class Operation(google.protobuf.message.Message):
     PRE_OPERATIONS_FIELD_NUMBER: builtins.int
     POST_OPERATIONS_FIELD_NUMBER: builtins.int
     UPDATE_SYSTEM_SOFTWARE_REQUEST_FIELD_NUMBER: builtins.int
-    UPDATE_FIRMWARE_REQUEST_FIELD_NUMBER: builtins.int
     @property
     def pre_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PreOperation]: ...
     @property
     def post_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PostOperation]: ...
     @property
-    def update_system_software_request(self) -> global___UpdateSystemSoftwareRequest: ...
-    @property
-    def update_firmware_request(self) -> global___UpdateFirmwareRequest:
+    def update_system_software_request(self) -> global___UpdateSystemSoftwareRequest:
         """..."""
 
     def __init__(
@@ -162,11 +159,10 @@ class Operation(google.protobuf.message.Message):
         pre_operations: collections.abc.Iterable[global___PreOperation] | None = ...,
         post_operations: collections.abc.Iterable[global___PostOperation] | None = ...,
         update_system_software_request: global___UpdateSystemSoftwareRequest | None = ...,
-        update_firmware_request: global___UpdateFirmwareRequest | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["operation_type", b"operation_type", "update_firmware_request", b"update_firmware_request", "update_system_software_request", b"update_system_software_request"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["operation_type", b"operation_type", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "update_firmware_request", b"update_firmware_request", "update_system_software_request", b"update_system_software_request"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["operation_type", b"operation_type"]) -> typing.Literal["update_system_software_request", "update_firmware_request"] | None: ...
+    def HasField(self, field_name: typing.Literal["operation_type", b"operation_type", "update_system_software_request", b"update_system_software_request"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["operation_type", b"operation_type", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "update_system_software_request", b"update_system_software_request"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["operation_type", b"operation_type"]) -> typing.Literal["update_system_software_request"] | None: ...
 
 global___Operation = Operation
 
@@ -202,8 +198,6 @@ global___PostOperation = PostOperation
 
 @typing.final
 class UpdateSystemSoftwareRequest(google.protobuf.message.Message):
-    """Performs a software update on the desired nodes"""
-
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     URL_FIELD_NUMBER: builtins.int
@@ -242,69 +236,6 @@ class UpdateSystemSoftwareRequest(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["do_not_reboot", b"do_not_reboot", "mode", b"mode", "package_list", b"package_list", "release_date", b"release_date", "url", b"url"]) -> None: ...
 
 global___UpdateSystemSoftwareRequest = UpdateSystemSoftwareRequest
-
-@typing.final
-class UpdateFirmwareRequest(google.protobuf.message.Message):
-    """Performs a firmware update after retrieving the update package
-    from a remote source.
-    """
-
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    URL_FIELD_NUMBER: builtins.int
-    RELEASE_DATE_FIELD_NUMBER: builtins.int
-    VENDOR_FIELD_NUMBER: builtins.int
-    MANUFACTURER_FIELD_NUMBER: builtins.int
-    PRODUCT_FIELD_NUMBER: builtins.int
-    MODEL_FIELD_NUMBER: builtins.int
-    SIGNATURE_FIELD_NUMBER: builtins.int
-    TOOL_OPTIONS_FIELD_NUMBER: builtins.int
-    DO_NOT_REBOOT_FIELD_NUMBER: builtins.int
-    vendor: builtins.str
-    """Firmware vendor"""
-    manufacturer: builtins.str
-    """Hardware manufacturer"""
-    product: builtins.str
-    """System board product type"""
-    model: builtins.str
-    """System board model number"""
-    signature: builtins.str
-    """Software signature to validate the update package"""
-    tool_options: builtins.str
-    """Flags that the firmware update tool may use"""
-    do_not_reboot: builtins.bool
-    """Weather to reboot the node after the firmware update attempt"""
-    @property
-    def url(self) -> global___Url:
-        """URL from which to remotely retrieve the package"""
-
-    @property
-    def release_date(self) -> google.protobuf.timestamp_pb2.Timestamp:
-        """Release date of the new FW update"""
-
-    def __init__(
-        self,
-        *,
-        url: global___Url | None = ...,
-        release_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        vendor: builtins.str = ...,
-        manufacturer: builtins.str = ...,
-        product: builtins.str = ...,
-        model: builtins.str = ...,
-        signature: builtins.str | None = ...,
-        tool_options: builtins.str | None = ...,
-        do_not_reboot: builtins.bool | None = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["_do_not_reboot", b"_do_not_reboot", "_signature", b"_signature", "_tool_options", b"_tool_options", "do_not_reboot", b"do_not_reboot", "release_date", b"release_date", "signature", b"signature", "tool_options", b"tool_options", "url", b"url"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["_do_not_reboot", b"_do_not_reboot", "_signature", b"_signature", "_tool_options", b"_tool_options", "do_not_reboot", b"do_not_reboot", "manufacturer", b"manufacturer", "model", b"model", "product", b"product", "release_date", b"release_date", "signature", b"signature", "tool_options", b"tool_options", "url", b"url", "vendor", b"vendor"]) -> None: ...
-    @typing.overload
-    def WhichOneof(self, oneof_group: typing.Literal["_do_not_reboot", b"_do_not_reboot"]) -> typing.Literal["do_not_reboot"] | None: ...
-    @typing.overload
-    def WhichOneof(self, oneof_group: typing.Literal["_signature", b"_signature"]) -> typing.Literal["signature"] | None: ...
-    @typing.overload
-    def WhichOneof(self, oneof_group: typing.Literal["_tool_options", b"_tool_options"]) -> typing.Literal["tool_options"] | None: ...
-
-global___UpdateFirmwareRequest = UpdateFirmwareRequest
 
 @typing.final
 class Url(google.protobuf.message.Message):
