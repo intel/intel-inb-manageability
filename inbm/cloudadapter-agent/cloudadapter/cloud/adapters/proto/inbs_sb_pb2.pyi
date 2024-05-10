@@ -26,23 +26,25 @@ class HandleINBMCommandRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     REQUEST_ID_FIELD_NUMBER: builtins.int
-    PING_REQUEST_FIELD_NUMBER: builtins.int
-    UPDATE_SCHEDULED_TASKS_REQUEST_FIELD_NUMBER: builtins.int
+    UPDATE_SCHEDULED_TASKS_FIELD_NUMBER: builtins.int
+    OPERATION_FIELD_NUMBER: builtins.int
     request_id: builtins.str
     @property
-    def ping_request(self) -> global___PingRequest: ...
+    def update_scheduled_tasks(self) -> global___UpdateScheduledTasks: ...
     @property
-    def update_scheduled_tasks_request(self) -> global___UpdateScheduledTasksRequest: ...
+    def operation(self) -> global___Operation:
+        """..."""
+
     def __init__(
         self,
         *,
         request_id: builtins.str = ...,
-        ping_request: global___PingRequest | None = ...,
-        update_scheduled_tasks_request: global___UpdateScheduledTasksRequest | None = ...,
+        update_scheduled_tasks: global___UpdateScheduledTasks | None = ...,
+        operation: global___Operation | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["ping_request", b"ping_request", "request", b"request", "update_scheduled_tasks_request", b"update_scheduled_tasks_request"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["ping_request", b"ping_request", "request", b"request", "request_id", b"request_id", "update_scheduled_tasks_request", b"update_scheduled_tasks_request"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["request", b"request"]) -> typing.Literal["ping_request", "update_scheduled_tasks_request"] | None: ...
+    def HasField(self, field_name: typing.Literal["operation", b"operation", "request", b"request", "update_scheduled_tasks", b"update_scheduled_tasks"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["operation", b"operation", "request", b"request", "request_id", b"request_id", "update_scheduled_tasks", b"update_scheduled_tasks"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["request", b"request"]) -> typing.Literal["update_scheduled_tasks", "operation"] | None: ...
 
 global___HandleINBMCommandRequest = HandleINBMCommandRequest
 
@@ -51,48 +53,18 @@ class HandleINBMCommandResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     REQUEST_ID_FIELD_NUMBER: builtins.int
-    PING_RESPONSE_FIELD_NUMBER: builtins.int
-    UPDATE_SCHEDULED_TASKS_RESPONSE_FIELD_NUMBER: builtins.int
     request_id: builtins.str
-    @property
-    def ping_response(self) -> global___PingResponse: ...
-    @property
-    def update_scheduled_tasks_response(self) -> global___UpdateScheduledTasksResponse: ...
     def __init__(
         self,
         *,
         request_id: builtins.str = ...,
-        ping_response: global___PingResponse | None = ...,
-        update_scheduled_tasks_response: global___UpdateScheduledTasksResponse | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["ping_response", b"ping_response", "response", b"response", "update_scheduled_tasks_response", b"update_scheduled_tasks_response"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["ping_response", b"ping_response", "request_id", b"request_id", "response", b"response", "update_scheduled_tasks_response", b"update_scheduled_tasks_response"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["response", b"response"]) -> typing.Literal["ping_response", "update_scheduled_tasks_response"] | None: ...
+    def ClearField(self, field_name: typing.Literal["request_id", b"request_id"]) -> None: ...
 
 global___HandleINBMCommandResponse = HandleINBMCommandResponse
 
 @typing.final
-class PingRequest(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    def __init__(
-        self,
-    ) -> None: ...
-
-global___PingRequest = PingRequest
-
-@typing.final
-class PingResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    def __init__(
-        self,
-    ) -> None: ...
-
-global___PingResponse = PingResponse
-
-@typing.final
-class UpdateScheduledTasksRequest(google.protobuf.message.Message):
+class UpdateScheduledTasks(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     TASKS_FIELD_NUMBER: builtins.int
@@ -105,17 +77,7 @@ class UpdateScheduledTasksRequest(google.protobuf.message.Message):
     ) -> None: ...
     def ClearField(self, field_name: typing.Literal["tasks", b"tasks"]) -> None: ...
 
-global___UpdateScheduledTasksRequest = UpdateScheduledTasksRequest
-
-@typing.final
-class UpdateScheduledTasksResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    def __init__(
-        self,
-    ) -> None: ...
-
-global___UpdateScheduledTasksResponse = UpdateScheduledTasksResponse
+global___UpdateScheduledTasks = UpdateScheduledTasks
 
 @typing.final
 class ScheduledTask(google.protobuf.message.Message):
@@ -145,13 +107,16 @@ class Operation(google.protobuf.message.Message):
     PRE_OPERATIONS_FIELD_NUMBER: builtins.int
     POST_OPERATIONS_FIELD_NUMBER: builtins.int
     UPDATE_SYSTEM_SOFTWARE_REQUEST_FIELD_NUMBER: builtins.int
+    NULL_OPERATION_FIELD_NUMBER: builtins.int
     @property
     def pre_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PreOperation]: ...
     @property
     def post_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PostOperation]: ...
     @property
-    def update_system_software_request(self) -> global___UpdateSystemSoftwareRequest:
-        """..."""
+    def update_system_software_request(self) -> global___UpdateSystemSoftwareRequest: ...
+    @property
+    def null_operation(self) -> global___NullOperation:
+        """useful for testing or for ping"""
 
     def __init__(
         self,
@@ -159,12 +124,23 @@ class Operation(google.protobuf.message.Message):
         pre_operations: collections.abc.Iterable[global___PreOperation] | None = ...,
         post_operations: collections.abc.Iterable[global___PostOperation] | None = ...,
         update_system_software_request: global___UpdateSystemSoftwareRequest | None = ...,
+        null_operation: global___NullOperation | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["operation_type", b"operation_type", "update_system_software_request", b"update_system_software_request"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["operation_type", b"operation_type", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "update_system_software_request", b"update_system_software_request"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["operation_type", b"operation_type"]) -> typing.Literal["update_system_software_request"] | None: ...
+    def HasField(self, field_name: typing.Literal["null_operation", b"null_operation", "operation_type", b"operation_type", "update_system_software_request", b"update_system_software_request"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["null_operation", b"null_operation", "operation_type", b"operation_type", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "update_system_software_request", b"update_system_software_request"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["operation_type", b"operation_type"]) -> typing.Literal["update_system_software_request", "null_operation"] | None: ...
 
 global___Operation = Operation
+
+@typing.final
+class NullOperation(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    def __init__(
+        self,
+    ) -> None: ...
+
+global___NullOperation = NullOperation
 
 @typing.final
 class PreOperation(google.protobuf.message.Message):

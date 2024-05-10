@@ -16,7 +16,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from google.protobuf import duration_pb2 as google_dot_protobuf_dot_duration__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/inbs_sb.proto\x12\x07inbs.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"\xb7\x01\n\x18HandleINBMCommandRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12,\n\x0cping_request\x18\x02 \x01(\x0b\x32\x14.inbs.v1.PingRequestH\x00\x12N\n\x1eupdate_scheduled_tasks_request\x18\x03 \x01(\x0b\x32$.inbs.v1.UpdateScheduledTasksRequestH\x00\x42\t\n\x07request\"\xbd\x01\n\x19HandleINBMCommandResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12.\n\rping_response\x18\x02 \x01(\x0b\x32\x15.inbs.v1.PingResponseH\x00\x12P\n\x1fupdate_scheduled_tasks_response\x18\x03 \x01(\x0b\x32%.inbs.v1.UpdateScheduledTasksResponseH\x00\x42\n\n\x08response\"\r\n\x0bPingRequest\"\x0e\n\x0cPingResponse\"D\n\x1bUpdateScheduledTasksRequest\x12%\n\x05tasks\x18\x01 \x03(\x0b\x32\x16.inbs.v1.ScheduledTask\"\x1e\n\x1cUpdateScheduledTasksResponse\"\\\n\rScheduledTask\x12%\n\toperation\x18\x01 \x01(\x0b\x32\x12.inbs.v1.Operation\x12$\n\tschedules\x18\x02 \x03(\x0b\x32\x11.inbs.v1.Schedule\"\xcd\x01\n\tOperation\x12-\n\x0epre_operations\x18\x01 \x03(\x0b\x32\x15.inbs.v1.PreOperation\x12/\n\x0fpost_operations\x18\x02 \x03(\x0b\x32\x16.inbs.v1.PostOperation\x12N\n\x1eupdate_system_software_request\x18\x03 \x01(\x0b\x32$.inbs.v1.UpdateSystemSoftwareRequestH\x00\x42\x10\n\x0eoperation_type\"\x0e\n\x0cPreOperation\"\x0f\n\rPostOperation\"\xbc\x01\n\x1bUpdateSystemSoftwareRequest\x12\x19\n\x03url\x18\x01 \x01(\x0b\x32\x0c.inbs.v1.Url\x12\x30\n\x0crelease_date\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12#\n\x04mode\x18\x03 \x01(\x0b\x32\x15.inbs.v1.DownloadMode\x12\x15\n\rdo_not_reboot\x18\x04 \x01(\x08\x12\x14\n\x0cpackage_list\x18\x05 \x03(\t\"\xa2\x01\n\x03Url\x12#\n\x06scheme\x18\x01 \x01(\x0e\x32\x13.inbs.v1.Url.Scheme\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\"S\n\x06Scheme\x12\x16\n\x12SCHEME_UNSPECIFIED\x10\x00\x12\x10\n\x0cSCHEME_HTTPS\x10\x01\x12\x0e\n\nSCHEME_FTP\x10\x02\x12\x0f\n\x0bSCHEME_FILE\x10\x03\"\x93\x01\n\x0c\x44ownloadMode\x12(\n\x04mode\x18\x01 \x01(\x0e\x32\x1a.inbs.v1.DownloadMode.Mode\"Y\n\x04Mode\x12\x14\n\x10MODE_UNSPECIFIED\x10\x00\x12\r\n\tMODE_FULL\x10\x01\x12\x14\n\x10MODE_NO_DOWNLOAD\x10\x02\x12\x16\n\x12MODE_DOWNLOAD_ONLY\x10\x03\"\x82\x01\n\x08Schedule\x12\x32\n\x0fsingle_schedule\x18\x01 \x01(\x0b\x32\x17.inbs.v1.SingleScheduleH\x00\x12\x36\n\x11repeated_schedule\x18\x02 \x01(\x0b\x32\x19.inbs.v1.RepeatedScheduleH\x00\x42\n\n\x08schedule\"n\n\x0eSingleSchedule\x12.\n\nstart_time\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xac\x01\n\x10RepeatedSchedule\x12+\n\x08\x64uration\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x14\n\x0c\x63ron_minutes\x18\x02 \x01(\t\x12\x12\n\ncron_hours\x18\x03 \x01(\t\x12\x16\n\x0e\x63ron_day_month\x18\x04 \x01(\t\x12\x12\n\ncron_month\x18\x05 \x01(\t\x12\x15\n\rcron_day_week\x18\x06 \x01(\t2o\n\rINBSSBService\x12^\n\x11HandleINBMCommand\x12\".inbs.v1.HandleINBMCommandResponse\x1a!.inbs.v1.HandleINBMCommandRequest(\x01\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13proto/inbs_sb.proto\x12\x07inbs.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"\xa3\x01\n\x18HandleINBMCommandRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12?\n\x16update_scheduled_tasks\x18\x02 \x01(\x0b\x32\x1d.inbs.v1.UpdateScheduledTasksH\x00\x12\'\n\toperation\x18\x03 \x01(\x0b\x32\x12.inbs.v1.OperationH\x00\x42\t\n\x07request\"/\n\x19HandleINBMCommandResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\"=\n\x14UpdateScheduledTasks\x12%\n\x05tasks\x18\x01 \x03(\x0b\x32\x16.inbs.v1.ScheduledTask\"\\\n\rScheduledTask\x12%\n\toperation\x18\x01 \x01(\x0b\x32\x12.inbs.v1.Operation\x12$\n\tschedules\x18\x02 \x03(\x0b\x32\x11.inbs.v1.Schedule\"\xff\x01\n\tOperation\x12-\n\x0epre_operations\x18\x01 \x03(\x0b\x32\x15.inbs.v1.PreOperation\x12/\n\x0fpost_operations\x18\x02 \x03(\x0b\x32\x16.inbs.v1.PostOperation\x12N\n\x1eupdate_system_software_request\x18\x03 \x01(\x0b\x32$.inbs.v1.UpdateSystemSoftwareRequestH\x00\x12\x30\n\x0enull_operation\x18\x04 \x01(\x0b\x32\x16.inbs.v1.NullOperationH\x00\x42\x10\n\x0eoperation_type\"\x0f\n\rNullOperation\"\x0e\n\x0cPreOperation\"\x0f\n\rPostOperation\"\xbc\x01\n\x1bUpdateSystemSoftwareRequest\x12\x19\n\x03url\x18\x01 \x01(\x0b\x32\x0c.inbs.v1.Url\x12\x30\n\x0crelease_date\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12#\n\x04mode\x18\x03 \x01(\x0b\x32\x15.inbs.v1.DownloadMode\x12\x15\n\rdo_not_reboot\x18\x04 \x01(\x08\x12\x14\n\x0cpackage_list\x18\x05 \x03(\t\"\xa2\x01\n\x03Url\x12#\n\x06scheme\x18\x01 \x01(\x0e\x32\x13.inbs.v1.Url.Scheme\x12\x0f\n\x07\x61\x64\x64ress\x18\x02 \x01(\t\x12\x10\n\x08username\x18\x03 \x01(\t\"S\n\x06Scheme\x12\x16\n\x12SCHEME_UNSPECIFIED\x10\x00\x12\x10\n\x0cSCHEME_HTTPS\x10\x01\x12\x0e\n\nSCHEME_FTP\x10\x02\x12\x0f\n\x0bSCHEME_FILE\x10\x03\"\x93\x01\n\x0c\x44ownloadMode\x12(\n\x04mode\x18\x01 \x01(\x0e\x32\x1a.inbs.v1.DownloadMode.Mode\"Y\n\x04Mode\x12\x14\n\x10MODE_UNSPECIFIED\x10\x00\x12\r\n\tMODE_FULL\x10\x01\x12\x14\n\x10MODE_NO_DOWNLOAD\x10\x02\x12\x16\n\x12MODE_DOWNLOAD_ONLY\x10\x03\"\x82\x01\n\x08Schedule\x12\x32\n\x0fsingle_schedule\x18\x01 \x01(\x0b\x32\x17.inbs.v1.SingleScheduleH\x00\x12\x36\n\x11repeated_schedule\x18\x02 \x01(\x0b\x32\x19.inbs.v1.RepeatedScheduleH\x00\x42\n\n\x08schedule\"n\n\x0eSingleSchedule\x12.\n\nstart_time\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xac\x01\n\x10RepeatedSchedule\x12+\n\x08\x64uration\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x14\n\x0c\x63ron_minutes\x18\x02 \x01(\t\x12\x12\n\ncron_hours\x18\x03 \x01(\t\x12\x16\n\x0e\x63ron_day_month\x18\x04 \x01(\t\x12\x12\n\ncron_month\x18\x05 \x01(\t\x12\x15\n\rcron_day_week\x18\x06 \x01(\t2o\n\rINBSSBService\x12^\n\x11HandleINBMCommand\x12\".inbs.v1.HandleINBMCommandResponse\x1a!.inbs.v1.HandleINBMCommandRequest(\x01\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -24,41 +24,37 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'proto.inbs_sb_pb2', _global
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _globals['_HANDLEINBMCOMMANDREQUEST']._serialized_start=98
-  _globals['_HANDLEINBMCOMMANDREQUEST']._serialized_end=281
-  _globals['_HANDLEINBMCOMMANDRESPONSE']._serialized_start=284
-  _globals['_HANDLEINBMCOMMANDRESPONSE']._serialized_end=473
-  _globals['_PINGREQUEST']._serialized_start=475
-  _globals['_PINGREQUEST']._serialized_end=488
-  _globals['_PINGRESPONSE']._serialized_start=490
-  _globals['_PINGRESPONSE']._serialized_end=504
-  _globals['_UPDATESCHEDULEDTASKSREQUEST']._serialized_start=506
-  _globals['_UPDATESCHEDULEDTASKSREQUEST']._serialized_end=574
-  _globals['_UPDATESCHEDULEDTASKSRESPONSE']._serialized_start=576
-  _globals['_UPDATESCHEDULEDTASKSRESPONSE']._serialized_end=606
-  _globals['_SCHEDULEDTASK']._serialized_start=608
-  _globals['_SCHEDULEDTASK']._serialized_end=700
-  _globals['_OPERATION']._serialized_start=703
-  _globals['_OPERATION']._serialized_end=908
-  _globals['_PREOPERATION']._serialized_start=910
-  _globals['_PREOPERATION']._serialized_end=924
-  _globals['_POSTOPERATION']._serialized_start=926
-  _globals['_POSTOPERATION']._serialized_end=941
-  _globals['_UPDATESYSTEMSOFTWAREREQUEST']._serialized_start=944
-  _globals['_UPDATESYSTEMSOFTWAREREQUEST']._serialized_end=1132
-  _globals['_URL']._serialized_start=1135
-  _globals['_URL']._serialized_end=1297
-  _globals['_URL_SCHEME']._serialized_start=1214
-  _globals['_URL_SCHEME']._serialized_end=1297
-  _globals['_DOWNLOADMODE']._serialized_start=1300
-  _globals['_DOWNLOADMODE']._serialized_end=1447
-  _globals['_DOWNLOADMODE_MODE']._serialized_start=1358
-  _globals['_DOWNLOADMODE_MODE']._serialized_end=1447
-  _globals['_SCHEDULE']._serialized_start=1450
-  _globals['_SCHEDULE']._serialized_end=1580
-  _globals['_SINGLESCHEDULE']._serialized_start=1582
-  _globals['_SINGLESCHEDULE']._serialized_end=1692
-  _globals['_REPEATEDSCHEDULE']._serialized_start=1695
-  _globals['_REPEATEDSCHEDULE']._serialized_end=1867
-  _globals['_INBSSBSERVICE']._serialized_start=1869
-  _globals['_INBSSBSERVICE']._serialized_end=1980
+  _globals['_HANDLEINBMCOMMANDREQUEST']._serialized_end=261
+  _globals['_HANDLEINBMCOMMANDRESPONSE']._serialized_start=263
+  _globals['_HANDLEINBMCOMMANDRESPONSE']._serialized_end=310
+  _globals['_UPDATESCHEDULEDTASKS']._serialized_start=312
+  _globals['_UPDATESCHEDULEDTASKS']._serialized_end=373
+  _globals['_SCHEDULEDTASK']._serialized_start=375
+  _globals['_SCHEDULEDTASK']._serialized_end=467
+  _globals['_OPERATION']._serialized_start=470
+  _globals['_OPERATION']._serialized_end=725
+  _globals['_NULLOPERATION']._serialized_start=727
+  _globals['_NULLOPERATION']._serialized_end=742
+  _globals['_PREOPERATION']._serialized_start=744
+  _globals['_PREOPERATION']._serialized_end=758
+  _globals['_POSTOPERATION']._serialized_start=760
+  _globals['_POSTOPERATION']._serialized_end=775
+  _globals['_UPDATESYSTEMSOFTWAREREQUEST']._serialized_start=778
+  _globals['_UPDATESYSTEMSOFTWAREREQUEST']._serialized_end=966
+  _globals['_URL']._serialized_start=969
+  _globals['_URL']._serialized_end=1131
+  _globals['_URL_SCHEME']._serialized_start=1048
+  _globals['_URL_SCHEME']._serialized_end=1131
+  _globals['_DOWNLOADMODE']._serialized_start=1134
+  _globals['_DOWNLOADMODE']._serialized_end=1281
+  _globals['_DOWNLOADMODE_MODE']._serialized_start=1192
+  _globals['_DOWNLOADMODE_MODE']._serialized_end=1281
+  _globals['_SCHEDULE']._serialized_start=1284
+  _globals['_SCHEDULE']._serialized_end=1414
+  _globals['_SINGLESCHEDULE']._serialized_start=1416
+  _globals['_SINGLESCHEDULE']._serialized_end=1526
+  _globals['_REPEATEDSCHEDULE']._serialized_start=1529
+  _globals['_REPEATEDSCHEDULE']._serialized_end=1701
+  _globals['_INBSSBSERVICE']._serialized_start=1703
+  _globals['_INBSSBSERVICE']._serialized_end=1814
 # @@protoc_insertion_point(module_scope)

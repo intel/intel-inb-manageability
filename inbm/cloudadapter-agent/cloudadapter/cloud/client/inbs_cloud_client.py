@@ -111,7 +111,7 @@ class InbsCloudClient(CloudClient):
         """
 
         self._callbacks[name] = callback
-
+    
     def _handle_update_scheduled_tasks_request(self,
                                      request: inbs_sb_pb2.UpdateScheduledTasksRequest,
                                      request_id: str
@@ -143,15 +143,15 @@ class InbsCloudClient(CloudClient):
 
                 request_data_type = item.WhichOneof('request')
                 if request_data_type:
-                    if request_data_type == 'ping_request':
-                        yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
-                                                                    ping_response=inbs_sb_pb2.PingResponse())
-                    elif request_data_type == 'update_scheduled_tasks_request':
-                        yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id,
-                                                                    update_scheduled_tasks_response=
-                                                                    self._handle_update_scheduled_tasks_request(
-                                                                        request_id=request_id,
-                                                                        request=item.update_scheduled_tasks_request))
+                    if request_data_type == 'operation':
+                        self._handle_operation(request_id=request_id,
+                                               operation=item.operation)
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id)
+                    elif request_data_type == 'update_scheduled_tasks':
+                        self._handle_update_scheduled_tasks_request(
+                                                    request_id=request_id,
+                                                    request=item.update_scheduled_tasks)
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(request_id=request_id)                                                                                                        
                     else:
                         # Log an error if the payload is not recognized
                         logger.error(

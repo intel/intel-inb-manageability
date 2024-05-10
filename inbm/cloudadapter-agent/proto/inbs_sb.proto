@@ -16,30 +16,18 @@ service INBSSBService {
 message HandleINBMCommandRequest {
   string request_id = 1;
   oneof request {
-    PingRequest ping_request = 2;
-    UpdateScheduledTasksRequest update_scheduled_tasks_request = 3;
+    UpdateScheduledTasks update_scheduled_tasks = 2;
+    Operation operation = 3;
+    // ...
   }
 }
 
-message HandleINBMCommandResponse {  
+message HandleINBMCommandResponse {
   string request_id = 1;
-  oneof response {
-    PingResponse ping_response = 2;
-    UpdateScheduledTasksResponse update_scheduled_tasks_response = 3;
-  }
 }
 
-message PingRequest {
-}
-
-message PingResponse {
-}
-
-message UpdateScheduledTasksRequest {
+message UpdateScheduledTasks {
   repeated ScheduledTask tasks = 1;
-}
-
-message UpdateScheduledTasksResponse {
 }
 
 message ScheduledTask {
@@ -52,8 +40,13 @@ message Operation {
   repeated PostOperation post_operations = 2;
   oneof operation_type {
     UpdateSystemSoftwareRequest update_system_software_request = 3;
+    NullOperation null_operation = 4; // useful for testing or for ping
     // ...
   }
+}
+
+message NullOperation {
+
 }
 
 message PreOperation {
