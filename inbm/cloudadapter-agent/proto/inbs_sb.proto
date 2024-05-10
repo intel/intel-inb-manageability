@@ -52,6 +52,7 @@ message Operation {
   repeated PostOperation post_operations = 2;
   oneof operation_type {
     UpdateSystemSoftwareRequest update_system_software_request = 3;
+    UpdateFirmwareRequest update_firmware_request = 4;
     // ...
   }
 }
@@ -68,12 +69,27 @@ message PostOperation {
 // }
 }
 
+// Performs a software update on the desired nodes
 message UpdateSystemSoftwareRequest {
     Url url = 1; // URL from which to remotely retrieve the package
     google.protobuf.Timestamp release_date = 2; // Release date of the new SW update.
     DownloadMode mode = 3; // Mode for installing the softare update regarding download and install steps.
     bool do_not_reboot = 4;  // Whether to reboot the node after the firmware update attempt
     repeated string package_list = 5; // List of packages to install if whole package update isn't desired.
+}
+
+// Performs a firmware update after retrieving the update package
+// from a remote source.
+message UpdateFirmwareRequest {
+    Url url = 1; // URL from which to remotely retrieve the package
+    google.protobuf.Timestamp release_date = 2; // Release date of the new FW update
+    string vendor = 3; // Firmware vendor
+    string manufacturer = 4; // Hardware manufacturer 
+    string product = 5; // System board product type
+    string model = 6; // System board model number    
+    string signature = 7; // Software signature to validate the update package
+    string tool_options = 8; // Flags that the firmware update tool may use
+    bool do_not_reboot = 9;  // Weather to reboot the node after the firmware update attempt
 }
 
 // Defines the URL structure
