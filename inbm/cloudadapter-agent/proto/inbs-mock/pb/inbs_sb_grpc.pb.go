@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	INBSSBService_INBMCommand_FullMethodName = "/inbs.INBSSBService/INBMCommand"
+	INBSSBService_INBMCommand_FullMethodName = "/inbs.v1.INBSSBService/INBMCommand"
 )
 
 // INBSSBServiceClient is the client API for INBSSBService service.
@@ -128,7 +128,7 @@ func (x *iNBSSBServiceINBMCommandServer) Recv() (*INBMResponse, error) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var INBSSBService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "inbs.INBSSBService",
+	ServiceName: "inbs.v1.INBSSBService",
 	HandlerType: (*INBSSBServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{

@@ -15,7 +15,7 @@ class INBSSBServiceStub(object):
             channel: A grpc.Channel.
         """
         self.INBMCommand = channel.stream_stream(
-                '/inbs.INBSSBService/INBMCommand',
+                '/inbs.v1.INBSSBService/INBMCommand',
                 request_serializer=proto_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
                 response_deserializer=proto_dot_inbs__sb__pb2.INBMRequest.FromString,
                 )
@@ -41,7 +41,7 @@ def add_INBSSBServiceServicer_to_server(servicer, server):
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
-            'inbs.INBSSBService', rpc_method_handlers)
+            'inbs.v1.INBSSBService', rpc_method_handlers)
     server.add_generic_rpc_handlers((generic_handler,))
 
 
@@ -60,7 +60,7 @@ class INBSSBService(object):
             wait_for_ready=None,
             timeout=None,
             metadata=None):
-        return grpc.experimental.stream_stream(request_iterator, target, '/inbs.INBSSBService/INBMCommand',
+        return grpc.experimental.stream_stream(request_iterator, target, '/inbs.v1.INBSSBService/INBMCommand',
             proto_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
             proto_dot_inbs__sb__pb2.INBMRequest.FromString,
             options, channel_credentials,
