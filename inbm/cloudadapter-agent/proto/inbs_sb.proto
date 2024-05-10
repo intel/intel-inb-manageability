@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package inbs;
+package inbs.v1;
 
 service INBSSBService {
   // Bi-directional streaming method
