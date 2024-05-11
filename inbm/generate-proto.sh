@@ -17,6 +17,7 @@ python -m grpc_tools.protoc -I../proto --python_out=cloudadapter/pb --grpc_pytho
 python -m grpc_tools.protoc -I../proto --python_out=cloudadapter/pb --grpc_python_out=cloudadapter/pb --mypy_out=cloudadapter/pb ../proto/inbs/v1/inbs_sb.proto
 
 sed -i 's/ common.v1/ cloudadapter.pb.common.v1/' cloudadapter/pb/*/v1/*.py{,i}
+sed -i 's/\[common.v1.common_pb2/\[cloudadapter.pb.common.v1.common_pb2/' cloudadapter/pb/*/v1/*.py{,i}
 sed -i 's/ inbs.v1/ cloudadapter.pb.inbs.v1/' cloudadapter/pb/*/v1/*.py{,i}
 
 echo "Generating golang proto files for inbs-mock."

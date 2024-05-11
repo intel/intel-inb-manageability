@@ -4,88 +4,99 @@ isort:skip_file
 """
 
 import builtins
+import collections.abc
 import cloudadapter.pb.common.v1.common_pb2
 import google.protobuf.descriptor
+import google.protobuf.internal.containers
 import google.protobuf.message
 import typing
 
 DESCRIPTOR: google.protobuf.descriptor.FileDescriptor
 
 @typing.final
-class INBMRequest(google.protobuf.message.Message):
+class HandleINBMCommandRequest(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     REQUEST_ID_FIELD_NUMBER: builtins.int
-    PING_REQUEST_FIELD_NUMBER: builtins.int
+    COMMAND_FIELD_NUMBER: builtins.int
     request_id: builtins.str
     @property
-    def ping_request(self) -> global___PingRequest: ...
+    def command(self) -> global___INBMCommand: ...
     def __init__(
         self,
         *,
         request_id: builtins.str = ...,
-        ping_request: global___PingRequest | None = ...,
+        command: global___INBMCommand | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["payload", b"payload", "ping_request", b"ping_request"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["payload", b"payload", "ping_request", b"ping_request", "request_id", b"request_id"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["payload", b"payload"]) -> typing.Literal["ping_request"] | None: ...
+    def HasField(self, field_name: typing.Literal["command", b"command"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["command", b"command", "request_id", b"request_id"]) -> None: ...
 
-global___INBMRequest = INBMRequest
+global___HandleINBMCommandRequest = HandleINBMCommandRequest
 
 @typing.final
-class INBMResponse(google.protobuf.message.Message):
+class HandleINBMCommandResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     REQUEST_ID_FIELD_NUMBER: builtins.int
-    PING_RESPONSE_FIELD_NUMBER: builtins.int
+    ERROR_FIELD_NUMBER: builtins.int
     request_id: builtins.str
     @property
-    def ping_response(self) -> global___PingResponse: ...
+    def error(self) -> cloudadapter.pb.common.v1.common_pb2.Error: ...
     def __init__(
         self,
         *,
         request_id: builtins.str = ...,
-        ping_response: global___PingResponse | None = ...,
+        error: cloudadapter.pb.common.v1.common_pb2.Error | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["payload", b"payload", "ping_response", b"ping_response"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["payload", b"payload", "ping_response", b"ping_response", "request_id", b"request_id"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["payload", b"payload"]) -> typing.Literal["ping_response"] | None: ...
+    def HasField(self, field_name: typing.Literal["error", b"error"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["error", b"error", "request_id", b"request_id"]) -> None: ...
 
-global___INBMResponse = INBMResponse
+global___HandleINBMCommandResponse = HandleINBMCommandResponse
 
 @typing.final
-class PingRequest(google.protobuf.message.Message):
+class INBMCommand(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    def __init__(
-        self,
-    ) -> None: ...
-
-global___PingRequest = PingRequest
-
-@typing.final
-class PingResponse(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    def __init__(
-        self,
-    ) -> None: ...
-
-global___PingResponse = PingResponse
-
-@typing.final
-class TestCommonImport(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    COMMON_MESSAGE_FIELD_NUMBER: builtins.int
+    UPDATE_SCHEDULED_OPERATIONS_FIELD_NUMBER: builtins.int
+    PING_FIELD_NUMBER: builtins.int
     @property
-    def common_message(self) -> cloudadapter.pb.common.v1.common_pb2.CommonMessage: ...
+    def update_scheduled_operations(self) -> global___UpdateScheduledOperations: ...
+    @property
+    def ping(self) -> global___Ping: ...
     def __init__(
         self,
         *,
-        common_message: cloudadapter.pb.common.v1.common_pb2.CommonMessage | None = ...,
+        update_scheduled_operations: global___UpdateScheduledOperations | None = ...,
+        ping: global___Ping | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["common_message", b"common_message"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["common_message", b"common_message"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["inbm_command", b"inbm_command", "ping", b"ping", "update_scheduled_operations", b"update_scheduled_operations"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["inbm_command", b"inbm_command", "ping", b"ping", "update_scheduled_operations", b"update_scheduled_operations"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["inbm_command", b"inbm_command"]) -> typing.Literal["update_scheduled_operations", "ping"] | None: ...
 
-global___TestCommonImport = TestCommonImport
+global___INBMCommand = INBMCommand
+
+@typing.final
+class UpdateScheduledOperations(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    SCHEDULED_OPERATIONS_FIELD_NUMBER: builtins.int
+    @property
+    def scheduled_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[cloudadapter.pb.common.v1.common_pb2.ScheduledOperation]: ...
+    def __init__(
+        self,
+        *,
+        scheduled_operations: collections.abc.Iterable[cloudadapter.pb.common.v1.common_pb2.ScheduledOperation] | None = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["scheduled_operations", b"scheduled_operations"]) -> None: ...
+
+global___UpdateScheduledOperations = UpdateScheduledOperations
+
+@typing.final
+class Ping(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    def __init__(
+        self,
+    ) -> None: ...
+
+global___Ping = Ping

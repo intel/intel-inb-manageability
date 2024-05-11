@@ -5,29 +5,28 @@ import "common/v1/common.proto";
 
 service INBSSBService {
   // Bi-directional streaming method
-  rpc INBMCommand(stream INBMResponse) returns (stream INBMRequest);
+  rpc HandleINBMCommand(stream HandleINBMCommandResponse) returns (stream HandleINBMCommandRequest);
 }
 
-message INBMRequest {
+message HandleINBMCommandRequest {
   string request_id = 1;
-  oneof payload {
-    PingRequest ping_request = 2;
+  INBMCommand command = 2;
+}
+
+message HandleINBMCommandResponse {
+  string request_id = 1;
+  common.v1.Error error = 2;
+}
+
+message INBMCommand {
+  oneof inbm_command {
+    UpdateScheduledOperations update_scheduled_operations = 1;
+    Ping ping = 2;
   }
 }
 
-message INBMResponse {  
-  string request_id = 1;
-  oneof payload {
-    PingResponse ping_response = 2;
-  }
+message UpdateScheduledOperations {
+  repeated common.v1.ScheduledOperation scheduled_operations = 1;
 }
 
-message PingRequest {
-}
-
-message PingResponse {
-}
-
-message TestCommonImport {
-  common.v1.CommonMessage common_message = 1;
-}
+message Ping {}

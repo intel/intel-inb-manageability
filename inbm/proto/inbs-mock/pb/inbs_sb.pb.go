@@ -20,20 +20,17 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type INBMRequest struct {
+type HandleINBMCommandRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	RequestId string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	// Types that are assignable to Payload:
-	//
-	//	*INBMRequest_PingRequest
-	Payload isINBMRequest_Payload `protobuf_oneof:"payload"`
+	RequestId string       `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	Command   *INBMCommand `protobuf:"bytes,2,opt,name=command,proto3" json:"command,omitempty"`
 }
 
-func (x *INBMRequest) Reset() {
-	*x = INBMRequest{}
+func (x *HandleINBMCommandRequest) Reset() {
+	*x = HandleINBMCommandRequest{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_inbs_v1_inbs_sb_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -41,13 +38,13 @@ func (x *INBMRequest) Reset() {
 	}
 }
 
-func (x *INBMRequest) String() string {
+func (x *HandleINBMCommandRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*INBMRequest) ProtoMessage() {}
+func (*HandleINBMCommandRequest) ProtoMessage() {}
 
-func (x *INBMRequest) ProtoReflect() protoreflect.Message {
+func (x *HandleINBMCommandRequest) ProtoReflect() protoreflect.Message {
 	mi := &file_inbs_v1_inbs_sb_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -59,56 +56,36 @@ func (x *INBMRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use INBMRequest.ProtoReflect.Descriptor instead.
-func (*INBMRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use HandleINBMCommandRequest.ProtoReflect.Descriptor instead.
+func (*HandleINBMCommandRequest) Descriptor() ([]byte, []int) {
 	return file_inbs_v1_inbs_sb_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *INBMRequest) GetRequestId() string {
+func (x *HandleINBMCommandRequest) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
 	}
 	return ""
 }
 
-func (m *INBMRequest) GetPayload() isINBMRequest_Payload {
-	if m != nil {
-		return m.Payload
+func (x *HandleINBMCommandRequest) GetCommand() *INBMCommand {
+	if x != nil {
+		return x.Command
 	}
 	return nil
 }
 
-func (x *INBMRequest) GetPingRequest() *PingRequest {
-	if x, ok := x.GetPayload().(*INBMRequest_PingRequest); ok {
-		return x.PingRequest
-	}
-	return nil
-}
-
-type isINBMRequest_Payload interface {
-	isINBMRequest_Payload()
-}
-
-type INBMRequest_PingRequest struct {
-	PingRequest *PingRequest `protobuf:"bytes,2,opt,name=ping_request,json=pingRequest,proto3,oneof"`
-}
-
-func (*INBMRequest_PingRequest) isINBMRequest_Payload() {}
-
-type INBMResponse struct {
+type HandleINBMCommandResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	RequestId string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
-	// Types that are assignable to Payload:
-	//
-	//	*INBMResponse_PingResponse
-	Payload isINBMResponse_Payload `protobuf_oneof:"payload"`
+	Error     *Error `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
 }
 
-func (x *INBMResponse) Reset() {
-	*x = INBMResponse{}
+func (x *HandleINBMCommandResponse) Reset() {
+	*x = HandleINBMCommandResponse{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_inbs_v1_inbs_sb_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -116,13 +93,13 @@ func (x *INBMResponse) Reset() {
 	}
 }
 
-func (x *INBMResponse) String() string {
+func (x *HandleINBMCommandResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*INBMResponse) ProtoMessage() {}
+func (*HandleINBMCommandResponse) ProtoMessage() {}
 
-func (x *INBMResponse) ProtoReflect() protoreflect.Message {
+func (x *HandleINBMCommandResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_inbs_v1_inbs_sb_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -134,50 +111,39 @@ func (x *INBMResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use INBMResponse.ProtoReflect.Descriptor instead.
-func (*INBMResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use HandleINBMCommandResponse.ProtoReflect.Descriptor instead.
+func (*HandleINBMCommandResponse) Descriptor() ([]byte, []int) {
 	return file_inbs_v1_inbs_sb_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *INBMResponse) GetRequestId() string {
+func (x *HandleINBMCommandResponse) GetRequestId() string {
 	if x != nil {
 		return x.RequestId
 	}
 	return ""
 }
 
-func (m *INBMResponse) GetPayload() isINBMResponse_Payload {
-	if m != nil {
-		return m.Payload
+func (x *HandleINBMCommandResponse) GetError() *Error {
+	if x != nil {
+		return x.Error
 	}
 	return nil
 }
 
-func (x *INBMResponse) GetPingResponse() *PingResponse {
-	if x, ok := x.GetPayload().(*INBMResponse_PingResponse); ok {
-		return x.PingResponse
-	}
-	return nil
-}
-
-type isINBMResponse_Payload interface {
-	isINBMResponse_Payload()
-}
-
-type INBMResponse_PingResponse struct {
-	PingResponse *PingResponse `protobuf:"bytes,2,opt,name=ping_response,json=pingResponse,proto3,oneof"`
-}
-
-func (*INBMResponse_PingResponse) isINBMResponse_Payload() {}
-
-type PingRequest struct {
+type INBMCommand struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to InbmCommand:
+	//
+	//	*INBMCommand_UpdateScheduledOperations
+	//	*INBMCommand_Ping
+	InbmCommand isINBMCommand_InbmCommand `protobuf_oneof:"inbm_command"`
 }
 
-func (x *PingRequest) Reset() {
-	*x = PingRequest{}
+func (x *INBMCommand) Reset() {
+	*x = INBMCommand{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_inbs_v1_inbs_sb_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -185,13 +151,13 @@ func (x *PingRequest) Reset() {
 	}
 }
 
-func (x *PingRequest) String() string {
+func (x *INBMCommand) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PingRequest) ProtoMessage() {}
+func (*INBMCommand) ProtoMessage() {}
 
-func (x *PingRequest) ProtoReflect() protoreflect.Message {
+func (x *INBMCommand) ProtoReflect() protoreflect.Message {
 	mi := &file_inbs_v1_inbs_sb_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -203,19 +169,58 @@ func (x *PingRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PingRequest.ProtoReflect.Descriptor instead.
-func (*PingRequest) Descriptor() ([]byte, []int) {
+// Deprecated: Use INBMCommand.ProtoReflect.Descriptor instead.
+func (*INBMCommand) Descriptor() ([]byte, []int) {
 	return file_inbs_v1_inbs_sb_proto_rawDescGZIP(), []int{2}
 }
 
-type PingResponse struct {
+func (m *INBMCommand) GetInbmCommand() isINBMCommand_InbmCommand {
+	if m != nil {
+		return m.InbmCommand
+	}
+	return nil
+}
+
+func (x *INBMCommand) GetUpdateScheduledOperations() *UpdateScheduledOperations {
+	if x, ok := x.GetInbmCommand().(*INBMCommand_UpdateScheduledOperations); ok {
+		return x.UpdateScheduledOperations
+	}
+	return nil
+}
+
+func (x *INBMCommand) GetPing() *Ping {
+	if x, ok := x.GetInbmCommand().(*INBMCommand_Ping); ok {
+		return x.Ping
+	}
+	return nil
+}
+
+type isINBMCommand_InbmCommand interface {
+	isINBMCommand_InbmCommand()
+}
+
+type INBMCommand_UpdateScheduledOperations struct {
+	UpdateScheduledOperations *UpdateScheduledOperations `protobuf:"bytes,1,opt,name=update_scheduled_operations,json=updateScheduledOperations,proto3,oneof"`
+}
+
+type INBMCommand_Ping struct {
+	Ping *Ping `protobuf:"bytes,2,opt,name=ping,proto3,oneof"`
+}
+
+func (*INBMCommand_UpdateScheduledOperations) isINBMCommand_InbmCommand() {}
+
+func (*INBMCommand_Ping) isINBMCommand_InbmCommand() {}
+
+type UpdateScheduledOperations struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
+
+	ScheduledOperations []*ScheduledOperation `protobuf:"bytes,1,rep,name=scheduled_operations,json=scheduledOperations,proto3" json:"scheduled_operations,omitempty"`
 }
 
-func (x *PingResponse) Reset() {
-	*x = PingResponse{}
+func (x *UpdateScheduledOperations) Reset() {
+	*x = UpdateScheduledOperations{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_inbs_v1_inbs_sb_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -223,13 +228,13 @@ func (x *PingResponse) Reset() {
 	}
 }
 
-func (x *PingResponse) String() string {
+func (x *UpdateScheduledOperations) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*PingResponse) ProtoMessage() {}
+func (*UpdateScheduledOperations) ProtoMessage() {}
 
-func (x *PingResponse) ProtoReflect() protoreflect.Message {
+func (x *UpdateScheduledOperations) ProtoReflect() protoreflect.Message {
 	mi := &file_inbs_v1_inbs_sb_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -241,21 +246,26 @@ func (x *PingResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PingResponse.ProtoReflect.Descriptor instead.
-func (*PingResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use UpdateScheduledOperations.ProtoReflect.Descriptor instead.
+func (*UpdateScheduledOperations) Descriptor() ([]byte, []int) {
 	return file_inbs_v1_inbs_sb_proto_rawDescGZIP(), []int{3}
 }
 
-type TestCommonImport struct {
+func (x *UpdateScheduledOperations) GetScheduledOperations() []*ScheduledOperation {
+	if x != nil {
+		return x.ScheduledOperations
+	}
+	return nil
+}
+
+type Ping struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	CommonMessage *CommonMessage `protobuf:"bytes,1,opt,name=common_message,json=commonMessage,proto3" json:"common_message,omitempty"`
 }
 
-func (x *TestCommonImport) Reset() {
-	*x = TestCommonImport{}
+func (x *Ping) Reset() {
+	*x = Ping{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_inbs_v1_inbs_sb_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -263,13 +273,13 @@ func (x *TestCommonImport) Reset() {
 	}
 }
 
-func (x *TestCommonImport) String() string {
+func (x *Ping) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*TestCommonImport) ProtoMessage() {}
+func (*Ping) ProtoMessage() {}
 
-func (x *TestCommonImport) ProtoReflect() protoreflect.Message {
+func (x *Ping) ProtoReflect() protoreflect.Message {
 	mi := &file_inbs_v1_inbs_sb_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -281,16 +291,9 @@ func (x *TestCommonImport) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TestCommonImport.ProtoReflect.Descriptor instead.
-func (*TestCommonImport) Descriptor() ([]byte, []int) {
+// Deprecated: Use Ping.ProtoReflect.Descriptor instead.
+func (*Ping) Descriptor() ([]byte, []int) {
 	return file_inbs_v1_inbs_sb_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *TestCommonImport) GetCommonMessage() *CommonMessage {
-	if x != nil {
-		return x.CommonMessage
-	}
-	return nil
 }
 
 var File_inbs_v1_inbs_sb_proto protoreflect.FileDescriptor
@@ -299,35 +302,46 @@ var file_inbs_v1_inbs_sb_proto_rawDesc = []byte{
 	0x0a, 0x15, 0x69, 0x6e, 0x62, 0x73, 0x2f, 0x76, 0x31, 0x2f, 0x69, 0x6e, 0x62, 0x73, 0x5f, 0x73,
 	0x62, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31,
 	0x1a, 0x16, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6f, 0x6d, 0x6d,
-	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x72, 0x0a, 0x0b, 0x49, 0x4e, 0x42, 0x4d,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x39, 0x0a, 0x0c, 0x70, 0x69, 0x6e, 0x67, 0x5f, 0x72,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x69,
-	0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x48, 0x00, 0x52, 0x0b, 0x70, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x42, 0x09, 0x0a, 0x07, 0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x22, 0x76, 0x0a, 0x0c,
-	0x49, 0x4e, 0x42, 0x4d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x0a,
-	0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x3c, 0x0a, 0x0d, 0x70,
-	0x69, 0x6e, 0x67, 0x5f, 0x72, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x15, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x69, 0x6e,
-	0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x48, 0x00, 0x52, 0x0c, 0x70, 0x69, 0x6e,
-	0x67, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x09, 0x0a, 0x07, 0x70, 0x61, 0x79,
-	0x6c, 0x6f, 0x61, 0x64, 0x22, 0x0d, 0x0a, 0x0b, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x22, 0x0e, 0x0a, 0x0c, 0x50, 0x69, 0x6e, 0x67, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x53, 0x0a, 0x10, 0x54, 0x65, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x6f,
-	0x6e, 0x49, 0x6d, 0x70, 0x6f, 0x72, 0x74, 0x12, 0x3f, 0x0a, 0x0e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
-	0x6e, 0x5f, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x18, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x43, 0x6f, 0x6d, 0x6d,
-	0x6f, 0x6e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x52, 0x0d, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
-	0x6e, 0x4d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x32, 0x4f, 0x0a, 0x0d, 0x49, 0x4e, 0x42, 0x53,
-	0x53, 0x42, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x3e, 0x0a, 0x0b, 0x49, 0x4e, 0x42,
-	0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x12, 0x15, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e,
-	0x76, 0x31, 0x2e, 0x49, 0x4e, 0x42, 0x4d, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a,
-	0x14, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x49, 0x4e, 0x42, 0x4d, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x28, 0x01, 0x30, 0x01, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x33,
+	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x69, 0x0a, 0x18, 0x48, 0x61, 0x6e, 0x64,
+	0x6c, 0x65, 0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x07, 0x63, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x49,
+	0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x07, 0x63, 0x6f, 0x6d, 0x6d,
+	0x61, 0x6e, 0x64, 0x22, 0x62, 0x0a, 0x19, 0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65, 0x49, 0x4e, 0x42,
+	0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49, 0x64, 0x12,
+	0x26, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10,
+	0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72,
+	0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x22, 0xa8, 0x01, 0x0a, 0x0b, 0x49, 0x4e, 0x42, 0x4d,
+	0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x12, 0x64, 0x0a, 0x1b, 0x75, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x5f, 0x6f, 0x70, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x69,
+	0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x63, 0x68,
+	0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x48, 0x00, 0x52, 0x19, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75,
+	0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x23, 0x0a,
+	0x04, 0x70, 0x69, 0x6e, 0x67, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0d, 0x2e, 0x69, 0x6e,
+	0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x50, 0x69, 0x6e, 0x67, 0x48, 0x00, 0x52, 0x04, 0x70, 0x69,
+	0x6e, 0x67, 0x42, 0x0e, 0x0a, 0x0c, 0x69, 0x6e, 0x62, 0x6d, 0x5f, 0x63, 0x6f, 0x6d, 0x6d, 0x61,
+	0x6e, 0x64, 0x22, 0x6d, 0x0a, 0x19, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x63, 0x68, 0x65,
+	0x64, 0x75, 0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12,
+	0x50, 0x0a, 0x14, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x5f, 0x6f, 0x70, 0x65,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e,
+	0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75,
+	0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x13, 0x73, 0x63,
+	0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x73, 0x22, 0x06, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x32, 0x6f, 0x0a, 0x0d, 0x49, 0x4e, 0x42,
+	0x53, 0x53, 0x42, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5e, 0x0a, 0x11, 0x48, 0x61,
+	0x6e, 0x64, 0x6c, 0x65, 0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x12,
+	0x22, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65,
+	0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x1a, 0x21, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x48, 0x61,
+	0x6e, 0x64, 0x6c, 0x65, 0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x28, 0x01, 0x30, 0x01, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -344,24 +358,27 @@ func file_inbs_v1_inbs_sb_proto_rawDescGZIP() []byte {
 
 var file_inbs_v1_inbs_sb_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_inbs_v1_inbs_sb_proto_goTypes = []interface{}{
-	(*INBMRequest)(nil),      // 0: inbs.v1.INBMRequest
-	(*INBMResponse)(nil),     // 1: inbs.v1.INBMResponse
-	(*PingRequest)(nil),      // 2: inbs.v1.PingRequest
-	(*PingResponse)(nil),     // 3: inbs.v1.PingResponse
-	(*TestCommonImport)(nil), // 4: inbs.v1.TestCommonImport
-	(*CommonMessage)(nil),    // 5: common.v1.CommonMessage
+	(*HandleINBMCommandRequest)(nil),  // 0: inbs.v1.HandleINBMCommandRequest
+	(*HandleINBMCommandResponse)(nil), // 1: inbs.v1.HandleINBMCommandResponse
+	(*INBMCommand)(nil),               // 2: inbs.v1.INBMCommand
+	(*UpdateScheduledOperations)(nil), // 3: inbs.v1.UpdateScheduledOperations
+	(*Ping)(nil),                      // 4: inbs.v1.Ping
+	(*Error)(nil),                     // 5: common.v1.Error
+	(*ScheduledOperation)(nil),        // 6: common.v1.ScheduledOperation
 }
 var file_inbs_v1_inbs_sb_proto_depIdxs = []int32{
-	2, // 0: inbs.v1.INBMRequest.ping_request:type_name -> inbs.v1.PingRequest
-	3, // 1: inbs.v1.INBMResponse.ping_response:type_name -> inbs.v1.PingResponse
-	5, // 2: inbs.v1.TestCommonImport.common_message:type_name -> common.v1.CommonMessage
-	1, // 3: inbs.v1.INBSSBService.INBMCommand:input_type -> inbs.v1.INBMResponse
-	0, // 4: inbs.v1.INBSSBService.INBMCommand:output_type -> inbs.v1.INBMRequest
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	2, // 0: inbs.v1.HandleINBMCommandRequest.command:type_name -> inbs.v1.INBMCommand
+	5, // 1: inbs.v1.HandleINBMCommandResponse.error:type_name -> common.v1.Error
+	3, // 2: inbs.v1.INBMCommand.update_scheduled_operations:type_name -> inbs.v1.UpdateScheduledOperations
+	4, // 3: inbs.v1.INBMCommand.ping:type_name -> inbs.v1.Ping
+	6, // 4: inbs.v1.UpdateScheduledOperations.scheduled_operations:type_name -> common.v1.ScheduledOperation
+	1, // 5: inbs.v1.INBSSBService.HandleINBMCommand:input_type -> inbs.v1.HandleINBMCommandResponse
+	0, // 6: inbs.v1.INBSSBService.HandleINBMCommand:output_type -> inbs.v1.HandleINBMCommandRequest
+	6, // [6:7] is the sub-list for method output_type
+	5, // [5:6] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_inbs_v1_inbs_sb_proto_init() }
@@ -372,7 +389,7 @@ func file_inbs_v1_inbs_sb_proto_init() {
 	file_common_v1_common_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_inbs_v1_inbs_sb_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*INBMRequest); i {
+			switch v := v.(*HandleINBMCommandRequest); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -384,7 +401,7 @@ func file_inbs_v1_inbs_sb_proto_init() {
 			}
 		}
 		file_inbs_v1_inbs_sb_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*INBMResponse); i {
+			switch v := v.(*HandleINBMCommandResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -396,7 +413,7 @@ func file_inbs_v1_inbs_sb_proto_init() {
 			}
 		}
 		file_inbs_v1_inbs_sb_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PingRequest); i {
+			switch v := v.(*INBMCommand); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -408,7 +425,7 @@ func file_inbs_v1_inbs_sb_proto_init() {
 			}
 		}
 		file_inbs_v1_inbs_sb_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*PingResponse); i {
+			switch v := v.(*UpdateScheduledOperations); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -420,7 +437,7 @@ func file_inbs_v1_inbs_sb_proto_init() {
 			}
 		}
 		file_inbs_v1_inbs_sb_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*TestCommonImport); i {
+			switch v := v.(*Ping); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -432,11 +449,9 @@ func file_inbs_v1_inbs_sb_proto_init() {
 			}
 		}
 	}
-	file_inbs_v1_inbs_sb_proto_msgTypes[0].OneofWrappers = []interface{}{
-		(*INBMRequest_PingRequest)(nil),
-	}
-	file_inbs_v1_inbs_sb_proto_msgTypes[1].OneofWrappers = []interface{}{
-		(*INBMResponse_PingResponse)(nil),
+	file_inbs_v1_inbs_sb_proto_msgTypes[2].OneofWrappers = []interface{}{
+		(*INBMCommand_UpdateScheduledOperations)(nil),
+		(*INBMCommand_Ping)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

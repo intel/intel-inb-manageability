@@ -13,6 +13,7 @@ from datetime import datetime
 
 from cloudadapter.exceptions import AuthenticationError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
+from cloudadapter.pb.common.v1 import common_pb2
 import logging
 
 import grpc
@@ -109,12 +110,14 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         pass
 
-    def _handle_inbm_command(self, request_queue: queue.Queue[inbs_sb_pb2.INBMRequest]) -> Generator[inbs_sb_pb2.INBMResponse, None, None]:
-        """Generator function to respond to INBMRequests with INBMResponses
+    def _handle_inbm_command_request(self,
+                                     request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
+                                     ) -> Generator[inbs_sb_pb2.HandleINBMCommandResponse, None, None]:
+        """Generator function to respond to HandleINBMCommandRequests with HandleINBMCommandResponses
 
-        @param request_queue: Queue with INBMRequests that will be supplied from another thread
+        @param request_queue: Queue with HandleINBMCommandRequests that will be supplied from another thread
 
-        When an INBMResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event."""
+        When a HandleINBMCommandResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event."""
         while not self._stop_event.is_set():
             try:
                 item = request_queue.get()
@@ -124,23 +127,34 @@ class InbsCloudClient(CloudClient):
                 request_id = item.request_id
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
 
-                payload_type = item.WhichOneof('payload')
-                if payload_type:
-                    if payload_type == 'ping_request':
-                        # Handle PingRequest and create a corresponding PingResponse
-                        yield inbs_sb_pb2.INBMResponse(request_id=request_id, ping_response=inbs_sb_pb2.PingResponse())
-                    else:
-                        # Log an error if the payload is not recognized (not a PingRequest)
+                command_type = item.command.WhichOneof('inbm_command')
+                if command_type:
+                    if command_type == 'update_scheduled_operations':
                         logger.error(
-                            f"Received unexpected payload type: {payload_type} for request_id {request_id}")
-                        break
+                            f"Received unimplemented command {command_type} for request_id {request_id}")
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(
+                            request_id=request_id,
+                            error=common_pb2.Error(message=f"cloudadapter: unimplemented command {command_type}"))
+                    elif command_type == 'ping':
+                        logger.debug(f"Received ping command for request_id {request_id}")
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(
+                            request_id=request_id)
+                    else:
+                        logger.error(
+                            f"Received unknown command {command_type} for request_id {request_id}")
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(
+                            request_id=request_id,
+                            error=common_pb2.Error(message=f"cloudadapter: unknown command {command_type}"))
                 else:
-                    logger.error(f"No payload found for request_id {request_id}")
+                    logger.error(f"Received unknown command for request_id {request_id}")
+                    yield inbs_sb_pb2.HandleINBMCommandResponse(
+                        request_id=request_id,
+                        error=common_pb2.Error(message="cloudadapter: unknown command"))
 
             except queue.Empty:
                 continue  # No available item in the queue, continue to the next iteration
             except grpc.RpcError as e:
-                logger.error(f"gRPC error in _handle_inbm_command: {e}")
+                logger.error(f"gRPC error in _handle_inbm_command_request: {e}")
                 break
 
     def _do_socket_connect(self):
@@ -174,7 +188,7 @@ class InbsCloudClient(CloudClient):
             try:
                 self._do_socket_connect()
                 request_queue: queue.Queue = queue.Queue()
-                stream = self.stub.INBMCommand(self._handle_inbm_command(
+                stream = self.stub.HandleINBMCommand(self._handle_inbm_command_request(
                     request_queue), metadata=self._metadata)
                 for command in stream:
                     if self._stop_event.is_set():

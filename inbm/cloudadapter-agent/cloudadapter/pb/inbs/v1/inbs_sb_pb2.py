@@ -15,23 +15,23 @@ _sym_db = _symbol_database.Default()
 from cloudadapter.pb.common.v1 import common_pb2 as common_dot_v1_dot_common__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15inbs/v1/inbs_sb.proto\x12\x07inbs.v1\x1a\x16\x63ommon/v1/common.proto\"Z\n\x0bINBMRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12,\n\x0cping_request\x18\x02 \x01(\x0b\x32\x14.inbs.v1.PingRequestH\x00\x42\t\n\x07payload\"]\n\x0cINBMResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12.\n\rping_response\x18\x02 \x01(\x0b\x32\x15.inbs.v1.PingResponseH\x00\x42\t\n\x07payload\"\r\n\x0bPingRequest\"\x0e\n\x0cPingResponse\"D\n\x10TestCommonImport\x12\x30\n\x0e\x63ommon_message\x18\x01 \x01(\x0b\x32\x18.common.v1.CommonMessage2O\n\rINBSSBService\x12>\n\x0bINBMCommand\x12\x15.inbs.v1.INBMResponse\x1a\x14.inbs.v1.INBMRequest(\x01\x30\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15inbs/v1/inbs_sb.proto\x12\x07inbs.v1\x1a\x16\x63ommon/v1/common.proto\"U\n\x18HandleINBMCommandRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12%\n\x07\x63ommand\x18\x02 \x01(\x0b\x32\x14.inbs.v1.INBMCommand\"P\n\x19HandleINBMCommandResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x1f\n\x05\x65rror\x18\x02 \x01(\x0b\x32\x10.common.v1.Error\"\x87\x01\n\x0bINBMCommand\x12I\n\x1bupdate_scheduled_operations\x18\x01 \x01(\x0b\x32\".inbs.v1.UpdateScheduledOperationsH\x00\x12\x1d\n\x04ping\x18\x02 \x01(\x0b\x32\r.inbs.v1.PingH\x00\x42\x0e\n\x0cinbm_command\"X\n\x19UpdateScheduledOperations\x12;\n\x14scheduled_operations\x18\x01 \x03(\x0b\x32\x1d.common.v1.ScheduledOperation\"\x06\n\x04Ping2o\n\rINBSSBService\x12^\n\x11HandleINBMCommand\x12\".inbs.v1.HandleINBMCommandResponse\x1a!.inbs.v1.HandleINBMCommandRequest(\x01\x30\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'inbs.v1.inbs_sb_pb2', _globals)
 if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
-  _globals['_INBMREQUEST']._serialized_start=58
-  _globals['_INBMREQUEST']._serialized_end=148
-  _globals['_INBMRESPONSE']._serialized_start=150
-  _globals['_INBMRESPONSE']._serialized_end=243
-  _globals['_PINGREQUEST']._serialized_start=245
-  _globals['_PINGREQUEST']._serialized_end=258
-  _globals['_PINGRESPONSE']._serialized_start=260
-  _globals['_PINGRESPONSE']._serialized_end=274
-  _globals['_TESTCOMMONIMPORT']._serialized_start=276
-  _globals['_TESTCOMMONIMPORT']._serialized_end=344
-  _globals['_INBSSBSERVICE']._serialized_start=346
-  _globals['_INBSSBSERVICE']._serialized_end=425
+  _globals['_HANDLEINBMCOMMANDREQUEST']._serialized_start=58
+  _globals['_HANDLEINBMCOMMANDREQUEST']._serialized_end=143
+  _globals['_HANDLEINBMCOMMANDRESPONSE']._serialized_start=145
+  _globals['_HANDLEINBMCOMMANDRESPONSE']._serialized_end=225
+  _globals['_INBMCOMMAND']._serialized_start=228
+  _globals['_INBMCOMMAND']._serialized_end=363
+  _globals['_UPDATESCHEDULEDOPERATIONS']._serialized_start=365
+  _globals['_UPDATESCHEDULEDOPERATIONS']._serialized_end=453
+  _globals['_PING']._serialized_start=455
+  _globals['_PING']._serialized_end=461
+  _globals['_INBSSBSERVICE']._serialized_start=463
+  _globals['_INBSSBSERVICE']._serialized_end=574
 # @@protoc_insertion_point(module_scope)

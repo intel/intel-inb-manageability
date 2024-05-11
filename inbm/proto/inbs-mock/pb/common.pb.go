@@ -7,6 +7,8 @@
 package pb
 
 import (
+	duration "github.com/golang/protobuf/ptypes/duration"
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -20,16 +22,68 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-type CommonMessage struct {
+type UpdateSystemSoftwareOperation_DownloadMode int32
+
+const (
+	UpdateSystemSoftwareOperation_DOWNLOAD_MODE_UNSPECIFIED   UpdateSystemSoftwareOperation_DownloadMode = 0
+	UpdateSystemSoftwareOperation_DOWNLOAD_MODE_FULL          UpdateSystemSoftwareOperation_DownloadMode = 1 // Both download the package and install the package
+	UpdateSystemSoftwareOperation_DOWNLOAD_MODE_NO_DOWNLOAD   UpdateSystemSoftwareOperation_DownloadMode = 2 // Do not download the package.  Only install.
+	UpdateSystemSoftwareOperation_DOWNLOAD_MODE_DOWNLOAD_ONLY UpdateSystemSoftwareOperation_DownloadMode = 3 // Only download the package.  Do not install.
+)
+
+// Enum value maps for UpdateSystemSoftwareOperation_DownloadMode.
+var (
+	UpdateSystemSoftwareOperation_DownloadMode_name = map[int32]string{
+		0: "DOWNLOAD_MODE_UNSPECIFIED",
+		1: "DOWNLOAD_MODE_FULL",
+		2: "DOWNLOAD_MODE_NO_DOWNLOAD",
+		3: "DOWNLOAD_MODE_DOWNLOAD_ONLY",
+	}
+	UpdateSystemSoftwareOperation_DownloadMode_value = map[string]int32{
+		"DOWNLOAD_MODE_UNSPECIFIED":   0,
+		"DOWNLOAD_MODE_FULL":          1,
+		"DOWNLOAD_MODE_NO_DOWNLOAD":   2,
+		"DOWNLOAD_MODE_DOWNLOAD_ONLY": 3,
+	}
+)
+
+func (x UpdateSystemSoftwareOperation_DownloadMode) Enum() *UpdateSystemSoftwareOperation_DownloadMode {
+	p := new(UpdateSystemSoftwareOperation_DownloadMode)
+	*p = x
+	return p
+}
+
+func (x UpdateSystemSoftwareOperation_DownloadMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (UpdateSystemSoftwareOperation_DownloadMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_common_v1_common_proto_enumTypes[0].Descriptor()
+}
+
+func (UpdateSystemSoftwareOperation_DownloadMode) Type() protoreflect.EnumType {
+	return &file_common_v1_common_proto_enumTypes[0]
+}
+
+func (x UpdateSystemSoftwareOperation_DownloadMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use UpdateSystemSoftwareOperation_DownloadMode.Descriptor instead.
+func (UpdateSystemSoftwareOperation_DownloadMode) EnumDescriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{7, 0}
+}
+
+type Error struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Hello string `protobuf:"bytes,1,opt,name=hello,proto3" json:"hello,omitempty"`
+	Message string `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
 }
 
-func (x *CommonMessage) Reset() {
-	*x = CommonMessage{}
+func (x *Error) Reset() {
+	*x = Error{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_common_v1_common_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -37,13 +91,13 @@ func (x *CommonMessage) Reset() {
 	}
 }
 
-func (x *CommonMessage) String() string {
+func (x *Error) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CommonMessage) ProtoMessage() {}
+func (*Error) ProtoMessage() {}
 
-func (x *CommonMessage) ProtoReflect() protoreflect.Message {
+func (x *Error) ProtoReflect() protoreflect.Message {
 	mi := &file_common_v1_common_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -55,16 +109,590 @@ func (x *CommonMessage) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CommonMessage.ProtoReflect.Descriptor instead.
-func (*CommonMessage) Descriptor() ([]byte, []int) {
+// Deprecated: Use Error.ProtoReflect.Descriptor instead.
+func (*Error) Descriptor() ([]byte, []int) {
 	return file_common_v1_common_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CommonMessage) GetHello() string {
+func (x *Error) GetMessage() string {
 	if x != nil {
-		return x.Hello
+		return x.Message
 	}
 	return ""
+}
+
+type NodeScheduledOperation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ScheduledOperation *ScheduledOperation `protobuf:"bytes,1,opt,name=scheduled_operation,json=scheduledOperation,proto3" json:"scheduled_operation,omitempty"`
+	NodeId             string              `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+}
+
+func (x *NodeScheduledOperation) Reset() {
+	*x = NodeScheduledOperation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *NodeScheduledOperation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*NodeScheduledOperation) ProtoMessage() {}
+
+func (x *NodeScheduledOperation) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use NodeScheduledOperation.ProtoReflect.Descriptor instead.
+func (*NodeScheduledOperation) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *NodeScheduledOperation) GetScheduledOperation() *ScheduledOperation {
+	if x != nil {
+		return x.ScheduledOperation
+	}
+	return nil
+}
+
+func (x *NodeScheduledOperation) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+type ScheduledOperation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Operation *Operation  `protobuf:"bytes,1,opt,name=operation,proto3" json:"operation,omitempty"`
+	Schedules []*Schedule `protobuf:"bytes,2,rep,name=schedules,proto3" json:"schedules,omitempty"`
+}
+
+func (x *ScheduledOperation) Reset() {
+	*x = ScheduledOperation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ScheduledOperation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScheduledOperation) ProtoMessage() {}
+
+func (x *ScheduledOperation) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScheduledOperation.ProtoReflect.Descriptor instead.
+func (*ScheduledOperation) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ScheduledOperation) GetOperation() *Operation {
+	if x != nil {
+		return x.Operation
+	}
+	return nil
+}
+
+func (x *ScheduledOperation) GetSchedules() []*Schedule {
+	if x != nil {
+		return x.Schedules
+	}
+	return nil
+}
+
+type Schedule struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Types that are assignable to Schedule:
+	//
+	//	*Schedule_SingleSchedule
+	//	*Schedule_RepeatedSchedule
+	Schedule isSchedule_Schedule `protobuf_oneof:"schedule"`
+}
+
+func (x *Schedule) Reset() {
+	*x = Schedule{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Schedule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Schedule) ProtoMessage() {}
+
+func (x *Schedule) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Schedule.ProtoReflect.Descriptor instead.
+func (*Schedule) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{3}
+}
+
+func (m *Schedule) GetSchedule() isSchedule_Schedule {
+	if m != nil {
+		return m.Schedule
+	}
+	return nil
+}
+
+func (x *Schedule) GetSingleSchedule() *SingleSchedule {
+	if x, ok := x.GetSchedule().(*Schedule_SingleSchedule); ok {
+		return x.SingleSchedule
+	}
+	return nil
+}
+
+func (x *Schedule) GetRepeatedSchedule() *RepeatedSchedule {
+	if x, ok := x.GetSchedule().(*Schedule_RepeatedSchedule); ok {
+		return x.RepeatedSchedule
+	}
+	return nil
+}
+
+type isSchedule_Schedule interface {
+	isSchedule_Schedule()
+}
+
+type Schedule_SingleSchedule struct {
+	SingleSchedule *SingleSchedule `protobuf:"bytes,1,opt,name=single_schedule,json=singleSchedule,proto3,oneof"`
+}
+
+type Schedule_RepeatedSchedule struct {
+	RepeatedSchedule *RepeatedSchedule `protobuf:"bytes,2,opt,name=repeated_schedule,json=repeatedSchedule,proto3,oneof"`
+}
+
+func (*Schedule_SingleSchedule) isSchedule_Schedule() {}
+
+func (*Schedule_RepeatedSchedule) isSchedule_Schedule() {}
+
+// this is different from MM's SingleSchedule in that it is using google's Timestamp
+type SingleSchedule struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// to specify running immeidate, omit start time and end time
+	StartTime *timestamp.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	EndTime   *timestamp.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+}
+
+func (x *SingleSchedule) Reset() {
+	*x = SingleSchedule{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SingleSchedule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SingleSchedule) ProtoMessage() {}
+
+func (x *SingleSchedule) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SingleSchedule.ProtoReflect.Descriptor instead.
+func (*SingleSchedule) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *SingleSchedule) GetStartTime() *timestamp.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+func (x *SingleSchedule) GetEndTime() *timestamp.Timestamp {
+	if x != nil {
+		return x.EndTime
+	}
+	return nil
+}
+
+// this is different from MM's SingleSchedule in that it is using google's Duration
+type RepeatedSchedule struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Duration     *duration.Duration `protobuf:"bytes,1,opt,name=duration,proto3" json:"duration,omitempty"`                               // should be between 1 second and 86400 seconds (24 hours worth of seconds)
+	CronMinutes  string             `protobuf:"bytes,2,opt,name=cron_minutes,json=cronMinutes,proto3" json:"cron_minutes,omitempty"`      // cron style minutes (0-59)
+	CronHours    string             `protobuf:"bytes,3,opt,name=cron_hours,json=cronHours,proto3" json:"cron_hours,omitempty"`            // cron style hours (0-23)
+	CronDayMonth string             `protobuf:"bytes,4,opt,name=cron_day_month,json=cronDayMonth,proto3" json:"cron_day_month,omitempty"` // cron style day of month (0-31)
+	CronMonth    string             `protobuf:"bytes,5,opt,name=cron_month,json=cronMonth,proto3" json:"cron_month,omitempty"`            // cron style month (1-12)
+	CronDayWeek  string             `protobuf:"bytes,6,opt,name=cron_day_week,json=cronDayWeek,proto3" json:"cron_day_week,omitempty"`    // cron style day of week (0-6)
+}
+
+func (x *RepeatedSchedule) Reset() {
+	*x = RepeatedSchedule{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RepeatedSchedule) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RepeatedSchedule) ProtoMessage() {}
+
+func (x *RepeatedSchedule) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RepeatedSchedule.ProtoReflect.Descriptor instead.
+func (*RepeatedSchedule) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *RepeatedSchedule) GetDuration() *duration.Duration {
+	if x != nil {
+		return x.Duration
+	}
+	return nil
+}
+
+func (x *RepeatedSchedule) GetCronMinutes() string {
+	if x != nil {
+		return x.CronMinutes
+	}
+	return ""
+}
+
+func (x *RepeatedSchedule) GetCronHours() string {
+	if x != nil {
+		return x.CronHours
+	}
+	return ""
+}
+
+func (x *RepeatedSchedule) GetCronDayMonth() string {
+	if x != nil {
+		return x.CronDayMonth
+	}
+	return ""
+}
+
+func (x *RepeatedSchedule) GetCronMonth() string {
+	if x != nil {
+		return x.CronMonth
+	}
+	return ""
+}
+
+func (x *RepeatedSchedule) GetCronDayWeek() string {
+	if x != nil {
+		return x.CronDayWeek
+	}
+	return ""
+}
+
+type Operation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PreOperations  []*PreOperation  `protobuf:"bytes,1,rep,name=pre_operations,json=preOperations,proto3" json:"pre_operations,omitempty"`
+	PostOperations []*PostOperation `protobuf:"bytes,2,rep,name=post_operations,json=postOperations,proto3" json:"post_operations,omitempty"`
+	// Types that are assignable to Operation:
+	//
+	//	*Operation_UpdateSystemSoftwareOperation
+	Operation isOperation_Operation `protobuf_oneof:"operation"`
+}
+
+func (x *Operation) Reset() {
+	*x = Operation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *Operation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Operation) ProtoMessage() {}
+
+func (x *Operation) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Operation.ProtoReflect.Descriptor instead.
+func (*Operation) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *Operation) GetPreOperations() []*PreOperation {
+	if x != nil {
+		return x.PreOperations
+	}
+	return nil
+}
+
+func (x *Operation) GetPostOperations() []*PostOperation {
+	if x != nil {
+		return x.PostOperations
+	}
+	return nil
+}
+
+func (m *Operation) GetOperation() isOperation_Operation {
+	if m != nil {
+		return m.Operation
+	}
+	return nil
+}
+
+func (x *Operation) GetUpdateSystemSoftwareOperation() *UpdateSystemSoftwareOperation {
+	if x, ok := x.GetOperation().(*Operation_UpdateSystemSoftwareOperation); ok {
+		return x.UpdateSystemSoftwareOperation
+	}
+	return nil
+}
+
+type isOperation_Operation interface {
+	isOperation_Operation()
+}
+
+type Operation_UpdateSystemSoftwareOperation struct {
+	UpdateSystemSoftwareOperation *UpdateSystemSoftwareOperation `protobuf:"bytes,3,opt,name=update_system_software_operation,json=updateSystemSoftwareOperation,proto3,oneof"` // and others
+}
+
+func (*Operation_UpdateSystemSoftwareOperation) isOperation_Operation() {}
+
+type UpdateSystemSoftwareOperation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Url         string                                     `protobuf:"bytes,1,opt,name=url,proto3" json:"url,omitempty"`                                                              // URL from which to remotely retrieve the package
+	ReleaseDate *timestamp.Timestamp                       `protobuf:"bytes,2,opt,name=release_date,json=releaseDate,proto3" json:"release_date,omitempty"`                           // Release date of the new SW update.
+	Mode        UpdateSystemSoftwareOperation_DownloadMode `protobuf:"varint,3,opt,name=mode,proto3,enum=common.v1.UpdateSystemSoftwareOperation_DownloadMode" json:"mode,omitempty"` // Mode for installing the softare update regarding download and install steps.
+	DoNotReboot bool                                       `protobuf:"varint,4,opt,name=do_not_reboot,json=doNotReboot,proto3" json:"do_not_reboot,omitempty"`                        // Whether to reboot the node after the firmware update attempt
+	PackageList []string                                   `protobuf:"bytes,5,rep,name=package_list,json=packageList,proto3" json:"package_list,omitempty"`                           // List of packages to install if whole package update isn't desired.
+}
+
+func (x *UpdateSystemSoftwareOperation) Reset() {
+	*x = UpdateSystemSoftwareOperation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *UpdateSystemSoftwareOperation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateSystemSoftwareOperation) ProtoMessage() {}
+
+func (x *UpdateSystemSoftwareOperation) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateSystemSoftwareOperation.ProtoReflect.Descriptor instead.
+func (*UpdateSystemSoftwareOperation) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *UpdateSystemSoftwareOperation) GetUrl() string {
+	if x != nil {
+		return x.Url
+	}
+	return ""
+}
+
+func (x *UpdateSystemSoftwareOperation) GetReleaseDate() *timestamp.Timestamp {
+	if x != nil {
+		return x.ReleaseDate
+	}
+	return nil
+}
+
+func (x *UpdateSystemSoftwareOperation) GetMode() UpdateSystemSoftwareOperation_DownloadMode {
+	if x != nil {
+		return x.Mode
+	}
+	return UpdateSystemSoftwareOperation_DOWNLOAD_MODE_UNSPECIFIED
+}
+
+func (x *UpdateSystemSoftwareOperation) GetDoNotReboot() bool {
+	if x != nil {
+		return x.DoNotReboot
+	}
+	return false
+}
+
+func (x *UpdateSystemSoftwareOperation) GetPackageList() []string {
+	if x != nil {
+		return x.PackageList
+	}
+	return nil
+}
+
+type PreOperation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *PreOperation) Reset() {
+	*x = PreOperation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PreOperation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PreOperation) ProtoMessage() {}
+
+func (x *PreOperation) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PreOperation.ProtoReflect.Descriptor instead.
+func (*PreOperation) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{8}
+}
+
+type PostOperation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *PostOperation) Reset() {
+	*x = PostOperation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_common_v1_common_proto_msgTypes[9]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PostOperation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PostOperation) ProtoMessage() {}
+
+func (x *PostOperation) ProtoReflect() protoreflect.Message {
+	mi := &file_common_v1_common_proto_msgTypes[9]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PostOperation.ProtoReflect.Descriptor instead.
+func (*PostOperation) Descriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{9}
 }
 
 var File_common_v1_common_proto protoreflect.FileDescriptor
@@ -72,10 +700,108 @@ var File_common_v1_common_proto protoreflect.FileDescriptor
 var file_common_v1_common_proto_rawDesc = []byte{
 	0x0a, 0x16, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2f, 0x76, 0x31, 0x2f, 0x63, 0x6f, 0x6d, 0x6d,
 	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
-	0x2e, 0x76, 0x31, 0x22, 0x25, 0x0a, 0x0d, 0x43, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x4d, 0x65, 0x73,
-	0x73, 0x61, 0x67, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x05, 0x68, 0x65, 0x6c, 0x6c, 0x6f, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x2e, 0x76, 0x31, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x22, 0x21, 0x0a, 0x05, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x12, 0x18, 0x0a,
+	0x07, 0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x6d, 0x65, 0x73, 0x73, 0x61, 0x67, 0x65, 0x22, 0x81, 0x01, 0x0a, 0x16, 0x4e, 0x6f, 0x64, 0x65,
+	0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x4e, 0x0a, 0x13, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x5f,
+	0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x1d, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x63, 0x68, 0x65,
+	0x64, 0x75, 0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x12,
+	0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x17, 0x0a, 0x07, 0x6e, 0x6f, 0x64, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x06, 0x6e, 0x6f, 0x64, 0x65, 0x49, 0x64, 0x22, 0x7b, 0x0a, 0x12, 0x53,
+	0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x32, 0x0a, 0x09, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x14, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31,
+	0x2e, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x09, 0x6f, 0x70, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x31, 0x0a, 0x09, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
+	0x65, 0x73, 0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x52, 0x09, 0x73,
+	0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x73, 0x22, 0xa8, 0x01, 0x0a, 0x08, 0x53, 0x63, 0x68,
+	0x65, 0x64, 0x75, 0x6c, 0x65, 0x12, 0x44, 0x0a, 0x0f, 0x73, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x5f,
+	0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19,
+	0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x69, 0x6e, 0x67, 0x6c,
+	0x65, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x48, 0x00, 0x52, 0x0e, 0x73, 0x69, 0x6e,
+	0x67, 0x6c, 0x65, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x12, 0x4a, 0x0a, 0x11, 0x72,
+	0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e,
+	0x76, 0x31, 0x2e, 0x52, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x53, 0x63, 0x68, 0x65, 0x64,
+	0x75, 0x6c, 0x65, 0x48, 0x00, 0x52, 0x10, 0x72, 0x65, 0x70, 0x65, 0x61, 0x74, 0x65, 0x64, 0x53,
+	0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x42, 0x0a, 0x0a, 0x08, 0x73, 0x63, 0x68, 0x65, 0x64,
+	0x75, 0x6c, 0x65, 0x22, 0x82, 0x01, 0x0a, 0x0e, 0x53, 0x69, 0x6e, 0x67, 0x6c, 0x65, 0x53, 0x63,
+	0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x12, 0x39, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f,
+	0x74, 0x69, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x73, 0x74, 0x61, 0x72, 0x74, 0x54, 0x69, 0x6d,
+	0x65, 0x12, 0x35, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52,
+	0x07, 0x65, 0x6e, 0x64, 0x54, 0x69, 0x6d, 0x65, 0x22, 0xf4, 0x01, 0x0a, 0x10, 0x52, 0x65, 0x70,
+	0x65, 0x61, 0x74, 0x65, 0x64, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x12, 0x35, 0x0a,
+	0x08, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x19, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
+	0x66, 0x2e, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x08, 0x64, 0x75, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x21, 0x0a, 0x0c, 0x63, 0x72, 0x6f, 0x6e, 0x5f, 0x6d, 0x69, 0x6e,
+	0x75, 0x74, 0x65, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x63, 0x72, 0x6f, 0x6e,
+	0x4d, 0x69, 0x6e, 0x75, 0x74, 0x65, 0x73, 0x12, 0x1d, 0x0a, 0x0a, 0x63, 0x72, 0x6f, 0x6e, 0x5f,
+	0x68, 0x6f, 0x75, 0x72, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x63, 0x72, 0x6f,
+	0x6e, 0x48, 0x6f, 0x75, 0x72, 0x73, 0x12, 0x24, 0x0a, 0x0e, 0x63, 0x72, 0x6f, 0x6e, 0x5f, 0x64,
+	0x61, 0x79, 0x5f, 0x6d, 0x6f, 0x6e, 0x74, 0x68, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
+	0x63, 0x72, 0x6f, 0x6e, 0x44, 0x61, 0x79, 0x4d, 0x6f, 0x6e, 0x74, 0x68, 0x12, 0x1d, 0x0a, 0x0a,
+	0x63, 0x72, 0x6f, 0x6e, 0x5f, 0x6d, 0x6f, 0x6e, 0x74, 0x68, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x09, 0x63, 0x72, 0x6f, 0x6e, 0x4d, 0x6f, 0x6e, 0x74, 0x68, 0x12, 0x22, 0x0a, 0x0d, 0x63,
+	0x72, 0x6f, 0x6e, 0x5f, 0x64, 0x61, 0x79, 0x5f, 0x77, 0x65, 0x65, 0x6b, 0x18, 0x06, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0b, 0x63, 0x72, 0x6f, 0x6e, 0x44, 0x61, 0x79, 0x57, 0x65, 0x65, 0x6b, 0x22,
+	0x90, 0x02, 0x0a, 0x09, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3e, 0x0a,
+	0x0e, 0x70, 0x72, 0x65, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76,
+	0x31, 0x2e, 0x50, 0x72, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0d,
+	0x70, 0x72, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x12, 0x41, 0x0a,
+	0x0f, 0x70, 0x6f, 0x73, 0x74, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x18, 0x02, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e,
+	0x76, 0x31, 0x2e, 0x50, 0x6f, 0x73, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x0e, 0x70, 0x6f, 0x73, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
+	0x12, 0x73, 0x0a, 0x20, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x5f, 0x73, 0x79, 0x73, 0x74, 0x65,
+	0x6d, 0x5f, 0x73, 0x6f, 0x66, 0x74, 0x77, 0x61, 0x72, 0x65, 0x5f, 0x6f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x28, 0x2e, 0x63, 0x6f, 0x6d,
+	0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x79, 0x73,
+	0x74, 0x65, 0x6d, 0x53, 0x6f, 0x66, 0x74, 0x77, 0x61, 0x72, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x48, 0x00, 0x52, 0x1d, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x79,
+	0x73, 0x74, 0x65, 0x6d, 0x53, 0x6f, 0x66, 0x74, 0x77, 0x61, 0x72, 0x65, 0x4f, 0x70, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x0b, 0x0a, 0x09, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x22, 0x8a, 0x03, 0x0a, 0x1d, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x79, 0x73,
+	0x74, 0x65, 0x6d, 0x53, 0x6f, 0x66, 0x74, 0x77, 0x61, 0x72, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x10, 0x0a, 0x03, 0x75, 0x72, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x03, 0x75, 0x72, 0x6c, 0x12, 0x3d, 0x0a, 0x0c, 0x72, 0x65, 0x6c, 0x65, 0x61, 0x73,
+	0x65, 0x5f, 0x64, 0x61, 0x74, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0b, 0x72, 0x65, 0x6c, 0x65, 0x61, 0x73,
+	0x65, 0x44, 0x61, 0x74, 0x65, 0x12, 0x49, 0x0a, 0x04, 0x6d, 0x6f, 0x64, 0x65, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x35, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x53, 0x6f, 0x66, 0x74,
+	0x77, 0x61, 0x72, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x44, 0x6f,
+	0x77, 0x6e, 0x6c, 0x6f, 0x61, 0x64, 0x4d, 0x6f, 0x64, 0x65, 0x52, 0x04, 0x6d, 0x6f, 0x64, 0x65,
+	0x12, 0x22, 0x0a, 0x0d, 0x64, 0x6f, 0x5f, 0x6e, 0x6f, 0x74, 0x5f, 0x72, 0x65, 0x62, 0x6f, 0x6f,
+	0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0b, 0x64, 0x6f, 0x4e, 0x6f, 0x74, 0x52, 0x65,
+	0x62, 0x6f, 0x6f, 0x74, 0x12, 0x21, 0x0a, 0x0c, 0x70, 0x61, 0x63, 0x6b, 0x61, 0x67, 0x65, 0x5f,
+	0x6c, 0x69, 0x73, 0x74, 0x18, 0x05, 0x20, 0x03, 0x28, 0x09, 0x52, 0x0b, 0x70, 0x61, 0x63, 0x6b,
+	0x61, 0x67, 0x65, 0x4c, 0x69, 0x73, 0x74, 0x22, 0x85, 0x01, 0x0a, 0x0c, 0x44, 0x6f, 0x77, 0x6e,
+	0x6c, 0x6f, 0x61, 0x64, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x1d, 0x0a, 0x19, 0x44, 0x4f, 0x57, 0x4e,
+	0x4c, 0x4f, 0x41, 0x44, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43,
+	0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x16, 0x0a, 0x12, 0x44, 0x4f, 0x57, 0x4e, 0x4c,
+	0x4f, 0x41, 0x44, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x46, 0x55, 0x4c, 0x4c, 0x10, 0x01, 0x12,
+	0x1d, 0x0a, 0x19, 0x44, 0x4f, 0x57, 0x4e, 0x4c, 0x4f, 0x41, 0x44, 0x5f, 0x4d, 0x4f, 0x44, 0x45,
+	0x5f, 0x4e, 0x4f, 0x5f, 0x44, 0x4f, 0x57, 0x4e, 0x4c, 0x4f, 0x41, 0x44, 0x10, 0x02, 0x12, 0x1f,
+	0x0a, 0x1b, 0x44, 0x4f, 0x57, 0x4e, 0x4c, 0x4f, 0x41, 0x44, 0x5f, 0x4d, 0x4f, 0x44, 0x45, 0x5f,
+	0x44, 0x4f, 0x57, 0x4e, 0x4c, 0x4f, 0x41, 0x44, 0x5f, 0x4f, 0x4e, 0x4c, 0x59, 0x10, 0x03, 0x22,
+	0x0e, 0x0a, 0x0c, 0x50, 0x72, 0x65, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
+	0x0f, 0x0a, 0x0d, 0x50, 0x6f, 0x73, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -90,16 +816,42 @@ func file_common_v1_common_proto_rawDescGZIP() []byte {
 	return file_common_v1_common_proto_rawDescData
 }
 
-var file_common_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_common_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_common_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
 var file_common_v1_common_proto_goTypes = []interface{}{
-	(*CommonMessage)(nil), // 0: common.v1.CommonMessage
+	(UpdateSystemSoftwareOperation_DownloadMode)(0), // 0: common.v1.UpdateSystemSoftwareOperation.DownloadMode
+	(*Error)(nil),                         // 1: common.v1.Error
+	(*NodeScheduledOperation)(nil),        // 2: common.v1.NodeScheduledOperation
+	(*ScheduledOperation)(nil),            // 3: common.v1.ScheduledOperation
+	(*Schedule)(nil),                      // 4: common.v1.Schedule
+	(*SingleSchedule)(nil),                // 5: common.v1.SingleSchedule
+	(*RepeatedSchedule)(nil),              // 6: common.v1.RepeatedSchedule
+	(*Operation)(nil),                     // 7: common.v1.Operation
+	(*UpdateSystemSoftwareOperation)(nil), // 8: common.v1.UpdateSystemSoftwareOperation
+	(*PreOperation)(nil),                  // 9: common.v1.PreOperation
+	(*PostOperation)(nil),                 // 10: common.v1.PostOperation
+	(*timestamp.Timestamp)(nil),           // 11: google.protobuf.Timestamp
+	(*duration.Duration)(nil),             // 12: google.protobuf.Duration
 }
 var file_common_v1_common_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	3,  // 0: common.v1.NodeScheduledOperation.scheduled_operation:type_name -> common.v1.ScheduledOperation
+	7,  // 1: common.v1.ScheduledOperation.operation:type_name -> common.v1.Operation
+	4,  // 2: common.v1.ScheduledOperation.schedules:type_name -> common.v1.Schedule
+	5,  // 3: common.v1.Schedule.single_schedule:type_name -> common.v1.SingleSchedule
+	6,  // 4: common.v1.Schedule.repeated_schedule:type_name -> common.v1.RepeatedSchedule
+	11, // 5: common.v1.SingleSchedule.start_time:type_name -> google.protobuf.Timestamp
+	11, // 6: common.v1.SingleSchedule.end_time:type_name -> google.protobuf.Timestamp
+	12, // 7: common.v1.RepeatedSchedule.duration:type_name -> google.protobuf.Duration
+	9,  // 8: common.v1.Operation.pre_operations:type_name -> common.v1.PreOperation
+	10, // 9: common.v1.Operation.post_operations:type_name -> common.v1.PostOperation
+	8,  // 10: common.v1.Operation.update_system_software_operation:type_name -> common.v1.UpdateSystemSoftwareOperation
+	11, // 11: common.v1.UpdateSystemSoftwareOperation.release_date:type_name -> google.protobuf.Timestamp
+	0,  // 12: common.v1.UpdateSystemSoftwareOperation.mode:type_name -> common.v1.UpdateSystemSoftwareOperation.DownloadMode
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_common_v1_common_proto_init() }
@@ -109,7 +861,115 @@ func file_common_v1_common_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_common_v1_common_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*CommonMessage); i {
+			switch v := v.(*Error); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*NodeScheduledOperation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ScheduledOperation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Schedule); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SingleSchedule); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RepeatedSchedule); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*Operation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*UpdateSystemSoftwareOperation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PreOperation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_common_v1_common_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PostOperation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -121,18 +981,26 @@ func file_common_v1_common_proto_init() {
 			}
 		}
 	}
+	file_common_v1_common_proto_msgTypes[3].OneofWrappers = []interface{}{
+		(*Schedule_SingleSchedule)(nil),
+		(*Schedule_RepeatedSchedule)(nil),
+	}
+	file_common_v1_common_proto_msgTypes[6].OneofWrappers = []interface{}{
+		(*Operation_UpdateSystemSoftwareOperation)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_common_v1_common_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      1,
+			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_common_v1_common_proto_goTypes,
 		DependencyIndexes: file_common_v1_common_proto_depIdxs,
+		EnumInfos:         file_common_v1_common_proto_enumTypes,
 		MessageInfos:      file_common_v1_common_proto_msgTypes,
 	}.Build()
 	File_common_v1_common_proto = out.File
