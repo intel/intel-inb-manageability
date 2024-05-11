@@ -4,7 +4,7 @@ isort:skip_file
 """
 
 import builtins
-import cloudadapter.cloud.adapters.common.v1.common_pb2
+import cloudadapter.pb.common.v1.common_pb2
 import google.protobuf.descriptor
 import google.protobuf.message
 import typing
@@ -79,11 +79,11 @@ class TestCommonImport(google.protobuf.message.Message):
 
     COMMON_MESSAGE_FIELD_NUMBER: builtins.int
     @property
-    def common_message(self) -> cloudadapter.cloud.adapters.common.v1.common_pb2.CommonMessage: ...
+    def common_message(self) -> cloudadapter.pb.common.v1.common_pb2.CommonMessage: ...
     def __init__(
         self,
         *,
-        common_message: cloudadapter.cloud.adapters.common.v1.common_pb2.CommonMessage | None = ...,
+        common_message: cloudadapter.pb.common.v1.common_pb2.CommonMessage | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["common_message", b"common_message"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing.Literal["common_message", b"common_message"]) -> None: ...

@@ -12,12 +12,12 @@ set -euxo pipefail
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 echo Generating Python proto files.
-cd "$DIR"
-python -m grpc_tools.protoc -Iproto --python_out=cloudadapter/cloud/adapters --grpc_python_out=cloudadapter/cloud/adapters --mypy_out=cloudadapter/cloud/adapters proto/common/v1/common.proto
-python -m grpc_tools.protoc -Iproto --python_out=cloudadapter/cloud/adapters --grpc_python_out=cloudadapter/cloud/adapters --mypy_out=cloudadapter/cloud/adapters proto/inbs/v1/inbs_sb.proto
+cd "$DIR/cloudadapter-agent"
+python -m grpc_tools.protoc -I../proto --python_out=cloudadapter/pb --grpc_python_out=cloudadapter/pb --mypy_out=cloudadapter/pb ../proto/common/v1/common.proto
+python -m grpc_tools.protoc -I../proto --python_out=cloudadapter/pb --grpc_python_out=cloudadapter/pb --mypy_out=cloudadapter/pb ../proto/inbs/v1/inbs_sb.proto
 
-sed -i 's/ common.v1/ cloudadapter.cloud.adapters.common.v1/' cloudadapter/cloud/adapters/*/v1/*.py{,i}
-sed -i 's/ inbs.v1/ cloudadapter.cloud.adapters.inbs.v1/' cloudadapter/cloud/adapters/*/v1/*.py{,i}
+sed -i 's/ common.v1/ cloudadapter.pb.common.v1/' cloudadapter/pb/*/v1/*.py{,i}
+sed -i 's/ inbs.v1/ cloudadapter.pb.inbs.v1/' cloudadapter/pb/*/v1/*.py{,i}
 
 echo "Generating golang proto files for inbs-mock."
 cd "$DIR"/proto

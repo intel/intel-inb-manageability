@@ -3,6 +3,7 @@ Modification of Cloud Client class that works for INBS.
 INBS is different because it is using gRPC instead of MQTT.
 """
 
+from collections.abc import Generator
 import queue
 import random
 import threading
@@ -11,7 +12,7 @@ from typing import Callable, Optional, Any
 from datetime import datetime
 
 from cloudadapter.exceptions import AuthenticationError
-from cloudadapter.cloud.adapters.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
+from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 import logging
 
 import grpc
@@ -108,7 +109,7 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         pass
 
-    def _handle_inbm_command(self, request_queue: queue.Queue):
+    def _handle_inbm_command(self, request_queue: queue.Queue[inbs_sb_pb2.INBMRequest]) -> Generator[inbs_sb_pb2.INBMResponse, None, None]:
         """Generator function to respond to INBMRequests with INBMResponses
 
         @param request_queue: Queue with INBMRequests that will be supplied from another thread

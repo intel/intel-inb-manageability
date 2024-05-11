@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from cloudadapter.cloud.adapters.inbs.v1 import inbs_sb_pb2 as inbs_dot_v1_dot_inbs__sb__pb2
+from cloudadapter.pb.inbs.v1 import inbs_sb_pb2 as inbs_dot_v1_dot_inbs__sb__pb2
 
 
 class INBSSBServiceStub(object):
