@@ -65,7 +65,7 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 	return err
 }
 
-func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
+func (s *server) HandleINBMCommand(stream pb.INBSSBService_HandleINBMCommandServer) error {
 	ctx := stream.Context()
 
 	// Extract metadata from the context
@@ -93,12 +93,13 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 		default:
 			// Sending a Ping to the client
 			requestId := uuid.New().String()
-			err := stream.Send(&pb.INBMRequest{
+			err := stream.Send(&pb.HandleINBMCommandRequest{
 				RequestId: requestId,
-				Payload: &pb.INBMRequest_PingRequest{
-					PingRequest: &pb.PingRequest{},
+				Command: &pb.INBMCommand{
+					InbmCommand: &pb.INBMCommand_Ping{},
 				},
 			})
+
 			if err != nil {
 				log.Fatalf("Failed to send a ping: %v", err)
 			}
@@ -113,9 +114,10 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 			if requestId != response.GetRequestId() {
 				log.Fatalf("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
 			}
-			// check that the response payload is a ping type
-			if _, ok := response.GetPayload().(*pb.INBMResponse_PingResponse); !ok {
-				log.Fatalf("Response payload is not a PingResponse")
+
+			// check that the response does not have error set
+			if response.GetError() != nil {
+				log.Fatalf("Response payload has error set: %s", response.GetError().GetMessage())
 			}
 
 			log.Println("Received response from client with request ID " + response.GetRequestId())
