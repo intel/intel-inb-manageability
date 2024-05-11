@@ -6,7 +6,7 @@ Unit tests for the InbsCloudClient
 
 
 from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
-from cloudadapter.cloud.adapters.proto import inbs_sb_pb2
+from cloudadapter.cloud.adapters.inbs.v1 import inbs_sb_pb2
 import unittest
 from cloudadapter.cloud.client.inbs_cloud_client import grpc
 from unittest.mock import patch, MagicMock, Mock
@@ -18,7 +18,7 @@ import queue
 class TestInbsCloudClient(unittest.TestCase):
 
     @patch("cloudadapter.cloud.client.inbs_cloud_client.grpc.insecure_channel")
-    @patch("cloudadapter.cloud.adapters.proto.inbs_sb_pb2_grpc.INBSSBServiceStub")
+    @patch("cloudadapter.cloud.adapters.inbs.v1.inbs_sb_pb2_grpc.INBSSBServiceStub")
     def setUp(self, mock_stub, mock_channel):
         self.hostname = "localhost"
         self.port = "50051"
@@ -87,7 +87,7 @@ class TestInbsCloudClient(unittest.TestCase):
 
     @patch("cloudadapter.cloud.client.inbs_cloud_client.time.sleep", side_effect=InterruptedError)
     @patch("grpc.insecure_channel")
-    @patch("cloudadapter.cloud.adapters.proto.inbs_sb_pb2_grpc.INBSSBServiceStub")
+    @patch("cloudadapter.cloud.adapters.inbs.v1.inbs_sb_pb2_grpc.INBSSBServiceStub")
     def test_run_grpc_error(self, mock_stub, mock_channel, mock_sleep):
         # Setup aRpcError to simulate gRPC error
         mock_channel.side_effect = MagicMock(side_effect=grpc.RpcError())

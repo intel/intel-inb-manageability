@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from . import inbs_sb_pb2 as proto_dot_inbs__sb__pb2
+from cloudadapter.cloud.adapters.inbs.v1 import inbs_sb_pb2 as inbs_dot_v1_dot_inbs__sb__pb2
 
 
 class INBSSBServiceStub(object):
@@ -16,8 +16,8 @@ class INBSSBServiceStub(object):
         """
         self.INBMCommand = channel.stream_stream(
                 '/inbs.v1.INBSSBService/INBMCommand',
-                request_serializer=proto_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
-                response_deserializer=proto_dot_inbs__sb__pb2.INBMRequest.FromString,
+                request_serializer=inbs_dot_v1_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
+                response_deserializer=inbs_dot_v1_dot_inbs__sb__pb2.INBMRequest.FromString,
                 )
 
 
@@ -36,8 +36,8 @@ def add_INBSSBServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'INBMCommand': grpc.stream_stream_rpc_method_handler(
                     servicer.INBMCommand,
-                    request_deserializer=proto_dot_inbs__sb__pb2.INBMResponse.FromString,
-                    response_serializer=proto_dot_inbs__sb__pb2.INBMRequest.SerializeToString,
+                    request_deserializer=inbs_dot_v1_dot_inbs__sb__pb2.INBMResponse.FromString,
+                    response_serializer=inbs_dot_v1_dot_inbs__sb__pb2.INBMRequest.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -61,7 +61,7 @@ class INBSSBService(object):
             timeout=None,
             metadata=None):
         return grpc.experimental.stream_stream(request_iterator, target, '/inbs.v1.INBSSBService/INBMCommand',
-            proto_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
-            proto_dot_inbs__sb__pb2.INBMRequest.FromString,
+            inbs_dot_v1_dot_inbs__sb__pb2.INBMResponse.SerializeToString,
+            inbs_dot_v1_dot_inbs__sb__pb2.INBMRequest.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

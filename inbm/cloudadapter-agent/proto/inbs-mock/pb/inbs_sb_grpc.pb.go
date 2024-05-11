@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.12.4
-// source: inbs_sb.proto
+// source: inbs/v1/inbs_sb.proto
 
 package pb
 
@@ -139,5 +139,5 @@ var INBSSBService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "inbs_sb.proto",
+	Metadata: "inbs/v1/inbs_sb.proto",
 }

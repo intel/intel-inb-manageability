@@ -4,6 +4,7 @@ isort:skip_file
 """
 
 import builtins
+import cloudadapter.cloud.adapters.common.v1.common_pb2
 import google.protobuf.descriptor
 import google.protobuf.message
 import typing
@@ -71,3 +72,20 @@ class PingResponse(google.protobuf.message.Message):
     ) -> None: ...
 
 global___PingResponse = PingResponse
+
+@typing.final
+class TestCommonImport(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    COMMON_MESSAGE_FIELD_NUMBER: builtins.int
+    @property
+    def common_message(self) -> cloudadapter.cloud.adapters.common.v1.common_pb2.CommonMessage: ...
+    def __init__(
+        self,
+        *,
+        common_message: cloudadapter.cloud.adapters.common.v1.common_pb2.CommonMessage | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["common_message", b"common_message"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["common_message", b"common_message"]) -> None: ...
+
+global___TestCommonImport = TestCommonImport

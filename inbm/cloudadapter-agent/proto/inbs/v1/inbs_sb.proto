@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package inbs.v1;
+import "common/v1/common.proto";
 
 service INBSSBService {
   // Bi-directional streaming method
@@ -25,4 +26,8 @@ message PingRequest {
 }
 
 message PingResponse {
+}
+
+message TestCommonImport {
+  common.v1.CommonMessage common_message = 1;
 }

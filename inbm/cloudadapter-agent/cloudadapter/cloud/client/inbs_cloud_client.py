@@ -11,7 +11,7 @@ from typing import Callable, Optional, Any
 from datetime import datetime
 
 from cloudadapter.exceptions import AuthenticationError
-from ..adapters.proto import inbs_sb_pb2_grpc, inbs_sb_pb2
+from cloudadapter.cloud.adapters.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 import logging
 
 import grpc
