@@ -3,20 +3,27 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
+from typing import Any
 import pytest
 from cloudadapter.pb.common.v1.common_pb2 import (
     UpdateSystemSoftwareOperation,
     Operation,
     PreOperation,
     PostOperation,
+    ScheduledOperation,
+    Schedule,
+    SingleSchedule,
 )
+from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
 from google.protobuf.timestamp_pb2 import Timestamp
 from datetime import datetime
+from xml.sax.saxutils import escape
 
 # Import the function to be tested
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_system_software_operation_to_xml_manifest,
     convert_operation_to_xml_manifests,
+    convert_updated_scheduled_operations_to_dispatcher_xml,
 )
 
 SOTA_OPERATION_LARGE = UpdateSystemSoftwareOperation(
@@ -51,6 +58,102 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
     "</ota></manifest>"
 )
 
+
+# Test cases to convert UpdateScheduledOperations -> dispatcher XML (success)
+@pytest.mark.parametrize(
+    "uso, request_id, expected_xml",
+    [
+        (
+            UpdateScheduledOperations(),
+            "1234",
+            "<schedule_request><request_id>1234</request_id></schedule_request>",
+        ),
+        (
+            UpdateScheduledOperations(
+                scheduled_operations=[
+                    ScheduledOperation(
+                        operation=Operation(
+                            post_operations=[],
+                            pre_operations=[],
+                            update_system_software_operation=SOTA_OPERATION_SMALL,
+                        ),
+                        schedules=[Schedule(single_schedule=SingleSchedule())],
+                    ),
+                    ScheduledOperation(
+                        operation=Operation(
+                            post_operations=[],
+                            pre_operations=[],
+                            update_system_software_operation=SOTA_OPERATION_LARGE,
+                        ),
+                        schedules=[Schedule(single_schedule=SingleSchedule())],
+                    ),
+                ]
+            ),
+            "1234",
+            "<schedule_request>"
+            "<request_id>1234</request_id>"
+            "<update_schedule><scheduled_operation>"
+            "<manifests><manifest_xml>"
+            + escape(SOTA_OPERATION_SMALL_MANIFEST_XML)
+            + "</manifest_xml></manifests>"
+            "<single_schedule />"
+            "</scheduled_operation></update_schedule>"
+            "<update_schedule><scheduled_operation>"
+            "<manifests><manifest_xml>"
+            + escape(SOTA_OPERATION_LARGE_MANIFEST_XML)
+            + "</manifest_xml></manifests>"
+            "<single_schedule />"
+            "</scheduled_operation></update_schedule>"
+            "</schedule_request>",
+        ),
+    ],
+)
+def test_convert_update_scheduled_operations_to_xml_manifest_success(uso: UpdateScheduledOperations, request_id: str, expected_xml: str):
+    xml_manifest: str = convert_updated_scheduled_operations_to_dispatcher_xml(request_id, uso)    
+    assert xml_manifest == expected_xml   
+
+# Test cases to convert UpdateScheduledOperations -> dispatcher XML (exception)
+@pytest.mark.parametrize(
+    "uso, request_id, expected_exception, expected_exception_message",
+    [
+        (
+            UpdateScheduledOperations(
+                scheduled_operations=[
+                    ScheduledOperation(
+                        operation=Operation(
+                            post_operations=[],
+                            pre_operations=[PreOperation()],
+                            update_system_software_operation=SOTA_OPERATION_LARGE,
+                        ),
+                        schedules=[Schedule(single_schedule=SingleSchedule())],
+                    ),
+                ]
+            ),
+            "1234",
+            ValueError,
+            "Pre-operations not supported",
+        ),
+                (
+            UpdateScheduledOperations(
+                scheduled_operations=[
+                    ScheduledOperation(
+                        operation=Operation(),
+                        schedules=[Schedule(single_schedule=SingleSchedule())],
+                    ),
+                ]
+            ),
+            "1234",
+            ValueError,
+            "Operation type not supported",
+        ),
+    ],
+)
+def test_convert_update_scheduled_operations_to_xml_manifest_exception(
+    uso: UpdateScheduledOperations, request_id: str, expected_exception: Any, expected_exception_message: str,
+):
+    with pytest.raises(expected_exception) as exc_info:
+        convert_updated_scheduled_operations_to_dispatcher_xml(request_id, uso)
+    assert expected_exception_message == str(exc_info.value)
 
 # Test cases for function that checks XML manifest creation from software update operations
 @pytest.mark.parametrize(

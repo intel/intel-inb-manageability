@@ -6,7 +6,83 @@
 
 import xml.etree.ElementTree as ET
 from google.protobuf.timestamp_pb2 import Timestamp
-from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, Operation
+from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, Operation, Schedule
+from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
+
+def create_xml_element(tag: str, text: str | None = None, attrib: dict[str, str] | None = None) -> ET.Element:
+    """Create an XML element with optional text and attributes."""
+
+    element = ET.Element(tag)
+    if text:
+        element.text = text
+    if attrib:
+        element.attrib = attrib
+    return element
+
+def protobuf_timestamp_to_iso(timestamp: Timestamp) -> str:
+    """Converts a protobuf Timestamp to an ISO formatted string."""
+
+    return timestamp.ToDatetime().isoformat()
+
+def convert_schedule_to_xml(schedule: Schedule) -> ET.Element:
+    """Converts a Schedule message to an XML element."""
+
+    if schedule.HasField('single_schedule'):
+        single = schedule.single_schedule
+        single_schedule = create_xml_element('single_schedule')
+        if single.HasField('start_time'):
+            start_time = create_xml_element('start_time', protobuf_timestamp_to_iso(single.start_time))
+            single_schedule.append(start_time)
+        if single.HasField('end_time'):
+            end_time = create_xml_element('end_time', protobuf_timestamp_to_iso(single.end_time))
+            single_schedule.append(end_time)
+        return single_schedule
+    elif schedule.HasField('repeated_schedule'):
+        repeated = schedule.repeated_schedule
+        repeated_schedule = create_xml_element('repeated_schedule')
+        duration = create_xml_element('duration', 'PT' + str(repeated.duration.ToSeconds()) + 'S')
+        repeated_schedule.extend([
+            duration,
+            create_xml_element('cron_minutes', repeated.cron_minutes),
+            create_xml_element('cron_hours', repeated.cron_hours),
+            create_xml_element('cron_day_month', repeated.cron_day_month),
+            create_xml_element('cron_month', repeated.cron_month),
+            create_xml_element('cron_day_week', repeated.cron_day_week),
+        ])
+        return repeated_schedule
+    else:
+        raise ValueError("invalid Schedule protobuf")
+
+def convert_operation_to_xml_scheduled_operation(operation: Operation) -> ET.Element:
+    """Converts an Operation message to an XML element for Dispatcher."""
+
+    scheduled_operation_elem = create_xml_element('scheduled_operation')
+    manifests = create_xml_element('manifests')
+    for xml_str in convert_operation_to_xml_manifests(operation):
+        manifest_elem = create_xml_element('manifest_xml')
+        manifest_elem.text = xml_str
+        manifests.append(manifest_elem)
+    scheduled_operation_elem.append(manifests)
+    return scheduled_operation_elem
+
+def convert_updated_scheduled_operations_to_dispatcher_xml(request_id: str, update_operations_proto: UpdateScheduledOperations) -> str:
+    """Converts an UpdateScheduledOperations message to an XML string for Dispatcher."""
+
+    root = create_xml_element('schedule_request')
+    xml_request_id = create_xml_element('request_id', text=request_id)
+    root.append(xml_request_id)
+    
+    for scheduled_operation in update_operations_proto.scheduled_operations:
+        update_schedule = create_xml_element('update_schedule')
+        for schedule in scheduled_operation.schedules:
+            schedule_elem = convert_schedule_to_xml(schedule)
+            xml_scheduled_operation = convert_operation_to_xml_scheduled_operation(scheduled_operation.operation)
+            xml_scheduled_operation.append(schedule_elem)
+            update_schedule.append(xml_scheduled_operation)
+        root.append(update_schedule)
+    
+    tree = ET.ElementTree(root)
+    return ET.tostring(root, encoding='unicode')
 
 def convert_operation_to_xml_manifests(operation: Operation) -> list[str]:
     """Converts an Operation message to a list of XML manifest strings for Dispatcher."""

@@ -85,25 +85,58 @@ func (s *server) HandleINBMCommand(stream pb.INBSSBService_HandleINBMCommandServ
 
 	log.Printf("Received connection with inband-id: %s", nodeID)
 
+	firstCommand := true
 	// Loop until the context is done (connection closed)
 	for {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			// Sending a Ping to the client
 			requestId := uuid.New().String()
-			err := stream.Send(&pb.HandleINBMCommandRequest{
-				RequestId: requestId,
-				Command: &pb.INBMCommand{
-					InbmCommand: &pb.INBMCommand_Ping{},
-				},
-			})
 
-			if err != nil {
-				log.Fatalf("Failed to send a ping: %v", err)
+			if firstCommand {
+				// First command will be an UpdateScheduledOperations type
+				// Sending a UpdateScheduledOperations command to the client to do
+				// a simple SOTA with no reboot, download only
+				firstCommand = false
+				log.Println("Sending a UpdateScheduledOperations command to client with request ID " + requestId)
+				err := stream.Send(&pb.HandleINBMCommandRequest{
+					RequestId: requestId,
+					Command: &pb.INBMCommand{
+						InbmCommand: &pb.INBMCommand_UpdateScheduledOperations{
+							UpdateScheduledOperations: &pb.UpdateScheduledOperations{
+								ScheduledOperations: []*pb.ScheduledOperation{
+									{
+										Operation: &pb.Operation{
+											PreOperations:  []*pb.PreOperation{},
+											PostOperations: []*pb.PostOperation{},
+											Operation: &pb.Operation_UpdateSystemSoftwareOperation{
+												UpdateSystemSoftwareOperation: &pb.UpdateSystemSoftwareOperation{
+													Mode:        *pb.UpdateSystemSoftwareOperation_DOWNLOAD_MODE_DOWNLOAD_ONLY.Enum(),
+													DoNotReboot: true,
+												},
+											},
+										},
+										Schedules: []*pb.Schedule{{Schedule: &pb.Schedule_SingleSchedule{}}}, // immediate
+									}}}}}})
+				if err != nil {
+					log.Fatalf("Failed to send the command: %v", err)
+				}
+			} else {
+				// Sending a Ping to the client
+				log.Println("Sending a Ping to client with request ID " + requestId)
+				err := stream.Send(&pb.HandleINBMCommandRequest{
+					RequestId: requestId,
+					Command: &pb.INBMCommand{
+						InbmCommand: &pb.INBMCommand_Ping{},
+					},
+				})
+				if err != nil {
+					log.Fatalf("Failed to send the command: %v", err)
+				}
 			}
-			log.Println("Ping sent to client with request ID " + requestId)
+
+			log.Println("Command sent to client with request ID " + requestId)
 
 			// Receiving and logging INBMResponse from client
 			response, err := stream.Recv()
