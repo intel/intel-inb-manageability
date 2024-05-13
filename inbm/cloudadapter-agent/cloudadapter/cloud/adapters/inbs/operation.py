@@ -81,7 +81,6 @@ def convert_updated_scheduled_operations_to_dispatcher_xml(request_id: str, upda
             update_schedule.append(xml_scheduled_operation)
         root.append(update_schedule)
     
-    tree = ET.ElementTree(root)
     return ET.tostring(root, encoding='unicode')
 
 def convert_operation_to_xml_manifests(operation: Operation) -> list[str]:

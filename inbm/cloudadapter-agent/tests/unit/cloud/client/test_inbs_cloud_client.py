@@ -5,6 +5,7 @@ import grpc
 from datetime import datetime
 from typing import Generator
 
+from cloudadapter.constants import METHOD
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
@@ -58,12 +59,13 @@ class TestInbsCloudClient:
         inbs_client.publish_attribute(key="example_attribute", value="attribute_value")
 
     @pytest.mark.parametrize(
-        "request_id, command_type, expected_response",
+        "request_id, command_type, expected_response, expected_xml",
         [
             (
                 "123",
                 inbs_sb_pb2.INBMCommand(ping=inbs_sb_pb2.Ping()),
                 inbs_sb_pb2.HandleINBMCommandResponse(request_id="123"),
+                ""
             ),
             (
                 "124",
@@ -71,11 +73,9 @@ class TestInbsCloudClient:
                     update_scheduled_operations=inbs_sb_pb2.UpdateScheduledOperations()
                 ),
                 inbs_sb_pb2.HandleINBMCommandResponse(
-                    request_id="124",
-                    error=common_pb2.Error(
-                        message="cloudadapter: unimplemented command update_scheduled_operations"
-                    ),
+                    request_id="124",                    
                 ),
+                "<schedule_request><request_id>124</request_id></schedule_request>"
             ),
         ],
     )
@@ -85,6 +85,7 @@ class TestInbsCloudClient:
         request_id: str,
         command_type: inbs_sb_pb2.INBMCommand,
         expected_response: inbs_sb_pb2.HandleINBMCommandResponse,
+        expected_xml: str,
     ) -> None:
         # Setup
         request_queue: queue.Queue[
@@ -92,6 +93,16 @@ class TestInbsCloudClient:
         ] = queue.Queue()
         stop_event = Mock()
         stop_event.is_set.return_value = False
+
+        # set up the triggerota callback to see what is sent to dispatcher
+        triggered_str = ""
+
+        def triggerota(xml: str) -> str:
+            nonlocal triggered_str
+            triggered_str = xml
+            return "triggerota"
+        
+        inbs_client.bind_callback('triggerota', triggerota)
 
         # Construct command using parameters
         command = inbs_sb_pb2.HandleINBMCommandRequest(
@@ -101,6 +112,7 @@ class TestInbsCloudClient:
         request_queue.put(None)  # Sentinel to end the generator
 
         inbs_client._stop_event = stop_event
+           
 
         # Execute
         generator = inbs_client._handle_inbm_command_request(request_queue)
@@ -108,24 +120,28 @@ class TestInbsCloudClient:
 
         # Validate
         assert response == expected_response
+        assert triggered_str == expected_xml
 
         # Cleanup
         with pytest.raises(StopIteration):
             next(generator)
 
     def test_run_grpc_error(self, inbs_client: InbsCloudClient) -> None:
-        # Setup aRpcError to simulate gRPC error
-        with patch("grpc.insecure_channel") as mock_channel, patch(
-            "cloudadapter.cloud.client.inbs_cloud_client.time.sleep",
-            side_effect=InterruptedError,
-        ) as mock_sleep:
+        # Setup a RpcError to simulate gRPC error
+        with patch("grpc.insecure_channel") as mock_channel, \
+            patch("threading.Event.wait", side_effect=InterruptedError) as mock_wait:
+            
             mock_channel.side_effect = MagicMock(side_effect=grpc.RpcError())
-
+            
+            # Ensure the stop event is not set initially
             inbs_client._stop_event.clear()
-            with pytest.raises(InterruptedError):  # To stop the infinite loop
+            
+            # Run the test expecting InterruptedError to stop the infinite loop
+            with pytest.raises(InterruptedError):
                 inbs_client._run()
-
-            mock_sleep.assert_called()  # Check that backoff sleep was called
+            
+            # Assert that stop_event.wait() was called
+            mock_wait.assert_called()
 
     def test_run_stop_event_sets(self, inbs_client: InbsCloudClient) -> None:
         with patch(

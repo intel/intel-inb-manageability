@@ -13,9 +13,11 @@ from cloudadapter.pb.common.v1.common_pb2 import (
     ScheduledOperation,
     Schedule,
     SingleSchedule,
+    RepeatedSchedule,
 )
 from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
 from google.protobuf.timestamp_pb2 import Timestamp
+from google.protobuf.duration_pb2 import Duration
 from datetime import datetime
 from xml.sax.saxutils import escape
 
@@ -85,7 +87,18 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
                             pre_operations=[],
                             update_system_software_operation=SOTA_OPERATION_LARGE,
                         ),
-                        schedules=[Schedule(single_schedule=SingleSchedule())],
+                        schedules=[
+                            Schedule(
+                                repeated_schedule=RepeatedSchedule(
+                                    cron_day_month="1",
+                                    cron_day_week="2",
+                                    cron_hours="*/3",
+                                    cron_minutes="4",
+                                    cron_month="5",
+                                    duration=Duration(seconds=900),
+                                )
+                            )
+                        ],
                     ),
                 ]
             ),
@@ -102,15 +115,29 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
             "<manifests><manifest_xml>"
             + escape(SOTA_OPERATION_LARGE_MANIFEST_XML)
             + "</manifest_xml></manifests>"
-            "<single_schedule />"
+            "<repeated_schedule>"
+            "<duration>PT900S</duration>"
+            "<cron_minutes>4</cron_minutes>"
+            "<cron_hours>*/3</cron_hours>"
+            "<cron_day_month>1</cron_day_month>"
+            "<cron_month>5</cron_month>"
+            "<cron_day_week>2</cron_day_week>"
+            "</repeated_schedule>"
             "</scheduled_operation></update_schedule>"
             "</schedule_request>",
         ),
     ],
 )
-def test_convert_update_scheduled_operations_to_xml_manifest_success(uso: UpdateScheduledOperations, request_id: str, expected_xml: str):
-    xml_manifest: str = convert_updated_scheduled_operations_to_dispatcher_xml(request_id, uso)    
-    assert xml_manifest == expected_xml   
+def test_convert_update_scheduled_operations_to_xml_manifest_success(
+    uso: UpdateScheduledOperations, request_id: str, expected_xml: str
+):
+    xml_manifest: str = convert_updated_scheduled_operations_to_dispatcher_xml(
+        request_id, uso
+    )
+    assert xml_manifest == expected_xml
+
+    "<repeated_schedule><duration>PT900S</duration><cron_minutes>4</cron_minutes><cron_hours>*/3</cron_hours><cron_day_month>1</cron_day_month><cron_month>5</cron_month><cron_day_week>2</cron_day_week></repeated_schedule>"
+
 
 # Test cases to convert UpdateScheduledOperations -> dispatcher XML (exception)
 @pytest.mark.parametrize(
@@ -133,7 +160,7 @@ def test_convert_update_scheduled_operations_to_xml_manifest_success(uso: Update
             ValueError,
             "Pre-operations not supported",
         ),
-                (
+        (
             UpdateScheduledOperations(
                 scheduled_operations=[
                     ScheduledOperation(
@@ -149,11 +176,15 @@ def test_convert_update_scheduled_operations_to_xml_manifest_success(uso: Update
     ],
 )
 def test_convert_update_scheduled_operations_to_xml_manifest_exception(
-    uso: UpdateScheduledOperations, request_id: str, expected_exception: Any, expected_exception_message: str,
+    uso: UpdateScheduledOperations,
+    request_id: str,
+    expected_exception: Any,
+    expected_exception_message: str,
 ):
     with pytest.raises(expected_exception) as exc_info:
         convert_updated_scheduled_operations_to_dispatcher_xml(request_id, uso)
     assert expected_exception_message == str(exc_info.value)
+
 
 # Test cases for function that checks XML manifest creation from software update operations
 @pytest.mark.parametrize(

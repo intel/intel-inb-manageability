@@ -12,7 +12,7 @@ from typing import Callable, Optional, Any
 from datetime import datetime
 
 from cloudadapter.cloud.adapters.inbs.operation import (
-    convert_updated_scheduled_operations_to_dispatcher_xml
+    convert_updated_scheduled_operations_to_dispatcher_xml,
 )
 from cloudadapter.constants import METHOD
 from cloudadapter.exceptions import AuthenticationError
@@ -144,18 +144,20 @@ class InbsCloudClient(CloudClient):
                     if command_type == "update_scheduled_operations":
                         # Convert operations to Dispatcher's ScheduleRequest
                         try:
-                            dispatcher_xml = convert_updated_scheduled_operations_to_dispatcher_xml(
-                                request_id, item.command.update_scheduled_operations
+                            dispatcher_xml = (
+                                convert_updated_scheduled_operations_to_dispatcher_xml(
+                                    request_id, item.command.update_scheduled_operations
+                                )
                             )
                         except ValueError as ve:
-                            logger.error(f"Error converting operations to Dispatcher XML: {ve}")
+                            logger.error(
+                                f"Error converting operations to Dispatcher XML: {ve}"
+                            )
                             yield inbs_sb_pb2.HandleINBMCommandResponse(
                                 request_id=request_id,
-                                error=common_pb2.Error(
-                                    message=f"cloudadapter: {ve}"
-                                ),
+                                error=common_pb2.Error(message=f"cloudadapter: {ve}"),
                             )
-                            continue            
+                            continue
 
                         # Send the converted operations to Dispatcher
                         self._callbacks[METHOD.MANIFEST](dispatcher_xml)
@@ -229,7 +231,9 @@ class InbsCloudClient(CloudClient):
         while not self._stop_event.is_set():
             try:
                 self._do_socket_connect()
-                request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None] = queue.Queue()
+                request_queue: queue.Queue[
+                    inbs_sb_pb2.HandleINBMCommandRequest | None
+                ] = queue.Queue()
                 stream = self.stub.HandleINBMCommand(
                     self._handle_inbm_command_request(request_queue),
                     metadata=self._metadata,
