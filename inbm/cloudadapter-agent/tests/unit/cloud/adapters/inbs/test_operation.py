@@ -120,7 +120,7 @@ def test_convert_operation_with_system_software_update_to_xml_manifests_success(
                 pre_operations=[PreOperation()],
                 update_system_software_operation=SOTA_OPERATION_SMALL,
             ),
-            "Operation type not supported",
+            "Pre-operations not supported",
         ),
         (
             Operation(
@@ -128,7 +128,7 @@ def test_convert_operation_with_system_software_update_to_xml_manifests_success(
                 pre_operations=[PreOperation()],
                 update_system_software_operation=SOTA_OPERATION_SMALL,
             ),
-            "Operation type not supported",
+            "Pre-operations not supported",
         ),
         (
             Operation(
@@ -136,7 +136,7 @@ def test_convert_operation_with_system_software_update_to_xml_manifests_success(
                 pre_operations=[],
                 update_system_software_operation=SOTA_OPERATION_SMALL,
             ),
-            "Operation type not supported",
+            "Post-operations not supported",
         ),
         (Operation(), "Operation type not supported"),
     ],
@@ -144,8 +144,6 @@ def test_convert_operation_with_system_software_update_to_xml_manifests_success(
 def test_convert_operation_with_invalid_operation_type_error(
     operation, exception_message
 ):
-    # Intentionally clearing the field to trigger the error
-    operation.ClearField("update_system_software_operation")
     with pytest.raises(ValueError) as excinfo:
         convert_operation_to_xml_manifests(operation)
     assert exception_message in str(excinfo.value)
