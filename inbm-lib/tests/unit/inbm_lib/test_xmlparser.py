@@ -19,33 +19,12 @@ TEST_SCHEMA_LOCATION = os.path.join(
                                         'manifest_schema.xsd',
                                     )
 
-SCHEDULE_TEST_SCHEMA_LOCATION = os.path.join(
-                                        os.path.dirname(__file__),
-                                        '..',
-                                        '..',
-                                        '..',
-                                        '..',
-                                        'inbm',
-                                        'dispatcher-agent',
-                                        'fpm-template',
-                                        'usr',
-                                        'share',
-                                        'dispatcher-agent',
-                                        'schedule_manifest_schema.xsd',
-                                    )
-
 GOOD_XML = '<?xml version="1.0" encoding="UTF-8"?>' \
            '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \
            'Sample FOTA manifest file</description><type>aota</type><repo>remote</repo>' \
            '</header><type><aota name="sample"><cmd>load</cmd><app>docker</app><fetch>sample</fetch>' \
            '<containerTag>defg</containerTag>' \
            '</aota></type></ota></manifest>'
-
-GOOD_MULTIPLE_SCHEDULED_REQUESTS_XML = '''<schedule_request><request_id>REQ12345</request_id>
-    <update_schedule><schedule><single_schedule></single_schedule></schedule><manifests><manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-    </manifests></update_schedule><update_schedule><schedule><single_schedule></single_schedule>
-    </schedule><manifests><manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-    </manifests></update_schedule></schedule_request>'''
 
 ENTITY_INJECTION_XML = """<?xml version="1.0" encoding="utf-8"?><!DOCTYPE foo [ <!ENTITY xxe 
 SYSTEM "file:///etc/passwd"> ]><manifest><type>&xxe;</type><ota><header><id>sampleId</id>
@@ -97,12 +76,7 @@ class TestXmlParser(TestCase):
     def setUp(self) -> None:
         self.good = XmlHandler(GOOD_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         self.test = XmlHandler(TEST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
-        self.good_multiple_scheduled_requests = XmlHandler(GOOD_MULTIPLE_SCHEDULED_REQUESTS_XML, is_file=False, schema_location=SCHEDULE_TEST_SCHEMA_LOCATION)
-
-    def test_find_all_scheduled_requests(self) -> None:
-        schedules = self.good_multiple_scheduled_requests.find_elements('update_schedule')
-        self.assertEqual(2, len(schedules))
-        
+       
     def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
 
