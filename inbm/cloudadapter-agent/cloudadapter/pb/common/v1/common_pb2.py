@@ -16,7 +16,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from google.protobuf import duration_pb2 as google_dot_protobuf_dot_duration__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x63ommon/v1/common.proto\x12\tcommon.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"\x18\n\x05\x45rror\x12\x0f\n\x07message\x18\x01 \x01(\t\"e\n\x16NodeScheduledOperation\x12:\n\x13scheduled_operation\x18\x01 \x01(\x0b\x32\x1d.common.v1.ScheduledOperation\x12\x0f\n\x07node_id\x18\x02 \x01(\t\"e\n\x12ScheduledOperation\x12\'\n\toperation\x18\x01 \x01(\x0b\x32\x14.common.v1.Operation\x12&\n\tschedules\x18\x02 \x03(\x0b\x32\x13.common.v1.Schedule\"\x86\x01\n\x08Schedule\x12\x34\n\x0fsingle_schedule\x18\x01 \x01(\x0b\x32\x19.common.v1.SingleScheduleH\x00\x12\x38\n\x11repeated_schedule\x18\x02 \x01(\x0b\x32\x1b.common.v1.RepeatedScheduleH\x00\x42\n\n\x08schedule\"n\n\x0eSingleSchedule\x12.\n\nstart_time\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xac\x01\n\x10RepeatedSchedule\x12+\n\x08\x64uration\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x14\n\x0c\x63ron_minutes\x18\x02 \x01(\t\x12\x12\n\ncron_hours\x18\x03 \x01(\t\x12\x16\n\x0e\x63ron_day_month\x18\x04 \x01(\t\x12\x12\n\ncron_month\x18\x05 \x01(\t\x12\x15\n\rcron_day_week\x18\x06 \x01(\t\"\xd2\x01\n\tOperation\x12/\n\x0epre_operations\x18\x01 \x03(\x0b\x32\x17.common.v1.PreOperation\x12\x31\n\x0fpost_operations\x18\x02 \x03(\x0b\x32\x18.common.v1.PostOperation\x12T\n update_system_software_operation\x18\x03 \x01(\x0b\x32(.common.v1.UpdateSystemSoftwareOperationH\x00\x42\x0b\n\toperation\"\xd8\x02\n\x1dUpdateSystemSoftwareOperation\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x30\n\x0crelease_date\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x43\n\x04mode\x18\x03 \x01(\x0e\x32\x35.common.v1.UpdateSystemSoftwareOperation.DownloadMode\x12\x15\n\rdo_not_reboot\x18\x04 \x01(\x08\x12\x14\n\x0cpackage_list\x18\x05 \x03(\t\"\x85\x01\n\x0c\x44ownloadMode\x12\x1d\n\x19\x44OWNLOAD_MODE_UNSPECIFIED\x10\x00\x12\x16\n\x12\x44OWNLOAD_MODE_FULL\x10\x01\x12\x1d\n\x19\x44OWNLOAD_MODE_NO_DOWNLOAD\x10\x02\x12\x1f\n\x1b\x44OWNLOAD_MODE_DOWNLOAD_ONLY\x10\x03\"\x0e\n\x0cPreOperation\"\x0f\n\rPostOperationb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x63ommon/v1/common.proto\x12\tcommon.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"\x18\n\x05\x45rror\x12\x0f\n\x07message\x18\x01 \x01(\t\"g\n\x17NodeScheduledOperations\x12;\n\x14scheduled_operations\x18\x01 \x01(\x0b\x32\x1d.common.v1.ScheduledOperation\x12\x0f\n\x07node_id\x18\x02 \x01(\t\"e\n\x12ScheduledOperation\x12\'\n\toperation\x18\x01 \x01(\x0b\x32\x14.common.v1.Operation\x12&\n\tschedules\x18\x02 \x03(\x0b\x32\x13.common.v1.Schedule\"\x86\x01\n\x08Schedule\x12\x34\n\x0fsingle_schedule\x18\x01 \x01(\x0b\x32\x19.common.v1.SingleScheduleH\x00\x12\x38\n\x11repeated_schedule\x18\x02 \x01(\x0b\x32\x1b.common.v1.RepeatedScheduleH\x00\x42\n\n\x08schedule\"n\n\x0eSingleSchedule\x12.\n\nstart_time\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xac\x01\n\x10RepeatedSchedule\x12+\n\x08\x64uration\x18\x01 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x14\n\x0c\x63ron_minutes\x18\x02 \x01(\t\x12\x12\n\ncron_hours\x18\x03 \x01(\t\x12\x16\n\x0e\x63ron_day_month\x18\x04 \x01(\t\x12\x12\n\ncron_month\x18\x05 \x01(\t\x12\x15\n\rcron_day_week\x18\x06 \x01(\t\"\xd2\x01\n\tOperation\x12/\n\x0epre_operations\x18\x01 \x03(\x0b\x32\x17.common.v1.PreOperation\x12\x31\n\x0fpost_operations\x18\x02 \x03(\x0b\x32\x18.common.v1.PostOperation\x12T\n update_system_software_operation\x18\x03 \x01(\x0b\x32(.common.v1.UpdateSystemSoftwareOperationH\x00\x42\x0b\n\toperation\"\xd8\x02\n\x1dUpdateSystemSoftwareOperation\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x30\n\x0crelease_date\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x43\n\x04mode\x18\x03 \x01(\x0e\x32\x35.common.v1.UpdateSystemSoftwareOperation.DownloadMode\x12\x15\n\rdo_not_reboot\x18\x04 \x01(\x08\x12\x14\n\x0cpackage_list\x18\x05 \x03(\t\"\x85\x01\n\x0c\x44ownloadMode\x12\x1d\n\x19\x44OWNLOAD_MODE_UNSPECIFIED\x10\x00\x12\x16\n\x12\x44OWNLOAD_MODE_FULL\x10\x01\x12\x1d\n\x19\x44OWNLOAD_MODE_NO_DOWNLOAD\x10\x02\x12\x1f\n\x1b\x44OWNLOAD_MODE_DOWNLOAD_ONLY\x10\x03\"\x0e\n\x0cPreOperation\"\x0f\n\rPostOperationb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -25,24 +25,24 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   DESCRIPTOR._options = None
   _globals['_ERROR']._serialized_start=102
   _globals['_ERROR']._serialized_end=126
-  _globals['_NODESCHEDULEDOPERATION']._serialized_start=128
-  _globals['_NODESCHEDULEDOPERATION']._serialized_end=229
-  _globals['_SCHEDULEDOPERATION']._serialized_start=231
-  _globals['_SCHEDULEDOPERATION']._serialized_end=332
-  _globals['_SCHEDULE']._serialized_start=335
-  _globals['_SCHEDULE']._serialized_end=469
-  _globals['_SINGLESCHEDULE']._serialized_start=471
-  _globals['_SINGLESCHEDULE']._serialized_end=581
-  _globals['_REPEATEDSCHEDULE']._serialized_start=584
-  _globals['_REPEATEDSCHEDULE']._serialized_end=756
-  _globals['_OPERATION']._serialized_start=759
-  _globals['_OPERATION']._serialized_end=969
-  _globals['_UPDATESYSTEMSOFTWAREOPERATION']._serialized_start=972
-  _globals['_UPDATESYSTEMSOFTWAREOPERATION']._serialized_end=1316
-  _globals['_UPDATESYSTEMSOFTWAREOPERATION_DOWNLOADMODE']._serialized_start=1183
-  _globals['_UPDATESYSTEMSOFTWAREOPERATION_DOWNLOADMODE']._serialized_end=1316
-  _globals['_PREOPERATION']._serialized_start=1318
-  _globals['_PREOPERATION']._serialized_end=1332
-  _globals['_POSTOPERATION']._serialized_start=1334
-  _globals['_POSTOPERATION']._serialized_end=1349
+  _globals['_NODESCHEDULEDOPERATIONS']._serialized_start=128
+  _globals['_NODESCHEDULEDOPERATIONS']._serialized_end=231
+  _globals['_SCHEDULEDOPERATION']._serialized_start=233
+  _globals['_SCHEDULEDOPERATION']._serialized_end=334
+  _globals['_SCHEDULE']._serialized_start=337
+  _globals['_SCHEDULE']._serialized_end=471
+  _globals['_SINGLESCHEDULE']._serialized_start=473
+  _globals['_SINGLESCHEDULE']._serialized_end=583
+  _globals['_REPEATEDSCHEDULE']._serialized_start=586
+  _globals['_REPEATEDSCHEDULE']._serialized_end=758
+  _globals['_OPERATION']._serialized_start=761
+  _globals['_OPERATION']._serialized_end=971
+  _globals['_UPDATESYSTEMSOFTWAREOPERATION']._serialized_start=974
+  _globals['_UPDATESYSTEMSOFTWAREOPERATION']._serialized_end=1318
+  _globals['_UPDATESYSTEMSOFTWAREOPERATION_DOWNLOADMODE']._serialized_start=1185
+  _globals['_UPDATESYSTEMSOFTWAREOPERATION_DOWNLOADMODE']._serialized_end=1318
+  _globals['_PREOPERATION']._serialized_start=1320
+  _globals['_PREOPERATION']._serialized_end=1334
+  _globals['_POSTOPERATION']._serialized_start=1336
+  _globals['_POSTOPERATION']._serialized_end=1351
 # @@protoc_insertion_point(module_scope)

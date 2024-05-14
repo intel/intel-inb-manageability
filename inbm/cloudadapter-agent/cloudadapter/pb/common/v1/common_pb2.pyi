@@ -37,27 +37,31 @@ class Error(google.protobuf.message.Message):
 global___Error = Error
 
 @typing.final
-class NodeScheduledOperation(google.protobuf.message.Message):
+class NodeScheduledOperations(google.protobuf.message.Message):
+    """one node could have multiple operations (SOTA, FOTA, etc) each with their own schedules"""
+
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    SCHEDULED_OPERATION_FIELD_NUMBER: builtins.int
+    SCHEDULED_OPERATIONS_FIELD_NUMBER: builtins.int
     NODE_ID_FIELD_NUMBER: builtins.int
     node_id: builtins.str
     @property
-    def scheduled_operation(self) -> global___ScheduledOperation: ...
+    def scheduled_operations(self) -> global___ScheduledOperation: ...
     def __init__(
         self,
         *,
-        scheduled_operation: global___ScheduledOperation | None = ...,
+        scheduled_operations: global___ScheduledOperation | None = ...,
         node_id: builtins.str = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["scheduled_operation", b"scheduled_operation"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["node_id", b"node_id", "scheduled_operation", b"scheduled_operation"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["scheduled_operations", b"scheduled_operations"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["node_id", b"node_id", "scheduled_operations", b"scheduled_operations"]) -> None: ...
 
-global___NodeScheduledOperation = NodeScheduledOperation
+global___NodeScheduledOperations = NodeScheduledOperations
 
 @typing.final
 class ScheduledOperation(google.protobuf.message.Message):
+    """this is one operation with a set of times to run"""
+
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     OPERATION_FIELD_NUMBER: builtins.int

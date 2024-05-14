@@ -9,11 +9,13 @@ message Error {
   string message = 1;
 }
 
-message NodeScheduledOperation {
-  ScheduledOperation scheduled_operation = 1;
+// one node could have multiple operations (SOTA, FOTA, etc) each with their own schedules
+message NodeScheduledOperations {
+  ScheduledOperation scheduled_operations = 1;
   string node_id = 2;
 }
 
+// this is one operation with a set of times to run
 message ScheduledOperation {
   Operation operation = 1;
   repeated Schedule schedules = 2;
