@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
-     <xs:simpleType name="sourceType">
+    <xs:simpleType name="sourceType">
           <xs:restriction base="xs:string">
                 <xs:enumeration value="application"/>
                 <xs:enumeration value="os"/>

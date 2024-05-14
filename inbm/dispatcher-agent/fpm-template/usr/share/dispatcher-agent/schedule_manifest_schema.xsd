@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:complexType name="INBMManifests">
+    <xs:sequence>
+      <xs:element name="manifest_xml" type="xs:string" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="SingleSchedule">
+    <xs:sequence>
+      <xs:element name="start_time" type="xs:dateTime" minOccurs="0"/>
+      <xs:element name="end_time" type="xs:dateTime" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="RepeatedSchedule">
+    <xs:sequence>
+      <xs:element name="duration" type="xs:duration"/>
+      <xs:element name="cron_minutes" type="xs:string"/>
+      <xs:element name="cron_hours" type="xs:string"/>
+      <xs:element name="cron_day_month" type="xs:string"/>
+      <xs:element name="cron_month" type="xs:string"/>
+      <xs:element name="cron_day_week" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="Schedule">
+    <xs:choice>
+      <xs:element name="single_schedule" type="SingleSchedule"/>
+      <xs:element name="repeated_schedule" type="RepeatedSchedule"/>
+    </xs:choice>
+  </xs:complexType>
+
+  <xs:complexType name="ScheduledOperation">
+    <xs:sequence>
+      <xs:element name="schedule" type="Schedule"/>
+      <xs:element name="manifests" type="INBMManifests"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Root element type -->
+  <xs:complexType name="ScheduleRequest">
+    <xs:sequence>
+      <xs:element name="request_id" type="xs:string"/>
+      <xs:element name="update_schedule" type="ScheduledOperation" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <!-- Define the root element using the root element type -->
+  <xs:element name="schedule_request" type="ScheduleRequest"/>
+</xs:schema>

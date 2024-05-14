@@ -134,7 +134,21 @@ class XmlHandler:
                 logger.debug(f'Empty tag {each.tag} encountered, but allowed.')
 
         return children
+    
+    def find_elements(self, xpath: str) -> list[Any]:
+        """Find all elements matching XPath from parsed XML
 
+        @param xpath: Valid XPath expression
+        @return: List of matched elements
+        @raises XmlException
+        """
+        elements: list[Any] = []
+        try:
+            elements = self._root.findall(xpath)
+        except (XmlException, ValueError, TypeError, KeyError) as e:
+            raise XmlException(f"ERROR while finding elements with XPath '{xpath}': {e}")
+        return elements
+        
     def get_children(self, xpath: str) -> dict[str, Any]:
         """Find all elements matching XPath from parsed XML
 
