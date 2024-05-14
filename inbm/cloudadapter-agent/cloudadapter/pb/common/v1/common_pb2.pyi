@@ -46,14 +46,13 @@ class NodeScheduledOperations(google.protobuf.message.Message):
     NODE_ID_FIELD_NUMBER: builtins.int
     node_id: builtins.str
     @property
-    def scheduled_operations(self) -> global___ScheduledOperation: ...
+    def scheduled_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___ScheduledOperation]: ...
     def __init__(
         self,
         *,
-        scheduled_operations: global___ScheduledOperation | None = ...,
+        scheduled_operations: collections.abc.Iterable[global___ScheduledOperation] | None = ...,
         node_id: builtins.str = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["scheduled_operations", b"scheduled_operations"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing.Literal["node_id", b"node_id", "scheduled_operations", b"scheduled_operations"]) -> None: ...
 
 global___NodeScheduledOperations = NodeScheduledOperations

@@ -11,7 +11,7 @@ message Error {
 
 // one node could have multiple operations (SOTA, FOTA, etc) each with their own schedules
 message NodeScheduledOperations {
-  ScheduledOperation scheduled_operations = 1;
+  repeated ScheduledOperation scheduled_operations = 1;
   string node_id = 2;
 }
 
