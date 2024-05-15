@@ -1,46 +1,78 @@
 import os
 from unittest import TestCase
 
-from inbm_lib.xmlhandler import XmlHandler
+from dispatcher.schedule.manifest_parser import ScheduleManifestParser
 
-GOOD_IMMEDIATE_SINGLE_SOTA_XML = '''<schedule_request><request_id>REQ12345</request_id>
+GOOD_IMMEDIATE_SINGLE_SOTA_XML = """<?xml version="1" encoding="utf-8"?>
+<schedule_request>
+    <request_id>REQ12345</request_id>
     <update_schedule>
-      <schedule>
-        <single_schedule></single_schedule>
-      </schedule>
-      <manifests>
-        <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-      </manifests>
-  </update_schedule></schedule_request>'''
-  
-GOOD_REPEATED_SINGLE_SOTA_XML = '''<schedule_request><request_id>REQ12345</request_id>
+        <schedule>
+            <single_schedule></single_schedule>
+        </schedule>
+        <manifests>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+        </manifests>
+    </update_schedule>
+</schedule_request>"""
+
+GOOD_IMM_SINGLE_SOTA_XML = """<?xml version="1" encoding="utf-8"?>
+<schedule_request>
+    <request_id>REQ12345</request_id>
     <update_schedule>
-      <schedule>
-        <repeated_schedule>
-          <duration>P7D</duration>
-          <cron_minutes>15</cron_minutes>
-          <cron_hours>22</cron_hours>
-          <cron_day_month>*</cron_day_month>
-          <cron_month>*</cron_month>
-          <cron_day_week>*</cron_day_week>
-        </repeated_schedule>
-      </schedule>
-      <manifests>
-        <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-      </manifests>
-  </update_schedule></schedule_request>'''
-  
-BAD_BOTH_SINGLE_AND_REPEATED_XML = '''<schedule_request><request_id>REQ12345</request_id>
-    <update_schedule><schedule><single_schedule></single_schedule><repeated_schedule><duration></repeated_schedule></schedule><manifests><manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-    </manifests></update_schedule><update_schedule><schedule><single_schedule></single_schedule>
-    </schedule><manifests><manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-    </manifests></update_schedule></schedule_request>'''
+        <schedule>
+            <single_schedule></single_schedule>
+        </schedule>
+        <manifests>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+        </manifests>
+    </update_schedule>
     
-GOOD_MULTIPLE_MANIFEST_SINGLE_SCHEDULED_IMMEDIATE_REQUEST_XML = '''<schedule_request><request_id>REQ12345</request_id>
-    <update_schedule><schedule><single_schedule></single_schedule></schedule><manifests><manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-    </manifests></update_schedule><update_schedule><schedule><single_schedule></single_schedule>
-    </schedule><manifests><manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-    </manifests></update_schedule></schedule_request>'''
+</schedule_request>"""
+
+GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
+<schedule_request>
+    <request_id>REQ12345</request_id>
+    <update_schedule>
+        <schedule>
+            <single_schedule></single_schedule>
+        </schedule>
+        <manifests>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+        </manifests>
+    </update_schedule>
+    <update_schedule>
+        <schedule>
+            <single_schedule>
+                <start_time>2024-01-01T00:00:00</start_time>
+                <end_time>2024-01-01T01:00:00</end_time>
+            </single_schedule>
+        </schedule>
+        <manifests>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+        </manifests>
+    </update_schedule>
+    <update_schedule>
+        <schedule>
+            <repeated_schedule>
+                <duration>P7D</duration>
+                <cron_minutes>0</cron_minutes>
+                <cron_hours>0</cron_hours>
+                <cron_day_month>*</cron_day_month>
+                <cron_month>*</cron_month>
+                <cron_day_week>*</cron_day_week>
+            </repeated_schedule>
+        </schedule>
+        <manifests>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+        </manifests>
+    </update_schedule>
+</schedule_request>"""
 
 TEST_SCHEDULE_SCHEMA_LOCATION = os.path.join(
                                         os.path.dirname(__file__),
@@ -54,11 +86,13 @@ TEST_SCHEDULE_SCHEMA_LOCATION = os.path.join(
                                         'schedule_manifest_schema.xsd',
                                     )
 
-class TestManifestParser(TestCase):
-    def setUp(self) -> None:
-        self.good_multiple_scheduled_requests = XmlHandler(GOOD_MULTIPLE_MANIFEST_SINGLE_SCHEDULED_IMMEDIATE_REQUEST_XML, is_file=False, schema_location=TEST_SCHEDULE_SCHEMA_LOCATION)
-
-    def test_get_all_scheduled_requests(self) -> None:
-        schedules = self.good_multiple_scheduled_requests.find_elements('update_schedule')
-        self.assertEqual(2, len(schedules))
+class TestScheduleManifestParser(TestCase):
      
+    def test_get_single_scheduled_requests(self) -> None:
+        p = ScheduleManifestParser(GOOD_IMM_SINGLE_SOTA_XML, schema_location=TEST_SCHEDULE_SCHEMA_LOCATION)
+        self.assertEqual(1, len(p.immedate_requests))
+        self.assertEqual(2, len(p.immedate_requests[0].manifests))
+        self.assertEqual(0, len(p.single_scheduled_requests))
+        #self.assertEqual(0, len(p.single_scheduled_requests[0].manifests))
+        self.assertEqual(0, len(p.repeated_scheduled_requests))
+        #self.assertEqual(0, len(p.repeated_scheduled_requests.manifests))
