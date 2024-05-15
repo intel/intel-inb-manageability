@@ -16,21 +16,6 @@ GOOD_IMMEDIATE_SINGLE_SOTA_XML = """<?xml version="1" encoding="utf-8"?>
     </update_schedule>
 </schedule_request>"""
 
-GOOD_IMM_SINGLE_SOTA_XML = """<?xml version="1" encoding="utf-8"?>
-<schedule_request>
-    <request_id>REQ12345</request_id>
-    <update_schedule>
-        <schedule>
-            <single_schedule></single_schedule>
-        </schedule>
-        <manifests>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-        </manifests>
-    </update_schedule>
-    
-</schedule_request>"""
-
 GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
 <schedule_request>
     <request_id>REQ12345</request_id>
@@ -74,25 +59,26 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
     </update_schedule>
 </schedule_request>"""
 
-TEST_SCHEDULE_SCHEMA_LOCATION = os.path.join(
-                                        os.path.dirname(__file__),
-                                        '..',
-                                        '..',
-                                        '..',
-                                        'fpm-template',
-                                        'usr',
-                                        'share',
-                                        'dispatcher-agent',
-                                        'schedule_manifest_schema.xsd',
-                                    )
+SCHEDULE_SCHEMA_LOCATION = os.path.join(
+                                os.path.dirname(__file__),
+                                '..',
+                                '..',
+                                '..',
+                                'fpm-template',
+                                'usr',
+                                'share',
+                                'dispatcher-agent',
+                                'schedule_manifest_schema.xsd',
+                            )
 
 class TestScheduleManifestParser(TestCase):
      
     def test_get_single_scheduled_requests(self) -> None:
-        p = ScheduleManifestParser(GOOD_IMM_SINGLE_SOTA_XML, schema_location=TEST_SCHEDULE_SCHEMA_LOCATION)
+        p = ScheduleManifestParser(GOOD_MULTIPLE_SCHEDULES_XML, 
+                                   schema_location=SCHEDULE_SCHEMA_LOCATION)
         self.assertEqual(1, len(p.immedate_requests))
         self.assertEqual(2, len(p.immedate_requests[0].manifests))
-        self.assertEqual(0, len(p.single_scheduled_requests))
-        #self.assertEqual(0, len(p.single_scheduled_requests[0].manifests))
-        self.assertEqual(0, len(p.repeated_scheduled_requests))
-        #self.assertEqual(0, len(p.repeated_scheduled_requests.manifests))
+        self.assertEqual(1, len(p.single_scheduled_requests))
+        self.assertEqual(2, len(p.single_scheduled_requests[0].manifests))
+        self.assertEqual(1, len(p.repeated_scheduled_requests))
+        self.assertEqual(3, len(p.repeated_scheduled_requests[0].manifests))
