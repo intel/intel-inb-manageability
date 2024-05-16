@@ -66,17 +66,7 @@ class ScheduleManifestParser:
             if hasattr(update_schedule, 'schedule'):
                 schedule = update_schedule.schedule
                 if hasattr(schedule, 'single_schedule'):
-                    single_schedule = schedule.single_schedule
-                    if not hasattr(single_schedule, 'start_time'):
-                        self.immedate_requests.append(
-                            SingleSchedule(
-                                manifests=manifests))
-                    else:                                  
-                        self.single_scheduled_requests.append(
-                            SingleSchedule(
-                            start_time=schedule.single_schedule.start_time.cdata, 
-                            end_time=schedule.single_schedule.end_time.cdata,
-                            manifests=manifests))                        
+                    self._parse_single_schedule(schedule, manifests)
                 elif hasattr(schedule, 'repeated_schedule'):
                     repeated_schedule = schedule.repeated_schedule
                     rs = RepeatedSchedule(
@@ -94,3 +84,19 @@ class ScheduleManifestParser:
         for manifest in scheduled_manifests:
             manifests.append(manifest.cdata)
         return manifests
+    
+    def _parse_single_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
+        single_schedule = schedule.single_schedule
+        if not hasattr(single_schedule, 'start_time'):
+            self.immedate_requests.append(
+                SingleSchedule(
+                    manifests=manifests))
+        else: 
+            end = schedule.single_schedule.end_time.cdata \
+                if hasattr(single_schedule, 'end_time') else None
+
+            self.single_scheduled_requests.append(
+                SingleSchedule(
+                start_time=schedule.single_schedule.start_time.cdata, 
+                end_time=end,
+                manifests=manifests))

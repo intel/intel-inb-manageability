@@ -146,13 +146,6 @@ class TestXmlParser(TestCase):
 
     def test_get_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.get_element, 'ota/header/bb')
-
-    def test_find_elements_under_elements(self) -> None:
-        elements = self.good.find_elements_under_element('ota', 'type', 'aota')
-        expected_elements = [
-            {'app': 'docker', 'cmd': 'load', 'fetch': 'sample', 'containerTag': 'defg'}
-        ]
-        self.assertEqual(expected_elements, elements)
         
 if __name__ == '__main__':
     unittest.main()

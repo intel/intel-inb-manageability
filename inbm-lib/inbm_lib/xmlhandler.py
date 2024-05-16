@@ -134,39 +134,7 @@ class XmlHandler:
                 logger.debug(f'Empty tag {each.tag} encountered, but allowed.')
 
         return children
-    
-    def find_elements_under_element(self, parent_element: str, xpath: str) -> list[Any]:
-        """Find all elements matching XPath under a specific parent element
-
-        @param parent_element: XPath expression for the parent element
-        @param xpath: Valid XPath expression for the child elements
-        @return: List of matched elements
-        @raises XmlException
-        """
-        elements: list[Any] = []
-        try:
-            parent = self._root.find(parent_element)
-            if parent is None:
-                raise XmlException(f"Cannot find parent element at specified path: {parent_element}")
-            elements = parent.findall(xpath)
-        except (XmlException, ValueError, TypeError, KeyError) as e:
-            raise XmlException(f"ERROR while finding elements with XPath '{xpath}' under parent element '{parent_element}': {e}")
-        return elements
-    
-    def find_elements(self, xpath: str) -> list[Any]:
-        """Find all elements matching XPath from parsed XML
-
-        @param xpath: Valid XPath expression
-        @return: List of matched elements
-        @raises XmlException
-        """
-        elements: list[Any] = []
-        try:
-            elements = self._root.findall(xpath)
-        except (XmlException, ValueError, TypeError, KeyError) as e:
-            raise XmlException(f"ERROR while finding elements with XPath '{xpath}': {e}")
-        return elements
-        
+          
     def get_children(self, xpath: str) -> dict[str, Any]:
         """Find all elements matching XPath from parsed XML
 

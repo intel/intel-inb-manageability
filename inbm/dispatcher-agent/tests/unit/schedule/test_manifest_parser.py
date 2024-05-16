@@ -3,12 +3,27 @@ from unittest import TestCase
 
 from dispatcher.schedule.manifest_parser import ScheduleManifestParser
 
-GOOD_IMMEDIATE_SINGLE_SOTA_XML = """<?xml version="1" encoding="utf-8"?>
+GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 <schedule_request>
     <request_id>REQ12345</request_id>
     <update_schedule>
         <schedule>
-            <single_schedule></single_schedule>
+            <single_schedule />
+        </schedule>
+        <manifests>
+            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+        </manifests>
+    </update_schedule>
+</schedule_request>"""
+
+GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML = """<?xml version="1" encoding="utf-8"?>
+<schedule_request>
+    <request_id>REQ12345</request_id>
+    <update_schedule>
+        <schedule>
+            <single_schedule>
+                <start_time>2024-01-01T00:00:00</start_time>
+            </single_schedule>
         </schedule>
         <manifests>
             <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
@@ -73,12 +88,31 @@ SCHEDULE_SCHEMA_LOCATION = os.path.join(
 
 class TestScheduleManifestParser(TestCase):
      
-    def test_get_single_scheduled_requests(self) -> None:
+    def test_get_immediate_request_type(self) -> None:
+        p = ScheduleManifestParser(GOOD_IMMEDIATE_SCHEDULE_XML, 
+                                   schema_location=SCHEDULE_SCHEMA_LOCATION)
+        self.assertEqual("REQ12345", p.request_id)
+        self.assertEqual(1, len(p.immedate_requests))
+        self.assertEqual(1, len(p.immedate_requests[0].manifests))
+        self.assertEqual(0, len(p.single_scheduled_requests))
+        self.assertEqual(0, len(p.repeated_scheduled_requests))
+        
+    def test_get_multiple_scheduled_request_types(self) -> None:
         p = ScheduleManifestParser(GOOD_MULTIPLE_SCHEDULES_XML, 
                                    schema_location=SCHEDULE_SCHEMA_LOCATION)
+        self.assertEqual("REQ12345", p.request_id)
         self.assertEqual(1, len(p.immedate_requests))
         self.assertEqual(2, len(p.immedate_requests[0].manifests))
         self.assertEqual(1, len(p.single_scheduled_requests))
         self.assertEqual(2, len(p.single_scheduled_requests[0].manifests))
         self.assertEqual(1, len(p.repeated_scheduled_requests))
         self.assertEqual(3, len(p.repeated_scheduled_requests[0].manifests))
+        
+    def test_get_single_with_no_end_time(self) -> None:
+        p = ScheduleManifestParser(GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML, 
+                                   schema_location=SCHEDULE_SCHEMA_LOCATION)
+        self.assertEqual("REQ12345", p.request_id)
+        self.assertEqual(0, len(p.immedate_requests))
+        self.assertEqual(1, len(p.single_scheduled_requests))
+        self.assertEqual(1, len(p.single_scheduled_requests[0].manifests))
+        self.assertEqual(0, len(p.repeated_scheduled_requests))
