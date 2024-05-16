@@ -9,6 +9,7 @@
 """
 
 from ..constants import (
+    SCHEDULE,
     TC_TOPIC,
     TC_REQUEST_CHANNEL,
     SHUTDOWN,
@@ -105,6 +106,14 @@ class Broker:
         """
         logger.info("Sending a manifest...")
         self.mqttc.publish(TC_REQUEST_CHANNEL + INSTALL, manifest, retain=False)
+
+    def publish_schedule(self, manifest: str) -> None:
+        """Publishes a schedule request
+
+        @param manifest: (str) The XML formatted schedule to send
+        """
+        logger.info("Sending a schedule...")
+        self.mqttc.publish(TC_REQUEST_CHANNEL + SCHEDULE, manifest, retain=False)
 
     def publish_command(self, command: str) -> None:
         """Publishes a received command message

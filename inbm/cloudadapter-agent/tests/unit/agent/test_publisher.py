@@ -341,6 +341,14 @@ class TestPublisher(unittest.TestCase):
         mocked = self.MockBroker.return_value
         mocked.publish_install.assert_called_once_with(manifest)
 
+    def test_publish_schedule_succeed(self) -> None:
+        schedule = "<schedule_request><request_id>1234</request_id></schedule_request>"
+
+        self.publisher.publish_schedule(schedule)
+
+        mocked = self.MockBroker.return_value
+        mocked.publish_schedule.assert_called_once_with(schedule)
+
     def test_publish_manifest_whitespace_fail(self) -> None:
         self.assertRaises(ValueError, self.publisher.publish_manifest, "    ")
 

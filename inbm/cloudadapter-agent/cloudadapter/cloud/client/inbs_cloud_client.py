@@ -160,7 +160,7 @@ class InbsCloudClient(CloudClient):
                             continue
 
                         # Send the converted operations to Dispatcher
-                        self._callbacks[METHOD.MANIFEST](dispatcher_xml)
+                        self._callbacks[METHOD.SCHEDULE](dispatcher_xml)
 
                         yield inbs_sb_pb2.HandleINBMCommandResponse(
                             request_id=request_id

@@ -10,7 +10,7 @@ import mock
 
 from cloudadapter.agent.broker import Broker, TC_TOPIC
 
-from cloudadapter.constants import AGENT, TC_REQUEST_CHANNEL, SHUTDOWN, RESTART, INSTALL, COMMAND, CLIENT_CERTS, CLIENT_KEYS
+from cloudadapter.constants import AGENT, SCHEDULE, TC_REQUEST_CHANNEL, SHUTDOWN, RESTART, INSTALL, COMMAND, CLIENT_CERTS, CLIENT_KEYS
 
 
 class TestBroker(unittest.TestCase):
@@ -117,6 +117,15 @@ class TestBroker(unittest.TestCase):
         mocked = self.MockMQTT.return_value
         mocked.publish.assert_called_once_with(
             TC_REQUEST_CHANNEL + INSTALL, manifest, retain=False)
+
+    def test_publish_schedule_succeeds(self) -> None:
+        schedule = "<schedule_request><request_id>1234</request_id></schedule_request>"
+
+        self.broker.publish_schedule(schedule)
+
+        mocked = self.MockMQTT.return_value
+        mocked.publish.assert_called_once_with(
+            TC_REQUEST_CHANNEL + SCHEDULE, schedule, retain=False)
 
     def test_publish_command_succeeds(self) -> None:
         command = "<command></command>"

@@ -32,6 +32,14 @@ class Publisher:
         logger.info("Send manifest invoked")
         self._broker.publish_install(manifest)
 
+    def _send_schedule(self, schedule: str) -> None:
+        """Sends schedule to the MQTT Broker
+
+        @param manifest: The properly formatted schedule to send
+        """
+        logger.info("Send schedule invoked")
+        self._broker.publish_schedule(schedule)
+
     def _sanitize_values(self, arguments: Dict[str, str], valid_mapping: Dict[str, List[str]]) -> None:
         """Sanitizes and validates arguments against a set of valid inputs
 
@@ -88,6 +96,19 @@ class Publisher:
 
         self._send_manifest(manifest)
         return MESSAGE.MANIFEST
+    
+    def publish_schedule(self, schedule: str = "") -> None:
+        """Publishes a schedule update
+
+        @param manifest: The schedule to update with
+        @exception ValueError: If an empty manifest is given
+        """
+        logger.debug("Schedule Update Triggered")
+
+        if not schedule or not schedule.strip():
+            raise ValueError("No manifest was given!")
+
+        self._send_schedule(schedule)
 
     def publish_command(self, command: str = "") -> None:
         """Sends command to the MQTT Broker

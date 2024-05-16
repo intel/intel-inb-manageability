@@ -73,6 +73,7 @@ class Client:
     def _bind_cloud_to_agent(self) -> None:
         adapter_bindings = {
             METHOD.MANIFEST: self._publisher.publish_manifest,
+            METHOD.SCHEDULE: self._publisher.publish_schedule,
             METHOD.AOTA: self._publisher.publish_aota,
             METHOD.FOTA: self._publisher.publish_fota,
             METHOD.SOTA: self._publisher.publish_sota,

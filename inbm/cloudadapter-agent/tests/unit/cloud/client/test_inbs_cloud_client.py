@@ -97,12 +97,12 @@ class TestInbsCloudClient:
         # set up the triggerota callback to see what is sent to dispatcher
         triggered_str = ""
 
-        def triggerota(xml: str) -> str:
+        def triggerschedule(xml: str) -> str:
             nonlocal triggered_str
             triggered_str = xml
-            return "triggerota"
+            return "triggerschedule"
         
-        inbs_client.bind_callback('triggerota', triggerota)
+        inbs_client.bind_callback('triggerschedule', triggerschedule)
 
         # Construct command using parameters
         command = inbs_sb_pb2.HandleINBMCommandRequest(
