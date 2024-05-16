@@ -11,6 +11,7 @@ from typing import Optional
 
 from .schedules import SingleSchedule, RepeatedSchedule
 from ..dispatcher_exception import DispatcherException
+from ..constants import SCHEMA_LOCATION
 
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_SHARE_PATH_PREFIX
@@ -18,29 +19,28 @@ from inbm_lib.xmlhandler import *
 
 logger = logging.getLogger(__name__)
 
-SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
+SCHEDULE_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
                       'dispatcher-agent' / 'schedule_manifest_schema.xsd')
 
 
 class ScheduleManifestParser:
-    def __init__(self, manifest: str, schema_location=SCHEMA_LOCATION) -> None:
-        self._manifest_root = self._validate_manifest(manifest, schema_location)
+    def __init__(self, manifest: str, schema_location=SCHEDULE_SCHEMA_LOCATION) -> None:
+        self._validate_schedule_manifest(manifest, schema_location)
         self._xml_obj = untangle.parse(manifest)
         
         # Parsed manifest data
         self.request_id = None
-        self.immedate_requests: SingleSchedule = []
-        self.single_scheduled_requests: SingleSchedule = []
-        self.repeated_scheduled_requests: RepeatedSchedule = []
+        self.immedate_requests: list[SingleSchedule] = []
+        self.single_scheduled_requests: list[SingleSchedule] = []
+        self.repeated_scheduled_requests: list[RepeatedSchedule] = []
         self._get_schedules()
         
-    def _validate_manifest(self, xml: str,
-                                      schema_location: Optional[str] = None) -> XmlHandler:
+    def _validate_schedule_manifest(self, xml: str,
+                                      schema_location: Optional[str] = None) -> None:
         """Validate manifest against schema
 
         @param xml: manifest in XML format
         @param schema_location: optional location of schema
-        @return: root of manifest
         """
         # Added schema_location variable for unit tests
         schema_location = get_canonical_representation_of_path(
@@ -50,7 +50,6 @@ class ScheduleManifestParser:
                             schema_location=schema_location)
 
         logger.debug(f"parsed: {(str(root))!r}.")                
-        return root
 
     def _get_schedules(self) -> None:
         if not self._xml_obj:
@@ -82,8 +81,19 @@ class ScheduleManifestParser:
     def _get_manifests(self, scheduled_manifests: list[untangle.Element]) -> list[str]:
         manifests: list[str] = []
         for manifest in scheduled_manifests:
+            self._validate_inband_manifest(manifest.cdata)
             manifests.append(manifest.cdata)
         return manifests
+    
+    def _validate_inband_manifest(self, manifest: str, schema_location=SCHEMA_LOCATION) -> None:
+        """Validate inband manifest.  This is just to make sure the manifest is valid
+        that was provided within the schedule manifest.  
+
+        @param manifest: inband manifest
+        """
+        XmlHandler(xml=manifest,
+                   is_file=False,
+                   schema_location=schema_location)
     
     def _parse_single_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
         single_schedule = schedule.single_schedule

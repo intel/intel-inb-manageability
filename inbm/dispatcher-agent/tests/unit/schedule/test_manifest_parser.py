@@ -11,7 +11,8 @@ GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
             <single_schedule />
         </schedule>
         <manifests>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
         </manifests>
     </update_schedule>
 </schedule_request>"""
@@ -26,7 +27,8 @@ GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML = """<?xml version="1" encoding="utf-8"?>
             </single_schedule>
         </schedule>
         <manifests>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
         </manifests>
     </update_schedule>
 </schedule_request>"""
@@ -39,8 +41,10 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
             <single_schedule></single_schedule>
         </schedule>
         <manifests>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
         </manifests>
     </update_schedule>
     <update_schedule>
@@ -51,9 +55,11 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
             </single_schedule>
         </schedule>
         <manifests>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-        </manifests>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
+       </manifests>
     </update_schedule>
     <update_schedule>
         <schedule>
@@ -67,9 +73,12 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
             </repeated_schedule>
         </schedule>
         <manifests>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
-            <manifest_xml><![CDATA[<?xml version="1" encoding="utf-8"?><manifest><type>ota</type><ota></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
+            <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
+                </sota></type></ota></manifest>]]></manifest_xml>
         </manifests>
     </update_schedule>
 </schedule_request>"""

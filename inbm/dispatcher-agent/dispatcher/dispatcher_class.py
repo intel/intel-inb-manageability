@@ -11,7 +11,6 @@ import json
 import platform
 import signal
 import sys
-from logging.config import fileConfig
 from queue import Queue
 from threading import Thread, active_count
 from time import sleep
@@ -34,6 +33,7 @@ from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.exceptions import UrlSecurityException
 
+from .schedule.manifest_parser import ScheduleManifestParser
 from .dispatcher_broker import DispatcherBroker
 from .dispatcher_exception import DispatcherException
 from .aota.aota_error import AotaError
@@ -707,7 +707,13 @@ def handle_updates(dispatcher: Any) -> None:
     message: Tuple[str, str] = dispatcher.update_queue.get()
     request_type: str = message[0]
     manifest: str = message[1]
-
+    
+    if request_type == "schedule":
+        schedule = ScheduleManifestParser(manifest)     
+        # TODO: Add the schedules to the scheduler DB
+        # TODO: Queue the immediate scheduled manifests
+        # TODO: Return results.
+    
     if request_type == "install" or request_type == "query":
         dispatcher.do_install(xml=manifest)
         return
