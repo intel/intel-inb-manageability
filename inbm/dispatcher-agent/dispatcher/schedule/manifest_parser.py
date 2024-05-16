@@ -24,9 +24,11 @@ SCHEDULE_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
 
 
 class ScheduleManifestParser:
-    def __init__(self, manifest: str, schema_location=SCHEDULE_SCHEMA_LOCATION) -> None:
-        self._validate_schedule_manifest(manifest, schema_location)
+    def __init__(self, manifest: str, 
+                 schedule_schema_location=SCHEDULE_SCHEMA_LOCATION, embedded_schema_location=SCHEMA_LOCATION) -> None:
+        self._validate_schedule_manifest(manifest, schedule_schema_location)
         self._xml_obj = untangle.parse(manifest)
+        self._embedded_schema_location=embedded_schema_location
         
         # Parsed manifest data
         self.request_id = None
@@ -85,7 +87,7 @@ class ScheduleManifestParser:
             manifests.append(manifest.cdata)
         return manifests
     
-    def _validate_inband_manifest(self, manifest: str, schema_location=SCHEMA_LOCATION) -> None:
+    def _validate_inband_manifest(self, manifest: str) -> None:
         """Validate inband manifest.  This is just to make sure the manifest is valid
         that was provided within the schedule manifest.  
 
@@ -93,7 +95,7 @@ class ScheduleManifestParser:
         """
         XmlHandler(xml=manifest,
                    is_file=False,
-                   schema_location=schema_location)
+                   schema_location=self._embedded_schema_location)
     
     def _parse_single_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
         single_schedule = schedule.single_schedule

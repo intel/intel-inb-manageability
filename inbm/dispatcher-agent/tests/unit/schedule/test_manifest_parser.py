@@ -95,11 +95,24 @@ SCHEDULE_SCHEMA_LOCATION = os.path.join(
                                 'schedule_manifest_schema.xsd',
                             )
 
+EMBEDDED_SCHEMA_LOCATION = os.path.join(
+                                os.path.dirname(__file__),
+                                '..',
+                                '..',
+                                '..',
+                                'fpm-template',
+                                'usr',
+                                'share',
+                                'dispatcher-agent',
+                                'manifest_schema.xsd',
+                            )
+
 class TestScheduleManifestParser(TestCase):
      
     def test_get_immediate_request_type(self) -> None:
         p = ScheduleManifestParser(GOOD_IMMEDIATE_SCHEDULE_XML, 
-                                   schema_location=SCHEDULE_SCHEMA_LOCATION)
+                                   schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
+                                   embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
         self.assertEqual("REQ12345", p.request_id)
         self.assertEqual(1, len(p.immedate_requests))
         self.assertEqual(1, len(p.immedate_requests[0].manifests))
@@ -108,7 +121,8 @@ class TestScheduleManifestParser(TestCase):
         
     def test_get_multiple_scheduled_request_types(self) -> None:
         p = ScheduleManifestParser(GOOD_MULTIPLE_SCHEDULES_XML, 
-                                   schema_location=SCHEDULE_SCHEMA_LOCATION)
+                                   schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
+                                   embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
         self.assertEqual("REQ12345", p.request_id)
         self.assertEqual(1, len(p.immedate_requests))
         self.assertEqual(2, len(p.immedate_requests[0].manifests))
@@ -119,7 +133,8 @@ class TestScheduleManifestParser(TestCase):
         
     def test_get_single_with_no_end_time(self) -> None:
         p = ScheduleManifestParser(GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML, 
-                                   schema_location=SCHEDULE_SCHEMA_LOCATION)
+                                   schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
+                                   embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
         self.assertEqual("REQ12345", p.request_id)
         self.assertEqual(0, len(p.immedate_requests))
         self.assertEqual(1, len(p.single_scheduled_requests))
