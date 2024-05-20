@@ -709,10 +709,20 @@ def handle_updates(dispatcher: Any) -> None:
     manifest: str = message[1]
     
     if request_type == "schedule":
-        schedule = ScheduleManifestParser(manifest)     
-        # TODO: Add the schedules to the scheduler DB
-        # TODO: Queue the immediate scheduled manifests
-        # TODO: Return results.
+        schedule = ScheduleManifestParser(manifest)
+        
+        # TODO: Change single and repeated to add the schedules to the scheduler DB
+        for _ in schedule.single_scheduled_requests:
+            e = "Scheduled requests are currently not supported."
+            dispatcher._send_result(str(Result(CODE_BAD_REQUEST, str(e))))
+            
+        for _ in schedule.repeated_scheduled_requests:
+            e = "Scheduled requests are currently not supported."
+            dispatcher._send_result(str(Result(CODE_BAD_REQUEST, str(e))))
+            
+        for imm in schedule.immedate_requests:
+            for manifest in imm.manifests:
+                dispatcher.do_install(xml=manifest)
     
     if request_type == "install" or request_type == "query":
         dispatcher.do_install(xml=manifest)
