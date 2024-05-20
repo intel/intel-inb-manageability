@@ -33,7 +33,7 @@ from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.exceptions import UrlSecurityException
 
-from .schedule.manifest_parser import ScheduleManifestParser
+from .schedule.manifest_parser import ScheduleManifestParser, SCHEDULE_SCHEMA_LOCATION
 from .dispatcher_broker import DispatcherBroker
 from .dispatcher_exception import DispatcherException
 from .aota.aota_error import AotaError
@@ -699,7 +699,9 @@ class Dispatcher:
             self._telemetry('Dispatcher detects normal boot sequence')
 
 
-def handle_updates(dispatcher: Any) -> None:
+def handle_updates(dispatcher: Any, 
+                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 
+                   manifest_schema=SCHEMA_LOCATION) -> None:
     """Global function to handle multiple requests from cloud using a FIFO queue.
 
     @param dispatcher: callback to dispatcher
@@ -709,8 +711,7 @@ def handle_updates(dispatcher: Any) -> None:
     manifest: str = message[1]
     
     if request_type == "schedule":
-        schedule = ScheduleManifestParser(manifest)
-        
+        schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
         # TODO: Change single and repeated to add the schedules to the scheduler DB
         for _ in schedule.single_scheduled_requests:
             e = "Scheduled requests are currently not supported."
@@ -723,6 +724,7 @@ def handle_updates(dispatcher: Any) -> None:
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:
                 dispatcher.do_install(xml=manifest)
+        return
     
     if request_type == "install" or request_type == "query":
         dispatcher.do_install(xml=manifest)

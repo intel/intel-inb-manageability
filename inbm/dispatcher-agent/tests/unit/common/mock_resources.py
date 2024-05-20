@@ -4,7 +4,8 @@
 import logging
 from threading import Lock
 import datetime
-from typing import Callable, Optional, Union, Any
+from typing import Callable, Optional, Union, Any, Tuple
+from queue import Queue
 
 from dispatcher.common.result_constants import *
 from dispatcher.install_check_service import InstallCheckService
@@ -15,9 +16,10 @@ from dispatcher.dispatcher_broker import DispatcherBroker
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.update_logger import UpdateLogger
+from dispatcher.workload_orchestration import WorkloadOrchestration
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.platform_info import PlatformInformation
-from inbm_common_lib.constants import UNKNOWN, UNKNOWN_DATETIME
+from inbm_common_lib.constants import UNKNOWN
 from inbm_lib.mqttclient.mqtt import MQTT
 
 fake_ota_resource = {'fetch': 'https://www.abc.com', 'biosversion': 'F2', 'vendor': 'American Megatrends Inc.',
@@ -318,8 +320,10 @@ class MockDispatcher(Dispatcher):
         self.dbs_remove_image_on_failed_container = True
         self._sota_repos = None
         self.proceed_without_rollback = False
-        self.dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
-        self.update_logger = UpdateLogger("", "")
+        self._dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
+        self._update_logger = UpdateLogger(ota_type="", data="")
+        self.update_queue: Queue[Tuple[str, str]] = Queue(1)
+        self._wo: Optional[WorkloadOrchestration] = None
 
     def clear_dispatcher_state(self) -> None:
         pass
