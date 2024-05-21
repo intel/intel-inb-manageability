@@ -344,10 +344,10 @@ class TestPublisher(unittest.TestCase):
     def test_publish_schedule_succeed(self) -> None:
         schedule = "<schedule_request><request_id>1234</request_id></schedule_request>"
 
-        self.publisher.publish_schedule(schedule)
+        _ = self.publisher.publish_schedule(schedule, "1234", 3)        
 
         mocked = self.MockBroker.return_value
-        mocked.publish_schedule.assert_called_once_with(schedule)
+        mocked.publish_schedule.assert_called_once_with(schedule, "1234", 3)
 
     def test_publish_manifest_whitespace_fail(self) -> None:
         self.assertRaises(ValueError, self.publisher.publish_manifest, "    ")

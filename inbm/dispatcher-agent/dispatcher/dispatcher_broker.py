@@ -35,16 +35,26 @@ class DispatcherBroker:
         self.mqttc.start()
         self._is_started = True
 
-    def send_result(self, message: str) -> None:  # pragma: no cover
-        """Sends event messages to local MQTT channel
+    def send_result(self, message: str, id: str = "") -> None:  # pragma: no cover
+        """Sends event messages to local MQTT channel        
+
+        Raises ValueError if id contains a slash
 
         @param message: message to be published to cloud
+        @param id: if not "", publish to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
         """
         logger.debug('Received result message: %s', message)
+
+        if "/" in id:
+            raise ValueError("id cannot contain '/'")
+
         if not self.is_started():
             logger.error('Cannot send result: dispatcher core not initialized')
         else:
-            self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
+            if id != "":
+                self.mqtt_publish(topic=RESPONSE_CHANNEL+"/"+id, payload=message)
+            else:
+                self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
 
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.

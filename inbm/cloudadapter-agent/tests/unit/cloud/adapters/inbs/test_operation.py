@@ -20,6 +20,7 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from google.protobuf.duration_pb2 import Duration
 from datetime import datetime
 from xml.sax.saxutils import escape
+import xml.etree.ElementTree as ET
 
 # Import the function to be tested
 from cloudadapter.cloud.adapters.inbs.operation import (
@@ -105,25 +106,25 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
             "1234",
             "<schedule_request>"
             "<request_id>1234</request_id>"
-            "<update_schedule><scheduled_operation>"
+            "<update_schedule>"
+            "<schedule><single_schedule /></schedule>"
             "<manifests><manifest_xml>"
             + escape(SOTA_OPERATION_SMALL_MANIFEST_XML)
             + "</manifest_xml></manifests>"
-            "<single_schedule />"
-            "</scheduled_operation></update_schedule>"
-            "<update_schedule><scheduled_operation>"
-            "<manifests><manifest_xml>"
-            + escape(SOTA_OPERATION_LARGE_MANIFEST_XML)
-            + "</manifest_xml></manifests>"
-            "<repeated_schedule>"
+            "</update_schedule>"
+            "<update_schedule>"
+            "<schedule><repeated_schedule>"
             "<duration>PT900S</duration>"
             "<cron_minutes>4</cron_minutes>"
             "<cron_hours>*/3</cron_hours>"
             "<cron_day_month>1</cron_day_month>"
             "<cron_month>5</cron_month>"
             "<cron_day_week>2</cron_day_week>"
-            "</repeated_schedule>"
-            "</scheduled_operation></update_schedule>"
+            "</repeated_schedule></schedule>"        
+            "<manifests><manifest_xml>"
+            + escape(SOTA_OPERATION_LARGE_MANIFEST_XML)
+            + "</manifest_xml></manifests>"            
+            "</update_schedule>"
             "</schedule_request>",
         ),
     ],
@@ -134,9 +135,7 @@ def test_convert_update_scheduled_operations_to_xml_manifest_success(
     xml_manifest: str = convert_updated_scheduled_operations_to_dispatcher_xml(
         request_id, uso
     )
-    assert xml_manifest == expected_xml
-
-    "<repeated_schedule><duration>PT900S</duration><cron_minutes>4</cron_minutes><cron_hours>*/3</cron_hours><cron_day_month>1</cron_day_month><cron_month>5</cron_month><cron_day_week>2</cron_day_week></repeated_schedule>"
+    assert xml_manifest == expected_xml    
 
 
 # Test cases to convert UpdateScheduledOperations -> dispatcher XML (exception)
@@ -224,7 +223,7 @@ def test_convert_system_software_operation_to_xml_manifest_unspecified_mode_erro
 
 
 @pytest.mark.parametrize(
-    "operation, num_manifests, expected_xml",
+    "operation, expected_inner_xml",
     [
         (
             Operation(
@@ -232,17 +231,21 @@ def test_convert_system_software_operation_to_xml_manifest_unspecified_mode_erro
                 pre_operations=[],
                 update_system_software_operation=SOTA_OPERATION_SMALL,
             ),
-            1,
             SOTA_OPERATION_SMALL_MANIFEST_XML,
         ),
     ],
 )
 def test_convert_operation_with_system_software_update_to_xml_manifests_success(
-    operation, num_manifests, expected_xml
+    operation, expected_inner_xml
 ):
-    manifests = convert_operation_to_xml_manifests(operation)
-    assert len(manifests) == num_manifests
-    assert manifests[0] == expected_xml
+    actual_result = convert_operation_to_xml_manifests(operation)
+    
+    expected_result = ET.Element('manifests')    
+    xml_manifest = ET.Element('manifest_xml')
+    xml_manifest.text=expected_inner_xml    
+    expected_result.append(xml_manifest)        
+
+    assert ET.tostring(actual_result, encoding='unicode') == ET.tostring(expected_result, encoding='unicode')
 
 
 @pytest.mark.parametrize(

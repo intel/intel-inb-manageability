@@ -42,6 +42,5 @@ class TestMQTT(TestCase):
         m_subscribe.assert_called_with('test', ANY)
         self.assertTrue('test' in mqtt.topics)
 
-
 if __name__ == '__main__':
     unittest.main()

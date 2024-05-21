@@ -159,12 +159,32 @@ class InbsCloudClient(CloudClient):
                             )
                             continue
 
-                        # Send the converted operations to Dispatcher
-                        self._callbacks[METHOD.SCHEDULE](dispatcher_xml)
+                        try:
+                            # Send the converted operations to Dispatcher; wait up to 3 seconds
+                            # for reply
+                            error = self._callbacks[METHOD.SCHEDULE](dispatcher_xml, request_id, 3)
 
-                        yield inbs_sb_pb2.HandleINBMCommandResponse(
-                            request_id=request_id
-                        )
+                            # Expect the callback to return an error message if there was an error
+                            # or None or "" if there was no error
+                            if error is None or error == "":
+                                pb_error = None
+                            else:
+                                pb_error = common_pb2.Error(message=error)
+
+                            yield inbs_sb_pb2.HandleINBMCommandResponse(
+                                request_id=request_id,
+                                error = pb_error
+                            )
+                        except TimeoutError:
+                            logger.error(
+                                f"Timed out waiting for response from Dispatcher for request_id {request_id}"
+                            )
+                            yield inbs_sb_pb2.HandleINBMCommandResponse(
+                                request_id=request_id,
+                                error=common_pb2.Error(
+                                    message="INBM Cloudadapter: timed out waiting for INBM Dispatcher response"
+                                ),
+                            )
                     elif command_type == "ping":
                         logger.debug(
                             f"Received ping command for request_id {request_id}"

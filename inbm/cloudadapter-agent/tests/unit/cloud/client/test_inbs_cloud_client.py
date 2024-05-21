@@ -59,21 +59,35 @@ class TestInbsCloudClient:
         inbs_client.publish_attribute(key="example_attribute", value="attribute_value")
 
     @pytest.mark.parametrize(
-        "request_id, command_type, expected_response, expected_xml",
+        "request_id, dispatcher_error_response, command_type, expected_response, expected_xml",
         [
             (
                 "123",
+                "",
                 inbs_sb_pb2.INBMCommand(ping=inbs_sb_pb2.Ping()),
                 inbs_sb_pb2.HandleINBMCommandResponse(request_id="123"),
                 ""
             ),
             (
                 "124",
+                "",
                 inbs_sb_pb2.INBMCommand(
                     update_scheduled_operations=inbs_sb_pb2.UpdateScheduledOperations()
                 ),
                 inbs_sb_pb2.HandleINBMCommandResponse(
                     request_id="124",                    
+                ),
+                "<schedule_request><request_id>124</request_id></schedule_request>"
+            ),
+            (
+                "124",
+                "test message",
+                inbs_sb_pb2.INBMCommand(
+                    update_scheduled_operations=inbs_sb_pb2.UpdateScheduledOperations()
+                ),
+                inbs_sb_pb2.HandleINBMCommandResponse(
+                    request_id="124",
+                    error=common_pb2.Error(message="test message"),
                 ),
                 "<schedule_request><request_id>124</request_id></schedule_request>"
             ),
@@ -83,6 +97,7 @@ class TestInbsCloudClient:
         self,
         inbs_client: InbsCloudClient,
         request_id: str,
+        dispatcher_error_response: str,
         command_type: inbs_sb_pb2.INBMCommand,
         expected_response: inbs_sb_pb2.HandleINBMCommandResponse,
         expected_xml: str,
@@ -97,10 +112,10 @@ class TestInbsCloudClient:
         # set up the triggerota callback to see what is sent to dispatcher
         triggered_str = ""
 
-        def triggerschedule(xml: str) -> str:
+        def triggerschedule(xml: str, id: str, timeout: int) -> str:
             nonlocal triggered_str
             triggered_str = xml
-            return "triggerschedule"
+            return dispatcher_error_response
         
         inbs_client.bind_callback('triggerschedule', triggerschedule)
 

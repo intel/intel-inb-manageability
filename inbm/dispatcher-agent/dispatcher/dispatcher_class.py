@@ -251,12 +251,16 @@ class Dispatcher:
     def _telemetry(self, message: str) -> None:
         self._dispatcher_broker.telemetry(message)
 
-    def _send_result(self, message: str) -> None:
-        """Sends event messages to local MQTT channel
+    def _send_result(self, message: str, id: str = "") -> None:
+        """Sends result message to local MQTT channel
+
+        If id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
+
+        Raises ValueError if id contains a slash
 
         @param message: message to be published to cloud
         """
-        self._dispatcher_broker.send_result(message)
+        self._dispatcher_broker.send_result(message, id)
 
     def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:
         """Delegates the installation to either
@@ -711,16 +715,21 @@ def handle_updates(dispatcher: Any,
     manifest: str = message[1]
     
     if request_type == "schedule":
-        schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
+        logger.debug("DEBUG: manifest = " + manifest)
+        try:
+            schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
+        except XmlException as e:
+            logger.error("XMLException parsing schedule: " + str(e))
+            # without request ID, cannot send response to cloudadapter
+            return
+        
         # TODO: Change single and repeated to add the schedules to the scheduler DB
-        for _ in schedule.single_scheduled_requests:
-            e = "Scheduled requests are currently not supported."
-            dispatcher._send_result(str(Result(CODE_BAD_REQUEST, str(e))))
-            
-        for _ in schedule.repeated_scheduled_requests:
-            e = "Scheduled requests are currently not supported."
-            dispatcher._send_result(str(Result(CODE_BAD_REQUEST, str(e))))
-            
+        if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
+            dispatcher._send_result("Scheduled requests are currently not supported.", schedule.request_id)
+        else:
+            # blank payload indicates no error
+            dispatcher._send_result("", schedule.request_id)
+        
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:
                 dispatcher.do_install(xml=manifest)

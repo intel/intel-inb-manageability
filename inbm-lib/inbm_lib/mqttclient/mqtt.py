@@ -9,6 +9,7 @@ import logging
 import os
 import socket
 import ssl
+import threading
 
 import paho.mqtt.client as mqtt
 from paho.mqtt.client import Client, MQTTMessage
@@ -136,6 +137,37 @@ class MQTT:
         logger.info('Publishing message: %s on topic: %s with retain: %s',
                     mask_security_info(payload), topic, retain)
         self._mqttc.publish(topic, payload.encode('utf-8'), qos, retain)
+    
+    # It's not clear how to meaningfully unit test this function as it uses threads and sleeps.
+    # It will require manual and/or integration testing when modified.
+    def publish_and_wait_response(self, topic: str, response_topic: str, payload: str, timeout_seconds: int) -> str | None:
+        """Publishes a schedule request and waits for a response within a timeout on the given channel.
+        
+        Raise TimeoutError if no response is received within the timeout."""
+
+        response = None
+        response_received = threading.Event()
+        def on_message(topic: str, payload: str, qos: int) -> None:
+            """Callback for when a message is received."""
+            nonlocal response
+            nonlocal response_received
+            response = payload
+            response_received.set()
+        self.subscribe(response_topic, on_message, 1)     
+
+        logger.debug(f"MQTT publishing message: {payload} on topic: {topic}")
+        self.publish(topic, payload, 2, retain=False)
+
+        # Wait for response or timeout
+        is_response_received = response_received.wait(timeout_seconds)
+
+        self.unsubscribe(response_topic)
+        if is_response_received:
+            logger.debug(f"MQTT received response: {response} on topic: {response_topic}")         
+        else:
+            raise TimeoutError(f"No response received within {timeout_seconds} seconds.")
+
+        return response
 
     def subscribe(self, topic: str, callback: Callable[[str, Any, int], None], qos: int = 0) -> None:
         """Subscribe to an MQTT topic

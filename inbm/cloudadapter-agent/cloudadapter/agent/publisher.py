@@ -32,13 +32,14 @@ class Publisher:
         logger.info("Send manifest invoked")
         self._broker.publish_install(manifest)
 
-    def _send_schedule(self, schedule: str) -> None:
+    def _send_schedule(self, schedule: str, request_id: str, timeout_sec: int) -> str | None:
         """Sends schedule to the MQTT Broker
 
-        @param manifest: The properly formatted schedule to send
-        """
-        logger.info("Send schedule invoked")
-        self._broker.publish_schedule(schedule)
+        Raises TimeoutError if no response within timeout_sec seconds.
+
+        @param schedule: The properly formatted schedule to send
+        """        
+        return self._broker.publish_schedule(schedule, request_id, timeout_sec)
 
     def _sanitize_values(self, arguments: Dict[str, str], valid_mapping: Dict[str, List[str]]) -> None:
         """Sanitizes and validates arguments against a set of valid inputs
@@ -97,18 +98,21 @@ class Publisher:
         self._send_manifest(manifest)
         return MESSAGE.MANIFEST
     
-    def publish_schedule(self, schedule: str = "") -> None:
+    def publish_schedule(self, schedule: str, request_id: str, timeout_sec: int) -> str | None:
         """Publishes a schedule update
+        
+        Waits for reply and returns error message: blank for no error.
 
         @param manifest: The schedule to update with
         @exception ValueError: If an empty manifest is given
+        @exception TimeoutError: If no response within timeout_sec seconds
         """
         logger.debug("Schedule Update Triggered")
 
         if not schedule or not schedule.strip():
             raise ValueError("No manifest was given!")
 
-        self._send_schedule(schedule)
+        return self._send_schedule(schedule, request_id, timeout_sec)
 
     def publish_command(self, command: str = "") -> None:
         """Sends command to the MQTT Broker

@@ -12,6 +12,7 @@ from ..constants import (
     SCHEDULE,
     TC_TOPIC,
     TC_REQUEST_CHANNEL,
+    TC_RESPONSE_CHANNEL,
     SHUTDOWN,
     RESTART,
     INSTALL,
@@ -107,13 +108,15 @@ class Broker:
         logger.info("Sending a manifest...")
         self.mqttc.publish(TC_REQUEST_CHANNEL + INSTALL, manifest, retain=False)
 
-    def publish_schedule(self, manifest: str) -> None:
-        """Publishes a schedule request
-
-        @param manifest: (str) The XML formatted schedule to send
-        """
-        logger.info("Sending a schedule...")
-        self.mqttc.publish(TC_REQUEST_CHANNEL + SCHEDULE, manifest, retain=False)
+    def publish_schedule(self, manifest: str, request_id: str, timeout_seconds: int) -> str | None:
+        """Publishes a schedule request and waits for a response within a timeout on the appropriate channel.
+        
+        Raise TimeoutError if no response is received within the timeout."""
+        return self.mqttc.publish_and_wait_response(TC_REQUEST_CHANNEL + SCHEDULE, 
+                                                    TC_RESPONSE_CHANNEL + "/" + request_id, 
+                                                    manifest, 
+                                                    timeout_seconds)
+        
 
     def publish_command(self, command: str) -> None:
         """Publishes a received command message

@@ -27,6 +27,8 @@ def protobuf_timestamp_to_iso(timestamp: Timestamp) -> str:
 def convert_schedule_to_xml(schedule: Schedule) -> ET.Element:
     """Converts a Schedule message to an XML element."""
 
+    outer_schedule_element = create_xml_element('schedule')
+
     if schedule.HasField('single_schedule'):
         single = schedule.single_schedule
         single_schedule = create_xml_element('single_schedule')
@@ -36,7 +38,8 @@ def convert_schedule_to_xml(schedule: Schedule) -> ET.Element:
         if single.HasField('end_time'):
             end_time = create_xml_element('end_time', protobuf_timestamp_to_iso(single.end_time))
             single_schedule.append(end_time)
-        return single_schedule
+        outer_schedule_element.append(single_schedule)
+        return outer_schedule_element
     elif schedule.HasField('repeated_schedule'):
         repeated = schedule.repeated_schedule
         repeated_schedule = create_xml_element('repeated_schedule')
@@ -49,21 +52,11 @@ def convert_schedule_to_xml(schedule: Schedule) -> ET.Element:
             create_xml_element('cron_month', repeated.cron_month),
             create_xml_element('cron_day_week', repeated.cron_day_week),
         ])
-        return repeated_schedule
+        outer_schedule_element.append(repeated_schedule)
+        return outer_schedule_element
     else:
         raise ValueError("invalid Schedule protobuf")
 
-def convert_operation_to_xml_scheduled_operation(operation: Operation) -> ET.Element:
-    """Converts an Operation message to an XML element for Dispatcher."""
-
-    scheduled_operation_elem = create_xml_element('scheduled_operation')
-    manifests = create_xml_element('manifests')
-    for xml_str in convert_operation_to_xml_manifests(operation):
-        manifest_elem = create_xml_element('manifest_xml')
-        manifest_elem.text = xml_str
-        manifests.append(manifest_elem)
-    scheduled_operation_elem.append(manifests)
-    return scheduled_operation_elem
 
 def convert_updated_scheduled_operations_to_dispatcher_xml(request_id: str, update_operations_proto: UpdateScheduledOperations) -> str:
     """Converts an UpdateScheduledOperations message to an XML string for Dispatcher."""
@@ -75,16 +68,17 @@ def convert_updated_scheduled_operations_to_dispatcher_xml(request_id: str, upda
     for scheduled_operation in update_operations_proto.scheduled_operations:
         update_schedule = create_xml_element('update_schedule')
         for schedule in scheduled_operation.schedules:
-            schedule_elem = convert_schedule_to_xml(schedule)
-            xml_scheduled_operation = convert_operation_to_xml_scheduled_operation(scheduled_operation.operation)
-            xml_scheduled_operation.append(schedule_elem)
-            update_schedule.append(xml_scheduled_operation)
+             xml_schedules = convert_schedule_to_xml(schedule)
+             update_schedule.append(xml_schedules)
+
+        xml_manifests = convert_operation_to_xml_manifests(scheduled_operation.operation)
+        update_schedule.append(xml_manifests)
         root.append(update_schedule)
     
     return ET.tostring(root, encoding='unicode')
 
-def convert_operation_to_xml_manifests(operation: Operation) -> list[str]:
-    """Converts an Operation message to a list of XML manifest strings for Dispatcher."""
+def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
+    """Converts an Operation message to an XML manifests element containing manifest_xml subelements for dispatcher."""
 
     if not operation.HasField('update_system_software_operation'):
         raise ValueError("Operation type not supported")
@@ -95,7 +89,11 @@ def convert_operation_to_xml_manifests(operation: Operation) -> list[str]:
     if len(operation.post_operations) > 0:
         raise ValueError("Post-operations not supported")
 
-    return [convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)]
+    result = create_xml_element('manifests')
+    for manifest in [convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)]:
+        xml_manifest = create_xml_element('manifest_xml', text=manifest)
+        result.append(xml_manifest)        
+    return result
 
 def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSoftwareOperation) -> str:
     """Converts a UpdateSystemSoftwareOperation message to an XML manifest string for Dispatcher."""
@@ -115,8 +113,8 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
     # Map the download mode to the correct string
     download_mode_map = {
         UpdateSystemSoftwareOperation.DownloadMode.DOWNLOAD_MODE_FULL: 'full',
-        UpdateSystemSoftwareOperation.DownloadMode.DOWNLOAD_MODE_NO_DOWNLOAD: 'no_download',
-        UpdateSystemSoftwareOperation.DownloadMode.DOWNLOAD_MODE_DOWNLOAD_ONLY: 'download_only',
+        UpdateSystemSoftwareOperation.DownloadMode.DOWNLOAD_MODE_NO_DOWNLOAD: 'no-download',
+        UpdateSystemSoftwareOperation.DownloadMode.DOWNLOAD_MODE_DOWNLOAD_ONLY: 'download-only',
     }
     mode_str = download_mode_map.get(operation.mode)
     ET.SubElement(sota, 'mode').text = mode_str

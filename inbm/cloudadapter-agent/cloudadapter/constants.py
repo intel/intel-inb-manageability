@@ -40,6 +40,7 @@ class TC_TOPIC:
 
 
 TC_REQUEST_CHANNEL = 'manageability/request/'
+TC_RESPONSE_CHANNEL = 'manageability/response/'
 
 DECOMMISSION = 'decommission'
 SHUTDOWN = 'shutdown'
