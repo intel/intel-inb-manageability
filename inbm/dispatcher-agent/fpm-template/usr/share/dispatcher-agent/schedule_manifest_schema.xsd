@@ -52,7 +52,7 @@
   </xs:complexType>
 
   <xs:complexType name="Schedule">
-    <xs:choice>
+    <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element name="single_schedule" type="SingleSchedule"/>
       <xs:element name="repeated_schedule" type="RepeatedSchedule"/>
     </xs:choice>

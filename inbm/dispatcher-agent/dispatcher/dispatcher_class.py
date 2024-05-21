@@ -719,6 +719,7 @@ def handle_updates(dispatcher: Any,
         try:
             schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
         except XmlException as e:
+            #TODO:  Add requestID to the error message.  Change the topic to also include the requestID.
             logger.error("XMLException parsing schedule: " + str(e))
             # without request ID, cannot send response to cloudadapter
             return

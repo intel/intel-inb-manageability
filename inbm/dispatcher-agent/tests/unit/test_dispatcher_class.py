@@ -105,5 +105,5 @@ def test_run_several_immediate_scheduled_manifest(mock_disp_obj, method_counter,
                     schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 
                     manifest_schema=EMBEDDED_SCHEMA_LOCATION)
     
-    # Assert that the do_install method is called once
+    # Assert that the do_install method is called the correct number of times
     assert method_counter.call_count == 2

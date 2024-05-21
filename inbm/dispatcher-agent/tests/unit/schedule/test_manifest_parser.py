@@ -38,7 +38,7 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
     <request_id>REQ12345</request_id>
     <update_schedule>
         <schedule>
-            <single_schedule></single_schedule>
+            <single_schedule />
         </schedule>
         <manifests>
             <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
@@ -53,6 +53,9 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
                 <start_time>2024-01-01T00:00:00</start_time>
                 <end_time>2024-01-01T01:00:00</end_time>
             </single_schedule>
+            <single_schedule>
+                <start_time>2024-01-02T00:00:00</start_time>
+            </single_schedule>
         </schedule>
         <manifests>
             <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
@@ -63,6 +66,18 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
     </update_schedule>
     <update_schedule>
         <schedule>
+            <single_schedule>
+                <start_time>2024-01-02T00:00:00</start_time>
+                <end_time>2024-01-02T01:00:00</end_time>
+            </single_schedule>
+            <repeated_schedule>
+                <duration>P7D</duration>
+                <cron_minutes>0</cron_minutes>
+                <cron_hours>0</cron_hours>
+                <cron_day_month>*</cron_day_month>
+                <cron_month>*</cron_month>
+                <cron_day_week>*</cron_day_week>
+            </repeated_schedule>
             <repeated_schedule>
                 <duration>P7D</duration>
                 <cron_minutes>0</cron_minutes>
@@ -126,9 +141,9 @@ class TestScheduleManifestParser(TestCase):
         self.assertEqual("REQ12345", p.request_id)
         self.assertEqual(1, len(p.immedate_requests))
         self.assertEqual(2, len(p.immedate_requests[0].manifests))
-        self.assertEqual(1, len(p.single_scheduled_requests))
+        self.assertEqual(3, len(p.single_scheduled_requests))
         self.assertEqual(2, len(p.single_scheduled_requests[0].manifests))
-        self.assertEqual(1, len(p.repeated_scheduled_requests))
+        self.assertEqual(2, len(p.repeated_scheduled_requests))
         self.assertEqual(3, len(p.repeated_scheduled_requests[0].manifests))
         
     def test_get_single_with_no_end_time(self) -> None:

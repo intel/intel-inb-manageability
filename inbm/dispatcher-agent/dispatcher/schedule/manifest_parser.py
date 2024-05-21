@@ -60,25 +60,26 @@ class ScheduleManifestParser:
             raise DispatcherException("No schedule requests found in the manifest")
                 
         self.request_id = self._xml_obj.schedule_request.request_id.cdata
-        schedules: list[untangle.Element] = self._xml_obj.schedule_request.update_schedule
+        update_schedules: list[untangle.Element] = self._xml_obj.schedule_request.update_schedule
         
-        for update_schedule in schedules:            
+        for update_schedule in update_schedules:            
             manifests = self._get_manifests(update_schedule.manifests.children)
             if hasattr(update_schedule, 'schedule'):
                 schedule = update_schedule.schedule
-                if hasattr(schedule, 'single_schedule'):
+                if 'single_schedule' in schedule:
                     self._parse_single_schedule(schedule, manifests)
-                elif hasattr(schedule, 'repeated_schedule'):
-                    repeated_schedule = schedule.repeated_schedule
-                    rs = RepeatedSchedule(
-                        cron_duration=repeated_schedule.duration.cdata,
-                        cron_minutes=repeated_schedule.cron_minutes.cdata,
-                        cron_hours=repeated_schedule.cron_hours.cdata,
-                        cron_day_month=repeated_schedule.cron_day_month.cdata,
-                        cron_month=repeated_schedule.cron_month.cdata,
-                        cron_day_week=repeated_schedule.cron_day_week.cdata,
-                        manifests=manifests)
-                    self.repeated_scheduled_requests.append(rs)
+                if 'repeated_schedule' in schedule:
+                    repeated_schedules = schedule.repeated_schedule
+                    for repeated_schedule in repeated_schedules:
+                        rs = RepeatedSchedule(
+                            cron_duration=repeated_schedule.duration.cdata,
+                            cron_minutes=repeated_schedule.cron_minutes.cdata,
+                            cron_hours=repeated_schedule.cron_hours.cdata,
+                            cron_day_month=repeated_schedule.cron_day_month.cdata,
+                            cron_month=repeated_schedule.cron_month.cdata,
+                            cron_day_week=repeated_schedule.cron_day_week.cdata,
+                            manifests=manifests)
+                        self.repeated_scheduled_requests.append(rs)
 
     def _get_manifests(self, scheduled_manifests: list[untangle.Element]) -> list[str]:
         manifests: list[str] = []
@@ -99,16 +100,18 @@ class ScheduleManifestParser:
     
     def _parse_single_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
         single_schedule = schedule.single_schedule
-        if not hasattr(single_schedule, 'start_time'):
-            self.immedate_requests.append(
-                SingleSchedule(
-                    manifests=manifests))
-        else: 
-            end = schedule.single_schedule.end_time.cdata \
-                if hasattr(single_schedule, 'end_time') else None
+        for ss in single_schedule:   
+            if not hasattr(ss, 'start_time'):
+                self.immedate_requests.append(
+                    SingleSchedule(
+                        manifests=manifests))
+            else: 
+                end = None
+                if hasattr(ss, 'end_time'):
+                    end = ss.end_time.cdata
 
-            self.single_scheduled_requests.append(
-                SingleSchedule(
-                start_time=schedule.single_schedule.start_time.cdata, 
-                end_time=end,
-                manifests=manifests))
+                self.single_scheduled_requests.append(
+                    SingleSchedule(
+                    start_time=ss.start_time.cdata, 
+                    end_time=end,
+                    manifests=manifests))
