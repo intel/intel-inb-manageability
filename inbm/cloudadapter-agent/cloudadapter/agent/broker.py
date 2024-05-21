@@ -113,7 +113,7 @@ class Broker:
         
         Raise TimeoutError if no response is received within the timeout."""
         return self.mqttc.publish_and_wait_response(TC_REQUEST_CHANNEL + SCHEDULE, 
-                                                    TC_RESPONSE_CHANNEL + "/" + request_id, 
+                                                    TC_RESPONSE_CHANNEL + request_id, 
                                                     manifest, 
                                                     timeout_seconds)
         

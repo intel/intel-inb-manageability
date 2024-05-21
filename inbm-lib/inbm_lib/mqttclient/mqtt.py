@@ -151,12 +151,15 @@ class MQTT:
             """Callback for when a message is received."""
             nonlocal response
             nonlocal response_received
+            logger.debug("publish_and_wait_response: received response: %s on topic: %s", payload, topic)
             response = payload
             response_received.set()
-        self.subscribe(response_topic, on_message, 1)     
+        
+        logger.debug(f"publish_and_wait_response: subscribing to response topic: {response_topic}")
+        self.subscribe(response_topic, on_message, 0) 
 
         logger.debug(f"MQTT publishing message: {payload} on topic: {topic}")
-        self.publish(topic, payload, 2, retain=False)
+        self.publish(topic, payload, 0, retain=False)
 
         # Wait for response or timeout
         is_response_received = response_received.wait(timeout_seconds)

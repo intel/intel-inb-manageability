@@ -99,6 +99,7 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
     """Converts a UpdateSystemSoftwareOperation message to an XML manifest string for Dispatcher."""
     # Create the root element
     manifest = ET.Element('manifest')
+    ET.SubElement(manifest, 'type').text = 'ota'
     ota = ET.SubElement(manifest, 'ota')
     header = ET.SubElement(ota, 'header')
     ET.SubElement(header, 'type').text = 'sota'

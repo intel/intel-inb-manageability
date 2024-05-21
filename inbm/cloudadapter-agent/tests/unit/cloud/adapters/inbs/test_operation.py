@@ -38,7 +38,7 @@ SOTA_OPERATION_LARGE = UpdateSystemSoftwareOperation(
 )
 SOTA_OPERATION_LARGE_MANIFEST_XML = (
     '<?xml version="1.0" encoding="utf-8"?>\n'
-    "<manifest><ota><header><type>sota</type><repo>remote</repo></header>"
+    "<manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header>"
     '<type><sota><cmd logtofile="y">update</cmd><mode>full</mode>'
     "<packageList>package1,package2</packageList>"
     "<fetch>http://example.com/update</fetch>"
@@ -52,7 +52,7 @@ SOTA_OPERATION_SMALL = UpdateSystemSoftwareOperation(
 )
 SOTA_OPERATION_SMALL_MANIFEST_XML = (
     '<?xml version="1.0" encoding="utf-8"?>\n'
-    "<manifest><ota><header><type>sota</type><repo>remote</repo></header>"
+    "<manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header>"
     "<type><sota>"
     '<cmd logtofile="y">update</cmd>'
     "<mode>full</mode>"

@@ -52,7 +52,9 @@ class DispatcherBroker:
             logger.error('Cannot send result: dispatcher core not initialized')
         else:
             if id != "":
-                self.mqtt_publish(topic=RESPONSE_CHANNEL+"/"+id, payload=message)
+                topic = RESPONSE_CHANNEL + "/" + id
+                logger.debug("===> Sending result to specific topic %s", topic)
+                self.mqtt_publish(topic=topic, payload=message)
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
 
