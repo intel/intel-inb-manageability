@@ -86,7 +86,7 @@ class Dispatcher:
     def __init__(self, args: list[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
         self._dispatcher_broker = broker
         self._install_check_service = install_check_service
-        self.update_queue: Queue[Tuple[str, str]] = Queue(1)
+        self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._thread_count = 1
         self._sota_repos = None
         self.sota_mode = None
@@ -450,10 +450,11 @@ class Dispatcher:
         """
         logger.info('Cloud request received: %s on topic: %s',
                     mask_security_info(payload), topic)
-        request_type = topic.split('/')[-1]
+        request_type = topic.split('/')[2]
+        request_id = topic.split('/')[3] if len(topic.split('/')) > 3 else None
         manifest = payload
         if not self.update_queue.full():
-            self.update_queue.put((request_type, manifest))
+            self.update_queue.put((request_type, manifest, request_id))
         else:
             self._send_result(
                 str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
@@ -710,18 +711,20 @@ def handle_updates(dispatcher: Any,
 
     @param dispatcher: callback to dispatcher
     """
-    message: Tuple[str, str] = dispatcher.update_queue.get()
+    message: Tuple[str, str, Optional[str]] = dispatcher.update_queue.get()
     request_type: str = message[0]
     manifest: str = message[1]
+    if message[2]:
+        request_id: str = message[2]
     
     if request_type == "schedule":
         logger.debug("DEBUG: manifest = " + manifest)
         try:
             schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
         except XmlException as e:
-            #TODO:  Add requestID to the error message.  Change the topic to also include the requestID.
             logger.error("XMLException parsing schedule: " + str(e))
-            # without request ID, cannot send response to cloudadapter
+            if request_id:
+                dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
             return
         
         # TODO: Change single and repeated to add the schedules to the scheduler DB

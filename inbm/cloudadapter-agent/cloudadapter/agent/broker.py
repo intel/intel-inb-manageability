@@ -23,7 +23,7 @@ from ..constants import (
     COMMAND)
 from ..utilities import make_threaded
 from inbm_lib.mqttclient.mqtt import MQTT
-from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL, DEFAULT_MQTT_CERTS
+from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from typing import Tuple, Callable
 import os
 import logging
@@ -112,7 +112,7 @@ class Broker:
         """Publishes a schedule request and waits for a response within a timeout on the appropriate channel.
         
         Raise TimeoutError if no response is received within the timeout."""
-        return self.mqttc.publish_and_wait_response(TC_REQUEST_CHANNEL + SCHEDULE, 
+        return self.mqttc.publish_and_wait_response(TC_REQUEST_CHANNEL + SCHEDULE + "/" + request_id, 
                                                     TC_RESPONSE_CHANNEL + request_id, 
                                                     manifest, 
                                                     timeout_seconds)

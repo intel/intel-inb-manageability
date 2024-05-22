@@ -1,6 +1,5 @@
 import pytest
 import os
-from unittest.mock import patch
 
 from unit.common.mock_resources import *
 from dispatcher.dispatcher_class import handle_updates
@@ -87,7 +86,7 @@ def method_counter(mocker):
 def test_run_one_immediate_scheduled_manifest(mock_disp_obj, method_counter, mocker):
     # Mock the call to dispatcher.update_queue.get
     mocker.patch.object(mock_disp_obj.update_queue, 'get', 
-                        return_value=['schedule', GOOD_IMMEDIATE_SCHEDULE_XML])
+                        return_value=['schedule', GOOD_IMMEDIATE_SCHEDULE_XML, "REQ12345"])
 
     handle_updates(mock_disp_obj, 
                     schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 
@@ -99,7 +98,7 @@ def test_run_one_immediate_scheduled_manifest(mock_disp_obj, method_counter, moc
 def test_run_several_immediate_scheduled_manifest(mock_disp_obj, method_counter, mocker):
     # Mock the call to dispatcher.update_queue.get
     mocker.patch.object(mock_disp_obj.update_queue, 'get', 
-                        return_value=['schedule', GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML])
+                        return_value=['schedule', GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML, "REQ12345"])
 
     handle_updates(mock_disp_obj, 
                     schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 

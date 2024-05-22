@@ -2,6 +2,8 @@ import os
 from unittest import TestCase
 
 from dispatcher.schedule.manifest_parser import ScheduleManifestParser
+from dispatcher.dispatcher_exception import DispatcherException
+from inbm_lib.xmlhandler import XmlException
 
 GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 <schedule_request>
@@ -15,6 +17,11 @@ GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
                 </sota></type></ota></manifest>]]></manifest_xml>
         </manifests>
     </update_schedule>
+</schedule_request>"""
+
+BAD_NO_SCHEDULED_REQUESTS_XML = """<?xml version="1.0" encoding="utf-8"?>
+<schedule_request>
+    <request_id>REQ12345</request_id>
 </schedule_request>"""
 
 GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML = """<?xml version="1" encoding="utf-8"?>
@@ -155,3 +162,11 @@ class TestScheduleManifestParser(TestCase):
         self.assertEqual(1, len(p.single_scheduled_requests))
         self.assertEqual(1, len(p.single_scheduled_requests[0].manifests))
         self.assertEqual(0, len(p.repeated_scheduled_requests))
+
+    def test_raise_exception_no_schedule_requests(self) -> None:
+        with self.assertRaises(XmlException) as e:
+            ScheduleManifestParser(BAD_NO_SCHEDULED_REQUESTS_XML, 
+                                   schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
+                                   embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
+            
+    

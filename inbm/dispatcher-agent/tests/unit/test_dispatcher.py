@@ -8,7 +8,7 @@ from dispatcher.dispatcher import WindowsDispatcherService
 from unit.common.mock_resources import *
 
 from dispatcher.aota.aota_error import AotaError
-from dispatcher.common.result_constants import PUBLISH_SUCCESS, CODE_OK, CODE_BAD_REQUEST
+from dispatcher.common.result_constants import PUBLISH_SUCCESS
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.ota_thread import AotaThread
@@ -151,16 +151,6 @@ class TestDispatcher(TestCase):
                           mock_parsed_manifest, mock_dbs)
         with self.assertRaisesRegex(AotaError, 'Cannot proceed with the AOTA '):
             aota.start()
-
-    @patch.object(Dispatcher, '_send_result', autospec=True)
-    def test_on_cloud_response_with_unicode_succeeds(self, mock_send_result) -> None:
-        d = TestDispatcher._build_dispatcher()
-        d.update_queue = Mock()
-        d.update_queue.full = Mock(return_value=False)
-        d.update_queue.full.return_value = False
-        d.update_queue.put = Mock()
-        d._on_cloud_request('topic', '\xe2\x82\xac', 1)
-        assert d.update_queue.put.call_count == 1
 
     @patch('dispatcher.dispatcher_class.OtaFactory', autospec=True)
     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)

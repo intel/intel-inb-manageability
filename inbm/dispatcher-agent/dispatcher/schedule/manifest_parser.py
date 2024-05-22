@@ -24,8 +24,16 @@ SCHEDULE_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
 
 
 class ScheduleManifestParser:
+
     def __init__(self, manifest: str, 
                  schedule_schema_location=SCHEDULE_SCHEMA_LOCATION, embedded_schema_location=SCHEMA_LOCATION) -> None:
+        """Parses the Scheduled Manifest and stores the schedules and valid Inband
+        manifests in the appropriate object and list.
+
+        @param manifest (str): root of scheduled manifest
+        @param schedule_schema_location (_type_, optional): XML Schema to use when validating the scheduled manifest. Defaults to SCHEDULE_SCHEMA_LOCATION.
+        @param embedded_schema_location (_type_, optional): XML Schema to validate the embedded Inband manifests. Defaults to SCHEMA_LOCATION.
+        """
         self._validate_schedule_manifest(manifest, schedule_schema_location)
         self._xml_obj = untangle.parse(manifest)
         self._embedded_schema_location=embedded_schema_location
@@ -69,18 +77,8 @@ class ScheduleManifestParser:
                 if 'single_schedule' in schedule:
                     self._parse_single_schedule(schedule, manifests)
                 if 'repeated_schedule' in schedule:
-                    repeated_schedules = schedule.repeated_schedule
-                    for repeated_schedule in repeated_schedules:
-                        rs = RepeatedSchedule(
-                            cron_duration=repeated_schedule.duration.cdata,
-                            cron_minutes=repeated_schedule.cron_minutes.cdata,
-                            cron_hours=repeated_schedule.cron_hours.cdata,
-                            cron_day_month=repeated_schedule.cron_day_month.cdata,
-                            cron_month=repeated_schedule.cron_month.cdata,
-                            cron_day_week=repeated_schedule.cron_day_week.cdata,
-                            manifests=manifests)
-                        self.repeated_scheduled_requests.append(rs)
-
+                    self._parse_repeated_schedule(schedule, manifests)
+                    
     def _get_manifests(self, scheduled_manifests: list[untangle.Element]) -> list[str]:
         manifests: list[str] = []
         for manifest in scheduled_manifests:
@@ -99,6 +97,12 @@ class ScheduleManifestParser:
                    schema_location=self._embedded_schema_location)
     
     def _parse_single_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
+        """Parses the single schedules in the manifest and stores them
+        in the SingleSchedule object list.
+
+        @param schedule (untangle.Element): pointer to the schedule elements
+        @param manifests (list[str]): list of valid Inband manifests to be scheduled
+        """
         single_schedule = schedule.single_schedule
         for ss in single_schedule:   
             if not hasattr(ss, 'start_time'):
@@ -106,12 +110,28 @@ class ScheduleManifestParser:
                     SingleSchedule(
                         manifests=manifests))
             else: 
-                end = None
-                if hasattr(ss, 'end_time'):
-                    end = ss.end_time.cdata
-
+                end = ss.end_time.cdata if hasattr(ss, 'end_time') else None
                 self.single_scheduled_requests.append(
                     SingleSchedule(
                     start_time=ss.start_time.cdata, 
                     end_time=end,
                     manifests=manifests))
+
+    def _parse_repeated_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
+        """Parses the repeated schedules in the manifest and stores them
+        in the RepeatedSchedule object list.
+
+        @param schedule (untangle.Element): pointer to the schedule elements
+        @param manifests (list[str]): list of valid Inband manifests to be scheduled
+        """
+        repeated_schedules = schedule.repeated_schedule
+        for repeated_schedule in repeated_schedules:
+            rs = RepeatedSchedule(
+                cron_duration=repeated_schedule.duration.cdata,
+                cron_minutes=repeated_schedule.cron_minutes.cdata,
+                cron_hours=repeated_schedule.cron_hours.cdata,
+                cron_day_month=repeated_schedule.cron_day_month.cdata,
+                cron_month=repeated_schedule.cron_month.cdata,
+                cron_day_week=repeated_schedule.cron_day_week.cdata,
+                manifests=manifests)
+            self.repeated_scheduled_requests.append(rs)

@@ -322,7 +322,7 @@ class MockDispatcher(Dispatcher):
         self.proceed_without_rollback = False
         self._dispatcher_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         self._update_logger = UpdateLogger(ota_type="", data="")
-        self.update_queue: Queue[Tuple[str, str]] = Queue(1)
+        self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._wo: Optional[WorkloadOrchestration] = None
 
     def clear_dispatcher_state(self) -> None:
