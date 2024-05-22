@@ -30,10 +30,12 @@ class TestInbsAdapter(unittest.TestCase):
         }
         self.config_with_token_path_no_tls = {
             **self.base_config,
+            "tls_enabled": False,
             "token_path": "/path/to/valid_token.txt"
         }
         self.config_with_tls_cert_path_no_tls = {
             **self.base_config,
+            "tls_enabled": False,
             "tls_cert_path": "/path/to/valid_cert.pem"
         }
         self.config_with_tls = {
@@ -55,6 +57,9 @@ class TestInbsAdapter(unittest.TestCase):
             **self.base_config,
             "tls_enabled": True,
             "token_path": "/path/to/valid_token.txt"
+        }
+        self.config_tls_unspecified = {
+            **self.base_config,
         }
 
     def tearDown(self):
@@ -89,6 +94,11 @@ class TestInbsAdapter(unittest.TestCase):
         # Ensure the configuration fails if token is given but TLS is not enabled
         with self.assertRaises(AdapterConfigureError):
             inbs_adapter = InbsAdapter(self.config_with_token_path_no_tls)
+    
+    def test_configure_fails_if_no_tls_options(self):
+        # Ensure TLS has to be explicitly disabled to be turned off
+        with self.assertRaises(AdapterConfigureError):
+            inbs_adapter = InbsAdapter(self.config_tls_unspecified)
 
     def test_configure_fails_if_certificate_given_with_no_tls(self):
         # Ensure the configuration fails if cert is given but TLS is not enabled

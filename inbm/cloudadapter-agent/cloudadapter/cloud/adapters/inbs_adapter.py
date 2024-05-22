@@ -47,7 +47,7 @@ class InbsAdapter(Adapter):
         if not node_id:
             raise AdapterConfigureError("Missing node_id")
 
-        tls_enabled = configs.get("tls_enabled", False)
+        tls_enabled = configs.get("tls_enabled", True)
         if tls_enabled:
             tls_cert_path = configs.get("tls_cert_path")
             if not tls_cert_path or not os.path.exists(tls_cert_path):

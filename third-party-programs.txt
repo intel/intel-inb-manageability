@@ -849,6 +849,9 @@ Copyright 2016 The Linux Foundation// Copyright 2016 The Linux Foundation
 grpc-grpc-go
 Copyright 2014 gRPC authors.
 
+grpc-core
+No copyright statement found.
+
 google go-genproto
 No copyright statement found.
 
