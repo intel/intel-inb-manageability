@@ -49,6 +49,7 @@ class SqliteManager:
         if cur.fetchone() is None:
             logger.debug("Table not exist. Creating the table.")
             sql = ''' CREATE TABLE single_task (
+                                    request_id text,
                                     start_time text,
                                     end_time text,
                                     manifests text
@@ -57,10 +58,10 @@ class SqliteManager:
 
         # Add the task
         for manifest in task.manifests:
-            sql = ''' INSERT INTO single_task(start_time, end_time, manifests)
-                                  VALUES(?,?,?) '''
-            logger.debug(f"Adding task: {str(task.start_time), str(task.end_time), str(manifest)}")
-            cur.execute(sql, (str(task.start_time), str(task.end_time), str(manifest)))
+            sql = ''' INSERT INTO single_task(request_id, start_time, end_time, manifests)
+                                  VALUES(?,?,?,?) '''
+            logger.debug(f"Adding task: {str(task.request_id), str(task.start_time), str(task.end_time), str(manifest)}")
+            cur.execute(sql, (str(task.request_id), str(task.start_time), str(task.end_time), str(manifest)))
             conn.commit()
         logger.debug("Task added.")
 
@@ -73,6 +74,7 @@ class SqliteManager:
         if cur.fetchone() is None:
             logger.debug("Table not exist. Creating the table.")
             sql = ''' CREATE TABLE repeated_task (
+                                    request_id text,
                                     cron_duration text,
                                     cron_minutes text,
                                     cron_hours text,
@@ -86,9 +88,9 @@ class SqliteManager:
         # Add the task
         for manifest in task.manifests:
 
-            sql = ''' INSERT INTO repeated_task(cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week, manifests)
-                                  VALUES(?,?,?,?,?,?,?) '''
-            logger.debug(f"Adding task: {str(task.cron_duration), str(task.cron_minutes), str(task.cron_hours), str(task.cron_day_month), str(task.cron_month), str(task.cron_day_week),str(manifest)}")
-            cur.execute(sql, (str(task.cron_duration), str(task.cron_minutes), str(task.cron_hours), str(task.cron_day_month), str(task.cron_month), str(task.cron_day_week),str(manifest)))
+            sql = ''' INSERT INTO repeated_task(request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week, manifests)
+                                  VALUES(?, ?,?,?,?,?,?,?) '''
+            logger.debug(f"Adding task: {str(task.request_id), str(task.cron_duration), str(task.cron_minutes), str(task.cron_hours), str(task.cron_day_month), str(task.cron_month), str(task.cron_day_week),str(manifest)}")
+            cur.execute(sql, (str(task.request_id), str(task.cron_duration), str(task.cron_minutes), str(task.cron_hours), str(task.cron_day_month), str(task.cron_month), str(task.cron_day_week),str(manifest)))
             conn.commit()
         logger.debug("Task added.")

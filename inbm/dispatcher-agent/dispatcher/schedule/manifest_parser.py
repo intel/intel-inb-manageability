@@ -108,14 +108,16 @@ class ScheduleManifestParser:
             if not hasattr(ss, 'start_time'):
                 self.immedate_requests.append(
                     SingleSchedule(
+                        request_id=self.request_id,
                         manifests=manifests))
             else: 
                 end = ss.end_time.cdata if hasattr(ss, 'end_time') else None
                 self.single_scheduled_requests.append(
                     SingleSchedule(
-                    start_time=ss.start_time.cdata, 
-                    end_time=end,
-                    manifests=manifests))
+                        request_id=self.request_id,
+                        start_time=ss.start_time.cdata, 
+                        end_time=end,
+                        manifests=manifests))
 
     def _parse_repeated_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
         """Parses the repeated schedules in the manifest and stores them
@@ -127,6 +129,7 @@ class ScheduleManifestParser:
         repeated_schedules = schedule.repeated_schedule
         for repeated_schedule in repeated_schedules:
             rs = RepeatedSchedule(
+                request_id=self.request_id,
                 cron_duration=repeated_schedule.duration.cdata,
                 cron_minutes=repeated_schedule.cron_minutes.cdata,
                 cron_hours=repeated_schedule.cron_hours.cdata,
