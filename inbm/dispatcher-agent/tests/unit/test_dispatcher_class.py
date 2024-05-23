@@ -2,6 +2,7 @@ import pytest
 import os
 
 from unit.common.mock_resources import *
+from unittest.mock import patch
 from dispatcher.dispatcher_class import handle_updates
 
 GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
@@ -94,8 +95,9 @@ def test_run_one_immediate_scheduled_manifest(mock_disp_obj, method_counter, moc
     
     # Assert that the do_install method is called once
     assert method_counter.call_count == 1
-    
-def test_run_several_immediate_scheduled_manifest(mock_disp_obj, method_counter, mocker):
+
+@patch('dispatcher.schedule.sqlite_manager.SqliteManager.create_task')
+def test_run_several_immediate_scheduled_manifest(mock_create_task, mock_disp_obj, method_counter, mocker):
     # Mock the call to dispatcher.update_queue.get
     mocker.patch.object(mock_disp_obj.update_queue, 'get', 
                         return_value=['schedule', GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML, "REQ12345"])

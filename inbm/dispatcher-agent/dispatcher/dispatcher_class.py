@@ -12,7 +12,7 @@ import platform
 import signal
 import sys
 from queue import Queue
-from threading import Thread, active_count
+from threading import Thread, active_count, Lock
 from time import sleep
 from typing import Optional, Any, Mapping, Tuple
 
@@ -34,6 +34,7 @@ from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.exceptions import UrlSecurityException
 
 from .schedule.manifest_parser import ScheduleManifestParser, SCHEDULE_SCHEMA_LOCATION
+from .schedule.sqlite_manager import SqliteManager
 from .dispatcher_broker import DispatcherBroker
 from .dispatcher_exception import DispatcherException
 from .aota.aota_error import AotaError
@@ -60,7 +61,8 @@ from .update_logger import UpdateLogger
 from . import source
 
 logger = logging.getLogger(__name__)
-
+# Mutex lock
+sql_lock = Lock()
 
 def _check_type_validate_manifest(xml: str,
                                   schema_location: Optional[str] = None) -> Tuple[str, XmlHandler]:
@@ -729,7 +731,13 @@ def handle_updates(dispatcher: Any,
         
         # TODO: Change single and repeated to add the schedules to the scheduler DB
         if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
-            dispatcher._send_result("Scheduled requests are currently not supported.", schedule.request_id)
+            sql_lock.acquire()
+            for single_task in schedule.single_scheduled_requests:
+                SqliteManager().create_task(single_task)
+            for repeated_task in schedule.repeated_scheduled_requests:
+                SqliteManager().create_task(repeated_task)
+            sql_lock.release()
+            dispatcher._send_result("Scheduled requests added.", schedule.request_id)
         else:
             # blank payload indicates no error
             dispatcher._send_result("", schedule.request_id)
