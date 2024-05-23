@@ -42,8 +42,12 @@ class DispatcherBroker:
 
         @param message: message to be published to cloud
         @param id: if not "", publish to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
-        """
-        logger.debug('Received result message: %s', message)
+        """        
+        if id:
+            extra_log = f" with id {id}"   
+        else:
+            extra_log = ""     
+        logger.debug(f"Sending result message{extra_log}: {message}")
 
         if "/" in id:
             raise ValueError("id cannot contain '/'")
@@ -53,7 +57,6 @@ class DispatcherBroker:
         else:
             if id != "":
                 topic = RESPONSE_CHANNEL + "/" + id
-                logger.debug("===> Sending result to specific topic %s", topic)
                 self.mqtt_publish(topic=topic, payload=message)
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
