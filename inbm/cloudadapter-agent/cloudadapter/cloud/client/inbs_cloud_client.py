@@ -216,18 +216,19 @@ class InbsCloudClient(CloudClient):
             except grpc.RpcError as e:
                 logger.error(f"gRPC error in _handle_inbm_command_request: {e}")
                 break
+        logger.debug("Exiting _handle_inbm_command_request")
 
     def _do_socket_connect(self):
         """Handle the socket/TLS/HTTP connection to the gRPC server."""
         if self._tls_enabled:
             # Create a secure channel with SSL credentials
-            logger.debug("Connecting to INBS cloud with TLS enabled...")
+            logger.debug("Setting up connection to INBS cloud with TLS enabled")
             credentials = grpc.ssl_channel_credentials(root_certificates=self._tls_cert)
             self.channel = grpc.secure_channel(
                 f"{self._grpc_hostname}:{self._grpc_port}", credentials
             )
         else:
-            logger.debug("Connecting to INBS cloud with TLS disabled...")
+            logger.debug("Setting up connection to INBS cloud with TLS disabled")
             # Create an insecure channel
             self.channel = grpc.insecure_channel(
                 f"{self._grpc_hostname}:{self._grpc_port}"
@@ -235,7 +236,7 @@ class InbsCloudClient(CloudClient):
 
         self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
         logger.info(
-            f"Successfully connected to INBS service at {self._grpc_hostname}:{self._grpc_port}"
+            f"Connection set up for {self._grpc_hostname}:{self._grpc_port}; will attempt TCP connection on first request."
         )
 
     def connect(self):
@@ -249,6 +250,7 @@ class InbsCloudClient(CloudClient):
         max_backoff = 4.0  # Maximum backoff delay in seconds
 
         while not self._stop_event.is_set():
+            logger.debug("InbsCloudClient _run loop")
             try:
                 self._do_socket_connect()
                 request_queue: queue.Queue[
@@ -287,7 +289,9 @@ class InbsCloudClient(CloudClient):
     ):  # pragma: no cover  # multithreaded operation not unit testable
         """Signal all background INBS threads to stop. Wait for them to terminate."""
 
+        logger.debug("InbsCloudClient.disconnect: signaling background thread to stop")
         self._stop_event.set()
         if self.background_thread is not None:
+            logger.debug("InbsCloudClient.disconnect: Waiting for background thread to terminate...")
             self.background_thread.join()
-        logger.debug("Disconnected from the INBS gRPC server.")
+        logger.debug("InbsCloudClient.disconnect: Disconnected from the INBS gRPC server.")

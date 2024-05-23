@@ -6,7 +6,7 @@ topic configuration/#
 topic diagnostic/#
 topic telemetry/#
 topic readwrite remediation/+
-topic read manageability/request/+
+topic read manageability/request/#
 topic write ma/request/+
 topic write manageability/event
 topic write manageability/cmd/+
@@ -17,11 +17,20 @@ topic write dispatcher/query
 
 user cloudadapter-agent
 topic cloudadapter/#
-topic write manageability/request/+
+topic write manageability/request/#
 topic read manageability/response
 topic read manageability/response/+
 topic read manageability/telemetry
 topic read manageability/event
+
+user inbc-program
+topic write manageability/request/#
+topic write ma/request/+
+topic write ma/configuration/update/+
+topic read manageability/response
+topic read manageability/response/+
+topic read manageability/event
+topic read ma/xlink/status
 
 user telemetry-agent
 topic telemetry/#
@@ -39,14 +48,6 @@ topic write remediation/+
 
 user configuration-agent
 topic configuration/#
-
-user inbc-program
-topic write manageability/request/+
-topic write ma/request/+
-topic write ma/configuration/update/+
-topic read manageability/response
-topic read manageability/event
-topic read ma/xlink/status
 
 user cmd-program
 topic write manageability/event

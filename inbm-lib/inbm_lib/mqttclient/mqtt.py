@@ -104,7 +104,20 @@ class MQTT:
             logger.error('Ensure MQTT service is running!')
             raise
 
+        self.mid_to_topic: dict[int, str] = {}
         self.topics: dict[str, Callable[[str, Any, int], None]] = {}
+        self.lock = threading.Lock()
+
+        def _on_subscribe(client: mqtt.Client, userdata: Any, mid: int, granted_qos: tuple[int]) -> None:
+            logger.debug("Subscribed to topic: %s", self.mid_to_topic.get(mid, "<unknown>"))
+            if granted_qos[0] == 128:
+                failed_topic = self.mid_to_topic.get(mid, "<unknown>")
+                logger.error("Failed to subscribe to topic: %s", failed_topic)
+            
+            with self.lock:                
+                self.mid_to_topic.pop(mid, None)            
+
+        self._mqttc.on_subscribe = _on_subscribe
 
     def loop_once(self, timeout: float = 1.0, max_packets: int = 1) -> None:
         """Loop the MQTT client once
@@ -182,14 +195,21 @@ class MQTT:
         """
         if topic in self.topics:
             logger.info('Topic: %s has already been subscribed to')
-            return
+            return        
 
         def _message_callback(client: Client, userdata: Any, message: MQTTMessage) -> None:
             """Add callback to callback list"""
             callback(message.topic, message.payload.decode(encoding='utf-8', errors='strict'),
-                     message.qos)
+                     message.qos)                
+            
+        try:
+            _, mid = self._mqttc.subscribe(topic, qos)
+            with self.lock:
+                self.mid_to_topic[mid] = topic     
+        except ValueError:
+            # proceed without mid
+            pass
 
-        self._mqttc.subscribe(topic, qos)
         self._mqttc.message_callback_add(topic, _message_callback)
         self.topics[topic] = callback
 
