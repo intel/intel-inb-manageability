@@ -14,10 +14,10 @@ max_line_length = 99
 # complexity; see https://wemake-python-stylegui.de/en/latest/pages/usage/violations/complexity.html#complexity
 max_jones_score = 12
 max_cognitive_score = 208 # extremely high
-max_line_complexity = 21 # high
+max_line_complexity = 35 # high
 max_imports = 49 # very high
 max_module_members = 14 # very high
-max_imported_names = 63 # very high
+max_imported_names = 65 # very high
 max_module_expressions = 47 # very high
 max_function_expressions = 8 # high
 max_local_variables = 16 # very high
