@@ -720,13 +720,15 @@ def handle_updates(dispatcher: Any,
         request_id: str = message[2]
     
     if request_type == "schedule":
+        if not request_id:
+            dispatcher._send_result("Error: No request ID provided for schedule request.")
+            
         logger.debug("DEBUG: manifest = " + manifest)
         try:
             schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
         except XmlException as e:
             logger.error("XMLException parsing schedule: " + str(e))
-            if request_id:
-                dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
+            dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
             return
         
         # TODO: Change single and repeated to add the schedules to the scheduler DB
@@ -737,10 +739,10 @@ def handle_updates(dispatcher: Any,
             for repeated_task in schedule.repeated_scheduled_requests:
                 SqliteManager().create_task(repeated_task)
             sql_lock.release()
-            dispatcher._send_result("Scheduled requests added.", schedule.request_id)
+            dispatcher._send_result("Scheduled requests added.", request_id)
         else:
             # blank payload indicates no error
-            dispatcher._send_result("", schedule.request_id)
+            dispatcher._send_result("", request_id)
         
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:

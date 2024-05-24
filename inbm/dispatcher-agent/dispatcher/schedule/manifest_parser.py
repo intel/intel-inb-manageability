@@ -132,7 +132,7 @@ class ScheduleManifestParser:
         repeated_schedules = schedule.repeated_schedule
         for repeated_schedule in repeated_schedules:
             rs = RepeatedSchedule(
-                request_id=self.request_id,
+                request_id=request_id,
                 cron_duration=repeated_schedule.duration.cdata,
                 cron_minutes=repeated_schedule.cron_minutes.cdata,
                 cron_hours=repeated_schedule.cron_hours.cdata,
