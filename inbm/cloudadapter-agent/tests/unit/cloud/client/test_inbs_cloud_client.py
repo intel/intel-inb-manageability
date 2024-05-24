@@ -1,111 +1,169 @@
-"""
-Unit tests for the InbsCloudClient
-
-
-"""
-
-
-from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
-from cloudadapter.cloud.adapters.proto import inbs_sb_pb2
-import unittest
-from cloudadapter.cloud.client.inbs_cloud_client import grpc
-from unittest.mock import patch, MagicMock, Mock
-from datetime import datetime
 import pytest
+from mock import MagicMock, Mock, patch
 import queue
+import grpc
+from datetime import datetime
+from typing import Generator
+
+from cloudadapter.constants import METHOD
+from cloudadapter.pb.inbs.v1 import inbs_sb_pb2
+from cloudadapter.pb.common.v1 import common_pb2
+from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
 
 
-class TestInbsCloudClient(unittest.TestCase):
+@pytest.fixture
+def inbs_client() -> Generator[InbsCloudClient, None, None]:
+    hostname = "localhost"
+    port = "50051"
+    node_id = "node_id"
+    tls_enabled = False
+    tls_cert = None
+    token = None
 
-    @patch("cloudadapter.cloud.client.inbs_cloud_client.grpc.insecure_channel")
-    @patch("cloudadapter.cloud.adapters.proto.inbs_sb_pb2_grpc.INBSSBServiceStub")
-    def setUp(self, mock_stub, mock_channel):
-        self.hostname = "localhost"
-        self.port = "50051"
-        self.node_id = "node_id"
-        self.token = "token"
-        self.inbs_client = InbsCloudClient(
-            hostname=self.hostname,
-            port=self.port,
-            node_id=self.node_id,
-            tls_enabled=False,
-            tls_cert=None,
-            token=None)
-        self.mock_channel = mock_channel
-        self.mock_stub = mock_stub
+    with patch(
+        "cloudadapter.cloud.client.inbs_cloud_client.grpc.insecure_channel"
+    ), patch("cloudadapter.pb.inbs.v1.inbs_sb_pb2_grpc.INBSSBServiceStub"):
+        yield InbsCloudClient(
+            hostname=hostname,
+            port=port,
+            node_id=node_id,
+            tls_enabled=tls_enabled,
+            tls_cert=tls_cert,
+            token=token,
+        )
 
-    def test_constructor_initializes_values(self):
-        self.assertEqual(self.inbs_client._grpc_hostname, self.hostname)
-        self.assertEqual(self.inbs_client._grpc_port, self.port)
-        self.assertEqual(self.inbs_client._client_id, self.node_id)
-        self.assertEqual(self.inbs_client._metadata, [
-                         ("node-id", self.node_id)])
 
-    def test_get_client_id(self):
-        client_id = self.inbs_client.get_client_id()
-        self.assertEqual(client_id, self.node_id)
+class TestInbsCloudClient:
+    def test_constructor_initializes_values(self, inbs_client: InbsCloudClient) -> None:
+        assert inbs_client._grpc_hostname == "localhost"
+        assert inbs_client._grpc_port == "50051"
+        assert inbs_client._client_id == "node_id"
+        assert inbs_client._metadata == [("node-id", "node_id")]
 
-    def test_publish_telemetry(self):
-        # this is  not expected to do anything yet
-        self.inbs_client.publish_telemetry(
-            key="example_key", value="example_value", time=datetime.now())
+    def test_get_client_id(self, inbs_client: InbsCloudClient) -> None:
+        client_id = inbs_client.get_client_id()
+        assert client_id == "node_id"
 
-    def test_publish_event(self):
+    def test_publish_telemetry(self, inbs_client: InbsCloudClient) -> None:
         # this is not expected to do anything yet
-        self.inbs_client.publish_event(key="example_event", value="event_value")
+        inbs_client.publish_telemetry(
+            key="example_key", value="example_value", time=datetime.now()
+        )
 
-    def test_publish_attribute(self):
+    def test_publish_event(self, inbs_client: InbsCloudClient) -> None:
         # this is not expected to do anything yet
-        self.inbs_client.publish_attribute(key="example_attribute", value="attribute_value")
+        inbs_client.publish_event(key="example_event", value="event_value")
 
-    def test_single_ping_request(self):
-        # Mocks
-        request_queue = queue.Queue()
+    def test_publish_attribute(self, inbs_client: InbsCloudClient) -> None:
+        # this is not expected to do anything yet
+        inbs_client.publish_attribute(key="example_attribute", value="attribute_value")
+
+    @pytest.mark.parametrize(
+        "request_id, dispatcher_error_response, command_type, expected_response, expected_xml",
+        [
+            (
+                "123",
+                "",
+                inbs_sb_pb2.INBMCommand(ping=inbs_sb_pb2.Ping()),
+                inbs_sb_pb2.HandleINBMCommandResponse(request_id="123"),
+                ""
+            ),
+            (
+                "124",
+                "",
+                inbs_sb_pb2.INBMCommand(
+                    update_scheduled_operations=inbs_sb_pb2.UpdateScheduledOperations()
+                ),
+                inbs_sb_pb2.HandleINBMCommandResponse(
+                    request_id="124",                    
+                ),
+                "<schedule_request><request_id>124</request_id></schedule_request>"
+            ),
+            (
+                "124",
+                "test message",
+                inbs_sb_pb2.INBMCommand(
+                    update_scheduled_operations=inbs_sb_pb2.UpdateScheduledOperations()
+                ),
+                inbs_sb_pb2.HandleINBMCommandResponse(
+                    request_id="124",
+                    error=common_pb2.Error(message="test message"),
+                ),
+                "<schedule_request><request_id>124</request_id></schedule_request>"
+            ),
+        ],
+    )
+    def test_single_command(
+        self,
+        inbs_client: InbsCloudClient,
+        request_id: str,
+        dispatcher_error_response: str,
+        command_type: inbs_sb_pb2.INBMCommand,
+        expected_response: inbs_sb_pb2.HandleINBMCommandResponse,
+        expected_xml: str,
+    ) -> None:
+        # Setup
+        request_queue: queue.Queue[
+            inbs_sb_pb2.HandleINBMCommandRequest | None
+        ] = queue.Queue()
         stop_event = Mock()
         stop_event.is_set.return_value = False
 
-        # Set up the INBMRequest with PingRequest
-        ping_request = inbs_sb_pb2.INBMRequest(
-            request_id="123", ping_request=inbs_sb_pb2.PingRequest())
-        request_queue.put(ping_request)
-        # Signal end of queue processing (in real code this isn't needed, here to stop the generator)
-        request_queue.put(None)
+        # set up the triggerota callback to see what is sent to dispatcher
+        triggered_str = ""
 
-        self.inbs_client._stop_event = stop_event
+        def triggerschedule(xml: str, id: str, timeout: int) -> str:
+            nonlocal triggered_str
+            triggered_str = xml
+            return dispatcher_error_response
+        
+        inbs_client.bind_callback('triggerschedule', triggerschedule)
 
-        # Run test
-        generator = self.inbs_client._handle_inbm_command(request_queue)
+        # Construct command using parameters
+        command = inbs_sb_pb2.HandleINBMCommandRequest(
+            request_id=request_id, command=command_type
+        )
+        request_queue.put(command)
+        request_queue.put(None)  # Sentinel to end the generator
+
+        inbs_client._stop_event = stop_event
+           
+
+        # Execute
+        generator = inbs_client._handle_inbm_command_request(request_queue)
         response = next(generator)
 
-        # Check the response correctness
-        self.assertEqual(response.request_id, "123")
-        self.assertTrue(hasattr(response, 'ping_response'))
+        # Validate
+        assert response == expected_response
+        assert triggered_str == expected_xml
 
-        # Cleanup, ensure nothing else is left in the generator
-        with self.assertRaises(StopIteration):
+        # Cleanup
+        with pytest.raises(StopIteration):
             next(generator)
 
-    @patch("cloudadapter.cloud.client.inbs_cloud_client.time.sleep", side_effect=InterruptedError)
-    @patch("grpc.insecure_channel")
-    @patch("cloudadapter.cloud.adapters.proto.inbs_sb_pb2_grpc.INBSSBServiceStub")
-    def test_run_grpc_error(self, mock_stub, mock_channel, mock_sleep):
-        # Setup aRpcError to simulate gRPC error
-        mock_channel.side_effect = MagicMock(side_effect=grpc.RpcError())
+    def test_run_grpc_error(self, inbs_client: InbsCloudClient) -> None:
+        # Setup a RpcError to simulate gRPC error
+        with patch("grpc.insecure_channel") as mock_channel, \
+            patch("threading.Event.wait", side_effect=InterruptedError) as mock_wait:
+            
+            mock_channel.side_effect = MagicMock(side_effect=grpc.RpcError())
+            
+            # Ensure the stop event is not set initially
+            inbs_client._stop_event.clear()
+            
+            # Run the test expecting InterruptedError to stop the infinite loop
+            with pytest.raises(InterruptedError):
+                inbs_client._run()
+            
+            # Assert that stop_event.wait() was called
+            mock_wait.assert_called()
 
-        self.inbs_client._stop_event.clear()
-        with self.assertRaises(InterruptedError):  # To stop the infinite loop
-            self.inbs_client._run()
+    def test_run_stop_event_sets(self, inbs_client: InbsCloudClient) -> None:
+        with patch(
+            "cloudadapter.cloud.client.inbs_cloud_client.queue.Queue"
+        ) as mock_queue:
+            inbs_client._stop_event.set()  # Act like we want to stop immediately
+            inbs_client._run()
 
-        mock_sleep.assert_called()  # Check that backoff sleep was called
-
-    @patch("cloudadapter.cloud.client.inbs_cloud_client.queue.Queue")
-    def test_run_stop_event_sets(self, mock_queue):
-        self.inbs_client._stop_event.set()  # Act like we want to stop immediately
-        self.inbs_client._run()
-
-        # If the method exits immediately, it means the stop event was respected
-        mock_queue.assert_not_called()
-
-
-if __name__ == '__main__':
-    unittest.main()
+            # If the method exits immediately, it means the stop event was respected
+            mock_queue.assert_not_called()

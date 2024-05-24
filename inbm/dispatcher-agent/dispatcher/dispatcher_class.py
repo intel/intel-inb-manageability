@@ -11,9 +11,8 @@ import json
 import platform
 import signal
 import sys
-from logging.config import fileConfig
 from queue import Queue
-from threading import Thread, active_count
+from threading import Thread, active_count, Lock
 from time import sleep
 from typing import Optional, Any, Mapping, Tuple
 
@@ -34,6 +33,8 @@ from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.exceptions import UrlSecurityException
 
+from .schedule.manifest_parser import ScheduleManifestParser, SCHEDULE_SCHEMA_LOCATION
+from .schedule.sqlite_manager import SqliteManager
 from .dispatcher_broker import DispatcherBroker
 from .dispatcher_exception import DispatcherException
 from .aota.aota_error import AotaError
@@ -60,17 +61,8 @@ from .update_logger import UpdateLogger
 from . import source
 
 logger = logging.getLogger(__name__)
-
-
-def get_log_config_path() -> str:
-    """Return the config path for this agent, taken by default from LOGGERCONFIG environment
-    variable and then from a fixed default path.
-    """
-    try:
-        return os.environ['LOGGERCONFIG']
-    except KeyError:
-        return DEFAULT_LOGGING_PATH
-
+# Mutex lock
+sql_lock = Lock()
 
 def _check_type_validate_manifest(xml: str,
                                   schema_location: Optional[str] = None) -> Tuple[str, XmlHandler]:
@@ -94,15 +86,9 @@ def _check_type_validate_manifest(xml: str,
 
 class Dispatcher:
     def __init__(self, args: list[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
-        log_config_path = get_log_config_path()
-        msg = f"Looking for logging configuration file at {log_config_path}"
-        print(msg)
-        fileConfig(log_config_path,
-                   disable_existing_loggers=False)
-
         self._dispatcher_broker = broker
         self._install_check_service = install_check_service
-        self.update_queue: Queue[Tuple[str, str]] = Queue(1)
+        self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._thread_count = 1
         self._sota_repos = None
         self.sota_mode = None
@@ -267,12 +253,16 @@ class Dispatcher:
     def _telemetry(self, message: str) -> None:
         self._dispatcher_broker.telemetry(message)
 
-    def _send_result(self, message: str) -> None:
-        """Sends event messages to local MQTT channel
+    def _send_result(self, message: str, id: str = "") -> None:
+        """Sends result message to local MQTT channel
+
+        If id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
+
+        Raises ValueError if id contains a slash
 
         @param message: message to be published to cloud
         """
-        self._dispatcher_broker.send_result(message)
+        self._dispatcher_broker.send_result(message, id)
 
     def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:
         """Delegates the installation to either
@@ -462,10 +452,11 @@ class Dispatcher:
         """
         logger.info('Cloud request received: %s on topic: %s',
                     mask_security_info(payload), topic)
-        request_type = topic.split('/')[-1]
+        request_type = topic.split('/')[2]
+        request_id = topic.split('/')[3] if len(topic.split('/')) > 3 else None
         manifest = payload
         if not self.update_queue.full():
-            self.update_queue.put((request_type, manifest))
+            self.update_queue.put((request_type, manifest, request_id))
         else:
             self._send_result(
                 str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
@@ -715,15 +706,49 @@ class Dispatcher:
             self._telemetry('Dispatcher detects normal boot sequence')
 
 
-def handle_updates(dispatcher: Any) -> None:
+def handle_updates(dispatcher: Any, 
+                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 
+                   manifest_schema=SCHEMA_LOCATION) -> None:
     """Global function to handle multiple requests from cloud using a FIFO queue.
 
     @param dispatcher: callback to dispatcher
     """
-    message: Tuple[str, str] = dispatcher.update_queue.get()
+    message: Tuple[str, str, Optional[str]] = dispatcher.update_queue.get()
     request_type: str = message[0]
     manifest: str = message[1]
-
+    if message[2]:
+        request_id: str = message[2]
+    
+    if request_type == "schedule":
+        if not request_id:
+            dispatcher._send_result("Error: No request ID provided for schedule request.")
+            
+        logger.debug("DEBUG: manifest = " + manifest)
+        try:
+            schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
+        except XmlException as e:
+            logger.error("XMLException parsing schedule: " + str(e))
+            dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
+            return
+        
+        # TODO: Change single and repeated to add the schedules to the scheduler DB
+        if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
+            sql_lock.acquire()
+            for single_task in schedule.single_scheduled_requests:
+                SqliteManager().create_task(single_task)
+            for repeated_task in schedule.repeated_scheduled_requests:
+                SqliteManager().create_task(repeated_task)
+            sql_lock.release()
+            dispatcher._send_result("Scheduled requests added.", request_id)
+        else:
+            # blank payload indicates no error
+            dispatcher._send_result("", request_id)
+        
+        for imm in schedule.immedate_requests:
+            for manifest in imm.manifests:
+                dispatcher.do_install(xml=manifest)
+        return
+    
     if request_type == "install" or request_type == "query":
         dispatcher.do_install(xml=manifest)
         return

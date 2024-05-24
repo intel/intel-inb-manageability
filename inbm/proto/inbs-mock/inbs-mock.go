@@ -65,7 +65,7 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 	return err
 }
 
-func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
+func (s *server) HandleINBMCommand(stream pb.INBSSBService_HandleINBMCommandServer) error {
 	ctx := stream.Context()
 
 	// Extract metadata from the context
@@ -85,24 +85,58 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 
 	log.Printf("Received connection with inband-id: %s", nodeID)
 
+	firstCommand := true
 	// Loop until the context is done (connection closed)
 	for {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
 		default:
-			// Sending a Ping to the client
 			requestId := uuid.New().String()
-			err := stream.Send(&pb.INBMRequest{
-				RequestId: requestId,
-				Payload: &pb.INBMRequest_PingRequest{
-					PingRequest: &pb.PingRequest{},
-				},
-			})
-			if err != nil {
-				log.Fatalf("Failed to send a ping: %v", err)
+
+			if firstCommand {
+				// First command will be an UpdateScheduledOperations type
+				// Sending a UpdateScheduledOperations command to the client to do
+				// a simple SOTA with no reboot, download only
+				firstCommand = false
+				log.Println("Sending a UpdateScheduledOperations command to client with request ID " + requestId)
+				err := stream.Send(&pb.HandleINBMCommandRequest{
+					RequestId: requestId,
+					Command: &pb.INBMCommand{
+						InbmCommand: &pb.INBMCommand_UpdateScheduledOperations{
+							UpdateScheduledOperations: &pb.UpdateScheduledOperations{
+								ScheduledOperations: []*pb.ScheduledOperation{
+									{
+										Operation: &pb.Operation{
+											PreOperations:  []*pb.PreOperation{},
+											PostOperations: []*pb.PostOperation{},
+											Operation: &pb.Operation_UpdateSystemSoftwareOperation{
+												UpdateSystemSoftwareOperation: &pb.UpdateSystemSoftwareOperation{
+													Mode:        *pb.UpdateSystemSoftwareOperation_DOWNLOAD_MODE_DOWNLOAD_ONLY.Enum(),
+													DoNotReboot: true,
+												},
+											},
+										},
+										Schedules: []*pb.Schedule{{Schedule: &pb.Schedule_SingleSchedule{}}}, // immediate
+									}}}}}})
+				if err != nil {
+					log.Fatalf("Failed to send the command: %v", err)
+				}
+			} else {
+				// Sending a Ping to the client
+				log.Println("Sending a Ping to client with request ID " + requestId)
+				err := stream.Send(&pb.HandleINBMCommandRequest{
+					RequestId: requestId,
+					Command: &pb.INBMCommand{
+						InbmCommand: &pb.INBMCommand_Ping{},
+					},
+				})
+				if err != nil {
+					log.Fatalf("Failed to send the command: %v", err)
+				}
 			}
-			log.Println("Ping sent to client with request ID " + requestId)
+
+			log.Println("Command sent to client with request ID " + requestId)
 
 			// Receiving and logging INBMResponse from client
 			response, err := stream.Recv()
@@ -113,9 +147,10 @@ func (s *server) INBMCommand(stream pb.INBSSBService_INBMCommandServer) error {
 			if requestId != response.GetRequestId() {
 				log.Fatalf("Response request ID " + response.GetRequestId() + " does not match request ID " + requestId)
 			}
-			// check that the response payload is a ping type
-			if _, ok := response.GetPayload().(*pb.INBMResponse_PingResponse); !ok {
-				log.Fatalf("Response payload is not a PingResponse")
+
+			// check that the response does not have error set
+			if response.GetError() != nil {
+				log.Fatalf("Response payload has error set: %s", response.GetError().GetMessage())
 			}
 
 			log.Println("Received response from client with request ID " + response.GetRequestId())

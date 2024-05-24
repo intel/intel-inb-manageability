@@ -134,7 +134,7 @@ class XmlHandler:
                 logger.debug(f'Empty tag {each.tag} encountered, but allowed.')
 
         return children
-
+          
     def get_children(self, xpath: str) -> dict[str, Any]:
         """Find all elements matching XPath from parsed XML
 

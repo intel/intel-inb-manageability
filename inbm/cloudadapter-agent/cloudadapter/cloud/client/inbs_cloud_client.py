@@ -3,6 +3,7 @@ Modification of Cloud Client class that works for INBS.
 INBS is different because it is using gRPC instead of MQTT.
 """
 
+from collections.abc import Generator
 import queue
 import random
 import threading
@@ -10,8 +11,13 @@ import time
 from typing import Callable, Optional, Any
 from datetime import datetime
 
+from cloudadapter.cloud.adapters.inbs.operation import (
+    convert_updated_scheduled_operations_to_dispatcher_xml,
+)
+from cloudadapter.constants import METHOD
 from cloudadapter.exceptions import AuthenticationError
-from ..adapters.proto import inbs_sb_pb2_grpc, inbs_sb_pb2
+from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
+from cloudadapter.pb.common.v1 import common_pb2
 import logging
 
 import grpc
@@ -21,14 +27,15 @@ logger = logging.getLogger(__name__)
 
 
 class InbsCloudClient(CloudClient):
-
-    def __init__(self,
-                 hostname: str,
-                 port: str,
-                 node_id: str,
-                 tls_enabled: bool,
-                 tls_cert: bytes | None,
-                 token: str | None):
+    def __init__(
+        self,
+        hostname: str,
+        port: str,
+        node_id: str,
+        tls_enabled: bool,
+        tls_cert: bytes | None,
+        token: str | None,
+    ):
         """Constructor for InbsCloudClient
 
         @param hostname: The hostname of the gRPC server
@@ -38,6 +45,10 @@ class InbsCloudClient(CloudClient):
         @param tls_cert: (optional, only if tls_enabled) TLS cert contents
         @param token: (optional, only if tls_enabled) The authentication token
         """
+        self._callbacks: dict[
+            str, Callable
+        ] = {}  # Used to send messages to Dispatcher Agent
+
         self._grpc_hostname = hostname
         self._grpc_port = port
         self._client_id = node_id
@@ -52,7 +63,9 @@ class InbsCloudClient(CloudClient):
             else:
                 self._metadata.append(("token", token))
             if tls_cert is None:
-                raise AuthenticationError("TLS certificate path is required when TLS is enabled.")
+                raise AuthenticationError(
+                    "TLS certificate path is required when TLS is enabled."
+                )
 
         self._stop_event = threading.Event()
 
@@ -106,14 +119,17 @@ class InbsCloudClient(CloudClient):
         """
 
         # for now ignore all callbacks; only Ping is supported
-        pass
+        self._callbacks[name] = callback
 
-    def _handle_inbm_command(self, request_queue: queue.Queue):
-        """Generator function to respond to INBMRequests with INBMResponses
+    def _handle_inbm_command_request(
+        self, request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
+    ) -> Generator[inbs_sb_pb2.HandleINBMCommandResponse, None, None]:
+        """Generator function to respond to HandleINBMCommandRequests with HandleINBMCommandResponses
 
-        @param request_queue: Queue with INBMRequests that will be supplied from another thread
+        @param request_queue: Queue with HandleINBMCommandRequests that will be supplied from another thread
 
-        When an INBMResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event."""
+        When a HandleINBMCommandResponse is ready, yield it. Quit when gRPC error is seen or signaled to stop on self._stop_event.
+        """
         while not self._stop_event.is_set():
             try:
                 item = request_queue.get()
@@ -123,41 +139,105 @@ class InbsCloudClient(CloudClient):
                 request_id = item.request_id
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
 
-                payload_type = item.WhichOneof('payload')
-                if payload_type:
-                    if payload_type == 'ping_request':
-                        # Handle PingRequest and create a corresponding PingResponse
-                        yield inbs_sb_pb2.INBMResponse(request_id=request_id, ping_response=inbs_sb_pb2.PingResponse())
+                command_type = item.command.WhichOneof("inbm_command")
+                if command_type:
+                    if command_type == "update_scheduled_operations":
+                        # Convert operations to Dispatcher's ScheduleRequest
+                        try:
+                            dispatcher_xml = (
+                                convert_updated_scheduled_operations_to_dispatcher_xml(
+                                    request_id, item.command.update_scheduled_operations
+                                )
+                            )
+                        except ValueError as ve:
+                            logger.error(
+                                f"Error converting operations to Dispatcher XML: {ve}"
+                            )
+                            yield inbs_sb_pb2.HandleINBMCommandResponse(
+                                request_id=request_id,
+                                error=common_pb2.Error(message=f"cloudadapter: {ve}"),
+                            )
+                            continue
+
+                        try:
+                            # Send the converted operations to Dispatcher; wait up to 3 seconds
+                            # for reply
+                            error = self._callbacks[METHOD.SCHEDULE](dispatcher_xml, request_id, 3)
+
+                            # Expect the callback to return an error message if there was an error
+                            # or None or "" if there was no error
+                            if error is None or error == "":
+                                pb_error = None
+                            else:
+                                pb_error = common_pb2.Error(message=error)
+
+                            yield inbs_sb_pb2.HandleINBMCommandResponse(
+                                request_id=request_id,
+                                error = pb_error
+                            )
+                        except TimeoutError:
+                            logger.error(
+                                f"Timed out waiting for response from Dispatcher for request_id {request_id}"
+                            )
+                            yield inbs_sb_pb2.HandleINBMCommandResponse(
+                                request_id=request_id,
+                                error=common_pb2.Error(
+                                    message="INBM Cloudadapter: timed out waiting for INBM Dispatcher response"
+                                ),
+                            )
+                    elif command_type == "ping":
+                        logger.debug(
+                            f"Received ping command for request_id {request_id}"
+                        )
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(
+                            request_id=request_id
+                        )
                     else:
-                        # Log an error if the payload is not recognized (not a PingRequest)
                         logger.error(
-                            f"Received unexpected payload type: {payload_type} for request_id {request_id}")
-                        break
+                            f"Received unknown command {command_type} for request_id {request_id}"
+                        )
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(
+                            request_id=request_id,
+                            error=common_pb2.Error(
+                                message=f"cloudadapter: unknown command {command_type}"
+                            ),
+                        )
                 else:
-                    logger.error(f"No payload found for request_id {request_id}")
+                    logger.error(
+                        f"Received unknown command for request_id {request_id}"
+                    )
+                    yield inbs_sb_pb2.HandleINBMCommandResponse(
+                        request_id=request_id,
+                        error=common_pb2.Error(message="cloudadapter: unknown command"),
+                    )
 
             except queue.Empty:
                 continue  # No available item in the queue, continue to the next iteration
             except grpc.RpcError as e:
-                logger.error(f"gRPC error in _handle_inbm_command: {e}")
+                logger.error(f"gRPC error in _handle_inbm_command_request: {e}")
                 break
+        logger.debug("Exiting _handle_inbm_command_request")
 
     def _do_socket_connect(self):
         """Handle the socket/TLS/HTTP connection to the gRPC server."""
         if self._tls_enabled:
             # Create a secure channel with SSL credentials
-            logger.debug("Connecting to INBS cloud with TLS enabled...")
+            logger.debug("Setting up connection to INBS cloud with TLS enabled")
             credentials = grpc.ssl_channel_credentials(root_certificates=self._tls_cert)
             self.channel = grpc.secure_channel(
-                f'{self._grpc_hostname}:{self._grpc_port}', credentials)
+                f"{self._grpc_hostname}:{self._grpc_port}", credentials
+            )
         else:
-            logger.debug("Connecting to INBS cloud with TLS disabled...")
+            logger.debug("Setting up connection to INBS cloud with TLS disabled")
             # Create an insecure channel
-            self.channel = grpc.insecure_channel(f'{self._grpc_hostname}:{self._grpc_port}')
+            self.channel = grpc.insecure_channel(
+                f"{self._grpc_hostname}:{self._grpc_port}"
+            )
 
         self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
         logger.info(
-            f"Successfully connected to INBS service at {self._grpc_hostname}:{self._grpc_port}")
+            f"Connection set up for {self._grpc_hostname}:{self._grpc_port}; will attempt TCP connection on first request."
+        )
 
     def connect(self):
         # Start the background thread
@@ -166,15 +246,20 @@ class InbsCloudClient(CloudClient):
 
     def _run(self):  # pragma: no cover  # multithreaded operation not unit testable
         """INBS cloud loop. Intended to be used inside a background thread."""
-        backoff = 1.0  # Initial backoff delay in seconds
-        max_backoff = 32.0  # Maximum backoff delay in seconds
+        backoff = 0.1  # Initial fixed backoff delay in seconds
+        max_backoff = 4.0  # Maximum backoff delay in seconds
 
         while not self._stop_event.is_set():
+            logger.debug("InbsCloudClient _run loop")
             try:
                 self._do_socket_connect()
-                request_queue: queue.Queue = queue.Queue()
-                stream = self.stub.INBMCommand(self._handle_inbm_command(
-                    request_queue), metadata=self._metadata)
+                request_queue: queue.Queue[
+                    inbs_sb_pb2.HandleINBMCommandRequest | None
+                ] = queue.Queue()
+                stream = self.stub.HandleINBMCommand(
+                    self._handle_inbm_command_request(request_queue),
+                    metadata=self._metadata,
+                )
                 for command in stream:
                     if self._stop_event.is_set():
                         break
@@ -188,20 +273,25 @@ class InbsCloudClient(CloudClient):
             except grpc.RpcError as e:
                 if not self._stop_event.is_set():
                     logger.error(
-                        f"gRPC stream closed with error: {e}. Reconnecting in {backoff} seconds...")
-                    time.sleep(backoff)
+                        f"gRPC stream closed with error: {e}. Reconnecting in {backoff} seconds..."
+                    )
+                    self._stop_event.wait(backoff)
                     # Increase the backoff for the next attempt, up to a maximum.
-                    backoff = min(backoff * 2.0 + random.uniform(0, 1), max_backoff)
+                    backoff = min(backoff * 2.0 + random.uniform(0, 0.1), max_backoff)
                 else:
                     logger.debug("gRPC Stream closed by stop event.")
                     break
 
         logger.debug("Exiting gRPC _run thread")
 
-    def disconnect(self):  # pragma: no cover  # multithreaded operation not unit testable
+    def disconnect(
+        self,
+    ):  # pragma: no cover  # multithreaded operation not unit testable
         """Signal all background INBS threads to stop. Wait for them to terminate."""
 
+        logger.debug("InbsCloudClient.disconnect: signaling background thread to stop")
         self._stop_event.set()
         if self.background_thread is not None:
+            logger.debug("InbsCloudClient.disconnect: Waiting for background thread to terminate...")
             self.background_thread.join()
-        logger.debug("Disconnected from the INBS gRPC server.")
+        logger.debug("InbsCloudClient.disconnect: Disconnected from the INBS gRPC server.")

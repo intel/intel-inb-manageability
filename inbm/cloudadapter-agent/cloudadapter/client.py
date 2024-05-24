@@ -73,6 +73,7 @@ class Client:
     def _bind_cloud_to_agent(self) -> None:
         adapter_bindings = {
             METHOD.MANIFEST: self._publisher.publish_manifest,
+            METHOD.SCHEDULE: self._publisher.publish_schedule,
             METHOD.AOTA: self._publisher.publish_aota,
             METHOD.FOTA: self._publisher.publish_fota,
             METHOD.SOTA: self._publisher.publish_sota,
@@ -148,9 +149,11 @@ class Client:
 
     def stop(self) -> None:
         """Disconnect the cloud and Intel(R) In-Band Manageability"""
+        logger.debug("Stopping cloudadapter client")
         self._broker.stop()
         self._cloud_publisher.publish_event("Disconnected")
         try:
+            logger.debug("Calling disconnect on adapter")
             self._adapter.disconnect()
         except DisconnectError as e:
             logger.error(str(e))

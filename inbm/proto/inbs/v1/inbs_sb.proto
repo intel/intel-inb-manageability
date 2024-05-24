@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package inbs.v1;
+import "common/v1/common.proto";
+
+service INBSSBService {
+  // Bi-directional streaming method
+  rpc HandleINBMCommand(stream HandleINBMCommandResponse) returns (stream HandleINBMCommandRequest);
+}
+
+message HandleINBMCommandRequest {
+  string request_id = 1;
+  INBMCommand command = 2;
+}
+
+message HandleINBMCommandResponse {
+  string request_id = 1;
+  common.v1.Error error = 2;
+}
+
+message INBMCommand {
+  oneof inbm_command {
+    UpdateScheduledOperations update_scheduled_operations = 1;
+    Ping ping = 2;
+  }
+}
+
+message UpdateScheduledOperations {
+  repeated common.v1.ScheduledOperation scheduled_operations = 1;
+}
+
+message Ping {}

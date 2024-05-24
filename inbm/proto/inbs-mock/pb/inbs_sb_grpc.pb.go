@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v3.12.4
-// source: inbs_sb.proto
+// source: inbs/v1/inbs_sb.proto
 
 package pb
 
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	INBSSBService_INBMCommand_FullMethodName = "/inbs.INBSSBService/INBMCommand"
+	INBSSBService_HandleINBMCommand_FullMethodName = "/inbs.v1.INBSSBService/HandleINBMCommand"
 )
 
 // INBSSBServiceClient is the client API for INBSSBService service.
@@ -27,7 +27,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type INBSSBServiceClient interface {
 	// Bi-directional streaming method
-	INBMCommand(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_INBMCommandClient, error)
+	HandleINBMCommand(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_HandleINBMCommandClient, error)
 }
 
 type iNBSSBServiceClient struct {
@@ -38,31 +38,31 @@ func NewINBSSBServiceClient(cc grpc.ClientConnInterface) INBSSBServiceClient {
 	return &iNBSSBServiceClient{cc}
 }
 
-func (c *iNBSSBServiceClient) INBMCommand(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_INBMCommandClient, error) {
-	stream, err := c.cc.NewStream(ctx, &INBSSBService_ServiceDesc.Streams[0], INBSSBService_INBMCommand_FullMethodName, opts...)
+func (c *iNBSSBServiceClient) HandleINBMCommand(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_HandleINBMCommandClient, error) {
+	stream, err := c.cc.NewStream(ctx, &INBSSBService_ServiceDesc.Streams[0], INBSSBService_HandleINBMCommand_FullMethodName, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &iNBSSBServiceINBMCommandClient{stream}
+	x := &iNBSSBServiceHandleINBMCommandClient{stream}
 	return x, nil
 }
 
-type INBSSBService_INBMCommandClient interface {
-	Send(*INBMResponse) error
-	Recv() (*INBMRequest, error)
+type INBSSBService_HandleINBMCommandClient interface {
+	Send(*HandleINBMCommandResponse) error
+	Recv() (*HandleINBMCommandRequest, error)
 	grpc.ClientStream
 }
 
-type iNBSSBServiceINBMCommandClient struct {
+type iNBSSBServiceHandleINBMCommandClient struct {
 	grpc.ClientStream
 }
 
-func (x *iNBSSBServiceINBMCommandClient) Send(m *INBMResponse) error {
+func (x *iNBSSBServiceHandleINBMCommandClient) Send(m *HandleINBMCommandResponse) error {
 	return x.ClientStream.SendMsg(m)
 }
 
-func (x *iNBSSBServiceINBMCommandClient) Recv() (*INBMRequest, error) {
-	m := new(INBMRequest)
+func (x *iNBSSBServiceHandleINBMCommandClient) Recv() (*HandleINBMCommandRequest, error) {
+	m := new(HandleINBMCommandRequest)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (x *iNBSSBServiceINBMCommandClient) Recv() (*INBMRequest, error) {
 // for forward compatibility
 type INBSSBServiceServer interface {
 	// Bi-directional streaming method
-	INBMCommand(INBSSBService_INBMCommandServer) error
+	HandleINBMCommand(INBSSBService_HandleINBMCommandServer) error
 	mustEmbedUnimplementedINBSSBServiceServer()
 }
 
@@ -82,8 +82,8 @@ type INBSSBServiceServer interface {
 type UnimplementedINBSSBServiceServer struct {
 }
 
-func (UnimplementedINBSSBServiceServer) INBMCommand(INBSSBService_INBMCommandServer) error {
-	return status.Errorf(codes.Unimplemented, "method INBMCommand not implemented")
+func (UnimplementedINBSSBServiceServer) HandleINBMCommand(INBSSBService_HandleINBMCommandServer) error {
+	return status.Errorf(codes.Unimplemented, "method HandleINBMCommand not implemented")
 }
 func (UnimplementedINBSSBServiceServer) mustEmbedUnimplementedINBSSBServiceServer() {}
 
@@ -98,26 +98,26 @@ func RegisterINBSSBServiceServer(s grpc.ServiceRegistrar, srv INBSSBServiceServe
 	s.RegisterService(&INBSSBService_ServiceDesc, srv)
 }
 
-func _INBSSBService_INBMCommand_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(INBSSBServiceServer).INBMCommand(&iNBSSBServiceINBMCommandServer{stream})
+func _INBSSBService_HandleINBMCommand_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(INBSSBServiceServer).HandleINBMCommand(&iNBSSBServiceHandleINBMCommandServer{stream})
 }
 
-type INBSSBService_INBMCommandServer interface {
-	Send(*INBMRequest) error
-	Recv() (*INBMResponse, error)
+type INBSSBService_HandleINBMCommandServer interface {
+	Send(*HandleINBMCommandRequest) error
+	Recv() (*HandleINBMCommandResponse, error)
 	grpc.ServerStream
 }
 
-type iNBSSBServiceINBMCommandServer struct {
+type iNBSSBServiceHandleINBMCommandServer struct {
 	grpc.ServerStream
 }
 
-func (x *iNBSSBServiceINBMCommandServer) Send(m *INBMRequest) error {
+func (x *iNBSSBServiceHandleINBMCommandServer) Send(m *HandleINBMCommandRequest) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func (x *iNBSSBServiceINBMCommandServer) Recv() (*INBMResponse, error) {
-	m := new(INBMResponse)
+func (x *iNBSSBServiceHandleINBMCommandServer) Recv() (*HandleINBMCommandResponse, error) {
+	m := new(HandleINBMCommandResponse)
 	if err := x.ServerStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -128,16 +128,16 @@ func (x *iNBSSBServiceINBMCommandServer) Recv() (*INBMResponse, error) {
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var INBSSBService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "inbs.INBSSBService",
+	ServiceName: "inbs.v1.INBSSBService",
 	HandlerType: (*INBSSBServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "INBMCommand",
-			Handler:       _INBSSBService_INBMCommand_Handler,
+			StreamName:    "HandleINBMCommand",
+			Handler:       _INBSSBService_HandleINBMCommand_Handler,
 			ServerStreams: true,
 			ClientStreams: true,
 		},
 	},
-	Metadata: "inbs_sb.proto",
+	Metadata: "inbs/v1/inbs_sb.proto",
 }

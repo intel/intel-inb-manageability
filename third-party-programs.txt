@@ -100,6 +100,16 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ------------------------------------------------------------------------------------------------------------------------
 2. Software Released under the MIT License:
 
+untangle
+Copyright (c) 2011
+Christian Stefanescu <chris@0chris.com>
+# Contributions from:
+Florian Idelberger <flo@terrorpop.de>
+Apalala <apalala@gmail.com>
+Reverb Chu <reverbc@me.com>
+Henrikki Tenkanen <henrikki.tenkanen@gmail.com>
+
+
 xmlschema
 Copyright (c), 2016-2020, SISSA (Scuola Internazionale Superiore di Studi Avanzati)
 
