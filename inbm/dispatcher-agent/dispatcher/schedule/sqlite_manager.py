@@ -90,7 +90,7 @@ class SqliteManager:
 
             sql = ''' INSERT INTO repeated_task(request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week, manifests)
                                   VALUES(?, ?,?,?,?,?,?,?) '''
-            logger.debug(f"Adding task: {str(task.request_id), str(task.cron_duration), str(task.cron_minutes), str(task.cron_hours), str(task.cron_day_month), str(task.cron_month), str(task.cron_day_week),str(manifest)}")
-            cur.execute(sql, (str(task.request_id), str(task.cron_duration), str(task.cron_minutes), str(task.cron_hours), str(task.cron_day_month), str(task.cron_month), str(task.cron_day_week),str(manifest)))
+            logger.debug(f"Adding task: {str(task.request_id), str(task.cron_duration), str(task.cron_minutes), str(task.cron_hours), str(task.cron_day_month), str(task.cron_month), str(task.cron_day_week),str(manifest)}") # noqa
+            cur.execute(sql, (str(task.request_id), str(task.cron_duration), str(task.cron_minutes), str(task.cron_hours), str(task.cron_day_month), str(task.cron_month), str(task.cron_day_week),str(manifest))) # noqa
             conn.commit()
         logger.debug("Task added.")
