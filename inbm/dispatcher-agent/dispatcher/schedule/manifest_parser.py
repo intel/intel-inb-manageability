@@ -39,7 +39,6 @@ class ScheduleManifestParser:
         self._embedded_schema_location=embedded_schema_location
         
         # Parsed manifest data
-        self.request_id = None
         self.immedate_requests: list[SingleSchedule] = []
         self.single_scheduled_requests: list[SingleSchedule] = []
         self.repeated_scheduled_requests: list[RepeatedSchedule] = []
@@ -67,7 +66,9 @@ class ScheduleManifestParser:
         if not self._xml_obj.schedule_request:
             raise DispatcherException("No schedule requests found in the manifest")
                 
-        self.request_id = self._xml_obj.schedule_request.request_id.cdata
+        request_id = self._xml_obj.schedule_request.request_id.cdata
+        if not request_id:
+            raise DispatcherException("Request ID not found in the manifest")
         update_schedules: list[untangle.Element] = self._xml_obj.schedule_request.update_schedule
         
         for update_schedule in update_schedules:            
@@ -75,9 +76,9 @@ class ScheduleManifestParser:
             if hasattr(update_schedule, 'schedule'):
                 schedule = update_schedule.schedule
                 if 'single_schedule' in schedule:
-                    self._parse_single_schedule(schedule, manifests)
+                    self._parse_single_schedule(schedule, manifests, request_id)
                 if 'repeated_schedule' in schedule:
-                    self._parse_repeated_schedule(schedule, manifests)
+                    self._parse_repeated_schedule(schedule, manifests, request_id)
                     
     def _get_manifests(self, scheduled_manifests: list[untangle.Element]) -> list[str]:
         manifests: list[str] = []
@@ -96,35 +97,37 @@ class ScheduleManifestParser:
                    is_file=False,
                    schema_location=self._embedded_schema_location)
     
-    def _parse_single_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
+    def _parse_single_schedule(self, schedule: untangle.Element, manifests: list[str], request_id: str) -> None:
         """Parses the single schedules in the manifest and stores them
         in the SingleSchedule object list.
 
         @param schedule (untangle.Element): pointer to the schedule elements
         @param manifests (list[str]): list of valid Inband manifests to be scheduled
+        @param request_id (str): request ID from manifest
         """
         single_schedule = schedule.single_schedule
         for ss in single_schedule:   
             if not hasattr(ss, 'start_time'):
                 self.immedate_requests.append(
                     SingleSchedule(
-                        request_id=self.request_id,
+                        request_id=request_id,
                         manifests=manifests))
             else: 
                 end = ss.end_time.cdata if hasattr(ss, 'end_time') else None
                 self.single_scheduled_requests.append(
                     SingleSchedule(
-                        request_id=self.request_id,
+                        request_id=request_id,
                         start_time=ss.start_time.cdata, 
                         end_time=end,
                         manifests=manifests))
 
-    def _parse_repeated_schedule(self, schedule: untangle.Element, manifests: list[str]) -> None:
+    def _parse_repeated_schedule(self, schedule: untangle.Element, manifests: list[str], request_id: str) -> None:
         """Parses the repeated schedules in the manifest and stores them
         in the RepeatedSchedule object list.
 
         @param schedule (untangle.Element): pointer to the schedule elements
         @param manifests (list[str]): list of valid Inband manifests to be scheduled
+        @param request_id (str): request ID from manifest
         """
         repeated_schedules = schedule.repeated_schedule
         for repeated_schedule in repeated_schedules:
