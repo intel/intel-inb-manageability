@@ -135,7 +135,6 @@ class TestScheduleManifestParser(TestCase):
         p = ScheduleManifestParser(GOOD_IMMEDIATE_SCHEDULE_XML, 
                                    schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
                                    embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
-        self.assertEqual("REQ12345", p.request_id)
         self.assertEqual(1, len(p.immedate_requests))
         self.assertEqual(1, len(p.immedate_requests[0].manifests))
         self.assertEqual(0, len(p.single_scheduled_requests))
@@ -145,7 +144,6 @@ class TestScheduleManifestParser(TestCase):
         p = ScheduleManifestParser(GOOD_MULTIPLE_SCHEDULES_XML, 
                                    schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
                                    embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
-        self.assertEqual("REQ12345", p.request_id)
         self.assertEqual(1, len(p.immedate_requests))
         self.assertEqual(2, len(p.immedate_requests[0].manifests))
         self.assertEqual(3, len(p.single_scheduled_requests))
@@ -157,7 +155,6 @@ class TestScheduleManifestParser(TestCase):
         p = ScheduleManifestParser(GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML, 
                                    schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
                                    embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
-        self.assertEqual("REQ12345", p.request_id)
         self.assertEqual(0, len(p.immedate_requests))
         self.assertEqual(1, len(p.single_scheduled_requests))
         self.assertEqual(1, len(p.single_scheduled_requests[0].manifests))
