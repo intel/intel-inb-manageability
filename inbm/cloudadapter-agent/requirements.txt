@@ -1,7 +1,7 @@
 #Production
 jsonschema==4.20.0
 types-jsonschema==4.20.0.0
-requests==2.31.0
+requests==2.32.2
 urllib3==1.26.18
 PySocks==1.7.1
 psutil==5.9.5
