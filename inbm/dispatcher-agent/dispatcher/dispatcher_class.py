@@ -734,10 +734,10 @@ def handle_updates(dispatcher: Any,
         # TODO: Change single and repeated to add the schedules to the scheduler DB
         if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
             sql_lock.acquire()
-            for single_task in schedule.single_scheduled_requests:
-                SqliteManager().create_task(single_task)
-            for repeated_task in schedule.repeated_scheduled_requests:
-                SqliteManager().create_task(repeated_task)
+            for ss in schedule.single_scheduled_requests:
+                SqliteManager().create_schedule(ss)
+            for rs in schedule.repeated_scheduled_requests:
+                SqliteManager().create_schedule(rs)
             sql_lock.release()
             dispatcher._send_result("Scheduled requests added.", request_id)
         else:
