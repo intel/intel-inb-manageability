@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 class SqliteManager:
     def __init__(self, db_file=UDM_DB_FILE) -> None:
         self._db_file = db_file
-        self.conn: sqlite3.Connection = sqlite3.connect(self._db_file)
+        self._conn: sqlite3.Connection = sqlite3.connect(self._db_file)
         self._create_tables_if_not_exist()
 
     def create_schedule(self, schedule: Union[SingleSchedule, RepeatedSchedule]) -> None:
@@ -36,12 +36,12 @@ class SqliteManager:
         except (sqlite3.OperationalError, sqlite3.InternalError) as e:
             raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
         finally:
-            if self.conn:
-                self.conn.close()
+            if self._conn:
+                self._conn.close()
     
     def _create_single_schedule(self, ss: SingleSchedule, conn: sqlite3.Connection) -> None:
         # Creating the table
-        cur = conn.cursor()
+        cur = self._conn.cursor()
 
         # Add the schedule to the single_schedule table
         sql = ''' INSERT INTO single_schedule(request_id, start_time, end_time)
@@ -54,10 +54,7 @@ class SqliteManager:
             raise DispatcherException(f"Error adding single schedule to database: {e}")
         
         schedule_id = cur.lastrowid
-        logger.debug(f"Added schedule with id: {str(schedule_id)}, 
-                     request_id:{ss.request_id}, 
-                     start_time: {str(ss.start_time)}, 
-                     end_time: {str(ss.end_time)}")
+        logger.debug(f"Added schedule with id: {str(schedule_id)}, request_id: {ss.request_id}, start_time: {str(ss.start_time)}, end_time: {str(ss.end_time)}")
         
         # Add the manifests to the manifest table
         manifest_ids = self._add_manifest_to_table(cur, ss.manifests)
@@ -69,7 +66,7 @@ class SqliteManager:
 
     def _create_repeated_schedule(self, rs: RepeatedSchedule, conn: sqlite3.Connection) -> None:
         # Creating the table
-        cur = conn.cursor()
+        cur = self._conn.cursor()
 
         # Add the schedule to the single_schedule table
         sql = ''' INSERT INTO repeated_schedule(request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week)
@@ -86,14 +83,7 @@ class SqliteManager:
             raise DispatcherException(f"Error adding repeated schedule to database: {e}")
         
         schedule_id = cur.lastrowid
-        logger.debug(f"Added repeated schedule with id: {str(schedule_id)}, 
-                     request_id:{rs.request_id}, 
-                     cron_duration: {rs.cron_duration}, 
-                     cron_minutes: {rs.cron_minutes},
-                     cron_hours: {rs.cron_hours},
-                     cron_day_month: {rs.cron_day_month},
-                     cron_month: {rs.cron_month},
-                     cron_day_week: {rs.cron_day_week}")
+        logger.debug(f"Added repeated schedule with id: {str(schedule_id)}, request_id:{rs.request_id}, cron_duration: {rs.cron_duration}, cron_minutes: {rs.cron_minutes}, cron_hours: {rs.cron_hours}, cron_day_month: {rs.cron_day_month}, cron_month: {rs.cron_month}, cron_day_week: {rs.cron_day_week}")
         
         # Add the manifests to the manifest table
         manifest_ids = self._add_manifest_to_table(cur, rs.manifests)
@@ -136,7 +126,7 @@ class SqliteManager:
                                 start_time text,
                                 end_time text
                             ); '''
-        self.conn.execute(sql)
+        self._conn.execute(sql)
     
     def _create_repeated_schedule_table(self) -> None:      
         sql = ''' CREATE TABLE repeated_schedule IF NOT EXISTS (
@@ -148,24 +138,24 @@ class SqliteManager:
                                 cron_day_month text,
                                 cron_month text,
                                 cron_day_week text); '''
-        self.conn.execute(sql)
+        self._conn.execute(sql)
         
     def _create_manifest_table(self) -> None:      
         sql = ''' CREATE TABLE manifest IF NOT EXISTS (
                                 id integer INTEGER PRIMARY KEY AUTOINCREMENT,
                                 manifest text); '''
-        self.conn.execute(sql)
+        self._conn.execute(sql)
         
     def _create_single_schedule_manfiest_table(self) -> None:
         sql = ''' CREATE TABLE single_schedule_manifest IF NOT EXISTS (
                                 id integer INTEGER PRIMARY KEY AUTOINCREMENT,
                                 schedule_id integer,
                                 manifest_id integer); '''
-        self.conn.execute(sql)
+        self._conn.execute(sql)
         
     def _create_repeated_schedule_manifest_table(self) -> None:
         sql = ''' CREATE TABLE repeated_schedule_manifest IF NOT EXISTS (
                                 id integer INTEGER PRIMARY KEY AUTOINCREMENT,
                                 schedule_id integer,
                                 manifest_id integer); '''
-        self.conn.execute(sql)
+        self._conn.execute(sql)
