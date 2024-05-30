@@ -2,7 +2,6 @@ import os
 from unittest import TestCase
 
 from dispatcher.schedule.manifest_parser import ScheduleManifestParser
-from dispatcher.dispatcher_exception import DispatcherException
 from inbm_lib.xmlhandler import XmlException
 
 GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
