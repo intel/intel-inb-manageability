@@ -12,6 +12,7 @@ from typing import Optional
 class SingleSchedule:
     """ Represents a SingleSchedule object from the Scheduled Manifest """
     request_id: str
+    id: Optional[int] = field(default=None)    
     start_time: Optional[datetime] = field(default=None)
     end_time: Optional[datetime] = field(default=None)
     manifests: list[str] = field(default_factory=list)
@@ -20,6 +21,7 @@ class SingleSchedule:
 class RepeatedSchedule:
     """ Represents a RepeatedSchedule object from the Scheduled Manifest """
     request_id: str
+    id: Optional[int] = field(default=None)    
     cron_duration: str = field(default='*')
     cron_minutes: str = field(default='*')
     cron_hours: str = field(default='*')

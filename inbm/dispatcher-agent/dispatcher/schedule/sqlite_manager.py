@@ -7,7 +7,7 @@
 
 import logging
 import sqlite3
-from typing import Union
+from typing import Union, Any
 from .schedules import SingleSchedule, RepeatedSchedule
 from ..dispatcher_exception import DispatcherException
 from ..constants import UDM_DB_FILE
@@ -138,20 +138,86 @@ class SqliteManager:
             logger.debug(f"Inserted new tuple to repeated_schedule_manifest table with manifest_id: {str(manifest_id)} to schedule with id: {str(schedule_id)}, with priority: {str(priority)}")
  
     def select_single_schedule_by_request_id(self, request_id: str) -> list[SingleSchedule]:
+        """Create a list of SingleSchedule objects from the database matching the request_id
+        @param request_id: request ID to match in the database
+        @return: list of SingleSchedule objects
+        """
+        
         sql = ''' SELECT * FROM single_schedule WHERE request_id = ? '''
         try:
             self._cursor.execute(sql, (request_id,))
-            self._cursor.row_factory = None
         except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
             raise DispatcherException(f"Error selecting single schedule from database: {e}")
         
-        rows = self._cursor.fetchall()
-        self._conn.commit()
+        ss_rows = self._cursor.fetchall()
+        if len(ss_rows) == 0:
+            raise DispatcherException(f"No single schedule found with request_id: {request_id}")
+                       
         ss: list[SingleSchedule] = []
-        for row in rows:            
-            ss.append(SingleSchedule(request_id=request_id, start_time=row))
+        for row in ss_rows:
+            # Get the ids for the manifests matching the schedules from the join table (single_schedule_manifest)
+            sql = ''' SELECT * FROM single_schedule_manifest WHERE schedule_id = ? '''
+            ssm_rows = self._select_manifest_ids_by_schedule_id(sql, row[0])            
+            manifests = self._select_manifests_by_schedule_id(ssm_rows)      
+            
+            ss.append(SingleSchedule(id=row[0], request_id=row[1], start_time=row[2], end_time=row[3], manifests=manifests))
         return ss
+    
+    def select_repeated_schedule_by_request_id(self, request_id: str) -> list[RepeatedSchedule]:
+        """Create a list of RepeatedSchedule objects from the database matching the request_id
+        @param request_id: request ID to match in the database
+        @return: list of RepeatedSchedule objects
+        """
         
+        sql = ''' SELECT * FROM repeated_schedule WHERE request_id = ? '''
+        try:
+            self._cursor.execute(sql, (request_id,))
+        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
+            raise DispatcherException(f"Error selecting repeated schedule from database: {e}")
+        
+        rs_rows = self._cursor.fetchall()
+        if len(rs_rows) == 0:
+            raise DispatcherException(f"No repeated schedule found with request_id: {request_id}")
+        
+        rs: list[RepeatedSchedule] = []
+        for row in rs_rows:
+            sql = ''' SELECT * FROM repeated_schedule_manifest WHERE schedule_id = ? '''
+            rsm_rows = self._select_manifest_ids_by_schedule_id(sql, row[0])            
+            manifests = self._select_manifests_by_schedule_id(rsm_rows)                
+            rs.append(RepeatedSchedule(id=row[0], request_id=row[1], cron_duration=row[2], cron_minutes=row[3], 
+                                       cron_hours=row[4], cron_day_month=row[5], cron_month=row[6], cron_day_week=row[7],
+                                       manifests=manifests))
+        return rs
+        
+    def _select_manifest_ids_by_schedule_id(self, sql: str, schedule_id: int) -> list[int]:
+        # Get the manifest_ids from the join table
+        try:
+            self._cursor.execute(sql, (schedule_id,))
+        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
+            raise DispatcherException(f"Error selecting schedule manifest from database: {e}")
+        
+        rows = self._cursor.fetchall()
+        if len(rows) == 0:
+            raise DispatcherException(f"No schedule manifest found with schedule_id: {schedule_id}")
+        return rows
+    
+    def _select_manifests_by_schedule_id(self, schedule_manifest_rows: list[Any]) -> list[str]:
+        # Get the manifests using the manifest_ids from the join table
+        manifests: list[str] = []
+        for row in schedule_manifest_rows:
+            # Get the manifests using the manifest_ids from the join table
+            sql = ''' SELECT * FROM manifest WHERE id = ? '''
+            try:
+                self._cursor.execute(sql, (row[2],))
+            except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
+                raise DispatcherException(f"Error selecting manifest from database: {e}")
+            
+            manifest_row = self._cursor.fetchone()
+            if not manifest_row:
+                raise DispatcherException(f"No manifest found with id: {manifest_row[2]}")
+            manifests.append(manifest_row[1])
+        return manifests  
+                 
     def _create_tables_if_not_exist(self) -> None:
         self._create_single_schedule_table()
         self._create_repeated_schedule_table()
@@ -161,38 +227,40 @@ class SqliteManager:
     
     def _create_single_schedule_table(self) -> None:      
         sql = ''' CREATE TABLE IF NOT EXISTS single_schedule(
-                                request_id text,
-                                start_time text,
-                                end_time text
-                            ); '''
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                request_id TEXT NOT NULL,
+                                start_time TEXT NOT NULL,
+                                end_time TEXT); '''
         self._conn.execute(sql)
     
     def _create_repeated_schedule_table(self) -> None:      
         sql = ''' CREATE TABLE IF NOT EXISTS repeated_schedule(
-                                request_id text,
-                                cron_duration text,
-                                cron_minutes text,
-                                cron_hours text,
-                                cron_day_month text,
-                                cron_month text,
-                                cron_day_week text); '''
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                request_id TEXT,
+                                cron_duration TEXT,
+                                cron_minutes TEXT,
+                                cron_hours TEXT,
+                                cron_day_month TEXT,
+                                cron_month TEXT,
+                                cron_day_week TEXT); '''
         self._conn.execute(sql)
         
     def _create_manifest_table(self) -> None:      
         sql = ''' CREATE TABLE IF NOT EXISTS manifest(
-                                manifest text); '''
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                manifest TEXT); '''
         self._conn.execute(sql)
         
     def _create_single_schedule_manifest_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS single_schedule_manifest(
-                                priority INTEGER,
-                                schedule_id INTEGER,
-                                manifest_id INTEGER); '''
+                                priority INTEGER NOT NULL,
+                                schedule_id INTEGER NOT NULL,
+                                manifest_id INTEGER NOT NULL); '''
         self._conn.execute(sql)
         
     def _create_repeated_schedule_manifest_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS repeated_schedule_manifest(
-                                priority INTEGER,
-                                schedule_id INTEGER,
-                                manifest_id INTEGER); '''
+                                priority INTEGER NOT NULL,
+                                schedule_id INTEGER NOT NULL,
+                                manifest_id INTEGER NOT NULL); '''
         self._conn.execute(sql)
