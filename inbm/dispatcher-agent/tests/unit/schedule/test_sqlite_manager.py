@@ -18,7 +18,7 @@ class TestSqliteManager(TestCase):
 
         self.db.create_schedule(ss)
         ss = self.db.select_single_schedule_by_request_id("REQ123")
-        self.assertEqual(ss.request_id[0], "REQ123")
+        self.assertEqual(ss[0].request_id, "REQ123")
         
          
 

@@ -85,10 +85,10 @@ class SqliteManager:
         logger.debug(f"Added repeated schedule with id: {str(schedule_id)}, request_id:{rs.request_id}, cron_duration: {rs.cron_duration}, cron_minutes: {rs.cron_minutes}, cron_hours: {rs.cron_hours}, cron_day_month: {rs.cron_day_month}, cron_month: {rs.cron_month}, cron_day_week: {rs.cron_day_week}") # noqa
         
         # Add the manifests to the manifest table
-        manifest_ids = self._insert_manifest_to_table(cur, rs.manifests)
+        manifest_ids = self._insert_manifest_to_table(rs.manifests)
            
         # Add the schedule_id and manifest_id to the repeated_schedule_manifest table
-        self._insert_repeated_schedule_manifest_tables(cur, schedule_id, manifest_ids)
+        self._insert_repeated_schedule_manifest_tables(schedule_id, manifest_ids)
         self._conn.commit()
         
     def _insert_manifest_to_table(self, manifests: list[str]) -> list[int]:
@@ -138,16 +138,16 @@ class SqliteManager:
             logger.debug(f"Inserted new tuple to repeated_schedule_manifest table with manifest_id: {str(manifest_id)} to schedule with id: {str(schedule_id)}, with priority: {str(priority)}")
  
     def select_single_schedule_by_request_id(self, request_id: str) -> list[SingleSchedule]:
-        sql = ''' SELECT * FROM single_schedule WHERE request_id = ?'; '''
+        sql = ''' SELECT * FROM single_schedule WHERE request_id = ? '''
         try:
-            self._cursor.execute(sql)
+            self._cursor.execute(sql, (request_id,))
             self._cursor.row_factory = None
         except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
             raise DispatcherException(f"Error selecting single schedule from database: {e}")
         
         rows = self._cursor.fetchall()
         self._conn.commit()
-        ss: SingleSchedule = []
+        ss: list[SingleSchedule] = []
         for row in rows:            
             ss.append(SingleSchedule(request_id=request_id, start_time=row))
         return ss
