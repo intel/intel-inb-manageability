@@ -742,10 +742,7 @@ def handle_updates(dispatcher: Any,
             all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests                
             process_scheduled_requests(all_scheduled_requests)
 
-            dispatcher._send_result("Scheduled requests added.", request_id)
-        else:
-            # blank payload indicates no error
-            dispatcher._send_result("", request_id)
+        dispatcher._send_result("", request_id)
         
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:

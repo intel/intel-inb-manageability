@@ -59,7 +59,7 @@ class SqliteManager:
     
     def _create_single_schedule(self, ss: SingleSchedule) -> None:
         # Add the schedule to the single_schedule table
-        logger.debug(f"Execute -> INSERT INTO single_schedule_manifest(request_id, start_time, end_time) VALUES({ss.request_id}{ss.start_time}{ss.end_time})")
+        logger.debug(f"Execute -> INSERT INTO single_schedule(request_id, start_time, end_time) VALUES({ss.request_id}{ss.start_time}{ss.end_time})")
 
         sql = ''' INSERT INTO single_schedule(request_id, start_time, end_time)
                                 VALUES(?,?,?); '''
@@ -72,7 +72,7 @@ class SqliteManager:
             if not schedule_id:
                 raise DispatcherException("No schedule id was added to the single_schedule table.")
             
-            logger.debug(f"Added schedule with id: {str(schedule_id)}, request_id: {ss.request_id}, start_time: {str(ss.start_time)}, end_time: {str(ss.end_time)}")
+            logger.debug(f"Added schedule with id: {str(schedule_id)}, request_id: {ss.request_id}, start_time: {start_time}, end_time: {ss.end_time}")
         
             # Add the manifests to the manifest table
             manifest_ids = self._insert_manifest_to_table(ss.manifests)
