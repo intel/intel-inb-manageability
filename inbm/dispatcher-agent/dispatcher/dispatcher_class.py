@@ -734,14 +734,13 @@ def handle_updates(dispatcher: Any,
         
         # Add schedules to the database
         if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
-            with sql_lock:            
-                def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
+            def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
+                with sql_lock:  
                     sqliteManager = SqliteManager()
                     for requests in scheduled_requests:
                         sqliteManager.create_schedule(requests)
-                        
-                process_scheduled_requests(schedule.single_scheduled_requests)
-                process_scheduled_requests(schedule.repeated_scheduled_requests)
+            all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests                
+            process_scheduled_requests(all_scheduled_requests)
 
             dispatcher._send_result("Scheduled requests added.", request_id)
         else:

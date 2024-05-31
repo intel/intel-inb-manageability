@@ -7,6 +7,7 @@
 
 import logging
 import sqlite3
+import os
 from typing import Any
 from .schedules import SingleSchedule, RepeatedSchedule, Schedule
 from ..dispatcher_exception import DispatcherException
@@ -22,23 +23,18 @@ class SqliteManager:
         @param db_file: The path to the SQLite database file.  Defaults to UDM_DB_FILE.
         """
         self._db_file = db_file
-        self._conn = None
+        if self._db_file != ":memory:" and not os.path.exists(self._db_file):
+            raise DispatcherException(f"Error: Database file {self._db_file} does not exist.")
+
         try:
             with sqlite3.connect(self._db_file) as conn:
-                self._conn = conn        
+                self._conn = conn
+            self._cursor = self._conn.cursor()
+            self._create_tables_if_not_exist()         
         except sqlite3.Error as e:
-           raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
-        
-        self._cursor = self._conn.cursor()
-        self._create_tables_if_not_exist() 
-    
-
-    def __del__(self) -> None:
-        if self._cursor:
-            self._cursor.close()
-        if self._conn:
-            self._conn.close()
-            
+            logger.error(f"Error connecting to Dispatcher Schedule database: {e}")
+            raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
+           
     def create_schedule(self, schedule: Schedule) -> None:
         """
         Create a new schedule in the database.
@@ -75,22 +71,10 @@ class SqliteManager:
             
             # Add the schedule_id and manifest_id to the single_schedule_manifest table
             self._insert_single_schedule_manifest_tables(schedule_id, manifest_ids)         
-            self._commit_transaction()
-        except (sqlite3.DatabaseError) as e:
-            self._rollback_transaction()
-            raise DispatcherException(f"Transaction failed: {str(e)}")                       
-
-    def _commit_transaction(self) -> None:
-        if self._conn:
             self._conn.commit()
-            
-    def _execute_transaction(self, sql: str) -> None:
-        if self._conn:
-            self._conn.execute(sql)
-            
-    def _rollback_transaction(self) -> None:
-        if self._conn:
+        except (sqlite3.DatabaseError) as e:
             self._conn.rollback()
+            raise DispatcherException(f"Transaction failed: {str(e)}")                       
 
     def _create_repeated_schedule(self, rs: RepeatedSchedule) -> None:
         # Add the schedule to the single_schedule table
@@ -105,7 +89,7 @@ class SqliteManager:
                                         rs.cron_hours, 
                                         rs.cron_day_month, 
                                         rs.cron_month, 
-                                        rs.cron_day_week))
+                                        rs.cron_day_week,))
             schedule_id = self._cursor.lastrowid
             if not schedule_id:
                 raise DispatcherException("No schedule id was added to the repeated_schedule table.")
@@ -117,9 +101,9 @@ class SqliteManager:
             
             # Add the schedule_id and manifest_id to the repeated_schedule_manifest table
             self._insert_repeated_schedule_manifest_tables(schedule_id, manifest_ids)
-            self._commit_transaction()
+            self._conn.commit()
         except (sqlite3.DatabaseError) as e:
-            self._rollback_transaction()
+            self._conn.rollback()
             raise DispatcherException(f"Transaction failed: {str(e)}")        
         
     def _insert_manifest_to_table(self, manifests: list[str]) -> list[int]:
@@ -274,7 +258,7 @@ class SqliteManager:
                                 request_id TEXT NOT NULL,
                                 start_time TEXT NOT NULL,
                                 end_time TEXT); '''
-        self._execute_transaction(sql)
+        self._conn.execute(sql)
     
     def _create_repeated_schedule_table(self) -> None:      
         sql = ''' CREATE TABLE IF NOT EXISTS repeated_schedule(
@@ -286,24 +270,24 @@ class SqliteManager:
                                 cron_day_month TEXT,
                                 cron_month TEXT,
                                 cron_day_week TEXT); '''
-        self._execute_transaction(sql)
+        self._conn.execute(sql)
         
     def _create_manifest_table(self) -> None:      
         sql = ''' CREATE TABLE IF NOT EXISTS manifest(
                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                                 manifest TEXT); '''
-        self._execute_transaction(sql)
+        self._conn.execute(sql)
         
     def _create_single_schedule_manifest_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS single_schedule_manifest(
                                 priority INTEGER NOT NULL,
                                 schedule_id INTEGER NOT NULL REFERENCES single_schedule(id),
                                 manifest_id INTEGER NOT NULL REFERENCES manifest(id)); '''
-        self._execute_transaction(sql)
+        self._conn.execute(sql)
         
     def _create_repeated_schedule_manifest_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS repeated_schedule_manifest(
                                 priority INTEGER NOT NULL,
                                 schedule_id INTEGER NOT NULL REFERENCES repeated_schedule(id),
                                 manifest_id INTEGER NOT NULL REFERENCES manifest(id)); '''
-        self._execute_transaction(sql)
+        self._conn.execute(sql)

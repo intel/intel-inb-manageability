@@ -8,10 +8,6 @@ class TestSqliteManager(TestCase):
     
     def setUp(self) -> None:
         self.db = SqliteManager(":memory:")
-        
-    #def tearDown(self) -> None:
-        #if self.db._conn:
-        #    self.db._conn.close()
      
     def test_raise_exception_when_create_single_schedule_with_invalid_start_time(self):
         ss1 = SingleSchedule(request_id="REQ123", 
