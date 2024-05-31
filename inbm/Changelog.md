@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
  - Added INBS cloud with Ping support to Cloudadapter
 
+### Security
+ - Bump requests from 2.31.0 to 2.32.2 in multiple agents resolving detected 3rd party CVE: CVE-2024-35195
+
 ## 4.2.3 - 2024-05-02
 
 ### Changed
