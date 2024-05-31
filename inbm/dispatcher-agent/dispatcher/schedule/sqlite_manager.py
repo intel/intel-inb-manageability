@@ -24,15 +24,18 @@ class SqliteManager:
         self._db_file = db_file
         self._conn = None
         try:
-            self._conn = sqlite3.connect(self._db_file)
-        
+            with sqlite3.connect(self._db_file) as conn:
+                self._conn = conn        
         except sqlite3.Error as e:
            raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
         
+        self._cursor = self._conn.cursor()
         self._create_tables_if_not_exist() 
-        self._cursor = self._conn.cursor()       
+    
 
     def __del__(self) -> None:
+        if self._cursor:
+            self._cursor.close()
         if self._conn:
             self._conn.close()
             
