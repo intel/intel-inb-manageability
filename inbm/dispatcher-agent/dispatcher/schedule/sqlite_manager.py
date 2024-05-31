@@ -45,12 +45,14 @@ class SqliteManager:
         # Add the schedule to the single_schedule table
         sql = ''' INSERT INTO single_schedule(request_id, start_time, end_time)
                                 VALUES(?,?,?); '''
+        start_time = None if not ss.start_time else str(ss.start_time)
+        end_time = None if not ss.end_time else str(ss.end_time)
         try:
-            self._cursor.execute(sql, (str(ss.request_id), 
-                            str(ss.start_time), 
-                            str(ss.end_time)))
+            self._cursor.execute(sql, (ss.request_id, 
+                            start_time, 
+                            end_time))
         except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
-            raise DispatcherException(f"Error adding single schedule to database: {e}")
+            raise DispatcherException(f"Error adding single schedule to database: {str(e)}")
         
         schedule_id = self._cursor.lastrowid
         if not schedule_id:
@@ -69,13 +71,13 @@ class SqliteManager:
         sql = ''' INSERT INTO repeated_schedule(request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week)
                                 VALUES(?,?,?,?,?,?,?); '''
         try:
-            self._cursor.execute(sql, (str(rs.request_id), 
-                            str(rs.cron_duration), 
-                            str(rs.cron_minutes), 
-                            str(rs.cron_hours), 
-                            str(rs.cron_day_month), 
-                            str(rs.cron_month), 
-                            str(rs.cron_day_week)))
+            self._cursor.execute(sql, (rs.request_id, 
+                                        rs.cron_duration, 
+                                        rs.cron_minutes, 
+                                        rs.cron_hours, 
+                                        rs.cron_day_month, 
+                                        rs.cron_month, 
+                                        rs.cron_day_week))
         except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
             raise DispatcherException(f"Error adding repeated schedule to database: {e}")
         
@@ -95,6 +97,9 @@ class SqliteManager:
         # Add the manifest to the manifest table
         manifest_ids: list[int] = []
         
+        if len(manifests) == 0:
+            raise DispatcherException("Error: At least one manifest is required for the schedule.  Manifests list is empty.")
+        
         for manifest in manifests:
             sql = ''' INSERT INTO manifest(manifest) VALUES(?); '''
             try: 
@@ -104,8 +109,8 @@ class SqliteManager:
 
             manifest_id = self._cursor.lastrowid
             if not manifest_id:
-                raise DispatcherException("No new manifest was added to the manifest table.")
-            
+                raise DispatcherException("No manifest id was added to the manifest table.")
+           
             logger.debug(f"Added manifest with id: {str(manifest_id)}.")
             manifest_ids.append(manifest_id)
          

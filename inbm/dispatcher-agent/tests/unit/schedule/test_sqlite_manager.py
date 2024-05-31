@@ -1,4 +1,3 @@
-import datetime
 from unittest import TestCase
 
 from dispatcher.schedule.sqlite_manager import SqliteManager
@@ -10,6 +9,33 @@ class TestSqliteManager(TestCase):
     def setUp(self) -> None:
         self.db = SqliteManager(":memory:")
      
+    def test_raise_exception_when_create_single_schedule_with_invalid_start_time(self):
+        ss1 = SingleSchedule(request_id="REQ123", 
+                            start_time=None,
+                            end_time="2024-01-02T00:00:00", 
+                            manifests=["MANIFEST1", "MANIFEST2"])
+        with self.assertRaisesRegex(DispatcherException, 
+                                    'Error adding single schedule to database: NOT NULL constraint failed: single_schedule.start_time'):
+            self.db.create_schedule(ss1)
+    
+    def test_raise_exception_when_create_single_schedule_with_no_manifests(self):
+        ss1 = SingleSchedule(request_id="REQ123", 
+                            start_time="2024-01-01T00:00:00",
+                            end_time="2024-01-02T00:00:00", 
+                            manifests=[])
+        with self.assertRaisesRegex(DispatcherException, 
+                                    'Error: At least one manifest is required for the schedule.  Manifests list is empty.'):
+            self.db.create_schedule(ss1)
+                    
+    def test_raise_exception_when_create_repeated_schedule_with_no_manifests(self):
+        rs1 = RepeatedSchedule(request_id="REQ123",
+                            cron_duration=None,
+                            cron_minutes="*/3",
+                            manifests=[])
+        with self.assertRaisesRegex(DispatcherException, 
+                                    'Error: At least one manifest is required for the schedule.  Manifests list is empty.'):
+            self.db.create_schedule(rs1)
+        
     def test_create_simple_schedule(self):
         ss1 = SingleSchedule(request_id="REQ123", 
                             start_time="2024-01-01T00:00:00", 
