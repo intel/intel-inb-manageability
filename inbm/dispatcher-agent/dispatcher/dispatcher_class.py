@@ -14,7 +14,7 @@ import sys
 from queue import Queue
 from threading import Thread, active_count, Lock
 from time import sleep
-from typing import Optional, Any, Mapping, Tuple
+from typing import Optional, Any, Mapping, Tuple, Sequence
 
 from dispatcher.config.config_operation import ConfigOperation
 from dispatcher.source.source_command import do_source_command
@@ -34,6 +34,7 @@ from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.exceptions import UrlSecurityException
 
 from .schedule.manifest_parser import ScheduleManifestParser, SCHEDULE_SCHEMA_LOCATION
+from .schedule.schedules import Schedule
 from .schedule.sqlite_manager import SqliteManager
 from .dispatcher_broker import DispatcherBroker
 from .dispatcher_exception import DispatcherException
@@ -731,14 +732,17 @@ def handle_updates(dispatcher: Any,
             dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
             return
         
-        # TODO: Change single and repeated to add the schedules to the scheduler DB
+        # Add schedules to the database
         if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
-            sql_lock.acquire()
-            for ss in schedule.single_scheduled_requests:
-                SqliteManager().create_schedule(ss)
-            for rs in schedule.repeated_scheduled_requests:
-                SqliteManager().create_schedule(rs)
-            sql_lock.release()
+            with sql_lock:            
+                def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
+                    sqliteManager = SqliteManager()
+                    for requests in scheduled_requests:
+                        sqliteManager.create_schedule(requests)
+                        
+                process_scheduled_requests(schedule.single_scheduled_requests)
+                process_scheduled_requests(schedule.repeated_scheduled_requests)
+
             dispatcher._send_result("Scheduled requests added.", request_id)
         else:
             # blank payload indicates no error

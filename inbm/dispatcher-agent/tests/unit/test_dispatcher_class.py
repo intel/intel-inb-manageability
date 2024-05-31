@@ -97,9 +97,9 @@ def test_run_one_immediate_scheduled_manifest(mock_disp_obj, method_counter, moc
     assert method_counter.call_count == 1
 
 
-@patch('dispatcher.schedule.sqlite_manager.sqlite3.connect')
-@patch('dispatcher.schedule.sqlite_manager.SqliteManager.create_schedule')
-def test_run_several_immediate_scheduled_manifest(mock_create_schedule, mock_conn, mock_disp_obj, method_counter, mocker):
+def test_run_several_immediate_scheduled_manifest(mock_disp_obj, method_counter, mocker):        
+    mocker.patch('dispatcher.schedule.sqlite_manager.sqlite3.connect')
+    mocker.patch('dispatcher.schedule.sqlite_manager.SqliteManager.create_schedule')
     # Mock the call to dispatcher.update_queue.get
     mocker.patch.object(mock_disp_obj.update_queue, 'get', 
                         return_value=['schedule', GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML, "REQ12345"])
@@ -110,3 +110,4 @@ def test_run_several_immediate_scheduled_manifest(mock_create_schedule, mock_con
     
     # Assert that the do_install method is called the correct number of times
     assert method_counter.call_count == 2
+

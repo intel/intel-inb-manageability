@@ -8,6 +8,10 @@ class TestSqliteManager(TestCase):
     
     def setUp(self) -> None:
         self.db = SqliteManager(":memory:")
+        
+    #def tearDown(self) -> None:
+        #if self.db._conn:
+        #    self.db._conn.close()
      
     def test_raise_exception_when_create_single_schedule_with_invalid_start_time(self):
         ss1 = SingleSchedule(request_id="REQ123", 
@@ -15,7 +19,7 @@ class TestSqliteManager(TestCase):
                             end_time="2024-01-02T00:00:00", 
                             manifests=["MANIFEST1", "MANIFEST2"])
         with self.assertRaisesRegex(DispatcherException, 
-                                    'Error adding single schedule to database: NOT NULL constraint failed: single_schedule.start_time'):
+                                    "Transaction failed: NOT NULL constraint failed: single_schedule.start_time"):
             self.db.create_schedule(ss1)
     
     def test_raise_exception_when_create_single_schedule_with_no_manifests(self):
@@ -24,7 +28,7 @@ class TestSqliteManager(TestCase):
                             end_time="2024-01-02T00:00:00", 
                             manifests=[])
         with self.assertRaisesRegex(DispatcherException, 
-                                    'Error: At least one manifest is required for the schedule.  Manifests list is empty.'):
+                                    "Error: At least one manifest is required for the schedule.  Manifests list is empty."):
             self.db.create_schedule(ss1)
                     
     def test_raise_exception_when_create_repeated_schedule_with_no_manifests(self):
@@ -33,7 +37,7 @@ class TestSqliteManager(TestCase):
                             cron_minutes="*/3",
                             manifests=[])
         with self.assertRaisesRegex(DispatcherException, 
-                                    'Error: At least one manifest is required for the schedule.  Manifests list is empty.'):
+                                    "Error: At least one manifest is required for the schedule.  Manifests list is empty."):
             self.db.create_schedule(rs1)
         
     def test_create_simple_schedule(self):
