@@ -1,7 +1,7 @@
 ---
 linktitle: "Dispatcher Schedule DB ER-Design"
 categories: ["Design"]
-status: "proposed"
+status: "approved"
 weight: 2
 toc_hide: false
 hide_summary: false
