@@ -29,7 +29,6 @@ class TestSqliteManager(TestCase):
                     
     def test_raise_exception_when_create_repeated_schedule_with_no_manifests(self):
         rs1 = RepeatedSchedule(request_id="REQ123",
-                            cron_duration=None,
                             cron_minutes="*/3",
                             manifests=[])
         with self.assertRaisesRegex(DispatcherException, 
