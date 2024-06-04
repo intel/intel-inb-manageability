@@ -8,7 +8,7 @@
 import logging
 import sqlite3
 import os
-from typing import Any
+from typing import Any, List, Tuple
 from .schedules import SingleSchedule, RepeatedSchedule, Schedule
 from ..dispatcher_exception import DispatcherException
 from ..constants import UDM_DB_FILE
@@ -42,7 +42,7 @@ class SqliteManager:
         
         self._create_tables_if_not_exist() 
 
-    def get_single_schedule_manifest(self) -> list[(int, int, int)]:
+    def get_single_schedule_manifest(self) -> List[Tuple[int, int, int]]:
         """
         Get the data from single_schedule_manifest table and arrange them in ascending order based on the priority.
         @return: List of tuple which represents priority, schedule_id and manifest_id.

@@ -149,8 +149,8 @@ class Dispatcher:
         for single_schedule in single_schedule_list:
             schedule_id = single_schedule[1]
             manifest_id = single_schedule[2]
-            start_time = sqliteManager.select_single_schedule_start_time_by_id(schedule_id)
-            manifest = sqliteManager.select_manifest_by_id(manifest_id)
+            start_time = sqliteManager.select_single_schedule_start_time_by_id(str(schedule_id))
+            manifest = sqliteManager.select_manifest_by_id(str(manifest_id))
             scheduler.add_single_schedule_job(self.do_install, start_time, manifest)
         scheduler.start()
 
