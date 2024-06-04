@@ -14,7 +14,7 @@ deploy_package () {
     set -x
 }
 
-DISTRIBUTION_STRING='deb.distribution=focal;deb.distribution=hirsute;deb.distribution=impish;deb.distribution=jammy'
+DISTRIBUTION_STRING='deb.distribution=focal;deb.distribution=hirsute;deb.distribution=impish;deb.distribution=jammy;deb.distribution=noble'
 COMPONENT=universe
 ARCHITECTURE=amd64
 
