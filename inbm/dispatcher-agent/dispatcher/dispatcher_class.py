@@ -36,6 +36,7 @@ from inbm_common_lib.exceptions import UrlSecurityException
 from .schedule.manifest_parser import ScheduleManifestParser, SCHEDULE_SCHEMA_LOCATION
 from .schedule.schedules import Schedule
 from .schedule.sqlite_manager import SqliteManager
+from .schedule.apscheduler import APScheduler
 from .dispatcher_broker import DispatcherBroker
 from .dispatcher_exception import DispatcherException
 from .aota.aota_error import AotaError
@@ -140,6 +141,18 @@ class Dispatcher:
 
         with ota_lock:
             self._perform_startup_tasks()
+
+        # Run scheduler to schedule the task
+        scheduler = APScheduler()
+        sqliteManager = SqliteManager()
+        single_schedule_list = sqliteManager.get_single_schedule_manifest()
+        for single_schedule in single_schedule_list:
+            schedule_id = single_schedule[1]
+            manifest_id = single_schedule[2]
+            start_time = sqliteManager.select_single_schedule_start_time_by_id(schedule_id)
+            manifest = sqliteManager.select_manifest_by_id(manifest_id)
+            scheduler.add_single_schedule_job(self.do_install, start_time, manifest)
+        scheduler.start()
 
         def _sig_handler(signo, frame) -> None:
             """Callback to register different signals. Currently we do that only for SIGTERM & SIGINT
