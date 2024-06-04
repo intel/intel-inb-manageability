@@ -275,19 +275,19 @@ class SqliteManager:
     def _create_repeated_schedule_table(self) -> None:      
         sql = ''' CREATE TABLE IF NOT EXISTS repeated_schedule(
                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                request_id TEXT,
-                                cron_duration TEXT,
-                                cron_minutes TEXT,
-                                cron_hours TEXT,
-                                cron_day_month TEXT,
-                                cron_month TEXT,
-                                cron_day_week TEXT); '''
+                                request_id TEXT NOT NULL,
+                                cron_duration TEXT NOT NULL,
+                                cron_minutes TEXT NOT NULL,
+                                cron_hours TEXT NOT NULL,
+                                cron_day_month TEXT NOT NULL,
+                                cron_month TEXT NOT NULL,
+                                cron_day_week TEXT NOT NULL); '''
         self._conn.execute(sql)
         
     def _create_manifest_table(self) -> None:      
         sql = ''' CREATE TABLE IF NOT EXISTS manifest(
                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                                manifest TEXT); '''
+                                manifest TEXT NOT NULL); '''
         self._conn.execute(sql)
         
     def _create_single_schedule_manifest_table(self) -> None:
