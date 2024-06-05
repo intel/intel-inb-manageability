@@ -8,7 +8,8 @@
 import logging
 import sqlite3
 import os
-from typing import Any, List, Tuple
+import stat
+from typing import Any, List
 from .schedules import SingleSchedule, RepeatedSchedule, Schedule, SingleScheduleManifest
 from ..dispatcher_exception import DispatcherException
 from ..constants import UDM_DB_FILE
@@ -24,8 +25,12 @@ class SqliteManager:
         """
         self._db_file = db_file
         if self._db_file != ":memory:" and not os.path.exists(self._db_file):
-            raise DispatcherException(f"Error: Database file {self._db_file} does not exist.")
-
+            # Create database file if not exist
+            logger.info(f"Database file doesn't exist. Creating the file.")
+            file_descriptor = os.open(self._db_file, os.O_CREAT)
+            # Set permission of the file (rw for owner and group)
+            os.chmod(self._db_file, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
+            os.close(file_descriptor)
         try:
             with sqlite3.connect(self._db_file) as conn:
                 self._conn = conn                    

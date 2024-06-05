@@ -7,7 +7,8 @@
 from enum import Enum
 
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_ETC_PATH_PREFIX, \
-    INTEL_MANAGEABILITY_SHARE_PATH_PREFIX, INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, BROKER_ETC_PATH
+    INTEL_MANAGEABILITY_SHARE_PATH_PREFIX, INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, BROKER_ETC_PATH, \
+    INTEL_MANAGEABILITY_VAR_PATH_PREFIX
 
 AGENT = 'dispatcher'
 STATE_CHANNEL = '+/state'
@@ -30,8 +31,7 @@ TOKEN = 'token'  # noqa: S105
 CSL_CA = 'certFile'
 
 # UDM Sqlite3 DB FILE
-UDM_DB_FILE = str(INTEL_MANAGEABILITY_ETC_PATH_PREFIX /
-                  'public' / 'dispatcher-agent' / 'udm.db')
+UDM_DB_FILE = str(INTEL_MANAGEABILITY_VAR_PATH_PREFIX / 'udm.db')
 
 # Subscription channels
 TC_REQUEST_CHANNEL = 'manageability/request/#'
