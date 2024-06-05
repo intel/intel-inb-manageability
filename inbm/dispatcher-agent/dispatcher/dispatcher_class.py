@@ -146,6 +146,7 @@ class Dispatcher:
         scheduler = APScheduler()
         sqliteManager = SqliteManager()
         single_schedule_list = sqliteManager.get_all_single_schedule_in_priority()
+        logger.info(f"Total scheduled tasks: {len(single_schedule_list)}")
         for single_schedule in single_schedule_list:
             scheduler.add_single_schedule_job(self.do_install, single_schedule)
         scheduler.start()

@@ -70,7 +70,7 @@ class SqliteManager:
                 schedule_id = single_schedule_manifest.schedule_id
                 manifest_id = single_schedule_manifest.manifest_id
                 single_schedule = self._select_single_schedule_by_id(str(schedule_id))
-                single_schedule.manifests[0] = self._select_manifest_by_id(str(manifest_id))
+                single_schedule.manifests = [self._select_manifest_by_id(str(manifest_id))]
                 ss.append(single_schedule)
             return ss
 
