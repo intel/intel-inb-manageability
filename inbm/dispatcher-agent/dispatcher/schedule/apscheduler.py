@@ -31,4 +31,5 @@ class APScheduler:
         @param manifest: Manifest to be executed.
         """
         logger.debug("")
-        self._scheduler.add_job(callback, 'date', run_date=single_schedule.start_time, args=[single_schedule.manifests])
+        for manifest in single_schedule.manifests:
+            self._scheduler.add_job(callback, 'date', run_date=single_schedule.start_time, args=[manifest])

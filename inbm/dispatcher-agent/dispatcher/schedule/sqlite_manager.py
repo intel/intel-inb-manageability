@@ -59,12 +59,13 @@ class SqliteManager:
                                                                             manifest_id=row[2]))
 
             ss: list[SingleSchedule] = []
-            # Create single_schedule object
+            # Create multiple SingleSchedule object and stores them inside the list.
+            # Each element in single_schedule_manifest creates one SingleSchedule object.
             for single_schedule_manifest in single_schedule_manifest_list:
                 schedule_id = single_schedule_manifest.schedule_id
                 manifest_id = single_schedule_manifest.manifest_id
                 single_schedule = self._select_single_schedule_by_id(str(schedule_id))
-                single_schedule.manifests = self._select_manifest_by_id(str(manifest_id))
+                single_schedule.manifests[0] = self._select_manifest_by_id(str(manifest_id))
                 ss.append(single_schedule)
             return ss
 
