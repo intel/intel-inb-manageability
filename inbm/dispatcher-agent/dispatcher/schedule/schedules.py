@@ -39,3 +39,10 @@ class SingleScheduleManifest:
     priority: int
     schedule_id: int
     manifest_id: int
+
+@dataclass
+class RepeatedScheduleManifest:
+    """ Represents a RepeatedScheduleManifest object from the Scheduled Manifest """
+    priority: int
+    schedule_id: int
+    manifest_id: int

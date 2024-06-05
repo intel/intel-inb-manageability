@@ -8,7 +8,7 @@
 import logging
 from typing import Callable
 
-from .schedules import SingleSchedule
+from .schedules import SingleSchedule, RepeatedSchedule
 from apscheduler.schedulers.background import BackgroundScheduler
 
 logger = logging.getLogger(__name__)
@@ -27,9 +27,19 @@ class APScheduler:
         """Add the job for single schedule.
 
         @param callback: The function to be called.
-        @param schedule_date: The schedule date.
-        @param manifest: Manifest to be executed.
+        @param single_schedule: SingleSchedule object
         """
         logger.debug("")
         for manifest in single_schedule.manifests:
             self._scheduler.add_job(callback, 'date', run_date=single_schedule.start_time, args=[manifest])
+
+    def add_repeated_schedule_job(self, callback: Callable, repeated_schedule: RepeatedSchedule) -> None:
+        """Add the job for repeated schedule.
+
+        @param callback: The function to be called.
+        @param repeated_schedule: RepeatedSchedule object.
+        """
+        logger.debug("")
+        for manifest in repeated_schedule.manifests:
+            logger.debug("To be implemented.")
+

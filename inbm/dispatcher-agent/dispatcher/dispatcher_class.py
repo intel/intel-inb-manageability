@@ -142,13 +142,18 @@ class Dispatcher:
         with ota_lock:
             self._perform_startup_tasks()
 
-        # Run scheduler to schedule the task
+        # Run scheduler to schedule the task during startup.
         scheduler = APScheduler()
         sqliteManager = SqliteManager()
         single_schedule_list = sqliteManager.get_all_single_schedule_in_priority()
-        logger.info(f"Total scheduled tasks: {len(single_schedule_list)}")
+        logger.info(f"Total single scheduled tasks: {len(single_schedule_list)}")
         for single_schedule in single_schedule_list:
             scheduler.add_single_schedule_job(self.do_install, single_schedule)
+
+        repeated_schedule_list = sqliteManager.get_all_repeated_schedule_in_priority()
+        logger.info(f"Total repeated scheduled tasks: {len(repeated_schedule_list)}")
+        for repeated_schedule in repeated_schedule_list:
+            scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
         scheduler.start()
 
         def _sig_handler(signo, frame) -> None:

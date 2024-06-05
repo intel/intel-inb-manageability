@@ -10,7 +10,7 @@ import sqlite3
 import os
 import stat
 from typing import Any, List
-from .schedules import SingleSchedule, RepeatedSchedule, Schedule, SingleScheduleManifest
+from .schedules import SingleSchedule, RepeatedSchedule, Schedule, SingleScheduleManifest, RepeatedScheduleManifest
 from ..dispatcher_exception import DispatcherException
 from ..constants import UDM_DB_FILE
 
@@ -58,14 +58,13 @@ class SqliteManager:
             rows = self._cursor.fetchall()
             single_schedule_manifest_list: List[SingleScheduleManifest] = []
             for row in rows:
-                # Access the data using the column index or name
                 single_schedule_manifest_list.append(SingleScheduleManifest(priority=row[0],
                                                                             schedule_id=row[1],
                                                                             manifest_id=row[2]))
 
-            ss: list[SingleSchedule] = []
+            ss: List[SingleSchedule] = []
             # Create multiple SingleSchedule object and stores them inside the list.
-            # Each element in single_schedule_manifest creates one SingleSchedule object.
+            # Each element in single_schedule_manifest_list creates one SingleSchedule object.
             for single_schedule_manifest in single_schedule_manifest_list:
                 schedule_id = single_schedule_manifest.schedule_id
                 manifest_id = single_schedule_manifest.manifest_id
@@ -75,7 +74,36 @@ class SqliteManager:
             return ss
 
         except (sqlite3.Error) as e:
-            raise DispatcherException(f"Error getting the single_schedule_manifest from database: {e}")
+            raise DispatcherException(f"Error in getting the all single schedules from database: {e}")
+
+    def get_all_repeated_schedule_in_priority(self) -> List[RepeatedSchedule]:
+        """
+        Get all the RepeatedSchedule and arrange them by priority in ascending order.
+        @return: List of RepeatedSchedule object by priority in ascending order
+        """
+        try:
+            sql = ''' SELECT priority, schedule_id, manifest_id FROM repeated_schedule_manifest ORDER BY priority ASC; '''
+            self._cursor.execute(sql)
+            rows = self._cursor.fetchall()
+            repeated_schedule_manifest_list: List[RepeatedScheduleManifest] = []
+            for row in rows:
+                repeated_schedule_manifest_list.append(RepeatedScheduleManifest(priority=row[0],
+                                                                                schedule_id=row[1],
+                                                                                manifest_id=row[2]))
+
+            rs: List[RepeatedSchedule] = []
+            # Create multiple RepeatedSchedule object and stores them inside the list.
+            # Each element in repeated_schedule_manifest_list creates one RepeatedSchedule object.
+            for repeated_schedule_manifest in repeated_schedule_manifest_list:
+                schedule_id = repeated_schedule_manifest.schedule_id
+                manifest_id = repeated_schedule_manifest.manifest_id
+                repeated_schedule = self._select_repeated_schedule_by_id(str(schedule_id))
+                repeated_schedule.manifests = [self._select_manifest_by_id(str(manifest_id))]
+                rs.append(repeated_schedule)
+            return rs
+
+        except (sqlite3.Error) as e:
+            raise DispatcherException(f"Error in getting the all repeated schedules from database: {e}")
 
     def _select_manifest_by_id(self, id: str) -> str:
         """Get the manifest stored in database by id.
@@ -102,6 +130,32 @@ class SqliteManager:
         end_time = result[2]
         logger.debug(f"id={id}, request_id={request_id}, start_time={start_time}, end_time={end_time}")
         return SingleSchedule(id=int(id), request_id=request_id, start_time=start_time, end_time=end_time)
+
+    def _select_repeated_schedule_by_id(self, id: str) -> RepeatedSchedule:
+        """Get the repeated schedule stored in database by id.
+        @param id: row index
+        @return: RepeatedSchedule object
+        """
+        sql = ''' SELECT request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week FROM repeated_schedule WHERE rowid=?; '''
+        self._cursor.execute(sql, (id,))
+        result = self._cursor.fetchone()
+        request_id = result[0]
+        cron_duration = result[1]
+        cron_minutes = result[2]
+        cron_hours = result[3]
+        cron_day_month = result[4]
+        cron_month = result[5]
+        cron_day_week = result[6]
+        logger.debug(f"id={id}, cron_duration={cron_duration}, cron_minutes={cron_minutes}, cron_hours={cron_hours},"
+                     f" cron_day_month={cron_day_month}, cron_month={cron_month}, cron_day_week={cron_day_week}")
+        return RepeatedSchedule(id=int(id),
+                                request_id=request_id,
+                                cron_duration=cron_duration,
+                                cron_minutes=cron_minutes,
+                                cron_hours=cron_hours,
+                                cron_day_month=cron_day_month,
+                                cron_month=cron_month,
+                                cron_day_week=cron_day_week)
 
     def create_schedule(self, schedule: Schedule) -> None:
         """
