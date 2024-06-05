@@ -9,7 +9,7 @@ import logging
 import sqlite3
 import os
 from typing import Any, List, Tuple
-from .schedules import SingleSchedule, RepeatedSchedule, Schedule
+from .schedules import SingleSchedule, RepeatedSchedule, Schedule, SingleScheduleManifest
 from ..dispatcher_exception import DispatcherException
 from ..constants import UDM_DB_FILE
 
@@ -42,34 +42,36 @@ class SqliteManager:
         
         self._create_tables_if_not_exist() 
 
-    def get_single_schedule_manifest(self) -> List[Tuple[int, int, int]]:
+    def get_all_single_schedule_in_priority(self) -> List[SingleSchedule]:
         """
-        Get the data from single_schedule_manifest table and arrange them in ascending order based on the priority.
-        @return: List of tuple which represents priority, schedule_id and manifest_id.
+        Get all the SingleSchedule and arrange them by priority in ascending order.
+        @return: List of SingleSchedule object by priority in ascending order
         """
         try:
-            sql = ''' SELECT * FROM single_schedule_manifest; '''
+            sql = ''' SELECT priority, schedule_id, manifest_id FROM single_schedule_manifest ORDER BY priority ASC; '''
             self._cursor.execute(sql)
             rows = self._cursor.fetchall()
-            data_list = []
+            single_schedule_manifest_list: List[SingleScheduleManifest] = []
             for row in rows:
                 # Access the data using the column index or name
-                priority = row[0]
-                schedule_id = row[1]
-                manifest_id = row[2]
-                # Store the data in a tuple and append it to the list
-                data_tuple = (priority, schedule_id, manifest_id)
-                data_list.append(data_tuple)
+                single_schedule_manifest_list.append(SingleScheduleManifest(priority=row[0],
+                                                                            schedule_id=row[1],
+                                                                            manifest_id=row[2]))
 
-            # Sort the data_list by priority in ascending order
-            data_list = sorted(data_list, key=lambda x: x[0])
-            # Print the sorted data_list
-            return data_list
+            ss: list[SingleSchedule] = []
+            # Create single_schedule object
+            for single_schedule_manifest in single_schedule_manifest_list:
+                schedule_id = single_schedule_manifest.schedule_id
+                manifest_id = single_schedule_manifest.manifest_id
+                single_schedule = self._select_single_schedule_by_id(str(schedule_id))
+                single_schedule.manifests = self._select_manifest_by_id(str(manifest_id))
+                ss.append(single_schedule)
+            return ss
 
         except (sqlite3.Error) as e:
             raise DispatcherException(f"Error getting the single_schedule_manifest from database: {e}")
 
-    def select_manifest_by_id(self, id: str) -> str:
+    def _select_manifest_by_id(self, id: str) -> str:
         """Get the manifest stored in database by id.
         @param id: row index
         @return: manifest
@@ -81,17 +83,19 @@ class SqliteManager:
         logger.debug(f"id={id}, manifest={manifest}")
         return manifest
 
-    def select_single_schedule_start_time_by_id(self, id: str) -> str:
-        """Get the single schedule start time stored in database by id.
+    def _select_single_schedule_by_id(self, id: str) -> SingleSchedule:
+        """Get the single schedule stored in database by id.
         @param id: row index
-        @return: start_time of the single schedule
+        @return: SingleSchedule object
         """
-        sql = ''' SELECT start_time FROM single_schedule WHERE rowid=?; '''
+        sql = ''' SELECT request_id, start_time, end_time FROM single_schedule WHERE rowid=?; '''
         self._cursor.execute(sql, (id,))
-        row = self._cursor.fetchone()
-        start_time = row[0]
-        logger.debug(f"id={id}, start_time={start_time}")
-        return start_time
+        result = self._cursor.fetchone()
+        request_id = result[0]
+        start_time = result[1]
+        end_time = result[2]
+        logger.debug(f"id={id}, request_id={request_id}, start_time={start_time}, end_time={end_time}")
+        return SingleSchedule(id=int(id), request_id=request_id, start_time=start_time, end_time=end_time)
 
     def create_schedule(self, schedule: Schedule) -> None:
         """

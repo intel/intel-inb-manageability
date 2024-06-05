@@ -32,4 +32,10 @@ class RepeatedSchedule(Schedule):
     cron_month: str = field(default='*')
     cron_day_week: str = field(default='*')
     manifests: List[str] = field(default_factory=list)
-    
+
+@dataclass
+class SingleScheduleManifest:
+    """ Represents a SingleScheduleManifest object from the Scheduled Manifest """
+    priority: int
+    schedule_id: int
+    manifest_id: int

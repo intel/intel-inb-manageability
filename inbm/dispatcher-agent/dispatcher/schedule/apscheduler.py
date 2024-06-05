@@ -6,10 +6,9 @@
 """
 
 import logging
-from datetime import datetime
 from typing import Callable
-import os
 
+from .schedules import SingleSchedule
 from apscheduler.schedulers.background import BackgroundScheduler
 
 logger = logging.getLogger(__name__)
@@ -24,12 +23,12 @@ class APScheduler:
         logger.debug("")
         self._scheduler.start()
 
-    def add_single_schedule_job(self, callback: Callable, schedule_date: str, manifest: str) -> None:
-        """Handles the connection to the SQLite database and all database operations.
+    def add_single_schedule_job(self, callback: Callable, single_schedule: SingleSchedule) -> None:
+        """Add the job for single schedule.
 
         @param callback: The function to be called.
         @param schedule_date: The schedule date.
         @param manifest: Manifest to be executed.
         """
         logger.debug("")
-        self._scheduler.add_job(callback, 'date', run_date=schedule_date, args=[manifest])
+        self._scheduler.add_job(callback, 'date', run_date=single_schedule.start_time, args=[single_schedule.manifests])

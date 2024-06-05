@@ -145,13 +145,9 @@ class Dispatcher:
         # Run scheduler to schedule the task
         scheduler = APScheduler()
         sqliteManager = SqliteManager()
-        single_schedule_list = sqliteManager.get_single_schedule_manifest()
+        single_schedule_list = sqliteManager.get_all_single_schedule_in_priority()
         for single_schedule in single_schedule_list:
-            schedule_id = single_schedule[1]
-            manifest_id = single_schedule[2]
-            start_time = sqliteManager.select_single_schedule_start_time_by_id(str(schedule_id))
-            manifest = sqliteManager.select_manifest_by_id(str(manifest_id))
-            scheduler.add_single_schedule_job(self.do_install, start_time, manifest)
+            scheduler.add_single_schedule_job(self.do_install, single_schedule)
         scheduler.start()
 
         def _sig_handler(signo, frame) -> None:
@@ -754,12 +750,14 @@ def handle_updates(dispatcher: Any,
                         sqliteManager.create_schedule(requests)
             all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests                
             process_scheduled_requests(all_scheduled_requests)
-
-        dispatcher._send_result("", request_id)
         
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:
-                dispatcher.do_install(xml=manifest)
+                try:
+                    dispatcher.do_install(xml=manifest)
+                except (NotImplementedError, DispatcherException) as e:
+                    dispatcher._send_result(str(e), request_id)
+        dispatcher._send_result("", request_id)
         return
     
     if request_type == "install" or request_type == "query":
