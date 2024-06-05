@@ -28,6 +28,11 @@ jobs:
           GITHUB_ACTION.AUTO_REVIEW: false
           GITHUB_ACTION.AUTO_DESCRIBE: false
           GITHUB_ACTION.UPDATE_TITLE: false
+          USE_CUSTOM_MODEL: true
+          CUSTOM_PROD_API_BASE: ${{ secrets.CUSTOM_PROD_API_BASE }}
+          CUSTOM_PROD_API_KEY: ${{ secrets.CUSTOM_PROD_API_KEY }}
+          GPT4128K_DEPLOY_NAME: ${{ secrets.GPT4128K_DEPLOY_NAME }}
+          CUSTOM_API_VERSION: ${{ secrets.CUSTOM_API_VERSION }}
           # Uncomment the line below to add any extra instructions you wish to give to the LLM
           # GITHUB_ACTION.EXTRA_INSTRUCTIONS: 'Please give clear review for the user'
 
