@@ -32,6 +32,7 @@ CSL_CA = 'certFile'
 
 # UDM Sqlite3 DB FILE
 UDM_DB_FILE = str(INTEL_MANAGEABILITY_VAR_PATH_PREFIX / 'udm.db')
+SCHEDULED = "scheduled"
 
 # Subscription channels
 TC_REQUEST_CHANNEL = 'manageability/request/#'

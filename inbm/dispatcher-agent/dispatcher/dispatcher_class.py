@@ -143,8 +143,8 @@ class Dispatcher:
             self._perform_startup_tasks()
 
         # Run scheduler to schedule the task during startup.
-        scheduler = APScheduler()
         sqliteManager = SqliteManager()
+        scheduler = APScheduler(sqlite_mgr=sqliteManager)
         single_schedule_list = sqliteManager.get_all_single_schedule_in_priority()
         logger.info(f"Total single scheduled tasks: {len(single_schedule_list)}")
         for single_schedule in single_schedule_list:

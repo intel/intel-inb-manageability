@@ -9,10 +9,11 @@ import logging
 import sqlite3
 import os
 import stat
+from datetime import datetime
 from typing import Any, List
 from .schedules import SingleSchedule, RepeatedSchedule, Schedule, SingleScheduleManifest, RepeatedScheduleManifest
 from ..dispatcher_exception import DispatcherException
-from ..constants import UDM_DB_FILE
+from ..constants import UDM_DB_FILE, SCHEDULED
 
 logger = logging.getLogger(__name__)
 
@@ -53,24 +54,30 @@ class SqliteManager:
         @return: List of SingleSchedule object by priority in ascending order
         """
         try:
-            sql = ''' SELECT priority, schedule_id, manifest_id FROM single_schedule_manifest ORDER BY priority ASC; '''
+            sql = ''' SELECT priority, schedule_id, manifest_id, status FROM single_schedule_manifest ORDER BY priority ASC; '''
             self._cursor.execute(sql)
             rows = self._cursor.fetchall()
             single_schedule_manifest_list: List[SingleScheduleManifest] = []
             for row in rows:
                 single_schedule_manifest_list.append(SingleScheduleManifest(priority=row[0],
                                                                             schedule_id=row[1],
-                                                                            manifest_id=row[2]))
+                                                                            manifest_id=row[2],
+                                                                            status=row[3]))
 
             ss: List[SingleSchedule] = []
             # Create multiple SingleSchedule object and stores them inside the list.
             # Each element in single_schedule_manifest_list creates one SingleSchedule object.
             for single_schedule_manifest in single_schedule_manifest_list:
-                schedule_id = single_schedule_manifest.schedule_id
-                manifest_id = single_schedule_manifest.manifest_id
-                single_schedule = self._select_single_schedule_by_id(str(schedule_id))
-                single_schedule.manifests = [self._select_manifest_by_id(str(manifest_id))]
-                ss.append(single_schedule)
+                # If the manifest already run in the past, it will not be scheduled again.
+                if single_schedule_manifest.status != SCHEDULED:
+                    schedule_id = single_schedule_manifest.schedule_id
+                    manifest_id = single_schedule_manifest.manifest_id
+                    single_schedule = self._select_single_schedule_by_id(str(schedule_id))
+                    single_schedule.manifests = [self._select_manifest_by_id(str(manifest_id))]
+                    single_schedule.schedule_manifest_id = (single_schedule_manifest.priority,
+                                                            single_schedule_manifest.schedule_id,
+                                                            single_schedule_manifest.manifest_id)
+                    ss.append(single_schedule)
             return ss
 
         except (sqlite3.Error) as e:
@@ -82,24 +89,27 @@ class SqliteManager:
         @return: List of RepeatedSchedule object by priority in ascending order
         """
         try:
-            sql = ''' SELECT priority, schedule_id, manifest_id FROM repeated_schedule_manifest ORDER BY priority ASC; '''
+            sql = ''' SELECT priority, schedule_id, manifest_id, status FROM repeated_schedule_manifest ORDER BY priority ASC; '''
             self._cursor.execute(sql)
             rows = self._cursor.fetchall()
             repeated_schedule_manifest_list: List[RepeatedScheduleManifest] = []
             for row in rows:
                 repeated_schedule_manifest_list.append(RepeatedScheduleManifest(priority=row[0],
                                                                                 schedule_id=row[1],
-                                                                                manifest_id=row[2]))
+                                                                                manifest_id=row[2],
+                                                                                status=row[3]))
 
             rs: List[RepeatedSchedule] = []
             # Create multiple RepeatedSchedule object and stores them inside the list.
             # Each element in repeated_schedule_manifest_list creates one RepeatedSchedule object.
             for repeated_schedule_manifest in repeated_schedule_manifest_list:
-                schedule_id = repeated_schedule_manifest.schedule_id
-                manifest_id = repeated_schedule_manifest.manifest_id
-                repeated_schedule = self._select_repeated_schedule_by_id(str(schedule_id))
-                repeated_schedule.manifests = [self._select_manifest_by_id(str(manifest_id))]
-                rs.append(repeated_schedule)
+                # If the manifest already run in the past, it will not be scheduled again.
+                if repeated_schedule_manifest.status != SCHEDULED:
+                    schedule_id = repeated_schedule_manifest.schedule_id
+                    manifest_id = repeated_schedule_manifest.manifest_id
+                    repeated_schedule = self._select_repeated_schedule_by_id(str(schedule_id))
+                    repeated_schedule.manifests = [self._select_manifest_by_id(str(manifest_id))]
+                    rs.append(repeated_schedule)
             return rs
 
         except (sqlite3.Error) as e:
@@ -126,8 +136,8 @@ class SqliteManager:
         self._cursor.execute(sql, (id,))
         result = self._cursor.fetchone()
         request_id = result[0]
-        start_time = result[1]
-        end_time = result[2]
+        start_time = datetime.fromisoformat(result[1])
+        end_time = datetime.fromisoformat(result[2])
         logger.debug(f"id={id}, request_id={request_id}, start_time={start_time}, end_time={end_time}")
         return SingleSchedule(id=int(id), request_id=request_id, start_time=start_time, end_time=end_time)
 
@@ -156,6 +166,23 @@ class SqliteManager:
                                 cron_day_month=cron_day_month,
                                 cron_month=cron_month,
                                 cron_day_week=cron_day_week)
+
+    def update_status_in_database(self, schedule: Schedule, status: str) -> None:
+        """
+        Set the status of a Schedule object in the database.
+        @param schedule: SingleSchedule or RepeatedSchedule object
+        @param status: status to be set
+        """
+        try:
+            sql = ''' UPDATE single_schedule_manifest SET status = ? WHERE priority = ? AND schedule_id = ? AND manifest_id = ?; '''
+            if schedule.schedule_manifest_id:
+                logger.debug(f"Update status in database to {status} with id={schedule.schedule_manifest_id}")
+                self._cursor.execute(sql, (status, schedule.schedule_manifest_id[0], schedule.schedule_manifest_id[1], schedule.schedule_manifest_id[2]))
+                self._conn.commit()
+            else:
+                logger.error("Unable to update status in database as the schedule_manifest_id is empty.")
+        except (sqlite3.Error) as e:
+            raise DispatcherException(f"Error to update status in Dispatcher Schedule database: {e}")
 
     def create_schedule(self, schedule: Schedule) -> None:
         """
@@ -409,12 +436,14 @@ class SqliteManager:
         sql = ''' CREATE TABLE IF NOT EXISTS single_schedule_manifest(
                                 priority INTEGER NOT NULL,
                                 schedule_id INTEGER NOT NULL REFERENCES single_schedule(id),
-                                manifest_id INTEGER NOT NULL REFERENCES manifest(id)); '''
+                                manifest_id INTEGER NOT NULL REFERENCES manifest(id),
+                                status TEXT); '''
         self._conn.execute(sql)
         
     def _create_repeated_schedule_manifest_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS repeated_schedule_manifest(
                                 priority INTEGER NOT NULL,
                                 schedule_id INTEGER NOT NULL REFERENCES repeated_schedule(id),
-                                manifest_id INTEGER NOT NULL REFERENCES manifest(id)); '''
+                                manifest_id INTEGER NOT NULL REFERENCES manifest(id),
+                                status TEXT); '''
         self._conn.execute(sql)

@@ -6,13 +6,14 @@
 """
 from datetime import datetime
 from dataclasses import dataclass, field
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 @dataclass
 class Schedule:
     """ Represents a Base class for schedule objects """
     request_id: str
-    id: Optional[int] = field(default=None)    
+    id: Optional[int] = field(default=None)
+    schedule_manifest_id: Optional[Tuple[int, int, int]] = field(default=None)
 
 
 @dataclass
@@ -39,6 +40,7 @@ class SingleScheduleManifest:
     priority: int
     schedule_id: int
     manifest_id: int
+    status: Optional[str]
 
 @dataclass
 class RepeatedScheduleManifest:
@@ -46,3 +48,4 @@ class RepeatedScheduleManifest:
     priority: int
     schedule_id: int
     manifest_id: int
+    status: Optional[str]
