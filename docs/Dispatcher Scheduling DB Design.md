@@ -53,7 +53,7 @@ erDiagram
         INTEGER priority "Order the manifests should run"
         INTEGER schedule_id PK, FK "REFERENCES repeated_schedule(id)"
         INTEGER manifest_id PK, FK "REFERENCES manifest(id)"
-        TEXT  "NULL or scheduled"
+        TEXT status "NULL or scheduled"
     }
 
     REPEATED_SCHEDULE {
