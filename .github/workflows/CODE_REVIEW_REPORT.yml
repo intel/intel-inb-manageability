@@ -21,3 +21,8 @@ jobs:
          ./get_pr_eval_report.sh
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
+          USE_CUSTOM_MODEL: true
+          CUSTOM_PROD_API_BASE: ${{ secrets.CUSTOM_PROD_API_BASE }}
+          CUSTOM_PROD_API_KEY: ${{ secrets.CUSTOM_PROD_API_KEY }}
+          GPT4128K_DEPLOY_NAME: ${{ secrets.GPT4128K_DEPLOY_NAME }}
+          CUSTOM_API_VERSION: ${{ secrets.CUSTOM_API_VERSION }}
