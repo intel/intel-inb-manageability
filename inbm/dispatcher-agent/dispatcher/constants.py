@@ -30,8 +30,8 @@ IP = 'ip'
 TOKEN = 'token'  # noqa: S105
 CSL_CA = 'certFile'
 
-# UDM Sqlite3 DB FILE
-UDM_DB_FILE = str(INTEL_MANAGEABILITY_VAR_PATH_PREFIX / 'udm.db')
+# Scheduler Sqlite3 DB FILE
+SCHEDULER_DB_FILE = str(INTEL_MANAGEABILITY_VAR_PATH_PREFIX / 'scheduler.db')
 SCHEDULED = "scheduled"
 
 # Subscription channels

@@ -2,9 +2,7 @@ import pytest
 import os
 
 from unit.common.mock_resources import *
-from unittest.mock import patch
 from dispatcher.dispatcher_class import handle_updates
-from dispatcher.schedule.sqlite_manager import SqliteManager
 
 GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 <schedule_request>

@@ -145,15 +145,17 @@ class Dispatcher:
         # Run scheduler to schedule the task during startup.
         sqliteManager = SqliteManager()
         scheduler = APScheduler(sqlite_mgr=sqliteManager)
-        single_schedule_list = sqliteManager.get_all_single_schedule_in_priority()
-        logger.info(f"Total single scheduled tasks: {len(single_schedule_list)}")
-        for single_schedule in single_schedule_list:
+        single_schedules = sqliteManager.get_all_single_schedule_in_priority()
+        logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
+        for single_schedule in single_schedules:
             scheduler.add_single_schedule_job(self.do_install, single_schedule)
+            logger.debug(f"Scheduled single job: {single_schedule}")
 
-        repeated_schedule_list = sqliteManager.get_all_repeated_schedule_in_priority()
-        logger.info(f"Total repeated scheduled tasks: {len(repeated_schedule_list)}")
-        for repeated_schedule in repeated_schedule_list:
+        repeated_schedules = sqliteManager.get_all_repeated_schedule_in_priority()
+        logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
+        for repeated_schedule in repeated_schedules:
             scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
+            logger.debug(f"Scheduled repeated job: {repeated_schedule}")
         scheduler.start()
 
         def _sig_handler(signo, frame) -> None:

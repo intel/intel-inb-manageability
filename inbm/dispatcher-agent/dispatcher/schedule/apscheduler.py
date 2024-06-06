@@ -6,7 +6,7 @@
 """
 
 import logging
-from typing import Callable, Optional
+from typing import Callable
 from datetime import datetime
 
 from .schedules import Schedule, SingleSchedule, RepeatedSchedule
@@ -24,7 +24,7 @@ class APScheduler:
 
     def start(self) -> None:
         """Start the scheduler"""
-        logger.debug("")
+        logger.debug("Starting APScheduler")
         self._scheduler.start()
 
     def add_single_schedule_job(self, callback: Callable, single_schedule: SingleSchedule) -> None:

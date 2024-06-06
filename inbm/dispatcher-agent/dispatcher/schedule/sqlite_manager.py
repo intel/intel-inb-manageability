@@ -7,33 +7,30 @@
 
 import logging
 import sqlite3
-import os
+import os   
 import stat
 from datetime import datetime
 from typing import Any, List
+from inbm_common_lib.utility import get_canonical_representation_of_path
 from .schedules import SingleSchedule, RepeatedSchedule, Schedule, SingleScheduleManifest, RepeatedScheduleManifest
 from ..dispatcher_exception import DispatcherException
-from ..constants import UDM_DB_FILE, SCHEDULED
+from ..constants import SCHEDULER_DB_FILE, SCHEDULED
 
 logger = logging.getLogger(__name__)
 
 
 class SqliteManager:
-    def __init__(self, db_file=UDM_DB_FILE) -> None:
+    def __init__(self, db_file=SCHEDULER_DB_FILE) -> None:
         """Handles the connection to the SQLite database and all database operations.
         
         @param db_file: The path to the SQLite database file.  Defaults to UDM_DB_FILE.
         """
-        self._db_file = db_file
-        if self._db_file != ":memory:" and not os.path.exists(self._db_file):
-            # Create database file if not exist
-            logger.info(f"Database file doesn't exist. Creating the file.")
-            file_descriptor = os.open(self._db_file, os.O_CREAT)
-            # Set permission of the file (rw for owner and group)
-            os.chmod(self._db_file, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP)
-            os.close(file_descriptor)
+        self._db_file = get_canonical_representation_of_path(db_file)
+        # Create the DB if it doesn't exist
+        self._create_db()
+        
         try:
-            with sqlite3.connect(self._db_file) as conn:
+            with sqlite3.Connection(self._db_file) as conn:
                 self._conn = conn                    
         except sqlite3.Error as e:
             logger.error(f"Error connecting to Dispatcher Schedule database: {e}")
@@ -48,6 +45,15 @@ class SqliteManager:
         
         self._create_tables_if_not_exist() 
 
+    def _create_db(self) -> None:  
+        # Create database file if not exist     
+        if self._db_file != ":memory:" and not os.path.exists(self._db_file):            
+            logger.info(f"Database file doesn't exist. Creating the file.")
+            # Set permission of the file (rw for owner and group)
+            mode = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
+            fd = os.open(self._db_file, os.O_CREAT | os.O_WRONLY, mode)
+            os.close(fd)            
+                
     def get_all_single_schedule_in_priority(self) -> List[SingleSchedule]:
         """
         Get all the SingleSchedule and arrange them by priority in ascending order.
