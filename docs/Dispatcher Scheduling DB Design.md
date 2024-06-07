@@ -27,11 +27,11 @@ title: Dispatcher Schedule ER Model
 ---
 
 erDiagram
-    SINGLE_SCHEDULE ||--o{ SINGLE_SCHEDULE_MANIFEST : schedules
-    SINGLE_SCHEDULE_MANIFEST {
-        INTEGER priority "Order the manifests should run"
+    SINGLE_SCHEDULE ||--o{ SINGLE_SCHEDULE_JOB : schedules
+    SINGLE_SCHEDULE_JOB {
+        INTEGER priority "Order the job manifests should run"
         INTEGER schedule_id PK, FK "REFERENCES single_schedule(id)"
-        INTEGER manifest_id PK, FK "REFERENCES manifest(id)"
+        INTEGER job_id PK, FK "REFERENCES job(id)"
         TEXT status "NULL or scheduled"
     }
 
@@ -41,18 +41,18 @@ erDiagram
         TEXT start_time "NOT NULL - Format -> 2024-01-01T00:00:00"
         TEXT end_time
     }
-    MANIFEST ||--o{ SINGLE_SCHEDULE_MANIFEST : performs
-    MANIFEST ||--o{ REPEATED_SCHEDULE_MANIFEST : performs
+    JOB ||--o{ SINGLE_SCHEDULE_JOB: performs
+    JOB ||--o{ REPEATED_SCHEDULE_JOB : performs
 
-    MANIFEST {
+    JOB {
         INTEGER id PK "AUTOINCREMENT"
         TEXT manifest "NOT NULL"
     }
-    REPEATED_SCHEDULE ||--o{ REPEATED_SCHEDULE_MANIFEST : schedules
-    REPEATED_SCHEDULE_MANIFEST {
-        INTEGER priority "Order the manifests should run"
+    REPEATED_SCHEDULE ||--o{ REPEATED_SCHEDULE_JOB : schedules
+    REPEATED_SCHEDULE_JOB {
+        INTEGER priority "Order the job manifests should run"
         INTEGER schedule_id PK, FK "REFERENCES repeated_schedule(id)"
-        INTEGER manifest_id PK, FK "REFERENCES manifest(id)"
+        INTEGER job_id PK, FK "REFERENCES job(id)"
         TEXT status "NULL or scheduled"
     }
 
@@ -71,7 +71,7 @@ erDiagram
 
 ## DB Table Examples
 
-### MANIFEST Table
+### JOB Table
 
 | id | manifest |
 | :---- | :----- |
@@ -98,21 +98,21 @@ NOTE: These values may not make sense in the real world.  Just for demonstration
 | 3 | 234 | P2D | 0 | */8 | * | * | * |
 | 4 | 234 | P14D | 0 | * | * | * | * |
 
-### SINGLE_SCHEDULE_MANIFEST Table
+### SINGLE_SCHEDULE_JOB Table
 
 Example: To do a download, install, and reboot of SOTA at the time in schedule 1
 
-| priority | schedule_id | manifest_id | status |
+| priority | schedule_id | job_id | status |
 | :---- | :---- | :---- | :----- |
 | 0   | 1 | 1 | scheduled |
 | 1   | 1 | 2 | scheduled |
 | 2   | 1 | 3 |   |
 
-### REPEATED_SCHEDULE_MANIFEST Table
+### REPEATED_SCHEDULE_JOB Table
 
 Example: To do a download, install, and reboot of SOTA at the repeated time in schedule 2
 
-| priority | schedule_id | manifest_id | status |
+| priority | schedule_id | job_id | status |
 | :---- | :---- | :---- | :----- |
 | 0   | 2 | 1 | scheduled |
 | 1   | 2 | 2 | scheduled |

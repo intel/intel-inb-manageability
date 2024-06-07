@@ -12,40 +12,39 @@ from typing import Optional, List, Tuple
 class Schedule:
     """ Represents a Base class for schedule objects """
     request_id: str
-    id: Optional[int] = field(default=None)
-    schedule_manifest_id: Optional[Tuple[int, int, int]] = field(default=None)
-
+    schedule_id: Optional[int] = field(default=None)
+    # priority, schedule_id, job_id from DB
+    job_id: Optional[Tuple[int, int, int]] = field(default=None)
+    manifests: List[str] = field(default_factory=list)
 
 @dataclass
 class SingleSchedule(Schedule):
-    """ Represents a SingleSchedule object from the Scheduled Manifest """ 
+    """ Represents a SingleSchedule object """ 
     start_time: Optional[datetime] = field(default=None)
-    end_time: Optional[datetime] = field(default=None)
-    manifests: List[str] = field(default_factory=list)
+    end_time: Optional[datetime] = field(default=None)       
  
 @dataclass
 class RepeatedSchedule(Schedule):
-    """ Represents a RepeatedSchedule object from the Scheduled Manifest """
+    """ Represents a RepeatedSchedule object """
     cron_duration: str = field(default='*')
     cron_minutes: str = field(default='*')
     cron_hours: str = field(default='*')
     cron_day_month: str = field(default='*')
     cron_month: str = field(default='*')
     cron_day_week: str = field(default='*')
-    manifests: List[str] = field(default_factory=list)
 
 @dataclass
-class SingleScheduleManifest:
-    """ Represents a SingleScheduleManifest object from the Scheduled Manifest """
+class SingleScheduleJob:
+    """ Represents a SingleScheduleJob object """
     priority: int
     schedule_id: int
-    manifest_id: int
+    job_id: int
     status: Optional[str]
 
 @dataclass
-class RepeatedScheduleManifest:
-    """ Represents a RepeatedScheduleManifest object from the Scheduled Manifest """
+class RepeatedScheduleJob:
+    """ Represents a RepeatedScheduleJob object """
     priority: int
     schedule_id: int
-    manifest_id: int
+    job_id: int
     status: Optional[str]

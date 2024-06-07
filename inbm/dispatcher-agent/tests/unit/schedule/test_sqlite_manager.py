@@ -8,6 +8,9 @@ class TestSqliteManager(TestCase):
     
     def setUp(self) -> None:
         self.db = SqliteManager(":memory:")
+    
+    def tearDown(self) -> None:
+        self.db.close()
      
     def test_raise_exception_when_create_single_schedule_with_invalid_start_time(self):
         ss1 = SingleSchedule(request_id="REQ123", 
@@ -18,13 +21,13 @@ class TestSqliteManager(TestCase):
                                     "Transaction failed: NOT NULL constraint failed: single_schedule.start_time"):
             self.db.create_schedule(ss1)
     
-    def test_raise_exception_when_create_single_schedule_with_no_manifests(self):
+    def test_raise_exeption_when_create_single_schedule_with_no_manifests(self):
         ss1 = SingleSchedule(request_id="REQ123", 
                             start_time="2024-01-01T00:00:00",
                             end_time="2024-01-02T00:00:00", 
                             manifests=[])
         with self.assertRaisesRegex(DispatcherException, 
-                                    "Error: At least one manifest is required for the schedule.  Manifests list is empty."):
+                                    "Error: At least one job is required for the schedule.  Jobs list is empty."):
             self.db.create_schedule(ss1)
                     
     def test_raise_exception_when_create_repeated_schedule_with_no_manifests(self):
@@ -32,7 +35,7 @@ class TestSqliteManager(TestCase):
                             cron_minutes="*/3",
                             manifests=[])
         with self.assertRaisesRegex(DispatcherException, 
-                                    "Error: At least one manifest is required for the schedule.  Manifests list is empty."):
+                                    "Error: At least one job is required for the schedule.  Jobs list is empty."):
             self.db.create_schedule(rs1)
         
     def test_create_simple_schedule(self):
@@ -49,15 +52,16 @@ class TestSqliteManager(TestCase):
         res1 = self.db.select_single_schedule_by_request_id("REQ123")
         res2 = self.db.select_single_schedule_by_request_id("REQ234")
         
-        self.assertEqual(res1[0].id, 1)
+        self.assertEqual(res1[0].schedule_id, 1)
         self.assertEqual(res1[0].request_id, "REQ123")
         self.assertEqual(res1[0].start_time, "2024-01-01T00:00:00")
         self.assertEqual(res1[0].end_time, "2024-01-02T00:00:00")
         self.assertEqual(res1[0].manifests, ["MANIFEST1", "MANIFEST2"])
         
+        self.assertEqual(res2[0].schedule_id, 2)
         self.assertEqual(res2[0].request_id, "REQ234")
         self.assertEqual(res2[0].start_time, "2024-05-01T00:00:00")
-        #self.assertEqual(res2[0].end_time, None)
+        self.assertEqual(res2[0].end_time, None)
         self.assertEqual(res2[0].manifests, ["MANIFEST3", "MANIFEST4"])
         
     def test_create_repeated_schedule(self):
@@ -77,7 +81,7 @@ class TestSqliteManager(TestCase):
         res1 = self.db.select_repeated_schedule_by_request_id("REQ123")
         res2 = self.db.select_repeated_schedule_by_request_id("REQ234")
     
-        self.assertEqual(res1[0].id, 1)
+        self.assertEqual(res1[0].schedule_id, 1)
         self.assertEqual(res1[0].request_id, "REQ123")
         self.assertEqual(res1[0].cron_duration, "*")
         self.assertEqual(res1[0].cron_minutes, "0")
@@ -87,7 +91,7 @@ class TestSqliteManager(TestCase):
         self.assertEqual(res1[0].cron_day_week, "1-5")
         self.assertEqual(res1[0].manifests, ["MANIFEST1", "MANIFEST2"])
              
-        self.assertEqual(res2[0].id, 2)
+        self.assertEqual(res2[0].schedule_id, 2)
         self.assertEqual(res2[0].request_id, "REQ234")
         self.assertEqual(res2[0].cron_duration, "P1D")
         self.assertEqual(res2[0].cron_minutes, "*/3")

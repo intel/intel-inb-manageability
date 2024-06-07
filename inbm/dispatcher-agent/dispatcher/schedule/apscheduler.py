@@ -35,7 +35,7 @@ class APScheduler:
         """
         logger.debug("")
         if self.is_schedulable(single_schedule):
-            self._sqlite_mgr.update_status_in_database(single_schedule, SCHEDULED)
+            self._sqlite_mgr.update_status(single_schedule, SCHEDULED)
             for manifest in single_schedule.manifests:
                 self._scheduler.add_job(callback, 'date', run_date=single_schedule.start_time, args=[manifest])
 
