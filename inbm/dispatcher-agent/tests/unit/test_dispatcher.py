@@ -457,11 +457,13 @@ class TestDispatcher(TestCase):
         mock_request_config_agent.return_value = True
         self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
+    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.__init__', return_value=None)
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     def test_service_name_prefixed_inbm(self,
                                         m_sub: Any,
                                         m_connect: Any,
+                                        sql_mgr: Any,
                                         ) -> None:
 
         d = WindowsDispatcherService([])
@@ -469,7 +471,8 @@ class TestDispatcher(TestCase):
         self.assertEqual(d._svc_name_.split('-')[0], 'inbm')
 
     @staticmethod
-    def _build_dispatcher(install_check: InstallCheckService = MockInstallCheckService()) -> Dispatcher:
+    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.__init__', return_value=None)
+    def _build_dispatcher(sqlite_mgr, install_check: InstallCheckService = MockInstallCheckService()) -> Dispatcher:
         d = Dispatcher([], MockDispatcherBroker.build_mock_dispatcher_broker(),
                        install_check)
         d._update_logger = Mock()

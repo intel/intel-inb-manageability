@@ -111,6 +111,8 @@ class Dispatcher:
 
         self._config_operation = ConfigOperation(self._dispatcher_broker)
 
+        self.sqlite_mgr = SqliteManager()
+
     def stop(self) -> None:
         self.RUNNING = False
 
@@ -143,15 +145,14 @@ class Dispatcher:
             self._perform_startup_tasks()
 
         # Run scheduler to schedule the task during startup.
-        sqliteManager = SqliteManager()
-        scheduler = APScheduler(sqlite_mgr=sqliteManager)
-        single_schedules = sqliteManager.get_all_single_schedules_in_priority_order()
+        scheduler = APScheduler(sqlite_mgr=self.sqlite_mgr)
+        single_schedules = self.sqlite_mgr.get_all_single_schedules_in_priority_order()
         logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
         for single_schedule in single_schedules:
             scheduler.add_single_schedule_job(self.do_install, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
-        repeated_schedules = sqliteManager.get_all_repeated_schedules_in_priority_order()
+        repeated_schedules = self.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
         logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
             scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
@@ -749,18 +750,16 @@ def handle_updates(dispatcher: Any,
             dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
             return
         
-        sqliteManager = SqliteManager()
-        
         # Clear the database of existing schedules before we add the new schedules
         with sql_lock:
-            sqliteManager.clear_database()
+            dispatcher.sqlite_mgr.clear_database()
             
         # Add schedules to the database
         if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
             def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
                 with sql_lock:
                     for requests in scheduled_requests:
-                        sqliteManager.create_schedule(requests)
+                        dispatcher.sqlite_mgr.create_schedule(requests)
             all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests                
             process_scheduled_requests(all_scheduled_requests)
         

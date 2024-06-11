@@ -143,16 +143,16 @@ class SqliteManager:
         except (sqlite3.Error) as e:
             raise DispatcherException(f"Error in getting the all repeated schedules from database: {e}")
 
-    def _select_job_by_id(self, id: str) -> str:
+    def _select_job_by_id(self, job_id: str) -> str:
         """Get the job stored in database by id.
         @param id: row index
         @return: job
         """
-        sql = ''' SELECT job FROM job WHERE rowid=?; '''
-        self._cursor.execute(sql, (id,))
+        sql = ''' SELECT manifest FROM job WHERE rowid=?; '''
+        self._cursor.execute(sql, (job_id,))
         row = self._cursor.fetchone()
         manifest = row[0]
-        logger.debug(f"id={id}, manifest={manifest}")
+        logger.debug(f"id={job_id}, manifest={manifest}")
         return manifest
 
     def _select_single_schedule_by_id(self, schedule_id: str) -> SingleSchedule:
@@ -161,11 +161,16 @@ class SqliteManager:
         @return: SingleSchedule object
         """
         sql = ''' SELECT request_id, start_time, end_time FROM single_schedule WHERE rowid=?; '''
-        self._cursor.execute(sql, (id,))
+        self._cursor.execute(sql, (schedule_id,))
         result = self._cursor.fetchone()
         request_id = result[0]
         start_time = datetime.fromisoformat(result[1])
-        end_time = datetime.fromisoformat(result[2])
+
+        if result[2]:
+            end_time = datetime.fromisoformat(result[2])
+        else:
+            end_time = None
+
         logger.debug(f"schedule_id={schedule_id}, request_id={request_id}, start_time={start_time}, end_time={end_time}")
         return SingleSchedule(schedule_id=int(schedule_id), request_id=request_id, start_time=start_time, end_time=end_time)
 

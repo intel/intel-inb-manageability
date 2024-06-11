@@ -17,6 +17,7 @@ from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.update_logger import UpdateLogger
 from dispatcher.workload_orchestration import WorkloadOrchestration
+from dispatcher.schedule.sqlite_manager import SqliteManager
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.constants import UNKNOWN
@@ -324,6 +325,7 @@ class MockDispatcher(Dispatcher):
         self._update_logger = UpdateLogger(ota_type="", data="")
         self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._wo: Optional[WorkloadOrchestration] = None
+        self.sqlite_mgr = SqliteManager(':memory:')
 
     def clear_dispatcher_state(self) -> None:
         pass

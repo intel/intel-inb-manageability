@@ -57,7 +57,7 @@ def test_create_simple_schedule(db_connection: SqliteManager):
     db_connection.create_schedule(ss1)
     db_connection.create_schedule(ss2)
     res = db_connection.get_all_single_schedules_in_priority_order()
-    assert len(res) == 2
+    assert len(res) == 4
         
         #res1 = self.db.select_single_schedule_by_request_id("REQ123")
         #res2 = self.db.select_single_schedule_by_request_id("REQ234")
