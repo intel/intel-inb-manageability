@@ -27,7 +27,7 @@ title: Dispatcher Schedule ER Model
 ---
 
 erDiagram
-    SINGLE_SCHEDULE ||--o{ SINGLE_SCHEDULE_JOB : schedules
+    SINGLE_SCHEDULE ||--|{ SINGLE_SCHEDULE_JOB : schedules
     SINGLE_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run"
         INTEGER schedule_id PK, FK "REFERENCES single_schedule(id)"
@@ -48,7 +48,7 @@ erDiagram
         INTEGER id PK "AUTOINCREMENT"
         TEXT manifest "NOT NULL"
     }
-    REPEATED_SCHEDULE ||--o{ REPEATED_SCHEDULE_JOB : schedules
+    REPEATED_SCHEDULE ||--|{ REPEATED_SCHEDULE_JOB : schedules
     REPEATED_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run"
         INTEGER schedule_id PK, FK "REFERENCES repeated_schedule(id)"

@@ -12,7 +12,7 @@ import stat
 from datetime import datetime
 from typing import Any, List
 from inbm_common_lib.utility import get_canonical_representation_of_path
-from .schedules import SingleSchedule, RepeatedSchedule, Schedule, SingleScheduleJob, RepeatedScheduleJob
+from .schedules import SingleSchedule, RepeatedSchedule, Schedule, ScheduledJob
 from ..dispatcher_exception import DispatcherException
 from ..constants import SCHEDULER_DB_FILE, SCHEDULED
 
@@ -50,6 +50,25 @@ class SqliteManager:
         self._cursor.close()
         self._conn.close()
         
+    def __del__(self) -> None:
+        """Close the connection to the SQLite database."""
+        self.close()
+        
+    def clear_database(self) -> None:
+        """Clear the database of all data."""
+        try:
+            self._conn.execute('BEGIN')
+            self._conn.execute('DELETE FROM single_schedule_job;')
+            self._conn.execute('DELETE FROM repeated_schedule_job;')
+            self._conn.execute('DELETE FROM single_schedule;')
+            self._conn.execute('DELETE FROM repeated_schedule;')
+            self._conn.execute('DELETE FROM job;')
+            self._conn.commit()
+        except sqlite3.Error as e:
+            self._conn.rollback()
+            logger.error(f"Error clearing database: {e}")
+            raise DispatcherException(f"Error clearing database: {e}")
+        
     def _create_db(self) -> None:  
         # Create database file if not exist     
         if self._db_file != ":memory:" and not os.path.exists(self._db_file):            
@@ -59,42 +78,40 @@ class SqliteManager:
             fd = os.open(self._db_file, os.O_CREAT | os.O_WRONLY, mode)
             os.close(fd)            
                 
-    def get_all_single_schedule_in_priority(self) -> List[SingleSchedule]:
+    def get_all_single_schedules_in_priority_order(self) -> List[SingleSchedule]:
         """
         Get all the SingleSchedule and arrange them by priority in ascending order.
         @return: List of SingleSchedule object by priority in ascending order
         """
         try:
-            sql = ''' SELECT priority, schedule_id, manifest_id, status FROM single_schedule_manifest ORDER BY priority ASC; '''
+            sql = ''' SELECT priority, schedule_id, job_id, status FROM single_schedule_job WHERE status IS NULL ORDER BY priority ASC; '''
             self._cursor.execute(sql)
             rows = self._cursor.fetchall()
-            single_schedule_jobs: List[SingleScheduleJob] = []
+            scheduled_jobs: List[ScheduledJob] = []
             for row in rows:
-                single_schedule_jobs.append(SingleScheduleJob(priority=row[0],
-                                                                            schedule_id=row[1],
-                                                                            job_id=row[2],
-                                                                            status=row[3]))
+                scheduled_jobs.append(ScheduledJob(priority=row[0],
+                                                   schedule_id=row[1],
+                                                   job_id=row[2],
+                                                   status=row[3]))
 
             ss: List[SingleSchedule] = []
-            # Create multiple SingleSchedule object and stores them inside the list.
-            # Each element in single_schedule_jobs creates one SingleSchedule object.
-            for job in single_schedule_jobs:
-                # If the job already ran, it will not be scheduled again.
-                if job.status != SCHEDULED:
-                    schedule_id = job.schedule_id
-                    job_id = job.job_id
-                    single_schedule = self._select_single_schedule_by_id(str(schedule_id))
-                    single_schedule.manifests = [self._select_job_by_id(str(job_id))]
-                    single_schedule.job_id = (job.priority,
-                                              job.schedule_id,
-                                              job.job_id)
-                    ss.append(single_schedule)
+            # Create SingleSchedule objects.
+            # Each element in schedule_jobs creates one SingleSchedule object.
+            for job in scheduled_jobs:
+                schedule_id = job.schedule_id
+                job_id = job.job_id
+                single_schedule = self._select_single_schedule_by_id(str(schedule_id))
+                single_schedule.manifests = [self._select_job_by_id(str(job_id))]
+                single_schedule.job_id = (job.priority,
+                                            job.schedule_id,
+                                            job.job_id)
+                ss.append(single_schedule)
             return ss
 
         except (sqlite3.Error) as e:
             raise DispatcherException(f"Error in getting the all single schedules from database: {e}")
 
-    def get_all_repeated_schedule_in_priority(self) -> List[RepeatedSchedule]:
+    def get_all_repeated_schedules_in_priority_order(self) -> List[RepeatedSchedule]:
         """
         Get all the RepeatedSchedule and arrange them by priority in ascending order.
         @return: List of RepeatedSchedule object by priority in ascending order
@@ -103,9 +120,9 @@ class SqliteManager:
             sql = ''' SELECT priority, schedule_id, job_id, status FROM repeated_schedule_job ORDER BY priority ASC; '''
             self._cursor.execute(sql)
             rows = self._cursor.fetchall()
-            repeated_schedule_jobs: List[RepeatedScheduleJob] = []
+            repeated_schedule_jobs: List[ScheduledJob] = []
             for row in rows:
-                repeated_schedule_jobs.append(RepeatedScheduleJob(priority=row[0],
+                repeated_schedule_jobs.append(ScheduledJob(priority=row[0],
                                                                         schedule_id=row[1],
                                                                         job_id=row[2],
                                                                         status=row[3]))

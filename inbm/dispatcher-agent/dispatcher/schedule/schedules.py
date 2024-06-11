@@ -34,16 +34,7 @@ class RepeatedSchedule(Schedule):
     cron_day_week: str = field(default='*')
 
 @dataclass
-class SingleScheduleJob:
-    """ Represents a SingleScheduleJob object """
-    priority: int
-    schedule_id: int
-    job_id: int
-    status: Optional[str]
-
-@dataclass
-class RepeatedScheduleJob:
-    """ Represents a RepeatedScheduleJob object """
+class ScheduledJob:
     priority: int
     schedule_id: int
     job_id: int
