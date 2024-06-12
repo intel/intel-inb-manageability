@@ -172,15 +172,39 @@ global___RepeatedSchedule = RepeatedSchedule
 class Operation(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    class _ServiceType:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _ServiceTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Operation._ServiceType.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        SERVICE_TYPE_UNSPECIFIED: Operation._ServiceType.ValueType  # 0
+        SERVICE_TYPE_INBS: Operation._ServiceType.ValueType  # 1
+        SERVICE_TYPE_OOB_AMT: Operation._ServiceType.ValueType  # 2
+        SERVICE_TYPE_OOB_BMC: Operation._ServiceType.ValueType  # 3
+        SERVICE_TYPE_AUTO: Operation._ServiceType.ValueType  # 4
+
+    class ServiceType(_ServiceType, metaclass=_ServiceTypeEnumTypeWrapper): ...
+    SERVICE_TYPE_UNSPECIFIED: Operation.ServiceType.ValueType  # 0
+    SERVICE_TYPE_INBS: Operation.ServiceType.ValueType  # 1
+    SERVICE_TYPE_OOB_AMT: Operation.ServiceType.ValueType  # 2
+    SERVICE_TYPE_OOB_BMC: Operation.ServiceType.ValueType  # 3
+    SERVICE_TYPE_AUTO: Operation.ServiceType.ValueType  # 4
+
     PRE_OPERATIONS_FIELD_NUMBER: builtins.int
     POST_OPERATIONS_FIELD_NUMBER: builtins.int
+    SERVICE_TYPE_FIELD_NUMBER: builtins.int
     UPDATE_SYSTEM_SOFTWARE_OPERATION_FIELD_NUMBER: builtins.int
+    SET_POWER_STATE_OPERATION_FIELD_NUMBER: builtins.int
+    service_type: global___Operation.ServiceType.ValueType
     @property
     def pre_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PreOperation]: ...
     @property
     def post_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PostOperation]: ...
     @property
-    def update_system_software_operation(self) -> global___UpdateSystemSoftwareOperation:
+    def update_system_software_operation(self) -> global___UpdateSystemSoftwareOperation: ...
+    @property
+    def set_power_state_operation(self) -> global___SetPowerStateOperation:
         """and others"""
 
     def __init__(
@@ -188,11 +212,13 @@ class Operation(google.protobuf.message.Message):
         *,
         pre_operations: collections.abc.Iterable[global___PreOperation] | None = ...,
         post_operations: collections.abc.Iterable[global___PostOperation] | None = ...,
+        service_type: global___Operation.ServiceType.ValueType = ...,
         update_system_software_operation: global___UpdateSystemSoftwareOperation | None = ...,
+        set_power_state_operation: global___SetPowerStateOperation | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["operation", b"operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation"] | None: ...
+    def HasField(self, field_name: typing.Literal["operation", b"operation", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "service_type", b"service_type", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation", "set_power_state_operation"] | None: ...
 
 global___Operation = Operation
 
@@ -255,6 +281,40 @@ class UpdateSystemSoftwareOperation(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["do_not_reboot", b"do_not_reboot", "mode", b"mode", "package_list", b"package_list", "release_date", b"release_date", "url", b"url"]) -> None: ...
 
 global___UpdateSystemSoftwareOperation = UpdateSystemSoftwareOperation
+
+@typing.final
+class SetPowerStateOperation(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    class _PowerState:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _PowerStateEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[SetPowerStateOperation._PowerState.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        POWER_STATE_UNSPECIFIED: SetPowerStateOperation._PowerState.ValueType  # 0
+        POWER_STATE_ON: SetPowerStateOperation._PowerState.ValueType  # 2
+        POWER_STATE_CYCLE: SetPowerStateOperation._PowerState.ValueType  # 5
+        POWER_STATE_OFF: SetPowerStateOperation._PowerState.ValueType  # 8
+        POWER_STATE_RESET: SetPowerStateOperation._PowerState.ValueType  # 10
+
+    class PowerState(_PowerState, metaclass=_PowerStateEnumTypeWrapper): ...
+    POWER_STATE_UNSPECIFIED: SetPowerStateOperation.PowerState.ValueType  # 0
+    POWER_STATE_ON: SetPowerStateOperation.PowerState.ValueType  # 2
+    POWER_STATE_CYCLE: SetPowerStateOperation.PowerState.ValueType  # 5
+    POWER_STATE_OFF: SetPowerStateOperation.PowerState.ValueType  # 8
+    POWER_STATE_RESET: SetPowerStateOperation.PowerState.ValueType  # 10
+
+    OPCODE_FIELD_NUMBER: builtins.int
+    opcode: global___SetPowerStateOperation.PowerState.ValueType
+    def __init__(
+        self,
+        *,
+        opcode: global___SetPowerStateOperation.PowerState.ValueType = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["opcode", b"opcode"]) -> None: ...
+
+global___SetPowerStateOperation = SetPowerStateOperation
 
 @typing.final
 class PreOperation(google.protobuf.message.Message):
