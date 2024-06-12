@@ -29,14 +29,14 @@ title: Dispatcher Schedule ER Model
 erDiagram
     SINGLE_SCHEDULE ||--|{ SINGLE_SCHEDULE_JOB : schedules
     SINGLE_SCHEDULE_JOB {
-        INTEGER priority "Order the job manifests should run"
+        INTEGER priority "Order the job manifests should run - Starting with 0"
         INTEGER schedule_id PK, FK "REFERENCES single_schedule(id)"
-        INTEGER job_id PK, FK "REFERENCES job(id)"
+        TEXT job_id PK, FK "REFERENCES job(id)"
         TEXT status "NULL or scheduled"
     }
 
     SINGLE_SCHEDULE {
-        INTEGER id PK "AUTOINCREMENT"
+        INTEGER schedule_id PK "AUTOINCREMENT"
         TEXT request_id "NOT NULL - Format -> 2024-01-01T00:00:00"
         TEXT start_time "NOT NULL - Format -> 2024-01-01T00:00:00"
         TEXT end_time
@@ -45,19 +45,19 @@ erDiagram
     JOB ||--o{ REPEATED_SCHEDULE_JOB : performs
 
     JOB {
-        INTEGER id PK "AUTOINCREMENT"
+        TEXT job_id PK "FROM MJUNCT"
         TEXT manifest "NOT NULL"
     }
     REPEATED_SCHEDULE ||--|{ REPEATED_SCHEDULE_JOB : schedules
     REPEATED_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run"
         INTEGER schedule_id PK, FK "REFERENCES repeated_schedule(id)"
-        INTEGER job_id PK, FK "REFERENCES job(id)"
+        TEXT job_id PK, FK "REFERENCES job(id)"
         TEXT status "NULL or scheduled"
     }
 
     REPEATED_SCHEDULE {
-        INTEGER id PK "AUTOINCREMENT"
+        INTEGER schedule_id PK "AUTOINCREMENT"
         TEXT request_id "NOT NULL"
         TEXT cron_duration "NOT NULL"
         TEXT cron_minutes "NOT NULL"

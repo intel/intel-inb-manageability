@@ -10,7 +10,7 @@ from dispatcher.dispatcher_exception import DispatcherException
 @pytest.fixture
 def db_connection():
     # Setup: create a new in-memory database connection using the custom class
-    db_conn = SqliteManager(':memory:')
+    db_conn = SqliteManager(":memory:")
 
     # Yield the custom database connection to the test
     yield db_conn
@@ -58,21 +58,23 @@ def test_create_simple_schedule(db_connection: SqliteManager):
     db_connection.create_schedule(ss2)
     res = db_connection.get_all_single_schedules_in_priority_order()
     assert len(res) == 4
-        
-        #res1 = self.db.select_single_schedule_by_request_id("REQ123")
-        #res2 = self.db.select_single_schedule_by_request_id("REQ234")
-        
-        # self.assertEqual(res[0].schedule_id, 1)
-        # self.assertEqual(res[0].request_id, "REQ123")
-        # self.assertEqual(res[0].start_time, "2024-01-01T00:00:00")
-        # self.assertEqual(res[0].end_time, "2024-01-02T00:00:00")
-        # self.assertEqual(res[0].manifests, ["MANIFEST1", "MANIFEST2"])
-        
-        # self.assertEqual(res[1].schedule_id, 2)
-        # self.assertEqual(res[1].request_id, "REQ234")
-        # self.assertEqual(res[1].start_time, "2024-05-01T00:00:00")
-        # self.assertEqual(res[1].end_time, None)
-        # self.assertEqual(res[1].manifests, ["MANIFEST3", "MANIFEST4"])
+    assert res[0].request_id == "REQ123"
+    assert res[1].request_id == "REQ234"
+    assert res[2].request_id == "REQ123"
+    assert res[3].request_id == "REQ234"
+    assert res[0].start_time == datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
+    assert res[1].start_time == datetime.strptime("2024-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
+    assert res[2].start_time == datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
+    assert res[3].start_time == datetime.strptime("2024-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
+    assert res[0].end_time == datetime.strptime("2024-01-02T00:00:00", "%Y-%m-%dT%H:%M:%S")
+    assert res[1].end_time == None
+    assert res[2].end_time == datetime.strptime("2024-01-02T00:00:00", "%Y-%m-%dT%H:%M:%S")
+    assert res[3].end_time == None
+    assert res[0].manifests == ["MANIFEST1"]
+    assert res[1].manifests == ["MANIFEST3"]
+    assert res[2].manifests == ["MANIFEST2"]
+    assert res[3].manifests == ["MANIFEST4"]
+
         
     # def test_create_repeated_schedule(self):
     #     rs1 = RepeatedSchedule(request_id="REQ123", 

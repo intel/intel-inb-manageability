@@ -14,7 +14,7 @@ class Schedule:
     request_id: str
     schedule_id: Optional[int] = field(default=None)
     # priority, schedule_id, job_id from DB
-    job_id: Optional[Tuple[int, int, int]] = field(default=None)
+    job_id: Optional[Tuple[int, int, int]] = field(default=None)    
     manifests: List[str] = field(default_factory=list)
 
 @dataclass

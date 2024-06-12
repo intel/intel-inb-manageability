@@ -9,29 +9,31 @@ import logging
 import sqlite3
 import os   
 import stat
+
 from datetime import datetime
-from typing import Any, List
+from typing import List
+
 from inbm_common_lib.utility import get_canonical_representation_of_path
+
 from .schedules import SingleSchedule, RepeatedSchedule, Schedule, ScheduledJob
 from ..dispatcher_exception import DispatcherException
 from ..constants import SCHEDULER_DB_FILE, SCHEDULED
 
 logger = logging.getLogger(__name__)
 
-
 class SqliteManager:
     def __init__(self, db_file=SCHEDULER_DB_FILE) -> None:
         """Handles the connection to the SQLite database and all database operations.
         
-        @param db_file: The path to the SQLite database file.  Defaults to UDM_DB_FILE.
+        @param db_file: The path to the SQLite database file.  Defaults to SCHEDULER_DB_FILE.
         """
         self._db_file = get_canonical_representation_of_path(db_file)
         # Create the DB if it doesn't exist
         self._create_db()
         
         try:
-            with sqlite3.Connection(self._db_file) as conn:
-                self._conn = conn                    
+            with sqlite3.connect(self._db_file) as conn:
+                self._conn = conn
         except sqlite3.Error as e:
             logger.error(f"Error connecting to Dispatcher Schedule database: {e}")
             raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
@@ -350,91 +352,6 @@ class SqliteManager:
                 raise DispatcherException(f"Error inserting new tuple to repeated_schedule_job table: {e}")
 
             logger.debug(f"Inserted new tuple to repeated_schedule_job table with job_id: {str(job_id)} to schedule with id: {str(schedule_id)}, with priority: {str(priority)}")
- 
-    def select_single_schedule_by_request_id(self, request_id: str) -> list[SingleSchedule]:
-        """Create a list of SingleSchedule objects from the database matching the request_id
-        @param request_id: request ID to match in the database
-        @return: list of SingleSchedule objects
-        """
-        
-        logger.debug(f"Execute -> SELECT -> single_schedule -> request_id={request_id}")
-        sql = ''' SELECT * FROM single_schedule WHERE request_id = ? '''
-        try:
-            self._cursor.execute(sql, (request_id,))
-        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
-            raise DispatcherException(f"Error selecting single schedule from database: {e}")
-        
-        ss_rows = self._cursor.fetchall()
-        if len(ss_rows) == 0:
-            raise DispatcherException(f"No single schedule found with request_id: {request_id}")
-                       
-        ss: list[SingleSchedule] = []
-        for row in ss_rows:
-            # Get the ids for the manifests matching the schedules from the join table (single_schedule_manifest)
-            sql = ''' SELECT * FROM single_schedule_job WHERE schedule_id = ? '''
-            ssm_rows = self._select_job_ids_by_schedule_id(sql, row[0])            
-            manifests = self._select_jobs_by_job_id(ssm_rows)      
-            
-            ss.append(SingleSchedule(schedule_id=row[0], request_id=row[1], start_time=row[2], end_time=row[3], manifests=manifests))
-        return ss
-    
-    def select_repeated_schedule_by_request_id(self, request_id: str) -> list[RepeatedSchedule]:
-        """Create a list of RepeatedSchedule objects from the database matching the request_id
-        @param request_id: request ID to match in the database
-        @return: list of RepeatedSchedule objects
-        """
-
-        logger.debug(f"Execute -> SELECT -> repeated_schedule -> request_id={request_id}")
-        sql = ''' SELECT * FROM repeated_schedule WHERE request_id = ? '''
-        try:
-            self._cursor.execute(sql, (request_id,))
-        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
-            raise DispatcherException(f"Error selecting repeated schedule from database: {e}")
-        
-        rs_rows = self._cursor.fetchall()
-        if len(rs_rows) == 0:
-            raise DispatcherException(f"No repeated schedule found with request_id: {request_id}")
-        
-        rs: list[RepeatedSchedule] = []
-        for row in rs_rows:
-            sql = ''' SELECT * FROM repeated_schedule_job WHERE schedule_id = ? '''
-            rsm_rows = self._select_job_ids_by_schedule_id(sql, row[0])            
-            manifests = self._select_jobs_by_job_id(rsm_rows)                
-            rs.append(RepeatedSchedule(schedule_id=row[0], request_id=row[1], cron_duration=row[2], cron_minutes=row[3], 
-                                       cron_hours=row[4], cron_day_month=row[5], cron_month=row[6], cron_day_week=row[7],
-                                       manifests=manifests))
-        return rs
-        
-    def _select_job_ids_by_schedule_id(self, sql: str, schedule_id: int) -> list[int]:
-        # Get the manifest_ids from the join table
-        logger.debug(f"Execute -> {sql} with schedule_id={schedule_id}")
-        try:            
-            self._cursor.execute(sql, (schedule_id,))
-        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
-            raise DispatcherException(f"Error selecting scheduled job from database: {e}")
-        
-        rows = self._cursor.fetchall()
-        if len(rows) == 0:
-            raise DispatcherException(f"No scheduled job found with schedule_id: {schedule_id}")
-        return rows
-    
-    def _select_jobs_by_job_id(self, schedule_manifest_rows: list[Any]) -> list[str]:
-        # Get the jobs using the job_id from the join table
-        manifests: list[str] = []
-        for row in schedule_manifest_rows:
-            # Get the jobs using the job_ids from the join table
-            logger.debug(f"Execute -> SELECT -> job -> id={row[2]}")
-            sql = ''' SELECT * FROM JOB WHERE id = ? '''
-            try:
-                self._cursor.execute(sql, (row[2],))
-            except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
-                raise DispatcherException(f"Error selecting job from database: {e}")
-            
-            row = self._cursor.fetchone()
-            if not row:
-                raise DispatcherException(f"No job found with id: {row[2]}")
-            manifests.append(row[1])
-        return manifests  
                  
     def _create_tables_if_not_exist(self) -> None:
         self._create_single_schedule_table()
