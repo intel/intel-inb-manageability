@@ -28,6 +28,11 @@ class APScheduler:
         logger.debug("Starting APScheduler")
         self._scheduler.start()
 
+    def remove_all_jobs(self) -> None:
+        """Remove all jobs."""
+        logger.debug("Remove all jobs in APScheduler")
+        self._scheduler.remove_all_jobs()
+
     def add_single_schedule_job(self, callback: Callable, single_schedule: SingleSchedule) -> None:
         """Add the job for single schedule.
 

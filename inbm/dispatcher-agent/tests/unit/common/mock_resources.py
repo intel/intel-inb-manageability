@@ -6,6 +6,7 @@ from threading import Lock
 import datetime
 from typing import Callable, Optional, Union, Any, Tuple
 from queue import Queue
+from dispatcher.schedule.apscheduler import APScheduler
 
 from dispatcher.common.result_constants import *
 from dispatcher.install_check_service import InstallCheckService
@@ -326,6 +327,7 @@ class MockDispatcher(Dispatcher):
         self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._wo: Optional[WorkloadOrchestration] = None
         self.sqlite_mgr = SqliteManager(':memory:')
+        self.ap_scheduler = APScheduler(sqlite_mgr=self.sqlite_mgr)
 
     def clear_dispatcher_state(self) -> None:
         pass
