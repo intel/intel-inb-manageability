@@ -75,17 +75,19 @@ erDiagram
 
 | id | manifest |
 | :---- | :----- |
-| 1 | valid Inband Manageability XML manifest - SOTA download only |
-| 2 | valid Inband Manageability XML manifest - SOTA install only|
-| 3 | valid Inband Manageability XML manifest - Reboot system |
+| swupd-fc276d74-014f-44c2-a57c-de1944a6e974 | valid Inband Manageability XML manifest - SOTA download only |
+| swupd-09273593-ff7b-433f-820c-86440b6f8cf3 | valid Inband Manageability XML manifest - SOTA install only|
+| setpwr-70ab8502-2c53-4417-ae57-90e4c2b7f0b6 | valid Inband Manageability XML manifest - Reboot system |
+| fwupd-718814f3-b12a-432e-ac38-093e8dcb4bd1 | valid Inband Manageability XML manifest - FOTA |
+| setpwr-d8be8ae4-7512-43c0-9bdd-9a066de17322 | valid Inband Manageability XML manifest - Reboot system |
 
 ### SINGLE_SCHEDULE Table
 
 | id | request_id | start_time | end_time |
 | :---- | :---- | :---- | :---- |
-| 1  | 123 | 2023-04-01T08:00:00 | |
-| 2  | 123 | 2023-05-01T08:00:00 | |
-| 3  | 234 | 2023-04-01T08:00:00 | |
+| 1  | 123 | 2024-04-01T08:00:00 | 2024-04-01T12:00:00 |
+| 2  | 123 | 2024-05-01T08:00:00 | 2024-05-01T12:00:00|
+| 3  | 234 | 2024-04-02T08:00:00 | 2024-04-02T14:00:00|
 
 ### REPEATED_SCHEDULE Table
 
@@ -104,9 +106,9 @@ Example: To do a download, install, and reboot of SOTA at the time in schedule 1
 
 | priority | schedule_id | job_id | status |
 | :---- | :---- | :---- | :----- |
-| 0   | 1 | 1 | scheduled |
-| 1   | 1 | 2 | scheduled |
-| 2   | 1 | 3 |   |
+| 0   | 1 | swupd-fc276d74-014f-44c2-a57c-de1944a6e974| scheduled |
+| 1   | 1 | swupd-09273593-ff7b-433f-820c-86440b6f8cf3 | scheduled |
+| 2   | 1 | setpwr-70ab8502-2c53-4417-ae57-90e4c2b7f0b6 |   |
 
 ### REPEATED_SCHEDULE_JOB Table
 
@@ -114,9 +116,8 @@ Example: To do a download, install, and reboot of SOTA at the repeated time in s
 
 | priority | schedule_id | job_id | status |
 | :---- | :---- | :---- | :----- |
-| 0   | 2 | 1 | scheduled |
-| 1   | 2 | 2 | scheduled |
-| 2   | 2 | 3 | |
+| 0   | 2 | fwupd-718814f3-b12a-432e-ac38-093e8dcb4bd1 | scheduled |
+| 1   | 2 | setpwr-d8be8ae4-7512-43c0-9bdd-9a066de17322 | scheduled |
 
 ## Field Descriptions
 
