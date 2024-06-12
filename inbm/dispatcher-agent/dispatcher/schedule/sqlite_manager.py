@@ -32,7 +32,7 @@ class SqliteManager:
         self._create_db()
         
         try:
-            with sqlite3.connect(self._db_file) as conn:
+            with sqlite3.connect(self._db_file, check_same_thread=False) as conn:
                 self._conn = conn
         except sqlite3.Error as e:
             logger.error(f"Error connecting to Dispatcher Schedule database: {e}")
