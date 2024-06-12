@@ -112,6 +112,7 @@ class Dispatcher:
         self._config_operation = ConfigOperation(self._dispatcher_broker)
 
         self.sqlite_mgr = SqliteManager()
+        self.ap_scheduler = APScheduler(sqlite_mgr=self.sqlite_mgr)
 
     def stop(self) -> None:
         self.RUNNING = False
@@ -145,19 +146,18 @@ class Dispatcher:
             self._perform_startup_tasks()
 
         # Run scheduler to schedule the task during startup.
-        scheduler = APScheduler(sqlite_mgr=self.sqlite_mgr)
         single_schedules = self.sqlite_mgr.get_all_single_schedules_in_priority_order()
         logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
         for single_schedule in single_schedules:
-            scheduler.add_single_schedule_job(self.do_install, single_schedule)
+            self.ap_scheduler.add_single_schedule_job(self.do_install, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
         repeated_schedules = self.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
         logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
-            scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
+            self.ap_scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
-        scheduler.start()
+        self.ap_scheduler.start()
 
         def _sig_handler(signo, frame) -> None:
             """Callback to register different signals. Currently we do that only for SIGTERM & SIGINT
@@ -751,9 +751,6 @@ def handle_updates(dispatcher: Any,
             return
         
         # Clear the database of existing schedules before we add the new schedules
-        
-        # TODO: Clear the jobs in the APScheduler if jobs exist.
-        
         with sql_lock:
             dispatcher.sqlite_mgr.clear_database()
             
@@ -765,9 +762,20 @@ def handle_updates(dispatcher: Any,
                         dispatcher.sqlite_mgr.create_schedule(requests)
             all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests                
             process_scheduled_requests(all_scheduled_requests)
-            
-        # TODO: Add the schedules to the APScheduler
-        
+
+        # Add job to the scheduler
+        single_schedules = dispatcher.sqlite_mgr.get_all_single_schedules_in_priority_order()
+        logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
+        for single_schedule in single_schedules:
+            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, single_schedule)
+            logger.debug(f"Scheduled single job: {single_schedule}")
+
+        repeated_schedules = dispatcher.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
+        logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
+        for repeated_schedule in repeated_schedules:
+            dispatcher.ap_scheduler.add_repeated_schedule_job(dispatcher.do_install, repeated_schedule)
+            logger.debug(f"Scheduled repeated job: {repeated_schedule}")
+
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:
                 try:

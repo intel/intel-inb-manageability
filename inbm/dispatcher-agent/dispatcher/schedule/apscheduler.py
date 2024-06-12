@@ -7,7 +7,7 @@
 
 import logging
 from typing import Callable
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from .schedules import Schedule, SingleSchedule, RepeatedSchedule
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -89,8 +89,8 @@ class APScheduler:
         # run immediately.
         if schedule.start_time and schedule.end_time and \
                 schedule.start_time < current_time < schedule.end_time:
-            # Reset the start time to current datetime.
-            schedule.start_time = datetime.now()
+            # Reset the start time to current datetime + 2s buffer time.
+            schedule.start_time = datetime.now() + timedelta(seconds=2)
             return True
 
         logger.error("The start time or current time is greather than end time. Will not schedule")

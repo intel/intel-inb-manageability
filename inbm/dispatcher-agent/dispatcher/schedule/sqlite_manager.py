@@ -212,7 +212,7 @@ class SqliteManager:
         @param status: status to be set
         """
         try:
-            sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND manifest_id = ?; '''
+            sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND job_id = ?; '''
             if schedule.job_id:
                 logger.debug(f"Update status in database to {status} with id={schedule.job_id}")
                 self._cursor.execute(sql, (status, schedule.job_id[0], schedule.job_id[1], schedule.job_id[2]))
