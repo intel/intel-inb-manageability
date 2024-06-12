@@ -751,6 +751,9 @@ def handle_updates(dispatcher: Any,
             return
         
         # Clear the database of existing schedules before we add the new schedules
+        
+        # TODO: Clear the jobs in the APScheduler if jobs exist.
+        
         with sql_lock:
             dispatcher.sqlite_mgr.clear_database()
             
@@ -762,6 +765,8 @@ def handle_updates(dispatcher: Any,
                         dispatcher.sqlite_mgr.create_schedule(requests)
             all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests                
             process_scheduled_requests(all_scheduled_requests)
+            
+        # TODO: Add the schedules to the APScheduler
         
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:
