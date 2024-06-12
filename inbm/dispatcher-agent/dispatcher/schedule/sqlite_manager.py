@@ -119,27 +119,28 @@ class SqliteManager:
         @return: List of RepeatedSchedule object by priority in ascending order
         """
         try:
-            sql = ''' SELECT priority, schedule_id, job_id, status FROM repeated_schedule_job ORDER BY priority ASC; '''
+            sql = ''' SELECT priority, schedule_id, job_id, status FROM repeated_schedule_job WHERE status IS NULL ORDER BY priority ASC; '''
             self._cursor.execute(sql)
             rows = self._cursor.fetchall()
             repeated_schedule_jobs: List[ScheduledJob] = []
             for row in rows:
                 repeated_schedule_jobs.append(ScheduledJob(priority=row[0],
-                                                                        schedule_id=row[1],
-                                                                        job_id=row[2],
-                                                                        status=row[3]))
+                                                           schedule_id=row[1],
+                                                           job_id=row[2],
+                                                           status=row[3]))
 
             rs: List[RepeatedSchedule] = []
             # Create multiple RepeatedSchedule object and stores them inside the list.
             # Each element in repeated_schedule_jobs creates one RepeatedSchedule object.
             for job in repeated_schedule_jobs:
-                # If the manifest already ran, it will not be scheduled again.
-                if job.status != SCHEDULED:
-                    schedule_id = job.schedule_id
-                    job_id = job.job_id
-                    repeated_schedule = self._select_repeated_schedule_by_id(str(schedule_id))
-                    repeated_schedule.manifests = [self._select_job_by_id(str(job_id))]
-                    rs.append(repeated_schedule)
+                schedule_id = job.schedule_id
+                job_id = job.job_id
+                repeated_schedule = self._select_repeated_schedule_by_id(str(schedule_id))
+                repeated_schedule.manifests = [self._select_job_by_id(str(job_id))]
+                repeated_schedule.job_id = (job.priority,
+                                            job.schedule_id,
+                                            job.job_id)
+                rs.append(repeated_schedule)
             return rs
 
         except (sqlite3.Error) as e:
@@ -182,7 +183,7 @@ class SqliteManager:
         @return: RepeatedSchedule object
         """
         sql = ''' SELECT request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week FROM repeated_schedule WHERE rowid=?; '''
-        self._cursor.execute(sql, (id,))
+        self._cursor.execute(sql, (schedule_id,))
         result = self._cursor.fetchone()
         
         request_id = result[0]
@@ -212,7 +213,13 @@ class SqliteManager:
         @param status: status to be set
         """
         try:
-            sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND job_id = ?; '''
+            sql = ""
+            if isinstance(schedule, SingleSchedule):
+                sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND job_id = ?; '''
+            elif isinstance(schedule, RepeatedSchedule):
+                sql = ''' UPDATE repeated_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND job_id = ?; '''
+            else:
+                sql = ""
             if schedule.job_id:
                 logger.debug(f"Update status in database to {status} with id={schedule.job_id}")
                 self._cursor.execute(sql, (status, schedule.job_id[0], schedule.job_id[1], schedule.job_id[2]))

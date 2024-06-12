@@ -6,7 +6,8 @@
 """
 
 import logging
-from typing import Callable
+import re
+from typing import Callable, Union
 from datetime import datetime, timedelta
 
 from .schedules import Schedule, SingleSchedule, RepeatedSchedule
@@ -46,8 +47,17 @@ class APScheduler:
         @param repeated_schedule: RepeatedSchedule object.
         """
         logger.debug("")
-        for manifest in repeated_schedule.manifests:
-            logger.debug("To be implemented.")
+        if self.is_schedulable(repeated_schedule):
+            self._sqlite_mgr.update_status(repeated_schedule, SCHEDULED)
+            for manifest in repeated_schedule.manifests:
+                self._scheduler.add_job(callback, 'cron', args=[manifest],
+                                        start_date=datetime.now(),
+                                        end_date=self._convert_duration_to_end_time(repeated_schedule.cron_duration),
+                                        minute=repeated_schedule.cron_minutes,
+                                        hour=repeated_schedule.cron_hours,
+                                        day=repeated_schedule.cron_day_month,
+                                        month=repeated_schedule.cron_month,
+                                        day_of_week=repeated_schedule.cron_day_week)
 
     def is_schedulable(self, schedule: Schedule) -> bool:
         """Check if the schedule can be scheduled.
@@ -97,9 +107,38 @@ class APScheduler:
         return False
 
     def _check_repeated_schedule(self, schedule: RepeatedSchedule) -> bool:
-        """Check if the start time is still within the end time.
+        """Check if the schedule can be scheduled.
 
         @param schedule: RepeatedSchedule object
-        @return: True if start time doesn't exceed end time; False if start time exceeds end time.
+        @return: True if the check passes; False if rejected.
         """
-        return False
+        logger.debug(f"cron_duration={schedule.cron_duration},"
+                     f"cron_minutes={schedule.cron_minutes},"
+                     f"cron_hours={schedule.cron_duration},"
+                     f"cron_day_month={schedule.cron_day_month},"
+                     f"cron_month={schedule.cron_month},"
+                     f"cron_day_week={schedule.cron_day_week}")
+        # TODO: Add any checking
+        return True
+
+    def _convert_duration_to_end_time(self, duration: str) -> Union[str, datetime]:
+        """Convert the cron duration to end time.
+
+        @param duration: cron duration
+        @return: datetime object or str
+        """
+        # Example of supported cron_duration are "P7D", "PT3600S"
+        # Pattern to extract days or seconds
+        end_time: Union[str, datetime] = duration
+        if duration != "*":
+            pattern = r'P(?:(\d+)D)?T?(?:(\d+)S)?'
+            match = re.match(pattern, duration)
+            if match:
+                days = int(match.group(1)) if match.group(1) else 0
+                seconds = int(match.group(2)) if match.group(2) else 0
+            else:
+                days = 0
+                seconds = 0
+            end_time = datetime.now() + timedelta(days=days, seconds=seconds)
+            logger.debug(f"Repeated end_time={end_time}")
+        return end_time
