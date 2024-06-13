@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from unittest import TestCase
 
 from dispatcher.schedule.schedules import SingleSchedule
@@ -51,4 +51,15 @@ class TestAPScheduler(TestCase):
         self.scheduler.add_single_schedule_job(callback=Mock(), single_schedule=ss1)
         self.assertEqual(len(self.scheduler._scheduler.get_jobs()), 3)
 
+    def test_convert_duration_to_end_time_return_default(self):
+        self.assertEqual(self.scheduler._convert_duration_to_end_time(duration="*"), "*")
 
+    @patch('dispatcher.schedule.apscheduler.datetime', wraps=datetime)
+    def test_convert_duration_to_end_time_with_second(self, mock_datetime):
+        mock_datetime.now.return_value = datetime(2024, 12, 25, 12, 0, 0)
+        self.assertEqual(self.scheduler._convert_duration_to_end_time(duration="PT3600S"), datetime(2024, 12, 25, 13, 0, 0))
+
+    @patch('dispatcher.schedule.apscheduler.datetime', wraps=datetime)
+    def test_convert_duration_to_end_time_with_day(self, mock_datetime):
+        mock_datetime.now.return_value = datetime(2024, 12, 25, 12, 0, 0)
+        self.assertEqual(self.scheduler._convert_duration_to_end_time(duration="P1D"), datetime(2024, 12, 26, 12, 0, 0))
