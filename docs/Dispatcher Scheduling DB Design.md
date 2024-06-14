@@ -30,8 +30,8 @@ erDiagram
     SINGLE_SCHEDULE ||--|{ SINGLE_SCHEDULE_JOB : schedules
     SINGLE_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run - Starting with 0"
-        INTEGER schedule_id PK, FK "REFERENCES single_schedule(id)"
-        TEXT job_id PK, FK "REFERENCES job(id)"
+        INTEGER schedule_id PK,FK "REFERENCES SINGLE_SCHEDULE(schedule_id)"
+        TEXT job_id PK,FK "REFERENCES job(id)"
         TEXT status "NULL or scheduled"
     }
 
@@ -45,14 +45,16 @@ erDiagram
     JOB ||--o{ REPEATED_SCHEDULE_JOB : performs
 
     JOB {
-        TEXT job_id PK "FROM MJUNCT"
+        INTEGER task_id PK "AUTOINCREMENT"
+        TEXT job_id "FROM MJUNCT"
         TEXT manifest "NOT NULL"
-    }
+    }  
+    
     REPEATED_SCHEDULE ||--|{ REPEATED_SCHEDULE_JOB : schedules
     REPEATED_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run"
-        INTEGER schedule_id PK, FK "REFERENCES repeated_schedule(id)"
-        TEXT job_id PK, FK "REFERENCES job(id)"
+        INTEGER schedule_id PK,FK "REFERENCES REPEATED_SCHEDULE(schedule_id)"
+        TEXT job_id PK,FK "REFERENCES job(id)"
         TEXT status "NULL or scheduled"
     }
 
