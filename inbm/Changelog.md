@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - Fixed some Yocto issues found after migrating to scarthgap
+ - (NEXARL-195) Fixed device tree detection check on systems that implement only part of device tree
 
 ### Security
  - Bump requests from 2.31.0 to 2.32.2 in multiple agents resolving detected 3rd party CVE: CVE-2024-35195
