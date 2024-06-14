@@ -48,8 +48,17 @@ message RepeatedSchedule {
 message Operation {
   repeated PreOperation pre_operations = 1;
   repeated PostOperation post_operations = 2;
+  enum ServiceType {
+    SERVICE_TYPE_UNSPECIFIED = 0;
+    SERVICE_TYPE_INBS = 1;
+    SERVICE_TYPE_OOB_AMT = 2;
+    SERVICE_TYPE_OOB_BMC = 3;
+    SERVICE_TYPE_AUTO = 4;
+  }
+  ServiceType service_type = 3;  
   oneof operation {
-    UpdateSystemSoftwareOperation update_system_software_operation = 3;
+    UpdateSystemSoftwareOperation update_system_software_operation = 4;
+    SetPowerStateOperation set_power_state_operation = 5;
     // and others
   }
 }
@@ -66,6 +75,17 @@ message UpdateSystemSoftwareOperation {
     DownloadMode mode = 3; // Mode for installing the softare update regarding download and install steps.
     bool do_not_reboot = 4;  // Whether to reboot the node after the firmware update attempt
     repeated string package_list = 5; // List of packages to install if whole package update isn't desired.
+}
+
+message SetPowerStateOperation {
+    enum PowerState {
+        POWER_STATE_UNSPECIFIED = 0;
+        POWER_STATE_ON = 2;
+        POWER_STATE_CYCLE = 5;
+        POWER_STATE_OFF = 8;
+        POWER_STATE_RESET = 10;
+    }
+    PowerState opcode = 1;
 }
 
 message PreOperation {
