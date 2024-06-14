@@ -75,7 +75,7 @@ class TestInbsCloudClient:
                     update_scheduled_operations=inbs_sb_pb2.UpdateScheduledOperations()
                 ),
                 inbs_sb_pb2.HandleINBMCommandResponse(
-                    request_id="124",                    
+                    request_id="124",
                 ),
                 "<schedule_request><request_id>124</request_id></schedule_request>"
             ),
@@ -116,7 +116,7 @@ class TestInbsCloudClient:
             nonlocal triggered_str
             triggered_str = xml
             return dispatcher_error_response
-        
+
         inbs_client.bind_callback('triggerschedule', triggerschedule)
 
         # Construct command using parameters
@@ -127,7 +127,6 @@ class TestInbsCloudClient:
         request_queue.put(None)  # Sentinel to end the generator
 
         inbs_client._stop_event = stop_event
-           
 
         # Execute
         generator = inbs_client._handle_inbm_command_request(request_queue)
@@ -144,17 +143,17 @@ class TestInbsCloudClient:
     def test_run_grpc_error(self, inbs_client: InbsCloudClient) -> None:
         # Setup a RpcError to simulate gRPC error
         with patch("grpc.insecure_channel") as mock_channel, \
-            patch("threading.Event.wait", side_effect=InterruptedError) as mock_wait:
-            
+                patch("threading.Event.wait", side_effect=InterruptedError) as mock_wait:
+
             mock_channel.side_effect = MagicMock(side_effect=grpc.RpcError())
-            
+
             # Ensure the stop event is not set initially
             inbs_client._stop_event.clear()
-            
+
             # Run the test expecting InterruptedError to stop the infinite loop
             with pytest.raises(InterruptedError):
                 inbs_client._run()
-            
+
             # Assert that stop_event.wait() was called
             mock_wait.assert_called()
 

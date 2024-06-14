@@ -43,7 +43,8 @@ class APScheduler:
         if self.is_schedulable(single_schedule):
             self._sqlite_mgr.update_status(single_schedule, SCHEDULED)
             for manifest in single_schedule.manifests:
-                self._scheduler.add_job(callback, 'date', run_date=single_schedule.start_time, args=[manifest])
+                self._scheduler.add_job(
+                    callback, 'date', run_date=single_schedule.start_time, args=[manifest])
 
     def add_repeated_schedule_job(self, callback: Callable, repeated_schedule: RepeatedSchedule) -> None:
         """Add the job for repeated schedule.
@@ -57,7 +58,8 @@ class APScheduler:
             for manifest in repeated_schedule.manifests:
                 self._scheduler.add_job(callback, 'cron', args=[manifest],
                                         start_date=datetime.now(),
-                                        end_date=self._convert_duration_to_end_time(repeated_schedule.cron_duration),
+                                        end_date=self._convert_duration_to_end_time(
+                                            repeated_schedule.cron_duration),
                                         minute=repeated_schedule.cron_minutes,
                                         hour=repeated_schedule.cron_hours,
                                         day=repeated_schedule.cron_day_month,
@@ -85,7 +87,8 @@ class APScheduler:
         @return: True if the start time fulfill the requirement; False if start time fails the requirement.
         """
         current_time = datetime.now()
-        logger.debug(f"current_time={current_time}, start_time={schedule.start_time}, end_time={schedule.end_time}")
+        logger.debug(
+            f"current_time={current_time}, start_time={schedule.start_time}, end_time={schedule.end_time}")
 
         # If the start time is greater than the end time, the schedule is rejected.
         if schedule.start_time and schedule.end_time and \

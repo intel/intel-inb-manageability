@@ -66,6 +66,7 @@ logger = logging.getLogger(__name__)
 # Mutex lock
 sql_lock = Lock()
 
+
 def _check_type_validate_manifest(xml: str,
                                   schema_location: Optional[str] = None) -> Tuple[str, XmlHandler]:
     """Parse manifest
@@ -725,8 +726,8 @@ class Dispatcher:
             self._telemetry('Dispatcher detects normal boot sequence')
 
 
-def handle_updates(dispatcher: Any, 
-                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 
+def handle_updates(dispatcher: Any,
+                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION,
                    manifest_schema=SCHEMA_LOCATION) -> None:
     """Global function to handle multiple requests from cloud using a FIFO queue.
 
@@ -737,11 +738,11 @@ def handle_updates(dispatcher: Any,
     manifest: str = message[1]
     if message[2]:
         request_id: str = message[2]
-    
+
     if request_type == "schedule":
         if not request_id:
             dispatcher._send_result("Error: No request ID provided for schedule request.")
-            
+
         logger.debug("DEBUG: manifest = " + manifest)
         try:
             schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
@@ -749,7 +750,7 @@ def handle_updates(dispatcher: Any,
             logger.error("XMLException parsing schedule: " + str(e))
             dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
             return
-        
+
         # Clear the database of existing schedules before we add the new schedules
         with sql_lock:
             dispatcher.sqlite_mgr.clear_database()
@@ -762,7 +763,7 @@ def handle_updates(dispatcher: Any,
                 with sql_lock:
                     for requests in scheduled_requests:
                         dispatcher.sqlite_mgr.create_schedule(requests)
-            all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests                
+            all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests
             process_scheduled_requests(all_scheduled_requests)
 
         # Add job to the scheduler
@@ -775,7 +776,8 @@ def handle_updates(dispatcher: Any,
         repeated_schedules = dispatcher.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
         logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
-            dispatcher.ap_scheduler.add_repeated_schedule_job(dispatcher.do_install, repeated_schedule)
+            dispatcher.ap_scheduler.add_repeated_schedule_job(
+                dispatcher.do_install, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
 
         for imm in schedule.immedate_requests:
@@ -786,7 +788,7 @@ def handle_updates(dispatcher: Any,
                     dispatcher._send_result(str(e), request_id)
         dispatcher._send_result("", request_id)
         return
-    
+
     if request_type == "install" or request_type == "query":
         dispatcher.do_install(xml=manifest)
         return

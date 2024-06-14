@@ -105,42 +105,43 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
 </schedule_request>"""
 
 SCHEDULE_SCHEMA_LOCATION = os.path.join(
-                                os.path.dirname(__file__),
-                                '..',
-                                '..',
-                                '..',
-                                'fpm-template',
-                                'usr',
-                                'share',
-                                'dispatcher-agent',
-                                'schedule_manifest_schema.xsd',
-                            )
+    os.path.dirname(__file__),
+    '..',
+    '..',
+    '..',
+    'fpm-template',
+    'usr',
+    'share',
+    'dispatcher-agent',
+    'schedule_manifest_schema.xsd',
+)
 
 EMBEDDED_SCHEMA_LOCATION = os.path.join(
-                                os.path.dirname(__file__),
-                                '..',
-                                '..',
-                                '..',
-                                'fpm-template',
-                                'usr',
-                                'share',
-                                'dispatcher-agent',
-                                'manifest_schema.xsd',
-                            )
+    os.path.dirname(__file__),
+    '..',
+    '..',
+    '..',
+    'fpm-template',
+    'usr',
+    'share',
+    'dispatcher-agent',
+    'manifest_schema.xsd',
+)
+
 
 class TestScheduleManifestParser(TestCase):
-     
+
     def test_get_immediate_request_type(self) -> None:
-        p = ScheduleManifestParser(GOOD_IMMEDIATE_SCHEDULE_XML, 
+        p = ScheduleManifestParser(GOOD_IMMEDIATE_SCHEDULE_XML,
                                    schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
                                    embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
         self.assertEqual(1, len(p.immedate_requests))
         self.assertEqual(1, len(p.immedate_requests[0].manifests))
         self.assertEqual(0, len(p.single_scheduled_requests))
         self.assertEqual(0, len(p.repeated_scheduled_requests))
-        
+
     def test_get_multiple_scheduled_request_types(self) -> None:
-        p = ScheduleManifestParser(GOOD_MULTIPLE_SCHEDULES_XML, 
+        p = ScheduleManifestParser(GOOD_MULTIPLE_SCHEDULES_XML,
                                    schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
                                    embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
         self.assertEqual(1, len(p.immedate_requests))
@@ -149,9 +150,9 @@ class TestScheduleManifestParser(TestCase):
         self.assertEqual(2, len(p.single_scheduled_requests[0].manifests))
         self.assertEqual(2, len(p.repeated_scheduled_requests))
         self.assertEqual(3, len(p.repeated_scheduled_requests[0].manifests))
-        
+
     def test_get_single_with_no_end_time(self) -> None:
-        p = ScheduleManifestParser(GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML, 
+        p = ScheduleManifestParser(GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML,
                                    schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
                                    embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
         self.assertEqual(0, len(p.immedate_requests))
@@ -161,8 +162,6 @@ class TestScheduleManifestParser(TestCase):
 
     def test_raise_exception_no_schedule_requests(self) -> None:
         with self.assertRaises(XmlException) as e:
-            ScheduleManifestParser(BAD_NO_SCHEDULED_REQUESTS_XML, 
+            ScheduleManifestParser(BAD_NO_SCHEDULED_REQUESTS_XML,
                                    schedule_schema_location=SCHEDULE_SCHEMA_LOCATION,
                                    embedded_schema_location=EMBEDDED_SCHEMA_LOCATION)
-            
-    

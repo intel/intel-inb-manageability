@@ -120,10 +120,10 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
             "<cron_day_month>1</cron_day_month>"
             "<cron_month>5</cron_month>"
             "<cron_day_week>2</cron_day_week>"
-            "</repeated_schedule></schedule>"        
+            "</repeated_schedule></schedule>"
             "<manifests><manifest_xml>"
             + escape(SOTA_OPERATION_LARGE_MANIFEST_XML)
-            + "</manifest_xml></manifests>"            
+            + "</manifest_xml></manifests>"
             "</update_schedule>"
             "</schedule_request>",
         ),
@@ -135,7 +135,7 @@ def test_convert_update_scheduled_operations_to_xml_manifest_success(
     xml_manifest: str = convert_updated_scheduled_operations_to_dispatcher_xml(
         request_id, uso
     )
-    assert xml_manifest == expected_xml    
+    assert xml_manifest == expected_xml
 
 
 # Test cases to convert UpdateScheduledOperations -> dispatcher XML (exception)
@@ -239,13 +239,14 @@ def test_convert_operation_with_system_software_update_to_xml_manifests_success(
     operation, expected_inner_xml
 ):
     actual_result = convert_operation_to_xml_manifests(operation)
-    
-    expected_result = ET.Element('manifests')    
-    xml_manifest = ET.Element('manifest_xml')
-    xml_manifest.text=expected_inner_xml    
-    expected_result.append(xml_manifest)        
 
-    assert ET.tostring(actual_result, encoding='unicode') == ET.tostring(expected_result, encoding='unicode')
+    expected_result = ET.Element('manifests')
+    xml_manifest = ET.Element('manifest_xml')
+    xml_manifest.text = expected_inner_xml
+    expected_result.append(xml_manifest)
+
+    assert ET.tostring(actual_result, encoding='unicode') == ET.tostring(
+        expected_result, encoding='unicode')
 
 
 @pytest.mark.parametrize(
