@@ -42,11 +42,11 @@ class DispatcherBroker:
 
         @param message: message to be published to cloud
         @param id: if not "", publish to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
-        """        
+        """
         if id:
-            extra_log = f" with id {id}"   
+            extra_log = f" with id {id}"
         else:
-            extra_log = ""     
+            extra_log = ""
         logger.debug(f"Sending result message{extra_log}: {message}")
 
         if "/" in id:

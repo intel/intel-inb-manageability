@@ -113,9 +113,9 @@ class MQTT:
             if granted_qos[0] == 128:
                 failed_topic = self.mid_to_topic.get(mid, "<unknown>")
                 logger.error("Failed to subscribe to topic: %s", failed_topic)
-            
-            with self.lock:                
-                self.mid_to_topic.pop(mid, None)            
+
+            with self.lock:
+                self.mid_to_topic.pop(mid, None)
 
         self._mqttc.on_subscribe = _on_subscribe
 
@@ -150,26 +150,28 @@ class MQTT:
         logger.info('Publishing message: %s on topic: %s with retain: %s',
                     mask_security_info(payload), topic, retain)
         self._mqttc.publish(topic, payload.encode('utf-8'), qos, retain)
-    
+
     # It's not clear how to meaningfully unit test this function as it uses threads and sleeps.
     # It will require manual and/or integration testing when modified.
     def publish_and_wait_response(self, topic: str, response_topic: str, payload: str, timeout_seconds: int) -> str | None:
         """Publishes a schedule request and waits for a response within a timeout on the given channel.
-        
+
         Raise TimeoutError if no response is received within the timeout."""
 
         response = None
         response_received = threading.Event()
+
         def on_message(topic: str, payload: str, qos: int) -> None:
             """Callback for when a message is received."""
             nonlocal response
             nonlocal response_received
-            logger.debug("publish_and_wait_response: received response: %s on topic: %s", payload, topic)
+            logger.debug(
+                "publish_and_wait_response: received response: %s on topic: %s", payload, topic)
             response = payload
             response_received.set()
-        
+
         logger.debug(f"publish_and_wait_response: subscribing to response topic: {response_topic}")
-        self.subscribe(response_topic, on_message, 0) 
+        self.subscribe(response_topic, on_message, 0)
 
         logger.debug(f"MQTT publishing message: {payload} on topic: {topic}")
         self.publish(topic, payload, 0, retain=False)
@@ -179,7 +181,7 @@ class MQTT:
 
         self.unsubscribe(response_topic)
         if is_response_received:
-            logger.debug(f"MQTT received response: {response} on topic: {response_topic}")         
+            logger.debug(f"MQTT received response: {response} on topic: {response_topic}")
         else:
             raise TimeoutError(f"No response received within {timeout_seconds} seconds.")
 
@@ -195,17 +197,17 @@ class MQTT:
         """
         if topic in self.topics:
             logger.info('Topic: %s has already been subscribed to')
-            return        
+            return
 
         def _message_callback(client: Client, userdata: Any, message: MQTTMessage) -> None:
             """Add callback to callback list"""
             callback(message.topic, message.payload.decode(encoding='utf-8', errors='strict'),
-                     message.qos)                
-            
+                     message.qos)
+
         try:
             _, mid = self._mqttc.subscribe(topic, qos)
             with self.lock:
-                self.mid_to_topic[mid] = topic     
+                self.mid_to_topic[mid] = topic
         except ValueError:
             # proceed without mid
             pass

@@ -13,3 +13,4 @@ pyinstaller==5.13.1
 setuptools==65.5.1
 future==0.18.3
 untangle==1.2.1
+APScheduler==3.10.4

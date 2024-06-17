@@ -173,7 +173,7 @@ class InbsCloudClient(CloudClient):
 
                             yield inbs_sb_pb2.HandleINBMCommandResponse(
                                 request_id=request_id,
-                                error = pb_error
+                                error=pb_error
                             )
                         except TimeoutError:
                             logger.error(

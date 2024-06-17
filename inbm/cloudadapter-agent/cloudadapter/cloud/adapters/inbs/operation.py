@@ -9,6 +9,7 @@ from google.protobuf.timestamp_pb2 import Timestamp
 from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, Operation, Schedule
 from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
 
+
 def create_xml_element(tag: str, text: str | None = None, attrib: dict[str, str] | None = None) -> ET.Element:
     """Create an XML element with optional text and attributes."""
 
@@ -19,10 +20,12 @@ def create_xml_element(tag: str, text: str | None = None, attrib: dict[str, str]
         element.attrib = attrib
     return element
 
+
 def protobuf_timestamp_to_iso(timestamp: Timestamp) -> str:
     """Converts a protobuf Timestamp to an ISO formatted string."""
 
     return timestamp.ToDatetime().isoformat()
+
 
 def convert_schedule_to_xml(schedule: Schedule) -> ET.Element:
     """Converts a Schedule message to an XML element."""
@@ -33,7 +36,8 @@ def convert_schedule_to_xml(schedule: Schedule) -> ET.Element:
         single = schedule.single_schedule
         single_schedule = create_xml_element('single_schedule')
         if single.HasField('start_time'):
-            start_time = create_xml_element('start_time', protobuf_timestamp_to_iso(single.start_time))
+            start_time = create_xml_element(
+                'start_time', protobuf_timestamp_to_iso(single.start_time))
             single_schedule.append(start_time)
         if single.HasField('end_time'):
             end_time = create_xml_element('end_time', protobuf_timestamp_to_iso(single.end_time))
@@ -64,18 +68,19 @@ def convert_updated_scheduled_operations_to_dispatcher_xml(request_id: str, upda
     root = create_xml_element('schedule_request')
     xml_request_id = create_xml_element('request_id', text=request_id)
     root.append(xml_request_id)
-    
+
     for scheduled_operation in update_operations_proto.scheduled_operations:
         update_schedule = create_xml_element('update_schedule')
         for schedule in scheduled_operation.schedules:
-             xml_schedules = convert_schedule_to_xml(schedule)
-             update_schedule.append(xml_schedules)
+            xml_schedules = convert_schedule_to_xml(schedule)
+            update_schedule.append(xml_schedules)
 
         xml_manifests = convert_operation_to_xml_manifests(scheduled_operation.operation)
         update_schedule.append(xml_manifests)
         root.append(update_schedule)
-    
+
     return ET.tostring(root, encoding='unicode')
+
 
 def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     """Converts an Operation message to an XML manifests element containing manifest_xml subelements for dispatcher."""
@@ -92,8 +97,9 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     result = create_xml_element('manifests')
     for manifest in [convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)]:
         xml_manifest = create_xml_element('manifest_xml', text=manifest)
-        result.append(xml_manifest)        
+        result.append(xml_manifest)
     return result
+
 
 def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSoftwareOperation) -> str:
     """Converts a UpdateSystemSoftwareOperation message to an XML manifest string for Dispatcher."""

@@ -344,7 +344,7 @@ class TestPublisher(unittest.TestCase):
     def test_publish_schedule_succeed(self) -> None:
         schedule = "<schedule_request><request_id>1234</request_id></schedule_request>"
 
-        _ = self.publisher.publish_schedule(schedule, "1234", 3)        
+        _ = self.publisher.publish_schedule(schedule, "1234", 3)
 
         mocked = self.MockBroker.return_value
         mocked.publish_schedule.assert_called_once_with(schedule, "1234", 3)
