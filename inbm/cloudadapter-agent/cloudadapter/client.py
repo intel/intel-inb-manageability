@@ -30,13 +30,10 @@ class Client:
         """Construct the Client object
         @exception BadConfigError: If the adapter configuration is bad
         """
-
-        # These statements set up INBM-side communication
         self._broker = Broker()
         self._publisher = Publisher(self._broker)
         self._device_manager = DeviceManager(self._broker)
 
-        # These statements set up the cloud side communication
         self._adapter = adapter_factory.get_adapter()
         self._cloud_publisher = CloudPublisher(self._adapter)
 
@@ -73,7 +70,6 @@ class Client:
     def _bind_cloud_to_agent(self) -> None:
         adapter_bindings = {
             METHOD.MANIFEST: self._publisher.publish_manifest,
-            METHOD.SCHEDULE: self._publisher.publish_schedule,
             METHOD.AOTA: self._publisher.publish_aota,
             METHOD.FOTA: self._publisher.publish_fota,
             METHOD.SOTA: self._publisher.publish_sota,
@@ -118,11 +114,7 @@ class Client:
         """Connect the cloud to Intel(R) In-Band Manageability
         @exception BadConfigError: If the connection configuration is bad
         """
-
-        # This part sets up INBM->cloud function calls
         self._bind_agent_to_cloud()
-
-        # This part sets up cloud->INBM function calls.
         if is_ucc_mode():
             self._bind_ucc_to_agent()
         else:
@@ -149,11 +141,9 @@ class Client:
 
     def stop(self) -> None:
         """Disconnect the cloud and Intel(R) In-Band Manageability"""
-        logger.debug("Stopping cloudadapter client")
         self._broker.stop()
         self._cloud_publisher.publish_event("Disconnected")
         try:
-            logger.debug("Calling disconnect on adapter")
             self._adapter.disconnect()
         except DisconnectError as e:
             logger.error(str(e))

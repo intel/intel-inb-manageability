@@ -41,7 +41,7 @@ class TestOsUpdater(unittest.TestCase):
         cls.sota_instance = SOTA(parsed_manifest,
                                  "remote",
                                  cls.mock_disp_broker,
-                                 cls.mock_disp_obj._update_logger,
+                                 cls.mock_disp_obj.update_logger,
                                  None,
                                  MockInstallCheckService(),
                                  snapshot=1)
@@ -53,7 +53,7 @@ class TestOsUpdater(unittest.TestCase):
         cls.sota_instance_packages = SOTA(parsed_manifest_packages,
                                           "remote",
                                           cls.mock_disp_broker,
-                                          cls.mock_disp_obj._update_logger,
+                                          cls.mock_disp_obj.update_logger,
                                           None,
                                           MockInstallCheckService(),
                                           snapshot=1)

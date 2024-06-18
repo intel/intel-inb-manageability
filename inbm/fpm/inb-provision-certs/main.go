@@ -199,25 +199,6 @@ func setUpMqttCaDirectories(secret_dir string, public_dir string, days_expiry st
 	mqttCaSecretKeyFilename := filepath.Join(mqttCaSecretDir, "mqtt-ca.key")
 	createPrivateKey(mqttCaSecretKeyFilename)
 
-	// Define the CA configuration content
-	caConfigContent := `[ req ]
-distinguished_name = req_distinguished_name
-x509_extensions = v3_ca
-
-[ req_distinguished_name ]
-
-[ v3_ca ]
-subjectKeyIdentifier = hash
-authorityKeyIdentifier = keyid:always,issuer
-basicConstraints = critical,CA:true
-keyUsage = keyCertSign, cRLSign
-`
-
-	// Write the config content to a file
-	caConfigFilename := filepath.Join(mqttCaSecretDir, "mqtt-ca.conf")
-	err := ioutil.WriteFile(caConfigFilename, []byte(caConfigContent), 0644)
-	must(err, "Write "+caConfigFilename)
-
 	mqttCaSecretCsrFilename := filepath.Join(mqttCaSecretDir, "mqtt-ca.csr")
 	cmd := exec.Command("openssl", "req", "-new", "-key", mqttCaSecretKeyFilename,
 		"-subj", "/C=US/ST=Oregon/L=Hillsboro/O=Intel/OU=EVAL/CN=mqtt-ca.example.com", "-out",
@@ -226,7 +207,7 @@ keyUsage = keyCertSign, cRLSign
 
 	mqttCaSecretCrtFilename := filepath.Join(mqttCaSecretDir, "mqtt-ca.crt")
 	cmd = exec.Command("openssl", "x509", "-req", "-days", days_expiry, "-sha384", "-extensions",
-		"v3_ca", "-extfile", caConfigFilename, "-signkey", mqttCaSecretKeyFilename, "-in",
+		"v3-ca", "-signkey", mqttCaSecretKeyFilename, "-in",
 		mqttCaSecretCsrFilename, "-out", mqttCaSecretCrtFilename)
 	mustRunCmd(cmd)
 

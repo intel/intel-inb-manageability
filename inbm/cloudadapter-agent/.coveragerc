@@ -3,6 +3,4 @@
 show_missing = True
 
 [run]
-omit = 
-  **/tests/*
-  **/pb/**
+omit = *tests*

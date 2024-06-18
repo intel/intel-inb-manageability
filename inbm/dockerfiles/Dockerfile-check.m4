@@ -25,7 +25,6 @@ RUN source /venv-py3/bin/activate && \
         pylint==2.5.3 \
         mypy==1.7.1 \
         types-requests==2.31.0.1 \
-        types-protobuf==5.26.0.20240422 \
     	pytest==7.4.3 \
     	pytest-cov==4.1.0 \
         pytest-mock==3.12.0 \

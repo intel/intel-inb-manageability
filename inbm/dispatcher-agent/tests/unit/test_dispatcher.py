@@ -8,7 +8,7 @@ from dispatcher.dispatcher import WindowsDispatcherService
 from unit.common.mock_resources import *
 
 from dispatcher.aota.aota_error import AotaError
-from dispatcher.common.result_constants import PUBLISH_SUCCESS
+from dispatcher.common.result_constants import PUBLISH_SUCCESS, CODE_OK, CODE_BAD_REQUEST
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.ota_thread import AotaThread
@@ -42,6 +42,9 @@ dmi_parsed_1 = PlatformInformation(date_time, 'innotek GmbH',
 dmi_unknown = PlatformInformation()
 
 
+@patch('dispatcher.dispatcher_class.get_log_config_path',
+       return_value=os.path.join(os.path.dirname(__file__),
+                                 '../../fpm-template/etc/intel-manageability/public/dispatcher-agent/logging.ini'))
 class TestDispatcher(TestCase):
 
     @patch('dispatcher.ota_thread.AotaThread.start')
@@ -53,7 +56,7 @@ class TestDispatcher(TestCase):
                              m_sub: Any,
                              m_connect: Any,
                              m_thread_start: Any,
-                             ) -> None:
+                             mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample FOTA</name><description>' \
               'Sample FOTA manifest file</description><type>aota</type><repository>remote</repository>' \
@@ -78,7 +81,7 @@ class TestDispatcher(TestCase):
                             m_connect: Any,
                             m_do_ota_update: Any,
                             m_thread_start: Any,
-                            ) -> None:
+                            mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample AOTA</name><description>' \
               'Sample AOTA manifest file</description><type>aota</type><repo>remote</repo>' \
@@ -102,7 +105,7 @@ class TestDispatcher(TestCase):
                                                               m_sub: Any,
                                                               m_connect: Any,
                                                               m_thread_start: Any,
-                                                              ) -> None:
+                                                              mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample AOTA</name><description>' \
               'Sample AOTA manifest file</description><type>aota</type><repo>remote</repo>' \
@@ -125,7 +128,7 @@ class TestDispatcher(TestCase):
                                                      m_sub: Any,
                                                      m_connect: Any,
                                                      m_thread_start: Any,
-                                                     ) -> None:
+                                                     mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?>' \
               '<manifest><type>ota</type><ota><header><id>sampleId</id><name>Sample AOTA</name><description>' \
               'Sample AOTA manifest file</description><type>aota</type><repo>remote</repo>' \
@@ -144,7 +147,7 @@ class TestDispatcher(TestCase):
                                              mock_trtl_path: Any,
                                              mock_ota_thread: Any,
                                              mock_pre_install_check: Any,
-                                             ) -> None:
+                                             mock_logging: Any) -> None:
         mock_parsed_manifest = Mock()
         mock_dbs = Mock()
         aota = AotaThread('remote', Mock(), UpdateLogger("AOTA", "metadata"), MockInstallCheckService(),
@@ -152,11 +155,21 @@ class TestDispatcher(TestCase):
         with self.assertRaisesRegex(AotaError, 'Cannot proceed with the AOTA '):
             aota.start()
 
+    @patch.object(Dispatcher, '_send_result', autospec=True)
+    def test_on_cloud_response_with_unicode_succeeds(self, mock_logging, mock_send_result) -> None:
+        d = TestDispatcher._build_dispatcher()
+        d.update_queue = Mock()
+        d.update_queue.full = Mock(return_value=False)
+        d.update_queue.full.return_value = False
+        d.update_queue.put = Mock()
+        d._on_cloud_request('topic', '\xe2\x82\xac', 1)
+        assert d.update_queue.put.call_count == 1
+
     @patch('dispatcher.dispatcher_class.OtaFactory', autospec=True)
     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     def test_do_install_ota_error_result_succeeds(self, mock_workload_orchestration_func, MockXmlHandler,
-                                                  MockOtaFactory) -> None:
+                                                  MockOtaFactory, mock_logging) -> None:
         parsed_head = MockXmlHandler.return_value
         mock_ota_factory = Mock()
         MockOtaFactory.get_factory.return_value = mock_ota_factory
@@ -173,7 +186,7 @@ class TestDispatcher(TestCase):
             assert "400" in result
 
     @patch('inbm_lib.xmlhandler.XmlHandler', autospec=True)
-    def test_do_install_pota_do_ota_func_called(self, MockXmlHandler) -> None:
+    def test_do_install_pota_do_ota_func_called(self, MockXmlHandler, mock_logging) -> None:
         parsed_head = MockXmlHandler.return_value
         resource = {'fota': ' ', 'sota': ' '}
         d = TestDispatcher._build_dispatcher()
@@ -194,7 +207,7 @@ class TestDispatcher(TestCase):
                                    mock_send_result: Any,
                                    m_sub: Any,
                                    m_connect: Any,
-                                   ) -> None:
+                                   mock_logging: Any) -> None:
 
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>maxCacheSize:149</path></set></configtype></config></manifest>'
         d = TestDispatcher._build_dispatcher(
@@ -213,7 +226,7 @@ class TestDispatcher(TestCase):
                                    mock_send_result: Any,
                                    m_sub: Any,
                                    m_connect: Any,
-                                   ) -> None:
+                                   mock_logging: Any) -> None:
 
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>set_element</cmd><configtype><set><path>"maxCacheSize":"149"</path></set></configtype></config></manifest>'
         d = TestDispatcher._build_dispatcher(
@@ -226,7 +239,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'sota_upgrade'})
     def test_dispatcher_state_file_info_sota(self, mock_disp_state_file_exist, mock_consume_disp_file, mock_invoke_sota,
-                                             ) -> None:
+                                             mock_logging) -> None:
         mock_install = MockInstallCheckService()
         d = TestDispatcher._build_dispatcher(install_check=mock_install)
         d.check_dispatcher_state_info()
@@ -236,7 +249,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.is_dispatcher_state_file_exists', return_value=True)
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file', return_value={'abc': 'abc'})
     def test_dispatcher_state_file_info_no_restart_reason(self, mock_disp_state_file_exist, mock_consume_disp_file,
-                                                          ) -> None:
+                                                          mock_logging) -> None:
         d = TestDispatcher._build_dispatcher()
         try:
             d.check_dispatcher_state_info()
@@ -249,7 +262,7 @@ class TestDispatcher(TestCase):
            return_value={'mender-version': 'abcvdk'})
     def test_dispatcher_state_file_info_sota_without_restart_reason(self, mock_disp_state_file_exist,
                                                                     mock_consume_disp_file, mock_invoke_sota,
-                                                                    ) -> None:
+                                                                    mock_logging) -> None:
         mock_install = MockInstallCheckService()
         d = TestDispatcher._build_dispatcher(install_check=mock_install)
         d.check_dispatcher_state_info()
@@ -263,7 +276,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
     def test_dispatcher_state_file_info_fota(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
-                                             mock_dmi_exists, mock_send_result) -> None:
+                                             mock_dmi_exists, mock_send_result, mock_logging) -> None:
         d = TestDispatcher._build_dispatcher()
         d.check_dispatcher_state_info()
         mock_send_result.assert_called_once_with(
@@ -276,7 +289,7 @@ class TestDispatcher(TestCase):
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
     def test_dispatcher_state_file_info_fota1(self, mock_consume_disp_file, mock_disp_state_file_exist, mock_dmi,
-                                              mock_dmi_exists, mock_send_result) -> None:
+                                              mock_dmi_exists, mock_send_result, mock_logging) -> None:
         d = TestDispatcher._build_dispatcher()
         d.check_dispatcher_state_info()
         mock_send_result.assert_called_once_with(
@@ -290,7 +303,7 @@ class TestDispatcher(TestCase):
            return_value={'restart_reason': 'fota', 'bios_version': 'VirtualBox', 'release_date': date_time})
     def test_dispatcher_device_tree_called_on_disp_state(self, mock_consume_disp_file, mock_disp_state_file_exist,
                                                          mock_devicetree, mock_dmi_path, mock_send_result,
-                                                         ) -> None:
+                                                         mock_logging) -> None:
         d = TestDispatcher._build_dispatcher()
         d.check_dispatcher_state_info()
         mock_send_result.assert_called()
@@ -306,7 +319,7 @@ class TestDispatcher(TestCase):
                                      m_sub: Any,
                                      m_connect: Any,
                                      mock_config_func: Any,
-                                     ) -> None:
+                                     mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
               '<cmd>get_element</cmd><configtype><get><path>maxCacheSize</path></get></configtype> ' \
               '</config></manifest> '
@@ -329,7 +342,7 @@ class TestDispatcher(TestCase):
                                                    m_sub: Any,
                                                    m_connect: Any,
                                                    mock_do_source_command: Any,
-                                                   ) -> None:
+                                                   mock_logging: Any) -> None:
         xml = """\
 <?xml version="1.0" encoding="utf-8"?>
     <manifest>
@@ -343,7 +356,7 @@ class TestDispatcher(TestCase):
         mock_workload_orchestration_func.assert_called()
         mock_do_source_command.assert_called_once()
 
-    def test_abc(self, ):
+    def test_abc(self, mock_logging: Any):
         xml = """\
 <?xml version="1.0" encoding="utf-8"?>
     <manifest>
@@ -365,7 +378,7 @@ class TestDispatcher(TestCase):
                                           m_sub: Any,
                                           m_connect: Any,
                                           mock_install_func: Any,
-                                          ) -> None:
+                                          mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
               '<cmd>load</cmd><configtype><load><fetch>maxCacheSize</fetch></load></configtype> ' \
               '</config></manifest> '
@@ -388,7 +401,7 @@ class TestDispatcher(TestCase):
                                               m_sub: Any,
                                               m_connect: Any,
                                               mock_install_func: Any,
-                                              ) -> None:
+                                              mock_logging: Any) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config> ' \
               '<cmd>load</cmd><bad>bad</bad><configtype><load><fetch>maxCacheSize</fetch></load></configtype> ' \
               '</config></manifest> '
@@ -399,7 +412,7 @@ class TestDispatcher(TestCase):
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration) -> None:
+    def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>restart</cmd></manifest>'
         d = TestDispatcher._build_dispatcher()
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
@@ -408,14 +421,14 @@ class TestDispatcher(TestCase):
 
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration) -> None:
+    def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_logging) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>query</cmd><query><option>status</option></query></manifest>'
         d = TestDispatcher._build_dispatcher()
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
         mock_workload_orchestration.assert_called()
         mock_perform_cmd_type_operation.assert_called_once()
 
-    def test_parse_error_invalid_command(self) -> None:
+    def test_parse_error_invalid_command(self, mock_logging) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange></orange></manifest>'
         d = TestDispatcher._build_dispatcher()
         status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
@@ -432,7 +445,7 @@ class TestDispatcher(TestCase):
                                      mock_send_result: Any,
                                      m_sub: Any,
                                      m_connect: Any,
-                                     ) -> None:
+                                     mock_logging: Any) -> None:
 
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercen</path></get></configtype></config></manifest>'
         d = TestDispatcher._build_dispatcher()
@@ -450,29 +463,26 @@ class TestDispatcher(TestCase):
                                      mock_send_result: Any,
                                      m_sub: Any,
                                      m_connect: Any,
-                                     ) -> None:
+                                     mock_logging: Any) -> None:
 
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>config</type><config><cmd>get_element</cmd><configtype><get><path>minPowerPercent</path></get></configtype></config></manifest>'
         d = TestDispatcher._build_dispatcher()
         mock_request_config_agent.return_value = True
         self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.__init__', return_value=None)
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     def test_service_name_prefixed_inbm(self,
                                         m_sub: Any,
                                         m_connect: Any,
-                                        sql_mgr: Any,
-                                        ) -> None:
+                                        mock_logging: Any) -> None:
 
         d = WindowsDispatcherService([])
         self.assertFalse(' ' in d._svc_name_)
         self.assertEqual(d._svc_name_.split('-')[0], 'inbm')
 
     @staticmethod
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.__init__', return_value=None)
-    def _build_dispatcher(sqlite_mgr, install_check: InstallCheckService = MockInstallCheckService()) -> Dispatcher:
+    def _build_dispatcher(install_check: InstallCheckService = MockInstallCheckService()) -> Dispatcher:
         d = Dispatcher([], MockDispatcherBroker.build_mock_dispatcher_broker(),
                        install_check)
         d._update_logger = Mock()

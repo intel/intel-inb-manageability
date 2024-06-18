@@ -7,8 +7,7 @@
 from enum import Enum
 
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_ETC_PATH_PREFIX, \
-    INTEL_MANAGEABILITY_SHARE_PATH_PREFIX, INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, BROKER_ETC_PATH, \
-    INTEL_MANAGEABILITY_VAR_PATH_PREFIX
+    INTEL_MANAGEABILITY_SHARE_PATH_PREFIX, INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, BROKER_ETC_PATH
 
 AGENT = 'dispatcher'
 STATE_CHANNEL = '+/state'
@@ -30,12 +29,9 @@ IP = 'ip'
 TOKEN = 'token'  # noqa: S105
 CSL_CA = 'certFile'
 
-# Scheduler Sqlite3 DB FILE
-SCHEDULER_DB_FILE = str(INTEL_MANAGEABILITY_VAR_PATH_PREFIX / 'scheduler.db')
-SCHEDULED = "scheduled"
 
 # Subscription channels
-TC_REQUEST_CHANNEL = 'manageability/request/#'
+TC_REQUEST_CHANNEL = 'manageability/request/+'
 DIAGNOSTIC_RESP_CHANNEL = 'diagnostic/response/'
 CONFIGURATION_DISPATCHER_UPDATE_CHANNEL = 'configuration/update/dispatcher/+'
 CONFIGURATION_ALL_AGENTS_UPDATE_CHANNEL = 'configuration/update/all/+'

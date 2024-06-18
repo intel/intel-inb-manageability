@@ -1,6 +1,7 @@
 # Configuration Parameters
 
-Each of the agents has its own set of configuration key/value pairs which can be dynamically set either via the cloud, INBC, or directly in the file.  Note, that if the changes are made via the cloud or using INBC that the changes will be dynamic.  If they are made to the file directly, then the service will need to be restarted to pick up the changes.
+Each of the agents has its own set of configuration key/value pairs which can be dynamically set either via the cloud, INBC, or directly in the file.  Note, that if the changes 
+are made via the cloud or using INBC that the changes will be dynamic.  If they are made to the file directly, then the service will need to be restarted to pick up the changes.
 
 ## INBM Configuration
 
@@ -10,13 +11,11 @@ Configuration update is used to change/retrieve/append/remove configuration para
 The below tables represent the different sections of the configuration file.
 
 ### All
-
 | Key | Default Value | Description                                                                                    |
 |:----|:-------------:|:-----------------------------------------------------------------------------------------------|
 | dbs |     WARN      | How the system should be respond if there is a Docker Bench Security alert. [ON, OFF, or WARN] |
 
 ### Telemetry
-
 | Key                            | Default Value | Lower Limit | Upper Limit | Description                                                                                                                              |
 |:-------------------------------|:-------------:|:------------|-------------|------------------------------------------------------------------------------------------------------------------------------------------|
 | collectionIntervalSeconds      |      60       | 30          | 120         | Time interval after which telemetry is collected from the system.                                                                        |
@@ -27,7 +26,6 @@ The below tables represent the different sections of the configuration file.
 | swBomIntervalHours             |      24       | 1           | 168         | Number of hours between swBom publish.                                                                                                   |
 
 ### Diagnostic
-
 | Key                                |        Default Value         | Description                                                                     |
 |:-----------------------------------|:----------------------------:|:--------------------------------------------------------------------------------|
 | minStorageMB                       |             100              | Minimum storage that the system should have before or after an update           |
@@ -38,14 +36,12 @@ The below tables represent the different sections of the configuration file.
 | networkCheck                       |             true             | True if network connection is mandatory; otherwise, False.                      |
 
 ### Dispatcher
-
 | Key                             | Default Value | Description                                                                        |
 |:--------------------------------|:-------------:|:-----------------------------------------------------------------------------------|
 | dbsRemoveImageOnFailedContainer |     false     | True if image should be removed on BSD flagged failed container; otherwise, False. |
 | trustedRepositories             |               | List of trusted repositories for fetching packages                                 | 
 
 ### Orchestrator
-
 | Key                  |             Default Value              | Description        |
 |:---------------------|:--------------------------------------:|:-------------------|
 | orchestratorResponse |                  true                  |                    |

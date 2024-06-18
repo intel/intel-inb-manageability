@@ -207,8 +207,6 @@
   /etc/intel-manageability/public/cloudadapter-agent/ w,
   /etc/intel-manageability/public/cloudadapter-agent/* rw,
   /etc/intel-manageability/public/cloudadapter-agent.dpkg-new/ wr,
-  /var/intel-manageability r,
-  /var/intel-manageability/scheduler.db rwk,
   /var/movisoc-fwu-status rw,
   /var/lib/dispatcher/ rw,
   /var/lib/dispatcher/** rw,

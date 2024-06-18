@@ -11,10 +11,11 @@ import json
 import platform
 import signal
 import sys
+from logging.config import fileConfig
 from queue import Queue
-from threading import Thread, active_count, Lock
+from threading import Thread, active_count
 from time import sleep
-from typing import Optional, Any, Mapping, Tuple, Sequence
+from typing import Optional, Any, Mapping, Tuple
 
 from dispatcher.config.config_operation import ConfigOperation
 from dispatcher.source.source_command import do_source_command
@@ -33,10 +34,6 @@ from inbm_common_lib.device_tree import get_device_tree_system_info
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.exceptions import UrlSecurityException
 
-from .schedule.manifest_parser import ScheduleManifestParser, SCHEDULE_SCHEMA_LOCATION
-from .schedule.schedules import Schedule
-from .schedule.sqlite_manager import SqliteManager
-from .schedule.apscheduler import APScheduler
 from .dispatcher_broker import DispatcherBroker
 from .dispatcher_exception import DispatcherException
 from .aota.aota_error import AotaError
@@ -63,8 +60,16 @@ from .update_logger import UpdateLogger
 from . import source
 
 logger = logging.getLogger(__name__)
-# Mutex lock
-sql_lock = Lock()
+
+
+def get_log_config_path() -> str:
+    """Return the config path for this agent, taken by default from LOGGERCONFIG environment
+    variable and then from a fixed default path.
+    """
+    try:
+        return os.environ['LOGGERCONFIG']
+    except KeyError:
+        return DEFAULT_LOGGING_PATH
 
 
 def _check_type_validate_manifest(xml: str,
@@ -89,9 +94,15 @@ def _check_type_validate_manifest(xml: str,
 
 class Dispatcher:
     def __init__(self, args: list[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
+        log_config_path = get_log_config_path()
+        msg = f"Looking for logging configuration file at {log_config_path}"
+        print(msg)
+        fileConfig(log_config_path,
+                   disable_existing_loggers=False)
+
         self._dispatcher_broker = broker
         self._install_check_service = install_check_service
-        self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
+        self.update_queue: Queue[Tuple[str, str]] = Queue(1)
         self._thread_count = 1
         self._sota_repos = None
         self.sota_mode = None
@@ -111,9 +122,6 @@ class Dispatcher:
         self._wo: Optional[WorkloadOrchestration] = None
 
         self._config_operation = ConfigOperation(self._dispatcher_broker)
-
-        self.sqlite_mgr = SqliteManager()
-        self.ap_scheduler = APScheduler(sqlite_mgr=self.sqlite_mgr)
 
     def stop(self) -> None:
         self.RUNNING = False
@@ -145,20 +153,6 @@ class Dispatcher:
 
         with ota_lock:
             self._perform_startup_tasks()
-
-        # Run scheduler to schedule the task during startup.
-        single_schedules = self.sqlite_mgr.get_all_single_schedules_in_priority_order()
-        logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
-        for single_schedule in single_schedules:
-            self.ap_scheduler.add_single_schedule_job(self.do_install, single_schedule)
-            logger.debug(f"Scheduled single job: {single_schedule}")
-
-        repeated_schedules = self.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
-        logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
-        for repeated_schedule in repeated_schedules:
-            self.ap_scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
-            logger.debug(f"Scheduled repeated job: {repeated_schedule}")
-        self.ap_scheduler.start()
 
         def _sig_handler(signo, frame) -> None:
             """Callback to register different signals. Currently we do that only for SIGTERM & SIGINT
@@ -273,16 +267,12 @@ class Dispatcher:
     def _telemetry(self, message: str) -> None:
         self._dispatcher_broker.telemetry(message)
 
-    def _send_result(self, message: str, id: str = "") -> None:
-        """Sends result message to local MQTT channel
-
-        If id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
-
-        Raises ValueError if id contains a slash
+    def _send_result(self, message: str) -> None:
+        """Sends event messages to local MQTT channel
 
         @param message: message to be published to cloud
         """
-        self._dispatcher_broker.send_result(message, id)
+        self._dispatcher_broker.send_result(message)
 
     def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:
         """Delegates the installation to either
@@ -472,11 +462,10 @@ class Dispatcher:
         """
         logger.info('Cloud request received: %s on topic: %s',
                     mask_security_info(payload), topic)
-        request_type = topic.split('/')[2]
-        request_id = topic.split('/')[3] if len(topic.split('/')) > 3 else None
+        request_type = topic.split('/')[-1]
         manifest = payload
         if not self.update_queue.full():
-            self.update_queue.put((request_type, manifest, request_id))
+            self.update_queue.put((request_type, manifest))
         else:
             self._send_result(
                 str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
@@ -726,68 +715,14 @@ class Dispatcher:
             self._telemetry('Dispatcher detects normal boot sequence')
 
 
-def handle_updates(dispatcher: Any,
-                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION,
-                   manifest_schema=SCHEMA_LOCATION) -> None:
+def handle_updates(dispatcher: Any) -> None:
     """Global function to handle multiple requests from cloud using a FIFO queue.
 
     @param dispatcher: callback to dispatcher
     """
-    message: Tuple[str, str, Optional[str]] = dispatcher.update_queue.get()
+    message: Tuple[str, str] = dispatcher.update_queue.get()
     request_type: str = message[0]
     manifest: str = message[1]
-    if message[2]:
-        request_id: str = message[2]
-
-    if request_type == "schedule":
-        if not request_id:
-            dispatcher._send_result("Error: No request ID provided for schedule request.")
-
-        logger.debug("DEBUG: manifest = " + manifest)
-        try:
-            schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
-        except XmlException as e:
-            logger.error("XMLException parsing schedule: " + str(e))
-            dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
-            return
-
-        # Clear the database of existing schedules before we add the new schedules
-        with sql_lock:
-            dispatcher.sqlite_mgr.clear_database()
-        # Remove all the jobs in apscheduler.
-        dispatcher.ap_scheduler.remove_all_jobs()
-
-        # Add schedules to the database
-        if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
-            def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
-                with sql_lock:
-                    for requests in scheduled_requests:
-                        dispatcher.sqlite_mgr.create_schedule(requests)
-            all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests
-            process_scheduled_requests(all_scheduled_requests)
-
-        # Add job to the scheduler
-        single_schedules = dispatcher.sqlite_mgr.get_all_single_schedules_in_priority_order()
-        logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
-        for single_schedule in single_schedules:
-            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, single_schedule)
-            logger.debug(f"Scheduled single job: {single_schedule}")
-
-        repeated_schedules = dispatcher.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
-        logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
-        for repeated_schedule in repeated_schedules:
-            dispatcher.ap_scheduler.add_repeated_schedule_job(
-                dispatcher.do_install, repeated_schedule)
-            logger.debug(f"Scheduled repeated job: {repeated_schedule}")
-
-        for imm in schedule.immedate_requests:
-            for manifest in imm.manifests:
-                try:
-                    dispatcher.do_install(xml=manifest)
-                except (NotImplementedError, DispatcherException) as e:
-                    dispatcher._send_result(str(e), request_id)
-        dispatcher._send_result("", request_id)
-        return
 
     if request_type == "install" or request_type == "query":
         dispatcher.do_install(xml=manifest)

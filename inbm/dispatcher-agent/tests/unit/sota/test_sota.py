@@ -11,6 +11,7 @@ from dispatcher.sota.sota import SOTA
 from dispatcher.sota.sota import SOTAUtil
 from dispatcher.sota.constants import *
 from inbm_lib.xmlhandler import XmlHandler
+from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX
 
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),

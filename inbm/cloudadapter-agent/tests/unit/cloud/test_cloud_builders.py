@@ -5,7 +5,7 @@ Unit tests for the cloud_builders module
 """
 
 
-from cloudadapter.cloud.cloud_builders import build_client_with_config, _configure_tls
+from cloudadapter.cloud.cloud_builders import build_client_with_config, _configure_tls, TLSConfig
 from cloudadapter.exceptions import ClientBuildError
 import jsonschema
 

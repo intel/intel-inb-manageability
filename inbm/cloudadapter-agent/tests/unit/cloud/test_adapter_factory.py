@@ -45,16 +45,6 @@ class TestAdapterFactory(unittest.TestCase):
         adapter_factory.get_adapter()
         assert MockAzureAdapter.call_count == 1
 
-    @mock.patch('cloudadapter.cloud.adapter_factory.InbsAdapter')
-    @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
-    def test_get_adapter_inbs_succeeds(self, mock_load_adapter_config, MockInbsAdapter) -> None:
-        mock_load_adapter_config.return_value = {
-            "cloud": "inbs",
-            "config": self.CONFIG
-        }
-        adapter_factory.get_adapter()
-        assert MockInbsAdapter.call_count == 1
-
     @mock.patch('cloudadapter.cloud.adapter_factory.GenericAdapter')
     @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
     def test_get_adapter_generic_succeeds(self, mock_load_adapter_config, MockGenericAdapter) -> None:

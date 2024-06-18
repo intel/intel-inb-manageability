@@ -48,7 +48,7 @@ class TestFota(unittest.TestCase):
                                              "local",
 
                                              cls.mock_disp_broker,
-                                             cls.mock_disp_obj._update_logger)
+                                             cls.mock_disp_obj.update_logger)
         parsed_manifest.update({'resource': cls.resource_2})
         TestFota._fota_instance_1 = FOTA(
             parsed_manifest, "remote", cls.mock_disp_broker, UpdateLogger("FOTA", "metadata"))

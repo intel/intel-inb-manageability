@@ -40,14 +40,12 @@ class TC_TOPIC:
 
 
 TC_REQUEST_CHANNEL = 'manageability/request/'
-TC_RESPONSE_CHANNEL = 'manageability/response/'
 
 DECOMMISSION = 'decommission'
 SHUTDOWN = 'shutdown'
 RESTART = 'restart'
 INSTALL = 'install'
 COMMAND = 'command'
-SCHEDULE = 'schedule'
 
 # TODO: What are these two?
 UNKNOWN = {'rc': 1, 'message': 'Unknown command invoked'}
@@ -75,7 +73,6 @@ class MESSAGE:
 
 class METHOD:
     MANIFEST = "triggerota"
-    SCHEDULE = "triggerschedule"
     AOTA = "triggeraota"
     FOTA = "triggerfota"
     SOTA = "triggersota"

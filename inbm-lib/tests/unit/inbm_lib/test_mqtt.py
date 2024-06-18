@@ -32,7 +32,7 @@ class TestMQTT(TestCase):
         m_publish.assert_called_with('test', b'test', ANY, ANY)
 
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
-    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe', return_value=(0, 1))
+    @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')
     def test_client_subscribe(self, m_subscribe: Mock, m_connect: Mock) -> None:
         mqtt = MQTT('id', 'broker', 1, 1, tls=False)
 
@@ -41,6 +41,7 @@ class TestMQTT(TestCase):
         mqtt.subscribe('test', callback)
         m_subscribe.assert_called_with('test', ANY)
         self.assertTrue('test' in mqtt.topics)
+
 
 if __name__ == '__main__':
     unittest.main()

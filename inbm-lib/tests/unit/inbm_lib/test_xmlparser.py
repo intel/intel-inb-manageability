@@ -76,7 +76,7 @@ class TestXmlParser(TestCase):
     def setUp(self) -> None:
         self.good = XmlHandler(GOOD_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
         self.test = XmlHandler(TEST_XML, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
-       
+
     def test_parser_creation_success(self) -> None:
         self.assertIsNotNone(self.good)
 
@@ -146,6 +146,7 @@ class TestXmlParser(TestCase):
 
     def test_get_element_throws_exception(self) -> None:
         self.assertRaises(XmlException, self.good.get_element, 'ota/header/bb')
-        
+
+
 if __name__ == '__main__':
     unittest.main()
