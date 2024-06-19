@@ -31,7 +31,7 @@ erDiagram
     SINGLE_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run - Starting with 0"
         INTEGER schedule_id PK,FK "REFERENCES SINGLE_SCHEDULE(schedule_id)"
-        TEXT task_id PK,FK "REFERENCES job(task_id)"
+        INTEGER task_id PK,FK "REFERENCES job(task_id)"
         TEXT status "NULL or scheduled"
     }
 
@@ -54,7 +54,7 @@ erDiagram
     REPEATED_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run"
         INTEGER schedule_id PK,FK "REFERENCES REPEATED_SCHEDULE(schedule_id)"
-        TEXT task_id PK,FK "REFERENCES job(task_id)"
+        INTEGER task_id PK,FK "REFERENCES job(task_id)"
         TEXT status "NULL or scheduled"
     }
 
