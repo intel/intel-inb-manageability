@@ -93,8 +93,9 @@ class SqliteManager:
             ss: List[SingleSchedule] = []
             for row in rows:
                 single_schedule = self._select_single_schedule_by_id(str(row[1]))
-                single_schedule.manifests = [self._select_job_by_id(str(row[2]))]
+                single_schedule.manifests = [self._select_job_by_task_id(str(row[2]))]
                 single_schedule.job_id = str(row[3])
+                single_schedule.schedule_job_id = (row[0], row[1], row[2])
                 ss.append(single_schedule)
             return ss    
         except (sqlite3.Error) as e:
@@ -114,24 +115,25 @@ class SqliteManager:
             rs: List[RepeatedSchedule] = []
             for row in rows:
                 repeated_schedule = self._select_repeated_schedule_by_id(str(row[1]))
-                repeated_schedule.manifests = [self._select_job_by_id(str(row[2]))]
+                repeated_schedule.manifests = [self._select_job_by_task_id(str(row[2]))]
                 repeated_schedule.job_id = str(row[3])
+                repeated_schedule.schedule_job_id = (row[0], row[1], row[2])
                 rs.append(repeated_schedule)
             return rs
         except (sqlite3.Error) as e:
             raise DispatcherException(
                 f"Error in getting the all repeated schedules from database: {e}")
 
-    def _select_job_by_id(self, job_id: str) -> str:
-        """Get the job stored in database by id.
+    def _select_job_by_task_id(self, task_id: str) -> str:
+        """Get the job stored in database by task id.
         @param id: row index
         @return: job
         """
         sql = ''' SELECT manifest FROM job WHERE rowid=?; '''
-        self._cursor.execute(sql, (job_id,))
+        self._cursor.execute(sql, (task_id,))
         row = self._cursor.fetchone()
         manifest = row[0]
-        logger.debug(f"id={job_id}, manifest={manifest}")
+        logger.debug(f"id={task_id}, manifest={manifest}")
         return manifest
 
     def _select_single_schedule_by_id(self, schedule_id: str) -> SingleSchedule:
@@ -192,15 +194,15 @@ class SqliteManager:
         try:
             sql = ""
             if isinstance(schedule, SingleSchedule):
-                sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND job_id = ?; '''
+                sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
             elif isinstance(schedule, RepeatedSchedule):
-                sql = ''' UPDATE repeated_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND job_id = ?; '''
+                sql = ''' UPDATE repeated_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
             else:
                 sql = ""
-            if schedule.job_id:
-                logger.debug(f"Update status in database to {status} with id={schedule.job_id}")
+            if schedule.schedule_job_id:
+                logger.debug(f"Update status in database to {status} with id={schedule.schedule_job_id}")
                 self._cursor.execute(
-                    sql, (status, schedule.job_id[0], schedule.job_id[1], schedule.job_id[2]))
+                    sql, (status, schedule.schedule_job_id[0], schedule.schedule_job_id[1], schedule.schedule_job_id[2]))
                 self._conn.commit()
             else:
                 logger.error("Unable to update status in database as the schedule_job_id is empty.")
@@ -243,11 +245,12 @@ class SqliteManager:
             logger.debug(
                 f"Added schedule with id: {str(schedule_id)}, request_id: {ss.request_id}, start_time: {start_time}, end_time: {ss.end_time}")
 
-            # Add the jobs to the job table
-            task_ids = self._insert_job(ss.job_id, ss.manifests)
+            if ss.job_id:
+                # Add the jobs to the job table
+                task_ids = self._insert_job(ss.job_id, ss.manifests)
+                # Add the schedule_id and job_id to the single_schedule_job table
+                self._insert_single_schedule_jobs(schedule_id, task_ids)
 
-            # Add the schedule_id and job_id to the single_schedule_job table
-            self._insert_single_schedule_jobs(schedule_id, task_ids)
             self._conn.commit()
         except (sqlite3.Error) as e:
             self._conn.rollback()
@@ -278,11 +281,12 @@ class SqliteManager:
 
             logger.debug(f"Added repeated schedule with id: {str(schedule_id)}, request_id:{rs.request_id}, job_id:{rs.job_id}, cron_duration: {rs.cron_duration}, cron_minutes: {rs.cron_minutes}, cron_hours: {rs.cron_hours}, cron_day_month: {rs.cron_day_month}, cron_month: {rs.cron_month}, cron_day_week: {rs.cron_day_week}")  # noqa
 
-            # Add the jobs to the JOB table
-            task_ids = self._insert_job(rs.job_id, rs.manifests)
+            if rs.job_id:
+                # Add the jobs to the JOB table
+                task_ids = self._insert_job(rs.job_id, rs.manifests)
+                # Add the schedule_id and job_id to the repeated_schedule_job table
+                self._insert_repeated_schedule_job_tables(schedule_id, task_ids)
 
-            # Add the schedule_id and job_id to the repeated_schedule_job table
-            self._insert_repeated_schedule_job_tables(schedule_id, task_ids)
             self._conn.commit()
         except (sqlite3.Error) as e:
             self._conn.rollback()
@@ -298,10 +302,10 @@ class SqliteManager:
         task_ids: list[int] = []
 
         for manifest in manifests:
-            sql = ''' INSERT INTO job(job_id, manifest) VALUES(?, ?); '''
+            sql = ''' INSERT INTO job(job_id, manifest) VALUES(?,?); '''
 
             try:
-                self._cursor.execute(sql, (job_id, manifest,))
+                self._cursor.execute(sql, (job_id, manifest))
             except (sqlite3.Error) as e:
                 logger.error(f"Error inserting job into JOB table: {e}")
                 raise DispatcherException(f"Error inserting job into JOB table: {e}")
@@ -349,6 +353,76 @@ class SqliteManager:
 
             logger.debug(
                 f"Inserted new tuple to repeated_schedule_job table with task_id: {str(task_id)} to schedule with id: {str(schedule_id)}, with priority: {str(priority)}")
+
+    def select_single_schedule_by_request_id(self, request_id: str) -> list[SingleSchedule]:
+        """Create a list of SingleSchedule objects from the database matching the request_id
+        @param request_id: request ID to match in the database
+        @return: list of SingleSchedule objects
+        """
+
+        logger.debug(f"Execute -> SELECT -> single_schedule -> request_id={request_id}")
+        sql = ''' SELECT * FROM single_schedule WHERE request_id = ? '''
+        try:
+            self._cursor.execute(sql, (request_id,))
+        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
+            raise DispatcherException(f"Error selecting single schedule from database: {e}")
+
+        ss_rows = self._cursor.fetchall()
+        if len(ss_rows) == 0:
+            raise DispatcherException(f"No single schedule found with request_id: {request_id}")
+
+        ss: list[SingleSchedule] = []
+        for row in ss_rows:
+            # Get the ids for the manifests matching the schedules from the join table (single_schedule_job)
+            sql = ''' SELECT j.manifest FROM single_schedule_job ssj  JOIN job j ON ssj.task_id=j.task_id WHERE ssj.schedule_id = ? '''
+            manifests = self._select_manifests_by_schedule_id(sql, row[0])
+            ss.append(
+                SingleSchedule(schedule_id=row[0], request_id=row[1], start_time=row[2], end_time=row[3], manifests=manifests))
+        return ss
+
+    def select_repeated_schedule_by_request_id(self, request_id: str) -> list[RepeatedSchedule]:
+        """Create a list of RepeatedSchedule objects from the database matching the request_id
+        @param request_id: request ID to match in the database
+        @return: list of RepeatedSchedule objects
+        """
+
+        logger.debug(f"Execute -> SELECT -> repeated_schedule -> request_id={request_id}")
+        sql = ''' SELECT * FROM repeated_schedule WHERE request_id = ? '''
+        try:
+            self._cursor.execute(sql, (request_id,))
+        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
+            raise DispatcherException(f"Error selecting repeated schedule from database: {e}")
+
+        rs_rows = self._cursor.fetchall()
+        if len(rs_rows) == 0:
+            raise DispatcherException(f"No repeated schedule found with request_id: {request_id}")
+
+        rs: list[RepeatedSchedule] = []
+        for row in rs_rows:
+            sql = ''' SELECT j.manifest FROM repeated_schedule_job rsj  JOIN job j ON rsj.task_id=j.task_id WHERE rsj.schedule_id = ? '''
+            manifests = self._select_manifests_by_schedule_id(sql, row[0])
+            rs.append(RepeatedSchedule(schedule_id=row[0], request_id=row[1], cron_duration=row[2], cron_minutes=row[3],
+                                       cron_hours=row[4], cron_day_month=row[5], cron_month=row[6],
+                                       cron_day_week=row[7],
+                                       manifests=manifests))
+        return rs
+
+    def _select_manifests_by_schedule_id(self, sql: str, schedule_id: int) -> list[str]:
+        # Get the manifests from the join table
+        logger.debug(f"Execute -> {sql} with schedule_id={schedule_id}")
+        try:
+            self._cursor.execute(sql, (schedule_id,))
+        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
+            raise DispatcherException(f"Error selecting schedule manifest from database: {e}")
+
+        rows = self._cursor.fetchall()
+        if len(rows) == 0:
+            raise DispatcherException(f"No schedule manifest found with schedule_id: {schedule_id}")
+
+        # cursor return [('MANIFEST1',), ('MANIFEST2',)].
+        # Extract the strings from each tuple in the list
+        manifests = [item[0] for item in rows]
+        return manifests
 
     def _create_tables_if_not_exist(self) -> None:
         self._create_single_schedule_table()

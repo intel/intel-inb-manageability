@@ -66,7 +66,7 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
                 <end_time>2024-01-01T01:00:00</end_time>
             </single_schedule>
             <single_schedule>
-                <job_id>swupd-88fff0ef-4fae-43a5-beb7-fe7d8d5e31cd/job_id>
+                <job_id>swupd-88fff0ef-4fae-43a5-beb7-fe7d8d5e31cd</job_id>
                 <start_time>2024-01-02T00:00:00</start_time>
             </single_schedule>
         </schedule>

@@ -94,12 +94,14 @@ def test_create_simple_schedule(db_connection: SqliteManager):
 def test_create_repeated_schedule(db_connection: SqliteManager):
     db_connection.clear_database()
     rs1 = RepeatedSchedule(request_id="bfe02847-caa3-4467-82e2-3cdb12e30c8f",
+                        job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d",
                         cron_duration="*",
                         cron_minutes="0",
                         cron_hours="0",
                         cron_day_week="1-5",
                         manifests=["MANIFEST1", "MANIFEST2"])
-    rs2 = RepeatedSchedule(request_id="bfe02847-caa3-4467-82e2-3cdb12e30c8f",
+    rs2 = RepeatedSchedule(request_id="d1d0f264-8d78-4460-9027-1354a784195d",
+                        job_id="swupd-88fff0ef-4fae-43a5-beb7-fe7d8d5e31cd",
                         cron_duration="P1D",
                         cron_minutes="*/3",
                         manifests=["MANIFEST3", "MANIFEST4"])
@@ -107,24 +109,24 @@ def test_create_repeated_schedule(db_connection: SqliteManager):
     db_connection.create_schedule(rs1)
     db_connection.create_schedule(rs2)
     res1 = db_connection.select_repeated_schedule_by_request_id("bfe02847-caa3-4467-82e2-3cdb12e30c8f")
-    res2 = db_connection.select_repeated_schedule_by_request_id("bfe02847-caa3-4467-82e2-3cdb12e30c8f")
+    res2 = db_connection.select_repeated_schedule_by_request_id("d1d0f264-8d78-4460-9027-1354a784195d")
 
-    #     self.assertEqual(res1[0].schedule_id, 1)
-    #     self.assertEqual(res1[0].request_id, "REQ123")
-    #     self.assertEqual(res1[0].cron_duration, "*")
-    #     self.assertEqual(res1[0].cron_minutes, "0")
-    #     self.assertEqual(res1[0].cron_hours, "0")
-    #     self.assertEqual(res1[0].cron_day_month, "*")
-    #     self.assertEqual(res1[0].cron_month, "*")
-    #     self.assertEqual(res1[0].cron_day_week, "1-5")
-    #     self.assertEqual(res1[0].manifests, ["MANIFEST1", "MANIFEST2"])
+    assert res1[0].schedule_id == 1
+    assert res1[0].request_id == "bfe02847-caa3-4467-82e2-3cdb12e30c8f"
+    assert res1[0].cron_duration == "*"
+    assert res1[0].cron_minutes == "0"
+    assert res1[0].cron_hours == "0"
+    assert res1[0].cron_day_month == "*"
+    assert res1[0].cron_month == "*"
+    assert res1[0].cron_day_week == "1-5"
+    assert res1[0].manifests == ['MANIFEST1', 'MANIFEST2']
 
-    #     self.assertEqual(res2[0].schedule_id, 2)
-    #     self.assertEqual(res2[0].request_id, "REQ234")
-    #     self.assertEqual(res2[0].cron_duration, "P1D")
-    #     self.assertEqual(res2[0].cron_minutes, "*/3")
-    #     self.assertEqual(res2[0].cron_hours, "*")
-    #     self.assertEqual(res2[0].cron_day_month, "*")
-    #     self.assertEqual(res2[0].cron_month, "*")
-    #     self.assertEqual(res2[0].cron_day_week, "*")
-    #     self.assertEqual(res2[0].manifests, ["MANIFEST3", "MANIFEST4"])
+    assert res2[0].schedule_id == 2
+    assert res2[0].request_id == "d1d0f264-8d78-4460-9027-1354a784195d"
+    assert res2[0].cron_duration == "P1D"
+    assert res2[0].cron_minutes == "*/3"
+    assert res2[0].cron_hours == "*"
+    assert res2[0].cron_day_month == "*"
+    assert res2[0].cron_month == "*"
+    assert res2[0].cron_day_week == "*"
+    assert res2[0].manifests == ['MANIFEST3', 'MANIFEST4']

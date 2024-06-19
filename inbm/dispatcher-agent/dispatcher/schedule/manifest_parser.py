@@ -66,7 +66,6 @@ class ScheduleManifestParser:
         if not self._xml_obj.schedule_request:
             raise DispatcherException("No schedule requests found in the manifest")
 
-        job_id = self._xml_obj.schedule_request.job_id.cdata
         request_id = self._xml_obj.schedule_request.request_id.cdata
         if not request_id:
             raise DispatcherException("Request ID not found in the manifest")
@@ -74,13 +73,15 @@ class ScheduleManifestParser:
 
         for update_schedule in update_schedules:
             manifests = self._get_manifests(update_schedule.manifests.children)
-            schedule_details = Schedule(request_id=request_id, job_id=job_id, manifests=manifests)
             if hasattr(update_schedule, 'schedule'):
                 schedule = update_schedule.schedule
                 if 'single_schedule' in schedule:
+                    schedule_details = Schedule(request_id=request_id, manifests=manifests)
                     self._parse_single_schedule(schedule, schedule_details)
                 if 'repeated_schedule' in schedule:
+                    schedule_details = Schedule(request_id=request_id, manifests=manifests)
                     self._parse_repeated_schedule(schedule, schedule_details)
+
 
     def _get_manifests(self, scheduled_manifests: list[untangle.Element]) -> list[str]:
         manifests: list[str] = []
@@ -113,14 +114,14 @@ class ScheduleManifestParser:
                 self.immedate_requests.append(
                     SingleSchedule(
                         request_id=schedule_details.request_id,
-                        job_id=schedule_details.job_id,
+                        job_id=ss.job_id.cdata,
                         manifests=schedule_details.manifests))
             else:
                 end = ss.end_time.cdata if hasattr(ss, 'end_time') else None
                 self.single_scheduled_requests.append(
                     SingleSchedule(
                         request_id=schedule_details.request_id,
-                        job_id=schedule_details.job_id,
+                        job_id=ss.job_id.cdata,
                         start_time=ss.start_time.cdata,
                         end_time=end,
                         manifests=schedule_details.manifests))
@@ -137,7 +138,7 @@ class ScheduleManifestParser:
         for repeated_schedule in repeated_schedules:
             rs = RepeatedSchedule(
                 request_id=schedule_details.request_id,
-                job_id=schedule_details.job_id,
+                job_id=repeated_schedule.job_id.cdata,
                 cron_duration=repeated_schedule.duration.cdata,
                 cron_minutes=repeated_schedule.cron_minutes.cdata,
                 cron_hours=repeated_schedule.cron_hours.cdata,
