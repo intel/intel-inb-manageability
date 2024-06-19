@@ -59,13 +59,14 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
         </manifests>
     </update_schedule>
     <update_schedule>
-        <schedule>
+        <schedule>        
             <single_schedule>
                 <job_id>swupd-0d903fba-00b6-4daf-bf6f-964edf16988a</job_id>
                 <start_time>2024-01-01T00:00:00</start_time>
                 <end_time>2024-01-01T01:00:00</end_time>
             </single_schedule>
             <single_schedule>
+                <job_id>swupd-88fff0ef-4fae-43a5-beb7-fe7d8d5e31cd/job_id>
                 <start_time>2024-01-02T00:00:00</start_time>
             </single_schedule>
         </schedule>
@@ -84,6 +85,7 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
                 <end_time>2024-01-02T01:00:00</end_time>
             </single_schedule>
             <repeated_schedule>
+                <job_id>swupd-4601c731-bce2-431a-bc3a-6aad5a091d4f</job_id>
                 <duration>P7D</duration>
                 <cron_minutes>0</cron_minutes>
                 <cron_hours>0</cron_hours>
@@ -92,6 +94,7 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
                 <cron_day_week>*</cron_day_week>
             </repeated_schedule>
             <repeated_schedule>
+                <job_id>swupd-9bc71491-45c3-4345-ae33-97e423f0dda9</job_id>
                 <duration>P7D</duration>
                 <cron_minutes>0</cron_minutes>
                 <cron_hours>0</cron_hours>
