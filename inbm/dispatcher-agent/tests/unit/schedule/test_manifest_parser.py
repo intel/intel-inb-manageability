@@ -6,10 +6,12 @@ from inbm_lib.xmlhandler import XmlException
 
 GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 <schedule_request>
-    <request_id>REQ12345</request_id>
+    <request_id>4324a262-b7d1-46a7-b8cc-84d934c3983f</request_id>
     <update_schedule>
         <schedule>
-            <single_schedule />
+            <single_schedule>
+                <job_id>swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d</job_id>
+            </single_schedule>
         </schedule>
         <manifests>
             <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
@@ -20,15 +22,16 @@ GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 
 BAD_NO_SCHEDULED_REQUESTS_XML = """<?xml version="1.0" encoding="utf-8"?>
 <schedule_request>
-    <request_id>REQ12345</request_id>
+    <request_id>4324a262-b7d1-46a7-b8cc-84d934c3983f</request_id>
 </schedule_request>"""
 
 GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML = """<?xml version="1" encoding="utf-8"?>
 <schedule_request>
-    <request_id>REQ12345</request_id>
+    <request_id>4324a262-b7d1-46a7-b8cc-84d934c3983f</request_id>
     <update_schedule>
         <schedule>
             <single_schedule>
+                <job_id>swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d</job_id>
                 <start_time>2024-01-01T00:00:00</start_time>
             </single_schedule>
         </schedule>
@@ -41,10 +44,12 @@ GOOD_SINGLE_SCHEDULED_NO_END_TIME_XML = """<?xml version="1" encoding="utf-8"?>
 
 GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
 <schedule_request>
-    <request_id>REQ12345</request_id>
+    <request_id>4324a262-b7d1-46a7-b8cc-84d934c3983f</request_id>
     <update_schedule>
         <schedule>
-            <single_schedule />
+            <single_schedule>
+                <job_id>swupd-f4d430a2-85b6-4653-8653-72ffce3f4c65</job_id>
+            </single_schedule>
         </schedule>
         <manifests>
             <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
@@ -56,6 +61,7 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
     <update_schedule>
         <schedule>
             <single_schedule>
+                <job_id>swupd-0d903fba-00b6-4daf-bf6f-964edf16988a</job_id>
                 <start_time>2024-01-01T00:00:00</start_time>
                 <end_time>2024-01-01T01:00:00</end_time>
             </single_schedule>
@@ -73,6 +79,7 @@ GOOD_MULTIPLE_SCHEDULES_XML = """<?xml version="1.0" encoding="utf-8"?>
     <update_schedule>
         <schedule>
             <single_schedule>
+                <job_id>swupd-f02131f9-b7d9-4e3f-9ee2-615e0fe005a5</job_id>
                 <start_time>2024-01-02T00:00:00</start_time>
                 <end_time>2024-01-02T01:00:00</end_time>
             </single_schedule>

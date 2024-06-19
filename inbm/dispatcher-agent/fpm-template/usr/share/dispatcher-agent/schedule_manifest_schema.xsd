@@ -26,6 +26,16 @@
       <xs:pattern value="([0-6]|[*]|[-]|[/])"/>
     </xs:restriction>
   </xs:simpleType>
+  <xs:simpleType name="ValidUuidFormat">
+        <xs:annotation>
+            <xs:documentation xml:lang="en">
+                The representation of a UUID, generally the id of an element.
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}"/>
+        </xs:restriction>
+    </xs:simpleType>
 
   <xs:complexType name="INBMManifests">
     <xs:sequence>
@@ -35,6 +45,7 @@
 
   <xs:complexType name="SingleSchedule">
     <xs:sequence>
+      <xs:element name="job_id" type="xs:string"/>
       <xs:element name="start_time" type="xs:dateTime" minOccurs="0"/>
       <xs:element name="end_time" type="xs:dateTime" minOccurs="0"/>
     </xs:sequence>
@@ -42,6 +53,7 @@
 
   <xs:complexType name="RepeatedSchedule">
     <xs:sequence>
+      <xs:element name="job_id" type="xs:string"/>
       <xs:element name="duration" type="xs:duration"/>
       <xs:element name="cron_minutes" type="MinutesWithinHourCronValue"/>
       <xs:element name="cron_hours" type="HourWithinDayCronValue"/>
@@ -68,7 +80,7 @@
   <!-- Root element type -->
   <xs:complexType name="ScheduleRequest">
     <xs:sequence>
-      <xs:element name="request_id" type="xs:string"/>
+      <xs:element name="request_id" type="ValidUuidFormat"/>
       <xs:element name="update_schedule" type="ScheduledOperation" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>

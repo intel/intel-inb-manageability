@@ -31,12 +31,12 @@ erDiagram
     SINGLE_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run - Starting with 0"
         INTEGER schedule_id PK,FK "REFERENCES SINGLE_SCHEDULE(schedule_id)"
-        TEXT job_id PK,FK "REFERENCES job(id)"
+        TEXT task_id PK,FK "REFERENCES job(task_id)"
         TEXT status "NULL or scheduled"
     }
 
     SINGLE_SCHEDULE {
-        INTEGER schedule_id PK "AUTOINCREMENT"
+        INTEGER id PK "AUTOINCREMENT"
         TEXT request_id "NOT NULL - Format -> 2024-01-01T00:00:00"
         TEXT start_time "NOT NULL - Format -> 2024-01-01T00:00:00"
         TEXT end_time
@@ -54,12 +54,12 @@ erDiagram
     REPEATED_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run"
         INTEGER schedule_id PK,FK "REFERENCES REPEATED_SCHEDULE(schedule_id)"
-        TEXT job_id PK,FK "REFERENCES job(id)"
+        TEXT task_id PK,FK "REFERENCES job(task_id)"
         TEXT status "NULL or scheduled"
     }
 
     REPEATED_SCHEDULE {
-        INTEGER schedule_id PK "AUTOINCREMENT"
+        INTEGER id PK "AUTOINCREMENT"
         TEXT request_id "NOT NULL"
         TEXT cron_duration "NOT NULL"
         TEXT cron_minutes "NOT NULL"

@@ -41,5 +41,5 @@ class RepeatedSchedule(Schedule):
 class ScheduledJob:
     priority: int
     schedule_id: int
-    job_id: int
-    status: Optional[str]
+    task_id: int
+    status: Optional[str] = field(default=None)

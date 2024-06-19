@@ -20,7 +20,8 @@ def db_connection():
 
 
 def test_raise_exception_when_create_single_schedule_with_invalid_start_time(db_connection: SqliteManager):
-    ss1 = SingleSchedule(request_id="REQ123",
+    ss1 = SingleSchedule(request_id="4324a262-b7d1-46a7-b8cc-84d934c3983f",
+                         job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d",
                          start_time=None,
                          end_time=datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"),
                          manifests=["MANIFEST1", "MANIFEST2"])
@@ -31,7 +32,8 @@ def test_raise_exception_when_create_single_schedule_with_invalid_start_time(db_
 
 
 def test_raise_exeption_when_create_single_schedule_with_no_manifests(db_connection: SqliteManager):
-    ss1 = SingleSchedule(request_id="REQ123",
+    ss1 = SingleSchedule(request_id="4324a262-b7d1-46a7-b8cc-84d934c3983f",
+                         job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d",
                          start_time=datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"),
                          end_time=datetime.strptime("2024-01-01T02:00:00", "%Y-%m-%dT%H:%M:%S",),
                          manifests=[])
@@ -42,7 +44,8 @@ def test_raise_exeption_when_create_single_schedule_with_no_manifests(db_connect
 
 
 def test_raise_exception_when_create_repeated_schedule_with_no_manifests(db_connection: SqliteManager):
-    rs1 = RepeatedSchedule(request_id="REQ123",
+    rs1 = RepeatedSchedule(request_id="4324a262-b7d1-46a7-b8cc-84d934c3983f",
+                           job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d",
                            cron_minutes="*/3",
                            manifests=[])
     with pytest.raises(DispatcherException) as excinfo:
@@ -53,11 +56,13 @@ def test_raise_exception_when_create_repeated_schedule_with_no_manifests(db_conn
 
 def test_create_simple_schedule(db_connection: SqliteManager):
     db_connection.clear_database()
-    ss1 = SingleSchedule(request_id="REQ123",
+    ss1 = SingleSchedule(request_id="4324a262-b7d1-46a7-b8cc-84d934c3983f",
+                         job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d",
                          start_time=datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"),
                          end_time=datetime.strptime("2024-01-02T00:00:00", "%Y-%m-%dT%H:%M:%S"),
                          manifests=["MANIFEST1", "MANIFEST2"])
-    ss2 = SingleSchedule(request_id="REQ234",
+    ss2 = SingleSchedule(request_id="4324a262-b7d1-46a7-b8cc-84d934c3983f",
+                         job_id="swupd-492708d4-919e-4b0f-aaa9-06e5e2c55e70",
                          start_time=datetime.strptime("2024-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S"),
                          manifests=["MANIFEST3", "MANIFEST4"])
 
@@ -65,10 +70,14 @@ def test_create_simple_schedule(db_connection: SqliteManager):
     db_connection.create_schedule(ss2)
     res = db_connection.get_all_single_schedules_in_priority_order()
     assert len(res) == 4
-    assert res[0].request_id == "REQ123"
-    assert res[1].request_id == "REQ234"
-    assert res[2].request_id == "REQ123"
-    assert res[3].request_id == "REQ234"
+    assert res[0].request_id == "4324a262-b7d1-46a7-b8cc-84d934c3983f"
+    assert res[1].request_id == "4324a262-b7d1-46a7-b8cc-84d934c3983f"
+    assert res[2].request_id == "4324a262-b7d1-46a7-b8cc-84d934c3983f"
+    assert res[3].request_id == "4324a262-b7d1-46a7-b8cc-84d934c3983f"
+    assert res[0].job_id == "swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"
+    assert res[1].job_id == "swupd-492708d4-919e-4b0f-aaa9-06e5e2c55e70"
+    assert res[2].job_id == "swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"
+    assert res[3].job_id == "swupd-492708d4-919e-4b0f-aaa9-06e5e2c55e70"
     assert res[0].start_time == datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
     assert res[1].start_time == datetime.strptime("2024-05-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
     assert res[2].start_time == datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S")
@@ -82,22 +91,23 @@ def test_create_simple_schedule(db_connection: SqliteManager):
     assert res[2].manifests == ["MANIFEST2"]
     assert res[3].manifests == ["MANIFEST4"]
 
-    # def test_create_repeated_schedule(self):
-    #     rs1 = RepeatedSchedule(request_id="REQ123",
-    #                         cron_duration="*",
-    #                         cron_minutes="0",
-    #                         cron_hours="0",
-    #                         cron_day_week="1-5",
-    #                         manifests=["MANIFEST1", "MANIFEST2"])
-    #     rs2 = RepeatedSchedule(request_id="REQ234",
-    #                         cron_duration="P1D",
-    #                         cron_minutes="*/3",
-    #                         manifests=["MANIFEST3", "MANIFEST4"])
+def test_create_repeated_schedule(db_connection: SqliteManager):
+    db_connection.clear_database()
+    rs1 = RepeatedSchedule(request_id="bfe02847-caa3-4467-82e2-3cdb12e30c8f",
+                        cron_duration="*",
+                        cron_minutes="0",
+                        cron_hours="0",
+                        cron_day_week="1-5",
+                        manifests=["MANIFEST1", "MANIFEST2"])
+    rs2 = RepeatedSchedule(request_id="bfe02847-caa3-4467-82e2-3cdb12e30c8f",
+                        cron_duration="P1D",
+                        cron_minutes="*/3",
+                        manifests=["MANIFEST3", "MANIFEST4"])
 
-    #     self.db.create_schedule(rs1)
-    #     self.db.create_schedule(rs2)
-    #     res1 = self.db.select_repeated_schedule_by_request_id("REQ123")
-    #     res2 = self.db.select_repeated_schedule_by_request_id("REQ234")
+    db_connection.create_schedule(rs1)
+    db_connection.create_schedule(rs2)
+    res1 = db_connection.select_repeated_schedule_by_request_id("bfe02847-caa3-4467-82e2-3cdb12e30c8f")
+    res2 = db_connection.select_repeated_schedule_by_request_id("bfe02847-caa3-4467-82e2-3cdb12e30c8f")
 
     #     self.assertEqual(res1[0].schedule_id, 1)
     #     self.assertEqual(res1[0].request_id, "REQ123")
