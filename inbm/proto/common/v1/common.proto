@@ -30,19 +30,21 @@ message Schedule {
 
 // this is different from MM's SingleSchedule in that it is using google's Timestamp
 message SingleSchedule {
+  string job_id = 1;
   // to specify running immeidate, omit start time and end time
-  google.protobuf.Timestamp start_time = 1;
-  google.protobuf.Timestamp end_time = 2;
+  google.protobuf.Timestamp start_time = 2;
+  google.protobuf.Timestamp end_time = 3;
 }
 
 // this is different from MM's SingleSchedule in that it is using google's Duration
 message RepeatedSchedule {
-  google.protobuf.Duration duration = 1;  // should be between 1 second and 86400 seconds (24 hours worth of seconds)
-  string cron_minutes = 2;  // cron style minutes (0-59)
-  string cron_hours = 3; // cron style hours (0-23)
-  string cron_day_month = 4;  // cron style day of month (0-31)
-  string cron_month = 5;  // cron style month (1-12)
-  string cron_day_week = 6;  // cron style day of week (0-6)
+  string job_id = 1;
+  google.protobuf.Duration duration = 2;  // should be between 1 second and 86400 seconds (24 hours worth of seconds)
+  string cron_minutes = 3;  // cron style minutes (0-59)
+  string cron_hours = 4; // cron style hours (0-23)
+  string cron_day_month = 5;  // cron style day of month (0-31)
+  string cron_month = 6;  // cron style month (1-12)
+  string cron_day_week = 7;  // cron style day of week (0-6)
 }
 
 message Operation {
