@@ -36,11 +36,3 @@ class RepeatedSchedule(Schedule):
     cron_day_month: str = field(default='*')
     cron_month: str = field(default='*')
     cron_day_week: str = field(default='*')
-
-
-@dataclass
-class ScheduledJob:
-    priority: int
-    schedule_id: int
-    task_id: int
-    status: Optional[str] = field(default=None)

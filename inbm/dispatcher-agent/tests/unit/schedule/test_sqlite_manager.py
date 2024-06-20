@@ -108,25 +108,31 @@ def test_create_repeated_schedule(db_connection: SqliteManager):
 
     db_connection.create_schedule(rs1)
     db_connection.create_schedule(rs2)
-    res1 = db_connection.select_repeated_schedule_by_request_id("bfe02847-caa3-4467-82e2-3cdb12e30c8f")
-    res2 = db_connection.select_repeated_schedule_by_request_id("d1d0f264-8d78-4460-9027-1354a784195d")
+    res = db_connection.get_all_repeated_schedules_in_priority_order()
 
-    assert res1[0].schedule_id == 1
-    assert res1[0].request_id == "bfe02847-caa3-4467-82e2-3cdb12e30c8f"
-    assert res1[0].cron_duration == "*"
-    assert res1[0].cron_minutes == "0"
-    assert res1[0].cron_hours == "0"
-    assert res1[0].cron_day_month == "*"
-    assert res1[0].cron_month == "*"
-    assert res1[0].cron_day_week == "1-5"
-    assert res1[0].manifests == ['MANIFEST1', 'MANIFEST2']
+    assert len(res) == 4
+    assert res[0].request_id == "bfe02847-caa3-4467-82e2-3cdb12e30c8f"
+    assert res[2].request_id == "bfe02847-caa3-4467-82e2-3cdb12e30c8f"
+    assert res[0].job_id == "swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"
+    assert res[2].job_id == "swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"
+    assert res[0].cron_duration == "*"
+    assert res[0].cron_minutes == "0"
+    assert res[0].cron_hours == "0"
+    assert res[0].cron_day_month == "*"
+    assert res[0].cron_month == "*"
+    assert res[0].cron_day_week == "1-5"
 
-    assert res2[0].schedule_id == 2
-    assert res2[0].request_id == "d1d0f264-8d78-4460-9027-1354a784195d"
-    assert res2[0].cron_duration == "P1D"
-    assert res2[0].cron_minutes == "*/3"
-    assert res2[0].cron_hours == "*"
-    assert res2[0].cron_day_month == "*"
-    assert res2[0].cron_month == "*"
-    assert res2[0].cron_day_week == "*"
-    assert res2[0].manifests == ['MANIFEST3', 'MANIFEST4']
+    assert res[1].request_id == "d1d0f264-8d78-4460-9027-1354a784195d"
+    assert res[3].request_id == "d1d0f264-8d78-4460-9027-1354a784195d"
+    assert res[1].job_id == "swupd-88fff0ef-4fae-43a5-beb7-fe7d8d5e31cd"
+    assert res[3].job_id == "swupd-88fff0ef-4fae-43a5-beb7-fe7d8d5e31cd"
+    assert res[1].cron_duration == "P1D"
+    assert res[1].cron_minutes == "*/3"
+    assert res[1].cron_hours == "*"
+    assert res[1].cron_day_month == "*"
+    assert res[1].cron_month == "*"
+    assert res[1].cron_day_week == "*"
+    assert res[0].manifests == ["MANIFEST1"]
+    assert res[1].manifests == ["MANIFEST3"]
+    assert res[2].manifests == ["MANIFEST2"]
+    assert res[3].manifests == ["MANIFEST4"]
