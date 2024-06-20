@@ -91,6 +91,7 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
                         schedules=[
                             Schedule(
                                 repeated_schedule=RepeatedSchedule(
+                                    job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d",
                                     cron_day_month="1",
                                     cron_day_week="2",
                                     cron_hours="*/3",
@@ -114,6 +115,7 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
             "</update_schedule>"
             "<update_schedule>"
             "<schedule><repeated_schedule>"
+            "<job_id>swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d</job_id>"
             "<duration>PT900S</duration>"
             "<cron_minutes>4</cron_minutes>"
             "<cron_hours>*/3</cron_hours>"
