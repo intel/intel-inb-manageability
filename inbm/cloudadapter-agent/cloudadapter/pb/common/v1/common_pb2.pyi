@@ -108,8 +108,10 @@ class SingleSchedule(google.protobuf.message.Message):
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    JOB_ID_FIELD_NUMBER: builtins.int
     START_TIME_FIELD_NUMBER: builtins.int
     END_TIME_FIELD_NUMBER: builtins.int
+    job_id: builtins.str
     @property
     def start_time(self) -> google.protobuf.timestamp_pb2.Timestamp:
         """to specify running immeidate, omit start time and end time"""
@@ -119,11 +121,12 @@ class SingleSchedule(google.protobuf.message.Message):
     def __init__(
         self,
         *,
+        job_id: builtins.str = ...,
         start_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
         end_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["end_time", b"end_time", "start_time", b"start_time"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["end_time", b"end_time", "start_time", b"start_time"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["end_time", b"end_time", "job_id", b"job_id", "start_time", b"start_time"]) -> None: ...
 
 global___SingleSchedule = SingleSchedule
 
@@ -133,12 +136,14 @@ class RepeatedSchedule(google.protobuf.message.Message):
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    JOB_ID_FIELD_NUMBER: builtins.int
     DURATION_FIELD_NUMBER: builtins.int
     CRON_MINUTES_FIELD_NUMBER: builtins.int
     CRON_HOURS_FIELD_NUMBER: builtins.int
     CRON_DAY_MONTH_FIELD_NUMBER: builtins.int
     CRON_MONTH_FIELD_NUMBER: builtins.int
     CRON_DAY_WEEK_FIELD_NUMBER: builtins.int
+    job_id: builtins.str
     cron_minutes: builtins.str
     """cron style minutes (0-59)"""
     cron_hours: builtins.str
@@ -156,6 +161,7 @@ class RepeatedSchedule(google.protobuf.message.Message):
     def __init__(
         self,
         *,
+        job_id: builtins.str = ...,
         duration: google.protobuf.duration_pb2.Duration | None = ...,
         cron_minutes: builtins.str = ...,
         cron_hours: builtins.str = ...,
@@ -164,7 +170,7 @@ class RepeatedSchedule(google.protobuf.message.Message):
         cron_day_week: builtins.str = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["duration", b"duration"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["cron_day_month", b"cron_day_month", "cron_day_week", b"cron_day_week", "cron_hours", b"cron_hours", "cron_minutes", b"cron_minutes", "cron_month", b"cron_month", "duration", b"duration"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["cron_day_month", b"cron_day_month", "cron_day_week", b"cron_day_week", "cron_hours", b"cron_hours", "cron_minutes", b"cron_minutes", "cron_month", b"cron_month", "duration", b"duration", "job_id", b"job_id"]) -> None: ...
 
 global___RepeatedSchedule = RepeatedSchedule
 
