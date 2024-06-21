@@ -92,7 +92,7 @@ class Dispatcher:
         self._dispatcher_broker = broker
         self._install_check_service = install_check_service
         self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
-        self._thread_count = 1
+        self._thread_count = 2
         self._sota_repos = None
         self.sota_mode = None
         self._package_list: str = ""
