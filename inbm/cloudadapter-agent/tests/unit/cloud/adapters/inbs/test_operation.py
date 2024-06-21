@@ -80,7 +80,7 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
                             pre_operations=[],
                             update_system_software_operation=SOTA_OPERATION_SMALL,
                         ),
-                        schedules=[Schedule(single_schedule=SingleSchedule())],
+                        schedules=[Schedule(single_schedule=SingleSchedule(job_id="swupd-2c5d08c1-200a-49cf-b808-e53c74a22e86"))],
                     ),
                     ScheduledOperation(
                         operation=Operation(
@@ -108,7 +108,9 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
             "<schedule_request>"
             "<request_id>1234</request_id>"
             "<update_schedule>"
-            "<schedule><single_schedule /></schedule>"
+            "<schedule><single_schedule>"
+            "<job_id>swupd-2c5d08c1-200a-49cf-b808-e53c74a22e86</job_id>"
+            "</single_schedule></schedule>"
             "<manifests><manifest_xml>"
             + escape(SOTA_OPERATION_SMALL_MANIFEST_XML)
             + "</manifest_xml></manifests>"
@@ -153,7 +155,7 @@ def test_convert_update_scheduled_operations_to_xml_manifest_success(
                             pre_operations=[PreOperation()],
                             update_system_software_operation=SOTA_OPERATION_LARGE,
                         ),
-                        schedules=[Schedule(single_schedule=SingleSchedule())],
+                        schedules=[Schedule(single_schedule=SingleSchedule(job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"))],
                     ),
                 ]
             ),
@@ -166,7 +168,7 @@ def test_convert_update_scheduled_operations_to_xml_manifest_success(
                 scheduled_operations=[
                     ScheduledOperation(
                         operation=Operation(),
-                        schedules=[Schedule(single_schedule=SingleSchedule())],
+                        schedules=[Schedule(single_schedule=SingleSchedule(job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"))],
                     ),
                 ]
             ),
