@@ -297,7 +297,7 @@ class SqliteManager:
         # Add the job to the job table
         if len(manifests) == 0:
             raise DispatcherException(
-                "Error: At least one job is required for the schedule.  Jobs list is empty.")
+                "Error: At least one manifest is required for the schedule.  Manifest list is empty.")
 
         task_ids: list[int] = []
 
