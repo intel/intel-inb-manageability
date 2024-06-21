@@ -35,8 +35,9 @@ def convert_schedule_to_xml(schedule: Schedule) -> ET.Element:
     if schedule.HasField('single_schedule'):
         single = schedule.single_schedule
         single_schedule = create_xml_element('single_schedule')
-        job_id = create_xml_element('job_id', single.job_id)
-        single_schedule.append(job_id)
+        if single.job_id:
+            job_id = create_xml_element('job_id', single.job_id)
+            single_schedule.append(job_id)
         if single.HasField('start_time'):
             start_time = create_xml_element(
                 'start_time', protobuf_timestamp_to_iso(single.start_time))
@@ -49,8 +50,9 @@ def convert_schedule_to_xml(schedule: Schedule) -> ET.Element:
     elif schedule.HasField('repeated_schedule'):
         repeated = schedule.repeated_schedule
         repeated_schedule = create_xml_element('repeated_schedule')
-        job_id = create_xml_element('job_id', repeated.job_id)
-        repeated_schedule.append(job_id)
+        if repeated.job_id:
+            job_id = create_xml_element('job_id', repeated.job_id)
+            repeated_schedule.append(job_id)
         duration = create_xml_element('duration', 'PT' + str(repeated.duration.ToSeconds()) + 'S')
         repeated_schedule.extend([
             duration,
