@@ -6,8 +6,8 @@ cryptography==42.0.4
 jsonschema==4.20.0
 types-jsonschema==4.20.0.0
 shortuuid==1.0.1
-requests==2.32.0
-urllib3==1.26.19
+requests==2.31.0
+urllib3==1.26.18
 certifi==2023.7.22
 pyinstaller==5.13.1
 setuptools==65.5.1
