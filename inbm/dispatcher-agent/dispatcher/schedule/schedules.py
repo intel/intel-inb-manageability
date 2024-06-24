@@ -11,7 +11,7 @@ from typing import Optional, List, Tuple
 
 @dataclass
 class Schedule:
-    """ Represents a Base class for schedule objects """
+    """ Represents a Base class for schedule objects."""
     request_id: str
     schedule_id: Optional[int] = field(default=None)
     job_id: Optional[str] = field(default=None)

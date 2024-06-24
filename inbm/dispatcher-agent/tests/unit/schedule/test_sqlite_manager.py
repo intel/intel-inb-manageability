@@ -23,7 +23,7 @@ def db_connection():
     (datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
      datetime.strptime("2024-01-02T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
      ["MANIFEST1", "MANIFEST2"], None, None),
-    # Success - no end time
+    # # Success - no end time
     (datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
      None, 
      ["MANIFEST1", "MANIFEST2"], None, None),
@@ -33,7 +33,7 @@ def db_connection():
     # Fail - no manifests
     (datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
     datetime.strptime("2024-01-02T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
-    [], DispatcherException, "Error: At least one manifest is required for the schedule.  Manifests list is empty."),
+    [], DispatcherException, "Error: At least one manifest is required for the schedule.  Manifest list is empty."),
 ])
 
 def test_create_single_schedule_with_various_parameters(db_connection: SqliteManager, 
@@ -64,7 +64,7 @@ def test_create_single_schedule_with_various_parameters(db_connection: SqliteMan
     # Success
     ("P7D", "0", "0", "*", "*", "1-5", ["MANIFEST1", "MANIFEST2"], None, None),
     # Fail - missing manifests
-    ("P7D", "*/31", "0", "*", "*", "1-5", [], DispatcherException, "Error: At least one manifest is required for the schedule.  Manifests list is empty."), 
+    ("P7D", "*/31", "0", "*", "*", "1-5", [], DispatcherException, "Error: At least one manifest is required for the schedule.  Manifest list is empty."), 
  ])
 
 def test_create_repeated_schedule_with_various_paramters(db_connection: SqliteManager, 

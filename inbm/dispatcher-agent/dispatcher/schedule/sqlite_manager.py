@@ -66,9 +66,9 @@ class SqliteManager:
             self._conn.execute('DELETE FROM single_schedule;')
             self._conn.execute('DELETE FROM repeated_schedule;')
             self._conn.execute('DELETE FROM job;')
-            self._conn.commit()
+            self._conn.execute('COMMIT')
         except sqlite3.Error as e:
-            self._conn.rollback()
+            self._conn.execute('ROLLBACK')
             logger.error(f"Error clearing database: {e}")
             raise DispatcherException(f"Error clearing database: {e}")
 

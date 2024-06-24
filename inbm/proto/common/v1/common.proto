@@ -30,6 +30,7 @@ message Schedule {
 
 // this is different from MM's SingleSchedule in that it is using google's Timestamp
 message SingleSchedule {
+  // This will be created by MJunct.  This will be empty coming into MJunct NB API.  Else, it should have a string value.
   string job_id = 1;
   // to specify running immeidate, omit start time and end time
   google.protobuf.Timestamp start_time = 2;
@@ -38,6 +39,7 @@ message SingleSchedule {
 
 // this is different from MM's SingleSchedule in that it is using google's Duration
 message RepeatedSchedule {
+  // This will be created by MJunct.  This will be empty coming into MJunct NB API.  Else, it should have a string value.
   string job_id = 1;
   google.protobuf.Duration duration = 2;  // should be between 1 second and 86400 seconds (24 hours worth of seconds)
   string cron_minutes = 3;  // cron style minutes (0-59)

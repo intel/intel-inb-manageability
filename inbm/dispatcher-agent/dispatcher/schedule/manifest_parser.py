@@ -71,9 +71,12 @@ class ScheduleManifestParser:
             raise DispatcherException("Request ID not found in the manifest")
         update_schedules: list[untangle.Element] = self._xml_obj.schedule_request.update_schedule
 
+        #for update_schedule in update_schedules:
+
+        update_schedules = getattr(self._xml_obj.schedule_request, 'update_schedule', [])
         for update_schedule in update_schedules:
             manifests = self._get_manifests(update_schedule.manifests.children)
-            if hasattr(update_schedule, 'schedule'):
+            if manifests and hasattr(update_schedule, 'schedule'):
                 schedule = update_schedule.schedule
                 if 'single_schedule' in schedule:
                     schedule_details = Schedule(request_id=request_id, manifests=manifests)
