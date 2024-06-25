@@ -143,5 +143,5 @@
   /usr/bin/fwupdate rUx,
   /var/log/inbm-update-status.log rw,
   /var/volatile/log/inbm-update-status.log rw,
-  /usr/bin/UpdateFirmwareBlobFwupdtool.sh rix,
+  /usr/bin/UpdateFirmwareBlobFwupdtool.sh rUx,
 }

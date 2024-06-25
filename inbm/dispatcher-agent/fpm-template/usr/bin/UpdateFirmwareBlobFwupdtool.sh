@@ -13,6 +13,18 @@
 # Example:
 #   UpdateFirmwareBlobFwupdtool.sh 1234abcd-5678-efgh-ijkl-9012mnop3456 /path/to/firmware.cap
 
+# Check if the first argument is "-l"
+if [ "$1" = "-l" ]; then
+    GUID=$(fwupdmgr get-devices 2>/dev/null | awk '/System Firmware/,/GUID/' | grep "GUID" | grep -oP '[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}')
+    if [ -n "$GUID" ]; then
+        echo "System Firmware type, $GUID"
+    else
+        echo "Error: Unable to retrieve system firmware GUID" >&2
+        exit 1
+    fi
+    exit 0
+fi
+
 # Check if both parameters are provided
 if [ $# -ne 2 ]; then
     echo "Error: Incorrect number of parameters."
