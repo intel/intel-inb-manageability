@@ -94,7 +94,7 @@ class TestInbsAdapter(unittest.TestCase):
         # Ensure the configuration fails if token is given but TLS is not enabled
         with self.assertRaises(AdapterConfigureError):
             inbs_adapter = InbsAdapter(self.config_with_token_path_no_tls)
-    
+
     def test_configure_fails_if_no_tls_options(self):
         # Ensure TLS has to be explicitly disabled to be turned off
         with self.assertRaises(AdapterConfigureError):

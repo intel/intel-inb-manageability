@@ -2,9 +2,7 @@ import pytest
 import os
 
 from unit.common.mock_resources import *
-from unittest.mock import patch
 from dispatcher.dispatcher_class import handle_updates
-from dispatcher.schedule.sqlite_manager import SqliteManager
 
 GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 <schedule_request>
@@ -55,60 +53,62 @@ GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 </schedule_request>"""
 
 SCHEDULE_SCHEMA_LOCATION = os.path.join(
-                                os.path.dirname(__file__),
-                                '..',
-                                '..',
-                                'fpm-template',
-                                'usr',
-                                'share',
-                                'dispatcher-agent',
-                                'schedule_manifest_schema.xsd',
-                            )
+    os.path.dirname(__file__),
+    '..',
+    '..',
+    'fpm-template',
+    'usr',
+    'share',
+    'dispatcher-agent',
+    'schedule_manifest_schema.xsd',
+)
 
 EMBEDDED_SCHEMA_LOCATION = os.path.join(
-                                os.path.dirname(__file__),
-                                '..',
-                                '..',
-                                'fpm-template',
-                                'usr',
-                                'share',
-                                'dispatcher-agent',
-                                'manifest_schema.xsd',
-                            )
+    os.path.dirname(__file__),
+    '..',
+    '..',
+    'fpm-template',
+    'usr',
+    'share',
+    'dispatcher-agent',
+    'manifest_schema.xsd',
+)
+
 
 @pytest.fixture
 def mock_disp_obj():
     return MockDispatcher.build_mock_dispatcher()
+
 
 @pytest.fixture
 def method_counter(mocker):
     mock_method = mocker.patch.object(MockDispatcher, 'do_install')
     yield mock_method
 
+
 def test_run_one_immediate_scheduled_manifest(mock_disp_obj, method_counter, mocker):
     # Mock the call to dispatcher.update_queue.get
-    mocker.patch.object(mock_disp_obj.update_queue, 'get', 
+    mocker.patch.object(mock_disp_obj.update_queue, 'get',
                         return_value=['schedule', GOOD_IMMEDIATE_SCHEDULE_XML, "REQ12345"])
 
-    handle_updates(mock_disp_obj, 
-                    schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 
-                    manifest_schema=EMBEDDED_SCHEMA_LOCATION)
-    
+    handle_updates(mock_disp_obj,
+                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION,
+                   manifest_schema=EMBEDDED_SCHEMA_LOCATION)
+
     # Assert that the do_install method is called once
     assert method_counter.call_count == 1
 
 
-def test_run_several_immediate_scheduled_manifest(mock_disp_obj, method_counter, mocker):        
+def test_run_several_immediate_scheduled_manifest(mock_disp_obj, method_counter, mocker):
     mocker.patch('dispatcher.schedule.sqlite_manager.SqliteManager.create_schedule')
     mocker.patch('dispatcher.schedule.sqlite_manager.SqliteManager.__init__', return_value=None)
     # Mock the call to dispatcher.update_queue.get
-    mocker.patch.object(mock_disp_obj.update_queue, 'get', 
+    mocker.patch.object(mock_disp_obj.update_queue, 'get',
                         return_value=['schedule', GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML, "REQ12345"])
-        
-    handle_updates(mock_disp_obj, 
-                    schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 
-                    manifest_schema=EMBEDDED_SCHEMA_LOCATION)
-    
+
+    handle_updates(mock_disp_obj,
+                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION,
+                   manifest_schema=EMBEDDED_SCHEMA_LOCATION)
+
     # Assert that the do_install method is called the correct number of times
     assert method_counter.call_count == 2
-

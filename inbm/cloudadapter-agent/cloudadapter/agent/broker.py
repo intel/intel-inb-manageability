@@ -110,13 +110,12 @@ class Broker:
 
     def publish_schedule(self, manifest: str, request_id: str, timeout_seconds: int) -> str | None:
         """Publishes a schedule request and waits for a response within a timeout on the appropriate channel.
-        
+
         Raise TimeoutError if no response is received within the timeout."""
-        return self.mqttc.publish_and_wait_response(TC_REQUEST_CHANNEL + SCHEDULE + "/" + request_id, 
-                                                    TC_RESPONSE_CHANNEL + request_id, 
-                                                    manifest, 
+        return self.mqttc.publish_and_wait_response(TC_REQUEST_CHANNEL + SCHEDULE + "/" + request_id,
+                                                    TC_RESPONSE_CHANNEL + request_id,
+                                                    manifest,
                                                     timeout_seconds)
-        
 
     def publish_command(self, command: str) -> None:
         """Publishes a received command message

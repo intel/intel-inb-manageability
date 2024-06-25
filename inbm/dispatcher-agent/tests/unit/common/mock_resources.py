@@ -6,6 +6,7 @@ from threading import Lock
 import datetime
 from typing import Callable, Optional, Union, Any, Tuple
 from queue import Queue
+from dispatcher.schedule.apscheduler import APScheduler
 
 from dispatcher.common.result_constants import *
 from dispatcher.install_check_service import InstallCheckService
@@ -17,6 +18,7 @@ from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.dispatcher_class import Dispatcher
 from dispatcher.update_logger import UpdateLogger
 from dispatcher.workload_orchestration import WorkloadOrchestration
+from dispatcher.schedule.sqlite_manager import SqliteManager
 from inbm_common_lib.utility import canonicalize_uri
 from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.constants import UNKNOWN
@@ -324,6 +326,8 @@ class MockDispatcher(Dispatcher):
         self._update_logger = UpdateLogger(ota_type="", data="")
         self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._wo: Optional[WorkloadOrchestration] = None
+        self.sqlite_mgr = SqliteManager(':memory:')
+        self.ap_scheduler = APScheduler(sqlite_mgr=self.sqlite_mgr)
 
     def clear_dispatcher_state(self) -> None:
         pass

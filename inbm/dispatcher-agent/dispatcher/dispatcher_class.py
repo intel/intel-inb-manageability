@@ -36,6 +36,7 @@ from inbm_common_lib.exceptions import UrlSecurityException
 from .schedule.manifest_parser import ScheduleManifestParser, SCHEDULE_SCHEMA_LOCATION
 from .schedule.schedules import Schedule
 from .schedule.sqlite_manager import SqliteManager
+from .schedule.apscheduler import APScheduler
 from .dispatcher_broker import DispatcherBroker
 from .dispatcher_exception import DispatcherException
 from .aota.aota_error import AotaError
@@ -64,6 +65,7 @@ from . import source
 logger = logging.getLogger(__name__)
 # Mutex lock
 sql_lock = Lock()
+
 
 def _check_type_validate_manifest(xml: str,
                                   schema_location: Optional[str] = None) -> Tuple[str, XmlHandler]:
@@ -110,6 +112,9 @@ class Dispatcher:
 
         self._config_operation = ConfigOperation(self._dispatcher_broker)
 
+        self.sqlite_mgr = SqliteManager()
+        self.ap_scheduler = APScheduler(sqlite_mgr=self.sqlite_mgr)
+
     def stop(self) -> None:
         self.RUNNING = False
 
@@ -140,6 +145,20 @@ class Dispatcher:
 
         with ota_lock:
             self._perform_startup_tasks()
+
+        # Run scheduler to schedule the task during startup.
+        single_schedules = self.sqlite_mgr.get_all_single_schedules_in_priority_order()
+        logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
+        for single_schedule in single_schedules:
+            self.ap_scheduler.add_single_schedule_job(self.do_install, single_schedule)
+            logger.debug(f"Scheduled single job: {single_schedule}")
+
+        repeated_schedules = self.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
+        logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
+        for repeated_schedule in repeated_schedules:
+            self.ap_scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
+            logger.debug(f"Scheduled repeated job: {repeated_schedule}")
+        self.ap_scheduler.start()
 
         def _sig_handler(signo, frame) -> None:
             """Callback to register different signals. Currently we do that only for SIGTERM & SIGINT
@@ -707,8 +726,8 @@ class Dispatcher:
             self._telemetry('Dispatcher detects normal boot sequence')
 
 
-def handle_updates(dispatcher: Any, 
-                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION, 
+def handle_updates(dispatcher: Any,
+                   schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION,
                    manifest_schema=SCHEMA_LOCATION) -> None:
     """Global function to handle multiple requests from cloud using a FIFO queue.
 
@@ -719,11 +738,11 @@ def handle_updates(dispatcher: Any,
     manifest: str = message[1]
     if message[2]:
         request_id: str = message[2]
-    
+
     if request_type == "schedule":
         if not request_id:
             dispatcher._send_result("Error: No request ID provided for schedule request.")
-            
+
         logger.debug("DEBUG: manifest = " + manifest)
         try:
             schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
@@ -731,24 +750,45 @@ def handle_updates(dispatcher: Any,
             logger.error("XMLException parsing schedule: " + str(e))
             dispatcher._send_result(f"Error parsing schedule manifest: {str(e)}", request_id)
             return
-        
+
+        # Clear the database of existing schedules before we add the new schedules
+        with sql_lock:
+            dispatcher.sqlite_mgr.clear_database()
+        # Remove all the jobs in apscheduler.
+        dispatcher.ap_scheduler.remove_all_jobs()
+
         # Add schedules to the database
         if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
             def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
-                with sql_lock:  
-                    sqliteManager = SqliteManager()
+                with sql_lock:
                     for requests in scheduled_requests:
-                        sqliteManager.create_schedule(requests)
-            all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests                
+                        dispatcher.sqlite_mgr.create_schedule(requests)
+            all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests
             process_scheduled_requests(all_scheduled_requests)
 
-        dispatcher._send_result("", request_id)
-        
+        # Add job to the scheduler
+        single_schedules = dispatcher.sqlite_mgr.get_all_single_schedules_in_priority_order()
+        logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
+        for single_schedule in single_schedules:
+            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, single_schedule)
+            logger.debug(f"Scheduled single job: {single_schedule}")
+
+        repeated_schedules = dispatcher.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
+        logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
+        for repeated_schedule in repeated_schedules:
+            dispatcher.ap_scheduler.add_repeated_schedule_job(
+                dispatcher.do_install, repeated_schedule)
+            logger.debug(f"Scheduled repeated job: {repeated_schedule}")
+
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:
-                dispatcher.do_install(xml=manifest)
+                try:
+                    dispatcher.do_install(xml=manifest)
+                except (NotImplementedError, DispatcherException) as e:
+                    dispatcher._send_result(str(e), request_id)
+        dispatcher._send_result("", request_id)
         return
-    
+
     if request_type == "install" or request_type == "query":
         dispatcher.do_install(xml=manifest)
         return

@@ -38,7 +38,7 @@ class Publisher:
         Raises TimeoutError if no response within timeout_sec seconds.
 
         @param schedule: The properly formatted schedule to send
-        """        
+        """
         return self._broker.publish_schedule(schedule, request_id, timeout_sec)
 
     def _sanitize_values(self, arguments: Dict[str, str], valid_mapping: Dict[str, List[str]]) -> None:
@@ -97,10 +97,10 @@ class Publisher:
 
         self._send_manifest(manifest)
         return MESSAGE.MANIFEST
-    
+
     def publish_schedule(self, schedule: str, request_id: str, timeout_sec: int) -> str | None:
         """Publishes a schedule update
-        
+
         Waits for reply and returns error message: blank for no error.
 
         @param manifest: The schedule to update with

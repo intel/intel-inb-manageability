@@ -125,9 +125,9 @@ class TestBroker(unittest.TestCase):
 
         mocked = self.MockMQTT.return_value
         mocked.publish_and_wait_response.assert_called_once_with(
-            TC_REQUEST_CHANNEL + SCHEDULE + "/1234", 
+            TC_REQUEST_CHANNEL + SCHEDULE + "/1234",
             TC_RESPONSE_CHANNEL + "1234",
-            schedule, 
+            schedule,
             3)
 
     def test_publish_command_succeeds(self) -> None:
