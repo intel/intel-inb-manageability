@@ -97,7 +97,6 @@ class SqliteManager:
                 single_schedule.job_id = str(row[3])
                 single_schedule.priority = row[0]
                 single_schedule.task_id = row[2]
-                #single_schedule.schedule_job_id = (row[0], row[1], row[2])
                 ss.append(single_schedule)
             return ss    
         except (sqlite3.Error) as e:
@@ -121,7 +120,6 @@ class SqliteManager:
                 repeated_schedule.job_id = str(row[3])
                 repeated_schedule.priority = row[0]
                 repeated_schedule.task_id = row[2]
-                #repeated_schedule.schedule_job_id = (row[0], row[1], row[2])
                 rs.append(repeated_schedule)
             return rs
         except (sqlite3.Error) as e:
@@ -203,7 +201,7 @@ class SqliteManager:
                 sql = ''' UPDATE repeated_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
 
             if schedule.task_id != -1:
-                #logger.debug(f"Update status in database to {status} with id={schedule.schedule_job_id}")
+                logger.debug(f"Update status in database to {status} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
                 self._cursor.execute(
                     sql, (status, schedule.priority, schedule.schedule_id, schedule.task_id))
                 self._conn.commit()
