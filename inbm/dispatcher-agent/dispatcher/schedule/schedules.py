@@ -11,11 +11,12 @@ from typing import Optional, List, Tuple
 
 @dataclass
 class Schedule:
-    """ Represents a Base class for schedule objects """
+    """ Represents a Base class for schedule objects."""
     request_id: str
     schedule_id: Optional[int] = field(default=None)
-    # priority, schedule_id, job_id from DB
-    job_id: Optional[Tuple[int, int, int]] = field(default=None)
+    job_id: Optional[str] = field(default=None)
+    task_id: int = field(default=-1)
+    priority: int = field(default=0)    
     manifests: List[str] = field(default_factory=list)
 
 
@@ -35,11 +36,3 @@ class RepeatedSchedule(Schedule):
     cron_day_month: str = field(default='*')
     cron_month: str = field(default='*')
     cron_day_week: str = field(default='*')
-
-
-@dataclass
-class ScheduledJob:
-    priority: int
-    schedule_id: int
-    job_id: int
-    status: Optional[str]
