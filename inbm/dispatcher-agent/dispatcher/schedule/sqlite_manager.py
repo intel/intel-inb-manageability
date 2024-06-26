@@ -95,7 +95,9 @@ class SqliteManager:
                 single_schedule = self._select_single_schedule_by_id(str(row[1]))
                 single_schedule.manifests = [self._select_job_by_task_id(str(row[2]))]
                 single_schedule.job_id = str(row[3])
-                single_schedule.schedule_job_id = (row[0], row[1], row[2])
+                single_schedule.priority = row[0]
+                single_schedule.task_id = row[2]
+                #single_schedule.schedule_job_id = (row[0], row[1], row[2])
                 ss.append(single_schedule)
             return ss    
         except (sqlite3.Error) as e:
@@ -117,7 +119,9 @@ class SqliteManager:
                 repeated_schedule = self._select_repeated_schedule_by_id(str(row[1]))
                 repeated_schedule.manifests = [self._select_job_by_task_id(str(row[2]))]
                 repeated_schedule.job_id = str(row[3])
-                repeated_schedule.schedule_job_id = (row[0], row[1], row[2])
+                repeated_schedule.priority = row[0]
+                repeated_schedule.task_id = row[2]
+                #repeated_schedule.schedule_job_id = (row[0], row[1], row[2])
                 rs.append(repeated_schedule)
             return rs
         except (sqlite3.Error) as e:
@@ -197,15 +201,14 @@ class SqliteManager:
                 sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
             elif isinstance(schedule, RepeatedSchedule):
                 sql = ''' UPDATE repeated_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
-            else:
-                sql = ""
-            if schedule.schedule_job_id:
-                logger.debug(f"Update status in database to {status} with id={schedule.schedule_job_id}")
+
+            if schedule.task_id != -1:
+                #logger.debug(f"Update status in database to {status} with id={schedule.schedule_job_id}")
                 self._cursor.execute(
-                    sql, (status, schedule.schedule_job_id[0], schedule.schedule_job_id[1], schedule.schedule_job_id[2]))
+                    sql, (status, schedule.priority, schedule.schedule_id, schedule.task_id))
                 self._conn.commit()
             else:
-                logger.error("Unable to update status in database as the schedule_job_id is empty.")
+                logger.error("Unable to update status in database as the task ID is not set.")
         except (sqlite3.Error) as e:
             raise DispatcherException(
                 f"Error to update status in Dispatcher Schedule database: {e}")
