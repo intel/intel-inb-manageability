@@ -1,12 +1,13 @@
-## Building
+# Building
 
-### Acquire FPM
+## Acquire FPM
 
 For a full reference, see https://fpm.readthedocs.io/en/latest/installing.html#installing-things-fpm-needs
 
 On Ubuntu 20.04:
 
 * `sudo apt install ruby ruby-dev rubygems build-essential`
+* `sudo gem install public_suffix -v 5.1.1`
 * `sudo gem install --no-document fpm -v 1.14.0`
 
 ### Set up jfrog
@@ -26,6 +27,7 @@ On Ubuntu 20.04:
   "Version": "1"
 }
 ```
+
 * Ensure `jfrog-cli.conf` is secured.  On Linux, run `chmod og-rwx $HOME/.jfrog/jfrog-cli.conf`
 
 ### Fetch dependencies
