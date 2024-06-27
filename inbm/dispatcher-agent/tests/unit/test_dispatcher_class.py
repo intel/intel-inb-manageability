@@ -6,10 +6,12 @@ from dispatcher.dispatcher_class import handle_updates
 
 GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 <schedule_request>
-    <request_id>REQ12345</request_id>
+    <request_id>6bf587ac-1d70-4e21-9a15-097f6292b9c4</request_id>
     <update_schedule>
         <schedule>
-            <single_schedule />
+            <single_schedule>
+                <job_id>swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d</job_id>
+            </single_schedule>
         </schedule>
         <manifests>
             <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
@@ -20,10 +22,12 @@ GOOD_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 
 GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
 <schedule_request>
-    <request_id>REQ12345</request_id>
+    <request_id>c9b74125-f3bb-440a-ad80-8d02090bd337</request_id>
     <update_schedule>
         <schedule>
-            <single_schedule />
+            <single_schedule>
+                <job_id>swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d</job_id>
+            </single_schedule>
         </schedule>
         <manifests>
             <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>
@@ -33,6 +37,7 @@ GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
     <update_schedule>
         <schedule>
             <single_schedule>
+                <job_id>swupd-88fff0ef-4fae-43a5-beb7-fe7d8d5e31cd</job_id>
                 <start_time>2021-09-01T00:00:00</start_time>
             </single_schedule>
         </schedule>
@@ -43,7 +48,9 @@ GOOD_SEVERAL_IMMEDIATE_SCHEDULE_XML = """<?xml version="1" encoding="utf-8"?>
     </update_schedule>
     <update_schedule>
         <schedule>
-            <single_schedule />
+            <single_schedule>
+                <job_id>swupd-dea8fac4-dbdb-400e-ba11-4dd3c07ad270</job_id>
+            </single_schedule>
         </schedule>
         <manifests>
             <manifest_xml><![CDATA[<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd><mode>full</mode><deviceReboot>no</deviceReboot>

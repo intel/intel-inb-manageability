@@ -128,6 +128,7 @@
   /usr/bin/unrar rix,
   /usr/bin/unrar-nonfree rix,
   /usr/bin/UpdateBIOS.sh rix,
+  /usr/bin/UpdateFirmwareBlobFwupdtool.sh rUx,
   /usr/bin/configuration/ w,
   /usr/bin/configuration/** w,
   /usr/bin/configuration/configuration l,

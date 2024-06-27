@@ -91,6 +91,7 @@ class Dispatcher:
     def __init__(self, args: list[str], broker: DispatcherBroker, install_check_service: InstallCheckService) -> None:
         self._dispatcher_broker = broker
         self._install_check_service = install_check_service
+        # Initialize update_queue with a capacity of 1 to ensure serialized handling of updates.
         self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._thread_count = 1
         self._sota_repos = None
