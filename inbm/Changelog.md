@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## 4.2.3.2 Hotfix - 2024-07-02
+
+### Added
+ - Added the ability to update Arrow Lake (or any with config) platform with fwupd rather than fwupdate
+
 ## 4.2.3.1 Hotfix - 2024-06-10
 
 ### Fixed
