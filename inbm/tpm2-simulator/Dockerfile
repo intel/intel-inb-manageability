@@ -22,7 +22,7 @@ RUN apt-get update &&\
         sudo &&  \
     apt-get clean
 
-RUN gem install public_suffix -v 5.0.5
+RUN gem install public_suffix -v 5.1.1
 RUN gem install dotenv -v 2.8.1
 RUN gem install --no-document fpm -v 1.14.0
 
