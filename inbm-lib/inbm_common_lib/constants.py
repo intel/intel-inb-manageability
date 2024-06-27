@@ -43,16 +43,6 @@ DMI_SYSTEM_PRODUCT_NAME = 'product_name'
 # Integration-tests
 FW_DMI_IT_PATH = '/scripts/dmi_id_bios_info/'
 
-# Used for systems implementing device-tree
-DEVICE_TREE_PATH = '/proc/device-tree/'
-DEVICE_TREE_MODEL = 'model'
-BIOS_RELEASE_DATE = 'bios-release-date'
-BIOS_VENDOR = 'bios-vendor'
-BIOS_VERSION = 'bios-version'
-SYSTEM_MANUFACTURER = 'system-manufacturer'
-SYSTEM_PRODUCT_NAME = 'system-product-name'
-FW_DEVICE_TREE_PATH = '/proc/device-tree/firmware/bios/'
-
 # Afulnx tool name
 AFULNX_64 = 'afulnx_64'
 

@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - Fixed some Yocto issues found after migrating to scarthgap
+ - (NEXARL-195) Fixed device tree detection check on systems that implement only part of device tree
 
 ## 4.2.3 - 2024-05-02
 
