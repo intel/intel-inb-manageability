@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - Added INBS cloud with Ping support to Cloudadapter
+ - Added firmware update support to Arrow Lake specifically using a generic script that will work for any platform using fwupdtool
 
 ### Fixed
  - Fixed some Yocto issues found after migrating to scarthgap
