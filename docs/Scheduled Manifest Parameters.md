@@ -4,6 +4,8 @@
 
 This XML schema defines the structure for a scheduled request. It includes types for cron values, manifests, schedules, and the overall schedule request.
 
+NOTE: If the Dispatcher receives a new scheduled manifest, the contents of the APSheduler and Database will be removed and replaced with the entire contents of the received manifest.  Any schedules that were in the previous manifest and not in the new one will no longer be scheduled.
+
 ## XML Structure
 
 ```xml
@@ -32,8 +34,9 @@ This XML schema defines the structure for a scheduled request. It includes types
 
 ```xml
 <single_schedule>
-    <start_time>2023-04-01T08:00:00</start_time>
-    <end_time>2023-04-01T17:00:00</end_time>
+  <job_id>swupd-f02131f9-b7d9-4e3f-9ee2-615e0fe005a5</job_id>
+  <start_time>2023-04-01T08:00:00</start_time>
+  <end_time>2023-04-01T17:00:00</end_time>
 </single_schedule>
 ```
 
@@ -41,7 +44,8 @@ This XML schema defines the structure for a scheduled request. It includes types
 
 ```xml
 <single_schedule>
-    <start_time>2023-04-01T08:00:00</start_time>
+  <job_id>swupd-f02131f9-b7d9-4e3f-9ee2-615e0fe005a5</job_id>
+  <start_time>2023-04-01T08:00:00</start_time>
 </single_schedule>
 ```
 
@@ -49,12 +53,13 @@ This XML schema defines the structure for a scheduled request. It includes types
 
 ```xml
 <repeated_schedule>
-    <duration>P1D</duration> <!-- P1D means a period of one day -->
-    <cron_minutes>0</cron_minutes> <!-- At minute 0 -->
-    <cron_hours>*/3</cron_hours> <!-- Every 3 hours -->
-    <cron_day_month>*</cron_day_month> <!-- Every day of the month -->
-    <cron_month>*</cron_month> <!-- Every month -->
-    <cron_day_week>*</cron_day_week> <!-- Every day of the week -->
+  <job_id>swupd-f02131f9-b7d9-4e3f-9ee2-615e0fe005a5</job_id>
+  <duration>P1D</duration> <!-- P1D means a period of one day -->
+  <cron_minutes>0</cron_minutes> <!-- At minute 0 -->
+  <cron_hours>*/3</cron_hours> <!-- Every 3 hours -->
+  <cron_day_month>*</cron_day_month> <!-- Every day of the month -->
+  <cron_month>*</cron_month> <!-- Every month -->
+  <cron_day_week>*</cron_day_week> <!-- Every day of the week -->
 </repeated_schedule>    
 ```
 
@@ -73,11 +78,13 @@ This XML schema defines the structure for a scheduled request. It includes types
 
 ### SingleSchedule
 
+- **job_id**: Assigned by MJunct to track each individual schedule request.  In the format of an abbreviated job type descriptor (4-9 characters) followed by a UUID.
 - **start_time** (optional): The start time of the schedule, represented as a dateTime.
 - **end_time** (optional): The end time of the schedule, represented as a dateTime.
 
 ### RepeatedSchedule
 
+- **job_id**: Assigned by MJunct to track each individual schedule request.  In the format of an abbreviated job type descriptor (4-9 characaters) followed by a UUID.
 - **duration**: The duration of the schedule, represented as an XML duration.
 - **cron_minutes**: The minute component of the cron schedule, using `MinutesWithinHourCronValue`.
 - **cron_hours**: The hour component of the cron schedule, using `HourWithinDayCronValue`.
