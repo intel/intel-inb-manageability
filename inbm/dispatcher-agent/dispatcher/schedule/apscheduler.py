@@ -9,6 +9,7 @@ import logging
 import re
 from typing import Callable, Union
 from datetime import datetime, timedelta
+from time import sleep
 
 from .schedules import Schedule, SingleSchedule, RepeatedSchedule
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -25,8 +26,12 @@ class APScheduler:
 
     def start(self) -> None:
         """Start the scheduler"""
-        logger.debug("Starting APScheduler")
+        def starting_message():
+            logger.debug("Starting APScheduler")
         self._scheduler.start()
+        self._scheduler.add_job(starting_message, 'date', run_date=datetime.now() + timedelta(seconds=1))
+        sleep(1)
+
 
     def remove_all_jobs(self) -> None:
         """Remove all jobs."""

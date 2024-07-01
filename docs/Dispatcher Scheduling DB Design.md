@@ -17,6 +17,8 @@ The database to be used will be SQLite3.  The database will be used to keep trac
 
 The goal of this design is to have a database design that adheres to the principles of Normal Form.
 
+NOTE:  The introduction of a task ID may be confusing.  It exists because there will be repeated schedules added to the database which will have the same JobID and manifest.   By adding an auto-incremented taskID, we are able to schedule and track subsequent runs of that same job/manifest and maintain our database integrity.
+
 ## ER Model
 
 ```mermaid
@@ -31,12 +33,12 @@ erDiagram
     SINGLE_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run - Starting with 0"
         INTEGER schedule_id PK,FK "REFERENCES SINGLE_SCHEDULE(schedule_id)"
-        TEXT job_id PK,FK "REFERENCES job(id)"
+        INTEGER task_id PK,FK "REFERENCES job(task_id)"
         TEXT status "NULL or scheduled"
     }
 
     SINGLE_SCHEDULE {
-        INTEGER schedule_id PK "AUTOINCREMENT"
+        INTEGER id PK "AUTOINCREMENT"
         TEXT request_id "NOT NULL - Format -> 2024-01-01T00:00:00"
         TEXT start_time "NOT NULL - Format -> 2024-01-01T00:00:00"
         TEXT end_time
@@ -54,12 +56,12 @@ erDiagram
     REPEATED_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run"
         INTEGER schedule_id PK,FK "REFERENCES REPEATED_SCHEDULE(schedule_id)"
-        TEXT job_id PK,FK "REFERENCES job(id)"
+        INTEGER task_id PK,FK "REFERENCES job(task_id)"
         TEXT status "NULL or scheduled"
     }
 
     REPEATED_SCHEDULE {
-        INTEGER schedule_id PK "AUTOINCREMENT"
+        INTEGER id PK "AUTOINCREMENT"
         TEXT request_id "NOT NULL"
         TEXT cron_duration "NOT NULL"
         TEXT cron_minutes "NOT NULL"
@@ -75,21 +77,21 @@ erDiagram
 
 ### JOB Table
 
-| id | manifest |
-| :---- | :----- |
-| swupd-fc276d74-014f-44c2-a57c-de1944a6e974 | valid Inband Manageability XML manifest - SOTA download only |
-| swupd-09273593-ff7b-433f-820c-86440b6f8cf3 | valid Inband Manageability XML manifest - SOTA install only|
-| setpwr-70ab8502-2c53-4417-ae57-90e4c2b7f0b6 | valid Inband Manageability XML manifest - Reboot system |
-| fwupd-718814f3-b12a-432e-ac38-093e8dcb4bd1 | valid Inband Manageability XML manifest - FOTA |
-| setpwr-d8be8ae4-7512-43c0-9bdd-9a066de17322 | valid Inband Manageability XML manifest - Reboot system |
+| task_id | job_id | manifest |
+| :---- | :---- | :----- |
+| 1 | swupd-fc276d74-014f-44c2-a57c-de1944a6e974 | valid Inband Manageability XML manifest - SOTA download only |
+| 2 | swupd-09273593-ff7b-433f-820c-86440b6f8cf3 | valid Inband Manageability XML manifest - SOTA install only|
+| 3 | setpwr-70ab8502-2c53-4417-ae57-90e4c2b7f0b6 | valid Inband Manageability XML manifest - Reboot system |
+| 4 | fwupd-718814f3-b12a-432e-ac38-093e8dcb4bd1 | valid Inband Manageability XML manifest - FOTA |
+| 5 | setpwr-d8be8ae4-7512-43c0-9bdd-9a066de17322 | valid Inband Manageability XML manifest - Reboot system |
 
 ### SINGLE_SCHEDULE Table
 
 | id | request_id | start_time | end_time |
 | :---- | :---- | :---- | :---- |
-| 1  | 123 | 2024-04-01T08:00:00 | 2024-04-01T12:00:00 |
-| 2  | 123 | 2024-05-01T08:00:00 | 2024-05-01T12:00:00|
-| 3  | 234 | 2024-04-02T08:00:00 | 2024-04-02T14:00:00|
+| 1  | 6bf587ac-1d70-4e21-9a15-097f6292b9c4 | 2024-04-01T08:00:00 | 2024-04-01T12:00:00 |
+| 2  | 6bf587ac-1d70-4e21-9a15-097f6292b9c4 | 2024-05-01T08:00:00 | 2024-05-01T12:00:00|
+| 3  | c9b74125-f3bb-440a-ad80-8d02090bd337 | 2024-04-02T08:00:00 | 2024-04-02T14:00:00|
 
 ### REPEATED_SCHEDULE Table
 
@@ -106,20 +108,20 @@ NOTE: These values may not make sense in the real world.  Just for demonstration
 
 Example: To do a download, install, and reboot of SOTA at the time in schedule 1
 
-| priority | schedule_id | job_id | status |
+| priority | schedule_id | task_id | status |
 | :---- | :---- | :---- | :----- |
-| 0   | 1 | swupd-fc276d74-014f-44c2-a57c-de1944a6e974| scheduled |
-| 1   | 1 | swupd-09273593-ff7b-433f-820c-86440b6f8cf3 | scheduled |
-| 2   | 1 | setpwr-70ab8502-2c53-4417-ae57-90e4c2b7f0b6 |   |
+| 0   | 1 | 1 | scheduled |
+| 1   | 1 | 2 | scheduled |
+| 2   | 1 | 3 |   |
 
 ### REPEATED_SCHEDULE_JOB Table
 
 Example: To do a download, install, and reboot of SOTA at the repeated time in schedule 2
 
-| priority | schedule_id | job_id | status |
+| priority | schedule_id | task_id | status |
 | :---- | :---- | :---- | :----- |
-| 0   | 2 | fwupd-718814f3-b12a-432e-ac38-093e8dcb4bd1 | scheduled |
-| 1   | 2 | setpwr-d8be8ae4-7512-43c0-9bdd-9a066de17322 | scheduled |
+| 0   | 2 | 4 | scheduled |
+| 1   | 2 | 5 | scheduled |
 
 ## Field Descriptions
 
@@ -133,7 +135,9 @@ Example: To do a download, install, and reboot of SOTA at the repeated time in s
 | cron_day_week | field in a cron job schedule that specifies the day of the week on which the task should run, ranging from 0 (Sunday) to 6 (Saturday).     | Yes |
 | end_time | ending date/time for a single scheduled request. | No |
 | id    | Auto-generated by DB.  The request Ids will not be unique in the tables to use as a PK. | Yes |
+| job_id | ID for each job assigned by MJunct.  It will have an abbreviation of the job type in front of a UUID | Yes |
 | manifest | valid Inband Manageability manifest | Yes |
 | request_id | Request ID generated by MJunct that is used to trace the request.| Yes |
 | start_time | starting date/time for a single scheduled request.| Yes |
 | status | indicates if the request has been scheduled.  Not scheduled unless 'scheduled' is indicated in the field.  This is used to ensure the same manifest is not ran after a reboot | No |
+| task_id | Autoincremented number in the JOB table to store jobs and their manifests.   | Yes |
