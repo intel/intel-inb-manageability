@@ -7,12 +7,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - Added the ability to update Arrow Lake (or any with config) platform with fwupd rather than fwupdate
+- (NEXARL-195) Fixed device tree detection check on systems that implement only part of device tree
 
 ## 4.2.3.1 Hotfix - 2024-06-10
 
 ### Fixed
  - Fixed some Yocto issues found after migrating to scarthgap
- - (NEXARL-195) Fixed device tree detection check on systems that implement only part of device tree
 
 ## 4.2.3 - 2024-05-02
 
