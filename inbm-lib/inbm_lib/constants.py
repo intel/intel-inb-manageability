@@ -70,6 +70,8 @@ CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool/')
 
 # OTA log file location
 LOG_FILE = str(LOG_PATH / "inbm-update-status.log")
+GRANULAR_LOG_FILE = str(LOG_PATH / "inbm-update-log.log")
+SYSTEM_HISTORY_LOG_FILE = str(LOG_PATH / "apt" / "history.log")
 
 # OTA STATUS
 OTA_SUCCESS = "SUCCESS"
