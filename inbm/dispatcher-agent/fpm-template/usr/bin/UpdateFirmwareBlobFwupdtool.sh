@@ -13,11 +13,15 @@
 # Example:
 #   UpdateFirmwareBlobFwupdtool.sh 1234abcd-5678-efgh-ijkl-9012mnop3456 /path/to/firmware.cap
 
-# Check if the first argument is "-l"
+# Alternate usage: UpdateFirmwareBlobFwupdtool.sh -l -- will list system firmware GUIDs
+
+# If "-l", then list system firmware GUIDs in the same format as fwupdate tool
 if [ "$1" = "-l" ]; then
-    GUID=$(fwupdmgr get-devices 2>/dev/null | awk '/System Firmware/,/GUID/' | grep "GUID" | grep -oP '[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}')
-    if [ -n "$GUID" ]; then
-        echo "System Firmware type, $GUID"
+    GUIDS=$(fwupdmgr get-devices 2>/dev/null | awk '/System Firmware/,/GUID/' | grep "GUID" | grep -oP '[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}')
+    if [ -n "$GUIDS" ]; then
+        while IFS= read -r GUID; do
+            echo "System Firmware type, $GUID"
+        done <<< "$GUIDS"
     else
         echo "Error: Unable to retrieve system firmware GUID" >&2
         exit 1
