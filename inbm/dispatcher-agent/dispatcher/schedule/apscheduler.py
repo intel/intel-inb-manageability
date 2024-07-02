@@ -39,7 +39,8 @@ class APScheduler:
         logger.debug("Remove all jobs in APScheduler")
         self._scheduler.remove_all_jobs()
 
-    def add_single_schedule_job(self, callback: Callable, single_schedule: SingleSchedule) -> None:
+    def add_single_schedule_job(self, callback: Callable, 
+                                single_schedule: SingleSchedule) -> None:
         """Add the job for single schedule.
 
         @param callback: The function to be called.
@@ -51,7 +52,7 @@ class APScheduler:
             try:
                 for manifest in single_schedule.manifests:
                     self._scheduler.add_job(
-                        callback, 'date', run_date=single_schedule.start_time, args=[manifest])
+                        func=callback, trigger='date', run_date=single_schedule.start_time, args=[manifest])
             except (ValueError, TypeError) as err:
                 raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
 
@@ -67,7 +68,7 @@ class APScheduler:
             self._sqlite_mgr.update_status(repeated_schedule, SCHEDULED)
             try:
                 for manifest in repeated_schedule.manifests:
-                    self._scheduler.add_job(callback, 'cron', args=[manifest],
+                    self._scheduler.add_job(func=callback, trigger='cron', args=[manifest],
                                             start_date=datetime.now(),
                                             end_date=self._convert_duration_to_end_time(
                                                 repeated_schedule.cron_duration),

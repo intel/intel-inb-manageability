@@ -19,7 +19,7 @@ class TestAPScheduler(TestCase):
                              end_time=datetime.now() + timedelta(minutes=5),
                              manifests=["MANIFEST1", "MANIFEST2"])
         self.assertTrue(self.scheduler.is_schedulable(ss1))
-
+    
     def test_return_false_too_late_to_schedule(self):
         ss1 = SingleSchedule(request_id="REQ123",
                              start_time=datetime.now() - timedelta(hours=2),
