@@ -16,7 +16,7 @@ from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
 from inbm_lib.validate_package_list import parse_and_validate_package_list
 from inbm_lib.detect_os import detect_os
-from inbm_lib.constants import OTA_PENDING, FAIL, OTA_SUCCESS
+from inbm_lib.constants import OTA_PENDING, FAIL, OTA_SUCCESS, OTA_NO_UPDATE
 
 from dispatcher.dispatcher_exception import DispatcherException
 from .command_handler import run_commands, print_execution_summary, get_command_status
@@ -121,6 +121,7 @@ class SOTA:
             # If manifest_package_list is None, treat it as an empty string, otherwise, convert to string
             self._package_list: str = "" if manifest_package_list is None else str(
                 manifest_package_list)
+            self._update_logger.package_list = self._package_list
         except (ValueError, TypeError) as e:
             # If an exception occurs during string conversion, raise that exception
             raise SotaError('package_list is not a string in manifest') from e
@@ -355,7 +356,14 @@ class SOTA:
                 else:
                     self._update_logger.status = OTA_PENDING
                     self._update_logger.error = ""
+
                 self._update_logger.save_log()
+                # Check if the sota doesn't perform any package upgrade/install
+                if self._is_ota_no_update_available(cmd_list) and self._package_list == "":
+                    # if no package upgrade/install, set the status to OTA_NO_UPDATE and skip saving the granular data.
+                    self._update_logger.status = OTA_NO_UPDATE
+                else:
+                    self._update_logger.save_granular_log_file()
                 if (self.sota_mode == 'download-only') or (not self._is_reboot_device()):
                     self._dispatcher_broker.telemetry("No reboot (SOTA pass)")
                 else:
@@ -368,12 +376,25 @@ class SOTA:
                 self._update_logger.status = FAIL
                 self._update_logger.error = ""
                 self._update_logger.save_log()
+                self._update_logger.save_granular_log_file()
                 self._dispatcher_broker.telemetry(SOTA_FAILURE)
                 self._dispatcher_broker.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)
 
     def _is_reboot_device(self) -> bool:
         return self._reboot_device not in ["No", "N", "n", "no", "NO"]
+
+    def _is_ota_no_update_available(self, cmd_list: List) -> bool:
+        """check if the command doesn't upgrade or install anything
+
+        @return: True if nothing upgraded or installed; False if something upgraded or installed.
+        """
+        logger.debug("")
+        if cmd_list:
+            for cmd in cmd_list:
+                if '0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded' in cmd.get_output():
+                    return True
+        return False
 
     def check(self) -> None:
         """Perform manifest checking before SOTA"""

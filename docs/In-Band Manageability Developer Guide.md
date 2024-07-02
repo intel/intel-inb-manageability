@@ -777,7 +777,62 @@ sudo systemctl start mqtt
 During the OTA, the OTA status will be recorded and saved at /var/cache/manageability/inbm-update-status.log.
 The log file contains the information such as the status, OTA type, time, metadata, error message and format version.
 
+| *OTA Status*         | *Description*                                 |
+|:---------------------|:----------------------------------------------|
+| SUCCESS              | OTA success                                   |
+| PENDING              | OTA success and pending reboot                |
+| FAIL                 | OTA fail                                      |
+| NO_UPDATE_AVAILABLE  | SOTA success without update (no new packages) |
+
+A package level granular update status data will be stored at /var/cache/manageability/inbm-update-log.log.
+This file contains the information such as the update type, package name, update time, package action, package status and package version.
+Only supports granular data of SOTA at this moment.
+
+
 #### Log File Sample
+Example of inbm-update-status.log:
 ```text
 "{'Status': 'SUCCESS', 'Type': 'sota', 'Time': '2023-06-07 05:06:43', 'Metadata': '<?xml version=\"1.0\" encoding=\"utf-8\"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile=\"y\">update</cmd></sota></type></ota></manifest>', 'Error': None, 'Version': 'v1'}"
+```
+
+Example of inbm-update-log.log:
+
+```text
+{
+    "UpdateLog": [
+        {
+            "update_type": "os",
+            "package_name": "emacs",
+            "update_time": "2024-07-03T01:50:55.935223",
+            "action": "install",
+            "status": "SUCCESS",
+            "version": "1:26.3+1-1ubuntu2\n"
+        },
+        {
+            "update_type": "os",
+            "package_name": "wcalc",
+            "update_time": "2024-07-03T01:50:55.935223",
+            "action": "install",
+            "status": "SUCCESS",
+            "version": "2.5-3build1\n"
+        },
+        {
+            "update_type": "os",
+            "package_name": "openvpn:amd64",
+            "update_time": "2024-07-03T01:51:36",
+            "action": "install",
+            "status": "SUCCESS",
+            "version": "2.4.7-1ubuntu2, 2.4.12-0ubuntu0.20.04.2"
+        },
+        {
+            "update_type": "os",
+            "package_name": "terraform:amd64",
+            "update_time": "2024-07-03T19:28:53",
+            "action": "upgrade",
+            "status": "SUCCESS",
+            "version": "1.9.0-1, 1.9.1-1"
+        }
+    ]
+}
+
 ```

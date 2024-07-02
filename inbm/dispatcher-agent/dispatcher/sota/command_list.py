@@ -21,6 +21,7 @@ class CommandList:
             self.text = text
             self.status = 'Not Executed'
             self.err: List = []
+            self.out = ''
 
         def __repr__(self) -> str:
             return self.text
@@ -32,6 +33,10 @@ class CommandList:
         def get_errors(self) -> List:
             """get any error associated with the command"""
             return self.err if self.err else ['N/A']
+
+        def get_output(self) -> str:
+            """get the output of command"""
+            return self.out
 
         def __str__(self) -> str:
             return self.__repr__()

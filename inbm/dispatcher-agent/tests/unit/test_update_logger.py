@@ -1,10 +1,12 @@
 import datetime
 import json
+import os
 from unittest import TestCase
 from unittest.mock import patch
 
 from dispatcher.update_logger import UpdateLogger
-from inbm_lib.constants import LOG_FILE, OTA_PENDING, OTA_SUCCESS, FAIL, FORMAT_VERSION
+from inbm_lib.constants import LOG_FILE, OTA_PENDING, OTA_SUCCESS, FAIL, FORMAT_VERSION, GRANULAR_LOG_FILE, \
+    SYSTEM_HISTORY_LOG_FILE, PACKAGE_SUCCESS
 
 SOTA_MANIFEST = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd></sota></type></ota></manifest>'
 
@@ -13,6 +15,11 @@ class TestUpdateLogger(TestCase):
 
     def setUp(self) -> None:
         self.update_logger = UpdateLogger(ota_type="sota", data=SOTA_MANIFEST)
+
+    def tearDown(self) -> None:
+        # Ensure the GRANULAR_LOG_FILE always removed after the test case
+        if os.path.exists(GRANULAR_LOG_FILE):
+            os.remove(GRANULAR_LOG_FILE)
 
     def test_set_time(self) -> None:
         ori_time = self.update_logger._time
@@ -60,3 +67,65 @@ class TestUpdateLogger(TestCase):
         expected_log = r'{"Status": "SUCCESS", "Type": "sota", "Time": "2023-12-25 00:00:00", "Metadata": "<?xml version=\"1.0\" encoding=\"utf-8\"?><manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile=\"y\">update</cmd></sota></type></ota></manifest>", "Error": "", "Version": "v1"}'
 
         mock_write_log_file.assert_called_once_with(expected_log)
+
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("install ok installed", "", 0))
+    def test_save_granular_log_file_sota_without_package_list(self, mock_status) -> None:
+        self.update_logger.ota_type = "sota"
+
+        history_content = """
+        Start-Date: 2024-07-03  19:28:53
+        Commandline: /bin/apt-get -yq -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --with-new-pkgs upgrade
+        Upgrade: terraform:amd64 (1.9.0-1, 1.9.1-1)
+        End-Date: 2024-07-03  19:28:53
+        """
+
+        expected_content = {
+                            "UpdateLog": [
+                                    {
+                                        "update_type": "os",
+                                        "package_name": "terraform:amd64",
+                                        "update_time": "2024-07-03T19:28:53",
+                                        "action": "upgrade",
+                                        "status": "SUCCESS",
+                                        "version": "1.9.0-1, 1.9.1-1"
+                                    }
+                                ]
+                            }
+
+        with open(SYSTEM_HISTORY_LOG_FILE, "w") as file:
+            file.write(history_content)
+
+        self.update_logger.save_granular_log_file()
+
+        with open(GRANULAR_LOG_FILE, 'r') as f:
+            granular_log = json.load(f)
+
+        mock_status.assert_called_once()
+        self.assertEqual(granular_log, expected_content)
+
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', side_effect=[("install ok installed", "", 0),
+                                                                              ("1:26.3+1-1ubuntu2", "", 0)])
+    def test_save_granular_log_file_sota_with_package_list(self, mock_run) -> None:
+        self.update_logger.ota_type = "sota"
+        self.update_logger._time = datetime.datetime(2024, 7, 3, 1, 50, 55, 935223)
+        self.update_logger.package_list = "emacs"
+        expected_content = {
+                            "UpdateLog": [
+                                    {
+                                        "update_type": "application",
+                                        "package_name": "emacs",
+                                        "update_time": "2024-07-03T01:50:55.935223",
+                                        "action": "install",
+                                        "status": "SUCCESS",
+                                        "version": "1:26.3+1-1ubuntu2"
+                                    }
+                                ]
+                            }
+
+        self.update_logger.save_granular_log_file()
+
+        with open(GRANULAR_LOG_FILE, 'r') as f:
+            granular_log = json.load(f)
+
+        assert mock_run.call_count == 2
+        self.assertEqual(granular_log, expected_content)
