@@ -121,6 +121,7 @@ class SOTA:
             # If manifest_package_list is None, treat it as an empty string, otherwise, convert to string
             self._package_list: str = "" if manifest_package_list is None else str(
                 manifest_package_list)
+            self._update_logger.package_list = self._package_list
         except (ValueError, TypeError) as e:
             # If an exception occurs during string conversion, raise that exception
             raise SotaError('package_list is not a string in manifest') from e
@@ -356,6 +357,7 @@ class SOTA:
                     self._update_logger.status = OTA_PENDING
                     self._update_logger.error = ""
                 self._update_logger.save_log()
+                self._update_logger.save_granular_log_file()
                 if (self.sota_mode == 'download-only') or (not self._is_reboot_device()):
                     self._dispatcher_broker.telemetry("No reboot (SOTA pass)")
                 else:
@@ -368,6 +370,7 @@ class SOTA:
                 self._update_logger.status = FAIL
                 self._update_logger.error = ""
                 self._update_logger.save_log()
+                self._update_logger.save_granular_log_file()
                 self._dispatcher_broker.telemetry(SOTA_FAILURE)
                 self._dispatcher_broker.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)
