@@ -2,7 +2,7 @@
 jsonschema==4.20.0
 types-jsonschema==4.20.0.0
 requests==2.32.2
-urllib3==1.26.18
+urllib3==1.26.19
 PySocks==1.7.1
 psutil==5.9.5
 shortuuid==1.0.1

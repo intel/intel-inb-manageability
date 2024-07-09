@@ -7,12 +7,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - Added INBS cloud with Ping support to Cloudadapter
+ - Added firmware update support to Arrow Lake specifically using a generic script that will work for any platform using fwupdtool
 
 ### Fixed
  - Fixed some Yocto issues found after migrating to scarthgap
+ - (NEXARL-195) Fixed device tree detection check on systems that implement only part of device tree
 
 ### Security
  - Bump requests from 2.31.0 to 2.32.2 in multiple agents resolving detected 3rd party CVE: CVE-2024-35195
+ - Bump urllib3 from 1.26.18 to 1.26.19 in cloudadapter agent resolving detected 3rd party CVE: CVE-2024-37891
 
 ## 4.2.3 - 2024-05-02
 

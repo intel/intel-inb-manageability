@@ -4,16 +4,26 @@
     Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
-from .constants import DEVICE_TREE_PATH, FW_DEVICE_TREE_PATH, DEVICE_TREE_MODEL, \
-    BIOS_RELEASE_DATE, \
-    BIOS_VERSION, \
-    BIOS_VENDOR, SYSTEM_MANUFACTURER, SYSTEM_PRODUCT_NAME
 from inbm_common_lib.constants import UNKNOWN, UNKNOWN_DATETIME
 from inbm_common_lib.platform_info import PlatformInformation
 import os
 import logging
 from datetime import datetime
 
+
+# Device tree base paths
+DEVICE_TREE_PATH = '/proc/device-tree/'
+FW_DEVICE_TREE_PATH = '/proc/device-tree/firmware/bios/'
+
+# Lookup table for device tree paths
+DEVICE_TREE_PATHS = {
+    'model': DEVICE_TREE_PATH + 'model',
+    'bios_release_date': FW_DEVICE_TREE_PATH + 'bios-release-date',
+    'bios_vendor': FW_DEVICE_TREE_PATH + 'bios-vendor',
+    'bios_version': FW_DEVICE_TREE_PATH + 'bios-version',
+    'system_manufacturer': FW_DEVICE_TREE_PATH + 'system-manufacturer',
+    'system_product_name': FW_DEVICE_TREE_PATH + 'system-product-name'
+}
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +33,7 @@ def get_device_tree_cpu_id() -> str:
 
     @return: CPU ID of the platform.
     """
-    return _read_file(DEVICE_TREE_PATH + DEVICE_TREE_MODEL, UNKNOWN)
+    return _read_file(DEVICE_TREE_PATHS['model'], UNKNOWN)
 
 
 def get_device_tree_system_info() -> PlatformInformation:
@@ -33,15 +43,15 @@ def get_device_tree_system_info() -> PlatformInformation:
     of the platform.
     """
     bios_release_date = _parse_bios_date(
-        _read_file(FW_DEVICE_TREE_PATH + BIOS_RELEASE_DATE, UNKNOWN))
+        _read_file(DEVICE_TREE_PATHS['bios_release_date'], UNKNOWN))
     bios_vendor = _read_file(
-        FW_DEVICE_TREE_PATH + BIOS_VENDOR, UNKNOWN)
+        DEVICE_TREE_PATHS['bios_vendor'], UNKNOWN)
     bios_version = _read_file(
-        FW_DEVICE_TREE_PATH + BIOS_VERSION, UNKNOWN)
+        DEVICE_TREE_PATHS['bios_version'], UNKNOWN)
     platform_mfg = _read_file(
-        FW_DEVICE_TREE_PATH + SYSTEM_MANUFACTURER, "")
+        DEVICE_TREE_PATHS['system_manufacturer'], "")
     platform_product = _read_file(
-        FW_DEVICE_TREE_PATH + SYSTEM_PRODUCT_NAME, "")
+        DEVICE_TREE_PATHS['system_product_name'], "")
     return PlatformInformation(bios_release_date, bios_vendor, bios_version, platform_mfg, platform_product)
 
 
@@ -66,13 +76,14 @@ def _read_file(path: str, not_found_default: str) -> str:
 
 
 def is_device_tree_exists() -> bool:
-    """The method verifies to see if device_tree path exists or not
+    """The method verifies to see if all device_tree paths exist or not
 
-    @return: returns false if there is no device_tree path otherwise true
+    @return: returns false if any path does not exist, otherwise true
     """
-    if not os.path.isdir(DEVICE_TREE_PATH):
-        logger.error("Device tree path does not exist")
-        return False
+    for path in DEVICE_TREE_PATHS.values():
+        if not os.path.exists(path):
+            logger.error("Device tree path '%s' does not exist", path)
+            return False
     return True
 
 
