@@ -115,6 +115,8 @@ Apalala <apalala@gmail.com>
 Reverb Chu <reverbc@me.com>
 Henrikki Tenkanen <henrikki.tenkanen@gmail.com>
 
+urllib3
+Copyright (c) 2008-2020 Andrey Petrov and contributors.
 
 xmlschema
 Copyright (c), 2016-2020, SISSA (Scuola Internazionale Superiore di Studi Avanzati)

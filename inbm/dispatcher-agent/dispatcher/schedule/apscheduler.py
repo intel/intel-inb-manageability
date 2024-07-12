@@ -15,6 +15,7 @@ from .schedules import Schedule, SingleSchedule, RepeatedSchedule
 from apscheduler.schedulers.background import BackgroundScheduler
 from .sqlite_manager import SqliteManager
 from ..constants import SCHEDULED
+from ..dispatcher_exception import DispatcherException
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,8 @@ class APScheduler:
         logger.debug("Remove all jobs in APScheduler")
         self._scheduler.remove_all_jobs()
 
-    def add_single_schedule_job(self, callback: Callable, single_schedule: SingleSchedule) -> None:
+    def add_single_schedule_job(self, callback: Callable, 
+                                single_schedule: SingleSchedule) -> None:
         """Add the job for single schedule.
 
         @param callback: The function to be called.
@@ -47,9 +49,13 @@ class APScheduler:
         logger.debug("")
         if self.is_schedulable(single_schedule):
             self._sqlite_mgr.update_status(single_schedule, SCHEDULED)
-            for manifest in single_schedule.manifests:
-                self._scheduler.add_job(
-                    callback, 'date', run_date=single_schedule.start_time, args=[manifest])
+            try:
+                for manifest in single_schedule.manifests:
+                    self._scheduler.add_job(
+                        func=callback, trigger='date', run_date=single_schedule.start_time, args=[manifest])
+            except (ValueError, TypeError) as err:
+                raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
+
 
     def add_repeated_schedule_job(self, callback: Callable, repeated_schedule: RepeatedSchedule) -> None:
         """Add the job for repeated schedule.
@@ -60,16 +66,19 @@ class APScheduler:
         logger.debug("")
         if self.is_schedulable(repeated_schedule):
             self._sqlite_mgr.update_status(repeated_schedule, SCHEDULED)
-            for manifest in repeated_schedule.manifests:
-                self._scheduler.add_job(callback, 'cron', args=[manifest],
-                                        start_date=datetime.now(),
-                                        end_date=self._convert_duration_to_end_time(
-                                            repeated_schedule.cron_duration),
-                                        minute=repeated_schedule.cron_minutes,
-                                        hour=repeated_schedule.cron_hours,
-                                        day=repeated_schedule.cron_day_month,
-                                        month=repeated_schedule.cron_month,
-                                        day_of_week=repeated_schedule.cron_day_week)
+            try:
+                for manifest in repeated_schedule.manifests:
+                    self._scheduler.add_job(func=callback, trigger='cron', args=[manifest],
+                                            start_date=datetime.now(),
+                                            end_date=self._convert_duration_to_end_time(
+                                                repeated_schedule.cron_duration),
+                                            minute=repeated_schedule.cron_minutes,
+                                            hour=repeated_schedule.cron_hours,
+                                            day=repeated_schedule.cron_day_month,
+                                            month=repeated_schedule.cron_month,
+                                            day_of_week=repeated_schedule.cron_day_week)
+            except (ValueError, TypeError) as err:
+                raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in cron expresssion to APScheduler: {err}")
 
     def is_schedulable(self, schedule: Schedule) -> bool:
         """Check if the schedule can be scheduled.
@@ -116,7 +125,7 @@ class APScheduler:
             schedule.start_time = datetime.now() + timedelta(seconds=2)
             return True
 
-        logger.error("The start time or current time is greather than end time. Will not schedule")
+        logger.error("The start time or current time is greater than the end time. Not scheduled.")
         return False
 
     def _check_repeated_schedule(self, schedule: RepeatedSchedule) -> bool:
@@ -131,7 +140,11 @@ class APScheduler:
                      f"cron_day_month={schedule.cron_day_month},"
                      f"cron_month={schedule.cron_month},"
                      f"cron_day_week={schedule.cron_day_week}")
-        # TODO: Add any checking
+        
+        # No negative duration
+        if schedule.cron_duration[0] == "-":
+            raise DispatcherException("Negative durations are not supported")
+
         return True
 
     def _convert_duration_to_end_time(self, duration: str) -> Union[str, datetime]:
