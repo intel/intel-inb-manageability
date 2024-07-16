@@ -485,12 +485,12 @@ class MarinerABSnapshot(Snapshot):
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
-        # TODO: put in mariner commit command
-        # cmd = mender_commit_command()
-        # logger.debug("Running Mender commit: " + str(cmd))
-        # (out, err, code) = PseudoShellRunner().run(cmd)
 
-        # return code
+        cmd = "echo TODO: put in mariner POC commit command"
+        logger.debug("Running Mariner A/B commit: " + str(cmd))
+        (out, err, code) = PseudoShellRunner().run(cmd)
+
+        return code
 
     def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA.

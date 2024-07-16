@@ -32,41 +32,43 @@ def get_sw_bom_list() -> List[Any]:
     try:
         os_type = detect_os()
         output = ""
-        if os_type in [LinuxDistType.Ubuntu.name, LinuxDistType.Deby.name]:
-            (output, err, code) = PseudoShellRunner().run(
-                "dpkg-query -f '${Package} ${Version}\n' -W")
-            if code != 0:
-                raise SoftwareBomError(err)
-        elif os_type in [LinuxDistType.YoctoX86_64.name, LinuxDistType.YoctoARM.name]:
-            (output, err, code) = PseudoShellRunner().run("rpm -qa")
-            if code != 0:
-                raise SoftwareBomError(err)
-            swbom = " mender version: " + read_mender_file(MENDER_PATH,  UNKNOWN)
-            if swbom is not None:
-                output = output + swbom
+        # detect_os always returns MenderAB for the POC
+        # if os_type in [LinuxDistType.Ubuntu.name, LinuxDistType.Deby.name]:
+        #     (output, err, code) = PseudoShellRunner().run(
+        #         "dpkg-query -f '${Package} ${Version}\n' -W")
+        #     if code != 0:
+        #         raise SoftwareBomError(err)
+        # elif os_type in [LinuxDistType.YoctoX86_64.name, LinuxDistType.YoctoARM.name]:
+        #     (output, err, code) = PseudoShellRunner().run("rpm -qa")
+        #     if code != 0:
+        #         raise SoftwareBomError(err)
+        #     swbom = " mender version: " + read_mender_file(MENDER_PATH,  UNKNOWN)
+        #     if swbom is not None:
+        #         output = output + swbom
         return output.splitlines()
     except (ValueError, OSError, FileNotFoundError) as e:
         raise SoftwareBomError(str(e))
 
 
-def read_mender_file(path: str, not_found_default: str) -> str:
-    """Checks if the file path exists, to read the mender version from the
-    file.
+# not needed for Mariner AB POC
+# def read_mender_file(path: str, not_found_default: str) -> str:
+#     """Checks if the file path exists, to read the mender version from the
+#     file.
 
-    @param path: file path
-    @param not_found_default: default value to use if path is not found.
-    @return: value associated with the specified path.
-    """
-    try:
-        if not os.path.exists(path):
-            logger.debug(
-                "File '%s' does not exist.", path)
-            return not_found_default
+#     @param path: file path
+#     @param not_found_default: default value to use if path is not found.
+#     @return: value associated with the specified path.
+#     """
+#     try:
+#         if not os.path.exists(path):
+#             logger.debug(
+#                 "File '%s' does not exist.", path)
+#             return not_found_default
 
-        with open(path) as f:
-            return f.readline().rstrip('\n').split('\x00')[0]
-    except OSError as e:
-        return "Error on reading installed mender version "
+#         with open(path) as f:
+#             return f.readline().rstrip('\n').split('\x00')[0]
+#     except OSError as e:
+#         return "Error on reading installed mender version "
 
 
 def publish_software_bom(client: MQTT, query_request: bool) -> None:

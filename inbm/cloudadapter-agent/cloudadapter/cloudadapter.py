@@ -76,7 +76,9 @@ class CloudAdapter(WindowsService):
         if platform.system() != 'Windows':
             # Unblock on termination signals
             def unblock(signal, _) -> None:
-                self.waiter.finish()
+                # self.waiter.finish()
+                # for mariner a/b POC: exit immediately
+                sys.exit(0)
 
             signal.signal(signal.SIGTERM, unblock)
             signal.signal(signal.SIGINT, unblock)

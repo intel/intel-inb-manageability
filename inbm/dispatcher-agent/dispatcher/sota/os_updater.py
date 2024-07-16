@@ -90,7 +90,7 @@ class OsUpdater(metaclass=ABCMeta):  # pragma: no cover
         commands = [" " + MENDER_COMMAND + " " + mender_install_argument() + " " +
                     file_path + " " + MENDER_MINIMIZE_LOGS_ARGUMENT]
         return CommandList(commands).cmd_list
-
+    
     @abstractmethod
     def no_download(self) -> list[str]:
         """Calculates commands needed for a no-download install.
@@ -395,6 +395,8 @@ class MarinerABUpdater(OsUpdater):
         if uri is None:
             raise SotaError("missing URI.")
         filename = uri_utilities.uri_to_filename(uri.value)
+        commands = ["echo FIXME: add actual mariner A/B command to update from a remote source"]
+
         # FIXME: put in Mariner A/B command instead of Mender
         
         # commands = [" " + MENDER_COMMAND + " " + mender_install_argument() + " " +
@@ -404,7 +406,7 @@ class MarinerABUpdater(OsUpdater):
         # # Only some Yocto systems need to run an additional command after running mender.
         # if Path(str(MENDER_UPDATE_SCRIPT_EHL)).is_file():
         #     commands.append(MENDER_ARTIFACT_INSTALL_COMMAND)
-        # return CommandList(commands).cmd_list
+        return CommandList(commands).cmd_list
 
     def update_local_source(self, file_path: str) -> List[str]:
         """Concrete class method to create command list to update from a local source for Mariner A/B OS.
@@ -412,7 +414,7 @@ class MarinerABUpdater(OsUpdater):
         @param file_path: path to local file
         @return: Command list to execute to perform update.
         """
-        return super()._create_local_mariner_ab_cmd(file_path)
+        return ["echo FIXME: add actual mariner A/B command to update from a local source"]
 
     @staticmethod
     def get_estimated_size() -> int:
