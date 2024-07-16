@@ -395,17 +395,7 @@ class MarinerABUpdater(OsUpdater):
         if uri is None:
             raise SotaError("missing URI.")
         filename = uri_utilities.uri_to_filename(uri.value)
-        commands = ["echo FIXME: add actual mariner A/B command to update from a remote source"]
-
-        # FIXME: put in Mariner A/B command instead of Mender
-        
-        # commands = [" " + MENDER_COMMAND + " " + mender_install_argument() + " " +
-        #             str(Path(repo.get_repo_path()) / filename) + " "
-        #             + MENDER_MINIMIZE_LOGS_ARGUMENT]
-
-        # # Only some Yocto systems need to run an additional command after running mender.
-        # if Path(str(MENDER_UPDATE_SCRIPT_EHL)).is_file():
-        #     commands.append(MENDER_ARTIFACT_INSTALL_COMMAND)
+        commands = ["/home/mariner/Jul8/pup.sh -l " + str(Path(repo.get_repo_path()) / filename)]
         return CommandList(commands).cmd_list
 
     def update_local_source(self, file_path: str) -> List[str]:

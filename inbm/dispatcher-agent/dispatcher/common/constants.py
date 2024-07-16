@@ -6,4 +6,5 @@
 """
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_RAW_ETC
 
-DISPATCHER_STATE_FILE = str(INTEL_MANAGEABILITY_RAW_ETC / 'dispatcher_state')
+# TODO: this is a temporary path change to make A/B more reliable for Mariner POC
+DISPATCHER_STATE_FILE = '/etc/intel-manageability/dispatcher_state'

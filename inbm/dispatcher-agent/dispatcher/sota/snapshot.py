@@ -455,7 +455,7 @@ class MarinerABSnapshot(Snapshot):
             "SOTA attempting to create a dispatcher state file before SOTA {}...".
             format(self.sota_cmd))
         try:
-            content = read_current_mender_version()
+            mariner_version = 'MARINER' # TODO: get mariner-ab version?
             state: dispatcher_state.DispatcherState
             if dispatcher_state.is_dispatcher_state_file_exists():
                 consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)
@@ -463,11 +463,11 @@ class MarinerABSnapshot(Snapshot):
                 if consumed_state:
                     restart_reason = consumed_state.get('restart_reason', None)
                 if restart_reason:
-                    state = {'mariner-ab-version': content}
+                    state = {'mariner-ab-version': mariner_version}
             else:
                 state = (
                     {'restart_reason': "sota",
-                     'mariner-ab-version': content}
+                     'mariner-ab-version': mariner_version}
                 )
             dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
@@ -486,7 +486,7 @@ class MarinerABSnapshot(Snapshot):
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
 
-        cmd = "echo TODO: put in mariner POC commit command"
+        cmd = "/home/mariner/Jul8/pup.sh -c"
         logger.debug("Running Mariner A/B commit: " + str(cmd))
         (out, err, code) = PseudoShellRunner().run(cmd)
 
