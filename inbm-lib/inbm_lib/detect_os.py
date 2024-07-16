@@ -87,36 +87,39 @@ def detect_os() -> str:
         return LinuxDistType.YoctoX86_64.name
     logger.debug('Did not find {0}'.format(FORCE_YOCTO_PATH))
 
-    # Get os_type string if OS is supported. E.g. Linux, Windows
-    os_type = verify_os_supported()
+    # Mariner A/B POC: force OS to be detected as Mariner
+    return 'MarinerAB'
 
-    if os_type == OsType.Linux.name:
-        _, _, kernel_version, version, arch = os.uname()
-        good_lsb_release_name: Optional[str] = None
-        os_name: Optional[str] = None
+    # # Get os_type string if OS is supported. E.g. Linux, Windows
+    # os_type = verify_os_supported()
 
-        # Try getting name from lsb_release (should only work on Linux)
-        lsb_release_name = get_lsb_release_name_host()
+    # if os_type == OsType.Linux.name:
+    #     _, _, kernel_version, version, arch = os.uname()
+    #     good_lsb_release_name: Optional[str] = None
+    #     os_name: Optional[str] = None
 
-        if lsb_release_name is not None and lsb_release_name in LinuxDistType.__members__:
-            logger.debug("Detected OS with lsb_release: " + lsb_release_name)
-            os_name = lsb_release_name
-        elif path.exists(SYSTEM_IS_YOCTO_PATH):
-            if not path.exists(MENDER_FILE_PATH):
-                raise ValueError("Yocto detected but unable to find Mender")
-            if arch.startswith("arm") or arch.startswith("ARM") or arch == 'aarch64':
-                os_name = LinuxDistType.YoctoARM.name
-            elif arch.startswith("x86_64"):
-                os_name = LinuxDistType.YoctoX86_64.name
-            else:
-                raise ValueError("Unsupported architecture: {}".format(str(arch)))
+    #     # Try getting name from lsb_release (should only work on Linux)
+    #     lsb_release_name = get_lsb_release_name_host()
 
-        if os_name is not None:
-            return os_name
-        else:
-            raise ValueError("Unsupported OS type or unable to detect OS")
-    else:  # Supported but not on Linux
-        return os_type
+    #     if lsb_release_name is not None and lsb_release_name in LinuxDistType.__members__:
+    #         logger.debug("Detected OS with lsb_release: " + lsb_release_name)
+    #         os_name = lsb_release_name
+    #     elif path.exists(SYSTEM_IS_YOCTO_PATH):
+    #         if not path.exists(MENDER_FILE_PATH):
+    #             raise ValueError("Yocto detected but unable to find Mender")
+    #         if arch.startswith("arm") or arch.startswith("ARM") or arch == 'aarch64':
+    #             os_name = LinuxDistType.YoctoARM.name
+    #         elif arch.startswith("x86_64"):
+    #             os_name = LinuxDistType.YoctoX86_64.name
+    #         else:
+    #             raise ValueError("Unsupported architecture: {}".format(str(arch)))
+
+    #     if os_name is not None:
+    #         return os_name
+    #     else:
+    #         raise ValueError("Unsupported OS type or unable to detect OS")
+    # else:  # Supported but not on Linux
+    #     return os_type
 
 
 def is_inside_container() -> bool:

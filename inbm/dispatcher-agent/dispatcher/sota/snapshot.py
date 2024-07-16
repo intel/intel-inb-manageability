@@ -436,3 +436,110 @@ class YoctoSnapshot(Snapshot):
         else:
             raise SotaError(
                 f"'mender-version' not in state or state is not available. state = {str(state)}")
+        
+class MarinerABSnapshot(Snapshot):
+    def __init__(self, trtl: Trtl, sota_cmd: str,
+                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str],
+                 proceed_without_rollback: bool, reboot_device: bool) -> None:
+        super().__init__(trtl, sota_cmd,
+                         snap_num, proceed_without_rollback, reboot_device)
+        self._dispatcher_broker = dispatcher_broker
+
+    def take_snapshot(self) -> None:
+        """This method saves the current mariner a-b artifact version info in a dispatcher state file
+
+        @raises SotaError: When failed to create a dispatcher state file
+        """
+        logger.debug("Mariner AB take_snapshot")
+        self._dispatcher_broker.telemetry(
+            "SOTA attempting to create a dispatcher state file before SOTA {}...".
+            format(self.sota_cmd))
+        try:
+            content = read_current_mender_version()
+            state: dispatcher_state.DispatcherState
+            if dispatcher_state.is_dispatcher_state_file_exists():
+                consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)
+                restart_reason = None
+                if consumed_state:
+                    restart_reason = consumed_state.get('restart_reason', None)
+                if restart_reason:
+                    state = {'mariner-ab-version': content}
+            else:
+                state = (
+                    {'restart_reason': "sota",
+                     'mariner-ab-version': content}
+                )
+            dispatcher_state.write_dispatcher_state_to_state_file(state)
+        except DispatcherException:
+            self._dispatcher_broker.telemetry(
+                "...state file creation unsuccessful.")
+            raise SotaError('Failed to create a dispatcher state file')
+
+        self._dispatcher_broker.telemetry(
+            "Dispatcher state file creation successful.")
+
+    def commit(self) -> int:
+        """On Mariner A/B, this method runs a Mariner A/B commit
+
+        Also, delete dispatcher state file.
+        """
+        logger.debug("")
+        dispatcher_state.clear_dispatcher_state()
+        # TODO: put in mariner commit command
+        # cmd = mender_commit_command()
+        # logger.debug("Running Mender commit: " + str(cmd))
+        # (out, err, code) = PseudoShellRunner().run(cmd)
+
+        # return code
+
+    def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
+        """Recover from a failed SOTA.
+
+        On Mariner A/B, no action is required other than deleting the
+        state file and rebooting.
+        @param rebooter: Object implementing reboot() method
+        @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
+        """
+        logger.debug("")
+        dispatcher_state.clear_dispatcher_state()
+        time.sleep(time_to_wait_before_reboot)
+        rebooter.reboot()
+
+    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
+        """Revert after second system SOTA boot when we see a problem with startup.
+
+        On Mariner A/B, we just reboot without commit
+        @param rebooter: Object implementing reboot() method
+        @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
+        """
+        logger.debug("time_to_wait_before_reboot = " + str(time_to_wait_before_reboot))
+        dispatcher_state.clear_dispatcher_state()
+        time.sleep(time_to_wait_before_reboot)
+        rebooter.reboot()
+
+    def update_system(self) -> None:
+        """If the system supports it, check whether the system was updated, after rebooting.
+
+        For Mariner A/B, we compare the dispatcher state file to current system information
+        (from a mender command defined in a constant)
+        """
+
+        # TODO: do we want to store/compare version info for POC?
+
+        # logger.debug("attempting to get dispatcher state from state file")
+        # state = dispatcher_state.consume_dispatcher_state_file()
+        # if state is not None and 'mender-version' in state:
+        #     logger.debug("got mender-version from state: " + str(state['mender-version']))
+        #     version = read_current_mender_version()
+        #     current_mender_version = version
+        #     previous_mender_version = state['mender-version']
+
+        #     if current_mender_version == previous_mender_version:
+        #         raise SotaError(
+        #             f"Requested update version is the same as version currently installed. {current_mender_version}")
+        #     else:
+        #         logger.debug("success; mender version changed")
+
+        # else:
+        #     raise SotaError(
+        #         f"'mender-version' not in state or state is not available. state = {str(state)}")

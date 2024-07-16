@@ -380,3 +380,52 @@ class WindowsUpdater(OsUpdater):
 
     def download_only(self) -> list[str]:
         raise NotImplementedError()
+    
+class MarinerABUpdater(OsUpdater):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
+        """Concrete class method to create command list to update from a remote source for Mariner A/B OS.
+
+        @param uri: Original download URI, if given in manifest.
+        @param repo: Directory on disk where update has been downloaded, if given in manifest.
+        @return: Command list to execute to perform update.
+        """
+        if uri is None:
+            raise SotaError("missing URI.")
+        filename = uri_utilities.uri_to_filename(uri.value)
+        # FIXME: put in Mariner A/B command instead of Mender
+        
+        # commands = [" " + MENDER_COMMAND + " " + mender_install_argument() + " " +
+        #             str(Path(repo.get_repo_path()) / filename) + " "
+        #             + MENDER_MINIMIZE_LOGS_ARGUMENT]
+
+        # # Only some Yocto systems need to run an additional command after running mender.
+        # if Path(str(MENDER_UPDATE_SCRIPT_EHL)).is_file():
+        #     commands.append(MENDER_ARTIFACT_INSTALL_COMMAND)
+        # return CommandList(commands).cmd_list
+
+    def update_local_source(self, file_path: str) -> List[str]:
+        """Concrete class method to create command list to update from a local source for Mariner A/B OS.
+
+        @param file_path: path to local file
+        @return: Command list to execute to perform update.
+        """
+        return super()._create_local_mariner_ab_cmd(file_path)
+
+    @staticmethod
+    def get_estimated_size() -> int:
+        """Gets the size of the update
+
+        @return: Returns 0 if size is freed. Returns in bytes of size consumed
+        """
+        return 0
+
+    def no_download(self) -> list[str]:
+        """Returns empty list for Mariner A/B--not applicable"""
+        return []
+
+    def download_only(self) -> list[str]:
+        """Returns empty list for Mariner A/B--not applicable"""
+        return []

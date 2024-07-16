@@ -165,3 +165,46 @@ class YoctoDownloader(Downloader):
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         return self.is_valid_release_date(release_date)
+    
+class MarinerABDownloader(Downloader):
+    def __init__(self) -> None:
+        super().__init__()
+
+    def download(self,
+                 dispatcher_broker: DispatcherBroker,
+                 uri: Optional[CanonicalUri],
+                 repo: IRepo,
+                 username: Optional[str],
+                 password: Optional[str],
+                 release_date: Optional[str]) -> None:
+        """Downloads files and places image in local cache
+
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
+        @param uri: URI of the source location
+        @param repo: repository for holding the download
+        @param username: username to use for download
+        @param password: password to use for download
+        @param release_date: manifest release date
+        @raises SotaError: release date is not valid
+        """
+
+        # skip this for Mariner A/B POC
+        # if not self.check_release_date(release_date):
+        #     msg = " SOTA download Aborted as mender release date " \
+        #           "is not lower than manifest date"
+        #     raise SotaError(msg)
+
+        if uri is None:
+            raise SotaError("URI is None while performing Yocto download")
+
+        download(dispatcher_broker=dispatcher_broker,
+                 uri=uri,
+                 repo=repo,
+                 umask=UMASK_OTA,
+                 username=username,
+                 password=password)
+
+    def check_release_date(self, release_date: Optional[str]) -> bool:
+        return True # hard coded to True for POC
+        # return self.is_valid_release_date(release_date)
+

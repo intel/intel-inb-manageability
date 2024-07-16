@@ -186,3 +186,27 @@ class YoctoSetupHelper(SetupHelper):
         """
         logger.debug("Yocto post processing")
         return ""
+
+
+class MarinerABSetupHelper(SetupHelper):
+    def __init__(self, broker: DispatcherBroker) -> None:
+        """
+        @param broker: DispatcherBroker instance used to communicate with other INBM agents
+        """
+        self._broker = broker
+        super().__init__()
+
+    def pre_processing(self):
+        """Perform checks immediately before applying an OS update or upgrade.        
+        @return: True if OK to proceed; False otherwise
+        """
+        logger.debug("MarinerAB pre processing")
+        return True  # hard coded to True for POC
+
+    def get_snapper_snapshot_number(self) -> str:
+        """Gets the snapper snapshot number
+
+        FIXME this is not OS generic)
+        """
+        logger.debug("MarinerAB post processing")
+        return ""
