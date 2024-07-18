@@ -33,6 +33,7 @@ cd /etc/intel-manageability/scratch
 # setup lock pass phrases with a -p password
 tpm2_startauthsession -S session.dat 1>&2
 tpm2_policypassword -S session.dat -L policy.dat 1>&2
+tpm2_flushcontext session.dat 1>&2
 
 # read existing or generate new tpm password.
 TPM_PASS_LOCATION="/etc/intel-manageability/tpm-pass.txt"
