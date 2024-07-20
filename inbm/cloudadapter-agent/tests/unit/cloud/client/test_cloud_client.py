@@ -9,6 +9,7 @@ from cloudadapter.cloud.client.connections._connection import Connection
 from cloudadapter.cloud.client.messengers._messenger import Messenger
 from cloudadapter.cloud.client.handlers._handler import Handler
 from cloudadapter.cloud.client.cloud_client import CloudClient
+from cloudadapter.constants import RUNNING
 
 import datetime
 
@@ -20,6 +21,7 @@ class TestCloudClient(unittest.TestCase):
 
     def setUp(self) -> None:
         self.mock_connection = mock.create_autospec(Connection)
+        self.mock_connection.set_dispatcher_state = mock.MagicMock()
         self.mock_telemetry = mock.create_autospec(Messenger)
         self.mock_attribute = mock.create_autospec(Messenger)
         self.mock_event = mock.create_autospec(Messenger)
@@ -60,3 +62,7 @@ class TestCloudClient(unittest.TestCase):
     def test_disconnect_succeeds(self) -> None:
         self.cloud_client.disconnect()
         assert self.mock_connection.stop.call_count == 1
+
+    def test_set_dispatcher_state_succeeds(self) -> None:
+        self.cloud_client.set_dispatcher_state(RUNNING)
+        assert self.mock_connection.set_dispatcher_state.call_count == 1

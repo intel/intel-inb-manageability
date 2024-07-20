@@ -5,7 +5,7 @@ import grpc
 from datetime import datetime
 from typing import Generator
 
-from cloudadapter.constants import METHOD
+from cloudadapter.constants import METHOD, RUNNING, DEAD
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
@@ -109,6 +109,9 @@ class TestInbsCloudClient:
         stop_event = Mock()
         stop_event.is_set.return_value = False
 
+        # Set dispatcher state
+        inbs_client.set_dispatcher_state(RUNNING)
+
         # set up the triggerota callback to see what is sent to dispatcher
         triggered_str = ""
 
@@ -139,6 +142,32 @@ class TestInbsCloudClient:
         # Cleanup
         with pytest.raises(StopIteration):
             next(generator)
+
+    def test_handle_command_when_dispatcher_is_not_up(self, inbs_client: InbsCloudClient) -> None:
+        # Setup
+        request_queue: queue.Queue[
+            inbs_sb_pb2.HandleINBMCommandRequest | None
+        ] = queue.Queue()
+        stop_event = Mock()
+        stop_event.is_set.return_value = False
+
+        # Set dispatcher state
+        inbs_client.set_dispatcher_state(DEAD)
+
+        # Construct command using parameters
+        command = inbs_sb_pb2.HandleINBMCommandRequest(
+            request_id="123", command=inbs_sb_pb2.INBMCommand(ping=inbs_sb_pb2.Ping())
+        )
+        request_queue.put(command)
+        request_queue.put(None)  # Sentinel to end the generator
+        generator = inbs_client._handle_inbm_command_request(request_queue)
+        response = next(generator)
+
+        # Validate
+        assert response == inbs_sb_pb2.HandleINBMCommandResponse(
+                    request_id="123",
+                    error=common_pb2.Error(message="INBM Cloudadapter: Unable to process request. Please try again"),
+                )
 
     def test_run_grpc_error(self, inbs_client: InbsCloudClient) -> None:
         # Setup a RpcError to simulate gRPC error
