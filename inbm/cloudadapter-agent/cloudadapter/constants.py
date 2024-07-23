@@ -11,12 +11,17 @@ from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_ETC_PATH_PREFIX
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_SHARE_PATH_PREFIX, BROKER_ETC_PATH
 
 AGENT = 'cloudadapter'
+DISPATCHER = 'dispatcher'
 
 LOGGERCONFIG = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / 'public' / 'cloudadapter-agent' / 'logging.ini'
 CLIENT_CERTS = BROKER_ETC_PATH / \
     'public' / 'cloudadapter-agent' / 'cloudadapter-agent.crt'
 CLIENT_KEYS = BROKER_ETC_PATH / \
     'secret' / 'cloudadapter-agent' / 'cloudadapter-agent.key'
+
+# Agent state
+RUNNING = "running"
+DEAD = "dead"
 
 # Delay to sleep in seconds
 SLEEP_DELAY = 1

@@ -35,6 +35,13 @@ class CloudClient:
         """
         return self._connection.get_client_id()
 
+    def set_dispatcher_state(self, state: str) -> None:
+        """Set the dispatcher state: running or dead
+
+        @param state: State of dispatcher agent to be set
+        """
+        self._connection.set_dispatcher_state(state)
+
     def publish_telemetry(self, key: str, value: str, time: datetime) -> None:
         """Publishes telemetry to the cloud
 

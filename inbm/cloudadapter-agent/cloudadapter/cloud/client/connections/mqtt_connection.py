@@ -89,6 +89,14 @@ class MQTTConnection(Connection):
         """
         return self._client_id
 
+    def set_dispatcher_state(self, state: str) -> None:
+        """Set the dispatcher state: running or dead
+
+        @param state: State of dispatcher agent to be set
+        """
+        raise NotImplementedError("Set dispatcher state is not implemented in mqtt_connection.")
+
+
     def _set_proxy(self, config: ProxyConfig) -> None:
         """Set the proxy; this is needed to avoid a pylint recursion error
 
