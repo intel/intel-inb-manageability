@@ -18,7 +18,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Security
  - Bump requests from 2.31.0 to 2.32.2 in multiple agents resolving detected 3rd party CVE: CVE-2024-35195
- - Bump urllib3 from 1.26.18 to 1.26.19 in cloudadapter agent resolving detected 3rd party CVE: CVE-2024-37891
+ - Bump urllib3 from 1.26.18 to 1.26.19 in cloudadapter agent and dispatcher agent resolving detected 3rd party CVE: CVE-2024-37891
+ - Bump setuptools from 65.5.1 to 70.0.0 in multiple agents resolving detected 3rd party CVE: CVE-2024-6345
+ - Bump certifi from 2023.7.22 to 2024.07.04 in dispatcher agent resolving detected 3rd party CVE: CVE-2024-39689
+ - Bump golang-runtime from 1.20.14 to 1.22.5 in all go binaries resolving detected 3rd party CVE: CVE-2024-24790
 
 ## 4.2.3 - 2024-05-02
 
