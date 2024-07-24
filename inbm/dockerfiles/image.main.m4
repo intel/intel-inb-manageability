@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 # base image with all dependencies for building
 FROM registry.hub.docker.com/library/ubuntu:20.04 as base
 RUN echo 'force cache refresh 20240212'

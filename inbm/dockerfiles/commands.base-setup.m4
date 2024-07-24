@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 # base-setup.m4: common set of commands for a base utility image, either x86 or arm
 
 SHELL ["/bin/bash", "-c"]
