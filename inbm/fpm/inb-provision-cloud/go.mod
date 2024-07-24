@@ -1,6 +1,6 @@
 module inb-provision-cloud
 
-go 1.20
+go 1.22
 
 require (
 	github.com/lestrrat-go/jsschema v0.0.0-20181205002244-5c81c58ffcc3

@@ -1,3 +1,3 @@
 module inb-provision-certs
 
-go 1.20
+go 1.22
