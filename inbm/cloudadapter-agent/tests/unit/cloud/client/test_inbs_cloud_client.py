@@ -156,7 +156,7 @@ class TestInbsCloudClient:
 
         # Construct command using parameters
         command = inbs_sb_pb2.HandleINBMCommandRequest(
-            request_id="123", command=inbs_sb_pb2.INBMCommand(ping=inbs_sb_pb2.Ping())
+            request_id="123", command=inbs_sb_pb2.INBMCommand(update_scheduled_operations=inbs_sb_pb2.UpdateScheduledOperations())
         )
         request_queue.put(command)
         request_queue.put(None)  # Sentinel to end the generator
