@@ -381,12 +381,12 @@ class WindowsUpdater(OsUpdater):
     def download_only(self) -> list[str]:
         raise NotImplementedError()
     
-class MarinerABUpdater(OsUpdater):
+class TiberOSABUpdater(OsUpdater):
     def __init__(self) -> None:
         super().__init__()
 
     def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
-        """Concrete class method to create command list to update from a remote source for Mariner A/B OS.
+        """Concrete class method to create command list to update from a remote source for TiberOS A/B OS.
 
         @param uri: Original download URI, if given in manifest.
         @param repo: Directory on disk where update has been downloaded, if given in manifest.
@@ -395,16 +395,16 @@ class MarinerABUpdater(OsUpdater):
         if uri is None:
             raise SotaError("missing URI.")
         filename = uri_utilities.uri_to_filename(uri.value)
-        commands = ["/home/mariner/Jul8/pup.sh -l " + str(Path(repo.get_repo_path()) / filename)]
+        commands = ["/home/tiberos/Jul8/pup.sh -l " + str(Path(repo.get_repo_path()) / filename)]
         return CommandList(commands).cmd_list
 
     def update_local_source(self, file_path: str) -> List[str]:
-        """Concrete class method to create command list to update from a local source for Mariner A/B OS.
+        """Concrete class method to create command list to update from a local source for TiberOS A/B OS.
 
         @param file_path: path to local file
         @return: Command list to execute to perform update.
         """
-        return ["echo FIXME: add actual mariner A/B command to update from a local source"]
+        return ["echo FIXME: add actual tiberos A/B command to update from a local source"]
 
     @staticmethod
     def get_estimated_size() -> int:
@@ -415,9 +415,9 @@ class MarinerABUpdater(OsUpdater):
         return 0
 
     def no_download(self) -> list[str]:
-        """Returns empty list for Mariner A/B--not applicable"""
+        """Returns empty list for TiberOS A/B--not applicable"""
         return []
 
     def download_only(self) -> list[str]:
-        """Returns empty list for Mariner A/B--not applicable"""
+        """Returns empty list for TiberOS A/B--not applicable"""
         return []

@@ -6,5 +6,5 @@
 """
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_RAW_ETC
 
-# TODO: this is a temporary path change to make A/B more reliable for Mariner POC
+# TODO: this is a temporary path change to make A/B more reliable for TiberOS POC
 DISPATCHER_STATE_FILE = '/etc/intel-manageability/dispatcher_state'

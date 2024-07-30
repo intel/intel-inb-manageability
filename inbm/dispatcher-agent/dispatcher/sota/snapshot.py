@@ -437,7 +437,7 @@ class YoctoSnapshot(Snapshot):
             raise SotaError(
                 f"'mender-version' not in state or state is not available. state = {str(state)}")
         
-class MarinerABSnapshot(Snapshot):
+class TiberOSABSnapshot(Snapshot):
     def __init__(self, trtl: Trtl, sota_cmd: str,
                  dispatcher_broker: DispatcherBroker, snap_num: Optional[str],
                  proceed_without_rollback: bool, reboot_device: bool) -> None:
@@ -446,16 +446,16 @@ class MarinerABSnapshot(Snapshot):
         self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
-        """This method saves the current mariner a-b artifact version info in a dispatcher state file
+        """This method saves the current tiberos a-b artifact version info in a dispatcher state file
 
         @raises SotaError: When failed to create a dispatcher state file
         """
-        logger.debug("Mariner AB take_snapshot")
+        logger.debug("TiberOS AB take_snapshot")
         self._dispatcher_broker.telemetry(
             "SOTA attempting to create a dispatcher state file before SOTA {}...".
             format(self.sota_cmd))
         try:
-            mariner_version = 'MARINER' # TODO: get mariner-ab version?
+            tiberos_version = 'TIBEROS' # TODO: get tiberos-ab version?
             state: dispatcher_state.DispatcherState
             if dispatcher_state.is_dispatcher_state_file_exists():
                 consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)
@@ -463,11 +463,11 @@ class MarinerABSnapshot(Snapshot):
                 if consumed_state:
                     restart_reason = consumed_state.get('restart_reason', None)
                 if restart_reason:
-                    state = {'mariner-ab-version': mariner_version}
+                    state = {'tiberos-ab-version': tiberos_version}
             else:
                 state = (
                     {'restart_reason': "sota",
-                     'mariner-ab-version': mariner_version}
+                     'tiberos-ab-version': tiberos_version}
                 )
             dispatcher_state.write_dispatcher_state_to_state_file(state)
         except DispatcherException:
@@ -479,15 +479,15 @@ class MarinerABSnapshot(Snapshot):
             "Dispatcher state file creation successful.")
 
     def commit(self) -> int:
-        """On Mariner A/B, this method runs a Mariner A/B commit
+        """On TiberOS A/B, this method runs a TiberOS A/B commit
 
         Also, delete dispatcher state file.
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
 
-        cmd = "/home/mariner/Jul8/pup.sh -c"
-        logger.debug("Running Mariner A/B commit: " + str(cmd))
+        cmd = "/home/tiberos/Jul8/pup.sh -c"
+        logger.debug("Running TiberOS A/B commit: " + str(cmd))
         (out, err, code) = PseudoShellRunner().run(cmd)
 
         return code
@@ -495,7 +495,7 @@ class MarinerABSnapshot(Snapshot):
     def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA.
 
-        On Mariner A/B, no action is required other than deleting the
+        On TiberOS A/B, no action is required other than deleting the
         state file and rebooting.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
@@ -508,7 +508,7 @@ class MarinerABSnapshot(Snapshot):
     def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
 
-        On Mariner A/B, we just reboot without commit
+        On TiberOS A/B, we just reboot without commit
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
         """
@@ -520,7 +520,7 @@ class MarinerABSnapshot(Snapshot):
     def update_system(self) -> None:
         """If the system supports it, check whether the system was updated, after rebooting.
 
-        For Mariner A/B, we compare the dispatcher state file to current system information
+        For TiberOS A/B, we compare the dispatcher state file to current system information
         (from a mender command defined in a constant)
         """
 

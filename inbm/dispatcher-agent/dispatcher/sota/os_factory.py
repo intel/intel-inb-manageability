@@ -13,7 +13,7 @@ from inbm_lib.detect_os import OsType
 
 from .constants import BTRFS
 from .downloader import *
-from .os_updater import DebianBasedUpdater, WindowsUpdater, YoctoX86_64Updater, OsUpdater, YoctoARMUpdater, MarinerABUpdater
+from .os_updater import DebianBasedUpdater, WindowsUpdater, YoctoX86_64Updater, OsUpdater, YoctoARMUpdater, TiberOSABUpdater
 from .rebooter import *
 from .setup_helper import *
 from .setup_helper import SetupHelper
@@ -29,7 +29,7 @@ class LinuxDistType(Enum):
     YoctoARM = 2
     Deby = 3
     Debian = 4
-    MarinerAB = 5
+    TiberOSAB = 5
 
 
 class SotaOsFactory:
@@ -80,9 +80,9 @@ class SotaOsFactory:
         elif os_type == OsType.Windows.name:
             logger.debug("Windows returned")
             return Windows(self._dispatcher_broker)
-        elif os_type == LinuxDistType.MarinerAB.name:
-            logger.debug("MarinerAB returned")
-            return MarinerABBasedSotaOs(self._dispatcher_broker)
+        elif os_type == LinuxDistType.TiberOSAB.name:
+            logger.debug("TiberOSAB returned")
+            return TiberOSABBasedSotaOs(self._dispatcher_broker)
         raise ValueError('Unsupported OS type: ' + os_type)
 
 
@@ -254,7 +254,7 @@ class Windows(ISotaOs):
     def create_downloader(self) -> Downloader:
         return WindowsDownloader()
 
-class MarinerABBasedSotaOs(ISotaOs):
+class TiberOSABBasedSotaOs(ISotaOs):
     def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:
         """Constructor.
 
@@ -264,7 +264,7 @@ class MarinerABBasedSotaOs(ISotaOs):
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
-        return MarinerABSetupHelper(self._dispatcher_broker)
+        return TiberOSABSetupHelper(self._dispatcher_broker)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug("")
@@ -272,15 +272,15 @@ class MarinerABBasedSotaOs(ISotaOs):
 
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
-        return MarinerABUpdater()
+        return TiberOSABUpdater()
 
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
                            proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return MarinerABSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num,
+        return TiberOSABSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num,
                              proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
         logger.debug("")
-        return MarinerABDownloader()
+        return TiberOSABDownloader()

@@ -53,7 +53,7 @@ DispatcherState = TypedDict('DispatcherState', {
     'bios_version': str,
     'release_date': datetime,
     'mender-version': str | None,
-    'mariner-ab-version': str | None,
+    'tiberos-ab-version': str | None,
 }, total=False)
 
 

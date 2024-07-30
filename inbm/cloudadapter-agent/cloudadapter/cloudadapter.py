@@ -77,7 +77,7 @@ class CloudAdapter(WindowsService):
             # Unblock on termination signals
             def unblock(signal, _) -> None:
                 # self.waiter.finish()
-                # for mariner a/b POC: exit immediately
+                # for tiberos a/b POC: exit immediately
                 sys.exit(0)
 
             signal.signal(signal.SIGTERM, unblock)

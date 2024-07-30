@@ -188,7 +188,7 @@ class YoctoSetupHelper(SetupHelper):
         return ""
 
 
-class MarinerABSetupHelper(SetupHelper):
+class TiberOSABSetupHelper(SetupHelper):
     def __init__(self, broker: DispatcherBroker) -> None:
         """
         @param broker: DispatcherBroker instance used to communicate with other INBM agents
@@ -200,7 +200,7 @@ class MarinerABSetupHelper(SetupHelper):
         """Perform checks immediately before applying an OS update or upgrade.        
         @return: True if OK to proceed; False otherwise
         """
-        logger.debug("MarinerAB pre processing")
+        logger.debug("TiberOSAB pre processing")
         return True  # hard coded to True for POC
 
     def get_snapper_snapshot_number(self) -> str:
@@ -208,5 +208,5 @@ class MarinerABSetupHelper(SetupHelper):
 
         FIXME this is not OS generic)
         """
-        logger.debug("MarinerAB post processing")
+        logger.debug("TiberOSAB post processing")
         return ""

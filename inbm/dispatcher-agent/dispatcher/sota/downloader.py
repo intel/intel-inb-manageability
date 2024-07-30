@@ -166,7 +166,7 @@ class YoctoDownloader(Downloader):
     def check_release_date(self, release_date: Optional[str]) -> bool:
         return self.is_valid_release_date(release_date)
     
-class MarinerABDownloader(Downloader):
+class TiberOSABDownloader(Downloader):
     def __init__(self) -> None:
         super().__init__()
 
@@ -188,7 +188,7 @@ class MarinerABDownloader(Downloader):
         @raises SotaError: release date is not valid
         """
 
-        # skip this for Mariner A/B POC
+        # skip this for TiberOS A/B POC
         # if not self.check_release_date(release_date):
         #     msg = " SOTA download Aborted as mender release date " \
         #           "is not lower than manifest date"

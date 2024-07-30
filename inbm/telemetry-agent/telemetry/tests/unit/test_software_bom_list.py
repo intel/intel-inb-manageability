@@ -22,7 +22,7 @@ class TestSoftwareBomList(TestCase):
         mock_runner.return_value = ('xserver-xorg-video', "", 0)
         mock_uname.return_value = ('Linux', 'abc', '#1 SMP Debian 4.19.67-2+deb10u1 (2019-09-20)',
                                    'Linux 4.19.0-6-amd64 x86_64', 'x86_64')
-        self.assertEqual(get_sw_bom_list(), [])  # Mariner A/B POC forces MarinerAB detected, which causes this list to be empty
+        self.assertEqual(get_sw_bom_list(), [])  # TiberOS A/B POC forces TiberOSAB detected, which causes this list to be empty
 
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
@@ -64,7 +64,7 @@ class TestSoftwareBomList(TestCase):
         mock_uname.return_value = ('Linux', 'abc', '#1 SMP PREEMPT Wed Mar 7 16:03:28 UTC 2021',
                                    '4.14.22-yocto', 'aarch64')
         # mock_read_file.return_value = "Error on reading mender version file /etc/mender/artifact_info "
-        self.assertEqual(get_sw_bom_list(), [])  # Mariner A/B POC forces MarinerAB detected, which causes this list to be empty
+        self.assertEqual(get_sw_bom_list(), [])  # TiberOS A/B POC forces TiberOSAB detected, which causes this list to be empty
 
     @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     @patch('inbm_lib.detect_os.os.uname')
@@ -76,9 +76,9 @@ class TestSoftwareBomList(TestCase):
         mock_uname.return_value = ('Linux', 'abc', '#1 SMP PREEMPT Wed Mar 7 16:03:28 UTC 2021',
                                    '4.14.22-yocto', 'aarch64')
         # mock_read_file.return_value = "artifact_name=Release-20200227142947"
-        self.assertEqual(get_sw_bom_list(), [])  # Mariner A/B POC forces MarinerAB detected, which causes this list to be empty
+        self.assertEqual(get_sw_bom_list(), [])  # TiberOS A/B POC forces TiberOSAB detected, which causes this list to be empty
 
-    # not needed for Mariner AB POC
+    # not needed for TiberOS AB POC
     # def test_read_mender_file_fail(self) -> None:
     #     self.assertEqual(read_mender_file('/etc/test_info', UNKNOWN), UNKNOWN)
 
@@ -91,7 +91,7 @@ class TestSoftwareBomList(TestCase):
         mock_runner.return_value = ("", "", 0)
         mock_uname.return_value = ('Linux', 'abc', '#1 SMP PREEMPT Wed Mar 7 16:03:28 UTC 2021',
                                    '4.14.22-yocto', 'aarch64')
-        self.assertEqual(get_sw_bom_list(), [])  # Mariner A/B POC forces MarinerAB detected, which causes this list to be empty
+        self.assertEqual(get_sw_bom_list(), [])  # TiberOS A/B POC forces TiberOSAB detected, which causes this list to be empty
 
     @patch('telemetry.telemetry_handling.publish_dynamic_telemetry')
     @patch('telemetry.software_bom_list.get_sw_bom_list', return_value=[])

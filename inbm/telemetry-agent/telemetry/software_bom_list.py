@@ -50,7 +50,7 @@ def get_sw_bom_list() -> List[Any]:
         raise SoftwareBomError(str(e))
 
 
-# not needed for Mariner AB POC
+# not needed for TiberOS AB POC
 # def read_mender_file(path: str, not_found_default: str) -> str:
 #     """Checks if the file path exists, to read the mender version from the
 #     file.

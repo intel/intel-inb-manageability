@@ -20,9 +20,9 @@ class TestDetectOs(TestCase):
             mock_runner.return_value = ("InvalidOS", "", 0)
 
             ret = detect_os()
-            self.assertEqual(ret, 'MarinerAB')  # POC hard codes this
+            self.assertEqual(ret, 'TiberOSAB')  # POC hard codes this
 
-    # POC hard codes MarinerAB; rest of tests not needed
+    # POC hard codes TiberOSAB; rest of tests not needed
 
     # @patch('inbm_lib.detect_os.platform.system', return_value='Linux')
     # @patch('inbm_lib.detect_os.os.uname')

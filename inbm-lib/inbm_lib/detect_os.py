@@ -87,8 +87,8 @@ def detect_os() -> str:
         return LinuxDistType.YoctoX86_64.name
     logger.debug('Did not find {0}'.format(FORCE_YOCTO_PATH))
 
-    # Mariner A/B POC: force OS to be detected as Mariner
-    return 'MarinerAB'
+    # TiberOS A/B POC: force OS to be detected as TiberOS
+    return 'TiberOSAB'
 
     # # Get os_type string if OS is supported. E.g. Linux, Windows
     # os_type = verify_os_supported()
