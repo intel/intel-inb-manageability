@@ -14,7 +14,7 @@ from datetime import datetime
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
-from cloudadapter.constants import METHOD
+from cloudadapter.constants import METHOD, DEAD
 from cloudadapter.exceptions import AuthenticationError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
@@ -55,6 +55,8 @@ class InbsCloudClient(CloudClient):
         self._token = token
         self._tls_enabled = tls_enabled
         self._tls_cert = tls_cert
+        self._dispatcher_state = DEAD
+        self._disp_state_lock = threading.Lock()
 
         self._metadata: list[tuple[str, str]] = [("node-id", node_id)]
         if tls_enabled:
@@ -76,6 +78,28 @@ class InbsCloudClient(CloudClient):
         """
 
         return self._client_id
+
+    def set_dispatcher_state(self, state) -> None:
+        """Set the dispatcher state: running or dead
+
+        @param state: State of dispatcher agent to be set
+        """
+        try:
+            self._disp_state_lock.acquire()
+            self._dispatcher_state = state
+        finally:
+            self._disp_state_lock.release()
+
+    def get_dispatcher_state(self) -> str:
+        """Get the dispatcher state
+
+        @return: State of dispatcher agent
+        """
+        try:
+            self._disp_state_lock.acquire()
+            return self._dispatcher_state
+        finally:
+            self._disp_state_lock.release()
 
     def publish_telemetry(self, key: str, value: str, time: datetime) -> None:
         """Publishes telemetry to the cloud
@@ -138,6 +162,18 @@ class InbsCloudClient(CloudClient):
 
                 request_id = item.request_id
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
+
+                if self.get_dispatcher_state() == DEAD:
+                    logger.error(
+                        f"Dispatcher not in running state. Unable to process request - {request_id}"
+                    )
+                    yield inbs_sb_pb2.HandleINBMCommandResponse(
+                        request_id=request_id,
+                        error=common_pb2.Error(
+                            message="INBM Cloudadapter: Unable to process request. Please try again"
+                        ),
+                    )
+                    continue
 
                 command_type = item.command.WhichOneof("inbm_command")
                 if command_type:

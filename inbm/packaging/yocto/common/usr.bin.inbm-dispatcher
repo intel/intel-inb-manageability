@@ -142,6 +142,8 @@
   /usr/bin/busybox.nosuid rUx,
   /usr/bin/fwupdate rUx,
   /var/log/inbm-update-status.log rw,
+  /var/log/inbm-update-log.log rw,
+  /var/log/apt/history.log r,
   /var/volatile/log/inbm-update-status.log rw,
   /usr/bin/UpdateFirmwareBlobFwupdtool.sh rUx,
 }

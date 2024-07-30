@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 # base image with all dependencies for building
 FROM registry.hub.docker.com/library/ubuntu:20.04 AS base
 RUN echo 'force cache refresh 20240212'
@@ -150,7 +153,7 @@ RUN source /venv-py3/bin/activate && \
 
 # ---trtl---
 
-FROM registry.hub.docker.com/library/golang:1.20-bookworm AS trtl-build
+FROM registry.hub.docker.com/library/golang:1.22-bookworm as trtl-build
 WORKDIR /
 ENV GOPATH /build/go
 ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin
@@ -178,19 +181,19 @@ RUN rm -rf /output/ && mv ./output/ /output/
 
 # --inb-provision-certs-
 
-FROM registry.hub.docker.com/library/golang:1.20-bookworm AS inb-provision-certs
+FROM registry.hub.docker.com/library/golang:1.22-bookworm as inb-provision-certs
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && CGO_ENABLED=0 go build -trimpath -mod=readonly -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" -ldflags="all=-s -w" . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs /output/inb-provision-certs
 
 # --inb-provision-cloud-
 
-FROM registry.hub.docker.com/library/golang:1.20-bookworm AS inb-provision-cloud
+FROM registry.hub.docker.com/library/golang:1.22-bookworm as inb-provision-cloud
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && go test . && CGO_ENABLED=0 go build -trimpath -mod=readonly -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" -ldflags="all=-s -w" . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud /output/inb-provision-cloud
 
 # --inb-provision-ota-cert-
 
-FROM registry.hub.docker.com/library/golang:1.20-bookworm AS inb-provision-ota-cert
+FROM registry.hub.docker.com/library/golang:1.22-bookworm as inb-provision-ota-cert
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && CGO_ENABLED=0 go build -trimpath -mod=readonly -gcflags="all=-spectre=all -N -l" -asmflags="all=-spectre=all" -ldflags="all=-s -w" . &&  rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert /output/inb-provision-ota-cert
 

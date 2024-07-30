@@ -70,10 +70,23 @@ CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool/')
 
 # OTA log file location
 LOG_FILE = str(LOG_PATH / "inbm-update-status.log")
+GRANULAR_LOG_FILE = str(LOG_PATH / "inbm-update-log.log")
+SYSTEM_HISTORY_LOG_FILE = str(LOG_PATH / "apt" / "history.log")
+
+# Package Status
+PACKAGE_SUCCESS = "SUCCESS"
+PACKAGE_PENDING = "PENDING"
+PACKAGE_FAIL = "FAIL"
+PACKAGE_UNKNOWN = "UNKNOWN"
+
+# Package installation action
+PACKAGE_INSTALL = "install"
+PACKAGE_UPGRADE = "upgrade"
 
 # OTA STATUS
 OTA_SUCCESS = "SUCCESS"
 FAIL = "FAIL"
 OTA_PENDING = "PENDING"
+OTA_NO_UPDATE = "NO_UPDATE_AVAILABLE"
 
 FORMAT_VERSION = "v1"

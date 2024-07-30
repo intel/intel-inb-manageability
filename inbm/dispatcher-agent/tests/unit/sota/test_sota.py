@@ -63,6 +63,7 @@ class TestSota(testtools.TestCase):
             self.assertfail("SotaError raised when not expected.")
 
     @unpack
+    @patch('dispatcher.sota.command_handler.open')
     @data(("update", "Y"), ("update", "N"))
     @patch('dispatcher.sota.sota.SOTAUtil.check_diagnostic_disk')
     @patch('dispatcher.sota.os_updater.DebianBasedUpdater.update_remote_source',
@@ -78,7 +79,7 @@ class TestSota(testtools.TestCase):
                         ('out', 'err', 0, '/home/fakepath/'),
                         ('out', 'err', 0, '/home/fakepath/')])
     def test_run_commands(self, sota_cmd, sota_logto,
-                          mock_run, mock_shell_open, mock_update, _) -> None:
+                          mock_run, mock_shell_open, mock_update, mock_open_file, _) -> None:
         TestSota.sota_instance.sota_cmd = sota_cmd
         TestSota.sota_instance.log_to_file = sota_logto
         TestSota.sota_instance.factory = SotaOsFactory(
@@ -88,6 +89,7 @@ class TestSota(testtools.TestCase):
         if sota_cmd != "update":
             self.force_failure("only update is valid")
 
+        mock_open_file.assert_called_once()
         mock_update.assert_called_once()
         mock_shell_open.assert_not_called()
 
@@ -226,3 +228,45 @@ class TestSota(testtools.TestCase):
             TestSota.sota_instance.check()
         except SotaError:
             self.fail("Sota check() method raised exception unexpectedly")
+
+    def test_is_ota_no_update_available_return_true(self) -> None:
+        cmd = "apt-get -yq -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --with-new-pkgs upgrade"
+        cmd_list = CommandList([cmd]).cmd_list
+        cmd_list[0].out = """
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Calculating upgrade...
+The following packages were automatically installed and are no longer required:
+  gir1.2-goa-1.0 libfwupdplugin1 libxmlb1
+Use 'sudo apt autoremove' to remove them.
+0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+        """
+        self.assertTrue(TestSota.sota_instance._is_ota_no_update_available(cmd_list))
+
+    def test_is_ota_no_update_available_return_false(self) -> None:
+        cmd = "apt-get -yq -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --with-new-pkgs upgrade"
+        cmd_list = CommandList([cmd]).cmd_list
+        cmd_list[0].out = """
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Calculating upgrade...
+The following packages were automatically installed and are no longer required:
+  gir1.2-goa-1.0 libfwupdplugin1 libxmlb1
+Use 'sudo apt autoremove' to remove them.
+The following packages will be upgraded:
+  openvpn
+Preconfiguring packages ...
+1 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.
+Need to get 0 B/483 kB of archives.
+After this operation, 8,192 B of additional disk space will be used.
+(Reading database ... 198685 files and directories currently installed.)
+Preparing to unpack .../openvpn_2.4.12-0ubuntu0.20.04.2_amd64.deb ...
+Unpacking openvpn (2.4.12-0ubuntu0.20.04.2) over (2.4.7-1ubuntu2) ...
+Setting up openvpn (2.4.12-0ubuntu0.20.04.2) ...
+ * Restarting virtual private network daemon.                            [ OK ]
+Processing triggers for man-db (2.9.1-1) ...
+Processing triggers for systemd (245.4-4ubuntu3.23) ...
+        """
+        self.assertFalse(TestSota.sota_instance._is_ota_no_update_available(cmd_list))

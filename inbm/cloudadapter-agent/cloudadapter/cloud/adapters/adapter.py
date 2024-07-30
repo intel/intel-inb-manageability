@@ -24,6 +24,13 @@ class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
         """
         return self._client.get_client_id()
 
+    def set_dispatcher_state(self, state: str) -> None:
+        """Set the dispatcher state: running or dead
+
+        @param state: State of dispatcher agent to be set
+        """
+        self._client.set_dispatcher_state(state)
+
     @abc.abstractmethod
     def configure(self, config: dict) -> CloudClient:
         """Configure the adapter with the given keyword arguments

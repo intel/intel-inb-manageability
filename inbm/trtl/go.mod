@@ -1,6 +1,6 @@
 module iotg-inb/trtl
 
-go 1.20
+go 1.22
 
 require (
 	github.com/docker/docker v24.0.9+incompatible

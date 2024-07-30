@@ -50,12 +50,19 @@ def run_commands(log_destination: str, cmd_list: List[CommandList.CommandObject]
                 _skip_remaining_commands(cmd_list, cmd_index, dispatcher_broker)
                 break
 
+            # Save the output of the command
+            cmd.out = output
+
             if log_destination == 'CLOUD':
                 dispatcher_broker.telemetry(
                     "{}. Command {} completed with Log: {}".format(cmd_index + 1, cmd, output))
             elif log_destination == 'FILE':
                 dispatcher_broker.telemetry("{}. Command {} completed, but will log instead to file: "
                                             "{}".format(cmd_index + 1, cmd, abs_log_path))
+                # If the output is saved as a file, read the output from the file.
+                if abs_log_path:
+                    with open(abs_log_path, 'r') as f:
+                        cmd.out = f.read()
             cmd.status = SUCCESS
 
 

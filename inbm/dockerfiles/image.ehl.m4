@@ -1,3 +1,6 @@
+# Copyright (c) 2024 Intel Corporation
+# SPDX-License-Identifier: Apache-2.0
+
 # build x86 assets
 include(`image.main.m4')
 
