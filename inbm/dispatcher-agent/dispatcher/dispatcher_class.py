@@ -782,12 +782,13 @@ def handle_updates(dispatcher: Any,
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
 
         for imm in schedule.immedate_requests:
+            dispatcher._send_result("", request_id)
             for manifest in imm.manifests:
                 try:
                     dispatcher.do_install(xml=manifest)
                 except (NotImplementedError, DispatcherException) as e:
-                    dispatcher._send_result(str(e), request_id)
-        dispatcher._send_result("", request_id)
+                    # TODO: Save the error for query request
+                    dispatcher._send_result(str(Result(CODE_BAD_REQUEST, str(e))))
         return
 
     if request_type == "install" or request_type == "query":
