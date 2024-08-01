@@ -101,6 +101,7 @@
   /var/boot-fwu-status w,
   /var/cache/manageability/ rw,
   /var/cache/manageability/** rw,
+  /var/intel-manageability/scheduler.db rwk,
   /etc/intel-manageability/public/dispatcher-agent/logging.ini r,
   /var/lib/dispatcher/ rw,
   /var/lib/dispatcher/** rw,
