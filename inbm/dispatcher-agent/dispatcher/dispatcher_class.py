@@ -781,8 +781,9 @@ def handle_updates(dispatcher: Any,
                 dispatcher.do_install, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
 
+        # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
+        dispatcher._send_result("", request_id)
         for imm in schedule.immedate_requests:
-            dispatcher._send_result("", request_id)
             for manifest in imm.manifests:
                 try:
                     dispatcher.do_install(xml=manifest)
