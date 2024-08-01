@@ -836,3 +836,24 @@ Example of inbm-update-log.log:
 }
 
 ```
+
+
+### Dispatcher-Agent Failed to Get Element from Database
+There will be an issue if the dispatcher agent is accessing the database with the old database structure.
+The error log would look like: 
+
+```text
+dispatcher.dispatcher_exception.DispatcherException: Error in getting the all single schedules from database: no such column: ssj.task_id
+```
+
+The workaround is to remove the old database and restart the dispatcher agent. 
+
+Step 1: 
+```shell
+sudo rm /var/intel-manageability/scheduler.db 
+```
+
+Step 2:
+```shell
+sudo systemctl restart inbm-dispatcher  
+```
