@@ -789,7 +789,7 @@ def handle_updates(dispatcher: Any,
                     dispatcher.do_install(xml=manifest)
                 except (NotImplementedError, DispatcherException) as e:
                     # TODO: Save the error for query request
-                    dispatcher._send_result(str(Result(CODE_BAD_REQUEST, str(e))))
+                    logger.error(str(e))
         return
 
     if request_type == "install" or request_type == "query":
