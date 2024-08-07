@@ -103,6 +103,71 @@ class TestUpdateLogger(TestCase):
         mock_status.assert_called_once()
         self.assertEqual(granular_log, expected_content)
 
+    def test_save_granular_log_file_sota_without_package_list_without_upgrade_but_with_upgrade_keyword_in_text(self) -> None:
+        self.update_logger.ota_type = "sota"
+
+        history_content = """
+        Start-Date: 2024-08-06  06:26:14
+        Commandline: apt remove -y unattended-upgrades
+        Remove: unattended-upgrades:amd64 (2.8ubuntu1)
+        End-Date: 2024-08-06  06:26:14
+        
+        Start-Date: 2024-08-06  07:45:30
+        Commandline: /bin/apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --no-download --fix-missing -yq install intel-opencl-icd
+        Install: intel-opencl-icd:amd64 (22.14.22890-1)
+        End-Date: 2024-08-06  07:45:30
+        
+        Start-Date: 2024-08-06  08:12:35
+        Commandline: /bin/apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --no-download --fix-missing -yq install mongodb-org
+        Install: mongodb-mongosh:amd64 (2.2.15, automatic), mongodb-org-database-tools-extra:amd64 (7.0.12, automatic), mongodb-org-shell:amd64 (7.0.12, automatic), mongodb-org-database:amd64 (7.0.12, automatic), mongodb-org-server:amd64 (7.0.12, automatic), mongodb-org:amd64 (7.0.12), mongodb-org-tools:amd64 (7.0.12, automatic), mongodb-database-tools:amd64 (100.10.0, automatic), mongodb-org-mongos:amd64 (7.0.12, automatic)
+        End-Date: 2024-08-06  08:12:42
+        """
+
+        expected_content: dict = {
+                            "UpdateLog": [
+                                ]
+                            }
+
+        with open(SYSTEM_HISTORY_LOG_FILE, "w") as file:
+            file.write(history_content)
+
+        self.update_logger.save_granular_log_file()
+
+        with open(GRANULAR_LOG_FILE, 'r') as f:
+            granular_log = json.load(f)
+
+        self.assertEqual(granular_log, expected_content)
+
+    def test_save_granular_log_file_sota_without_package_list_without_update_keyword(self) -> None:
+        self.update_logger.ota_type = "sota"
+
+        history_content = """
+        Start-Date: 2024-08-06  07:45:30
+        Commandline: /bin/apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --no-download --fix-missing -yq install intel-opencl-icd
+        Install: intel-opencl-icd:amd64 (22.14.22890-1)
+        End-Date: 2024-08-06  07:45:30
+
+        Start-Date: 2024-08-06  08:12:35
+        Commandline: /bin/apt-get -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --no-download --fix-missing -yq install mongodb-org
+        Install: mongodb-mongosh:amd64 (2.2.15, automatic), mongodb-org-database-tools-extra:amd64 (7.0.12, automatic), mongodb-org-shell:amd64 (7.0.12, automatic), mongodb-org-database:amd64 (7.0.12, automatic), mongodb-org-server:amd64 (7.0.12, automatic), mongodb-org:amd64 (7.0.12), mongodb-org-tools:amd64 (7.0.12, automatic), mongodb-database-tools:amd64 (100.10.0, automatic), mongodb-org-mongos:amd64 (7.0.12, automatic)
+        End-Date: 2024-08-06  08:12:42
+        """
+
+        expected_content: dict = {
+            "UpdateLog": [
+            ]
+        }
+
+        with open(SYSTEM_HISTORY_LOG_FILE, "w") as file:
+            file.write(history_content)
+
+        self.update_logger.save_granular_log_file()
+
+        with open(GRANULAR_LOG_FILE, 'r') as f:
+            granular_log = json.load(f)
+
+        self.assertEqual(granular_log, expected_content)
+
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', side_effect=[("install ok installed", "", 0),
                                                                               ("1:26.3+1-1ubuntu2", "", 0)])
     def test_save_granular_log_file_sota_with_package_list(self, mock_run) -> None:

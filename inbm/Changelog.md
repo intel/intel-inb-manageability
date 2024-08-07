@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEXMANAGE-259) Update status enhancements(granular package level data) in INBM
  - (NEXMANAGE-314) Fixed Cloudadapter sometimes sends INBS commands to Dispatcher before it's fully up
  - (NEXMANAGE-314) Send response immediately for immediately scheduling
+ - (NEXMANAGE-493) Fixed dispatcher error in getting granular log during download-only mode
 
 ### Fixed
  - Fixed some Yocto issues found after migrating to scarthgap
