@@ -3,18 +3,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - ?
+## Next version: X.Y.Z - YYYY-MM-DD 
+
+## 4.2.4.1 - 2024-08-01
+### Fixed
+ - (NEXMANAGE-453) Update dispatcher yocto apparmor for accessing database.
+
+## 4.2.4 - 2024-07-24
 
 ### Added
  - Added INBS cloud with Ping support to Cloudadapter
  - Added firmware update support to Arrow Lake specifically using a generic script that will work for any platform using fwupdtool
  - (NEXMANAGE-259) Update status enhancements(granular package level data) in INBM
  - (NEXMANAGE-314) Fixed Cloudadapter sometimes sends INBS commands to Dispatcher before it's fully up
+ - (NEXMANAGE-314) Send response immediately for immediately scheduling
 
 ### Fixed
  - Fixed some Yocto issues found after migrating to scarthgap
  - (NEXARL-195) Fixed device tree detection check on systems that implement only part of device tree
  - (NEXARL-279) Fixed system would not be able to access secret volume after fwupd on Arrow Lake platform
+ - (NEXMANAGE-430) Fixed Ping completed but cloudadapter shows error message
 
 ### Security
  - Bump requests from 2.31.0 to 2.32.2 in multiple agents resolving detected 3rd party CVE: CVE-2024-35195

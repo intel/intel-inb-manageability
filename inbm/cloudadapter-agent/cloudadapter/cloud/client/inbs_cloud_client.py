@@ -162,8 +162,9 @@ class InbsCloudClient(CloudClient):
 
                 request_id = item.request_id
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
+                command_type = item.command.WhichOneof("inbm_command")
 
-                if self.get_dispatcher_state() == DEAD:
+                if self.get_dispatcher_state() == DEAD and command_type != "ping":
                     logger.error(
                         f"Dispatcher not in running state. Unable to process request - {request_id}"
                     )
@@ -175,7 +176,7 @@ class InbsCloudClient(CloudClient):
                     )
                     continue
 
-                command_type = item.command.WhichOneof("inbm_command")
+
                 if command_type:
                     if command_type == "update_scheduled_operations":
                         # Convert operations to Dispatcher's ScheduleRequest
