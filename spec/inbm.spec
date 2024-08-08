@@ -12,6 +12,8 @@ Source0:        %{name}-%{version}.tar.gz
 %global _build_id_links none
 BuildRequires:  golang
 BuildRequires:  systemd-rpm-macros
+BuildRequires: python3.11
+BuildRequires: python3.11-venv
 
 %description
 INBM provides a framework for managing and updating edge node systems.
@@ -20,7 +22,9 @@ INBM provides a framework for managing and updating edge node systems.
 %setup -q
 
 %build
-# ... build here
+python3.11 -m venv env
+source env/bin/activate
+pip install pyinstaller
 
 %install
 mkdir -p %{buildroot}/src/inbm
