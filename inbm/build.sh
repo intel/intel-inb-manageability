@@ -10,7 +10,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # second arg: build-check; default true. false skips unit tests/mypy/other checks
 
 # Default arguments
-build_windows=false
+build_windows=true
 build_check=true
 
 # Parse command line arguments
