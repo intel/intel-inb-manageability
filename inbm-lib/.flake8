@@ -1,0 +1,41 @@
+[flake8]
+# General options
+max-line-length = 99
+exclude = tests, inbm_lib/tests, inbm_common_lib/tests, mqttclient/tests
+accept-encodings = utf-8
+
+# flake8-annotations plugin settings
+enable-extensions = G
+
+# Plugins settings
+select = ANN001,ANN2??,ANN301,WPS2??
+ignore = S405,S404,S603,S101,WPS202,WPS220,WPS223,WPS222,WPS236,WPS237,WPS238
+
+# Complexity limits enforced by wemake-python-styleguide
+max-jones-score = 6
+max-cognitive-complexity = 39
+max-try-body-length = 13
+max-arguments = 10
+max-methods = 30
+max-local-variables = 9
+max-expressions = 15
+max-returns = 5
+max-function-expressions = 4
+max-line-complexity = 21
+max-module-expressions = 47
+max-cognitive-average = 15
+max-string-usages = 19
+max-imports = 14
+max-attributes = 6
+max-module-members = 9
+max-imported-names = 50
+max-import-from-members = 10
+max-base-classes = 3
+max-decorators = 5
+max-annotation-complexity = 5
+
+# Additional settings if needed
+doctests = false
+show-source = true
+statistics = false
+

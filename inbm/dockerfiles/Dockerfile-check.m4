@@ -16,6 +16,7 @@ RUN source /venv-py3/bin/activate && \
     pip3.12 install wheel==0.40.0 && \
     pip3.12 install \
         flake8==7.1.1 \
+        flake8-commas==4.0.0.dev0 \
         bandit==1.7.3 \
         flake8-bandit \
         coverage==7.2.5 \

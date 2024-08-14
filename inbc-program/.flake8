@@ -9,21 +9,21 @@ enable-extensions = G
 
 # Plugins settings
 select = ANN001,ANN2??,ANN301,WPS2??
-ignore = WPS220,WPS223,WPS222,WPS236,WPS237,WPS238,S405,S404,S603,S311
+ignore = WPS220,WPS223,WPS222,WPS236,WPS237,WPS238,S404,S603
 
 # Complexity limits enforced by wemake-python-styleguide
 max-jones-score = 12
-max-cognitive-complexity = 208
-max-line-complexity = 21
-max-imports = 49
+max-cognitive-complexity = 150
+max-line-complexity = 18
+max-imports = 20
 max-module-members = 14
 max-imported-names = 62
-max-module-expressions = 47
+max-module-expressions = 30
 max-function-expressions = 8
 max-local-variables = 16
 max-string-usages = 24
-max-arguments = 11
-max-returns = 11
+max-arguments = 7
+max-returns = 12
 max-expressions = 26
 max-methods = 30
 max-base-classes = 3
@@ -38,8 +38,10 @@ max-annotation-complexity = 4
 max-import-from-members = 12
 max-tuple-unpack-length = 4
 
+# flake8-bandit settings
+bandit = +*, -S404, -S603
+
 # Additional settings if needed
 doctests = false
 show-source = true
 statistics = false
-
