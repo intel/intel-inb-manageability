@@ -104,4 +104,4 @@ class TestInbc(TestCase):
         with self.assertRaises(SystemExit):
             self.arg_parser.parse_args(
                 ['query', '-o', 'everything'])
-        self.assertRegexpMatches(mock_stderr.getvalue(), r"invalid choice: 'everything'")
+        self.assertRegex(mock_stderr.getvalue(), r"invalid choice: 'everything'")
