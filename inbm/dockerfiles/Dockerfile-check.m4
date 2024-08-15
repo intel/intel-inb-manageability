@@ -20,7 +20,7 @@ RUN source /venv-py3/bin/activate && \
         bandit==1.7.3 \
         flake8-bandit==4.1.1 \
         coverage==7.2.5 \
-        wemake-python-styleguide==0.19.2 \
+        wemake-python-styleguide \
         teamcity-messages==1.32 \
         pylint==3.2.6 \
         mypy==1.7.1 \
