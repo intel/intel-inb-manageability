@@ -18,11 +18,11 @@ RUN source /venv-py3/bin/activate && \
         flake8==7.1.1 \
         flake8-commas==4.0.0.dev0 \
         bandit==1.7.3 \
-        flake8-bandit \
+        flake8-bandit==4.1.1 \
         coverage==7.2.5 \
-        wemake-python-styleguide \
-        teamcity-messages \
-        pylint \
+        wemake-python-styleguide==0.19.2 \
+        teamcity-messages==1.32 \
+        pylint==3.2.6 \
         mypy==1.7.1 \
         types-requests==2.31.0.1 \
         types-protobuf==5.26.0.20240422 \
