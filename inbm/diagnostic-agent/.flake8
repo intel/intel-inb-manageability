@@ -1,4 +1,44 @@
 [flake8]
+# General options
 max-line-length = 99
-exclude = tests/*
-max-complexity = 10
+exclude = tests
+
+# Plugin settings
+accept-encodings = utf-8
+enable-extensions = G
+
+# Plugins settings
+select = ANN001,ANN2??,ANN301,WPS2??
+ignore = WPS220,WPS223,WPS222,WPS236,WPS237,WPS238
+
+# Complexity limits enforced by wemake-python-styleguide
+max-jones-score = 12
+max-cognitive-complexity = 208
+max-line-complexity = 21
+max-imports = 49
+max-module-members = 14
+max-imported-names = 62
+max-module-expressions = 47
+max-function-expressions = 8
+max-local-variables = 16
+max-string-usages = 24
+max-arguments = 11
+max-returns = 11
+max-expressions = 26
+max-methods = 30
+max-base-classes = 3
+max-decorators = 5
+max-awaits = 5
+max-asserts = 5
+max-try-body-length = 17
+max-attributes = 12
+max-cognitive-average = 34
+max-call-level = 3
+max-annotation-complexity = 4
+max-import-from-members = 12
+max-tuple-unpack-length = 4
+
+# Additional settings if needed
+doctests = false
+show-source = true
+statistics = false

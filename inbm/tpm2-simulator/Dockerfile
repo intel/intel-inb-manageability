@@ -1,11 +1,11 @@
 # Copyright (c) 2021-2024 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
-FROM registry.hub.docker.com/curlimages/curl:7.74.0  as ibmtpm1332
+FROM registry.hub.docker.com/curlimages/curl:7.74.0  AS ibmtpm1332
 RUN curl -L https://downloads.sourceforge.net/project/ibmswtpm2/ibmtpm1332.tar.gz >/tmp/ibmtpm1332.tar.gz && \
     sha256sum /tmp/ibmtpm1332.tar.gz | grep -q 8e8193af3d11d9ff6a951dda8cd1f4693cb01934a8ad7876b84e92c6148ab0fd
 
-FROM ubuntu:20.04 as builder-20.04
+FROM ubuntu:20.04 AS builder-20.04
 
 # generic build tools
 RUN apt-get update &&\

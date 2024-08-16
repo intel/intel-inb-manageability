@@ -9,7 +9,7 @@ enable-extensions = G
 
 # Plugins settings
 select = ANN001,ANN2??,ANN301,WPS2??
-ignore = WPS220,WPS223,WPS222,WPS236,WPS237,WPS238,S405,S404,S603,S311
+ignore = WPS220,WPS223,WPS222,WPS236,WPS237,WPS238,S404,S603
 
 # Complexity limits enforced by wemake-python-styleguide
 max-jones-score = 12
