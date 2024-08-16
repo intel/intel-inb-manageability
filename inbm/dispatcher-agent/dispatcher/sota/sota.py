@@ -362,7 +362,10 @@ class SOTA:
                 if self._is_ota_no_update_available(cmd_list) and self._package_list == "":
                     # if no package upgrade/install, set the status to OTA_NO_UPDATE and skip saving the granular data.
                     self._update_logger.status = OTA_NO_UPDATE
-                else:
+                # The download-only mode only downloads the packages without installing them.
+                # Since there is no installation, there will be no changes in the package status or version.
+                # The apt history.log also doesn't record any changes. Therefore we can skip saving granular log.
+                elif self.sota_mode != 'download-only':
                     self._update_logger.save_granular_log_file()
                 if (self.sota_mode == 'download-only') or (not self._is_reboot_device()):
                     self._dispatcher_broker.telemetry("No reboot (SOTA pass)")
@@ -376,7 +379,8 @@ class SOTA:
                 self._update_logger.status = FAIL
                 self._update_logger.error = ""
                 self._update_logger.save_log()
-                self._update_logger.save_granular_log_file()
+                if self.sota_mode != 'download-only':
+                    self._update_logger.save_granular_log_file()
                 self._dispatcher_broker.telemetry(SOTA_FAILURE)
                 self._dispatcher_broker.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)

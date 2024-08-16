@@ -11,7 +11,7 @@ include(`commands.base-setup.m4')
 # py3 venv
 FROM base AS venv-py3-x86_64
 WORKDIR /
-RUN python3.11 -m venv /venv-py3 && \
+RUN python3.12 -m venv /venv-py3 && \
     source /venv-py3/bin/activate && \
     pip install --upgrade pip==23.2.1 setuptools==68.1.2 && \
     pip install teamcity-messages virtualenv  wheel -U

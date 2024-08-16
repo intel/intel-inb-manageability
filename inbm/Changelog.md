@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## Next version: X.Y.Z - YYYY-MM-DD 
+## NEXT - YYYY-MM-DD
+
+## 4.2.4.2 - 2024-08-09
+### Fixed
+ - (NEXMANAGE-493) Fixed dispatcher error in getting granular log during download-only mode
 
 ## 4.2.4.1 - 2024-08-01
 ### Fixed
