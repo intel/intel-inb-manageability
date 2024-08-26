@@ -8,6 +8,7 @@ package realdocker
 import (
 	"io"
 
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 
 	"github.com/docker/docker/api/types"
@@ -38,7 +39,7 @@ func (f FakeFinder) FindContainer(DockerWrapper, string) (bool, types.Container,
 type FakeDockerWrapper struct {
 	AuthenticateOKBody registry.AuthenticateOKBody
 	Err                error
-	Images             []types.ImageSummary
+	Images             []image.Summary
 	ContainerJSON      types.ContainerJSON
 	Containers         []types.Container
 	HijackedResp       types.HijackedResponse
@@ -65,22 +66,22 @@ func (d FakeDockerWrapper) ImageLoad(io.Reader, bool) error {
 }
 
 // ImagePull is a fake method for unit testing.
-func (d FakeDockerWrapper) ImagePull(string, types.ImagePullOptions) error {
+func (d FakeDockerWrapper) ImagePull(string, image.PullOptions) error {
 	return d.Err
 }
 
 // ImageRemove is a fake method for unit testing
-func (d FakeDockerWrapper) ImageRemove(string, types.ImageRemoveOptions) error {
+func (d FakeDockerWrapper) ImageRemove(string, image.RemoveOptions) error {
 	return d.Err
 }
 
 // ImageList is a fake method for unit testing
-func (d FakeDockerWrapper) ImageList(types.ImageListOptions) ([]types.ImageSummary, error) {
+func (d FakeDockerWrapper) ImageList(image.ListOptions) ([]image.Summary, error) {
 	return d.Images, d.Err
 }
 
 // ContainerCommit is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerCommit(containerID string, options types.ContainerCommitOptions) (types.IDResponse, error) {
+func (d FakeDockerWrapper) ContainerCommit(containerID string, options container.CommitOptions) (types.IDResponse, error) {
 	return d.IDResponse, d.Err
 }
 
@@ -92,22 +93,22 @@ func (d FakeDockerWrapper) ContainerCreate(config *container.Config, hostConfig 
 }
 
 // ContainerList is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerList(types.ContainerListOptions) ([]types.Container, error) {
+func (d FakeDockerWrapper) ContainerList(container.ListOptions) ([]types.Container, error) {
 	return d.Containers, d.Err
 }
 
 // ContainerLogs is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerLogs(types.ContainerLogsOptions, string) error {
+func (d FakeDockerWrapper) ContainerLogs(container.LogsOptions, string) error {
 	return d.Err
 }
 
 // ContainerRemove is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerRemove(string, types.ContainerRemoveOptions) error {
+func (d FakeDockerWrapper) ContainerRemove(string, container.RemoveOptions) error {
 	return d.Err
 }
 
 // ContainerStart is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerStart(containerID string, options types.ContainerStartOptions) error {
+func (d FakeDockerWrapper) ContainerStart(containerID string, options container.StartOptions) error {
 	return d.Err
 }
 
@@ -140,6 +141,6 @@ func (d FakeDockerWrapper) ContainerExecCreate(container string, config types.Ex
 }
 
 // Login is a fake method for unit testing
-func (d FakeDockerWrapper) Login(config types.AuthConfig) (registry.AuthenticateOKBody, error) {
+func (d FakeDockerWrapper) Login(config registry.AuthConfig) (registry.AuthenticateOKBody, error) {
 	return d.AuthenticateOKBody, d.Err
 }

@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2024 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
@@ -9,8 +9,10 @@ import (
 	"fmt"
 	"sort"
 
-	"github.com/docker/docker/api/types"
 	"os"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 )
 
 // RemoveAllContainers will remove all containers.  Running containers will also be removed if force parameter is true.
@@ -68,7 +70,7 @@ func RemoveContainer(dw DockerWrapper, containerID string, force bool) error {
 
 	fmt.Println("Removing container", containerID, "...")
 	if err := dw.ContainerRemove(containerID,
-		types.ContainerRemoveOptions{RemoveVolumes: true, Force: force}); err != nil {
+		container.RemoveOptions{RemoveVolumes: true, Force: force}); err != nil {
 		return err
 	}
 
@@ -115,7 +117,7 @@ func RemoveLatestContainerFromImage(f Finder, dw DockerWrapper, image string, fo
 // It will return any error encountered.
 func RemoveImage(dw DockerWrapper, imageID string, force bool) error {
 	fmt.Println("Removing image", imageID, "...")
-	err := dw.ImageRemove(imageID, types.ImageRemoveOptions{PruneChildren: true, Force: force})
+	err := dw.ImageRemove(imageID, image.RemoveOptions{PruneChildren: true, Force: force})
 	if err != nil {
 		return err
 	}
@@ -147,7 +149,7 @@ func RemoveAllImages(dw DockerWrapper, imageName string, force bool) error {
 	return nil
 }
 
-func sortImages(images []types.ImageSummary) []string {
+func sortImages(images []image.Summary) []string {
 	var sortedImageString []string
 	for _, image := range images {
 		sortedImageString = append(sortedImageString, image.RepoTags[0])

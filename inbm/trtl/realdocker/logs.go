@@ -1,13 +1,12 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2024 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
 
 import (
 	"errors"
-	"github.com/docker/docker/api/types"
 )
 
 // logs retrieves logs from target.  Currently can be used by docker or compose.
@@ -21,7 +20,7 @@ func Logs(f Finder, dw DockerWrapper, options ContainerLogOptions, target string
 		return errors.New("Docker Container Logs could not find container: " + target)
 	}
 
-	o := types.ContainerLogsOptions{ShowStderr: true, ShowStdout: true, Timestamps: true}
+	o := container.LogsOptions{ShowStderr: true, ShowStdout: true, Timestamps: true}
 
 	if len(options.Details) > 0 {
 		o.Details = true

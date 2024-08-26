@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -51,7 +52,7 @@ func TestFindImageSuccessfully(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{{ID: "abcd"}, {ID: "cdef"}},
+		Images: []image.Summary{{ID: "abcd"}, {ID: "cdef"}},
 	}
 
 	imageID, err := f.FindImage(d, "abcd")
@@ -63,7 +64,7 @@ func TestFindImageReturnsDockerError(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:    errors.New("error finding image"),
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	imageID, err := f.FindImage(d, "abcd")
@@ -75,7 +76,7 @@ func TestFindContainerReturnsFalseWhenNoMatchingImage(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	imageID, err := f.FindImage(d, "abcd")

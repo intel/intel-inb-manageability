@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 
 	"os"
@@ -29,23 +30,23 @@ type DockerWrap struct{}
 type DockerWrapper interface {
 	Events(types.EventsOptions) (<-chan events.Message, <-chan error)
 	ImageImport(string, string, []string) error
-	ImagePull(referenceName string, options types.ImagePullOptions) error
-	ImageRemove(string, types.ImageRemoveOptions) error
-	ImageList(types.ImageListOptions) ([]types.ImageSummary, error)
+	ImagePull(referenceName string, options image.PullOptions) error
+	ImageRemove(string, image.RemoveOptions) error
+	ImageList(image.ListOptions) ([]image.Summary, error)
 	ImageLoad(io.Reader, bool) error
-	ContainerCommit(string, types.ContainerCommitOptions) (types.IDResponse, error)
+	ContainerCommit(string, container.CommitOptions) (types.IDResponse, error)
 	ContainerCreate(*container.Config, *container.HostConfig, *network.NetworkingConfig, *specs.Platform, string) (container.CreateResponse, error)
 	ContainerExecAttach(string, types.ExecStartCheck) error
 	ContainerExecCreate(string, types.ExecConfig) (types.IDResponse, error)
 	ContainerInspect(string) (types.ContainerJSON, error)
-	ContainerList(types.ContainerListOptions) ([]types.Container, error)
-	ContainerLogs(types.ContainerLogsOptions, string) error
-	ContainerRemove(string, types.ContainerRemoveOptions) error
+	ContainerList(container.ListOptions) ([]types.Container, error)
+	ContainerLogs(container.LogsOptions, string) error
+	ContainerRemove(string, container.RemoveOptions) error
 	ContainerStats(string, bool) (types.ContainerStats, error)
-	ContainerStart(string, types.ContainerStartOptions) error
+	ContainerStart(string, container.StartOptions) error
 	ContainerStop(string, *int) error
 	CopyToContainer(string, string, io.Reader, types.CopyToContainerOptions) error
-	Login(types.AuthConfig) (registry.AuthenticateOKBody, error)
+	Login(registry.AuthConfig) (registry.AuthenticateOKBody, error)
 }
 
 // Events makes actual call to docker to get the events and constantly polls.
@@ -81,7 +82,7 @@ func (dw DockerWrap) ImageImport(src string, ref string, changes []string) error
 }
 
 // ImagePull requests the docker host to pull an image from a remote registry.
-func (dw DockerWrap) ImagePull(reference string, options types.ImagePullOptions) error {
+func (dw DockerWrap) ImagePull(reference string, options image.PullOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -107,18 +108,18 @@ func (dw DockerWrap) ImagePull(reference string, options types.ImagePullOptions)
 }
 
 // ImageRemove makes actual call to docker to remove an image.
-func (dw DockerWrap) ImageRemove(imageID string, options types.ImageRemoveOptions) error {
+func (dw DockerWrap) ImageRemove(imageID string, options image.RemoveOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
 
-	_, err = cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{PruneChildren: options.PruneChildren, Force: options.Force})
+	_, err = cli.ImageRemove(context.Background(), imageID, image.RemoveOptions{PruneChildren: options.PruneChildren, Force: options.Force})
 	return err
 }
 
 // ImageList makes actual call to docker to get the image list.
-func (dw DockerWrap) ImageList(options types.ImageListOptions) ([]types.ImageSummary, error) {
+func (dw DockerWrap) ImageList(options image.ListOptions) ([]image.Summary, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
@@ -149,7 +150,7 @@ func (dw DockerWrap) ImageLoad(input io.Reader, quiet bool) error {
 }
 
 // ContainerCommit makes the actual call to docker to commit the container.
-func (dw DockerWrap) ContainerCommit(containerID string, options types.ContainerCommitOptions) (types.IDResponse, error) {
+func (dw DockerWrap) ContainerCommit(containerID string, options container.CommitOptions) (types.IDResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return types.IDResponse{}, err
@@ -194,7 +195,7 @@ func (dw DockerWrap) ContainerExecAttach(execID string, startCheck types.ExecSta
 }
 
 // ContainerList makes the actual call to docker to list the containers.
-func (dw DockerWrap) ContainerList(options types.ContainerListOptions) ([]types.Container, error) {
+func (dw DockerWrap) ContainerList(options container.ListOptions) ([]types.Container, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
@@ -204,7 +205,7 @@ func (dw DockerWrap) ContainerList(options types.ContainerListOptions) ([]types.
 }
 
 // ContainerLogs makes the actual call to docker to get logs for the container.
-func (dw DockerWrap) ContainerLogs(options types.ContainerLogsOptions, container string) error {
+func (dw DockerWrap) ContainerLogs(options container.LogsOptions, container string) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -231,7 +232,7 @@ func (dw DockerWrap) ContainerLogs(options types.ContainerLogsOptions, container
 }
 
 // ContainerRemove makes the actual call to docker to remove a container.
-func (dw DockerWrap) ContainerRemove(containerID string, options types.ContainerRemoveOptions) error {
+func (dw DockerWrap) ContainerRemove(containerID string, options container.RemoveOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -241,7 +242,7 @@ func (dw DockerWrap) ContainerRemove(containerID string, options types.Container
 }
 
 // ContainerStart makes the actual call to docker to inspect a container.
-func (dw DockerWrap) ContainerStart(containerID string, options types.ContainerStartOptions) error {
+func (dw DockerWrap) ContainerStart(containerID string, options container.StartOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -294,7 +295,7 @@ func (dw DockerWrap) CopyToContainer(containerID string, path string, content io
 }
 
 // Login authenticates a server with the given authentication credentials
-func (dw DockerWrap) Login(config types.AuthConfig) (registry.AuthenticateOKBody, error) {
+func (dw DockerWrap) Login(config registry.AuthConfig) (registry.AuthenticateOKBody, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return registry.AuthenticateOKBody{}, err

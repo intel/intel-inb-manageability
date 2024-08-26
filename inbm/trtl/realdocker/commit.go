@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2024 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
@@ -9,8 +9,9 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/docker/docker/api/types"
 	"iotg-inb/trtl/logging"
+
+	"github.com/docker/docker/api/types/container"
 )
 
 // Commit searches for a matching container and commits it to its corresponding
@@ -44,7 +45,7 @@ func commitContainer(dw DockerWrapper, containerID string, commitTag string, com
 // It returns the commit ID and any error encountered.
 func CommitContainer(dw DockerWrapper, containerID string, commitTag string, comment string) (string, error) {
 	response, err := dw.ContainerCommit(containerID,
-		types.ContainerCommitOptions{
+		container.CommitOptions{
 			Comment:   comment,
 			Reference: commitTag})
 	if err != nil {

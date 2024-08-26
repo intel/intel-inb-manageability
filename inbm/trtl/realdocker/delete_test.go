@@ -8,6 +8,7 @@ import (
 	"errors"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 )
 
 func TestImageDeleteOldSuccessfully(t *testing.T) {
@@ -19,7 +20,7 @@ func TestImageDeleteOldSuccessfully(t *testing.T) {
 
 	d := FakeDockerWrapper{
 		Err: nil,
-		Images: []types.ImageSummary{
+		Images: []image.Summary{
 			{ID: "abcd1", RepoTags: []string{"abcd:1"}},
 			{ID: "abcd2", RepoTags: []string{"abcd:2"}},
 		},
@@ -43,7 +44,7 @@ func TestImageDeleteOldNonSequentialSuccessfully(t *testing.T) {
 
 	d := FakeDockerWrapper{
 		Err: nil,
-		Images: []types.ImageSummary{
+		Images: []image.Summary{
 			{ID: "abcd1", RepoTags: []string{"abcd:5"}},
 			{ID: "abcd2", RepoTags: []string{"abcd:8"}},
 		},
@@ -67,7 +68,7 @@ func TestImageDeleteOldErrorsWhenImageListIsEmpty(t *testing.T) {
 
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	warnIfRunningContainer = func(dw DockerWrapper, containerID string) error {
@@ -87,7 +88,7 @@ func TestImageDeleteOldReturnsAnyDockerErrors(t *testing.T) {
 
 	d := FakeDockerWrapper{
 		Err:    errors.New("docker error"),
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	warnIfRunningContainer = func(dw DockerWrapper, containerID string) error {
