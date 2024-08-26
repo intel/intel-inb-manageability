@@ -101,6 +101,7 @@
   /var/boot-fwu-status w,
   /var/cache/manageability/ rw,
   /var/cache/manageability/** rw,
+  /var/intel-manageability/scheduler.db rwk,
   /etc/intel-manageability/public/dispatcher-agent/logging.ini r,
   /var/lib/dispatcher/ rw,
   /var/lib/dispatcher/** rw,
@@ -145,5 +146,6 @@
   /var/log/inbm-update-log.log rw,
   /var/log/apt/history.log r,
   /var/volatile/log/inbm-update-status.log rw,
+  /var/volatile/log/inbm-update-log.log rw,
   /usr/bin/UpdateFirmwareBlobFwupdtool.sh rUx,
 }

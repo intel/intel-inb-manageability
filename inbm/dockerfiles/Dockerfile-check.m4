@@ -2,27 +2,27 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # base image with all dependencies for running unit tests/lints
-FROM registry.hub.docker.com/library/ubuntu:20.04 as base
+FROM registry.hub.docker.com/library/ubuntu:20.04 AS base
 include(`commands.base-setup.m4')
 
 
 # build a virtual environment for each agent to run checks
 
 # py3 venv
-FROM base as venv-py3
+FROM base AS venv-py3
 WORKDIR /
-RUN python3.11 -m venv /venv-py3
+RUN python3.12 -m venv /venv-py3
 RUN source /venv-py3/bin/activate && \
-    pip3.11 install wheel==0.40.0 && \
-    pip3.11 install \
-        flake8==4.0.1 \
+    pip3.12 install wheel==0.40.0 && \
+    pip3.12 install \
+        flake8==7.1.1 \
+        flake8-commas==4.0.0.dev0 \
         bandit==1.7.3 \
-        flake8-bandit==3.0.0 \
+        flake8-bandit==4.1.1 \
         coverage==7.2.5 \
-        flakeheaven==3.3.0 \
-        wemake-python-styleguide==0.17.0 \
-        teamcity-messages==1.28 \
-        pylint==2.5.3 \
+        wemake-python-styleguide \
+        teamcity-messages==1.32 \
+        pylint==3.2.6 \
         mypy==1.7.1 \
         types-requests==2.31.0.1 \
         types-protobuf==5.26.0.20240422 \
@@ -35,26 +35,26 @@ COPY inbm-lib /src/inbm-lib
 ENV PYTHONPATH=/src/inbm-lib
 ENV MYPYPATH=/src/inbm-lib
 RUN source /venv-py3/bin/activate && \
-    pip3.11 install -e /src/inbm-lib && \
-    pip3.11 install /src/inbm-lib[test]
+    pip3.12 install -e /src/inbm-lib && \
+    pip3.12 install /src/inbm-lib[test]
 
-FROM venv-py3 as lint-venv-py3
+FROM venv-py3 AS lint-venv-py3
 RUN source /venv-py3/bin/activate && \
     cd /src/inbm-lib && \
     set -o pipefail && \
-    flakeheaven lint | tee /passed.txt
+    flake8 | tee /passed.txt
 
 
 # ---inbm-lib---
 
-FROM venv-py3 as mypy-inbm-lib
+FROM venv-py3 AS mypy-inbm-lib
 RUN source /venv-py3/bin/activate && \
     cd /src/inbm-lib && \
     rm -rf build && \
     mypy . && \
     touch /passed.txt
 
-FROM venv-py3 as test-inbm-lib
+FROM venv-py3 AS test-inbm-lib
 WORKDIR /src/inbm-lib
 # for unit test
 COPY inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/manifest_schema.xsd /src/inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/manifest_schema.xsd 
@@ -70,24 +70,24 @@ RUN source /venv-py3/bin/activate && \
 
 # ---inbc---
 
-FROM venv-py3 as venv-inbc-py3
+FROM venv-py3 AS venv-inbc-py3
 COPY inbc-program/requirements.txt /src/inbc-program/requirements.txt
 COPY inbc-program/test-requirements.txt /src/inbc-program/test-requirements.txt
 WORKDIR /src/inbc-program
 RUN source /venv-py3/bin/activate && \
-    pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt
+    pip3.12 install -r requirements.txt && \
+    pip3.12 install -r test-requirements.txt
 COPY inbc-program /src/inbc-program
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    flakeheaven lint
+    flake8
 
-FROM venv-inbc-py3 as mypy-inbc
+FROM venv-inbc-py3 AS mypy-inbc
 RUN source /venv-py3/bin/activate && \
     mypy inbc && \
     touch /passed.txt
 
-FROM venv-inbc-py3 as inbc-unit-tests
+FROM venv-inbc-py3 AS inbc-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
@@ -96,24 +96,24 @@ RUN source /venv-py3/bin/activate && \
 
 # ---diagnostic agent---
 
-FROM venv-py3 as venv-diagnostic-py3
+FROM venv-py3 AS venv-diagnostic-py3
 COPY inbm/diagnostic-agent/requirements.txt /src/diagnostic-agent/requirements.txt
 COPY inbm/diagnostic-agent/test-requirements.txt /src/diagnostic-agent/test-requirements.txt
 WORKDIR /src/diagnostic-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt
+    pip3.12 install -r requirements.txt && \
+    pip3.12 install -r test-requirements.txt
 COPY inbm/diagnostic-agent /src/diagnostic-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    flakeheaven lint
+    flake8
 
-FROM venv-diagnostic-py3 as mypy-diagnostic
+FROM venv-diagnostic-py3 AS mypy-diagnostic
 RUN source /venv-py3/bin/activate && \
     mypy diagnostic && \
     touch /passed.txt
 
-FROM venv-diagnostic-py3 as diagnostic-unit-tests
+FROM venv-diagnostic-py3 AS diagnostic-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
@@ -122,28 +122,28 @@ RUN source /venv-py3/bin/activate && \
 
 # ---dispatcher agent---
 
-FROM venv-py3 as venv-dispatcher-py3
+FROM venv-py3 AS venv-dispatcher-py3
 COPY inbm/dispatcher-agent/requirements.txt /src/dispatcher-agent/requirements.txt
 COPY inbm/dispatcher-agent/test-requirements.txt /src/dispatcher-agent/test-requirements.txt
 WORKDIR /src/dispatcher-agent
 RUN source /venv-py3/bin/activate && \
     ln -sf /usr/bin/pip /usr/bin/pip3 && \
-    pip3.11 install --upgrade pip && \
-    pip3.11 install setuptools-rust && \
-    pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt
+    pip3.12 install --upgrade pip && \
+    pip3.12 install setuptools-rust && \
+    pip3.12 install -r requirements.txt && \
+    pip3.12 install -r test-requirements.txt
 COPY inbm/dispatcher-agent /src/dispatcher-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    flakeheaven lint
+    flake8
 
-FROM venv-dispatcher-py3 as mypy-dispatcher
+FROM venv-dispatcher-py3 AS mypy-dispatcher
 RUN source /venv-py3/bin/activate && \
     mypy dispatcher && \
     mypy tests && \
     touch /passed.txt
 
-FROM venv-dispatcher-py3 as dispatcher-unit-tests
+FROM venv-dispatcher-py3 AS dispatcher-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
@@ -152,24 +152,24 @@ RUN source /venv-py3/bin/activate && \
 
 # ---cloudadapter agent---
 
-FROM venv-py3 as venv-cloudadapter-py3
+FROM venv-py3 AS venv-cloudadapter-py3
 COPY inbm/cloudadapter-agent/requirements.txt /src/cloudadapter-agent/requirements.txt
 COPY inbm/cloudadapter-agent/test-requirements.txt /src/cloudadapter-agent/test-requirements.txt
 WORKDIR /src/cloudadapter-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt
+    pip3.12 install -r requirements.txt && \
+    pip3.12 install -r test-requirements.txt
 COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    flakeheaven lint
+    flake8
 
-FROM venv-cloudadapter-py3 as mypy-cloudadapter
+FROM venv-cloudadapter-py3 AS mypy-cloudadapter
 RUN source /venv-py3/bin/activate && \
     mypy cloudadapter && \
     touch /passed.txt
 
-FROM venv-cloudadapter-py3 as cloudadapter-unit-tests
+FROM venv-cloudadapter-py3 AS cloudadapter-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
@@ -178,24 +178,24 @@ RUN source /venv-py3/bin/activate && \
 
 # ---telemetry agent---
 
-FROM venv-py3 as venv-telemetry-py3
+FROM venv-py3 AS venv-telemetry-py3
 COPY inbm/telemetry-agent/requirements.txt /src/telemetry-agent/requirements.txt
 COPY inbm/telemetry-agent/test-requirements.txt /src/telemetry-agent/test-requirements.txt
 WORKDIR /src/telemetry-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt
+    pip3.12 install -r requirements.txt && \
+    pip3.12 install -r test-requirements.txt
 COPY inbm/telemetry-agent /src/telemetry-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    flakeheaven lint
+    flake8
 
-FROM venv-telemetry-py3 as mypy-telemetry
+FROM venv-telemetry-py3 AS mypy-telemetry
 RUN source /venv-py3/bin/activate && \
     mypy telemetry && \
     touch /passed.txt
 
-FROM venv-telemetry-py3 as telemetry-unit-tests
+FROM venv-telemetry-py3 AS telemetry-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
@@ -204,24 +204,24 @@ RUN source /venv-py3/bin/activate && \
 
 # ---configuration agent---
 
-FROM venv-py3 as venv-configuration-py3
+FROM venv-py3 AS venv-configuration-py3
 COPY inbm/configuration-agent/requirements.txt /src/configuration-agent/requirements.txt
 COPY inbm/configuration-agent/test-requirements.txt /src/configuration-agent/test-requirements.txt
 WORKDIR /src/configuration-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.11 install -r requirements.txt && \
-    pip3.11 install -r test-requirements.txt
+    pip3.12 install -r requirements.txt && \
+    pip3.12 install -r test-requirements.txt
 COPY inbm/configuration-agent /src/configuration-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
-    flakeheaven lint
+    flake8
     
-FROM venv-configuration-py3 as mypy-configuration
+FROM venv-configuration-py3 AS mypy-configuration
 RUN source /venv-py3/bin/activate && \
     mypy configuration && \
     touch /passed.txt
 
-FROM venv-configuration-py3 as configuration-unit-tests
+FROM venv-configuration-py3 AS configuration-unit-tests
 RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
@@ -229,7 +229,7 @@ RUN source /venv-py3/bin/activate && \
     pytest -n 1 --cov=configuration --cov-report=term-missing --cov-fail-under=88 configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt
 
 # output container
-FROM base as output
+FROM base AS output
 COPY --from=test-inbm-lib /passed.txt /passed-test-inbm-lib.txt
 COPY --from=inbc-unit-tests /output /inbc
 COPY --from=diagnostic-unit-tests /output /diagnostic
