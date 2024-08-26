@@ -129,9 +129,9 @@ class Dispatcher:
         @param tls: Transport level security;  Default=True
         """
 
-        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 11:
+        if sys.version_info[0] < 3 or sys.version_info[0] == 3 and sys.version_info[1] < 12:
             logger.error(
-                "Python version must be 3.11 or higher. Python interpreter version: " + sys.version)
+                "Python version must be 3.12 or higher. Python interpreter version: " + sys.version)
             sys.exit(1)
         self.RUNNING = True
         logger.info("Dispatcher agent starting. Version info: " +
@@ -781,13 +781,15 @@ def handle_updates(dispatcher: Any,
                 dispatcher.do_install, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
 
+        # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
+        dispatcher._send_result("", request_id)
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:
                 try:
                     dispatcher.do_install(xml=manifest)
                 except (NotImplementedError, DispatcherException) as e:
-                    dispatcher._send_result(str(e), request_id)
-        dispatcher._send_result("", request_id)
+                    # TODO: Save the error for query request
+                    logger.error(str(e))
         return
 
     if request_type == "install" or request_type == "query":

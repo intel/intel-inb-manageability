@@ -33,19 +33,28 @@ def extract_package_names_and_versions(text: str) -> Dict[str, str]:
 
     @return: a dict that contains package's name and its version
     """
-    # Extract the upgrade line
-    upgrade_line = [line for line in text.split('\n') if 'Upgrade:' in line][0]
-    # Use regex to split on commas not inside parentheses
-    packages = re.split(r',\s*(?![^()]*\))', upgrade_line.replace('Upgrade: ', ''))
     # Create a dictionary to store package names and their versions
     package_dict = {}
-    # Loop through each package string and extract the name and version
-    for package in packages:
-        name_version = re.match(r"(.+?)\s+\((.+)\)", package)
-        if name_version:
-            name = name_version.group(1).strip()
-            version = name_version.group(2).strip()
-            package_dict[name] = version
+    try:
+        # Extract the upgrade line
+        upgrade_lines = [line for line in text.split('\n') if 'Upgrade:' in line]
+        if upgrade_lines:
+            upgrade_line = upgrade_lines[0]
+        else:
+            raise KeyError
+        # Use regex to split on commas not inside parentheses
+        packages = re.split(r',\s*(?![^()]*\))', upgrade_line.replace('Upgrade: ', ''))
+
+        # Loop through each package string and extract the name and version
+        for package in packages:
+            name_version = re.match(r"(.+?)\s+\((.+)\)", package)
+            if name_version:
+                name = name_version.group(1).strip()
+                version = name_version.group(2).strip()
+                package_dict[name] = version
+    except (IndexError, KeyError):
+        logger.debug(f"No Upgrade Packages found in text:{text}")
+        return package_dict
     return package_dict
 
 

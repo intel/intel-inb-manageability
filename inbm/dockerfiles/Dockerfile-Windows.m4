@@ -4,86 +4,35 @@
 include(`image.main.m4')
 
 # base windows/wine build image
-FROM registry.hub.docker.com/library/ubuntu:22.04 as base-windows
-RUN echo Refresh docker cache 20240212
+FROM registry.hub.docker.com/tobix/pywine:3.12 as base-windows
 
 ENV DEBIAN_FRONTEND noninteractive
 
-ARG WINE_VERSION=winehq-stable
-ARG PYTHON_VERSION=3.11.7
-ARG PYINSTALLER_VERSION=6.4.0
-
-# we need wine for this all to work, so we'll use the PPA
-RUN set -x \
-    && dpkg --add-architecture i386 \
-    && apt-get update -qy \
-    && apt-get install --no-install-recommends -qfy gpg-agent apt-transport-https software-properties-common wget rename \
-    && wget -nv https://dl.winehq.org/wine-builds/winehq.key \
-    && apt-key add winehq.key \
-    && add-apt-repository 'https://dl.winehq.org/wine-builds/ubuntu/' \
-    && apt-get update -qy \
-    && apt-get install --no-install-recommends -qfy $WINE_VERSION winbind cabextract \
-    && apt-get clean \
-    && wget -nv https://raw.githubusercontent.com/Winetricks/winetricks/master/src/winetricks \
-    && chmod +x winetricks \
-    && mv winetricks /usr/local/bin
-
-# wine settings
-ENV WINEARCH win32
-ENV WINEDEBUG fixme-all
-ENV WINEPREFIX /wine
-
-# PYPI repository location
-ENV PYPI_URL=https://pypi.python.org/
-# PYPI index location
-ENV PYPI_INDEX_URL=https://pypi.python.org/simple
-
-# install python in wine, using the msi packages to install, extracting
-# the files directly, since installing isn't running correctly.
-RUN set -x \
-    && winetricks win10 \
-    && for msifile in core dev exe lib path pip tcltk tools; do \
-        wget -nv "https://www.python.org/ftp/python/$PYTHON_VERSION/win32/${msifile}.msi"; \
-        wine msiexec /i "${msifile}.msi" /qb TARGETDIR=C:/Python3; \
-        rm ${msifile}.msi; \
-    done \
-    && cd /wine/drive_c/Python3 \
-    && echo 'wine '\''C:\Python3\python.exe'\'' "$@"' > /usr/bin/python \
-    && echo 'wine '\''C:\Python3\Scripts\easy_install.exe'\'' "$@"' > /usr/bin/easy_install \
-    && echo 'wine '\''C:\Python3\Scripts\pip.exe'\'' "$@"' > /usr/bin/pip \
-    && echo 'wine '\''C:\Python3\Scripts\pyinstaller.exe'\'' "$@"' > /usr/bin/pyinstaller \
-    && echo 'wine '\''C:\Python3\Scripts\pyupdater.exe'\'' "$@"' > /usr/bin/pyupdater \
-    && echo 'assoc .py=PythonScript' | wine cmd \
-    && echo 'ftype PythonScript=c:\Python3\python.exe "%1" %*' | wine cmd \
-    && while pgrep wineserver >/dev/null; do echo "Waiting for wineserver"; sleep 1; done \
-    && chmod +x /usr/bin/python /usr/bin/easy_install /usr/bin/pip /usr/bin/pyinstaller /usr/bin/pyupdater \
-    && (pip install -U pip || true) \
-    && rm -rf /tmp/.wine-*
-
-ENV W_DRIVE_C=/wine/drive_c
-ENV W_WINDIR_UNIX="$W_DRIVE_C/windows"
-ENV W_SYSTEM_DLLS="$W_WINDIR_UNIX/system32"
-ENV W_TMP="$W_DRIVE_C/windows/temp/_$0"
-
 # install Microsoft Visual C++ Redistributable for Visual Studio 2017 dll files
-RUN set -x \
-    && rm -f "$W_TMP"/* \
-    && wget -P "$W_TMP" https://download.visualstudio.microsoft.com/download/pr/11687613/88b50ce70017bf10f2d56d60fcba6ab1/VC_redist.x86.exe \
-    && cabextract -q --directory="$W_TMP" "$W_TMP"/VC_redist.x86.exe \
-    && cabextract -q --directory="$W_TMP" "$W_TMP/a10" \
-    && cabextract -q --directory="$W_TMP" "$W_TMP/a11" \
-    && cd "$W_TMP" \
-    && rename 's/_/\-/g' *.dll \
-    && cp "$W_TMP"/*.dll "$W_SYSTEM_DLLS"/
+# RUN set -x \
+#    && rm -f "$W_TMP"/* \
+#    && wget -P "$W_TMP" https://download.visualstudio.microsoft.com/download/pr/11687613/88b50ce70017bf10f2d56d60fcba6ab1/VC_redist.x86.exe \
+#    && cabextract -q --directory="$W_TMP" "$W_TMP"/VC_redist.x86.exe \
+#    && cabextract -q --directory="$W_TMP" "$W_TMP/a10" \
+#    && cabextract -q --directory="$W_TMP" "$W_TMP/a11" \
+#    && cd "$W_TMP" \
+#    && rename 's/_/\-/g' *.dll \
+#    && cp "$W_TMP"/*.dll "$W_SYSTEM_DLLS"/
 
-# install pyinstaller
-RUN /usr/bin/pip install pyinstaller==$PYINSTALLER_VERSION
+RUN cd /opt/wineprefix/drive_c/Python \
+    && echo 'wine '\''C:\Python\python.exe'\'' "$@"' > /usr/bin/python \
+    && echo 'wine '\''C:\Python\Scripts\easy_install.exe'\'' "$@"' > /usr/bin/easy_install \
+    && echo 'wine '\''C:\Python\Scripts\pip.exe'\'' "$@"' > /usr/bin/pip \
+    && echo 'wine '\''C:\Python\Scripts\pyinstaller.exe'\'' "$@"' > /usr/bin/pyinstaller \
+    && echo 'wine '\''C:\Python\Scripts\pyupdater.exe'\'' "$@"' > /usr/bin/pyupdater \
+    && chmod a+x /usr/bin/python /usr/bin/easy_install /usr/bin/pip /usr/bin/pyinstaller /usr/bin/pyupdater
+
 
 # put the src folder inside wine
-RUN mkdir /src/ && ln -s /src /wine/drive_c/src
+RUN mkdir /src/ && ln -s /src /opt/wineprefix/drive_c/src
 VOLUME /src/
-WORKDIR /wine/drive_c/src/
-RUN mkdir -p /wine/drive_c/tmp
+WORKDIR /opt/wineprefix/drive_c/src/
+RUN mkdir -p /opt/wineprefix/drive_c/tmp
 
 
 RUN ln -sf /usr/bin/pip /usr/bin/pip3
@@ -107,7 +56,6 @@ COPY inbm/packaging /src/packaging
 RUN mkdir -p /output && \
     pip3 install -r requirements.txt
 RUN pyinstaller inbm-cloudadapter-windows.spec && \
-    wine ../cloudadapter-agent/dist/inbm-cloudadapter/inbm-cloudadapter.exe install && \
     cp -r ../cloudadapter-agent/dist/inbm-cloudadapter /output
 
 FROM registry.hub.docker.com/library/golang:1.22-bookworm as inb-provision-certs-windows

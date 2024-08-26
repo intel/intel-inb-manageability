@@ -28,10 +28,10 @@ RUN apt-get update && \
     apt-get clean
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
-    python3.11 \
-    python3.11-dev \
+    python3.12 \
+    python3.12-dev \
     python3-pip \
-    python3.11-venv \
+    python3.12-venv \
     python3-setuptools \
     libxslt1-dev \
     gcc \
