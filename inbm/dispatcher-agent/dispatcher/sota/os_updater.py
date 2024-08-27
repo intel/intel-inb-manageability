@@ -215,6 +215,7 @@ class DebianBasedUpdater(OsUpdater):
         @return: returns list of commands that need to be run
         """
 
+        os.environ["DEBIAN_FRONTEND"] = "noninteractive"
         # if any packages are specified, use 'install' instead of 'upgrade' and include packages
         if self._package_list == []:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --no-download --fix-missing -yq upgrade"
@@ -234,6 +235,7 @@ class DebianBasedUpdater(OsUpdater):
         @return: returns commands
         """
 
+        os.environ["DEBIAN_FRONTEND"] = "noninteractive"
         if self._package_list == []:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --download-only --fix-missing -yq upgrade"
         else:

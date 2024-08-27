@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
+### Fixed
+ - (NEX-9338) Fixed interactive ui error in no-download and download-only mode.
 
 ## 4.2.4.2 - 2024-08-09
 ### Fixed
