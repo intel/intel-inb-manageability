@@ -110,6 +110,7 @@ class DebianBasedUpdater(OsUpdater):
     def __init__(self, package_list: list[str]) -> None:
         super().__init__()
         self._package_list = package_list
+        os.environ["DEBIAN_FRONTEND"] = "noninteractive"
 
     def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
         """Concrete class method to create command list to update from a remote source for Debian OS.
@@ -215,7 +216,6 @@ class DebianBasedUpdater(OsUpdater):
         @return: returns list of commands that need to be run
         """
 
-        os.environ["DEBIAN_FRONTEND"] = "noninteractive"
         # if any packages are specified, use 'install' instead of 'upgrade' and include packages
         if self._package_list == []:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --no-download --fix-missing -yq upgrade"
@@ -235,7 +235,6 @@ class DebianBasedUpdater(OsUpdater):
         @return: returns commands
         """
 
-        os.environ["DEBIAN_FRONTEND"] = "noninteractive"
         if self._package_list == []:
             install_cmd = "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --download-only --fix-missing -yq upgrade"
         else:
