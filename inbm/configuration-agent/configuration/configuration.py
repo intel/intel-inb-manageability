@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
     Central configuration-agent/configuration service for the manageability framework 
 

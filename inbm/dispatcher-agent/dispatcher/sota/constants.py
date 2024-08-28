@@ -14,6 +14,9 @@ MENDER_FILE_PATH = get_canonical_representation_of_path('/usr/bin/mender')
 # Mender artifact path
 MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifact_info")
 
+# Update Tool file path
+UPDATE_TOOL_PATH = get_canonical_representation_of_path('/usr/bin/os-update-tool.sh')
+
 SOTA_STATE = 'normal'
 
 LOGPATH = '/var/lib/dispatcher/upload'

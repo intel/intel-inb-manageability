@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
+### Added
+ - (NEXMANAGE-515) Update dispatcher SOTA related classes for supporting TiberOS
 
+## 4.2.5 - 2024-09-04
+### Fixed
+ - Added #!/usr/bin/python3 lines to agents to work in source install mode.
 
 ## 4.2.4.3 - 2024-08-27
 ### Fixed

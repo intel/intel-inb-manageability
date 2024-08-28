@@ -52,6 +52,6 @@ def test_update_remote_source(debian_updater, is_docker_env, package_list, expec
         'container': 'docker' if is_docker_env else ''
     })
 
-    cmds = debian_updater.update_remote_source(None, None)
+    cmds = debian_updater.update_remote_source(None, None, None)
 
     assert [cmd.text for cmd in cmds] == expected_commands

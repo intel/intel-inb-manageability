@@ -14,6 +14,7 @@ from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from .constants import MENDER_FILE_PATH
 from .mender_util import read_current_mender_version
+from .update_tool_util import update_tool_version_command, update_tool_commit_command
 from .rebooter import Rebooter
 from ..common import dispatcher_state
 from .sota_error import SotaError
@@ -436,3 +437,114 @@ class YoctoSnapshot(Snapshot):
         else:
             raise SotaError(
                 f"'mender-version' not in state or state is not available. state = {str(state)}")
+
+
+class TiberOSSnapshot(Snapshot):
+    """ Snapshot for TiberOS.
+
+    @param trtl: TRTL instance
+    @param sota_cmd: SOTA command (update)
+    @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
+    @param snap_num: snapshot number
+    @param proceed_without_rollback: Rollback on failure if False; otherwise, rollback.
+   """
+
+    def __init__(self, trtl: Trtl, sota_cmd: str,
+                 dispatcher_broker: DispatcherBroker, snap_num: Optional[str],
+                 proceed_without_rollback: bool, reboot_device: bool) -> None:
+        super().__init__(trtl, sota_cmd,
+                         snap_num, proceed_without_rollback, reboot_device)
+        self._dispatcher_broker = dispatcher_broker
+
+    def take_snapshot(self) -> None:
+        """This method saves the current mender artifact version info in a dispatcher state file
+
+        @raises SotaError: When failed to create a dispatcher state file
+        """
+        logger.debug("TiberOS take_snapshot")
+        self._dispatcher_broker.telemetry(
+            "SOTA attempting to create a dispatcher state file before SOTA {}...".
+            format(self.sota_cmd))
+        try:
+            content = update_tool_version_command()
+            state: dispatcher_state.DispatcherState
+            if dispatcher_state.is_dispatcher_state_file_exists():
+                consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)
+                restart_reason = None
+                if consumed_state:
+                    restart_reason = consumed_state.get('restart_reason', None)
+                if restart_reason:
+                    state = {'tiberos-version': content}
+            else:
+                state = (
+                    {'restart_reason': "sota",
+                     'tiberos-version': content}
+                )
+            dispatcher_state.write_dispatcher_state_to_state_file(state)
+        except (DispatcherException, SotaError) as err:
+            self._dispatcher_broker.telemetry(
+                "...state file creation unsuccessful.")
+            raise SotaError('Failed to create a dispatcher state file. Error: ', err)
+
+        self._dispatcher_broker.telemetry(
+            "Dispatcher state file creation successful.")
+
+    def commit(self) -> int:
+        """On TiberOS, this method runs a UT commit command
+
+        Also, delete dispatcher state file.
+        """
+        logger.debug("")
+        dispatcher_state.clear_dispatcher_state()
+        code = update_tool_commit_command()
+
+        return code
+
+    def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
+        """Recover from a failed SOTA.
+
+        On TiberOS, no action is required other than deleting the
+        state file and rebooting.
+        @param rebooter: Object implementing reboot() method
+        @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
+        """
+        logger.debug("")
+        dispatcher_state.clear_dispatcher_state()
+        time.sleep(time_to_wait_before_reboot)
+        rebooter.reboot()
+
+    def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
+        """Revert after second system SOTA boot when we see a problem with startup.
+
+        On TiberOS, we just reboot without commit
+        @param rebooter: Object implementing reboot() method
+        @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
+        """
+        logger.debug("time_to_wait_before_reboot = " + str(time_to_wait_before_reboot))
+        dispatcher_state.clear_dispatcher_state()
+        time.sleep(time_to_wait_before_reboot)
+        rebooter.reboot()
+
+    def update_system(self) -> None:
+        """If the system supports it, check whether the system was updated, after rebooting.
+
+        For TiberOS, we compare the image's SHA stored in dispatcher state file and current SHA.
+        """
+
+        logger.debug("attempting to get dispatcher state from state file")
+        state = dispatcher_state.consume_dispatcher_state_file()
+        if state is not None and 'tiberos-version' in state:
+            logger.debug("got tiberos-version from state: " + str(state['tiberos-version']))
+            version = update_tool_version_command()
+            current_tiberos_version = version
+            previous_tiberos_version = state['tiberos-version']
+
+            if current_tiberos_version == previous_tiberos_version:
+                raise SotaError(
+                    f"Requested update version is the same as version currently installed. SHA: {current_tiberos_version}")
+            else:
+                logger.debug("success; tiberos version changed")
+
+        else:
+            raise SotaError(
+                f"'tiberos-version' not in state or state is not available. state = {str(state)}")

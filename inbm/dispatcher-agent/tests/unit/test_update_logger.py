@@ -69,7 +69,8 @@ class TestUpdateLogger(TestCase):
         mock_write_log_file.assert_called_once_with(expected_log)
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("install ok installed", "", 0))
-    def test_save_granular_log_file_sota_without_package_list(self, mock_status) -> None:
+    @patch('dispatcher.update_logger.detect_os', return_value='Ubuntu')
+    def test_save_granular_log_file_sota_without_package_list(self, mock_os, mock_status) -> None:
         self.update_logger.ota_type = "sota"
 
         history_content = """
@@ -170,7 +171,8 @@ class TestUpdateLogger(TestCase):
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', side_effect=[("install ok installed", "", 0),
                                                                               ("1:26.3+1-1ubuntu2", "", 0)])
-    def test_save_granular_log_file_sota_with_package_list(self, mock_run) -> None:
+    @patch('dispatcher.update_logger.detect_os', return_value='Ubuntu')
+    def test_save_granular_log_file_sota_with_package_list(self, mock_os, mock_run) -> None:
         self.update_logger.ota_type = "sota"
         self.update_logger._time = datetime.datetime(2024, 7, 3, 1, 50, 55, 935223)
         self.update_logger.package_list = "emacs"
@@ -193,4 +195,28 @@ class TestUpdateLogger(TestCase):
             granular_log = json.load(f)
 
         assert mock_run.call_count == 2
+        self.assertEqual(granular_log, expected_content)
+
+    @patch('dispatcher.update_logger.detect_os', return_value='TiberOS')
+    def test_save_granular_log_file_sota_with_tiberos_and_log(self, mock_os) -> None:
+        self.update_logger.ota_type = "sota"
+        self.update_logger._time = datetime.datetime(2024, 7, 3, 1, 50, 55, 935223)
+        log = {
+            "StatusDetail.Status": "Failed",
+            "FailureReason": "DownloadFail"
+        }
+        expected_content = {
+                            "UpdateLog": [
+                                    {
+                                        "StatusDetail.Status": "Failed",
+                                        "FailureReason": "DownloadFail"
+                                    }
+                                ]
+                            }
+
+        self.update_logger.save_granular_log_file(log)
+
+        with open(GRANULAR_LOG_FILE, 'r') as f:
+            granular_log = json.load(f)
+
         self.assertEqual(granular_log, expected_content)

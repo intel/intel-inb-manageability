@@ -52,7 +52,8 @@ DispatcherState = TypedDict('DispatcherState', {
     'snapshot_num': str,
     'bios_version': str,
     'release_date': datetime,
-    'mender-version': str
+    'mender-version': str,
+    'tiberos-version': str
 }, total=False)
 
 
