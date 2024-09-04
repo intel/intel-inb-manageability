@@ -5,6 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
 
+
+## 4.2.4.3 - 2024-08-27
+### Fixed
+ - (NEX-9338) Fixed interactive ui error in no-download and download-only mode.
+
 ## 4.2.4.2 - 2024-08-09
 ### Fixed
  - (NEXMANAGE-493) Fixed dispatcher error in getting granular log during download-only mode

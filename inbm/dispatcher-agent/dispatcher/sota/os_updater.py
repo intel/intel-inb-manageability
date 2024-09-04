@@ -110,6 +110,7 @@ class DebianBasedUpdater(OsUpdater):
     def __init__(self, package_list: list[str]) -> None:
         super().__init__()
         self._package_list = package_list
+        os.environ["DEBIAN_FRONTEND"] = "noninteractive"
 
     def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
         """Concrete class method to create command list to update from a remote source for Debian OS.
