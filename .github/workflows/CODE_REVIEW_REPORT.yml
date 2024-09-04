@@ -11,7 +11,7 @@ jobs:
       pull-requests: write
     if: (contains(github.event.comment.body, '/generate_report') && github.event.comment.user.login != 'nex-maximus') ||
         github.event_name == 'pull_request' && github.event.pull_request.user.login != 'nex-maximus'
-    runs-on: [self-hosted, maximus-unit-test]
+    runs-on: [intel-ubuntu-latest, maximus-unit-test]
     steps:
       - name: PR Agent action step
         id: pragent

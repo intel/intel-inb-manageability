@@ -15,7 +15,7 @@ jobs:
         contains(github.event.comment.body, '/add_docs') ||  
         contains(github.event.comment.body, '/update_changelog')) && github.event.comment.user.login != 'nex-maximus') ||
         github.event_name == 'pull_request' && github.event.pull_request.user.login != 'nex-maximus'
-    runs-on: [self-hosted, smart-devops-code-review]
+    runs-on: [intel-ubuntu-latest, smart-devops-code-review]
     steps:
       - name: PR Agent action step
         id: pragent
