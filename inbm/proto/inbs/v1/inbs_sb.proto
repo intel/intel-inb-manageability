@@ -38,7 +38,7 @@ message SendNodeUpdateRequest {
   string request_id = 1;
   string node_id = 2;
   oneof update {
-    common.v1.NodeJobStatusUpdate node_job_status_update = 3;
+    common.v1.Job job_update = 3; // node_id will be filled in by INBS; schedule_id, executed_by, desired_start_time, create_time will be ignored
     // more types of updates from nodes can be added in the future
   }
 }
