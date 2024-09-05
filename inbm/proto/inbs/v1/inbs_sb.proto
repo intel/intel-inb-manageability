@@ -6,6 +6,9 @@ import "common/v1/common.proto";
 service INBSSBService {
   // Bi-directional streaming method
   rpc HandleINBMCommand(stream HandleINBMCommandResponse) returns (stream HandleINBMCommandRequest);
+
+  // Used to send any kind of node status update
+  rpc SendNodeUpdate(SendNodeUpdateRequest) returns (SendNodeUpdateResponse);
 }
 
 message HandleINBMCommandRequest {
@@ -30,3 +33,17 @@ message UpdateScheduledOperations {
 }
 
 message Ping {}
+
+message SendNodeUpdateRequest {
+  string request_id = 1;
+  string node_id = 2;
+  oneof update {
+    common.v1.NodeJobStatusUpdate node_job_status_update = 3;
+    // more types of updates from nodes can be added in the future
+  }
+}
+
+message SendNodeUpdateResponse {
+  string request_id = 1;
+  common.v1.Error error = 2;
+}

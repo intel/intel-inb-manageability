@@ -103,3 +103,9 @@ message PostOperation {
 //    // ...
 //  }
 }
+
+// this is used for nodes to send updates on job progress
+message NodeJobStatusUpdate {
+  string job_id = 1;
+  // other fields here
+}
