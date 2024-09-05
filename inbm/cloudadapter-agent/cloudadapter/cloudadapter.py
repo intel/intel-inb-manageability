@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 Agent that monitors and reports the state of critical components of the framework
 
