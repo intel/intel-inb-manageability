@@ -15,7 +15,7 @@ _sym_db = _symbol_database.Default()
 from cloudadapter.pb.common.v1 import common_pb2 as common_dot_v1_dot_common__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15inbs/v1/inbs_sb.proto\x12\x07inbs.v1\x1a\x16\x63ommon/v1/common.proto\"U\n\x18HandleINBMCommandRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12%\n\x07\x63ommand\x18\x02 \x01(\x0b\x32\x14.inbs.v1.INBMCommand\"P\n\x19HandleINBMCommandResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x1f\n\x05\x65rror\x18\x02 \x01(\x0b\x32\x10.common.v1.Error\"\x87\x01\n\x0bINBMCommand\x12I\n\x1bupdate_scheduled_operations\x18\x01 \x01(\x0b\x32\".inbs.v1.UpdateScheduledOperationsH\x00\x12\x1d\n\x04ping\x18\x02 \x01(\x0b\x32\r.inbs.v1.PingH\x00\x42\x0e\n\x0cinbm_command\"X\n\x19UpdateScheduledOperations\x12;\n\x14scheduled_operations\x18\x01 \x03(\x0b\x32\x1d.common.v1.ScheduledOperation\"\x06\n\x04Ping\"\x88\x01\n\x15SendNodeUpdateRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12@\n\x16node_job_status_update\x18\x03 \x01(\x0b\x32\x1e.common.v1.NodeJobStatusUpdateH\x00\x42\x08\n\x06update\"M\n\x16SendNodeUpdateResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x1f\n\x05\x65rror\x18\x02 \x01(\x0b\x32\x10.common.v1.Error2\xc2\x01\n\rINBSSBService\x12^\n\x11HandleINBMCommand\x12\".inbs.v1.HandleINBMCommandResponse\x1a!.inbs.v1.HandleINBMCommandRequest(\x01\x30\x01\x12Q\n\x0eSendNodeUpdate\x12\x1e.inbs.v1.SendNodeUpdateRequest\x1a\x1f.inbs.v1.SendNodeUpdateResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x15inbs/v1/inbs_sb.proto\x12\x07inbs.v1\x1a\x16\x63ommon/v1/common.proto\"U\n\x18HandleINBMCommandRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12%\n\x07\x63ommand\x18\x02 \x01(\x0b\x32\x14.inbs.v1.INBMCommand\"P\n\x19HandleINBMCommandResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x1f\n\x05\x65rror\x18\x02 \x01(\x0b\x32\x10.common.v1.Error\"\x87\x01\n\x0bINBMCommand\x12I\n\x1bupdate_scheduled_operations\x18\x01 \x01(\x0b\x32\".inbs.v1.UpdateScheduledOperationsH\x00\x12\x1d\n\x04ping\x18\x02 \x01(\x0b\x32\r.inbs.v1.PingH\x00\x42\x0e\n\x0cinbm_command\"X\n\x19UpdateScheduledOperations\x12;\n\x14scheduled_operations\x18\x01 \x03(\x0b\x32\x1d.common.v1.ScheduledOperation\"\x06\n\x04Ping\"l\n\x15SendNodeUpdateRequest\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12$\n\njob_update\x18\x03 \x01(\x0b\x32\x0e.common.v1.JobH\x00\x42\x08\n\x06update\"M\n\x16SendNodeUpdateResponse\x12\x12\n\nrequest_id\x18\x01 \x01(\t\x12\x1f\n\x05\x65rror\x18\x02 \x01(\x0b\x32\x10.common.v1.Error2\xc2\x01\n\rINBSSBService\x12^\n\x11HandleINBMCommand\x12\".inbs.v1.HandleINBMCommandResponse\x1a!.inbs.v1.HandleINBMCommandRequest(\x01\x30\x01\x12Q\n\x0eSendNodeUpdate\x12\x1e.inbs.v1.SendNodeUpdateRequest\x1a\x1f.inbs.v1.SendNodeUpdateResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,10 +32,10 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_UPDATESCHEDULEDOPERATIONS']._serialized_end=453
   _globals['_PING']._serialized_start=455
   _globals['_PING']._serialized_end=461
-  _globals['_SENDNODEUPDATEREQUEST']._serialized_start=464
-  _globals['_SENDNODEUPDATEREQUEST']._serialized_end=600
-  _globals['_SENDNODEUPDATERESPONSE']._serialized_start=602
-  _globals['_SENDNODEUPDATERESPONSE']._serialized_end=679
-  _globals['_INBSSBSERVICE']._serialized_start=682
-  _globals['_INBSSBSERVICE']._serialized_end=876
+  _globals['_SENDNODEUPDATEREQUEST']._serialized_start=463
+  _globals['_SENDNODEUPDATEREQUEST']._serialized_end=571
+  _globals['_SENDNODEUPDATERESPONSE']._serialized_start=573
+  _globals['_SENDNODEUPDATERESPONSE']._serialized_end=650
+  _globals['_INBSSBSERVICE']._serialized_start=653
+  _globals['_INBSSBSERVICE']._serialized_end=847
 # @@protoc_insertion_point(module_scope)

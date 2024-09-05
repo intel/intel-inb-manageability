@@ -355,19 +355,95 @@ class PostOperation(google.protobuf.message.Message):
 global___PostOperation = PostOperation
 
 @typing.final
-class NodeJobStatusUpdate(google.protobuf.message.Message):
-    """this is used for nodes to send updates on job progress"""
+class Job(google.protobuf.message.Message):
+    """this message represents a Job and can be used in multiple contexts; see RPC definitions
+    for some definitions fields may be ignored; e.g., when reporting job status up from a node,
+    the node_id is ignored and is filled in by INBS
+    """
 
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    class _ExecutedBy:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _ExecutedByEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Job._ExecutedBy.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        EXECUTED_BY_UNSPECIFIED: Job._ExecutedBy.ValueType  # 0
+        EXECUTED_BY_INBAND: Job._ExecutedBy.ValueType  # 1
+        EXECUTED_BY_OOB: Job._ExecutedBy.ValueType  # 2
+
+    class ExecutedBy(_ExecutedBy, metaclass=_ExecutedByEnumTypeWrapper): ...
+    EXECUTED_BY_UNSPECIFIED: Job.ExecutedBy.ValueType  # 0
+    EXECUTED_BY_INBAND: Job.ExecutedBy.ValueType  # 1
+    EXECUTED_BY_OOB: Job.ExecutedBy.ValueType  # 2
+
+    class _JobState:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _JobStateEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Job._JobState.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        JOB_STATE_UNSPECIFIED: Job._JobState.ValueType  # 0
+        SCHEDULED: Job._JobState.ValueType  # 1
+        STARTED: Job._JobState.ValueType  # 2
+        PASSED: Job._JobState.ValueType  # 3
+        FAILED: Job._JobState.ValueType  # 4
+
+    class JobState(_JobState, metaclass=_JobStateEnumTypeWrapper): ...
+    JOB_STATE_UNSPECIFIED: Job.JobState.ValueType  # 0
+    SCHEDULED: Job.JobState.ValueType  # 1
+    STARTED: Job.JobState.ValueType  # 2
+    PASSED: Job.JobState.ValueType  # 3
+    FAILED: Job.JobState.ValueType  # 4
+
     JOB_ID_FIELD_NUMBER: builtins.int
+    NODE_ID_FIELD_NUMBER: builtins.int
+    SCHEDULE_ID_FIELD_NUMBER: builtins.int
+    EXECUTED_BY_FIELD_NUMBER: builtins.int
+    DESIRED_START_TIME_FIELD_NUMBER: builtins.int
+    ACTUAL_START_TIME_FIELD_NUMBER: builtins.int
+    ACTUAL_END_TIME_FIELD_NUMBER: builtins.int
+    JOB_STATE_FIELD_NUMBER: builtins.int
+    STATUS_CODE_FIELD_NUMBER: builtins.int
+    RESULT_MSGS_FIELD_NUMBER: builtins.int
+    CREATE_TIME_FIELD_NUMBER: builtins.int
     job_id: builtins.str
-    """other fields here"""
+    """UUID with abbreviated type"""
+    node_id: builtins.str
+    """UUID, references NODE(node_id)"""
+    schedule_id: builtins.int
+    """References SCHEDULE(schedule_id)"""
+    executed_by: global___Job.ExecutedBy.ValueType
+    job_state: global___Job.JobState.ValueType
+    status_code: builtins.int
+    """Not yet defined"""
+    result_msgs: builtins.str
+    """JSON string for result messages of all tasks ran"""
+    @property
+    def desired_start_time(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    @property
+    def actual_start_time(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    @property
+    def actual_end_time(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    @property
+    def create_time(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
     def __init__(
         self,
         *,
         job_id: builtins.str = ...,
+        node_id: builtins.str = ...,
+        schedule_id: builtins.int = ...,
+        executed_by: global___Job.ExecutedBy.ValueType = ...,
+        desired_start_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        actual_start_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        actual_end_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        job_state: global___Job.JobState.ValueType = ...,
+        status_code: builtins.int = ...,
+        result_msgs: builtins.str = ...,
+        create_time: google.protobuf.timestamp_pb2.Timestamp | None = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["job_id", b"job_id"]) -> None: ...
+    def HasField(self, field_name: typing.Literal["actual_end_time", b"actual_end_time", "actual_start_time", b"actual_start_time", "create_time", b"create_time", "desired_start_time", b"desired_start_time"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["actual_end_time", b"actual_end_time", "actual_start_time", b"actual_start_time", "create_time", b"create_time", "desired_start_time", b"desired_start_time", "executed_by", b"executed_by", "job_id", b"job_id", "job_state", b"job_state", "node_id", b"node_id", "result_msgs", b"result_msgs", "schedule_id", b"schedule_id", "status_code", b"status_code"]) -> None: ...
 
-global___NodeJobStatusUpdate = NodeJobStatusUpdate
+global___Job = Job

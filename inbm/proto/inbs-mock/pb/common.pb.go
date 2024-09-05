@@ -184,6 +184,110 @@ func (SetPowerStateOperation_PowerState) EnumDescriptor() ([]byte, []int) {
 	return file_common_v1_common_proto_rawDescGZIP(), []int{8, 0}
 }
 
+type Job_ExecutedBy int32
+
+const (
+	Job_EXECUTED_BY_UNSPECIFIED Job_ExecutedBy = 0
+	Job_EXECUTED_BY_INBAND      Job_ExecutedBy = 1
+	Job_EXECUTED_BY_OOB         Job_ExecutedBy = 2
+)
+
+// Enum value maps for Job_ExecutedBy.
+var (
+	Job_ExecutedBy_name = map[int32]string{
+		0: "EXECUTED_BY_UNSPECIFIED",
+		1: "EXECUTED_BY_INBAND",
+		2: "EXECUTED_BY_OOB",
+	}
+	Job_ExecutedBy_value = map[string]int32{
+		"EXECUTED_BY_UNSPECIFIED": 0,
+		"EXECUTED_BY_INBAND":      1,
+		"EXECUTED_BY_OOB":         2,
+	}
+)
+
+func (x Job_ExecutedBy) Enum() *Job_ExecutedBy {
+	p := new(Job_ExecutedBy)
+	*p = x
+	return p
+}
+
+func (x Job_ExecutedBy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Job_ExecutedBy) Descriptor() protoreflect.EnumDescriptor {
+	return file_common_v1_common_proto_enumTypes[3].Descriptor()
+}
+
+func (Job_ExecutedBy) Type() protoreflect.EnumType {
+	return &file_common_v1_common_proto_enumTypes[3]
+}
+
+func (x Job_ExecutedBy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Job_ExecutedBy.Descriptor instead.
+func (Job_ExecutedBy) EnumDescriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{11, 0}
+}
+
+type Job_JobState int32
+
+const (
+	Job_JOB_STATE_UNSPECIFIED Job_JobState = 0
+	Job_SCHEDULED             Job_JobState = 1
+	Job_STARTED               Job_JobState = 2
+	Job_PASSED                Job_JobState = 3
+	Job_FAILED                Job_JobState = 4
+)
+
+// Enum value maps for Job_JobState.
+var (
+	Job_JobState_name = map[int32]string{
+		0: "JOB_STATE_UNSPECIFIED",
+		1: "SCHEDULED",
+		2: "STARTED",
+		3: "PASSED",
+		4: "FAILED",
+	}
+	Job_JobState_value = map[string]int32{
+		"JOB_STATE_UNSPECIFIED": 0,
+		"SCHEDULED":             1,
+		"STARTED":               2,
+		"PASSED":                3,
+		"FAILED":                4,
+	}
+)
+
+func (x Job_JobState) Enum() *Job_JobState {
+	p := new(Job_JobState)
+	*p = x
+	return p
+}
+
+func (x Job_JobState) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Job_JobState) Descriptor() protoreflect.EnumDescriptor {
+	return file_common_v1_common_proto_enumTypes[4].Descriptor()
+}
+
+func (Job_JobState) Type() protoreflect.EnumType {
+	return &file_common_v1_common_proto_enumTypes[4]
+}
+
+func (x Job_JobState) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Job_JobState.Descriptor instead.
+func (Job_JobState) EnumDescriptor() ([]byte, []int) {
+	return file_common_v1_common_proto_rawDescGZIP(), []int{11, 1}
+}
+
 type Error struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -894,17 +998,29 @@ func (*PostOperation) Descriptor() ([]byte, []int) {
 	return file_common_v1_common_proto_rawDescGZIP(), []int{10}
 }
 
-// this is used for nodes to send updates on job progress
-type NodeJobStatusUpdate struct {
+// this message represents a Job and can be used in multiple contexts; see RPC definitions
+// for some definitions fields may be ignored; e.g., when reporting job status up from a node,
+// the node_id is ignored and is filled in by INBS
+type Job struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	JobId string `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"` // other fields here
+	JobId            string               `protobuf:"bytes,1,opt,name=job_id,json=jobId,proto3" json:"job_id,omitempty"`                 // UUID with abbreviated type
+	NodeId           string               `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`              // UUID, references NODE(node_id)
+	ScheduleId       int32                `protobuf:"varint,3,opt,name=schedule_id,json=scheduleId,proto3" json:"schedule_id,omitempty"` // References SCHEDULE(schedule_id)
+	ExecutedBy       Job_ExecutedBy       `protobuf:"varint,4,opt,name=executed_by,json=executedBy,proto3,enum=common.v1.Job_ExecutedBy" json:"executed_by,omitempty"`
+	DesiredStartTime *timestamp.Timestamp `protobuf:"bytes,5,opt,name=desired_start_time,json=desiredStartTime,proto3" json:"desired_start_time,omitempty"`
+	ActualStartTime  *timestamp.Timestamp `protobuf:"bytes,6,opt,name=actual_start_time,json=actualStartTime,proto3" json:"actual_start_time,omitempty"`
+	ActualEndTime    *timestamp.Timestamp `protobuf:"bytes,7,opt,name=actual_end_time,json=actualEndTime,proto3" json:"actual_end_time,omitempty"`
+	JobState         Job_JobState         `protobuf:"varint,8,opt,name=job_state,json=jobState,proto3,enum=common.v1.Job_JobState" json:"job_state,omitempty"`
+	StatusCode       int32                `protobuf:"varint,9,opt,name=status_code,json=statusCode,proto3" json:"status_code,omitempty"` // Not yet defined
+	ResultMsgs       string               `protobuf:"bytes,10,opt,name=result_msgs,json=resultMsgs,proto3" json:"result_msgs,omitempty"` // JSON string for result messages of all tasks ran
+	CreateTime       *timestamp.Timestamp `protobuf:"bytes,11,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 }
 
-func (x *NodeJobStatusUpdate) Reset() {
-	*x = NodeJobStatusUpdate{}
+func (x *Job) Reset() {
+	*x = Job{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_common_v1_common_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -912,13 +1028,13 @@ func (x *NodeJobStatusUpdate) Reset() {
 	}
 }
 
-func (x *NodeJobStatusUpdate) String() string {
+func (x *Job) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*NodeJobStatusUpdate) ProtoMessage() {}
+func (*Job) ProtoMessage() {}
 
-func (x *NodeJobStatusUpdate) ProtoReflect() protoreflect.Message {
+func (x *Job) ProtoReflect() protoreflect.Message {
 	mi := &file_common_v1_common_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -930,16 +1046,86 @@ func (x *NodeJobStatusUpdate) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use NodeJobStatusUpdate.ProtoReflect.Descriptor instead.
-func (*NodeJobStatusUpdate) Descriptor() ([]byte, []int) {
+// Deprecated: Use Job.ProtoReflect.Descriptor instead.
+func (*Job) Descriptor() ([]byte, []int) {
 	return file_common_v1_common_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *NodeJobStatusUpdate) GetJobId() string {
+func (x *Job) GetJobId() string {
 	if x != nil {
 		return x.JobId
 	}
 	return ""
+}
+
+func (x *Job) GetNodeId() string {
+	if x != nil {
+		return x.NodeId
+	}
+	return ""
+}
+
+func (x *Job) GetScheduleId() int32 {
+	if x != nil {
+		return x.ScheduleId
+	}
+	return 0
+}
+
+func (x *Job) GetExecutedBy() Job_ExecutedBy {
+	if x != nil {
+		return x.ExecutedBy
+	}
+	return Job_EXECUTED_BY_UNSPECIFIED
+}
+
+func (x *Job) GetDesiredStartTime() *timestamp.Timestamp {
+	if x != nil {
+		return x.DesiredStartTime
+	}
+	return nil
+}
+
+func (x *Job) GetActualStartTime() *timestamp.Timestamp {
+	if x != nil {
+		return x.ActualStartTime
+	}
+	return nil
+}
+
+func (x *Job) GetActualEndTime() *timestamp.Timestamp {
+	if x != nil {
+		return x.ActualEndTime
+	}
+	return nil
+}
+
+func (x *Job) GetJobState() Job_JobState {
+	if x != nil {
+		return x.JobState
+	}
+	return Job_JOB_STATE_UNSPECIFIED
+}
+
+func (x *Job) GetStatusCode() int32 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
+func (x *Job) GetResultMsgs() string {
+	if x != nil {
+		return x.ResultMsgs
+	}
+	return ""
+}
+
+func (x *Job) GetCreateTime() *timestamp.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
 }
 
 var File_common_v1_common_proto protoreflect.FileDescriptor
@@ -1084,10 +1270,53 @@ var file_common_v1_common_proto_rawDesc = []byte{
 	0x10, 0x08, 0x12, 0x15, 0x0a, 0x11, 0x50, 0x4f, 0x57, 0x45, 0x52, 0x5f, 0x53, 0x54, 0x41, 0x54,
 	0x45, 0x5f, 0x52, 0x45, 0x53, 0x45, 0x54, 0x10, 0x0a, 0x22, 0x0e, 0x0a, 0x0c, 0x50, 0x72, 0x65,
 	0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x0f, 0x0a, 0x0d, 0x50, 0x6f, 0x73,
-	0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x2c, 0x0a, 0x13, 0x4e, 0x6f,
-	0x64, 0x65, 0x4a, 0x6f, 0x62, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x12, 0x15, 0x0a, 0x06, 0x6a, 0x6f, 0x62, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x05, 0x6a, 0x6f, 0x62, 0x49, 0x64, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xd0, 0x05, 0x0a, 0x03, 0x4a,
+	0x6f, 0x62, 0x12, 0x15, 0x0a, 0x06, 0x6a, 0x6f, 0x62, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x05, 0x6a, 0x6f, 0x62, 0x49, 0x64, 0x12, 0x17, 0x0a, 0x07, 0x6e, 0x6f, 0x64,
+	0x65, 0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x6e, 0x6f, 0x64, 0x65,
+	0x49, 0x64, 0x12, 0x1f, 0x0a, 0x0b, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x5f, 0x69,
+	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0a, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
+	0x65, 0x49, 0x64, 0x12, 0x3a, 0x0a, 0x0b, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x65, 0x64, 0x5f,
+	0x62, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x4a, 0x6f, 0x62, 0x2e, 0x45, 0x78, 0x65, 0x63, 0x75, 0x74, 0x65,
+	0x64, 0x42, 0x79, 0x52, 0x0a, 0x65, 0x78, 0x65, 0x63, 0x75, 0x74, 0x65, 0x64, 0x42, 0x79, 0x12,
+	0x48, 0x0a, 0x12, 0x64, 0x65, 0x73, 0x69, 0x72, 0x65, 0x64, 0x5f, 0x73, 0x74, 0x61, 0x72, 0x74,
+	0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69,
+	0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x10, 0x64, 0x65, 0x73, 0x69, 0x72, 0x65, 0x64,
+	0x53, 0x74, 0x61, 0x72, 0x74, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x46, 0x0a, 0x11, 0x61, 0x63, 0x74,
+	0x75, 0x61, 0x6c, 0x5f, 0x73, 0x74, 0x61, 0x72, 0x74, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x06,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70,
+	0x52, 0x0f, 0x61, 0x63, 0x74, 0x75, 0x61, 0x6c, 0x53, 0x74, 0x61, 0x72, 0x74, 0x54, 0x69, 0x6d,
+	0x65, 0x12, 0x42, 0x0a, 0x0f, 0x61, 0x63, 0x74, 0x75, 0x61, 0x6c, 0x5f, 0x65, 0x6e, 0x64, 0x5f,
+	0x74, 0x69, 0x6d, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f,
+	0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d,
+	0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0d, 0x61, 0x63, 0x74, 0x75, 0x61, 0x6c, 0x45, 0x6e,
+	0x64, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x34, 0x0a, 0x09, 0x6a, 0x6f, 0x62, 0x5f, 0x73, 0x74, 0x61,
+	0x74, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x17, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x4a, 0x6f, 0x62, 0x2e, 0x4a, 0x6f, 0x62, 0x53, 0x74, 0x61, 0x74,
+	0x65, 0x52, 0x08, 0x6a, 0x6f, 0x62, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x1f, 0x0a, 0x0b, 0x73,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x5f, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x05,
+	0x52, 0x0a, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x43, 0x6f, 0x64, 0x65, 0x12, 0x1f, 0x0a, 0x0b,
+	0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x5f, 0x6d, 0x73, 0x67, 0x73, 0x18, 0x0a, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0a, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x4d, 0x73, 0x67, 0x73, 0x12, 0x3b, 0x0a,
+	0x0b, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x5f, 0x74, 0x69, 0x6d, 0x65, 0x18, 0x0b, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0a,
+	0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x22, 0x56, 0x0a, 0x0a, 0x45, 0x78,
+	0x65, 0x63, 0x75, 0x74, 0x65, 0x64, 0x42, 0x79, 0x12, 0x1b, 0x0a, 0x17, 0x45, 0x58, 0x45, 0x43,
+	0x55, 0x54, 0x45, 0x44, 0x5f, 0x42, 0x59, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46,
+	0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x16, 0x0a, 0x12, 0x45, 0x58, 0x45, 0x43, 0x55, 0x54, 0x45,
+	0x44, 0x5f, 0x42, 0x59, 0x5f, 0x49, 0x4e, 0x42, 0x41, 0x4e, 0x44, 0x10, 0x01, 0x12, 0x13, 0x0a,
+	0x0f, 0x45, 0x58, 0x45, 0x43, 0x55, 0x54, 0x45, 0x44, 0x5f, 0x42, 0x59, 0x5f, 0x4f, 0x4f, 0x42,
+	0x10, 0x02, 0x22, 0x59, 0x0a, 0x08, 0x4a, 0x6f, 0x62, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x19,
+	0x0a, 0x15, 0x4a, 0x4f, 0x42, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50,
+	0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x0d, 0x0a, 0x09, 0x53, 0x43, 0x48,
+	0x45, 0x44, 0x55, 0x4c, 0x45, 0x44, 0x10, 0x01, 0x12, 0x0b, 0x0a, 0x07, 0x53, 0x54, 0x41, 0x52,
+	0x54, 0x45, 0x44, 0x10, 0x02, 0x12, 0x0a, 0x0a, 0x06, 0x50, 0x41, 0x53, 0x53, 0x45, 0x44, 0x10,
+	0x03, 0x12, 0x0a, 0x0a, 0x06, 0x46, 0x41, 0x49, 0x4c, 0x45, 0x44, 0x10, 0x04, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1102,49 +1331,57 @@ func file_common_v1_common_proto_rawDescGZIP() []byte {
 	return file_common_v1_common_proto_rawDescData
 }
 
-var file_common_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_common_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
 var file_common_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_common_v1_common_proto_goTypes = []interface{}{
 	(Operation_ServiceType)(0),                      // 0: common.v1.Operation.ServiceType
 	(UpdateSystemSoftwareOperation_DownloadMode)(0), // 1: common.v1.UpdateSystemSoftwareOperation.DownloadMode
 	(SetPowerStateOperation_PowerState)(0),          // 2: common.v1.SetPowerStateOperation.PowerState
-	(*Error)(nil),                                   // 3: common.v1.Error
-	(*NodeScheduledOperations)(nil),                 // 4: common.v1.NodeScheduledOperations
-	(*ScheduledOperation)(nil),                      // 5: common.v1.ScheduledOperation
-	(*Schedule)(nil),                                // 6: common.v1.Schedule
-	(*SingleSchedule)(nil),                          // 7: common.v1.SingleSchedule
-	(*RepeatedSchedule)(nil),                        // 8: common.v1.RepeatedSchedule
-	(*Operation)(nil),                               // 9: common.v1.Operation
-	(*UpdateSystemSoftwareOperation)(nil),           // 10: common.v1.UpdateSystemSoftwareOperation
-	(*SetPowerStateOperation)(nil),                  // 11: common.v1.SetPowerStateOperation
-	(*PreOperation)(nil),                            // 12: common.v1.PreOperation
-	(*PostOperation)(nil),                           // 13: common.v1.PostOperation
-	(*NodeJobStatusUpdate)(nil),                     // 14: common.v1.NodeJobStatusUpdate
-	(*timestamp.Timestamp)(nil),                     // 15: google.protobuf.Timestamp
-	(*duration.Duration)(nil),                       // 16: google.protobuf.Duration
+	(Job_ExecutedBy)(0),                             // 3: common.v1.Job.ExecutedBy
+	(Job_JobState)(0),                               // 4: common.v1.Job.JobState
+	(*Error)(nil),                                   // 5: common.v1.Error
+	(*NodeScheduledOperations)(nil),                 // 6: common.v1.NodeScheduledOperations
+	(*ScheduledOperation)(nil),                      // 7: common.v1.ScheduledOperation
+	(*Schedule)(nil),                                // 8: common.v1.Schedule
+	(*SingleSchedule)(nil),                          // 9: common.v1.SingleSchedule
+	(*RepeatedSchedule)(nil),                        // 10: common.v1.RepeatedSchedule
+	(*Operation)(nil),                               // 11: common.v1.Operation
+	(*UpdateSystemSoftwareOperation)(nil),           // 12: common.v1.UpdateSystemSoftwareOperation
+	(*SetPowerStateOperation)(nil),                  // 13: common.v1.SetPowerStateOperation
+	(*PreOperation)(nil),                            // 14: common.v1.PreOperation
+	(*PostOperation)(nil),                           // 15: common.v1.PostOperation
+	(*Job)(nil),                                     // 16: common.v1.Job
+	(*timestamp.Timestamp)(nil),                     // 17: google.protobuf.Timestamp
+	(*duration.Duration)(nil),                       // 18: google.protobuf.Duration
 }
 var file_common_v1_common_proto_depIdxs = []int32{
-	5,  // 0: common.v1.NodeScheduledOperations.scheduled_operations:type_name -> common.v1.ScheduledOperation
-	9,  // 1: common.v1.ScheduledOperation.operation:type_name -> common.v1.Operation
-	6,  // 2: common.v1.ScheduledOperation.schedules:type_name -> common.v1.Schedule
-	7,  // 3: common.v1.Schedule.single_schedule:type_name -> common.v1.SingleSchedule
-	8,  // 4: common.v1.Schedule.repeated_schedule:type_name -> common.v1.RepeatedSchedule
-	15, // 5: common.v1.SingleSchedule.start_time:type_name -> google.protobuf.Timestamp
-	15, // 6: common.v1.SingleSchedule.end_time:type_name -> google.protobuf.Timestamp
-	16, // 7: common.v1.RepeatedSchedule.duration:type_name -> google.protobuf.Duration
-	12, // 8: common.v1.Operation.pre_operations:type_name -> common.v1.PreOperation
-	13, // 9: common.v1.Operation.post_operations:type_name -> common.v1.PostOperation
+	7,  // 0: common.v1.NodeScheduledOperations.scheduled_operations:type_name -> common.v1.ScheduledOperation
+	11, // 1: common.v1.ScheduledOperation.operation:type_name -> common.v1.Operation
+	8,  // 2: common.v1.ScheduledOperation.schedules:type_name -> common.v1.Schedule
+	9,  // 3: common.v1.Schedule.single_schedule:type_name -> common.v1.SingleSchedule
+	10, // 4: common.v1.Schedule.repeated_schedule:type_name -> common.v1.RepeatedSchedule
+	17, // 5: common.v1.SingleSchedule.start_time:type_name -> google.protobuf.Timestamp
+	17, // 6: common.v1.SingleSchedule.end_time:type_name -> google.protobuf.Timestamp
+	18, // 7: common.v1.RepeatedSchedule.duration:type_name -> google.protobuf.Duration
+	14, // 8: common.v1.Operation.pre_operations:type_name -> common.v1.PreOperation
+	15, // 9: common.v1.Operation.post_operations:type_name -> common.v1.PostOperation
 	0,  // 10: common.v1.Operation.service_type:type_name -> common.v1.Operation.ServiceType
-	10, // 11: common.v1.Operation.update_system_software_operation:type_name -> common.v1.UpdateSystemSoftwareOperation
-	11, // 12: common.v1.Operation.set_power_state_operation:type_name -> common.v1.SetPowerStateOperation
-	15, // 13: common.v1.UpdateSystemSoftwareOperation.release_date:type_name -> google.protobuf.Timestamp
+	12, // 11: common.v1.Operation.update_system_software_operation:type_name -> common.v1.UpdateSystemSoftwareOperation
+	13, // 12: common.v1.Operation.set_power_state_operation:type_name -> common.v1.SetPowerStateOperation
+	17, // 13: common.v1.UpdateSystemSoftwareOperation.release_date:type_name -> google.protobuf.Timestamp
 	1,  // 14: common.v1.UpdateSystemSoftwareOperation.mode:type_name -> common.v1.UpdateSystemSoftwareOperation.DownloadMode
 	2,  // 15: common.v1.SetPowerStateOperation.opcode:type_name -> common.v1.SetPowerStateOperation.PowerState
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	3,  // 16: common.v1.Job.executed_by:type_name -> common.v1.Job.ExecutedBy
+	17, // 17: common.v1.Job.desired_start_time:type_name -> google.protobuf.Timestamp
+	17, // 18: common.v1.Job.actual_start_time:type_name -> google.protobuf.Timestamp
+	17, // 19: common.v1.Job.actual_end_time:type_name -> google.protobuf.Timestamp
+	4,  // 20: common.v1.Job.job_state:type_name -> common.v1.Job.JobState
+	17, // 21: common.v1.Job.create_time:type_name -> google.protobuf.Timestamp
+	22, // [22:22] is the sub-list for method output_type
+	22, // [22:22] is the sub-list for method input_type
+	22, // [22:22] is the sub-list for extension type_name
+	22, // [22:22] is the sub-list for extension extendee
+	0,  // [0:22] is the sub-list for field type_name
 }
 
 func init() { file_common_v1_common_proto_init() }
@@ -1286,7 +1523,7 @@ func file_common_v1_common_proto_init() {
 			}
 		}
 		file_common_v1_common_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*NodeJobStatusUpdate); i {
+			switch v := v.(*Job); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -1311,7 +1548,7 @@ func file_common_v1_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_common_v1_common_proto_rawDesc,
-			NumEnums:      3,
+			NumEnums:      5,
 			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   0,
