@@ -296,6 +296,136 @@ func (*Ping) Descriptor() ([]byte, []int) {
 	return file_inbs_v1_inbs_sb_proto_rawDescGZIP(), []int{4}
 }
 
+type SendNodeUpdateRequest struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RequestId string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Types that are assignable to Update:
+	//
+	//	*SendNodeUpdateRequest_JobUpdate
+	Update isSendNodeUpdateRequest_Update `protobuf_oneof:"update"`
+}
+
+func (x *SendNodeUpdateRequest) Reset() {
+	*x = SendNodeUpdateRequest{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_inbs_v1_inbs_sb_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendNodeUpdateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendNodeUpdateRequest) ProtoMessage() {}
+
+func (x *SendNodeUpdateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_inbs_v1_inbs_sb_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendNodeUpdateRequest.ProtoReflect.Descriptor instead.
+func (*SendNodeUpdateRequest) Descriptor() ([]byte, []int) {
+	return file_inbs_v1_inbs_sb_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *SendNodeUpdateRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (m *SendNodeUpdateRequest) GetUpdate() isSendNodeUpdateRequest_Update {
+	if m != nil {
+		return m.Update
+	}
+	return nil
+}
+
+func (x *SendNodeUpdateRequest) GetJobUpdate() *Job {
+	if x, ok := x.GetUpdate().(*SendNodeUpdateRequest_JobUpdate); ok {
+		return x.JobUpdate
+	}
+	return nil
+}
+
+type isSendNodeUpdateRequest_Update interface {
+	isSendNodeUpdateRequest_Update()
+}
+
+type SendNodeUpdateRequest_JobUpdate struct {
+	JobUpdate *Job `protobuf:"bytes,3,opt,name=job_update,json=jobUpdate,proto3,oneof"` // node_id will be filled in by INBS; schedule_id, executed_by, desired_start_time, create_time will be ignored
+}
+
+func (*SendNodeUpdateRequest_JobUpdate) isSendNodeUpdateRequest_Update() {}
+
+type SendNodeUpdateResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	RequestId string `protobuf:"bytes,1,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	Error     *Error `protobuf:"bytes,2,opt,name=error,proto3" json:"error,omitempty"`
+}
+
+func (x *SendNodeUpdateResponse) Reset() {
+	*x = SendNodeUpdateResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_inbs_v1_inbs_sb_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *SendNodeUpdateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SendNodeUpdateResponse) ProtoMessage() {}
+
+func (x *SendNodeUpdateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_inbs_v1_inbs_sb_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SendNodeUpdateResponse.ProtoReflect.Descriptor instead.
+func (*SendNodeUpdateResponse) Descriptor() ([]byte, []int) {
+	return file_inbs_v1_inbs_sb_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *SendNodeUpdateResponse) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (x *SendNodeUpdateResponse) GetError() *Error {
+	if x != nil {
+		return x.Error
+	}
+	return nil
+}
+
 var File_inbs_v1_inbs_sb_proto protoreflect.FileDescriptor
 
 var file_inbs_v1_inbs_sb_proto_rawDesc = []byte{
@@ -333,15 +463,33 @@ var file_inbs_v1_inbs_sb_proto_rawDesc = []byte{
 	0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75,
 	0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x13, 0x73, 0x63,
 	0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x64, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x73, 0x22, 0x06, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x32, 0x6f, 0x0a, 0x0d, 0x49, 0x4e, 0x42,
-	0x53, 0x53, 0x42, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12, 0x5e, 0x0a, 0x11, 0x48, 0x61,
-	0x6e, 0x64, 0x6c, 0x65, 0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x12,
-	0x22, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65,
-	0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x1a, 0x21, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x48, 0x61,
-	0x6e, 0x64, 0x6c, 0x65, 0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x28, 0x01, 0x30, 0x01, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x73, 0x22, 0x06, 0x0a, 0x04, 0x50, 0x69, 0x6e, 0x67, 0x22, 0x71, 0x0a, 0x15, 0x53, 0x65, 0x6e,
+	0x64, 0x4e, 0x6f, 0x64, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x5f, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49,
+	0x64, 0x12, 0x2f, 0x0a, 0x0a, 0x6a, 0x6f, 0x62, 0x5f, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76,
+	0x31, 0x2e, 0x4a, 0x6f, 0x62, 0x48, 0x00, 0x52, 0x09, 0x6a, 0x6f, 0x62, 0x55, 0x70, 0x64, 0x61,
+	0x74, 0x65, 0x42, 0x08, 0x0a, 0x06, 0x75, 0x70, 0x64, 0x61, 0x74, 0x65, 0x22, 0x5f, 0x0a, 0x16,
+	0x53, 0x65, 0x6e, 0x64, 0x4e, 0x6f, 0x64, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x72, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x76, 0x31,
+	0x2e, 0x45, 0x72, 0x72, 0x6f, 0x72, 0x52, 0x05, 0x65, 0x72, 0x72, 0x6f, 0x72, 0x32, 0xc2, 0x01,
+	0x0a, 0x0d, 0x49, 0x4e, 0x42, 0x53, 0x53, 0x42, 0x53, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x12,
+	0x5e, 0x0a, 0x11, 0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65, 0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d,
+	0x6d, 0x61, 0x6e, 0x64, 0x12, 0x22, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x48,
+	0x61, 0x6e, 0x64, 0x6c, 0x65, 0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d, 0x6d, 0x61, 0x6e, 0x64,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x21, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e,
+	0x76, 0x31, 0x2e, 0x48, 0x61, 0x6e, 0x64, 0x6c, 0x65, 0x49, 0x4e, 0x42, 0x4d, 0x43, 0x6f, 0x6d,
+	0x6d, 0x61, 0x6e, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x28, 0x01, 0x30, 0x01, 0x12,
+	0x51, 0x0a, 0x0e, 0x53, 0x65, 0x6e, 0x64, 0x4e, 0x6f, 0x64, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x12, 0x1e, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x6e, 0x64,
+	0x4e, 0x6f, 0x64, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
+	0x74, 0x1a, 0x1f, 0x2e, 0x69, 0x6e, 0x62, 0x73, 0x2e, 0x76, 0x31, 0x2e, 0x53, 0x65, 0x6e, 0x64,
+	0x4e, 0x6f, 0x64, 0x65, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -356,29 +504,36 @@ func file_inbs_v1_inbs_sb_proto_rawDescGZIP() []byte {
 	return file_inbs_v1_inbs_sb_proto_rawDescData
 }
 
-var file_inbs_v1_inbs_sb_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_inbs_v1_inbs_sb_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_inbs_v1_inbs_sb_proto_goTypes = []interface{}{
 	(*HandleINBMCommandRequest)(nil),  // 0: inbs.v1.HandleINBMCommandRequest
 	(*HandleINBMCommandResponse)(nil), // 1: inbs.v1.HandleINBMCommandResponse
 	(*INBMCommand)(nil),               // 2: inbs.v1.INBMCommand
 	(*UpdateScheduledOperations)(nil), // 3: inbs.v1.UpdateScheduledOperations
 	(*Ping)(nil),                      // 4: inbs.v1.Ping
-	(*Error)(nil),                     // 5: common.v1.Error
-	(*ScheduledOperation)(nil),        // 6: common.v1.ScheduledOperation
+	(*SendNodeUpdateRequest)(nil),     // 5: inbs.v1.SendNodeUpdateRequest
+	(*SendNodeUpdateResponse)(nil),    // 6: inbs.v1.SendNodeUpdateResponse
+	(*Error)(nil),                     // 7: common.v1.Error
+	(*ScheduledOperation)(nil),        // 8: common.v1.ScheduledOperation
+	(*Job)(nil),                       // 9: common.v1.Job
 }
 var file_inbs_v1_inbs_sb_proto_depIdxs = []int32{
 	2, // 0: inbs.v1.HandleINBMCommandRequest.command:type_name -> inbs.v1.INBMCommand
-	5, // 1: inbs.v1.HandleINBMCommandResponse.error:type_name -> common.v1.Error
+	7, // 1: inbs.v1.HandleINBMCommandResponse.error:type_name -> common.v1.Error
 	3, // 2: inbs.v1.INBMCommand.update_scheduled_operations:type_name -> inbs.v1.UpdateScheduledOperations
 	4, // 3: inbs.v1.INBMCommand.ping:type_name -> inbs.v1.Ping
-	6, // 4: inbs.v1.UpdateScheduledOperations.scheduled_operations:type_name -> common.v1.ScheduledOperation
-	1, // 5: inbs.v1.INBSSBService.HandleINBMCommand:input_type -> inbs.v1.HandleINBMCommandResponse
-	0, // 6: inbs.v1.INBSSBService.HandleINBMCommand:output_type -> inbs.v1.HandleINBMCommandRequest
-	6, // [6:7] is the sub-list for method output_type
-	5, // [5:6] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	8, // 4: inbs.v1.UpdateScheduledOperations.scheduled_operations:type_name -> common.v1.ScheduledOperation
+	9, // 5: inbs.v1.SendNodeUpdateRequest.job_update:type_name -> common.v1.Job
+	7, // 6: inbs.v1.SendNodeUpdateResponse.error:type_name -> common.v1.Error
+	1, // 7: inbs.v1.INBSSBService.HandleINBMCommand:input_type -> inbs.v1.HandleINBMCommandResponse
+	5, // 8: inbs.v1.INBSSBService.SendNodeUpdate:input_type -> inbs.v1.SendNodeUpdateRequest
+	0, // 9: inbs.v1.INBSSBService.HandleINBMCommand:output_type -> inbs.v1.HandleINBMCommandRequest
+	6, // 10: inbs.v1.INBSSBService.SendNodeUpdate:output_type -> inbs.v1.SendNodeUpdateResponse
+	9, // [9:11] is the sub-list for method output_type
+	7, // [7:9] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_inbs_v1_inbs_sb_proto_init() }
@@ -448,10 +603,37 @@ func file_inbs_v1_inbs_sb_proto_init() {
 				return nil
 			}
 		}
+		file_inbs_v1_inbs_sb_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendNodeUpdateRequest); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_inbs_v1_inbs_sb_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*SendNodeUpdateResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_inbs_v1_inbs_sb_proto_msgTypes[2].OneofWrappers = []interface{}{
 		(*INBMCommand_UpdateScheduledOperations)(nil),
 		(*INBMCommand_Ping)(nil),
+	}
+	file_inbs_v1_inbs_sb_proto_msgTypes[5].OneofWrappers = []interface{}{
+		(*SendNodeUpdateRequest_JobUpdate)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -459,7 +641,7 @@ func file_inbs_v1_inbs_sb_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_inbs_v1_inbs_sb_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

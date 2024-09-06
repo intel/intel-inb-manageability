@@ -103,3 +103,37 @@ message PostOperation {
 //    // ...
 //  }
 }
+
+
+// this message represents a Job and can be used in multiple contexts; see RPC definitions
+// for some definitions fields may be ignored; e.g., when reporting job status up from a node,
+// the node_id is ignored and is filled in by INBS
+message Job {
+  string job_id = 1;  // UUID with abbreviated type
+  string node_id = 2;  // UUID, references NODE(node_id)
+  int32 schedule_id = 3;  // References SCHEDULE(schedule_id)
+
+  enum ExecutedBy {
+    EXECUTED_BY_UNSPECIFIED = 0;
+    EXECUTED_BY_INBAND = 1;
+    EXECUTED_BY_OOB = 2;
+  }
+  ExecutedBy executed_by = 4;
+
+  google.protobuf.Timestamp desired_start_time = 5;
+  google.protobuf.Timestamp actual_start_time = 6;
+  google.protobuf.Timestamp actual_end_time = 7;
+
+  enum JobState {
+    JOB_STATE_UNSPECIFIED = 0;
+    SCHEDULED = 1;
+    STARTED = 2;
+    PASSED = 3;
+    FAILED = 4;
+  }
+  JobState job_state = 8;
+
+  int32 status_code = 9;  // Not yet defined
+  string result_msgs = 10;  // JSON string for result messages of all tasks ran
+  google.protobuf.Timestamp create_time = 11;
+}
