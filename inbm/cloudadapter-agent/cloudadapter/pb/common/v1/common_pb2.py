@@ -16,7 +16,7 @@ from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__
 from google.protobuf import duration_pb2 as google_dot_protobuf_dot_duration__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x63ommon/v1/common.proto\x12\tcommon.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"\x18\n\x05\x45rror\x12\x0f\n\x07message\x18\x01 \x01(\t\"g\n\x17NodeScheduledOperations\x12;\n\x14scheduled_operations\x18\x01 \x03(\x0b\x32\x1d.common.v1.ScheduledOperation\x12\x0f\n\x07node_id\x18\x02 \x01(\t\"e\n\x12ScheduledOperation\x12\'\n\toperation\x18\x01 \x01(\x0b\x32\x14.common.v1.Operation\x12&\n\tschedules\x18\x02 \x03(\x0b\x32\x13.common.v1.Schedule\"\x86\x01\n\x08Schedule\x12\x34\n\x0fsingle_schedule\x18\x01 \x01(\x0b\x32\x19.common.v1.SingleScheduleH\x00\x12\x38\n\x11repeated_schedule\x18\x02 \x01(\x0b\x32\x1b.common.v1.RepeatedScheduleH\x00\x42\n\n\x08schedule\"~\n\x0eSingleSchedule\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12.\n\nstart_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xbc\x01\n\x10RepeatedSchedule\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12+\n\x08\x64uration\x18\x02 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x14\n\x0c\x63ron_minutes\x18\x03 \x01(\t\x12\x12\n\ncron_hours\x18\x04 \x01(\t\x12\x16\n\x0e\x63ron_day_month\x18\x05 \x01(\t\x12\x12\n\ncron_month\x18\x06 \x01(\t\x12\x15\n\rcron_day_week\x18\x07 \x01(\t\"\xa5\x04\n\tOperation\x12/\n\x0epre_operations\x18\x01 \x03(\x0b\x32\x17.common.v1.PreOperation\x12\x31\n\x0fpost_operations\x18\x02 \x03(\x0b\x32\x18.common.v1.PostOperation\x12\x36\n\x0cservice_type\x18\x03 \x01(\x0e\x32 .common.v1.Operation.ServiceType\x12T\n update_system_software_operation\x18\x04 \x01(\x0b\x32(.common.v1.UpdateSystemSoftwareOperationH\x00\x12\x46\n\x19set_power_state_operation\x18\x05 \x01(\x0b\x32!.common.v1.SetPowerStateOperationH\x00\x12\x41\n\x16rpc_activate_operation\x18\x06 \x01(\x0b\x32\x1f.common.v1.RpcActivateOperationH\x00\"\x8d\x01\n\x0bServiceType\x12\x1c\n\x18SERVICE_TYPE_UNSPECIFIED\x10\x00\x12\x15\n\x11SERVICE_TYPE_INBS\x10\x01\x12\x18\n\x14SERVICE_TYPE_OOB_AMT\x10\x02\x12\x18\n\x14SERVICE_TYPE_OOB_BMC\x10\x03\x12\x15\n\x11SERVICE_TYPE_AUTO\x10\x04\x42\x0b\n\toperation\"9\n\x14RpcActivateOperation\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x14\n\x0cprofile_name\x18\x02 \x01(\t\"\xd8\x02\n\x1dUpdateSystemSoftwareOperation\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x30\n\x0crelease_date\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x43\n\x04mode\x18\x03 \x01(\x0e\x32\x35.common.v1.UpdateSystemSoftwareOperation.DownloadMode\x12\x15\n\rdo_not_reboot\x18\x04 \x01(\x08\x12\x14\n\x0cpackage_list\x18\x05 \x03(\t\"\x85\x01\n\x0c\x44ownloadMode\x12\x1d\n\x19\x44OWNLOAD_MODE_UNSPECIFIED\x10\x00\x12\x16\n\x12\x44OWNLOAD_MODE_FULL\x10\x01\x12\x1d\n\x19\x44OWNLOAD_MODE_NO_DOWNLOAD\x10\x02\x12\x1f\n\x1b\x44OWNLOAD_MODE_DOWNLOAD_ONLY\x10\x03\"\xd9\x01\n\x16SetPowerStateOperation\x12<\n\x06opcode\x18\x01 \x01(\x0e\x32,.common.v1.SetPowerStateOperation.PowerState\"\x80\x01\n\nPowerState\x12\x1b\n\x17POWER_STATE_UNSPECIFIED\x10\x00\x12\x12\n\x0ePOWER_STATE_ON\x10\x02\x12\x15\n\x11POWER_STATE_CYCLE\x10\x05\x12\x13\n\x0fPOWER_STATE_OFF\x10\x08\x12\x15\n\x11POWER_STATE_RESET\x10\n\"\x0e\n\x0cPreOperation\"\x0f\n\rPostOperation\"\xc9\x04\n\x03Job\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0bschedule_id\x18\x03 \x01(\x05\x12.\n\x0b\x65xecuted_by\x18\x04 \x01(\x0e\x32\x19.common.v1.Job.ExecutedBy\x12\x36\n\x12\x64\x65sired_start_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x11\x61\x63tual_start_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x33\n\x0f\x61\x63tual_end_time\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12*\n\tjob_state\x18\x08 \x01(\x0e\x32\x17.common.v1.Job.JobState\x12\x13\n\x0bstatus_code\x18\t \x01(\x05\x12\x13\n\x0bresult_msgs\x18\n \x01(\t\x12/\n\x0b\x63reate_time\x18\x0b \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"V\n\nExecutedBy\x12\x1b\n\x17\x45XECUTED_BY_UNSPECIFIED\x10\x00\x12\x16\n\x12\x45XECUTED_BY_INBAND\x10\x01\x12\x13\n\x0f\x45XECUTED_BY_OOB\x10\x02\"Y\n\x08JobState\x12\x19\n\x15JOB_STATE_UNSPECIFIED\x10\x00\x12\r\n\tSCHEDULED\x10\x01\x12\x0b\n\x07STARTED\x10\x02\x12\n\n\x06PASSED\x10\x03\x12\n\n\x06\x46\x41ILED\x10\x04\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x16\x63ommon/v1/common.proto\x12\tcommon.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\"\x18\n\x05\x45rror\x12\x0f\n\x07message\x18\x01 \x01(\t\"g\n\x17NodeScheduledOperations\x12;\n\x14scheduled_operations\x18\x01 \x03(\x0b\x32\x1d.common.v1.ScheduledOperation\x12\x0f\n\x07node_id\x18\x02 \x01(\t\"e\n\x12ScheduledOperation\x12\'\n\toperation\x18\x01 \x01(\x0b\x32\x14.common.v1.Operation\x12&\n\tschedules\x18\x02 \x03(\x0b\x32\x13.common.v1.Schedule\"\x86\x01\n\x08Schedule\x12\x34\n\x0fsingle_schedule\x18\x01 \x01(\x0b\x32\x19.common.v1.SingleScheduleH\x00\x12\x38\n\x11repeated_schedule\x18\x02 \x01(\x0b\x32\x1b.common.v1.RepeatedScheduleH\x00\x42\n\n\x08schedule\"~\n\x0eSingleSchedule\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12.\n\nstart_time\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12,\n\x08\x65nd_time\x18\x03 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"\xbc\x01\n\x10RepeatedSchedule\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12+\n\x08\x64uration\x18\x02 \x01(\x0b\x32\x19.google.protobuf.Duration\x12\x14\n\x0c\x63ron_minutes\x18\x03 \x01(\t\x12\x12\n\ncron_hours\x18\x04 \x01(\t\x12\x16\n\x0e\x63ron_day_month\x18\x05 \x01(\t\x12\x12\n\ncron_month\x18\x06 \x01(\t\x12\x15\n\rcron_day_week\x18\x07 \x01(\t\"\xf1\x02\n\tOperation\x12/\n\x0epre_operations\x18\x01 \x03(\x0b\x32\x17.common.v1.PreOperation\x12\x31\n\x0fpost_operations\x18\x02 \x03(\x0b\x32\x18.common.v1.PostOperation\x12T\n update_system_software_operation\x18\x04 \x01(\x0b\x32(.common.v1.UpdateSystemSoftwareOperationH\x00\x12\x46\n\x19set_power_state_operation\x18\x05 \x01(\x0b\x32!.common.v1.SetPowerStateOperationH\x00\x12\x41\n\x16rpc_activate_operation\x18\x06 \x01(\x0b\x32\x1f.common.v1.RpcActivateOperationH\x00\x42\x0b\n\toperationJ\x04\x08\x03\x10\x04R\x0cservice_type\"9\n\x14RpcActivateOperation\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x14\n\x0cprofile_name\x18\x02 \x01(\t\"\xd8\x02\n\x1dUpdateSystemSoftwareOperation\x12\x0b\n\x03url\x18\x01 \x01(\t\x12\x30\n\x0crelease_date\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x43\n\x04mode\x18\x03 \x01(\x0e\x32\x35.common.v1.UpdateSystemSoftwareOperation.DownloadMode\x12\x15\n\rdo_not_reboot\x18\x04 \x01(\x08\x12\x14\n\x0cpackage_list\x18\x05 \x03(\t\"\x85\x01\n\x0c\x44ownloadMode\x12\x1d\n\x19\x44OWNLOAD_MODE_UNSPECIFIED\x10\x00\x12\x16\n\x12\x44OWNLOAD_MODE_FULL\x10\x01\x12\x1d\n\x19\x44OWNLOAD_MODE_NO_DOWNLOAD\x10\x02\x12\x1f\n\x1b\x44OWNLOAD_MODE_DOWNLOAD_ONLY\x10\x03\"\xd9\x01\n\x16SetPowerStateOperation\x12<\n\x06opcode\x18\x01 \x01(\x0e\x32,.common.v1.SetPowerStateOperation.PowerState\"\x80\x01\n\nPowerState\x12\x1b\n\x17POWER_STATE_UNSPECIFIED\x10\x00\x12\x12\n\x0ePOWER_STATE_ON\x10\x02\x12\x15\n\x11POWER_STATE_CYCLE\x10\x05\x12\x13\n\x0fPOWER_STATE_OFF\x10\x08\x12\x15\n\x11POWER_STATE_RESET\x10\n\"\x0e\n\x0cPreOperation\"\x0f\n\rPostOperation\"\xc9\x04\n\x03Job\x12\x0e\n\x06job_id\x18\x01 \x01(\t\x12\x0f\n\x07node_id\x18\x02 \x01(\t\x12\x13\n\x0bschedule_id\x18\x03 \x01(\x05\x12.\n\x0b\x65xecuted_by\x18\x04 \x01(\x0e\x32\x19.common.v1.Job.ExecutedBy\x12\x36\n\x12\x64\x65sired_start_time\x18\x05 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x35\n\x11\x61\x63tual_start_time\x18\x06 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x33\n\x0f\x61\x63tual_end_time\x18\x07 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12*\n\tjob_state\x18\x08 \x01(\x0e\x32\x17.common.v1.Job.JobState\x12\x13\n\x0bstatus_code\x18\t \x01(\x05\x12\x13\n\x0bresult_msgs\x18\n \x01(\t\x12/\n\x0b\x63reate_time\x18\x0b \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"V\n\nExecutedBy\x12\x1b\n\x17\x45XECUTED_BY_UNSPECIFIED\x10\x00\x12\x16\n\x12\x45XECUTED_BY_INBAND\x10\x01\x12\x13\n\x0f\x45XECUTED_BY_OOB\x10\x02\"Y\n\x08JobState\x12\x19\n\x15JOB_STATE_UNSPECIFIED\x10\x00\x12\r\n\tSCHEDULED\x10\x01\x12\x0b\n\x07STARTED\x10\x02\x12\n\n\x06PASSED\x10\x03\x12\n\n\x06\x46\x41ILED\x10\x04\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,27 +36,25 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _globals['_REPEATEDSCHEDULE']._serialized_start=602
   _globals['_REPEATEDSCHEDULE']._serialized_end=790
   _globals['_OPERATION']._serialized_start=793
-  _globals['_OPERATION']._serialized_end=1342
-  _globals['_OPERATION_SERVICETYPE']._serialized_start=1188
-  _globals['_OPERATION_SERVICETYPE']._serialized_end=1329
-  _globals['_RPCACTIVATEOPERATION']._serialized_start=1344
-  _globals['_RPCACTIVATEOPERATION']._serialized_end=1401
-  _globals['_UPDATESYSTEMSOFTWAREOPERATION']._serialized_start=1404
-  _globals['_UPDATESYSTEMSOFTWAREOPERATION']._serialized_end=1748
-  _globals['_UPDATESYSTEMSOFTWAREOPERATION_DOWNLOADMODE']._serialized_start=1615
-  _globals['_UPDATESYSTEMSOFTWAREOPERATION_DOWNLOADMODE']._serialized_end=1748
-  _globals['_SETPOWERSTATEOPERATION']._serialized_start=1751
-  _globals['_SETPOWERSTATEOPERATION']._serialized_end=1968
-  _globals['_SETPOWERSTATEOPERATION_POWERSTATE']._serialized_start=1840
-  _globals['_SETPOWERSTATEOPERATION_POWERSTATE']._serialized_end=1968
-  _globals['_PREOPERATION']._serialized_start=1970
-  _globals['_PREOPERATION']._serialized_end=1984
-  _globals['_POSTOPERATION']._serialized_start=1986
-  _globals['_POSTOPERATION']._serialized_end=2001
-  _globals['_JOB']._serialized_start=2004
-  _globals['_JOB']._serialized_end=2589
-  _globals['_JOB_EXECUTEDBY']._serialized_start=2412
-  _globals['_JOB_EXECUTEDBY']._serialized_end=2498
-  _globals['_JOB_JOBSTATE']._serialized_start=2500
-  _globals['_JOB_JOBSTATE']._serialized_end=2589
+  _globals['_OPERATION']._serialized_end=1162
+  _globals['_RPCACTIVATEOPERATION']._serialized_start=1164
+  _globals['_RPCACTIVATEOPERATION']._serialized_end=1221
+  _globals['_UPDATESYSTEMSOFTWAREOPERATION']._serialized_start=1224
+  _globals['_UPDATESYSTEMSOFTWAREOPERATION']._serialized_end=1568
+  _globals['_UPDATESYSTEMSOFTWAREOPERATION_DOWNLOADMODE']._serialized_start=1435
+  _globals['_UPDATESYSTEMSOFTWAREOPERATION_DOWNLOADMODE']._serialized_end=1568
+  _globals['_SETPOWERSTATEOPERATION']._serialized_start=1571
+  _globals['_SETPOWERSTATEOPERATION']._serialized_end=1788
+  _globals['_SETPOWERSTATEOPERATION_POWERSTATE']._serialized_start=1660
+  _globals['_SETPOWERSTATEOPERATION_POWERSTATE']._serialized_end=1788
+  _globals['_PREOPERATION']._serialized_start=1790
+  _globals['_PREOPERATION']._serialized_end=1804
+  _globals['_POSTOPERATION']._serialized_start=1806
+  _globals['_POSTOPERATION']._serialized_end=1821
+  _globals['_JOB']._serialized_start=1824
+  _globals['_JOB']._serialized_end=2409
+  _globals['_JOB_EXECUTEDBY']._serialized_start=2232
+  _globals['_JOB_EXECUTEDBY']._serialized_end=2318
+  _globals['_JOB_JOBSTATE']._serialized_start=2320
+  _globals['_JOB_JOBSTATE']._serialized_end=2409
 # @@protoc_insertion_point(module_scope)
