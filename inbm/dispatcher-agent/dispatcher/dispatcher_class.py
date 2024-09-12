@@ -464,6 +464,13 @@ class Dispatcher:
         elif (usr is None) and pwd:
             raise DispatcherException(f'No Username sent in manifest for {ota}')
 
+    def _add_cmd_to_queue(self, request_type: str, manifest: str, request_id: Optional[str]) -> None:
+        if not self.update_queue.full():
+            self.update_queue.put((request_type, manifest, request_id))
+        else:
+            self._send_result(
+                str(Result(CODE_FOUND, "Request In Progress; Try Again Later")))
+            
     def _on_cloud_request(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from cloud
 
@@ -476,11 +483,7 @@ class Dispatcher:
         request_type = topic.split('/')[2]
         request_id = topic.split('/')[3] if len(topic.split('/')) > 3 else None
         manifest = payload
-        if not self.update_queue.full():
-            self.update_queue.put((request_type, manifest, request_id))
-        else:
-            self._send_result(
-                str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
+        self._add_cmd_to_queue(request_type, manifest, request_id)
 
     def _on_message(self, topic: str, payload: Any, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
@@ -786,7 +789,7 @@ def handle_updates(dispatcher: Any,
         for imm in schedule.immedate_requests:
             for manifest in imm.manifests:
                 try:
-                    dispatcher.do_install(xml=manifest)
+                    dispatcher._add_cmd_to_queue(request_type, manifest, request_id)
                 except (NotImplementedError, DispatcherException) as e:
                     # TODO: Save the error for query request
                     logger.error(str(e))
