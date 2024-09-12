@@ -76,13 +76,13 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
 
     try:
         enough_space = is_enough_space_to_download(
-            registry_manifest, DirectoryRepo(str(CACHE)), password)
+            registry_manifest, repo, password)
     except DispatcherException as e:
         raise DispatcherException(e)
 
     if not enough_space:
         err_msg = " Insufficient free space available on " + repo.get_repo_path() + \
-                  " for " + str(uri)
+                  " for " + str(uri.value)
         raise DispatcherException(err_msg)
 
     if password:
