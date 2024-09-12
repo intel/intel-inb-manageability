@@ -265,13 +265,14 @@ class SOTA:
                 self._dispatcher_broker.send_result(msg)
                 snapshot.commit()
                 self._update_logger.detail_status = OTA_SUCCESS
+                self.save_granular_log(check_package=False)
             except SotaError as e:
                 msg = "FAILED INSTALL: System has not been properly updated; reverting."
                 logger.debug(str(e))
                 self._dispatcher_broker.send_result(msg)
                 self._update_logger.update_log(FAIL)
                 self._update_logger.detail_status = ROLLBACK
-                self._update_logger.error =f"{msg}. Error: {e}"
+                self._update_logger.error = f"{msg}. Error: {e}"
                 self.save_granular_log(check_package=False)
                 snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:

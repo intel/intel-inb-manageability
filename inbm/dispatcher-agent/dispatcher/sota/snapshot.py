@@ -541,7 +541,8 @@ class TiberOSSnapshot(Snapshot):
 
             if current_tiberos_version == previous_tiberos_version:
                 raise SotaError(
-                    f"Requested update version is the same as version currently installed. SHA: {current_tiberos_version}")
+                    f"Requested update version is the same as previous version installed. SHA: "
+                    f"{current_tiberos_version}")
             else:
                 logger.debug("success; tiberos version changed")
 
