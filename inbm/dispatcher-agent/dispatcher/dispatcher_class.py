@@ -762,15 +762,21 @@ def handle_updates(dispatcher: Any,
         dispatcher.ap_scheduler.remove_all_jobs()
 
         # Add schedules to the database
-        if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
-            def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
-                with sql_lock:
-                    for requests in scheduled_requests:
-                        dispatcher.sqlite_mgr.create_schedule(requests)
-            all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests
-            process_scheduled_requests(all_scheduled_requests)
+        #if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
+        def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
+            with sql_lock:
+                for requests in scheduled_requests:
+                    dispatcher.sqlite_mgr.create_schedule(requests)
+        all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests + schedule.immedate_requests
+        process_scheduled_requests(all_scheduled_requests)
 
         # Add job to the scheduler
+        immediate_schedules = dispatcher.sqlite_mgr.get_all_immediate_schedules()
+        logger.info(f"Total immediate scheduled tasks: {len(immediate_schedules)}")
+        for immediate_schedule in immediate_schedules:
+            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, immediate_schedule)
+            logger.debug(f"Immediate schedule: {immediate_schedule}")
+        
         single_schedules = dispatcher.sqlite_mgr.get_all_single_schedules_in_priority_order()
         logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
         for single_schedule in single_schedules:
@@ -786,13 +792,14 @@ def handle_updates(dispatcher: Any,
 
         # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
         dispatcher._send_result("", request_id)
-        for imm in schedule.immedate_requests:
-            for manifest in imm.manifests:
-                try:
-                    dispatcher._add_request_to_queue(request_type, manifest, request_id)
-                except (NotImplementedError, DispatcherException) as e:
-                    # TODO: Save the error for query request
-                    logger.error(str(e))
+        # for imm in schedule.immedate_requests:
+        #     for manifest in imm.manifests:
+        #         try:
+        #             dispatcher.ap_scheduler.add_immediate_job(manifest)
+        #             #dispatcher.do_install(xml=manifest)
+        #         except (NotImplementedError, DispatcherException) as e:
+        #             # TODO: Save the error for query request
+        #             logger.error(str(e))
         return
 
     if request_type == "install" or request_type == "query":

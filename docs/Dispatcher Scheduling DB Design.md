@@ -39,9 +39,9 @@ erDiagram
 
     SINGLE_SCHEDULE {
         INTEGER id PK "AUTOINCREMENT"
-        TEXT request_id "NOT NULL - Format -> 2024-01-01T00:00:00"
+        TEXT request_id 
         TEXT start_time "NOT NULL - Format -> 2024-01-01T00:00:00"
-        TEXT end_time
+        TEXT end_time "NOT NULL - Format -> 2024-01-01T00:00:00"
     }
     JOB ||--o{ SINGLE_SCHEDULE_JOB: performs
     JOB ||--o{ REPEATED_SCHEDULE_JOB : performs

@@ -17,7 +17,7 @@ from inbm_common_lib.utility import get_canonical_representation_of_path
 
 from .schedules import SingleSchedule, RepeatedSchedule, Schedule
 from ..dispatcher_exception import DispatcherException
-from ..constants import SCHEDULER_DB_FILE, SCHEDULED
+from ..constants import SCHEDULER_DB_FILE
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class SqliteManager:
         self._db_file = get_canonical_representation_of_path(db_file)
         # Create the DB if it doesn't exist
         self._create_db()
-
+    
         try:
             with sqlite3.connect(self._db_file, check_same_thread=False) as conn:
                 self._conn = conn
@@ -50,12 +50,14 @@ class SqliteManager:
 
     def close(self) -> None:
         """Close the connection to the SQLite database."""
-        self._cursor.close()
-        self._conn.close()
+        if self._cursor:
+            self._cursor.close()
+        if self._conn:
+            self._conn.close()
 
     def __del__(self) -> None:
         """Close the connection to the SQLite database."""
-        self.close()
+        #self.close()
 
     def clear_database(self) -> None:
         """Clear the database of all data."""
@@ -80,14 +82,44 @@ class SqliteManager:
             mode = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
             fd = os.open(self._db_file, os.O_CREAT | os.O_WRONLY, mode)
             os.close(fd)
-
+            
+    def get_all_immediate_schedules(self) -> List[Schedule]:
+        """
+        Get all the immediate schedules.
+        @return: List of Schedule object
+        """
+        try:
+            sql = ''' SELECT isj.priority, isj.schedule_id, isj.task_id, j.job_id 
+            FROM immediate_schedule_job isj  
+            JOIN job j ON isj.task_id=j.task_id 
+            WHERE isj.status IS NULL 
+            ORDER BY priority ASC; '''
+            self._cursor.execute(sql)
+            rows = self._cursor.fetchall()
+            s: List[Schedule] = []
+            for row in rows:
+                immediate_schedule = self._select_immediate_schedule_by_id(str(row[1]))
+                immediate_schedule.manifests = [self._select_job_by_task_id(str(row[2]))]
+                immediate_schedule.job_id = str(row[3])
+                immediate_schedule.priority = row[0]
+                immediate_schedule.task_id = row[2]
+                s.append(immediate_schedule)
+            return s    
+        except (sqlite3.Error) as e:
+            raise DispatcherException(
+                f"Error in getting the all immediate schedules from database: {e}")
+            
     def get_all_single_schedules_in_priority_order(self) -> List[SingleSchedule]:
         """
         Get all the SingleSchedule and arrange them by priority in ascending order.
         @return: List of SingleSchedule object by priority in ascending order
         """
         try:
-            sql = ''' SELECT ssj.priority, ssj.schedule_id, ssj.task_id, j.job_id FROM single_schedule_job ssj  JOIN job j ON ssj.task_id=j.task_id WHERE ssj.status IS NULL ORDER BY priority ASC; '''
+            sql = ''' SELECT ssj.priority, ssj.schedule_id, ssj.task_id, j.job_id 
+            FROM single_schedule_job ssj  
+            JOIN job j ON ssj.task_id=j.task_id 
+            WHERE ssj.status IS NULL 
+            ORDER BY priority ASC; '''
             self._cursor.execute(sql)
             rows = self._cursor.fetchall()
             ss: List[SingleSchedule] = []
@@ -138,11 +170,25 @@ class SqliteManager:
         logger.debug(f"id={task_id}, manifest={manifest}")
         return manifest
 
+    def _select_immediate_schedule_by_id(self, schedule_id: str) -> Schedule:
+        """Get the immediate schedule stored in database by id.
+        @param id: row index
+        @return: Schedule object
+        """ 
+        sql = ''' SELECT request_id FROM immediate_schedule WHERE rowid=?; '''
+        self._cursor.execute(sql, (schedule_id,))
+        result = self._cursor.fetchone()
+        request_id = result[0]
+
+        logger.debug(
+            f"schedule_id={schedule_id}, request_id={request_id}")
+        return Schedule(schedule_id=int(schedule_id), request_id=request_id)
+
     def _select_single_schedule_by_id(self, schedule_id: str) -> SingleSchedule:
         """Get the single schedule stored in database by id.
         @param id: row index
         @return: SingleSchedule object
-        """
+        """ 
         sql = ''' SELECT request_id, start_time, end_time FROM single_schedule WHERE rowid=?; '''
         self._cursor.execute(sql, (schedule_id,))
         result = self._cursor.fetchone()
@@ -217,15 +263,48 @@ class SqliteManager:
         @param schedule: SingleSchedule or RepeatedSchedule object
         """
         try:
-            if isinstance(schedule, SingleSchedule):
-                self._create_single_schedule(schedule)
-            elif isinstance(schedule, RepeatedSchedule):
+            if isinstance(schedule, RepeatedSchedule):
+                logger.debug("Schedule is a Repeated Schedule object.")
                 self._create_repeated_schedule(schedule)
-            else:
-                logger.error(
-                    "Schedule type is neither a SingleSchedule nor a RepeatedSchedule object.")
+            elif isinstance(schedule, SingleSchedule):
+                if schedule.start_time:
+                    logger.debug(f"Schedule is a Single Schedule. startTime: {schedule.start_time}")
+                    self._create_single_schedule(schedule)                  
+            else: # Immediate Schedule
+                logger.debug("Schedule is an Immediate Schedule.")
+                self._create_immediate_schedule(schedule)               
+            
         except (sqlite3.Error) as e:
             raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
+
+    def _create_immediate_schedule(self, s: Schedule) -> None:
+        # Add the schedule to the immediate_schedule table
+        logger.debug(
+            f"Execute -> INSERT INTO immediate_schedule(request_id) VALUES({s.request_id})")
+
+        sql = ''' INSERT INTO immediate_schedule(request_id) VALUES(?); '''
+        try:
+            self._conn.execute('BEGIN')
+            self._cursor.execute(sql, (s.request_id,))
+            schedule_id = self._cursor.lastrowid
+            if not schedule_id:
+                raise DispatcherException("No schedule id was added to the immediate_schedule table.")
+
+            logger.debug(
+                f"Added schedule with id: {str(schedule_id)}, request_id: {s.request_id}")
+
+            if s.job_id:
+                # Add the jobs to the job table
+                task_ids = self._insert_job(s.job_id, s.manifests)
+                # Add the schedule_id and job_id to the immediate_schedule_job table
+                self._insert_immediate_schedule_jobs(schedule_id, task_ids)
+
+            self._conn.commit()
+        except (sqlite3.Error) as e:
+            self._conn.rollback()
+            self._cursor.close()
+            logger.error(f"Transaction failed: {str(e)}")
+            raise DispatcherException(f"Transaction failed: {str(e)}")
 
     def _create_single_schedule(self, ss: SingleSchedule) -> None:
         # Add the schedule to the single_schedule table
@@ -303,6 +382,9 @@ class SqliteManager:
         task_ids: list[int] = []
 
         for manifest in manifests:
+            logger.debug(
+                f"Execute -> INSERT INTO job(job_id, manifest) VALUES({job_id}{manifest})")
+
             sql = ''' INSERT INTO job(job_id, manifest) VALUES(?,?); '''
 
             try:
@@ -322,6 +404,21 @@ class SqliteManager:
             raise DispatcherException("No new jobs were added to the JOB table.")
 
         return task_ids
+
+    def _insert_immediate_schedule_jobs(self, schedule_id: int, task_ids: list[int]) -> None:
+        # Add the priority, schedule_id, job_id to the join table
+        for task_id in task_ids:
+            priority = task_ids.index(task_id)
+            logger.debug(
+                f"Execute -> INSERT INTO immediate_schedule_job(priority, schedule_id, task_id) VALUES({priority}{schedule_id}{task_id})")
+
+            sql = ''' INSERT INTO immediate_schedule_job(priority, schedule_id, task_id) VALUES(?,?,?); '''
+            try:
+                self._cursor.execute(sql, (priority, schedule_id, task_id))
+            except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
+                raise DispatcherException(f"Error inserting into immediate_schedule_job table: {e}")
+            logger.debug(
+                f"Inserted new tuple to immediate_schedule_job table with task_id: {str(task_id)} to schedule with id: {str(schedule_id)}, with priority: {str(priority)}")
 
     def _insert_single_schedule_jobs(self, schedule_id: int, task_ids: list[int]) -> None:
         # Add the priority, schedule_id, job_id to the join table
@@ -373,12 +470,20 @@ class SqliteManager:
         return manifests
 
     def _create_tables_if_not_exist(self) -> None:
+        self._create_immediate_schedule_table()
         self._create_single_schedule_table()
         self._create_repeated_schedule_table()
         self._create_job_table()
+        self._create_immediate_schedule_job_table()
         self._create_single_schedule_job_table()
-        self._create_repeated_schedule_job_table()
+        self._create_repeated_schedule_job_table()        
 
+    def _create_immediate_schedule_table(self) -> None:
+        sql = ''' CREATE TABLE IF NOT EXISTS immediate_schedule(
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                request_id TEXT NOT NULL); '''
+        self._conn.execute(sql)
+        
     def _create_single_schedule_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS single_schedule(
                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -406,6 +511,17 @@ class SqliteManager:
                                 manifest TEXT NOT NULL); '''
         self._conn.execute(sql)
 
+    def _create_immediate_schedule_job_table(self) -> None:
+        sql = ''' CREATE TABLE IF NOT EXISTS immediate_schedule_job(
+                                priority INTEGER NOT NULL,
+                                schedule_id INTEGER NOT NULL,                                
+                                task_id INTEGER NOT NULL,
+                                status TEXT,
+                                FOREIGN KEY(task_id) REFERENCES JOB(task_id),
+                                FOREIGN KEY(schedule_id) REFERENCES IMMEDIATE_SCHEDULE(id),
+                                PRIMARY KEY(schedule_id, task_id)); '''
+        self._conn.execute(sql)
+        
     def _create_single_schedule_job_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS single_schedule_job(
                                 priority INTEGER NOT NULL,
@@ -413,7 +529,7 @@ class SqliteManager:
                                 task_id INTEGER NOT NULL,
                                 status TEXT,
                                 FOREIGN KEY(task_id) REFERENCES JOB(task_id),
-                                FOREIGN KEY(schedule_id) REFERENCES REPEATED_SCHEDULE(id),
+                                FOREIGN KEY(schedule_id) REFERENCES SINGLE_SCHEDULE(id),
                                 PRIMARY KEY(schedule_id, task_id)); '''
         self._conn.execute(sql)
 

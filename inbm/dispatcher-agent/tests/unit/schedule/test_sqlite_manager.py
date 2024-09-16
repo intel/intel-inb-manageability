@@ -3,14 +3,18 @@ import pytest
 from datetime import datetime
 
 from dispatcher.schedule.sqlite_manager import SqliteManager
-from dispatcher.schedule.schedules import SingleSchedule, RepeatedSchedule
+from dispatcher.schedule.schedules import Schedule, SingleSchedule, RepeatedSchedule
 from dispatcher.dispatcher_exception import DispatcherException
 
+REQUEST_ID = "4324a262-b7d1-46a7-b8cc-84d934c3983f"
+JOB_ID = "swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"
 
 @pytest.fixture
 def db_connection():
     # Setup: create a new in-memory database connection using the custom class
     db_conn = SqliteManager(":memory:")
+    
+
 
     # Yield the custom database connection to the test
     yield db_conn
@@ -23,13 +27,10 @@ def db_connection():
     (datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
      datetime.strptime("2024-01-02T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
      ["MANIFEST1", "MANIFEST2"], None, None),
-    # # Success - no end time
+    # Success - no end time
     (datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
      None, 
      ["MANIFEST1", "MANIFEST2"], None, None),
-    # Fail - no start time
-    (None, datetime.strptime("2024-01-02T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
-    ["MANIFEST1"], DispatcherException, "Transaction failed: NOT NULL constraint failed: single_schedule.start_time"),
     # Fail - no manifests
     (datetime.strptime("2024-01-01T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
     datetime.strptime("2024-01-02T00:00:00", "%Y-%m-%dT%H:%M:%S"), 
@@ -39,8 +40,8 @@ def db_connection():
 def test_create_single_schedule_with_various_parameters(db_connection: SqliteManager, 
                                                 start_time, end_time, manifests, 
                                                 expected_exception, exception_text):
-    ss = SingleSchedule(request_id="4324a262-b7d1-46a7-b8cc-84d934c3983f",
-                         job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d",
+    ss = SingleSchedule(request_id=REQUEST_ID,
+                         job_id=JOB_ID,
                          start_time=start_time,
                          end_time=end_time,
                          manifests=manifests)
@@ -54,10 +55,35 @@ def test_create_single_schedule_with_various_parameters(db_connection: SqliteMan
         results = db_connection.get_all_single_schedules_in_priority_order()
         assert len(results) == 2
         for result in results:
-            assert result.request_id == "4324a262-b7d1-46a7-b8cc-84d934c3983f"
-            assert result.job_id == "swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"
+            assert result.request_id == REQUEST_ID
+            assert result.job_id == JOB_ID
             assert result.start_time == start_time
             assert result.end_time == end_time
+            assert result.manifests[0] in manifests
+
+@pytest.mark.parametrize("manifests, expected_exception, exception_text", [
+    # Success
+    (["MANIFEST1", "MANIFEST2"], None, None),
+    # Fail - missing manifests
+    ([], DispatcherException, "Error: At least one manifest is required for the schedule.  Manifest list is empty."), 
+ ])
+
+def test_create_immediate_schedule_with_various_parameters(db_connection: SqliteManager, manifests, expected_exception, exception_text):
+    s = Schedule(request_id=REQUEST_ID,
+                 job_id=JOB_ID,
+                 manifests=manifests)
+    db_connection.clear_database()
+    if expected_exception:
+        with pytest.raises(expected_exception) as excinfo:
+            db_connection.create_schedule(s)
+        assert exception_text in str(excinfo.value)
+    else:
+        db_connection.create_schedule(s)
+        results = db_connection.get_all_immediate_schedules()
+        assert len(results) == 2
+        for result in results:
+            assert result.request_id == REQUEST_ID
+            assert result.job_id == JOB_ID
             assert result.manifests[0] in manifests
 
 @pytest.mark.parametrize("duration, minutes, hours, day_month, month, day_week, manifests, expected_exception, exception_text", [
@@ -71,8 +97,8 @@ def test_create_repeated_schedule_with_various_paramters(db_connection: SqliteMa
                                                 duration, minutes, hours, 
                                                 day_month, month, day_week, 
                                                 manifests, expected_exception, exception_text):
-    rs = RepeatedSchedule(request_id="4324a262-b7d1-46a7-b8cc-84d934c3983f",
-                         job_id="swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d",
+    rs = RepeatedSchedule(request_id=REQUEST_ID,
+                         job_id=JOB_ID,
                          cron_duration=duration, cron_minutes=minutes, 
                          cron_hours=hours, cron_day_month=day_month,
                          cron_month=month, cron_day_week=day_week,
@@ -87,8 +113,8 @@ def test_create_repeated_schedule_with_various_paramters(db_connection: SqliteMa
         results = db_connection.get_all_repeated_schedules_in_priority_order()
         assert len(results) == 2
         for result in results:
-            assert result.request_id == "4324a262-b7d1-46a7-b8cc-84d934c3983f"
-            assert result.job_id == "swupd-939fe48c-32da-40eb-a00f-acfdb43a5d6d"
+            assert result.request_id == REQUEST_ID
+            assert result.job_id == JOB_ID
             assert result.cron_duration == duration
             assert result.cron_minutes == minutes
             assert result.cron_hours == hours

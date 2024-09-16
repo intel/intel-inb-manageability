@@ -39,6 +39,18 @@ class APScheduler:
         logger.debug("Remove all jobs in APScheduler")
         self._scheduler.remove_all_jobs()
 
+    def add_immediate_job(self, callback: Callable, manifest: str) -> None:
+        """Add the job for immediate schedule.
+
+        @param callback: The function to be called.
+        @param manifest: The manifest to be passed to the callback function.
+        """
+        logger.debug("")
+        try:
+            self._scheduler.add_job(func=callback, trigger=datetime.now, args=[manifest])
+        except (ValueError, TypeError) as err:
+            raise DispatcherException(f"Please correct and resubmit immediate request: {err}")
+     
     def add_single_schedule_job(self, callback: Callable, 
                                 single_schedule: SingleSchedule) -> None:
         """Add the job for single schedule.
