@@ -1,3 +1,5 @@
+import sqlite3
+from unittest.mock import MagicMock, patch
 import pytest
 
 from datetime import datetime
@@ -14,13 +16,23 @@ def db_connection():
     # Setup: create a new in-memory database connection using the custom class
     db_conn = SqliteManager(":memory:")
     
-
-
     # Yield the custom database connection to the test
     yield db_conn
 
     # Teardown: close the connection after the test is done
     db_conn.close()
+
+def test_rollback(db_connection: SqliteManager,):
+    s = Schedule(request_id=REQUEST_ID,
+                 job_id=JOB_ID,
+                 manifests=["MANIFEST1", "MANIFEST2"])
+    db_connection.clear_database()
+    
+    with patch.object(db_connection, '_insert_job', side_effect=sqlite3.Error("Mocked exception")):
+        with pytest.raises(DispatcherException) as excinfo:
+            db_connection.create_schedule(s)
+        assert "Mocked exception" in str(excinfo.value)
+    
 
 @pytest.mark.parametrize("start_time, end_time, manifests, expected_exception, exception_text", [
     # Success

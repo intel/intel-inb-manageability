@@ -772,19 +772,16 @@ def handle_updates(dispatcher: Any,
 
         # Add job to the scheduler
         immediate_schedules = dispatcher.sqlite_mgr.get_all_immediate_schedules()
-        logger.info(f"Total immediate scheduled tasks: {len(immediate_schedules)}")
         for immediate_schedule in immediate_schedules:
             dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, immediate_schedule)
             logger.debug(f"Immediate schedule: {immediate_schedule}")
         
         single_schedules = dispatcher.sqlite_mgr.get_all_single_schedules_in_priority_order()
-        logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
         for single_schedule in single_schedules:
             dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
         repeated_schedules = dispatcher.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
-        logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
             dispatcher.ap_scheduler.add_repeated_schedule_job(
                 dispatcher.do_install, repeated_schedule)
@@ -792,14 +789,6 @@ def handle_updates(dispatcher: Any,
 
         # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
         dispatcher._send_result("", request_id)
-        # for imm in schedule.immedate_requests:
-        #     for manifest in imm.manifests:
-        #         try:
-        #             dispatcher.ap_scheduler.add_immediate_job(manifest)
-        #             #dispatcher.do_install(xml=manifest)
-        #         except (NotImplementedError, DispatcherException) as e:
-        #             # TODO: Save the error for query request
-        #             logger.error(str(e))
         return
 
     if request_type == "install" or request_type == "query":

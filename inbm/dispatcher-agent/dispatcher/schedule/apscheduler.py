@@ -39,17 +39,21 @@ class APScheduler:
         logger.debug("Remove all jobs in APScheduler")
         self._scheduler.remove_all_jobs()
 
-    def add_immediate_job(self, callback: Callable, manifest: str) -> None:
+    def add_immediate_job(self, callback: Callable, schedule: Schedule) -> None:
         """Add the job for immediate schedule.
 
         @param callback: The function to be called.
         @param manifest: The manifest to be passed to the callback function.
         """
         logger.debug("")
-        try:
-            self._scheduler.add_job(func=callback, trigger=datetime.now, args=[manifest])
-        except (ValueError, TypeError) as err:
-            raise DispatcherException(f"Please correct and resubmit immediate request: {err}")
+        if self.is_schedulable(schedule):
+            self._sqlite_mgr.update_status(schedule, SCHEDULED)
+            try:
+                for manifest in schedule.manifests:
+                    self._scheduler.add_job(
+                        func=callback, run_date=datetime.now, args=[manifest])
+            except (ValueError, TypeError) as err:
+                raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
      
     def add_single_schedule_job(self, callback: Callable, 
                                 single_schedule: SingleSchedule) -> None:

@@ -11,7 +11,7 @@ import os
 import stat
 
 from datetime import datetime
-from typing import List
+from typing import Any, List
 
 from inbm_common_lib.utility import get_canonical_representation_of_path
 
@@ -35,33 +35,30 @@ class SqliteManager:
         try:
             with sqlite3.connect(self._db_file, check_same_thread=False) as conn:
                 self._conn = conn
+                self._cursor = self._conn.cursor()
         except sqlite3.Error as e:
             logger.error(f"Error connecting to Dispatcher Schedule database: {e}")
             raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
-
-        try:
-            self._cursor = self._conn.cursor()
-        except sqlite3.Error as e:
-            logger.error(f"Error creating cursor: {e}")
-            self._conn.close()
-            raise DispatcherException(f"Error creating cursor: {e}")
 
         self._create_tables_if_not_exist()
 
     def close(self) -> None:
         """Close the connection to the SQLite database."""
-        if self._cursor:
-            self._cursor.close()
-        if self._conn:
-            self._conn.close()
+        try:
+            if self._cursor:
+                self._cursor.close()
+            if self._conn:
+                self._conn.close()
+        except sqlite3.Error as e:
+            logger.error(f"Error closing connection to Dispatcher Schedule database: {e}")
 
     def __del__(self) -> None:
         """Close the connection to the SQLite database."""
-        #self.close()
+        self.close()
 
     def clear_database(self) -> None:
         """Clear the database of all data."""
-        try:
+        try:            
             self._conn.execute('BEGIN')
             self._conn.execute('DELETE FROM single_schedule_job;')
             self._conn.execute('DELETE FROM repeated_schedule_job;')
@@ -70,9 +67,7 @@ class SqliteManager:
             self._conn.execute('DELETE FROM job;')
             self._conn.execute('COMMIT')
         except sqlite3.Error as e:
-            self._conn.execute('ROLLBACK')
-            logger.error(f"Error clearing database: {e}")
-            raise DispatcherException(f"Error clearing database: {e}")
+            self._rollback_transaction(str(e), "Error clearing database")            
 
     def _create_db(self) -> None:
         # Create database file if not exist
@@ -82,7 +77,11 @@ class SqliteManager:
             mode = stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IWGRP
             fd = os.open(self._db_file, os.O_CREAT | os.O_WRONLY, mode)
             os.close(fd)
-            
+        
+    def _fetch_schedules(self, sql: str) -> list[Any]:            
+        self._cursor.execute(sql)
+        return self._cursor.fetchall()
+                
     def get_all_immediate_schedules(self) -> List[Schedule]:
         """
         Get all the immediate schedules.
@@ -94,8 +93,9 @@ class SqliteManager:
             JOIN job j ON isj.task_id=j.task_id 
             WHERE isj.status IS NULL 
             ORDER BY priority ASC; '''
-            self._cursor.execute(sql)
-            rows = self._cursor.fetchall()
+            
+            rows = self._fetch_schedules(sql)
+
             s: List[Schedule] = []
             for row in rows:
                 immediate_schedule = self._select_immediate_schedule_by_id(str(row[1]))
@@ -120,8 +120,9 @@ class SqliteManager:
             JOIN job j ON ssj.task_id=j.task_id 
             WHERE ssj.status IS NULL 
             ORDER BY priority ASC; '''
-            self._cursor.execute(sql)
-            rows = self._cursor.fetchall()
+            
+            rows = self._fetch_schedules(sql)
+            
             ss: List[SingleSchedule] = []
             for row in rows:
                 single_schedule = self._select_single_schedule_by_id(str(row[1]))
@@ -143,8 +144,8 @@ class SqliteManager:
         try:
             sql = ''' SELECT rsj.priority, rsj.schedule_id, rsj.task_id, j.job_id FROM repeated_schedule_job rsj JOIN job j ON rsj.task_id=j.task_id WHERE rsj.status IS NULL ORDER BY priority ASC; '''
 
-            self._cursor.execute(sql)
-            rows = self._cursor.fetchall()
+            rows = self._fetch_schedules(sql)
+            
             rs: List[RepeatedSchedule] = []
             for row in rows:
                 repeated_schedule = self._select_repeated_schedule_by_id(str(row[1]))
@@ -170,14 +171,20 @@ class SqliteManager:
         logger.debug(f"id={task_id}, manifest={manifest}")
         return manifest
 
+    def _get_schedule_by_schedule_id(self, sql: str, schedule_id: str) -> Any:
+        self._cursor.execute(sql, (schedule_id,))
+        row = self._cursor.fetchone()
+        if not row:
+            raise DispatcherException(f"Unable to find the scheduleID: {schedule_id}.")
+        return row
+    
     def _select_immediate_schedule_by_id(self, schedule_id: str) -> Schedule:
         """Get the immediate schedule stored in database by id.
         @param id: row index
         @return: Schedule object
         """ 
         sql = ''' SELECT request_id FROM immediate_schedule WHERE rowid=?; '''
-        self._cursor.execute(sql, (schedule_id,))
-        result = self._cursor.fetchone()
+        result = self._get_schedule_by_schedule_id(sql, schedule_id)
         request_id = result[0]
 
         logger.debug(
@@ -190,8 +197,7 @@ class SqliteManager:
         @return: SingleSchedule object
         """ 
         sql = ''' SELECT request_id, start_time, end_time FROM single_schedule WHERE rowid=?; '''
-        self._cursor.execute(sql, (schedule_id,))
-        result = self._cursor.fetchone()
+        result = self._get_schedule_by_schedule_id(sql, schedule_id)
         request_id = result[0]
         start_time = datetime.fromisoformat(result[1])
 
@@ -210,8 +216,7 @@ class SqliteManager:
         @return: RepeatedSchedule object
         """
         sql = ''' SELECT request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week FROM repeated_schedule WHERE rowid=?; '''
-        self._cursor.execute(sql, (schedule_id,))
-        result = self._cursor.fetchone()
+        result = self._get_schedule_by_schedule_id(sql, schedule_id)
 
         request_id = result[0]
         cron_duration = result[1]
@@ -264,19 +269,45 @@ class SqliteManager:
         """
         try:
             if isinstance(schedule, RepeatedSchedule):
-                logger.debug("Schedule is a Repeated Schedule object.")
                 self._create_repeated_schedule(schedule)
             elif isinstance(schedule, SingleSchedule):
                 if schedule.start_time:
-                    logger.debug(f"Schedule is a Single Schedule. startTime: {schedule.start_time}")
                     self._create_single_schedule(schedule)                  
             else: # Immediate Schedule
-                logger.debug("Schedule is an Immediate Schedule.")
                 self._create_immediate_schedule(schedule)               
             
         except (sqlite3.Error) as e:
             raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
 
+    def _insert_schedule(self, sql: str, values: tuple) -> int:
+        try:
+            self._execute_transaction(sql, values, "Error inserting into schedule table")
+            schedule_id = self._cursor.lastrowid
+            if not schedule_id:
+                raise DispatcherException("No schedule id was added to the schedule table.")
+            return schedule_id
+        except (sqlite3.Error) as e:
+            raise DispatcherException(f"Error inserting into schedule table: {e}")
+        
+    def _execute_transaction(self, sql: str, values: tuple, err_msg: str) -> None:      
+        try:
+            self._conn.execute('BEGIN')
+            self._cursor.execute(sql, values)
+        except (sqlite3.Error) as e:
+            self._rollback_transaction(str(e), err_msg)
+        
+    def _execute_sql_statement(self, sql: str, values: tuple, errMsg: str) -> None:       
+        try:
+            self._cursor.execute(sql, values)
+        except (sqlite3.Error) as e:
+            self._rollback_transaction(str(e), errMsg)
+        
+    def _rollback_transaction(self, e: str, errorMsg: str) -> None:
+        self._conn.execute('ROLLBACK')
+        self._cursor.close()        
+        logger.error(f"{errorMsg}: {e}")
+        raise DispatcherException(f"{errorMsg}: {e}")
+        
     def _create_immediate_schedule(self, s: Schedule) -> None:
         # Add the schedule to the immediate_schedule table
         logger.debug(
@@ -284,11 +315,7 @@ class SqliteManager:
 
         sql = ''' INSERT INTO immediate_schedule(request_id) VALUES(?); '''
         try:
-            self._conn.execute('BEGIN')
-            self._cursor.execute(sql, (s.request_id,))
-            schedule_id = self._cursor.lastrowid
-            if not schedule_id:
-                raise DispatcherException("No schedule id was added to the immediate_schedule table.")
+            schedule_id = self._insert_schedule(sql, (s.request_id,))
 
             logger.debug(
                 f"Added schedule with id: {str(schedule_id)}, request_id: {s.request_id}")
@@ -298,13 +325,10 @@ class SqliteManager:
                 task_ids = self._insert_job(s.job_id, s.manifests)
                 # Add the schedule_id and job_id to the immediate_schedule_job table
                 self._insert_immediate_schedule_jobs(schedule_id, task_ids)
-
+            
             self._conn.commit()
         except (sqlite3.Error) as e:
-            self._conn.rollback()
-            self._cursor.close()
-            logger.error(f"Transaction failed: {str(e)}")
-            raise DispatcherException(f"Transaction failed: {str(e)}")
+            self._rollback_transaction(str(e), "Transaction failed to create immediate schedule")
 
     def _create_single_schedule(self, ss: SingleSchedule) -> None:
         # Add the schedule to the single_schedule table
@@ -316,12 +340,8 @@ class SqliteManager:
         start_time = None if not ss.start_time else str(ss.start_time)
         end_time = None if not ss.end_time else str(ss.end_time)
         try:
-            self._conn.execute('BEGIN')
-            self._cursor.execute(sql, (ss.request_id, start_time, end_time))
-            schedule_id = self._cursor.lastrowid
-            if not schedule_id:
-                raise DispatcherException("No schedule id was added to the single_schedule table.")
-
+            schedule_id = self._insert_schedule(sql, (ss.request_id, start_time, end_time))
+            
             logger.debug(
                 f"Added schedule with id: {str(schedule_id)}, request_id: {ss.request_id}, start_time: {start_time}, end_time: {ss.end_time}")
 
@@ -333,10 +353,7 @@ class SqliteManager:
 
             self._conn.commit()
         except (sqlite3.Error) as e:
-            self._conn.rollback()
-            self._cursor.close()
-            logger.error(f"Transaction failed: {str(e)}")
-            raise DispatcherException(f"Transaction failed: {str(e)}")
+            self._rollback_transaction(str(e), "Transaction failed to create single schedule")
 
     def _create_repeated_schedule(self, rs: RepeatedSchedule) -> None:
         # Add the schedule to the single_schedule table
@@ -346,19 +363,14 @@ class SqliteManager:
         sql = ''' INSERT INTO repeated_schedule(request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week)
                                 VALUES(?,?,?,?,?,?,?); '''
         try:
-            self._conn.execute('BEGIN')
-            self._cursor.execute(sql, (rs.request_id,
-                                       rs.cron_duration,
-                                       rs.cron_minutes,
-                                       rs.cron_hours,
-                                       rs.cron_day_month,
-                                       rs.cron_month,
-                                       rs.cron_day_week,))
-            schedule_id = self._cursor.lastrowid
-            if not schedule_id:
-                raise DispatcherException(
-                    "No schedule id was added to the repeated_schedule table.")
-
+            schedule_id = self._insert_schedule(sql, (rs.request_id,
+                                                        rs.cron_duration,
+                                                        rs.cron_minutes,
+                                                        rs.cron_hours,
+                                                        rs.cron_day_month,
+                                                        rs.cron_month,
+                                                        rs.cron_day_week,))
+            
             logger.debug(f"Added repeated schedule with id: {str(schedule_id)}, request_id:{rs.request_id}, job_id:{rs.job_id}, cron_duration: {rs.cron_duration}, cron_minutes: {rs.cron_minutes}, cron_hours: {rs.cron_hours}, cron_day_month: {rs.cron_day_month}, cron_month: {rs.cron_month}, cron_day_week: {rs.cron_day_week}")  # noqa
 
             if rs.job_id:
@@ -369,9 +381,7 @@ class SqliteManager:
 
             self._conn.commit()
         except (sqlite3.Error) as e:
-            self._conn.rollback()
-            logger.error(f"Transaction failed: {str(e)}")
-            raise DispatcherException(f"Transaction failed: {str(e)}")
+            self._rollback_transaction(str(e), "Transaction failed to create repeated schedule")
 
     def _insert_job(self, job_id: str, manifests: list[str]) -> list[int]:
         # Add the job to the job table
@@ -387,7 +397,7 @@ class SqliteManager:
 
             sql = ''' INSERT INTO job(job_id, manifest) VALUES(?,?); '''
 
-            try:
+            try:        
                 self._cursor.execute(sql, (job_id, manifest))
             except (sqlite3.Error) as e:
                 logger.error(f"Error inserting job into JOB table: {e}")
@@ -413,7 +423,7 @@ class SqliteManager:
                 f"Execute -> INSERT INTO immediate_schedule_job(priority, schedule_id, task_id) VALUES({priority}{schedule_id}{task_id})")
 
             sql = ''' INSERT INTO immediate_schedule_job(priority, schedule_id, task_id) VALUES(?,?,?); '''
-            try:
+            try:       
                 self._cursor.execute(sql, (priority, schedule_id, task_id))
             except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
                 raise DispatcherException(f"Error inserting into immediate_schedule_job table: {e}")
@@ -428,7 +438,7 @@ class SqliteManager:
                 f"Execute -> INSERT INTO single_schedule_job(priority, schedule_id, task_id) VALUES({priority}{schedule_id}{task_id})")
 
             sql = ''' INSERT INTO single_schedule_job(priority, schedule_id, task_id) VALUES(?,?,?); '''
-            try:
+            try: 
                 self._cursor.execute(sql, (priority, schedule_id, task_id))
             except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
                 raise DispatcherException(f"Error inserting into single_schedule_job table: {e}")
@@ -452,23 +462,6 @@ class SqliteManager:
             logger.debug(
                 f"Inserted new tuple to repeated_schedule_job table with task_id: {str(task_id)} to schedule with id: {str(schedule_id)}, with priority: {str(priority)}")
 
-    def _select_manifests_by_schedule_id(self, sql: str, schedule_id: int) -> list[str]:
-        # Get the manifests from the join table
-        logger.debug(f"Execute -> {sql} with schedule_id={schedule_id}")
-        try:
-            self._cursor.execute(sql, (schedule_id,))
-        except (sqlite3.IntegrityError, sqlite3.InternalError, sqlite3.OperationalError) as e:
-            raise DispatcherException(f"Error selecting schedule manifest from database: {e}")
-
-        rows = self._cursor.fetchall()
-        if len(rows) == 0:
-            raise DispatcherException(f"No schedule manifest found with schedule_id: {schedule_id}")
-
-        # cursor return [('MANIFEST1',), ('MANIFEST2',)].
-        # Extract the strings from each tuple in the list
-        manifests = [item[0] for item in rows]
-        return manifests
-
     def _create_tables_if_not_exist(self) -> None:
         self._create_immediate_schedule_table()
         self._create_single_schedule_table()
@@ -482,7 +475,7 @@ class SqliteManager:
         sql = ''' CREATE TABLE IF NOT EXISTS immediate_schedule(
                                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                                 request_id TEXT NOT NULL); '''
-        self._conn.execute(sql)
+        self._execute_sql_statement(sql, (), "Error creating immediate_schedule table")
         
     def _create_single_schedule_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS single_schedule(
@@ -490,7 +483,7 @@ class SqliteManager:
                                 request_id TEXT NOT NULL,
                                 start_time TEXT NOT NULL,
                                 end_time TEXT); '''
-        self._conn.execute(sql)
+        self._execute_sql_statement(sql, (), "Error creating single_schedule table")
 
     def _create_repeated_schedule_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS repeated_schedule(
@@ -502,14 +495,14 @@ class SqliteManager:
                                 cron_day_month TEXT NOT NULL,
                                 cron_month TEXT NOT NULL,
                                 cron_day_week TEXT NOT NULL); '''
-        self._conn.execute(sql)
+        self._execute_sql_statement(sql, (), "Error creating repeated_schedule table")
 
     def _create_job_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS job(
                                 task_id INTEGER PRIMARY KEY AUTOINCREMENT,
                                 job_id TEXT NOT NULL,
                                 manifest TEXT NOT NULL); '''
-        self._conn.execute(sql)
+        self._execute_sql_statement(sql, (), "Error creating job table")
 
     def _create_immediate_schedule_job_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS immediate_schedule_job(
@@ -520,7 +513,7 @@ class SqliteManager:
                                 FOREIGN KEY(task_id) REFERENCES JOB(task_id),
                                 FOREIGN KEY(schedule_id) REFERENCES IMMEDIATE_SCHEDULE(id),
                                 PRIMARY KEY(schedule_id, task_id)); '''
-        self._conn.execute(sql)
+        self._execute_sql_statement(sql, (), "Error creating immediate_schedule_job table")
         
     def _create_single_schedule_job_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS single_schedule_job(
@@ -531,7 +524,7 @@ class SqliteManager:
                                 FOREIGN KEY(task_id) REFERENCES JOB(task_id),
                                 FOREIGN KEY(schedule_id) REFERENCES SINGLE_SCHEDULE(id),
                                 PRIMARY KEY(schedule_id, task_id)); '''
-        self._conn.execute(sql)
+        self._execute_sql_statement(sql, (), "Error creating single_schedule_job table")
 
     def _create_repeated_schedule_job_table(self) -> None:
         sql = ''' CREATE TABLE IF NOT EXISTS repeated_schedule_job(
@@ -542,4 +535,4 @@ class SqliteManager:
                                 FOREIGN KEY(task_id) REFERENCES JOB(task_id),
                                 FOREIGN KEY(schedule_id) REFERENCES REPEATED_SCHEDULE(id),
                                 PRIMARY KEY(schedule_id, task_id)); '''
-        self._conn.execute(sql)
+        self._execute_sql_statement(sql, (), "Error creating repeated_schedule_job table")

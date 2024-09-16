@@ -412,8 +412,8 @@ class TestDispatcher(TestCase):
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>query</cmd><query><option>status</option></query></manifest>'
         d = TestDispatcher._build_dispatcher()
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
-        #mock_workload_orchestration.assert_called()
-        #mock_perform_cmd_type_operation.assert_called_once()
+        mock_workload_orchestration.assert_called()
+        mock_perform_cmd_type_operation.assert_called_once()
 
     def test_parse_error_invalid_command(self) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange></orange></manifest>'
