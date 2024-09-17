@@ -82,7 +82,7 @@ class SqliteManager:
         self._cursor.execute(sql)
         return self._cursor.fetchall()
                 
-    def get_all_immediate_schedules(self) -> List[Schedule]:
+    def get_immediate_schedules_in_priority_order(self) -> List[Schedule]:
         """
         Get all the immediate schedules.
         @return: List of Schedule object
@@ -107,9 +107,9 @@ class SqliteManager:
             return s    
         except (sqlite3.Error) as e:
             raise DispatcherException(
-                f"Error in getting the all immediate schedules from database: {e}")
+                f"Error in getting immediate schedules from database: {e}")
             
-    def get_all_single_schedules_in_priority_order(self) -> List[SingleSchedule]:
+    def get_single_schedules_in_priority_order(self) -> List[SingleSchedule]:
         """
         Get all the SingleSchedule and arrange them by priority in ascending order.
         @return: List of SingleSchedule object by priority in ascending order
@@ -134,9 +134,9 @@ class SqliteManager:
             return ss    
         except (sqlite3.Error) as e:
             raise DispatcherException(
-                f"Error in getting the all single schedules from database: {e}")
+                f"Error in getting single schedules from database: {e}")
 
-    def get_all_repeated_schedules_in_priority_order(self) -> List[RepeatedSchedule]:
+    def get_repeated_schedules_in_priority_order(self) -> List[RepeatedSchedule]:
         """
         Get all the RepeatedSchedule and arrange them by priority in ascending order.
         @return: List of RepeatedSchedule object by priority in ascending order
@@ -157,7 +157,7 @@ class SqliteManager:
             return rs
         except (sqlite3.Error) as e:
             raise DispatcherException(
-                f"Error in getting the all repeated schedules from database: {e}")
+                f"Error in getting repeated schedules from database: {e}")
 
     def _select_job_by_task_id(self, task_id: str) -> str:
         """Get the job stored in database by task id.
@@ -244,24 +244,29 @@ class SqliteManager:
         @param schedule: SingleSchedule or RepeatedSchedule object
         @param status: status to be set
         """
-        try:
-            sql = ""
-            if isinstance(schedule, SingleSchedule):
-                sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
-            elif isinstance(schedule, RepeatedSchedule):
-                sql = ''' UPDATE repeated_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
 
-            if schedule.task_id != -1:
-                logger.debug(f"Update status in database to {status} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
+        sql = ""
+        
+        if not isinstance(schedule, SingleSchedule) and not isinstance(schedule, RepeatedSchedule):
+            # Immediate Schedule
+            sql = ''' UPDATE immediate_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
+        if isinstance(schedule, SingleSchedule):
+            sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
+        elif isinstance(schedule, RepeatedSchedule):
+            sql = ''' UPDATE repeated_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
+        
+        if schedule.task_id != -1:
+            logger.debug(f"Update status in database to {status} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
+            try:
                 self._cursor.execute(
                     sql, (status, schedule.priority, schedule.schedule_id, schedule.task_id))
                 self._conn.commit()
-            else:
-                logger.error("Unable to update status in database as the task ID is not set.")
-        except (sqlite3.Error) as e:
-            raise DispatcherException(
-                f"Error to update status in Dispatcher Schedule database: {e}")
-
+            except (sqlite3.Error) as e:
+                raise DispatcherException(
+                    f"Error updating the schedule status in the Dispatcher Schedule database: {e}")
+        else:
+            logger.error("Unable to update status in database as the task ID is not set.")
+        
     def create_schedule(self, schedule: Schedule) -> None:
         """
         Create a new schedule in the database.

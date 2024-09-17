@@ -148,13 +148,13 @@ class Dispatcher:
             self._perform_startup_tasks()
 
         # Run scheduler to schedule the task during startup.
-        single_schedules = self.sqlite_mgr.get_all_single_schedules_in_priority_order()
+        single_schedules = self.sqlite_mgr.get_single_schedules_in_priority_order()
         logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
         for single_schedule in single_schedules:
             self.ap_scheduler.add_single_schedule_job(self.do_install, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
-        repeated_schedules = self.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
+        repeated_schedules = self.sqlite_mgr.get_repeated_schedules_in_priority_order()
         logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
             self.ap_scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
@@ -771,17 +771,17 @@ def handle_updates(dispatcher: Any,
         process_scheduled_requests(all_scheduled_requests)
 
         # Add job to the scheduler
-        immediate_schedules = dispatcher.sqlite_mgr.get_all_immediate_schedules()
+        immediate_schedules = dispatcher.sqlite_mgr.get_immediate_schedules()
         for immediate_schedule in immediate_schedules:
             dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, immediate_schedule)
             logger.debug(f"Immediate schedule: {immediate_schedule}")
         
-        single_schedules = dispatcher.sqlite_mgr.get_all_single_schedules_in_priority_order()
+        single_schedules = dispatcher.sqlite_mgr.get_single_schedules_in_priority_order()
         for single_schedule in single_schedules:
             dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
-        repeated_schedules = dispatcher.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
+        repeated_schedules = dispatcher.sqlite_mgr.get_repeated_schedules_in_priority_order()
         for repeated_schedule in repeated_schedules:
             dispatcher.ap_scheduler.add_repeated_schedule_job(
                 dispatcher.do_install, repeated_schedule)

@@ -33,7 +33,6 @@ class APScheduler:
         self._scheduler.add_job(starting_message, 'date', run_date=datetime.now() + timedelta(seconds=1))
         sleep(1)
 
-
     def remove_all_jobs(self) -> None:
         """Remove all jobs."""
         logger.debug("Remove all jobs in APScheduler")
@@ -46,14 +45,13 @@ class APScheduler:
         @param manifest: The manifest to be passed to the callback function.
         """
         logger.debug("")
-        if self.is_schedulable(schedule):
-            self._sqlite_mgr.update_status(schedule, SCHEDULED)
-            try:
-                for manifest in schedule.manifests:
-                    self._scheduler.add_job(
-                        func=callback, run_date=datetime.now, args=[manifest])
-            except (ValueError, TypeError) as err:
-                raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
+        self._sqlite_mgr.update_status(schedule, SCHEDULED)
+        try:
+            for manifest in schedule.manifests:
+                self._scheduler.add_job(
+                    func=callback, args=[manifest])
+        except (ValueError, TypeError) as err:
+            raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
      
     def add_single_schedule_job(self, callback: Callable, 
                                 single_schedule: SingleSchedule) -> None:
@@ -71,7 +69,6 @@ class APScheduler:
                         func=callback, trigger='date', run_date=single_schedule.start_time, args=[manifest])
             except (ValueError, TypeError) as err:
                 raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
-
 
     def add_repeated_schedule_job(self, callback: Callable, repeated_schedule: RepeatedSchedule) -> None:
         """Add the job for repeated schedule.
@@ -104,12 +101,9 @@ class APScheduler:
         """
         if isinstance(schedule, SingleSchedule):
             return self._check_single_schedule(schedule)
-        elif isinstance(schedule, RepeatedSchedule):
+        if isinstance(schedule, RepeatedSchedule):
             return self._check_repeated_schedule(schedule)
-        else:
-            logger.error("Schedule type is neither a SingleSchedule nor a RepeatedSchedule object.")
-        return False
-
+        return True
     def _check_single_schedule(self, schedule: SingleSchedule) -> bool:
         """Check if the schedule can be scheduled.
 
