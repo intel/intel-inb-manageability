@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional, Union
 
-from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER
+from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER, OS_RELEASE_PATH, UNKNOWN
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 from .constants import URL_NULL_CHAR
@@ -271,3 +271,20 @@ def validate_file_type(path: list[str]) -> None:
     if os.path.exists(TEMP_EXT_FOLDER):
         shutil.rmtree(TEMP_EXT_FOLDER, ignore_errors=True)
     remove_file_list(extracted_file_list)
+
+
+def get_os_version() -> str:
+    """Get os version from os release file.
+
+    @return value of the VERSION
+    """
+    if os.path.exists(OS_RELEASE_PATH):
+        with open(OS_RELEASE_PATH, 'r') as version_file:
+            for line in version_file:
+                if line.startswith('VERSION='):
+                    version = line.split('=')[1].replace('\n', ' ')
+                    return version
+        logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
+    else:
+        logger.error(f"{OS_RELEASE_PATH} not exist.")
+        return UNKNOWN

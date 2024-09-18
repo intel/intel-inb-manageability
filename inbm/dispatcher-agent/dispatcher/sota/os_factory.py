@@ -72,6 +72,10 @@ class SotaOsFactory:
         elif os_type == OsType.Windows.name:
             logger.debug("Windows returned")
             return Windows(self._dispatcher_broker)
+        #TODO: Remove this when confirmed that TiberOS is in use
+        elif os_type == LinuxDistType.Mariner.name:
+            logger.debug("Mariner returned")
+            return TiberOSBasedSotaOs(self._dispatcher_broker)
         elif os_type == LinuxDistType.TiberOS.name:
             logger.debug("TiberOS returned")
             return TiberOSBasedSotaOs(self._dispatcher_broker)

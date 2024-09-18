@@ -12,6 +12,7 @@ from abc import ABC, ABCMeta, abstractmethod
 from inbm_lib.trtl import Trtl
 from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
+from inbm_common_lib.utility import get_os_version
 from .constants import MENDER_FILE_PATH
 from .mender_util import read_current_mender_version
 from .update_tool_util import update_tool_version_command, update_tool_commit_command
@@ -466,7 +467,7 @@ class TiberOSSnapshot(Snapshot):
             "SOTA attempting to create a dispatcher state file before SOTA {}...".
             format(self.sota_cmd))
         try:
-            content = update_tool_version_command()
+            content = get_os_version()
             state: dispatcher_state.DispatcherState
             if dispatcher_state.is_dispatcher_state_file_exists():
                 consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)
@@ -535,13 +536,13 @@ class TiberOSSnapshot(Snapshot):
         state = dispatcher_state.consume_dispatcher_state_file()
         if state is not None and 'tiberos-version' in state:
             logger.debug("got tiberos-version from state: " + str(state['tiberos-version']))
-            version = update_tool_version_command()
+            version = get_os_version()
             current_tiberos_version = version
             previous_tiberos_version = state['tiberos-version']
 
             if current_tiberos_version == previous_tiberos_version:
                 raise SotaError(
-                    f"Requested update version is the same as previous version installed. SHA: "
+                    f"Requested update version is the same as previous version installed. VERSION: "
                     f"{current_tiberos_version}")
             else:
                 logger.debug("success; tiberos version changed")

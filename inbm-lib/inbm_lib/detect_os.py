@@ -34,7 +34,7 @@ class LinuxDistType(Enum):
     Deby = 3
     Debian = 4
     CentOS = 5
-    Mariner = 6  # Remove this when confirmed that TiberOS is in use
+    Mariner = 6  # TODO: Remove this when confirmed that TiberOS is in use
     TiberOS = 7
 
 

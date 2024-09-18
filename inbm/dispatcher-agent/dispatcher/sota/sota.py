@@ -11,7 +11,7 @@ import time
 from typing import Any, List, Optional, Union, Mapping
 
 from inbm_common_lib.exceptions import UrlSecurityException
-from inbm_common_lib.utility import canonicalize_uri, remove_file
+from inbm_common_lib.utility import canonicalize_uri, remove_file, get_os_version
 from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
 from inbm_lib.validate_package_list import parse_and_validate_package_list
@@ -386,7 +386,9 @@ class SOTA:
                 # Since there is no installation, there will be no changes in the package status or version.
                 # The apt history.log also doesn't record any changes. Therefore we can skip saving granular log.
                 # Always save the granular log in TiberOS.
-                elif self.sota_mode != 'download-only' or detect_os() == LinuxDistType.TiberOS.name:
+                # TODO: Remove Mariner when confirmed that TiberOS is in use
+                elif self.sota_mode != 'download-only' or detect_os() == LinuxDistType.TiberOS.name \
+                        or detect_os() == LinuxDistType.Mariner.name:
                     self.save_granular_log()
                 if (self.sota_mode == 'download-only') or (not self._is_reboot_device()):
                     self._dispatcher_broker.telemetry("No reboot (SOTA pass)")
@@ -400,7 +402,9 @@ class SOTA:
                 self._update_logger.status = FAIL
                 self._update_logger.save_log()
                 # Always save the granular log in TiberOS.
-                if self.sota_mode != 'download-only' or detect_os() == LinuxDistType.TiberOS.name:
+                # TODO: Remove Mariner when confirmed that TiberOS is in use
+                if self.sota_mode != 'download-only' or detect_os() == LinuxDistType.TiberOS.name \
+                        or detect_os() == LinuxDistType.Mariner.name:
                     self.save_granular_log()
                 self._dispatcher_broker.telemetry(SOTA_FAILURE)
                 self._dispatcher_broker.send_result(SOTA_FAILURE)
@@ -429,7 +433,8 @@ class SOTA:
         @param check_package: True if you want to check the package's status and version and record them in Ubuntu.
         """
         log = {}
-        if detect_os() == LinuxDistType.TiberOS.name:
+        # TODO: Remove Mariner when confirmed that TiberOS is in use
+        if detect_os() == LinuxDistType.TiberOS.name or detect_os() == LinuxDistType.Mariner.name:
             # Delete the previous log if exist.
             if os.path.exists(GRANULAR_LOG_FILE):
                 remove_file(GRANULAR_LOG_FILE)
@@ -442,7 +447,7 @@ class SOTA:
             elif self._update_logger.detail_status == OTA_SUCCESS or self._update_logger.detail_status == OTA_PENDING:
                 log = {
                     "StatusDetail.Status": self._update_logger.detail_status,
-                    "SHA": update_tool_version_command()
+                    "OS Version": get_os_version()
                 }
             # In TiberOS, no package level information needed.
             self._update_logger.save_granular_log_file(log=log, check_package=False)
