@@ -1,5 +1,5 @@
 """
-    Uses APScheduler to execute scheduled tasks.
+    Uses APScheduler to schedule and execute scheduled tasks.
 
     Copyright (C) 2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
@@ -14,7 +14,7 @@ from time import sleep
 from .schedules import Schedule, SingleSchedule, RepeatedSchedule
 from apscheduler.schedulers.background import BackgroundScheduler
 from .sqlite_manager import SqliteManager
-from ..constants import SCHEDULED
+from ..constants import SCHEDULED, STARTED
 from ..dispatcher_exception import DispatcherException
 
 logger = logging.getLogger(__name__)
@@ -24,6 +24,7 @@ class APScheduler:
     def __init__(self, sqlite_mgr: SqliteManager) -> None:
         self._scheduler = BackgroundScheduler()
         self._sqlite_mgr = sqlite_mgr
+        
 
     def start(self) -> None:
         """Start the scheduler"""
@@ -32,6 +33,16 @@ class APScheduler:
         self._scheduler.start()
         self._scheduler.add_job(starting_message, 'date', run_date=datetime.now() + timedelta(seconds=1))
         sleep(1)
+        
+    # def _run_job(self, schedule: Schedule, manifest: str) -> None:
+    #     """Run the job.
+
+    #     @param job_id: ID of the job to run.
+    #     @param manifest: The manifest to be passed to the callback function.
+    #     """
+    #     logger.debug(f"Running job with JobID={schedule.job_id}, manifest={manifest}")
+    #     self._sqlite_mgr.update_status(schedule, STARTED)
+    #     self._run_callback(manifest)
 
     def remove_all_jobs(self) -> None:
         """Remove all jobs."""
@@ -44,29 +55,30 @@ class APScheduler:
         @param callback: The function to be called.
         @param manifest: The manifest to be passed to the callback function.
         """
-        logger.debug("Add IMMEDIATE job to APScheduler")
-        self._sqlite_mgr.update_status(schedule, SCHEDULED)
+        logger.debug("Add IMMEDIATE job to APScheduler")        
         try:
             for manifest in schedule.manifests:
                 self._scheduler.add_job(
-                    func=callback, args=[manifest])
+                    func=callback, args=[schedule, manifest])
+            self._sqlite_mgr.update_status(schedule, SCHEDULED)
         except (ValueError, TypeError) as err:
             raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
      
-    def add_single_schedule_job(self, callback: Callable, 
-                                single_schedule: SingleSchedule) -> None:
+    def add_single_schedule_job(self, callback: Callable, single_schedule: SingleSchedule) -> None:
         """Add the job for single schedule.
 
-        @param callback: The function to be called.
         @param single_schedule: SingleSchedule object
         """
         logger.debug("Add SINGLE job to APScheduler")
-        if self.is_schedulable(single_schedule):
-            self._sqlite_mgr.update_status(single_schedule, SCHEDULED)
+        if self.is_schedulable(single_schedule):            
             try:
                 for manifest in single_schedule.manifests:
                     self._scheduler.add_job(
-                        func=callback, trigger='date', run_date=single_schedule.start_time, args=[manifest])
+                        func=callback, 
+                        trigger='date', 
+                        run_date=single_schedule.start_time, 
+                        args=[single_schedule, manifest])
+                self._sqlite_mgr.update_status(single_schedule, SCHEDULED)
             except (ValueError, TypeError) as err:
                 raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
 
@@ -77,11 +89,11 @@ class APScheduler:
         @param repeated_schedule: RepeatedSchedule object.
         """
         logger.debug("Add REPEATED job to APScheduler")
-        if self.is_schedulable(repeated_schedule):
-            self._sqlite_mgr.update_status(repeated_schedule, SCHEDULED)
+        if self.is_schedulable(repeated_schedule):            
             try:
-                for manifest in repeated_schedule.manifests:
-                    self._scheduler.add_job(func=callback, trigger='cron', args=[manifest],
+                for manifest in repeated_schedule.manifests:                    
+                    self._scheduler.add_job(func=callback, trigger='cron', 
+                                            args=[repeated_schedule, manifest],
                                             start_date=datetime.now(),
                                             end_date=self._convert_duration_to_end_time(
                                                 repeated_schedule.cron_duration),
@@ -90,6 +102,7 @@ class APScheduler:
                                             day=repeated_schedule.cron_day_month,
                                             month=repeated_schedule.cron_month,
                                             day_of_week=repeated_schedule.cron_day_week)
+                self._sqlite_mgr.update_status(repeated_schedule, SCHEDULED)
             except (ValueError, TypeError) as err:
                 raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in cron expresssion to APScheduler: {err}")
 

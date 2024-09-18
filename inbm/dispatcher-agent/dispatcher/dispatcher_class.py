@@ -151,13 +151,13 @@ class Dispatcher:
         single_schedules = self.sqlite_mgr.get_single_schedules_in_priority_order()
         logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
         for single_schedule in single_schedules:
-            self.ap_scheduler.add_single_schedule_job(self.do_install, single_schedule)
+            self.ap_scheduler.add_single_schedule_job(self.run_scheduled_job, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
         repeated_schedules = self.sqlite_mgr.get_repeated_schedules_in_priority_order()
         logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
-            self.ap_scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
+            self.ap_scheduler.add_repeated_schedule_job(self.run_scheduled_job, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
         self.ap_scheduler.start()
 
@@ -279,12 +279,22 @@ class Dispatcher:
 
         If id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
 
-        Raises ValueError if id contains a slash
+        Raises ValueError if request_id or job_id contains a slash
 
         @param message: message to be published to cloud
         """
         self._dispatcher_broker.send_result(message, id)
 
+    def run_scheduled_job(self, schedule: Schedule, manifest: str) -> None:
+        """Run the scheduled job.
+
+        @param job_id: ID of the job to run.
+        @param manifest: The manifest to be passed to the callback function.
+        """
+        logger.debug(f"Running schedule type={type(schedule)}, job with JobID={schedule.job_id}, manifest={manifest}")
+        #self.sqlite_mgr.update_status(schedule, STARTED)
+        self.do_install(manifest)
+        
     def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:
         """Delegates the installation to either
         . call a DeviceManager command
@@ -728,8 +738,7 @@ class Dispatcher:
             dispatcher_state.clear_dispatcher_state()
         else:
             self._telemetry('Dispatcher detects normal boot sequence')
-
-
+      
 def handle_updates(dispatcher: Any,
                    schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION,
                    manifest_schema=SCHEMA_LOCATION) -> None:
@@ -774,20 +783,19 @@ def handle_updates(dispatcher: Any,
         immediate_schedules = dispatcher.sqlite_mgr.get_immediate_schedules_in_priority_order()
         logger.debug(f"Total immediate schedules: {len(immediate_schedules)}")
         for immediate_schedule in immediate_schedules:
-            dispatcher.ap_scheduler.add_immediate_job(dispatcher.do_install, immediate_schedule)
+            dispatcher.ap_scheduler.add_immediate_job(dispatcher.run_scheduled_job, immediate_schedule)
             logger.debug(f"Immediate schedule: {immediate_schedule}")
         
         single_schedules = dispatcher.sqlite_mgr.get_single_schedules_in_priority_order()
         logger.debug(f"Total single schedules: {len(single_schedules)}")
         for single_schedule in single_schedules:
-            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, single_schedule)
+            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.run_scheduled_job, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
         repeated_schedules = dispatcher.sqlite_mgr.get_repeated_schedules_in_priority_order()
         logger.debug(f"Total repeated schedules: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
-            dispatcher.ap_scheduler.add_repeated_schedule_job(
-                dispatcher.do_install, repeated_schedule)
+            dispatcher.ap_scheduler.add_repeated_schedule_job(dispatcher.run_scheduled_job, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
 
         # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
