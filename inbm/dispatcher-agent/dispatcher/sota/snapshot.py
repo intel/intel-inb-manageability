@@ -13,9 +13,10 @@ from inbm_lib.trtl import Trtl
 from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import get_os_version
+from inbm_common_lib.constants import UNKNOWN
 from .constants import MENDER_FILE_PATH
 from .mender_util import read_current_mender_version
-from .update_tool_util import update_tool_version_command, update_tool_commit_command
+from .update_tool_util import update_tool_commit_command
 from .rebooter import Rebooter
 from ..common import dispatcher_state
 from .sota_error import SotaError
@@ -468,6 +469,8 @@ class TiberOSSnapshot(Snapshot):
             format(self.sota_cmd))
         try:
             content = get_os_version()
+            if content == UNKNOWN:
+                raise SotaError("Failed to get os version.")
             state: dispatcher_state.DispatcherState
             if dispatcher_state.is_dispatcher_state_file_exists():
                 consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)

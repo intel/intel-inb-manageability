@@ -1,14 +1,18 @@
 import unittest
 from typing import Optional
 import os
+import hashlib
 
 from ..common.mock_resources import *
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.packagemanager.memory_repo import MemoryRepo
+from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.sota.os_factory import SotaOsFactory
+from dispatcher.sota.downloader import TiberOSDownloader
 from dispatcher.sota.sota import SOTA
 from dispatcher.sota.sota_error import SotaError
 from inbm_lib.xmlhandler import XmlHandler
+from inbm_lib.constants import CACHE
 from unittest.mock import patch
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
@@ -110,3 +114,39 @@ class TestDownloader(unittest.TestCase):
             for i in range(0, num_files):
                 mem_repo.add("test" + str(i + 1) + ".rpm", b"0123456789")
         return mem_repo
+
+    @patch('dispatcher.sota.downloader.oras_download')
+    def test_tiberos_download_successful(self, mock_download) -> None:
+        self.release_date = self.username = None
+        password = "mock_password"
+        mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
+
+        assert TestDownloader.sota_instance
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+        factory = TestDownloader.sota_instance.factory
+        assert factory
+        installer = factory.create_downloader()
+        assert isinstance(installer, TiberOSDownloader)
+
+        if not os.path.exists(CACHE):
+            os.makedirs(CACHE)
+
+        file_path = os.path.join(CACHE, 'test')
+        with open(file_path, 'w') as file:
+            file.write('This is a test file.')
+        # Calculate the SHA256 checksum
+        sha256_hash = hashlib.sha256()
+        with open(file_path, 'rb') as file:
+            for chunk in iter(lambda: file.read(4096), b''):
+                sha256_hash.update(chunk)
+        checksum = sha256_hash.hexdigest()
+        installer._signature = checksum
+        try:
+            installer.download(self.mock_disp_broker,
+                               mock_url, DirectoryRepo(CACHE),
+                               self.username, password, self.release_date)
+        except (SotaError, DispatcherException):
+            self.fail("raised Error unexpectedly!")
+
+        mock_download.assert_called_once()

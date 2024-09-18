@@ -287,4 +287,5 @@ def get_os_version() -> str:
         logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
     else:
         logger.error(f"{OS_RELEASE_PATH} not exist.")
-        return UNKNOWN
+
+    return UNKNOWN
