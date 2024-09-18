@@ -44,7 +44,7 @@ class APScheduler:
         @param callback: The function to be called.
         @param manifest: The manifest to be passed to the callback function.
         """
-        logger.debug("")
+        logger.debug("Add IMMEDIATE job to APScheduler")
         self._sqlite_mgr.update_status(schedule, SCHEDULED)
         try:
             for manifest in schedule.manifests:
@@ -60,7 +60,7 @@ class APScheduler:
         @param callback: The function to be called.
         @param single_schedule: SingleSchedule object
         """
-        logger.debug("")
+        logger.debug("Add SINGLE job to APScheduler")
         if self.is_schedulable(single_schedule):
             self._sqlite_mgr.update_status(single_schedule, SCHEDULED)
             try:
@@ -76,7 +76,7 @@ class APScheduler:
         @param callback: The function to be called.
         @param repeated_schedule: RepeatedSchedule object.
         """
-        logger.debug("")
+        logger.debug("Add REPEATED job to APScheduler")
         if self.is_schedulable(repeated_schedule):
             self._sqlite_mgr.update_status(repeated_schedule, SCHEDULED)
             try:

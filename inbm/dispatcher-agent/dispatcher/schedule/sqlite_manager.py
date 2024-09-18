@@ -270,16 +270,19 @@ class SqliteManager:
     def create_schedule(self, schedule: Schedule) -> None:
         """
         Create a new schedule in the database.
-        @param schedule: SingleSchedule or RepeatedSchedule object
+        @param schedule: Schedule (Immediate), SingleSchedule or RepeatedSchedule object
         """
         try:
             if isinstance(schedule, RepeatedSchedule):
+                logger.debug("Create REPEATED schedule")
                 self._create_repeated_schedule(schedule)
-            elif isinstance(schedule, SingleSchedule):
+            elif isinstance(schedule, SingleSchedule):                
                 if schedule.start_time:
+                    logger.debug("Create SINGLE schedule")
                     self._create_single_schedule(schedule)                  
-            else: # Immediate Schedule
-                self._create_immediate_schedule(schedule)               
+                else: # Immediate Schedule
+                    logger.debug("Create IMMEDIATE schedule")
+                    self._create_immediate_schedule(schedule)               
             
         except (sqlite3.Error) as e:
             raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
@@ -315,6 +318,7 @@ class SqliteManager:
         
     def _create_immediate_schedule(self, s: Schedule) -> None:
         # Add the schedule to the immediate_schedule table
+        logger.debug("Create IMMEDIATE schedule")
         logger.debug(
             f"Execute -> INSERT INTO immediate_schedule(request_id) VALUES({s.request_id})")
 

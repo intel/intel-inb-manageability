@@ -23,7 +23,7 @@ def db_connection():
     db_conn.close()
 
 def test_rollback_called_on_insert_immediate_scheduled_job(db_connection: SqliteManager,):
-    s = Schedule(request_id=REQUEST_ID,
+    s = SingleSchedule(request_id=REQUEST_ID,
                  job_id=JOB_ID,
                  manifests=["MANIFEST1", "MANIFEST2"])
     db_connection.clear_database()
@@ -113,8 +113,8 @@ def test_update_repeated_schedule_statu_to_scheduled(db_connection: SqliteManage
     results = db_connection.get_repeated_schedules_in_priority_order()
     assert len(results) == 0
 
-def test_update_immediate_schedule_statu_to_scheduled(db_connection: SqliteManager):
-    s = Schedule(request_id=REQUEST_ID,
+def test_update_immediate_schedule_status_to_scheduled(db_connection: SqliteManager):
+    s = SingleSchedule(request_id=REQUEST_ID,
                  job_id=JOB_ID,
                  manifests=["MANIFEST1", "MANIFEST2"])
     db_connection.clear_database()
@@ -175,7 +175,7 @@ def test_create_single_schedule_with_various_parameters(db_connection: SqliteMan
  ])
 
 def test_create_immediate_schedule_with_various_parameters(db_connection: SqliteManager, manifests, expected_exception, exception_text):
-    s = Schedule(request_id=REQUEST_ID,
+    s = SingleSchedule(request_id=REQUEST_ID,
                  job_id=JOB_ID,
                  manifests=manifests)
     db_connection.clear_database()

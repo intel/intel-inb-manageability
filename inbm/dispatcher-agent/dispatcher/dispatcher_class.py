@@ -762,26 +762,29 @@ def handle_updates(dispatcher: Any,
         dispatcher.ap_scheduler.remove_all_jobs()
 
         # Add schedules to the database
-        #if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
         def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
             with sql_lock:
                 for requests in scheduled_requests:
                     dispatcher.sqlite_mgr.create_schedule(requests)
         all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests + schedule.immedate_requests
+        logger.debug(f"Total scheduled requests: {len(all_scheduled_requests)}")
         process_scheduled_requests(all_scheduled_requests)
 
         # Add job to the scheduler
-        immediate_schedules = dispatcher.sqlite_mgr.get_immediate_schedules()
+        immediate_schedules = dispatcher.sqlite_mgr.get_immediate_schedules_in_priority_order()
+        logger.debug(f"Total immediate schedules: {len(immediate_schedules)}")
         for immediate_schedule in immediate_schedules:
-            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, immediate_schedule)
+            dispatcher.ap_scheduler.add_immediate_job(dispatcher.do_install, immediate_schedule)
             logger.debug(f"Immediate schedule: {immediate_schedule}")
         
         single_schedules = dispatcher.sqlite_mgr.get_single_schedules_in_priority_order()
+        logger.debug(f"Total single schedules: {len(single_schedules)}")
         for single_schedule in single_schedules:
             dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
         repeated_schedules = dispatcher.sqlite_mgr.get_repeated_schedules_in_priority_order()
+        logger.debug(f"Total repeated schedules: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
             dispatcher.ap_scheduler.add_repeated_schedule_job(
                 dispatcher.do_install, repeated_schedule)
