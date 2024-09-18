@@ -19,6 +19,11 @@ class INBSSBServiceStub(object):
                 request_serializer=inbs_dot_v1_dot_inbs__sb__pb2.HandleINBMCommandResponse.SerializeToString,
                 response_deserializer=inbs_dot_v1_dot_inbs__sb__pb2.HandleINBMCommandRequest.FromString,
                 )
+        self.SendNodeUpdate = channel.unary_unary(
+                '/inbs.v1.INBSSBService/SendNodeUpdate',
+                request_serializer=inbs_dot_v1_dot_inbs__sb__pb2.SendNodeUpdateRequest.SerializeToString,
+                response_deserializer=inbs_dot_v1_dot_inbs__sb__pb2.SendNodeUpdateResponse.FromString,
+                )
 
 
 class INBSSBServiceServicer(object):
@@ -31,6 +36,13 @@ class INBSSBServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SendNodeUpdate(self, request, context):
+        """Used to send any kind of node status update
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_INBSSBServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -38,6 +50,11 @@ def add_INBSSBServiceServicer_to_server(servicer, server):
                     servicer.HandleINBMCommand,
                     request_deserializer=inbs_dot_v1_dot_inbs__sb__pb2.HandleINBMCommandResponse.FromString,
                     response_serializer=inbs_dot_v1_dot_inbs__sb__pb2.HandleINBMCommandRequest.SerializeToString,
+            ),
+            'SendNodeUpdate': grpc.unary_unary_rpc_method_handler(
+                    servicer.SendNodeUpdate,
+                    request_deserializer=inbs_dot_v1_dot_inbs__sb__pb2.SendNodeUpdateRequest.FromString,
+                    response_serializer=inbs_dot_v1_dot_inbs__sb__pb2.SendNodeUpdateResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -63,5 +80,22 @@ class INBSSBService(object):
         return grpc.experimental.stream_stream(request_iterator, target, '/inbs.v1.INBSSBService/HandleINBMCommand',
             inbs_dot_v1_dot_inbs__sb__pb2.HandleINBMCommandResponse.SerializeToString,
             inbs_dot_v1_dot_inbs__sb__pb2.HandleINBMCommandRequest.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def SendNodeUpdate(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/inbs.v1.INBSSBService/SendNodeUpdate',
+            inbs_dot_v1_dot_inbs__sb__pb2.SendNodeUpdateRequest.SerializeToString,
+            inbs_dot_v1_dot_inbs__sb__pb2.SendNodeUpdateResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
