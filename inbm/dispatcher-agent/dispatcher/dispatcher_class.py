@@ -279,7 +279,7 @@ class Dispatcher:
 
         If id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
 
-        Raises ValueError if request_id or job_id contains a slash
+        Raises ValueError if id contains a slash
 
         @param message: message to be published to cloud
         """
@@ -291,8 +291,8 @@ class Dispatcher:
         @param job_id: ID of the job to run.
         @param manifest: The manifest to be passed to the callback function.
         """
-        logger.debug(f"Running schedule type={type(schedule)}, job with JobID={schedule.job_id}, manifest={manifest}")
-        #self.sqlite_mgr.update_status(schedule, STARTED)
+        logger.debug(f"Running schedule of type={type(schedule)}, job with JobID={schedule.job_id}, manifest={manifest}")
+        self.sqlite_mgr.update_status(schedule, STARTED)
         self.do_install(manifest)
         
     def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:

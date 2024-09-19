@@ -33,16 +33,6 @@ class APScheduler:
         self._scheduler.start()
         self._scheduler.add_job(starting_message, 'date', run_date=datetime.now() + timedelta(seconds=1))
         sleep(1)
-        
-    # def _run_job(self, schedule: Schedule, manifest: str) -> None:
-    #     """Run the job.
-
-    #     @param job_id: ID of the job to run.
-    #     @param manifest: The manifest to be passed to the callback function.
-    #     """
-    #     logger.debug(f"Running job with JobID={schedule.job_id}, manifest={manifest}")
-    #     self._sqlite_mgr.update_status(schedule, STARTED)
-    #     self._run_callback(manifest)
 
     def remove_all_jobs(self) -> None:
         """Remove all jobs."""
