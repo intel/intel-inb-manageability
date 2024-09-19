@@ -459,7 +459,7 @@ class TiberOSSnapshot(Snapshot):
         self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
-        """This method saves the current mender artifact version info in a dispatcher state file
+        """This method saves the current TiberOS artifact version info in a dispatcher state file
 
         @raises SotaError: When failed to create a dispatcher state file
         """
@@ -532,7 +532,7 @@ class TiberOSSnapshot(Snapshot):
     def update_system(self) -> None:
         """If the system supports it, check whether the system was updated, after rebooting.
 
-        For TiberOS, we compare the image's SHA stored in dispatcher state file and current SHA.
+        For TiberOS, we compare the image's version stored in dispatcher state file and current os version.
         """
 
         logger.debug("attempting to get dispatcher state from state file")

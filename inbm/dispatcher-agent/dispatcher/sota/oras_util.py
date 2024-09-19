@@ -13,12 +13,11 @@ from typing import Optional
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import CanonicalUri
-from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.packagemanager.package_manager import verify_source
 from ..packagemanager.irepo import IRepo
 from ..dispatcher_broker import DispatcherBroker
-from ..constants import CACHE
-
+from .constants import ORAS_TOKEN_PATH
+from .sota_error import SotaError
 
 logger = logging.getLogger(__name__)
 
@@ -74,11 +73,8 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
     verify_source(source=source, dispatcher_broker=dispatcher_broker)
     dispatcher_broker.telemetry('Source Verification check passed')
 
-    try:
-        enough_space = is_enough_space_to_download(
-            registry_manifest, repo, password)
-    except DispatcherException as e:
-        raise DispatcherException(e)
+    enough_space = is_enough_space_to_download(
+        registry_manifest, repo, password)
 
     if not enough_space:
         err_msg = " Insufficient free space available on " + repo.get_repo_path() + \
@@ -148,3 +144,23 @@ def is_enough_space_to_download(manifest_uri: str,
     logger.debug("Free space available on destination_repo is " + repr(free_space))
     logger.debug("Free space needed on destination repo is " + repr(file_size))
     return True if free_space > file_size else False
+
+def read_oras_token() -> str:
+    """Read oras JWT token from a path configured by Tiber OS node-agent. The node agent will renew the token when
+    the token is expired.
+
+    @return: JWT token to access release server
+    """
+    token = None
+    if os.path.exists(ORAS_TOKEN_PATH):
+        with open(ORAS_TOKEN_PATH, 'r') as f:
+            token = f.read().strip()
+        return token
+    else:
+        msg = f"{ORAS_TOKEN_PATH} not exist."
+
+    if token is None:
+        msg = f"No JWT token found."
+
+    logger.error(msg)
+    raise SotaError(f"Error while performing TiberOS download: {msg}")

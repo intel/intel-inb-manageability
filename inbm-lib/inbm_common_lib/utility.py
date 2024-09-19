@@ -10,10 +10,10 @@ import url_normalize
 import shutil
 import tarfile
 import logging
-
+import ast
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Union, Dict, Tuple
 
 from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER, OS_RELEASE_PATH, UNKNOWN
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -280,12 +280,54 @@ def get_os_version() -> str:
     """
     if os.path.exists(OS_RELEASE_PATH):
         with open(OS_RELEASE_PATH, 'r') as version_file:
-            for line in version_file:
-                if line.startswith('VERSION='):
-                    version = line.split('=')[1].replace('\n', ' ')
-                    return version
+            content = version_file.read()
+
+        content_dict = parse_os_release(content)
+        for key in content_dict:
+            if key == "VERSION":
+                return content_dict[key]
         logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
     else:
         logger.error(f"{OS_RELEASE_PATH} not exist.")
 
     return UNKNOWN
+
+def parse_os_release(file_content: str) -> Dict[str, str]:
+    """
+    Parses the content of an os-release file and returns a dictionary of key-value pairs.
+
+    :param file_content: The content of the os-release file as a string.
+    :return: A dictionary containing key-value pairs from the file.
+    """
+    result: Dict[str, str] = {}
+    for line in file_content.splitlines():
+        parsed = parse_line(line)
+        if parsed:
+            key, value = parsed
+            result[key] = value
+    return result
+
+def parse_line(line: str) -> Optional[Tuple[str, str]]:
+    """
+    Parses a line of the os-release file and returns a key-value pair.
+    Returns None if the line is empty or a comment.
+
+    :param line: A line from the os-release file.
+    :return: A tuple of (key, value) if the line contains a key-value pair, else None.
+    """
+    line = line.strip()
+    if not line or line.startswith('#'):
+        return None
+    if '=' not in line:
+        return None
+    key, value = line.split('=', 1)
+    key = key.strip()
+    value = value.strip()
+    if (value.startswith('"') and value.endswith('"')) or \
+       (value.startswith("'") and value.endswith("'")):
+        try:
+            value = ast.literal_eval(value)
+        except (SyntaxError, ValueError):
+            pass  # Keep value as is
+    # Else, value is unquoted, keep as is
+    return key, value

@@ -447,7 +447,7 @@ class SOTA:
             elif self._update_logger.detail_status == OTA_SUCCESS or self._update_logger.detail_status == OTA_PENDING:
                 log = {
                     "StatusDetail.Status": self._update_logger.detail_status,
-                    "OS Version": get_os_version()
+                    "Version": get_os_version()
                 }
             # In TiberOS, no package level information needed.
             self._update_logger.save_granular_log_file(log=log, check_package=False)

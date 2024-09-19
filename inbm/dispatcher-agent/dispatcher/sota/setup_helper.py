@@ -194,13 +194,13 @@ class TiberOSSetupHelper(SetupHelper):
     """
 
     def __init__(self, broker: DispatcherBroker) -> None:
-        """ Initializes YoctoSetupHelper
+        """ Initializes TiberOSSetupHelper
         @param broker: DispatcherBroker instance used to communicate with other INBM agents
         """
         self._broker = broker
         super().__init__()
 
-    def pre_processing(self):
+    def pre_processing(self) -> bool:
         """Perform checks immediately before applying an OS update or upgrade.
         TiberOS: if Update Tool is present, it proceeds to perform the OS update
         @return: True if OK to proceed; False otherwise

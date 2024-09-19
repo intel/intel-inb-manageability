@@ -1,10 +1,12 @@
 import shutil
+import tempfile
 from unittest.mock import patch, Mock, mock_open
 from unittest import TestCase
 
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import clean_input, get_canonical_representation_of_path, canonicalize_uri, \
-    validate_file_type, remove_file, copy_file, move_file, create_file_with_contents
+    validate_file_type, remove_file, copy_file, move_file, create_file_with_contents, get_os_version
+from inbm_common_lib.constants import UNKNOWN
 
 
 class TestUtility(TestCase):
@@ -109,3 +111,19 @@ class TestUtility(TestCase):
 
         except IOError as e:
             self.fail(f"Unexpected exception raised during test: {e}")
+
+    @patch('builtins.open', new_callable=mock_open, read_data='VERSION="2.0.20240802.0213"')
+    def test_get_os_version_successfully(self, mock_open: Mock) -> None:
+        try:
+            self.assertEqual(get_os_version(), "2.0.20240802.0213")
+        except IOError as e:
+            self.fail(f"Unexpected exception raised during test: {e}")
+        mock_open.assert_called_once_with('/etc/os-release', 'r')
+
+    @patch('builtins.open', new_callable=mock_open, read_data='')
+    def test_get_os_version_with_no_version_found(self, mock_open: Mock) -> None:
+        try:
+            self.assertEqual(get_os_version(), UNKNOWN)
+        except IOError as e:
+            self.fail(f"Unexpected exception raised during test: {e}")
+        mock_open.assert_called_once_with('/etc/os-release', 'r')

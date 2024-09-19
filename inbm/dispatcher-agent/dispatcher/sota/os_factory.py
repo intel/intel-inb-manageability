@@ -150,6 +150,10 @@ class YoctoX86_64(ISotaOs):
                              proceed_without_rollback, reboot_device)
 
     def create_downloader(self, signature: Optional[str] = None) -> Downloader:
+        """ Create a downloader object. Signature is ignored.
+
+        @param signature: signature used to perform signature check
+        """
         logger.debug("")
         return YoctoDownloader()
 
@@ -180,6 +184,10 @@ class YoctoARM(ISotaOs):
                              snap_num, proceed_without_rollback, reboot_device)
 
     def create_downloader(self, signature: Optional[str] = None) -> Downloader:
+        """ Create a downloader object. Signature is ignored.
+
+        @param signature: signature used to perform signature check
+        """
         logger.debug("")
         return YoctoDownloader()
 
@@ -220,6 +228,10 @@ class DebianBasedSotaOs(ISotaOs):
                                    snap_num, proceed_without_rollback, reboot_device)
 
     def create_downloader(self, signature: Optional[str] = None) -> Downloader:
+        """ Create a downloader object. Signature is ignored.
+
+        @param signature: signature used to perform signature check
+        """
         return DebianBasedDownloader()
 
 
@@ -251,6 +263,10 @@ class Windows(ISotaOs):
                                proceed_without_rollback, reboot_device)
 
     def create_downloader(self, signature: Optional[str] = None) -> Downloader:
+        """ Create a downloader object. Signature is ignored.
+
+        @param signature: signature used to perform signature check
+        """
         return WindowsDownloader()
 
 
@@ -284,5 +300,9 @@ class TiberOSBasedSotaOs(ISotaOs):
                              proceed_without_rollback, reboot_device)
 
     def create_downloader(self, signature: Optional[str] = None) -> Downloader:
+        """ Create a downloader object.
+
+        @param signature: signature used to perform signature check
+        """
         logger.debug("")
         return TiberOSDownloader(signature=signature)

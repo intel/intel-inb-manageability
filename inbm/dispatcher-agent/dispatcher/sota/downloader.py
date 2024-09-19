@@ -14,7 +14,7 @@ from datetime import datetime
 from typing import Optional
 from .mender_util import read_current_mender_version
 from .sota_error import SotaError
-from .oras_util import oras_download
+from .oras_util import oras_download, read_oras_token
 from ..constants import UMASK_OTA
 from ..downloader import download
 from ..packagemanager.irepo import IRepo
@@ -201,8 +201,7 @@ class TiberOSDownloader(Downloader):
         if uri is None:
             raise SotaError("URI is None while performing TiberOS download")
 
-        if password is None:
-            raise SotaError("JWT Token is None while performing TiberOS download")
+        password = read_oras_token()
 
         oras_download(dispatcher_broker=dispatcher_broker,
                       uri=uri,

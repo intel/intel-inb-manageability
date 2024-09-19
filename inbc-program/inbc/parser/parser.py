@@ -221,8 +221,6 @@ class ArgsParser(object):
                                  help='Release date of the applying package - format YYYY-MM-DD')
         parser_sota.add_argument('--username', '-un', required=False, help='Username on the remote server',
                                  type=lambda x: validate_string_less_than_n_characters(x, 'Username', 50))
-        parser_sota.add_argument('--password', '-pw', required=False, help='Password on the remote server',
-                                 type=lambda x: validate_string_less_than_n_characters(x, 'Username', 5000))
         parser_sota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
                                  help='Type of information [ yes | no ]')
         parser_sota.add_argument('--mode', '-m', default='full',

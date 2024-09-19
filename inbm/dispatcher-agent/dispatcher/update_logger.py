@@ -85,6 +85,7 @@ class UpdateLogger:
     def save_granular_log_file(self, log: Optional[dict] = None, check_package: bool = True) -> None:
         """Add package level granular update status data to the granular log file
         In TiberOS, the granular log records the reason of failure.
+        If the log is passed in, it will only record the log.
 
         @param log: granular log to be recorded (dict)
         @param check_package: Set to True to check the package's status and version and record them.

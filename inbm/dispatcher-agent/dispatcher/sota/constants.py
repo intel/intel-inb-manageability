@@ -17,6 +17,10 @@ MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifac
 # Update Tool file path
 UPDATE_TOOL_PATH = get_canonical_representation_of_path('/usr/bin/os-update-tool.sh')
 
+# ORAS release server access token path
+ORAS_TOKEN_PATH = get_canonical_representation_of_path('/etc/intel_edge_node/tokens/platform-update-agent/'
+                                                       'rs_access_token')
+
 SOTA_STATE = 'normal'
 
 LOGPATH = '/var/lib/dispatcher/upload'

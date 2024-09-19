@@ -244,11 +244,11 @@ class TestInbc(TestCase):
     @patch('inbc.utility.getpass.getpass', return_value='123abc')
     def test_create_sota_manifest_with_signature(self, mock_pass, mock_reconnect) -> None:
         s = self.arg_parser.parse_args(
-            ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank', '-s', 'https://abc.com/signature.file'])
+            ['sota', '-u', 'https://abc.com/test.tar', '-un', 'Frank', '-s', '64a37255b4eb18ae858768c0c06d2875124e3111081cdade737196ec7502c53e'])
         expected = '<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header><type>sota</type' \
                    '><repo>remote</repo></header><type><sota><cmd ' \
                    'logtofile="y">update</cmd><mode>full</mode><package_list></package_list>' \
-                   '<fetch>https://abc.com/test.tar</fetch><signature>https://abc.com/signature.file</signature>' \
+                   '<fetch>https://abc.com/test.tar</fetch><signature>64a37255b4eb18ae858768c0c06d2875124e3111081cdade737196ec7502c53e</signature>' \
                    '<username>Frank</username><password>123abc</password>' \
                    '<release_date>2026-12-31</release_date><deviceReboot>yes</deviceReboot>' \
                    '</sota></type></ota></manifest>'

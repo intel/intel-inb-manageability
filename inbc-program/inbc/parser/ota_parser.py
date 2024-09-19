@@ -48,7 +48,7 @@ def sota(args: argparse.Namespace) -> str:
         'fetch': fetch_location,
         'signature': args.signature,
         'username': args.username,
-        'password': args.password if args.password else _get_password(args.username, "Please provide the password: "),
+        'password': _get_password(args.username, "Please provide the password: "),
         'deviceReboot': "no" if args.mode == "download-only" else args.reboot,
         'path': path_location,
         'package_list': package_list,
