@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 from cloudadapter.pb.common.v1.common_pb2 import (
     UpdateSystemSoftwareOperation,
+    RpcActivateOperation,
     Operation,
     PreOperation,
     PostOperation,
@@ -25,9 +26,24 @@ import xml.etree.ElementTree as ET
 # Import the function to be tested
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_system_software_operation_to_xml_manifest,
+    convert_rpc_activate_operation_to_xml_manifest,
     convert_operation_to_xml_manifests,
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
+
+RPC_OPERATION_LARGE = RpcActivateOperation(
+    url="http://example.com/update",
+    profile_name="UDM",
+)
+
+RPC_OPERATION_LARGE_MANIFEST_XML = (
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    "<manifest><type>cmd</type><cmd><header><type>rpc</type></header>"
+    '<type><rpc><profileName>UDM</profileName>'
+    "<fetch>http://example.com/update</fetch>"
+    "</rpc></type></cmd></manifest>"
+)
+
 
 SOTA_OPERATION_LARGE = UpdateSystemSoftwareOperation(
     url="http://example.com/update",

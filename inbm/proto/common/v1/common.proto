@@ -63,8 +63,14 @@ message Operation {
   oneof operation {
     UpdateSystemSoftwareOperation update_system_software_operation = 4;
     SetPowerStateOperation set_power_state_operation = 5;
+    RpcActivateOperation rpc_activate_operation = 6;
     // and others
   }
+}
+
+message RpcActivateOperation {
+  string url = 1;
+  string profile_name = 2;
 }
 
 message UpdateSystemSoftwareOperation {
