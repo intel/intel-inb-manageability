@@ -3,11 +3,13 @@ from typing import Optional
 import os
 
 from ..common.mock_resources import *
+from inbm_common_lib.utility import canonicalize_uri
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from dispatcher.sota.os_factory import SotaOsFactory
 from dispatcher.sota.sota import SOTA
 from dispatcher.sota.sota_error import SotaError
+from dispatcher.sota.oras_util import parse_uri
 from dispatcher.constants import CACHE
 from inbm_lib.xmlhandler import XmlHandler
 from unittest.mock import patch
@@ -101,6 +103,18 @@ class TestDownloader(unittest.TestCase):
         mock_get.assert_called_once()
         mock_loads.assert_called_once()
         mock_run.assert_called_once()
+
+    def test_parse_uri(self) -> None:
+        uri = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/test/tiberos:latest")
+        source, registry_server, image, image_tag, repository_name, image_full_path, registry_manifest = \
+            parse_uri(uri)
+        self.assertEqual(source, 'https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/test')
+        self.assertEqual(registry_server, 'registry-rs.internal.ledgepark.intel.com')
+        self.assertEqual(image, 'tiberos')
+        self.assertEqual(image_tag, 'latest')
+        self.assertEqual(repository_name, 'one-intel-edge')
+        self.assertEqual(image_full_path, 'registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest')
+        self.assertEqual(registry_manifest, 'https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifest/latest')
 
     @staticmethod
     def _build_mock_repo(num_files=0):

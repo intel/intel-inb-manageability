@@ -8,8 +8,8 @@ import logging
 import os
 import requests
 import json
-from urllib.parse import urlsplit
-from typing import Optional
+from urllib.parse import urlsplit, urlparse
+from typing import Optional, Tuple
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import CanonicalUri
@@ -41,24 +41,9 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
     if not isinstance(uri, CanonicalUri):
         raise DispatcherException("Internal error: uri improperly passed to download function")
 
-    """
-    In case of uri.value = https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest
-    source = https://registry-rs.internal.ledgepark.intel.com/one-intel-edge
-    registry_server = registry-rs.internal.ledgepark.intel.com
-    image = tiberos
-    image_tag = latest
-    image_full_path = registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest
-    repository_name = one-intel-edge
-    registry_manifest = https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifest/latest
-    """
     try:
-        source = uri.value[:-(len(uri.value.split('/')[-1]) + 1)]
-        registry_server = uri.value.split("/")[2]
-        image = os.path.basename(urlsplit(uri.value).path).split(":")[0]
-        image_tag = uri.value.split(":")[-1]
-        repository_name = "/".join(uri.value.split("/")[3:-1])
-        image_full_path = f"{registry_server}/{repository_name}/{image}:{image_tag}"
-        registry_manifest = f"https://{registry_server}/v2/{repository_name}/{image}/manifests/{image_tag}"
+        source, registry_server, image, image_tag, repository_name, image_full_path, registry_manifest = \
+            parse_uri(uri)
     except IndexError as err:
         logger.error(f"IndexError occurs with uri {uri.value}: {err}")
         raise DispatcherException(err)
@@ -68,6 +53,7 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
                  f"image: {image}, "
                  f"image_tag: {image_tag}, "
                  f"repository_name: {repository_name}, "
+                 f"image_full_path: {image_full_path}, "
                  f"registry_manifest: {registry_manifest}")
 
     verify_source(source=source, dispatcher_broker=dispatcher_broker)
@@ -82,17 +68,19 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         raise DispatcherException(err_msg)
 
     if password:
-        logger.debug("JWT Token provided.")
+        logger.debug("RS password provided.")
     else:
         err_msg = " No JWT token. Abort the update. "
         raise DispatcherException(err_msg)
 
+    # Set password as environment variables for security reason.
+    os.environ["ORAS_PASSWORD"] = password
+
     msg = f'Fetching software package from {image_full_path}'
     dispatcher_broker.telemetry(msg)
 
-    # Call oras to pull the image
-    # The password is the JWT token
-    (out, err_run, code) = PseudoShellRunner().run(f"oras pull {image_full_path} -o {repo.get_repo_path()} --password {password}")
+    # Call oras to pull the image. The password is the JWT token.
+    (out, err_run, code) = PseudoShellRunner().run(f"oras pull {image_full_path} -o {repo.get_repo_path()} --password $ORAS_PASSWORD")
     if code != 0:
         if err_run:
             raise DispatcherException("Error to download OTA files with ORAS: " + err_run + ". Code: " + str(code))
@@ -120,6 +108,8 @@ def is_enough_space_to_download(manifest_uri: str,
             "Accept": "application/vnd.docker.distribution.manifest.v2+json, application/vnd.docker.distribution.manifest.list.v2+json, application/vnd.oci.image.manifest.v1+json, application/vnd.oci.image.index.v1+json, application/vnd.oci.artifact.manifest.v1+json"
         }
         response = requests.get(manifest_uri, headers=headers)
+        if response.status_code != 200:
+            raise DispatcherException(f"Failed to get the response from {manifest_uri}.")
         data = json.loads(response.text)
         logger.debug(f"resp={data}")
         # Calculate the total size
@@ -128,7 +118,7 @@ def is_enough_space_to_download(manifest_uri: str,
             file_size += layer['size']
         logger.debug(f"Total file size: {file_size}")
 
-    except (KeyError, json.JSONDecodeError) as err:
+    except (TypeError, KeyError, json.JSONDecodeError, DispatcherException) as err:
         err_msg = f"Error getting artifact size from {manifest_uri} using token={jwt_token} Error: {err}"
         logger.error(err_msg)
         raise DispatcherException(err_msg)
@@ -144,6 +134,36 @@ def is_enough_space_to_download(manifest_uri: str,
     logger.debug("Free space available on destination_repo is " + repr(free_space))
     logger.debug("Free space needed on destination repo is " + repr(file_size))
     return True if free_space > file_size else False
+
+def parse_uri(uri: CanonicalUri) -> Tuple[str, str, str, str, str, str, str]:
+    """ Parse the uri.
+
+    In case of uri.value = https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest
+    source = https://registry-rs.internal.ledgepark.intel.com/one-intel-edge
+    registry_server = registry-rs.internal.ledgepark.intel.com
+    image = tiberos
+    image_tag = latest
+    image_full_path = registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest
+    repository_name = one-intel-edge
+    registry_manifest = https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifest/latest
+
+    @return: str representing source, registry_server, image, image_tag, image_full_path, repository_name and
+             registry_manifest
+    """
+    source = uri.value[:-(len(uri.value.split('/')[-1]) + 1)]
+    parsed_uri = urlparse(uri.value)
+    registry_server = parsed_uri.netloc
+    parsed_uri.geturl()
+    path_parts = parsed_uri.path.strip('/').split('/')
+    if len(path_parts) < 2:
+        raise DispatcherException(f"Invalid URI format: {uri.value}")
+    repository_name = '/'.join(path_parts[:-1])
+    image = path_parts[-1].split(':')[0]
+    image_tag = path_parts[-1].split(':')[1] if ':' in path_parts[-1] else 'latest'
+    image_full_path = f"{registry_server}/{repository_name}/{image}:{image_tag}"
+    registry_manifest = f"https://{registry_server}/v2/{repository_name}/{image}/manifests/{image_tag}"
+
+    return source, registry_server, image, image_tag, repository_name, image_full_path, registry_manifest
 
 def read_oras_token() -> str:
     """Read oras JWT token from a path configured by Tiber OS node-agent. The node agent will renew the token when

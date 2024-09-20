@@ -14,8 +14,6 @@ from typing import Optional, Dict, List, Any
 from inbm_lib.constants import LOG_FILE, GRANULAR_LOG_FILE, SYSTEM_HISTORY_LOG_FILE, OTA_PENDING, FORMAT_VERSION, \
     SOTA, OS, APPLICATION, PACKAGE_INSTALL, PACKAGE_UPGRADE
 
-from inbm_lib.detect_os import detect_os, LinuxDistType
-
 from inbm_lib.package_info import get_package_start_date, extract_package_names_and_versions, check_package_status, \
     check_package_version
 
@@ -202,15 +200,19 @@ class UpdateLogger:
     def update_granular_with_log(self, log: dict) -> None:
         """This function stores the log provided into the granular log file."""
         logger.debug("")
-        # Load current data in granular log file.
-        with open(GRANULAR_LOG_FILE, 'r') as f:
-            data = json.load(f)
-        # Append the log to the UpdateLog
-        data['UpdateLog'].append(log)
+        try:
+            # Load current data in granular log file.
+            with open(GRANULAR_LOG_FILE, 'r') as f:
+                data = json.load(f)
+            # Append the log to the UpdateLog
+            data['UpdateLog'].append(log)
 
-        # Open the file in write mode to save the updated data
-        with open(GRANULAR_LOG_FILE, 'w') as f:
-            json.dump(data, f, indent=4)
+            # Open the file in write mode to save the updated data
+            with open(GRANULAR_LOG_FILE, 'w') as f:
+                json.dump(data, f, indent=4)
+        except json.JSONDecodeError as err:
+            logger.error(f"Error decoding JSON from {GRANULAR_LOG_FILE}: {err}")
+
 
     def read_history_log_file(self) -> Optional[str]:
         """Read the apt history log file.
