@@ -14,6 +14,8 @@ from typing import Optional, Dict, List, Any
 from inbm_lib.constants import LOG_FILE, GRANULAR_LOG_FILE, SYSTEM_HISTORY_LOG_FILE, OTA_PENDING, FORMAT_VERSION, \
     SOTA, OS, APPLICATION, PACKAGE_INSTALL, PACKAGE_UPGRADE
 
+from inbm_lib.detect_os import detect_os, LinuxDistType
+
 from inbm_lib.package_info import get_package_start_date, extract_package_names_and_versions, check_package_status, \
     check_package_version
 

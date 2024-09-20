@@ -12,7 +12,7 @@ from dispatcher.sota.sota_error import SotaError
 from dispatcher.sota.oras_util import parse_uri
 from dispatcher.constants import CACHE
 from inbm_lib.xmlhandler import XmlHandler
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../../fpm-template/usr/share/dispatcher-agent/'
@@ -76,14 +76,16 @@ class TestDownloader(unittest.TestCase):
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
-
     @patch('json.loads', return_value=mock_resp)
     @patch('requests.get')
+    @patch('dispatcher.sota.downloader.read_oras_token', return_value="mock_password")
     @patch('dispatcher.sota.oras_util.verify_source')
-    def test_download_successful(self, mock_verify_source, mock_get, mock_loads, mock_run) -> None:
-        self.release_date = self.username = None
-        self.password = "mock_password"
+    def test_download_successful(self, mock_verify_source, mock_read_token, mock_get, mock_loads, mock_run) -> None:
+        self.release_date = self.username = self.password = None
         mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_get.return_value = mock_response
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
@@ -100,6 +102,7 @@ class TestDownloader(unittest.TestCase):
             self.fail("raised Error unexpectedly!")
 
         mock_verify_source.assert_called_once()
+        mock_read_token.assert_called_once()
         mock_get.assert_called_once()
         mock_loads.assert_called_once()
         mock_run.assert_called_once()
@@ -112,9 +115,9 @@ class TestDownloader(unittest.TestCase):
         self.assertEqual(registry_server, 'registry-rs.internal.ledgepark.intel.com')
         self.assertEqual(image, 'tiberos')
         self.assertEqual(image_tag, 'latest')
-        self.assertEqual(repository_name, 'one-intel-edge')
-        self.assertEqual(image_full_path, 'registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest')
-        self.assertEqual(registry_manifest, 'https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifest/latest')
+        self.assertEqual(repository_name, 'one-intel-edge/test')
+        self.assertEqual(image_full_path, 'registry-rs.internal.ledgepark.intel.com/one-intel-edge/test/tiberos:latest')
+        self.assertEqual(registry_manifest, 'https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/test/tiberos/manifests/latest')
 
     @staticmethod
     def _build_mock_repo(num_files=0):

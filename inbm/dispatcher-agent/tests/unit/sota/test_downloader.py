@@ -116,8 +116,9 @@ class TestDownloader(unittest.TestCase):
                 mem_repo.add("test" + str(i + 1) + ".rpm", b"0123456789")
         return mem_repo
 
+    @patch('dispatcher.sota.downloader.read_oras_token', return_value="mock_password")
     @patch('dispatcher.sota.downloader.oras_download')
-    def test_tiberos_download_successful(self, mock_download) -> None:
+    def test_tiberos_download_successful(self, mock_download, mock_read_token) -> None:
         self.release_date = self.username = None
         password = "mock_password"
         mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
@@ -137,7 +138,7 @@ class TestDownloader(unittest.TestCase):
 
         # Calculate the SHA256 checksum
         sha256_hash = hashlib.sha256()
-        with open(os.path.join(directory, "hello.txt"), 'rb') as file:
+        with open(os.path.join(directory, "test"), 'rb') as file:
             for chunk in iter(lambda: file.read(4096), b''):
                 sha256_hash.update(chunk)
         checksum = sha256_hash.hexdigest()
@@ -149,4 +150,54 @@ class TestDownloader(unittest.TestCase):
         except (SotaError, DispatcherException):
             self.fail("raised Error unexpectedly!")
 
+        mock_read_token.assert_called_once()
         mock_download.assert_called_once()
+
+    @patch('dispatcher.sota.downloader.read_oras_token', return_value="mock_password")
+    @patch('dispatcher.sota.downloader.oras_download')
+    def test_tiberos_download_and_signature_failed(self, mock_download, mock_read_token) -> None:
+        self.release_date = self.username = None
+        password = "mock_password"
+        mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
+
+        assert TestDownloader.sota_instance
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+        factory = TestDownloader.sota_instance.factory
+        assert factory
+        installer = factory.create_downloader()
+        assert isinstance(installer, TiberOSDownloader)
+
+        directory = tempfile.mkdtemp()
+        repo = DirectoryRepo(directory)
+
+        repo.add("test", b"This is a test file.")
+
+        installer._signature = "invalid checksum"
+        with self.assertRaises(SotaError):
+            installer.download(self.mock_disp_broker,
+                               mock_url, repo,
+                               self.username, password, self.release_date)
+
+        mock_read_token.assert_called_once()
+        mock_download.assert_called_once()
+
+    def test_tiberos_download_with_empty_uri(self) -> None:
+        self.release_date = self.username = None
+        password = "mock_password"
+        assert TestDownloader.sota_instance
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+        factory = TestDownloader.sota_instance.factory
+        assert factory
+        installer = factory.create_downloader()
+        assert isinstance(installer, TiberOSDownloader)
+
+        directory = tempfile.mkdtemp()
+        repo = DirectoryRepo(directory)
+
+        installer._signature = "invalid checksum"
+        with self.assertRaises(SotaError):
+            installer.download(self.mock_disp_broker,
+                               None, repo,
+                               self.username, password, self.release_date)

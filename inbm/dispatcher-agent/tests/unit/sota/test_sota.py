@@ -4,6 +4,7 @@ import tempfile
 from ..common.mock_resources import *
 from ddt import data, ddt, unpack
 from unittest.mock import patch, mock_open
+from typing import Dict, List
 
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from dispatcher.sota.command_list import CommandList
@@ -18,7 +19,6 @@ from inbm_lib.constants import OTA_SUCCESS, OTA_PENDING, FAIL, ROLLBACK, GRANULA
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../../fpm-template/usr/share/dispatcher-agent/'
                                     'manifest_schema.xsd')
-
 
 class MockInstaller:
 
@@ -273,9 +273,12 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
         """
         self.assertFalse(TestSota.sota_instance._is_ota_no_update_available(cmd_list))
 
+
+    @patch('json.dump')
+    @patch('json.load', return_value={"UpdateLog":[]})
     @patch('dispatcher.sota.sota.get_os_version', return_value='2.0.20240802.0213')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
-    def test_save_granular_in_tiberos_with_success_log(self, mock_run, mock_get_os_version) -> None:
+    def test_save_granular_in_tiberos_with_success_log(self, mock_run, mock_get_os_version, mock_load, mock_dump) -> None:
         TestSota.sota_instance.factory = SotaOsFactory(
             TestSota.mock_disp_broker,
             None, []).get_os('TiberOS')
@@ -294,12 +297,14 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
             ]
         }
 
-        m_open.assert_called_once_with(json.dumps(expected_content), 'w')
+        mock_dump.assert_called_with(expected_content, m_open(), indent=4)
 
 
+    @patch('json.dump')
+    @patch('json.load', return_value={"UpdateLog":[]})
     @patch('dispatcher.sota.sota.get_os_version', return_value='2.0.20240802.0213')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
-    def test_save_granular_in_tiberos_with_pending_log(self, mock_run, mock_get_os_version) -> None:
+    def test_save_granular_in_tiberos_with_pending_log(self, mock_run, mock_get_os_version, mock_load, mock_dump) -> None:
         TestSota.sota_instance.factory = SotaOsFactory(
             TestSota.mock_disp_broker,
             None, []).get_os('TiberOS')
@@ -318,10 +323,12 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
             ]
         }
 
-        m_open.assert_called_once_with(json.dumps(expected_content), 'w')
+        mock_dump.assert_called_with(expected_content, m_open(), indent=4)
 
+    @patch('json.dump')
+    @patch('json.load', return_value={"UpdateLog":[]})
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
-    def test_save_granular_in_tiberos_with_fail_log(self, mock_run) -> None:
+    def test_save_granular_in_tiberos_with_fail_log(self, mock_run, mock_load, mock_dump) -> None:
         TestSota.sota_instance.factory = SotaOsFactory(
             TestSota.mock_disp_broker,
             None, []).get_os('TiberOS')
@@ -341,11 +348,13 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
             ]
         }
 
-        m_open.assert_called_once_with(json.dumps(expected_content), 'w')
+        mock_dump.assert_called_with(expected_content, m_open(), indent=4)
 
 
+    @patch('json.dump')
+    @patch('json.load', return_value={"UpdateLog":[]})
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
-    def test_save_granular_in_tiberos_with_rollback_log(self, mock_run) -> None:
+    def test_save_granular_in_tiberos_with_rollback_log(self, mock_run, mock_load, mock_dump) -> None:
         TestSota.sota_instance.factory = SotaOsFactory(
             TestSota.mock_disp_broker,
             None, []).get_os('TiberOS')
@@ -364,4 +373,4 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
             ]
         }
 
-        m_open.assert_called_once_with(json.dumps(expected_content), 'w')
+        mock_dump.assert_called_with(expected_content, m_open(), indent=4)
