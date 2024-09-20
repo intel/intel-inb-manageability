@@ -1,8 +1,9 @@
 import testtools
 import os
+import tempfile
 from ..common.mock_resources import *
 from ddt import data, ddt, unpack
-from unittest.mock import patch
+from unittest.mock import patch, mock_open
 
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 from dispatcher.sota.command_list import CommandList
@@ -280,21 +281,21 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
             None, []).get_os('TiberOS')
 
         TestSota.sota_instance._update_logger.detail_status = OTA_SUCCESS
-        TestSota.sota_instance.save_granular_log(check_package=False)
 
-        with open(GRANULAR_LOG_FILE, 'r') as f:
-            granular_log = json.load(f)
+        with patch('builtins.open', mock_open()) as m_open:
+            TestSota.sota_instance.save_granular_log(check_package=False)
 
         expected_content = {
             "UpdateLog": [
                 {
                     "StatusDetail.Status": OTA_SUCCESS,
-                    "OS Version": '2.0.20240802.0213'
+                    "Version": '2.0.20240802.0213'
                 }
             ]
         }
 
-        self.assertEqual(granular_log, expected_content)
+        m_open.assert_called_once_with(json.dumps(expected_content), 'w')
+
 
     @patch('dispatcher.sota.sota.get_os_version', return_value='2.0.20240802.0213')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
@@ -304,21 +305,20 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
             None, []).get_os('TiberOS')
 
         TestSota.sota_instance._update_logger.detail_status = OTA_PENDING
-        TestSota.sota_instance.save_granular_log(check_package=False)
 
-        with open(GRANULAR_LOG_FILE, 'r') as f:
-            granular_log = json.load(f)
+        with patch('builtins.open', mock_open()) as m_open:
+            TestSota.sota_instance.save_granular_log(check_package=False)
 
         expected_content = {
             "UpdateLog": [
                 {
                     "StatusDetail.Status": OTA_PENDING,
-                    "OS Version": '2.0.20240802.0213'
+                    "Version": '2.0.20240802.0213'
                 }
             ]
         }
 
-        self.assertEqual(granular_log, expected_content)
+        m_open.assert_called_once_with(json.dumps(expected_content), 'w')
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
     def test_save_granular_in_tiberos_with_fail_log(self, mock_run) -> None:
@@ -328,10 +328,9 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
 
         TestSota.sota_instance._update_logger.detail_status = FAIL
         TestSota.sota_instance._update_logger.error = 'Error getting artifact size from https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifests/latest using token'
-        TestSota.sota_instance.save_granular_log(check_package=False)
 
-        with open(GRANULAR_LOG_FILE, 'r') as f:
-            granular_log = json.load(f)
+        with patch('builtins.open', mock_open()) as m_open:
+            TestSota.sota_instance.save_granular_log(check_package=False)
 
         expected_content = {
             "UpdateLog": [
@@ -342,7 +341,7 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
             ]
         }
 
-        self.assertEqual(granular_log, expected_content)
+        m_open.assert_called_once_with(json.dumps(expected_content), 'w')
 
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
@@ -353,10 +352,8 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
 
         TestSota.sota_instance._update_logger.detail_status = ROLLBACK
         TestSota.sota_instance._update_logger.error = 'FAILED INSTALL: System has not been properly updated; reverting..'
-        TestSota.sota_instance.save_granular_log(check_package=False)
-
-        with open(GRANULAR_LOG_FILE, 'r') as f:
-            granular_log = json.load(f)
+        with patch('builtins.open', mock_open()) as m_open:
+            TestSota.sota_instance.save_granular_log(check_package=False)
 
         expected_content = {
             "UpdateLog": [
@@ -367,4 +364,4 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
             ]
         }
 
-        self.assertEqual(granular_log, expected_content)
+        m_open.assert_called_once_with(json.dumps(expected_content), 'w')

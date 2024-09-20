@@ -1,4 +1,5 @@
 import unittest
+import tempfile
 from typing import Optional
 import os
 import hashlib
@@ -129,22 +130,21 @@ class TestDownloader(unittest.TestCase):
         installer = factory.create_downloader()
         assert isinstance(installer, TiberOSDownloader)
 
-        if not os.path.exists(CACHE):
-            os.makedirs(CACHE)
+        directory = tempfile.mkdtemp()
+        repo = DirectoryRepo(directory)
 
-        file_path = os.path.join(CACHE, 'test')
-        with open(file_path, 'w') as file:
-            file.write('This is a test file.')
+        repo.add("test", b"This is a test file.")
+
         # Calculate the SHA256 checksum
         sha256_hash = hashlib.sha256()
-        with open(file_path, 'rb') as file:
+        with open(os.path.join(directory, "hello.txt"), 'rb') as file:
             for chunk in iter(lambda: file.read(4096), b''):
                 sha256_hash.update(chunk)
         checksum = sha256_hash.hexdigest()
         installer._signature = checksum
         try:
             installer.download(self.mock_disp_broker,
-                               mock_url, DirectoryRepo(CACHE),
+                               mock_url, repo,
                                self.username, password, self.release_date)
         except (SotaError, DispatcherException):
             self.fail("raised Error unexpectedly!")
