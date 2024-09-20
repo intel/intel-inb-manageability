@@ -107,6 +107,7 @@ class APScheduler:
         if isinstance(schedule, RepeatedSchedule):
             return self._check_repeated_schedule(schedule)
         return True
+    
     def _check_single_schedule(self, schedule: SingleSchedule) -> bool:
         """Check if the schedule can be scheduled.
 

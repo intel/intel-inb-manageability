@@ -145,6 +145,14 @@ class InbsCloudClient(CloudClient):
         # for now ignore all callbacks; only Ping is supported
         self._callbacks[name] = callback
 
+    def _send_node_update(self, request: inbs_sb_pb2.SendNodeUpdateRequest):
+        """Send a node update to INBS as a Request
+
+        @param request: The SendNodeUpdateRequest to send
+        @return: None
+        """        
+        pass
+    
     def _handle_inbm_command_request(
         self, request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
     ) -> Generator[inbs_sb_pb2.HandleINBMCommandResponse, None, None]:

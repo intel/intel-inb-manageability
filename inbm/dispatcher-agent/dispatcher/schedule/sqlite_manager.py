@@ -11,7 +11,7 @@ import os
 import stat
 
 from datetime import datetime
-from typing import Any, List
+from typing import Any, List, Tuple
 
 from inbm_common_lib.utility import get_canonical_representation_of_path
 
@@ -58,11 +58,20 @@ class SqliteManager:
         try:
             cursor = self._conn.cursor()
             cursor.execute('BEGIN')
+            cursor.execute('DELETE FROM immediate_schedule_job;')
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='immediate_schedule_job';")
             cursor.execute('DELETE FROM single_schedule_job;')
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='single_schedule_job';")
             cursor.execute('DELETE FROM repeated_schedule_job;')
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='repeated_schedule_job';")
+            cursor.execute('DELETE FROM immediate_schedule;')
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='immediate_schedule';")
             cursor.execute('DELETE FROM single_schedule;')
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='single_schedule';")
             cursor.execute('DELETE FROM repeated_schedule;')
+            cursor.execute("DELETE FROM sqlite_sequence WHERE name='repeated_schedule';")
             cursor.execute('DELETE FROM job;')
+            cursor.execute('DELETE FROM sqlite_sequence WHERE name="job";')
             cursor.execute('COMMIT')
         except sqlite3.Error as e:
             self._rollback_transaction(str(e), "Error clearing database")
@@ -85,23 +94,61 @@ class SqliteManager:
             return cursor.fetchall()
         finally:
             cursor.close()
-                
-    def get_immediate_schedules_in_priority_order(self) -> List[Schedule]:
+             
+    def get_ids_of_started_job(self) -> Tuple[str, int]:
+        sql = ''' SELECT j.job_id, j.task_id
+            FROM job j
+            INNER JOIN immediate_schedule_job isj ON j.task_id = isj.task_id
+            WHERE isj.status = 'started'
+
+            UNION
+
+            SELECT j.job_id, j.task_id
+            FROM job j
+            INNER JOIN single_schedule_job ssj ON j.task_id = ssj.task_id
+            WHERE ssj.status = 'started'
+
+            UNION
+
+            SELECT j.job_id, j.task_id
+            FROM job j
+            INNER JOIN repeated_schedule_job rsj ON j.task_id = rsj.task_id
+            WHERE rsj.status = 'started'; '''
+        cursor = self._conn.cursor()
+        try:
+            cursor.execute(sql)
+            row = cursor.fetchall()
+            if len(row) > 1:
+                raise DispatcherException("More than one job in 'started' state.")     
+            if len(row) == 1:
+                job_id = row[0][0]
+                task_id = row[0][1]
+                logger.debug(f"Job ID of job in 'started' state: {job_id}")
+                return job_id, task_id
+            return "", -1                      
+        except (sqlite3.Error) as e:
+            raise DispatcherException(
+                f"Error in getting job in 'started' state: {e}")
+        finally:
+            cursor.close()
+           
+    def get_immediate_schedules_in_priority_order(self) -> List[SingleSchedule]:
         """
         Get all the immediate schedules.
         @return: List of Schedule object
         """
-        try:
-            sql = ''' SELECT isj.priority, isj.schedule_id, isj.task_id, j.job_id 
+        
+        sql = ''' SELECT isj.priority, isj.schedule_id, isj.task_id, j.job_id 
             FROM immediate_schedule_job isj  
             JOIN job j ON isj.task_id=j.task_id 
             WHERE isj.status IS NULL 
             ORDER BY priority ASC; '''
             
-            logger.debug(f"Get immediate schedules using sql: {sql}")            
+        logger.debug(f"Get immediate schedules using sql: {sql}") 
+        try:                       
             rows = self._fetch_schedules(sql)
 
-            s: List[Schedule] = []
+            s: List[SingleSchedule] = []
             for row in rows:
                 immediate_schedule = self._select_immediate_schedule_by_id(str(row[1]))
                 immediate_schedule.manifests = [self._select_job_by_task_id(str(row[2]))]
@@ -119,14 +166,16 @@ class SqliteManager:
         Get all the SingleSchedule and arrange them by priority in ascending order.
         @return: List of SingleSchedule object by priority in ascending order
         """
-        try:
-            sql = ''' SELECT ssj.priority, ssj.schedule_id, ssj.task_id, j.job_id 
+        
+        sql = ''' SELECT ssj.priority, ssj.schedule_id, ssj.task_id, j.job_id 
             FROM single_schedule_job ssj  
             JOIN job j ON ssj.task_id=j.task_id 
             WHERE ssj.status IS NULL 
             ORDER BY priority ASC; '''
             
-            logger.debug("Get single schedules using sql: {sql}")            
+        logger.debug("Get single schedules using sql: {sql}") 
+            
+        try:                       
             rows = self._fetch_schedules(sql)
             
             ss: List[SingleSchedule] = []
@@ -147,10 +196,16 @@ class SqliteManager:
         Get all the RepeatedSchedule and arrange them by priority in ascending order.
         @return: List of RepeatedSchedule object by priority in ascending order
         """
-        try:
-            sql = ''' SELECT rsj.priority, rsj.schedule_id, rsj.task_id, j.job_id FROM repeated_schedule_job rsj JOIN job j ON rsj.task_id=j.task_id WHERE rsj.status IS NULL ORDER BY priority ASC; '''
+        
+        sql = ''' SELECT rsj.priority, rsj.schedule_id, rsj.task_id, j.job_id 
+        FROM repeated_schedule_job rsj 
+        JOIN job j ON rsj.task_id=j.task_id 
+        WHERE rsj.status IS NULL 
+        ORDER BY priority ASC; '''
 
-            logger.debug(f"Get repeated schedules using sql: {sql}")
+        logger.debug(f"Get repeated schedules using sql: {sql}")
+            
+        try:
             rows = self._fetch_schedules(sql)
             
             rs: List[RepeatedSchedule] = []
@@ -193,7 +248,7 @@ class SqliteManager:
             raise DispatcherException(f"Unable to find the scheduleID: {schedule_id}.")
         return row
     
-    def _select_immediate_schedule_by_id(self, schedule_id: str) -> Schedule:
+    def _select_immediate_schedule_by_id(self, schedule_id: str) -> SingleSchedule:
         """Get the immediate schedule stored in database by id.
         @param id: row index
         @return: Schedule object
@@ -204,7 +259,7 @@ class SqliteManager:
 
         logger.debug(
             f"schedule_id={schedule_id}, request_id={request_id}")
-        return Schedule(schedule_id=int(schedule_id), request_id=request_id)
+        return SingleSchedule(schedule_id=int(schedule_id), request_id=request_id)
 
     def _select_single_schedule_by_id(self, schedule_id: str) -> SingleSchedule:
         """Get the single schedule stored in database by id.
@@ -260,34 +315,35 @@ class SqliteManager:
         @param status: status to be set
         """
 
-        sql = ""
-        
-        if not isinstance(schedule, SingleSchedule) and not isinstance(schedule, RepeatedSchedule):
-            # Immediate Schedule
-            sql = ''' UPDATE immediate_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
+        if schedule.task_id == -1:
+            raise DispatcherException("Unable to update status in database as the task ID is not set.")
+
+        sql = ""        
         if isinstance(schedule, SingleSchedule):
-            sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
+            if schedule.start_time:
+                sql = ''' UPDATE single_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
+            else:
+                sql = ''' UPDATE immediate_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
         elif isinstance(schedule, RepeatedSchedule):
             sql = ''' UPDATE repeated_schedule_job SET status = ? WHERE priority = ? AND schedule_id = ? AND task_id = ?; '''
-        
+        else:
+            raise DispatcherException("Unable to update status in database as the schedule type is not recognized.")
+                  
         logger.debug(f"Update status in database for schedule: {schedule}")
         logger.debug(f"Update status in database using sql: {sql}")
         
-        if schedule.task_id != -1:
-            logger.debug(f"Update status in database to {status} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
-            try:
-                cursor = self._conn.cursor()
-                cursor.execute(
-                    sql, (status, schedule.priority, schedule.schedule_id, schedule.task_id))
-                self._conn.commit()
-            except (sqlite3.Error) as e:
-                raise DispatcherException(
-                    f"Error updating the schedule status in the Dispatcher Schedule database: {e}")
-            finally:
-                cursor.close()
-        else:
-            logger.error("Unable to update status in database as the task ID is not set.")
-        
+        logger.debug(f"Update status in database to {status} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
+        try:
+            cursor = self._conn.cursor()
+            cursor.execute(
+                sql, (status, schedule.priority, schedule.schedule_id, schedule.task_id))
+            self._conn.commit()
+        except (sqlite3.Error) as e:
+            raise DispatcherException(
+                f"Error updating the schedule status in the Dispatcher Schedule database: {e}")
+        finally:
+            cursor.close()
+         
     def create_schedule(self, schedule: Schedule) -> None:
         """
         Create a new schedule in the database.

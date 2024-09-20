@@ -62,6 +62,10 @@ class Client:
                 TC_TOPIC.EVENT,
                 lambda _, payload: self._cloud_publisher.publish_event(payload)
             )
+            self._broker.bind_callback(
+                TC_TOPIC.UPDATE,
+                lambda _, payload: self._cloud_publisher.publish_update(payload)
+            )
 
     def _bind_ucc_to_agent(self) -> None:
         logger.debug("Binding cloud to Command")

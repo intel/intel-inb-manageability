@@ -13,7 +13,7 @@ from dispatcher.dispatcher_exception import DispatcherException
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
 
-from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL
+from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL, UPDATE_CHANNEL
 
 logger = logging.getLogger(__name__)
 
@@ -34,28 +34,41 @@ class DispatcherBroker:
         self.mqttc.start()
         self._is_started = True
 
-    def send_result(self, message: str, id: str = "") -> None:  # pragma: no cover
-        """Sends event messages to local MQTT channel        
+    def send_update(self, message: str, job_id: str) -> None:
+        """Sends node update to local MQTT 'UPDATE' channel to be published
+        to the cloudadapter where it will be sent as a reques to INBS (service in UDM)       
 
         Raises ValueError if id contains a slash
 
         @param message: message to be published to cloud
-        @param id: if not "", publish to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
+        @param job_id: Job ID used to track the request in both UDM and TC
         """
-        if id:
-            extra_log = f" with id {id}"
+        new_message = job_id + ":" + message
+        logger.debug(f"Sending node update for job={job_id} to {UPDATE_CHANNEL} with message: {new_message}")
+        self.mqtt_publish(topic=UPDATE_CHANNEL, payload=job_id + ":" + message)
+        
+    def send_result(self, message: str, request_id: str = "") -> None:  # pragma: no cover
+        """Sends result to local MQTT channel        
+
+        Raises ValueError if request_id contains a slash
+
+        @param message: message to be published to cloud
+        @param request_id: if not "", publish to RESPONSE_CHANNEL/request_id instead of RESPONSE_CHANNEL
+        """
+        if request_id:
+            extra_log = f" with id {request_id}"
         else:
             extra_log = ""
         logger.debug(f"Sending result message{extra_log}: {message}")
 
-        if "/" in id:
+        if "/" in request_id:
             raise ValueError("id cannot contain '/'")
 
         if not self.is_started():
             logger.error('Cannot send result: dispatcher core not initialized')
         else:
             if id != "":
-                topic = RESPONSE_CHANNEL + "/" + id
+                topic = RESPONSE_CHANNEL + "/" + request_id
                 self.mqtt_publish(topic=topic, payload=message)
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)

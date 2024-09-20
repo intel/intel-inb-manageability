@@ -274,7 +274,7 @@ class Dispatcher:
     def _telemetry(self, message: str) -> None:
         self._dispatcher_broker.telemetry(message)
 
-    def _send_result(self, message: str, id: str = "") -> None:
+    def _send_result(self, message: str, request_id: str = "") -> None:
         """Sends result message to local MQTT channel
 
         If id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
@@ -283,7 +283,14 @@ class Dispatcher:
 
         @param message: message to be published to cloud
         """
-        self._dispatcher_broker.send_result(message, id)
+        # Check if this is a request stored in the DB and started from the APScheduler
+        job_id, task_id = self.sqlite_mgr.get_ids_of_started_job()
+        if job_id == "":
+            # This is not a scheduled job
+            self._dispatcher_broker.send_result(message, request_id)
+        else:
+            # This is a scheduled job
+            self._dispatcher_broker.send_update(message, job_id)        
 
     def run_scheduled_job(self, schedule: Schedule, manifest: str) -> None:
         """Run the scheduled job.

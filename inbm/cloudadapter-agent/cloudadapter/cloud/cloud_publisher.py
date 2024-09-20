@@ -72,3 +72,15 @@ class CloudPublisher:
                     self._adapter.publish_attribute(key, value)
                 except PublishError as e:
                     logger.error(str(e))
+                    
+    def publish_update(self, message: str) -> None:
+        """Send node update to UDM
+
+        @param message: (str) JSON formatted SendNodeUpdateRequest
+        """
+        try:
+            logger.debug(f"Received node update: {message}")
+            #self._adapter.publish_update(key, value, timestamp_utc)
+        except PublishError as e:
+            logger.error(str(e))
+
