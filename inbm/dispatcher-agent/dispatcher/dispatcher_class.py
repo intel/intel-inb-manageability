@@ -277,20 +277,16 @@ class Dispatcher:
     def _send_result(self, message: str, request_id: str = "") -> None:
         """Sends result message to local MQTT channel
 
-        If id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
+        If request_id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
 
-        Raises ValueError if id contains a slash
+        Raises ValueError if request_id contains a slash
 
         @param message: message to be published to cloud
         """
         # Check if this is a request stored in the DB and started from the APScheduler
-        job_id, task_id = self.sqlite_mgr.get_ids_of_started_job()
-        if job_id == "":
-            # This is not a scheduled job
-            self._dispatcher_broker.send_result(message, request_id)
-        else:
-            # This is a scheduled job
-            self._dispatcher_broker.send_update(message, job_id)        
+        logger.debug(f"Sending result message with id {request_id}: {message}")           
+        self._dispatcher_broker.send_result(message, request_id)
+      
 
     def run_scheduled_job(self, schedule: Schedule, manifest: str) -> None:
         """Run the scheduled job.

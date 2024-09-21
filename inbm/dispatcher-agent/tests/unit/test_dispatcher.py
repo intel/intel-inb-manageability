@@ -343,7 +343,7 @@ class TestDispatcher(TestCase):
         mock_workload_orchestration_func.assert_called()
         mock_do_source_command.assert_called_once()
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_ids_of_started_job', return_value=["", -1])
+    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_any_started_schedule', return_value=None)
     def test_abc(self, mock_job_id):
         xml = """\
 <?xml version="1.0" encoding="utf-8"?>
@@ -398,7 +398,7 @@ class TestDispatcher(TestCase):
         self.assertIn("Error parsing/validating manifest: XML va", d.do_install(
             xml=xml, schema_location=TEST_SCHEMA_LOCATION).message)
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_ids_of_started_job', return_value=["", -1])
+    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_any_started_schedule', return_value=None)
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
     def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_job_id) -> None:
@@ -408,7 +408,7 @@ class TestDispatcher(TestCase):
         mock_workload_orchestration.assert_called()
         mock_perform_cmd_type_operation.assert_called_once()
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_ids_of_started_job', return_value=["", -1])
+    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_any_started_schedule', return_value=None)
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
     def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_job_id) -> None:
@@ -418,7 +418,7 @@ class TestDispatcher(TestCase):
         mock_workload_orchestration.assert_called()
         mock_perform_cmd_type_operation.assert_called_once()
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_ids_of_started_job', return_value=["", -1])
+    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_any_started_schedule', return_value=None)
     def test_parse_error_invalid_command(self, mock_job_id) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange></orange></manifest>'
         d = TestDispatcher._build_dispatcher()
@@ -461,7 +461,7 @@ class TestDispatcher(TestCase):
         mock_request_config_agent.return_value = True
         self.assertEqual(200, d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status)
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_ids_of_started_job', return_value=["", -1])
+    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_any_started_schedule', return_value=None)
     @patch('dispatcher.schedule.sqlite_manager.SqliteManager.__init__', return_value=None)
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.connect')
     @patch('inbm_lib.mqttclient.mqtt.mqtt.Client.subscribe')

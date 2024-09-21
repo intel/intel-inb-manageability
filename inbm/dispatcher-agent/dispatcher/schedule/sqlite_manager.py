@@ -11,7 +11,7 @@ import os
 import stat
 
 from datetime import datetime
-from typing import Any, List, Tuple
+from typing import Any, List, Optional
 
 from inbm_common_lib.utility import get_canonical_representation_of_path
 
@@ -23,6 +23,13 @@ logger = logging.getLogger(__name__)
 
 
 class SqliteManager:
+    _instance = None
+    
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
     def __init__(self, db_file=SCHEDULER_DB_FILE) -> None:
         """Handles the connection to the SQLite database and all database operations.
 
@@ -95,37 +102,44 @@ class SqliteManager:
         finally:
             cursor.close()
              
-    def get_ids_of_started_job(self) -> Tuple[str, int]:
-        sql = ''' SELECT j.job_id, j.task_id
-            FROM job j
-            INNER JOIN immediate_schedule_job isj ON j.task_id = isj.task_id
-            WHERE isj.status = 'started'
-
-            UNION
-
-            SELECT j.job_id, j.task_id
-            FROM job j
-            INNER JOIN single_schedule_job ssj ON j.task_id = ssj.task_id
-            WHERE ssj.status = 'started'
-
-            UNION
-
-            SELECT j.job_id, j.task_id
-            FROM job j
-            INNER JOIN repeated_schedule_job rsj ON j.task_id = rsj.task_id
-            WHERE rsj.status = 'started'; '''
+    def get_any_started_schedule(self) -> Optional[Schedule]:
+        sql = ''' SELECT 
+                    j.job_id,
+                    j.task_id,
+                    sj.schedule_id,                    
+                    COALESCE(iss.request_id, sss.request_id, rss.request_id) AS request_id
+                FROM 
+                    job j
+                JOIN 
+                    (
+                        SELECT task_id, schedule_id, status FROM immediate_schedule_job WHERE status = 'started'
+                        UNION ALL
+                        SELECT task_id, schedule_id, status FROM single_schedule_job WHERE status = 'started'
+                        UNION ALL
+                        SELECT task_id, schedule_id, status FROM repeated_schedule_job WHERE status = 'started'
+                    ) sj ON j.task_id = sj.task_id
+                LEFT JOIN 
+                    immediate_schedule iss ON sj.schedule_id = iss.id AND sj.status = 'started'
+                LEFT JOIN 
+                    single_schedule sss ON sj.schedule_id = sss.id AND sj.status = 'started'
+                LEFT JOIN 
+                    repeated_schedule rss ON sj.schedule_id = rss.id AND sj.status = 'started''
+            '''
+      
         cursor = self._conn.cursor()
         try:
             cursor.execute(sql)
             row = cursor.fetchall()
             if len(row) > 1:
-                raise DispatcherException("More than one job in 'started' state.")     
+                raise DispatcherException("More than one schedule in 'started' state.")     
             if len(row) == 1:
                 job_id = row[0][0]
                 task_id = row[0][1]
-                logger.debug(f"Job ID of job in 'started' state: {job_id}")
-                return job_id, task_id
-            return "", -1                      
+                schedule_id = row[0][2]
+                request_id = row[0][3]
+                logger.debug(f"Schedule in 'STARTED' state has jobID={job_id}, taskID={task_id}, scheduleID={schedule_id}, requestID={request_id}")
+                return Schedule(request_id=request_id, job_id=job_id, task_id=task_id, schedule_id=schedule_id)
+            return None
         except (sqlite3.Error) as e:
             raise DispatcherException(
                 f"Error in getting job in 'started' state: {e}")
@@ -330,14 +344,13 @@ class SqliteManager:
             raise DispatcherException("Unable to update status in database as the schedule type is not recognized.")
                   
         logger.debug(f"Update status in database for schedule: {schedule}")
-        logger.debug(f"Update status in database using sql: {sql}")
-        
-        logger.debug(f"Update status in database to {status} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
+        logger.debug(f"Update status in database to {status.upper()} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
         try:
             cursor = self._conn.cursor()
             cursor.execute(
                 sql, (status, schedule.priority, schedule.schedule_id, schedule.task_id))
             self._conn.commit()
+            logger.debug(f"Status of JobID={schedule.job_id} updated in database to {status.upper()}.")
         except (sqlite3.Error) as e:
             raise DispatcherException(
                 f"Error updating the schedule status in the Dispatcher Schedule database: {e}")
@@ -359,8 +372,7 @@ class SqliteManager:
                     self._create_single_schedule(schedule)                  
                 else: # Immediate Schedule
                     logger.debug("Create IMMEDIATE schedule")
-                    self._create_immediate_schedule(schedule)               
-            
+                    self._create_immediate_schedule(schedule)
         except (sqlite3.Error) as e:
             raise DispatcherException(f"Error connecting to Dispatcher Schedule database: {e}")
 

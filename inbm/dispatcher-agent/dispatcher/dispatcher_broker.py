@@ -8,7 +8,9 @@
 import logging
 from typing import Any, Optional, Callable
 
-from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS
+from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED
+from dispatcher.schedule.sqlite_manager import SqliteManager
+from dispatcher.schedule.schedules import Schedule
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
@@ -34,7 +36,7 @@ class DispatcherBroker:
         self.mqttc.start()
         self._is_started = True
 
-    def send_update(self, message: str, job_id: str) -> None:
+    def send_update(self, message: str, job_id: Optional[str]) -> None:
         """Sends node update to local MQTT 'UPDATE' channel to be published
         to the cloudadapter where it will be sent as a reques to INBS (service in UDM)       
 
@@ -43,9 +45,27 @@ class DispatcherBroker:
         @param message: message to be published to cloud
         @param job_id: Job ID used to track the request in both UDM and TC
         """
+        if job_id is None:
+            raise ValueError("job_id cannot be None")
         new_message = job_id + ":" + message
         logger.debug(f"Sending node update for job={job_id} to {UPDATE_CHANNEL} with message: {new_message}")
         self.mqtt_publish(topic=UPDATE_CHANNEL, payload=job_id + ":" + message)
+     
+    def _check_db_for_started_job(self) -> Schedule:
+        sqliteMgr = SqliteManager()
+        schedule = sqliteMgr.get_any_started_schedule()
+         
+        if schedule:
+            logger.debug("Found started schedule in DB")
+            s = Schedule(request_id=schedule.request_id,
+                         job_id=schedule.job_id, 
+                         task_id=schedule.task_id,
+                         schedule_id=schedule.schedule_id)
+            # Change status to COMPLETED
+            sqliteMgr.update_status(s, COMPLETED)
+        
+        del sqliteMgr
+        return s
         
     def send_result(self, message: str, request_id: str = "") -> None:  # pragma: no cover
         """Sends result to local MQTT channel        
@@ -66,12 +86,22 @@ class DispatcherBroker:
 
         if not self.is_started():
             logger.error('Cannot send result: dispatcher core not initialized')
-        else:
-            if id != "":
+            return
+
+        # Check if this is a request stored in the DB and started from the APScheduler
+        schedule = self._check_db_for_started_job()
+        
+        if schedule.job_id == "":
+            # This is not a scheduled job
+            if request_id != "":
                 topic = RESPONSE_CHANNEL + "/" + request_id
                 self.mqtt_publish(topic=topic, payload=message)
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
+        else:
+            # This is a scheduled job
+            logger.debug(f"Sending node update message with id {schedule.job_id}: {message}")
+            self.send_update(message, schedule.job_id)        
 
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.

@@ -78,14 +78,14 @@ def test_raises_sqlite_exception_on_get_repeated_schedules(db_connection: Sqlite
             schedules = db_connection.get_repeated_schedules_in_priority_order()
         assert "Error in getting repeated schedules from database: Mocked database error" in str(excinfo.value)
 
-@pytest.mark.parametrize("job_state, expected_job_id", [
+@pytest.mark.parametrize("status, expected_schedule", [
     # Success - no started jobs
-    ("scheduled", ""),
+    ("scheduled", None),
     # Success - one started job
-    ("started", JOB_ID), 
+    #("started", Schedule(request_id=REQUEST_ID, job_id=JOB_ID, task_id=1, schedule_id=1)), 
  ])
 
-def test_return_no_job_id_for_immediate_scheduled_job(db_connection: SqliteManager, job_state, expected_job_id):
+def test_return_schedule_for_immediate_scheduled_job(db_connection: SqliteManager, status, expected_schedule):
     s = SingleSchedule(request_id=REQUEST_ID,
                          job_id=JOB_ID,                         
                          manifests=["MANIFEST1"])
@@ -95,10 +95,10 @@ def test_return_no_job_id_for_immediate_scheduled_job(db_connection: SqliteManag
     s.task_id = 1
     s.schedule_id = 1
  
-    db_connection.update_status(s, job_state)
-    job_id, task_id = db_connection.get_ids_of_started_job()
+    db_connection.update_status(s, status)
+    schedule = db_connection.get_any_started_schedule()
     
-    assert job_id == expected_job_id
+    assert schedule == expected_schedule
 
 def test_update_single_schedule_status_to_scheduled(db_connection: SqliteManager):
     ss = SingleSchedule(request_id=REQUEST_ID,
