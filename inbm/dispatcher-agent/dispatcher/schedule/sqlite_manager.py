@@ -123,7 +123,7 @@ class SqliteManager:
                 LEFT JOIN 
                     single_schedule sss ON sj.schedule_id = sss.id AND sj.status = 'started'
                 LEFT JOIN 
-                    repeated_schedule rss ON sj.schedule_id = rss.id AND sj.status = 'started''
+                    repeated_schedule rss ON sj.schedule_id = rss.id AND sj.status = 'started'
             '''
       
         cursor = self._conn.cursor()

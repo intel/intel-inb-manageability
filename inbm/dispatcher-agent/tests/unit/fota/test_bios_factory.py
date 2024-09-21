@@ -50,7 +50,12 @@ class TestBiosFactory(TestCase):
             BiosFactory.get_factory('NUC7i5DNKPC', self._nuc_windows_dict,
                                     self.mock_dispatcher_broker, 
                                     MemoryRepo("test"))) is WindowsBiosNUC
-        
+    
+    @patch('platform.system', return_value='Windows')
+    def test_raise_unsupported_windows_system(self, mock_os) -> None:
+        self.assertRaises(FotaError, BiosFactory.get_factory, 'NUC', self._nuc_dict,
+                          self.mock_dispatcher_broker, MemoryRepo("test")) 
+
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')
     @patch('dispatcher.fota.bios_factory.BiosFactory.unpack')
