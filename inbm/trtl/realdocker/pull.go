@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2024 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
@@ -8,7 +8,9 @@ package realdocker
 import (
 	"bufio"
 	"encoding/base64"
+
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/registry"
 
 	"encoding/json"
 	"fmt"
@@ -32,7 +34,7 @@ func ImagePull(f Finder, dw DockerWrapper, referenceName string, userName string
 			return err
 		}
 
-		authConfig := types.AuthConfig{
+		authConfig := registry.AuthConfig{
 			Username: userName,
 			Password: pwd,
 		}
