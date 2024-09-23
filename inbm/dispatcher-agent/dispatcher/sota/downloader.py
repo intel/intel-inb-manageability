@@ -214,20 +214,23 @@ class TiberOSDownloader(Downloader):
         # Multiple files may have been downloaded from OCI.
         # The method below will iterate over all files in the repo, calculate the SHA256sum for each file,
         # and compare it with the provided signature.
-        if self._signature:
-            logger.debug("Perform signature check on the downloaded file.")
-            dest_repo = repo.get_repo_path()
-            for filename in os.listdir(dest_repo):
-                filepath = os.path.join(dest_repo, filename)
-                if os.path.isfile(filepath):
-                    with open(filepath, 'rb') as file:
-                        file_checksum = hashlib.sha256(file.read()).hexdigest()
-                        if file_checksum == self._signature:
-                            return
+        try:
+            if self._signature:
+                logger.debug("Perform signature check on the downloaded file.")
+                dest_repo = repo.get_repo_path()
+                for filename in os.listdir(dest_repo):
+                    filepath = os.path.join(dest_repo, filename)
+                    if os.path.isfile(filepath):
+                        with open(filepath, 'rb') as file:
+                            file_checksum = hashlib.sha256(file.read()).hexdigest()
+                            if file_checksum == self._signature:
+                                return
 
-            raise SotaError("Signature checks failed. No matching file found.")
-        else:
-            logger.info("No signature provided. Skip signature check.")
+                raise SotaError("Signature checks failed. No matching file found.")
+            else:
+                logger.info("No signature provided. Skip signature check.")
+        except OSError as err:
+            raise SotaError(err)
 
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
