@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2024 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
@@ -8,10 +8,10 @@ package realdocker
 import (
 	"bufio"
 	"fmt"
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/registry"
 	"os"
 	"strings"
+
+	"github.com/docker/docker/api/types/registry"
 )
 
 // Login authenticates a server with the given authentication credentials.
@@ -27,7 +27,7 @@ func Login(dw DockerWrapper, username string, serverAddress string) (registry.Au
 		return registry.AuthenticateOKBody{}, err
 	}
 
-	authConfig := types.AuthConfig{
+	authConfig := registry.AuthConfig{
 		Username:      username,
 		Password:      result,
 		ServerAddress: serverAddress,

@@ -9,6 +9,7 @@ import (
 	"io"
 
 	"github.com/docker/docker/api/types/registry"
+	specs "github.com/opencontainers/image-spec/specs-go/v1"
 
 	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
@@ -86,7 +87,7 @@ func (d FakeDockerWrapper) ContainerCommit(containerID string, options types.Con
 
 // ContainerCreate makes the actual call to docker to create the container.
 func (d FakeDockerWrapper) ContainerCreate(config *container.Config, hostConfig *container.HostConfig,
-	netConfig *network.NetworkingConfig, containerName string) (container.CreateResponse, error) {
+	netConfig *network.NetworkingConfig, platform *specs.Platform, containerName string) (container.CreateResponse, error) {
 
 	return d.CreatedBody, d.Err
 }
@@ -140,6 +141,6 @@ func (d FakeDockerWrapper) ContainerExecCreate(container string, config types.Ex
 }
 
 // Login is a fake method for unit testing
-func (d FakeDockerWrapper) Login(config types.AuthConfig) (registry.AuthenticateOKBody, error) {
+func (d FakeDockerWrapper) Login(config registry.AuthConfig) (registry.AuthenticateOKBody, error) {
 	return d.AuthenticateOKBody, d.Err
 }
