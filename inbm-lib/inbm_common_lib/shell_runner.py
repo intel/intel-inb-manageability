@@ -17,7 +17,7 @@ from datetime import datetime
 from subprocess import Popen, PIPE # nosec: B404
 import subprocess # nosec: B404
 
-from typing import Tuple, Optional, Union, BinaryIO, List, Any
+from typing import Tuple, Optional, Union, BinaryIO, List, Any, Dict
 from .constants import AFULNX_64
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_BINARY_SEARCH_PATHS
 
@@ -81,7 +81,7 @@ class PseudoShellRunner:
                           cmd: str,
                           log_path: Optional[str],
                           cwd: Optional[str] = None,
-                          env: Optional[dict] = None) -> Tuple[str, Optional[str], int, Optional[str]]:
+                          env: Optional[Dict[str, str]] = None) -> Tuple[str, Optional[str], int, Optional[str]]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -143,7 +143,7 @@ class PseudoShellRunner:
 
         return decoded_out, decoded_err, proc.returncode, abs_log_path
 
-    def run(self, cmd: str, cwd: Optional[str] = None, env: Optional[dict] = None) -> Tuple[str, Optional[str], int]:
+    def run(self, cmd: str, cwd: Optional[str] = None, env: Optional[Dict[str, str]] = None) -> Tuple[str, Optional[str], int]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
