@@ -10,7 +10,6 @@ import requests
 import json
 from urllib.parse import urlsplit, urlparse
 from typing import Optional, Tuple
-from dispatcher.dispatcher_exception import DispatcherException
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import CanonicalUri
 from dispatcher.packagemanager.package_manager import verify_source
@@ -32,21 +31,21 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
     @param username: username to use for download
     @param password: password to use for download
     @param umask: file permission mask
-    @raises DispatcherException: any exception
+    @raises SotaError: any exception
     """
     dispatcher_broker.telemetry(f'Package to be fetched from {uri.value}')
     dispatcher_broker.telemetry(
         'Checking authenticity of package by checking signature and source')
 
     if not isinstance(uri, CanonicalUri):
-        raise DispatcherException("Internal error: uri improperly passed to download function")
+        raise SotaError("Internal error: uri improperly passed to download function")
 
     try:
         source, registry_server, image, image_tag, repository_name, image_full_path, registry_manifest = \
             parse_uri(uri)
     except IndexError as err:
         logger.error(f"IndexError occurs with uri {uri.value}: {err}")
-        raise DispatcherException(err)
+        raise SotaError(err)
 
     logger.debug(f"source: {source}, "
                  f"registry_server: {registry_server}, "
@@ -65,13 +64,13 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
     if not enough_space:
         err_msg = " Insufficient free space available on " + repo.get_repo_path() + \
                   " for " + str(uri.value)
-        raise DispatcherException(err_msg)
+        raise SotaError(err_msg)
 
     if password:
         logger.debug("RS password provided.")
     else:
         err_msg = " No JWT token. Abort the update. "
-        raise DispatcherException(err_msg)
+        raise SotaError(err_msg)
 
     # Set password as environment variables for security reason.
     env = dict(os.environ)  # make a copy of the environment
@@ -84,10 +83,10 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
     (out, err_run, code) = PseudoShellRunner().run(f"oras pull {image_full_path} -o {repo.get_repo_path()} "
                                                    f"--password $ORAS_PASSWORD", env=env)
     if code != 0:
-        if err_run:
-            raise DispatcherException("Error to download OTA files with ORAS: " + err_run + ". Code: " + str(code))
+        if err_run is not None:
+            raise SotaError("Error to download OTA files with ORAS: " + err_run + ". Code: " + str(code))
         else:
-            raise DispatcherException("Error to download OTA files with ORAS. Code: " + str(code))
+            raise SotaError("Error to download OTA files with ORAS. Code: " + str(code))
     else:
         dispatcher_broker.telemetry('OTA Download Successful.')
 
@@ -111,7 +110,7 @@ def is_enough_space_to_download(manifest_uri: str,
         }
         response = requests.get(manifest_uri, headers=headers)
         if response.status_code != 200:
-            raise DispatcherException(f"Failed to get the response from {manifest_uri}.")
+            raise SotaError(f"Failed to get the response from {manifest_uri}.")
         data = json.loads(response.text)
         logger.debug(f"resp={data}")
         # Calculate the total size
@@ -120,16 +119,16 @@ def is_enough_space_to_download(manifest_uri: str,
             file_size += layer['size']
         logger.debug(f"Total file size: {file_size}")
 
-    except (TypeError, KeyError, json.JSONDecodeError, DispatcherException) as err:
+    except (TypeError, KeyError, json.JSONDecodeError, SotaError) as err:
         err_msg = f"Error getting artifact size from {manifest_uri} using token={jwt_token} Error: {err}"
         logger.error(err_msg)
-        raise DispatcherException(err_msg)
+        raise SotaError(err_msg)
 
     if destination_repo.exists():
         get_free_space = destination_repo.get_free_space()
         free_space: int = int(get_free_space)
     else:
-        raise DispatcherException("Repository does not exist : " +
+        raise SotaError("Repository does not exist : " +
                                   destination_repo.get_repo_path())
 
     logger.debug("get_free_space: " + repr(get_free_space))
@@ -158,7 +157,7 @@ def parse_uri(uri: CanonicalUri) -> Tuple[str, str, str, str, str, str, str]:
     parsed_uri.geturl()
     path_parts = parsed_uri.path.strip('/').split('/')
     if len(path_parts) < 2:
-        raise DispatcherException(f"Invalid URI format: {uri.value}")
+        raise SotaError(f"Invalid URI format: {uri.value}")
     repository_name = '/'.join(path_parts[:-1])
     image = path_parts[-1].split(':')[0]
     image_tag = path_parts[-1].split(':')[1] if ':' in path_parts[-1] else 'latest'

@@ -226,6 +226,8 @@ class TiberOSDownloader(Downloader):
                             return
 
             raise SotaError("Signature checks failed. No matching file found.")
+        else:
+            logger.info("No signature provided. Skip signature check.")
 
 
     def check_release_date(self, release_date: Optional[str]) -> bool:

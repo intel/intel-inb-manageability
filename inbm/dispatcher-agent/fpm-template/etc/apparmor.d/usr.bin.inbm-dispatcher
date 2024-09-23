@@ -14,6 +14,8 @@
   capability sys_ptrace,
   /bin/cat Pix,
   /usr/bin/cat Pix,
+  /usr/bin/bash rix,
+  /usr/bin/sh rix,
   /bin/chmod rix,
   /usr/bin/chmod rix,
   /bin/cp rix,

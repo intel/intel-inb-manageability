@@ -109,6 +109,15 @@ class PseudoShellRunner:
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 env=env)
+        elif env:
+            proc = subprocess.Popen(
+                cmd,
+                cwd=cwd,
+                shell=True,
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=env)
         else:
             proc = subprocess.Popen(
                 shlex_split_cmd,
