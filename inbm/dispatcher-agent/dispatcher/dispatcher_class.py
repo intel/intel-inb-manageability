@@ -754,12 +754,15 @@ def handle_updates(dispatcher: Any,
     manifest: str = message[1]
     if message[2]:
         request_id: str = message[2]
+        
+    # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
+        dispatcher._send_result("", request_id)
 
     if request_type == "schedule":
         if not request_id:
             dispatcher._send_result("Error: No request ID provided for schedule request.")
 
-        logger.debug("DEBUG: manifest = " + manifest)
+        logger.debug("DEBUG: schedule manifest = " + manifest)
         try:
             schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
         except XmlException as e:
@@ -801,8 +804,7 @@ def handle_updates(dispatcher: Any,
             dispatcher.ap_scheduler.add_repeated_schedule_job(dispatcher.run_scheduled_job, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
 
-        # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
-        dispatcher._send_result("", request_id)
+
         return
 
     if request_type == "install" or request_type == "query":

@@ -82,7 +82,7 @@ def test_raises_sqlite_exception_on_get_repeated_schedules(db_connection: Sqlite
     # Success - no started jobs
     ("scheduled", None),
     # Success - one started job
-    ("started", Schedule(request_id=REQUEST_ID, job_id=JOB_ID, task_id=1, schedule_id=1)), 
+    ("started", SingleSchedule(request_id=REQUEST_ID, job_id=JOB_ID, task_id=1, schedule_id=1)), 
  ])
 
 def test_return_schedule_for_immediate_scheduled_job(db_connection: SqliteManager, status, expected_schedule):
@@ -93,7 +93,7 @@ def test_return_schedule_for_immediate_scheduled_job(db_connection: SqliteManage
     
     db_connection.create_schedule(s)
     s.task_id = 1
-    s.schedule_id = 1
+    s.schedule_id = 1    
  
     db_connection.update_status(s, status)
     schedule = db_connection.get_any_started_schedule()

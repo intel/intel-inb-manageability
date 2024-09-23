@@ -51,21 +51,18 @@ class DispatcherBroker:
         logger.debug(f"Sending node update for job={job_id} to {UPDATE_CHANNEL} with message: {new_message}")
         self.mqtt_publish(topic=UPDATE_CHANNEL, payload=job_id + ":" + message)
      
-    def _check_db_for_started_job(self) -> Schedule:
+    def _check_db_for_started_job(self) -> Optional[Schedule]:
         sqliteMgr = SqliteManager()
         schedule = sqliteMgr.get_any_started_schedule()
          
         if schedule:
-            logger.debug("Found started schedule in DB")
-            s = Schedule(request_id=schedule.request_id,
-                         job_id=schedule.job_id, 
-                         task_id=schedule.task_id,
-                         schedule_id=schedule.schedule_id)
+            logger.debug(f"Found started schedule in DB: {schedule}")
+            
             # Change status to COMPLETED
-            sqliteMgr.update_status(s, COMPLETED)
+            sqliteMgr.update_status(schedule, COMPLETED)
         
         del sqliteMgr
-        return s
+        return schedule
         
     def send_result(self, message: str, request_id: str = "") -> None:  # pragma: no cover
         """Sends result to local MQTT channel        
@@ -91,8 +88,9 @@ class DispatcherBroker:
         # Check if this is a request stored in the DB and started from the APScheduler
         schedule = self._check_db_for_started_job()
         
-        if schedule.job_id == "":
+        if not schedule:
             # This is not a scheduled job
+            logger.debug(f"Sending result message with id {request_id}: {message}")
             if request_id != "":
                 topic = RESPONSE_CHANNEL + "/" + request_id
                 self.mqtt_publish(topic=topic, payload=message)

@@ -104,26 +104,27 @@ class SqliteManager:
              
     def get_any_started_schedule(self) -> Optional[Schedule]:
         sql = ''' SELECT 
-                    j.job_id,
-                    j.task_id,
-                    sj.schedule_id,                    
-                    COALESCE(iss.request_id, sss.request_id, rss.request_id) AS request_id
-                FROM 
-                    job j
-                JOIN 
-                    (
-                        SELECT task_id, schedule_id, status FROM immediate_schedule_job WHERE status = 'started'
-                        UNION ALL
-                        SELECT task_id, schedule_id, status FROM single_schedule_job WHERE status = 'started'
-                        UNION ALL
-                        SELECT task_id, schedule_id, status FROM repeated_schedule_job WHERE status = 'started'
-                    ) sj ON j.task_id = sj.task_id
-                LEFT JOIN 
-                    immediate_schedule iss ON sj.schedule_id = iss.id AND sj.status = 'started'
-                LEFT JOIN 
-                    single_schedule sss ON sj.schedule_id = sss.id AND sj.status = 'started'
-                LEFT JOIN 
-                    repeated_schedule rss ON sj.schedule_id = rss.id AND sj.status = 'started'
+            j.job_id,
+            j.task_id,
+            sj.schedule_id,
+            sj.schedule_type,                    
+            COALESCE(iss.request_id, sss.request_id, rss.request_id) AS request_id
+        FROM 
+            job j
+        JOIN 
+            (
+                SELECT task_id, schedule_id, 'Immediate' AS schedule_type FROM immediate_schedule_job WHERE status = 'started'
+                UNION ALL
+                SELECT task_id, schedule_id, 'Single' AS schedule_type FROM single_schedule_job WHERE status = 'started'
+                UNION ALL
+                SELECT task_id, schedule_id, 'Repeated' AS schedule_type FROM repeated_schedule_job WHERE status = 'started'
+            ) sj ON j.task_id = sj.task_id
+        LEFT JOIN 
+            immediate_schedule iss ON sj.schedule_id = iss.id AND sj.schedule_type = 'Immediate'
+        LEFT JOIN 
+            single_schedule sss ON sj.schedule_id = sss.id AND sj.schedule_type = 'Single'
+        LEFT JOIN 
+            repeated_schedule rss ON sj.schedule_id = rss.id AND sj.schedule_type = 'Repeated'
             '''
       
         cursor = self._conn.cursor()
@@ -136,9 +137,16 @@ class SqliteManager:
                 job_id = row[0][0]
                 task_id = row[0][1]
                 schedule_id = row[0][2]
-                request_id = row[0][3]
-                logger.debug(f"Schedule in 'STARTED' state has jobID={job_id}, taskID={task_id}, scheduleID={schedule_id}, requestID={request_id}")
-                return Schedule(request_id=request_id, job_id=job_id, task_id=task_id, schedule_id=schedule_id)
+                schedule_type = row[0][3]
+                request_id = row[0][4]
+                logger.debug(f"Schedule in 'STARTED' state has type={schedule_type}, jobID={job_id}, taskID={task_id}, scheduleID={schedule_id}, requestID={request_id}")
+
+                if schedule_type == 'Immediate':
+                    return SingleSchedule(request_id=request_id, job_id=job_id, task_id=task_id, schedule_id=schedule_id)
+                elif schedule_type == 'Single':
+                    return SingleSchedule(request_id=request_id, job_id=job_id, task_id=task_id, schedule_id=schedule_id, start_time=datetime.now())
+                else:
+                    return RepeatedSchedule(request_id=request_id, job_id=job_id, task_id=task_id, schedule_id=schedule_id)
             return None
         except (sqlite3.Error) as e:
             raise DispatcherException(
@@ -156,9 +164,8 @@ class SqliteManager:
             FROM immediate_schedule_job isj  
             JOIN job j ON isj.task_id=j.task_id 
             WHERE isj.status IS NULL 
-            ORDER BY priority ASC; '''
-            
-        logger.debug(f"Get immediate schedules using sql: {sql}") 
+            ORDER BY priority ASC; '''            
+
         try:                       
             rows = self._fetch_schedules(sql)
 
@@ -187,8 +194,6 @@ class SqliteManager:
             WHERE ssj.status IS NULL 
             ORDER BY priority ASC; '''
             
-        logger.debug("Get single schedules using sql: {sql}") 
-            
         try:                       
             rows = self._fetch_schedules(sql)
             
@@ -216,8 +221,6 @@ class SqliteManager:
         JOIN job j ON rsj.task_id=j.task_id 
         WHERE rsj.status IS NULL 
         ORDER BY priority ASC; '''
-
-        logger.debug(f"Get repeated schedules using sql: {sql}")
             
         try:
             rows = self._fetch_schedules(sql)

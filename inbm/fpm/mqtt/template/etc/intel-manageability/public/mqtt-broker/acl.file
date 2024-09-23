@@ -12,6 +12,7 @@ topic write manageability/event
 topic write manageability/cmd/+
 topic write manageability/response
 topic write manageability/response/+
+topic write manageability/update
 topic write ma/configuration/update/+
 topic write dispatcher/query
 
@@ -22,6 +23,7 @@ topic read manageability/response
 topic read manageability/response/+
 topic read manageability/telemetry
 topic read manageability/event
+topic read manageability/update
 
 user inbc-program
 topic write manageability/request/#

@@ -7,6 +7,7 @@ from dispatcher.sota.os_factory import SotaOsFactory
 from dispatcher.sota.os_updater import DebianBasedUpdater
 from dispatcher.sota.sota import SOTA
 from dispatcher.packagemanager.memory_repo import MemoryRepo
+from dispatcher.sota.command_list import CommandList
 from dispatcher.sota.constants import *
 from unittest.mock import patch
 from inbm_lib.xmlhandler import XmlHandler
@@ -57,6 +58,23 @@ class TestOsUpdater(unittest.TestCase):
                                           None,
                                           MockInstallCheckService(),
                                           snapshot=1)
+
+    def test_create_no_download_cmd_with_no_package_list(self) -> None:
+        expectedCmd = CommandList(["dpkg --configure -a --force-confdef --force-confold",
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -yq -f install",
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs --no-download --fix-missing -yq upgrade"]).cmd_list
+        output = DebianBasedUpdater(package_list=[]).no_download()
+ 
+        assert str(output) == str(expectedCmd)
+        
+    def test_create_no_download_cmd_with_package_list(self) -> None:
+        expectedCmd = CommandList(["dpkg --configure -a --force-confdef --force-confold",
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' -yq -f install",
+                "apt-get -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --no-download --fix-missing -yq install ubuntu"]).cmd_list
+        output = DebianBasedUpdater(package_list=['ubuntu']).no_download()
+ 
+        assert str(output) == str(expectedCmd)
+        
 
     def test_Ubuntu_update(self) -> None:
         assert TestOsUpdater.sota_instance
