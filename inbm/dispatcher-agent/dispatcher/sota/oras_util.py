@@ -74,13 +74,15 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         raise DispatcherException(err_msg)
 
     # Set password as environment variables for security reason.
-    os.environ["ORAS_PASSWORD"] = password
+    env = dict(os.environ)  # make a copy of the environment
+    env["ORAS_PASSWORD"] = password
 
     msg = f'Fetching software package from {image_full_path}'
     dispatcher_broker.telemetry(msg)
 
     # Call oras to pull the image. The password is the JWT token.
-    (out, err_run, code) = PseudoShellRunner().run(f"oras pull {image_full_path} -o {repo.get_repo_path()} --password $ORAS_PASSWORD")
+    (out, err_run, code) = PseudoShellRunner().run(f"oras pull {image_full_path} -o {repo.get_repo_path()} "
+                                                   f"--password $ORAS_PASSWORD", env=env)
     if code != 0:
         if err_run:
             raise DispatcherException("Error to download OTA files with ORAS: " + err_run + ". Code: " + str(code))

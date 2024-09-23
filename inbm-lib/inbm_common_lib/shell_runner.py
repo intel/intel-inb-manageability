@@ -80,7 +80,8 @@ class PseudoShellRunner:
     def run_with_log_path(self,
                           cmd: str,
                           log_path: Optional[str],
-                          cwd: Optional[str] = None) -> Tuple[str, Optional[str], int, Optional[str]]:
+                          cwd: Optional[str] = None,
+                          env: Optional[dict] = None) -> Tuple[str, Optional[str], int, Optional[str]]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -89,6 +90,7 @@ class PseudoShellRunner:
         @param cmd: Shell cmd to execute
         @param log_path: string format of log file's absolute path
         @param cwd: if not None, run process from this working directory
+        @param env: if not None, env variables will be used by subprocess, and it won't affect the parent process's env.
         @return: Result of subprocess along with output, error (possibly None), exit status, and absolute log path
         """
         shlex_split_cmd = PseudoShellRunner().interpret_shell_like_command(cmd)
@@ -105,7 +107,8 @@ class PseudoShellRunner:
                 shell=False,
                 stdin=subprocess.DEVNULL,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT)
+                stderr=subprocess.STDOUT,
+                env=env)
         else:
             proc = subprocess.Popen(
                 shlex_split_cmd,
@@ -113,7 +116,8 @@ class PseudoShellRunner:
                 shell=False,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE)
+                stderr=subprocess.PIPE,
+                env=env)
 
         if log_path or cmd.find("do-release") >= 0:
             (logfile, abs_log_path) = PseudoShellRunner().create_log_file(cmd, log_path)
@@ -139,7 +143,7 @@ class PseudoShellRunner:
 
         return decoded_out, decoded_err, proc.returncode, abs_log_path
 
-    def run(self, cmd: str, cwd: Optional[str] = None) -> Tuple[str, Optional[str], int]:
+    def run(self, cmd: str, cwd: Optional[str] = None, env: Optional[dict] = None) -> Tuple[str, Optional[str], int]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -147,9 +151,10 @@ class PseudoShellRunner:
 
         @param cmd: Shell cmd to execute
         @param cwd: if not None, run process from this working directory
+        @param env: if not None, env variables will be used by subprocess, and it won't affect the parent process's env.
         @return: Result of subprocess along with output, error (possibly None) & exit status
         """
-        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd)
+        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd, env=env)
         return out, err, code
 
     def interpret_shell_like_command(self, cmd: str) -> List[str]:
