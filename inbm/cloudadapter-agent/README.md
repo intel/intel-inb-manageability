@@ -49,6 +49,7 @@ The agent subscribes to the following topics:
   - Agent events: `manageability/event`
   - Responses: `manageability/response`
   - Device telemetry: `manageability/telemetry`
+  - Update from scheduled requests: `managebility/update`
 
 ❗`+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
 

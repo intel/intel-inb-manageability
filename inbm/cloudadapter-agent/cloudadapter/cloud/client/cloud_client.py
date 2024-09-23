@@ -13,18 +13,21 @@ from datetime import datetime
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 attribute: OneWayMessenger, handler: ReceiveRespondHandler) -> None:
+                 update: OneWayMessenger, attribute: OneWayMessenger, 
+                 handler: ReceiveRespondHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
         @param telemetry: Messenger to send telemetry
         @param event: Messenger to send events
+        @param update: Messenger to send updates
         @param attribute: Messenger to send attributes
         @param handler: Handler to deal with cloud method calls
         """
         self._connection = connection
         self._telemetry = telemetry
         self._event = event
+        self._update = update
         self._attribute = attribute
         self._handler = handler
 
@@ -52,6 +55,15 @@ class CloudClient:
         """
         return self._telemetry.publish(key, value, time)
 
+    def publish_update(self, key: str, value: str) -> None:
+        """Publishes an update to the cloud
+
+        @param key: update's key to publish
+        @param value: update to publish
+        @exception PublishError: If publish fails
+        """
+        return self._update.publish(key, value)
+    
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
 

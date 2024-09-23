@@ -145,6 +145,7 @@ class Client:
                 sleep(SLEEP_DELAY)
 
         self._cloud_publisher.publish_event("Connected")
+        self._cloud_publisher.publish_update("Connected")
 
         # Log agent states
         self._broker.bind_callback(
@@ -167,6 +168,7 @@ class Client:
         logger.debug("Stopping cloudadapter client")
         self._broker.stop()
         self._cloud_publisher.publish_event("Disconnected")
+        self._cloud_publisher.publish_update("Disconnected")
         try:
             logger.debug("Calling disconnect on adapter")
             self._adapter.disconnect()

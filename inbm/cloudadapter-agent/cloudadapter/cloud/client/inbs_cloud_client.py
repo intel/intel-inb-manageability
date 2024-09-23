@@ -112,6 +112,17 @@ class InbsCloudClient(CloudClient):
 
         pass  # INBS is not yet ready to receive telemetry
 
+    def publish_update(self, key: str, value: str) -> None:
+        """Publishes an update to the cloud
+
+        @param key: update's key to publish
+        @param value: update to publish
+        @exception PublishError: If publish fails
+        """
+
+        # TODO: Implement sending updates to INBS via gRPC
+        pass
+    
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
 

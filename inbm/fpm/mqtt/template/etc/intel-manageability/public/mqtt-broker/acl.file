@@ -55,6 +55,7 @@ user cmd-program
 topic write manageability/event
 topic write manageability/response
 topic write manageability/telemetry
+topic write manageability/update
 topic read manageability/cmd/+
 
 user ucc-native-service

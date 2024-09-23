@@ -24,13 +24,20 @@ class TestCloudPublisher(unittest.TestCase):
         self.MockedAdapter = MockedAdapter
         self.cloud_publisher = CloudPublisher(self.MockedAdapter("config"))
 
+    def test_publish_update_succeed(self) -> None:
+        update = "update"
+        self.cloud_publisher.publish_update(update)
+
+        mocked = self.MockedAdapter.return_value
+        mocked.publish_update.assert_called_once_with(update)
+        
     def test_publish_event_succeed(self) -> None:
         event = "event"
         self.cloud_publisher.publish_event(event)
 
         mocked = self.MockedAdapter.return_value
         mocked.publish_event.assert_called_once_with(event)
-
+        
     @mock.patch("cloudadapter.cloud.cloud_publisher.logger")
     def test_publish_event_with_adapter_success_succeeds(self, mock_logger) -> None:
         self.MockedAdapter.return_value.publish_event.return_value = None

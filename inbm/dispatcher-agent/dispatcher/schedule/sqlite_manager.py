@@ -350,13 +350,14 @@ class SqliteManager:
         logger.debug(f"Update status in database to {status.upper()} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
         try:
             cursor = self._conn.cursor()
+            logger.debug(f"Execute -> {sql}")
             cursor.execute(
                 sql, (status, schedule.priority, schedule.schedule_id, schedule.task_id))
             self._conn.commit()
             logger.debug(f"Status of JobID={schedule.job_id} updated in database to {status.upper()}.")
         except (sqlite3.Error) as e:
             raise DispatcherException(
-                f"Error updating the schedule status in the Dispatcher Schedule database: {e}")
+                f"Error updating the schedule status to {status.upper()} in the Dispatcher Schedule database: {e}")
         finally:
             cursor.close()
          
