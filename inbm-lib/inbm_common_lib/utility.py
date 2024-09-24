@@ -285,7 +285,9 @@ def get_os_version() -> str:
 
             content_dict = parse_os_release(content)
             version = content_dict.get("VERSION")
-            return version if version else logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
+            if version:
+                return version
+            logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
         else:
             logger.error(f"{OS_RELEASE_PATH} not exist.")
 

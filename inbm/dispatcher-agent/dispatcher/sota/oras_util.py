@@ -197,7 +197,7 @@ def parse_uri(uri: CanonicalUri) -> ParsedURI:
     image_full_path = f"{registry_server}/{repository_name}/{image}:{image_tag}"
     registry_manifest = (
         f"{parsed_uri.scheme}://{registry_server}/v2/"
-        f"{repository_name}/{image}/manifest/{image_tag}"
+        f"{repository_name}/{image}/manifests/{image_tag}"
     )
 
     # Return the populated ParsedURI data structure

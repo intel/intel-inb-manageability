@@ -109,15 +109,14 @@ class TestDownloader(unittest.TestCase):
 
     def test_parse_uri(self) -> None:
         uri = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/test/tiberos:latest")
-        source, registry_server, image, image_tag, repository_name, image_full_path, registry_manifest = \
-            parse_uri(uri)
-        self.assertEqual(source, 'https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/test')
-        self.assertEqual(registry_server, 'registry-rs.internal.ledgepark.intel.com')
-        self.assertEqual(image, 'tiberos')
-        self.assertEqual(image_tag, 'latest')
-        self.assertEqual(repository_name, 'one-intel-edge/test')
-        self.assertEqual(image_full_path, 'registry-rs.internal.ledgepark.intel.com/one-intel-edge/test/tiberos:latest')
-        self.assertEqual(registry_manifest, 'https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/test/tiberos/manifests/latest')
+        parsed_uri = parse_uri(uri)
+        self.assertEqual(parsed_uri.source, 'https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/test')
+        self.assertEqual(parsed_uri.registry_server, 'registry-rs.internal.ledgepark.intel.com')
+        self.assertEqual(parsed_uri.image, 'tiberos')
+        self.assertEqual(parsed_uri.image_tag, 'latest')
+        self.assertEqual(parsed_uri.repository_name, 'one-intel-edge/test')
+        self.assertEqual(parsed_uri.image_full_path, 'registry-rs.internal.ledgepark.intel.com/one-intel-edge/test/tiberos:latest')
+        self.assertEqual(parsed_uri.registry_manifest, 'https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/test/tiberos/manifests/latest')
 
     @staticmethod
     def _build_mock_repo(num_files=0):

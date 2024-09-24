@@ -15,7 +15,7 @@ import os
 from typing import Any, Optional
 
 from ..dispatcher_broker import DispatcherBroker
-from .constants import APT_SOURCES_LIST_PATH, MENDER_FILE_PATH, UPDATE_TOOL_PATH
+from .constants import APT_SOURCES_LIST_PATH, MENDER_FILE_PATH, TIBER_UPDATE_TOOL_PATH
 from ..common import dispatcher_state
 
 logger = logging.getLogger(__name__)
