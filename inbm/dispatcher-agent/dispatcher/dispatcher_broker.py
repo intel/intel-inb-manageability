@@ -5,9 +5,11 @@
     Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
+import json
 import logging
 from typing import Any, Optional, Callable
 
+from dispatcher.common.result_constants import Result
 from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED
 from dispatcher.schedule.sqlite_manager import SqliteManager
 from dispatcher.schedule.schedules import Schedule
@@ -36,7 +38,7 @@ class DispatcherBroker:
         self.mqttc.start()
         self._is_started = True
 
-    def send_update(self, message: str, job_id: Optional[str]) -> None:
+    def send_update(self, message: str) -> None:
         """Sends node update to local MQTT 'UPDATE' channel to be published
         to the cloudadapter where it will be sent as a reques to INBS (service in UDM)       
 
@@ -45,26 +47,21 @@ class DispatcherBroker:
         @param message: message to be published to cloud
         @param job_id: Job ID used to track the request in both UDM and TC
         """
-        if job_id is None:
-            raise ValueError("job_id cannot be None")
-        new_message = job_id + ":" + message
-        logger.debug(f"Sending node update for job={job_id} to {UPDATE_CHANNEL} with message: {new_message}")
-        self.mqtt_publish(topic=UPDATE_CHANNEL, payload=job_id + ":" + message)
+        logger.debug(f"Sending node update for to {UPDATE_CHANNEL} with message: {message}")
+        self.mqtt_publish(topic=UPDATE_CHANNEL, payload=message)
      
     def _check_db_for_started_job(self) -> Optional[Schedule]:
         sqliteMgr = SqliteManager()
         schedule = sqliteMgr.get_any_started_schedule()
-         
-        if schedule:
-            logger.debug(f"Found started schedule in DB: {schedule}")
-            
+        logger.debug(f"Checking for started schedule in DB: schedule={schedule}")
+        if schedule:          
             # Change status to COMPLETED
             sqliteMgr.update_status(schedule, COMPLETED)
         
         del sqliteMgr
         return schedule
         
-    def send_result(self, message: str, request_id: str = "") -> None:  # pragma: no cover
+    def send_result(self, message: str, request_id: str = "", job_id: str = "") -> None:  # pragma: no cover
         """Sends result to local MQTT channel        
 
         Raises ValueError if request_id contains a slash
@@ -85,8 +82,14 @@ class DispatcherBroker:
             logger.error('Cannot send result: dispatcher core not initialized')
             return
 
+        schedule = None
         # Check if this is a request stored in the DB and started from the APScheduler
-        schedule = self._check_db_for_started_job()
+        if job_id != "":
+            schedule = Schedule(request_id=request_id, job_id=job_id)
+        else:   
+            # Some jobs do not call send_result to the dispatcher class to get the
+            # job_id.  In this case, we need to check the DB for the job_id.
+            schedule = self._check_db_for_started_job()
         
         if not schedule:
             # This is not a scheduled job
@@ -98,8 +101,28 @@ class DispatcherBroker:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
         else:
             # This is a scheduled job
-            logger.debug(f"Sending node update message with id {schedule.job_id}: {message}")
-            self.send_update(message, schedule.job_id)        
+            logger.debug(f"Sending node update message: {message}")
+            
+            # Need to add the schedule information to the result message
+            try:
+                # Attempt to format the message as a JSON string
+                formatted_message = json.dumps(message)
+            except (TypeError, ValueError) as format_error:
+                logger.error(f"Failed to format message as JSON string: {message}. Error: {format_error}")
+                self.send_update(str(message)) 
+                return
+            
+            try:
+                data = json.loads(formatted_message)
+            except json.JSONDecodeError as e:
+                logger.error(f"Cannot decode message into Result object: {formatted_message}. Error: {e}")
+                self.send_update(str(message)) 
+                return
+            
+            result = Result(**data)
+            if schedule.job_id:
+                result.job_id = schedule.job_id
+            self.send_update(str(result))        
 
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.

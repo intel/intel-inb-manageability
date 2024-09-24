@@ -50,6 +50,7 @@ class APScheduler:
             for manifest in schedule.manifests:
                 self._scheduler.add_job(
                     func=callback, args=[schedule, manifest])
+            logger.debug("CHANGE IM STATUS TO SCHEDULED")
             self._sqlite_mgr.update_status(schedule, SCHEDULED)
         except (ValueError, TypeError) as err:
             raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")
@@ -68,6 +69,7 @@ class APScheduler:
                         trigger='date', 
                         run_date=single_schedule.start_time, 
                         args=[single_schedule, manifest])
+                logger.debug("CHANGE SS STATUS TO SCHEDULED")
                 self._sqlite_mgr.update_status(single_schedule, SCHEDULED)
             except (ValueError, TypeError) as err:
                 raise DispatcherException(f"Please correct and resubmit scheduled request. Invalid parameter used in date expresssion to APScheduler: {err}")

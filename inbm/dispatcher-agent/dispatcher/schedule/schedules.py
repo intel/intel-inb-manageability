@@ -13,8 +13,8 @@ from typing import Optional, List
 class Schedule:
     """ Represents a Base class for schedule objects."""
     request_id: str
-    schedule_id: Optional[int] = field(default=None)
-    job_id: Optional[str] = field(default=None)
+    job_id: str = field(default="")
+    schedule_id: Optional[int] = field(default=None)    
     task_id: int = field(default=-1)
     priority: int = field(default=0)    
     manifests: List[str] = field(default_factory=list)
