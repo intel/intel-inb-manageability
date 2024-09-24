@@ -72,16 +72,12 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         err_msg = " No JWT token. Abort the update. "
         raise SotaError(err_msg)
 
-    # Set password as environment variables for security reason.
-    env = dict(os.environ)  # make a copy of the environment
-    env["ORAS_PASSWORD"] = password
-
     msg = f'Fetching software package from {image_full_path}'
     dispatcher_broker.telemetry(msg)
 
     # Call oras to pull the image. The password is the JWT token.
     (out, err_run, code) = PseudoShellRunner().run(f"oras pull {image_full_path} -o {repo.get_repo_path()} "
-                                                   f"--password $ORAS_PASSWORD", env=env)
+                                                   f"--password-stdin", password=password)
     if code != 0:
         if err_run is not None:
             raise SotaError("Error to download OTA files with ORAS: " + err_run + ". Code: " + str(code))

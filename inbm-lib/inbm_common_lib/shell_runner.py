@@ -17,7 +17,7 @@ from datetime import datetime
 from subprocess import Popen, PIPE # nosec: B404
 import subprocess # nosec: B404
 
-from typing import Tuple, Optional, Union, BinaryIO, List, Any, Dict
+from typing import Tuple, Optional, Union, BinaryIO, List, Any
 from .constants import AFULNX_64
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_BINARY_SEARCH_PATHS
 
@@ -81,7 +81,7 @@ class PseudoShellRunner:
                           cmd: str,
                           log_path: Optional[str],
                           cwd: Optional[str] = None,
-                          env: Optional[Dict[str, str]] = None) -> Tuple[str, Optional[str], int, Optional[str]]:
+                          password: Optional[str] = None,) -> Tuple[str, Optional[str], int, Optional[str]]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -90,7 +90,7 @@ class PseudoShellRunner:
         @param cmd: Shell cmd to execute
         @param log_path: string format of log file's absolute path
         @param cwd: if not None, run process from this working directory
-        @param env: if not None, env variables will be used by subprocess, and it won't affect the parent process's env.
+        @param password: if password provided, it will be passed as stdin input
         @return: Result of subprocess along with output, error (possibly None), exit status, and absolute log path
         """
         shlex_split_cmd = PseudoShellRunner().interpret_shell_like_command(cmd)
@@ -107,17 +107,7 @@ class PseudoShellRunner:
                 shell=False,
                 stdin=subprocess.DEVNULL,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                env=env)
-        elif env:
-            proc = subprocess.Popen(
-                cmd,
-                cwd=cwd,
-                shell=True,
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=env)
+                stderr=subprocess.STDOUT)
         else:
             proc = subprocess.Popen(
                 shlex_split_cmd,
@@ -125,8 +115,7 @@ class PseudoShellRunner:
                 shell=False,
                 stdin=subprocess.PIPE,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                env=env)
+                stderr=subprocess.PIPE)
 
         if log_path or cmd.find("do-release") >= 0:
             (logfile, abs_log_path) = PseudoShellRunner().create_log_file(cmd, log_path)
@@ -139,7 +128,12 @@ class PseudoShellRunner:
             abs_log_path = None
 
         logger.debug("")
-        (out, err) = proc.communicate(b'yes\n') if AFULNX_64 in cmd else proc.communicate()
+        if AFULNX_64 in cmd:
+            (out, err) = proc.communicate(b'yes\n')
+        elif password:
+            (out, err) = proc.communicate(input=password.encode())
+        else:
+            (out, err) = proc.communicate()
 
         # we filter out bad characters but still accept the rest of the string
         # here based on experience running the underlying command
@@ -152,7 +146,8 @@ class PseudoShellRunner:
 
         return decoded_out, decoded_err, proc.returncode, abs_log_path
 
-    def run(self, cmd: str, cwd: Optional[str] = None, env: Optional[Dict[str, str]] = None) -> Tuple[str, Optional[str], int]:
+    def run(self, cmd: str, cwd: Optional[str] = None,
+            password: Optional[str] = None) -> Tuple[str, Optional[str], int]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -160,10 +155,10 @@ class PseudoShellRunner:
 
         @param cmd: Shell cmd to execute
         @param cwd: if not None, run process from this working directory
-        @param env: if not None, env variables will be used by subprocess, and it won't affect the parent process's env.
+        @param password: if token provided, it will be passed as stdin input
         @return: Result of subprocess along with output, error (possibly None) & exit status
         """
-        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd, env=env)
+        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd, password=password)
         return out, err, code
 
     def interpret_shell_like_command(self, cmd: str) -> List[str]:
