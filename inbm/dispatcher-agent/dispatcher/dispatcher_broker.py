@@ -100,29 +100,29 @@ class DispatcherBroker:
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
         else:
-            # This is a scheduled job
-            logger.debug(f"Sending node update message: {message}")
+            # This is a scheduled job           
             
-            # Need to add the schedule information to the result message
+            # Turn the formatted_message into a dict
             try:
-                # Attempt to format the message as a JSON string
-                formatted_message = json.dumps(message)
-            except (TypeError, ValueError) as format_error:
-                logger.error(f"Failed to format message as JSON string: {message}. Error: {format_error}")
-                self.send_update(str(message)) 
-                return
-            
-            try:
-                data = json.loads(formatted_message)
+                message_dict = json.loads(message)
             except json.JSONDecodeError as e:
-                logger.error(f"Cannot decode message into Result object: {formatted_message}. Error: {e}")
-                self.send_update(str(message)) 
+                logger.error(f"Cannot convert formatted message to dict: {message}. Error: {e}")
+                self.send_update(str(message))
                 return
-            
-            result = Result(**data)
-            if schedule.job_id:
-                result.job_id = schedule.job_id
-            self.send_update(str(result))        
+
+            # Update the job_id in the message_dict
+            message_dict['job_id'] = schedule.job_id
+
+            # Convert the updated message_dict back to a JSON string
+            try:
+                updated_message = json.dumps(message_dict)
+            except (TypeError, OverflowError) as e:
+                logger.error(f"Cannot convert Result back to string: {message_dict}. Error: {e}")
+                self.send_update(str(message))
+                return                
+       
+            logger.debug(f"Sending node update message: {str(updated_message)}")
+            self.send_update(str(updated_message))        
 
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.

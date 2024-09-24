@@ -374,7 +374,7 @@ class Dispatcher:
             self._update_logger.error = str(e)
         finally:            
             logger.info('Install result: %s', str(result))
-            self._send_result(str(result), job_id)
+            self._send_result(message=str(result), job_id=job_id)
             if result.status != CODE_OK and parsed_head:
                 self._update_logger.status = FAIL
                 self._update_logger.error = str(result)
