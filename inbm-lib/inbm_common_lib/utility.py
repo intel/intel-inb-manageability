@@ -330,9 +330,5 @@ def parse_line(line: str) -> Optional[Tuple[str, str]]:
     value = value.strip()
     if (value.startswith('"') and value.endswith('"')) or \
        (value.startswith("'") and value.endswith("'")):
-        try:
-            value = ast.literal_eval(value)
-        except (SyntaxError, ValueError):
-            pass  # Keep value as is
-    # Else, value is unquoted, keep as is
+           value = value[1:-1]
     return key, value
