@@ -213,12 +213,12 @@ class TiberOSSetupHelper(SetupHelper):
         @return: Boolean value to proceed or not with the OS update
         """
         logger.debug("Checking to see if update tool exists")
-        if os.path.isfile(UPDATE_TOOL_PATH):
-            self._broker.telemetry("Update tool found in " + UPDATE_TOOL_PATH +
+        if os.path.isfile(TIBER_UPDATE_TOOL_PATH):
+            self._broker.telemetry("Update tool found in " + TIBER_UPDATE_TOOL_PATH +
                                    ". Proceeding to perform SOTA.")
             return True
         else:
-            self._broker.telemetry("Update tool not found in " + UPDATE_TOOL_PATH +
+            self._broker.telemetry("Update tool not found in " + TIBER_UPDATE_TOOL_PATH +
                                    ". Aborting SOTA.")
             return False
 

@@ -1,5 +1,6 @@
 import unittest
 import tempfile
+import shutil
 from typing import Optional
 import os
 import hashlib
@@ -132,23 +133,26 @@ class TestDownloader(unittest.TestCase):
         assert isinstance(installer, TiberOSDownloader)
 
         directory = tempfile.mkdtemp()
-        repo = DirectoryRepo(directory)
-
-        repo.add("test", b"This is a test file.")
-
-        # Calculate the SHA256 checksum
-        sha256_hash = hashlib.sha256()
-        with open(os.path.join(directory, "test"), 'rb') as file:
-            for chunk in iter(lambda: file.read(4096), b''):
-                sha256_hash.update(chunk)
-        checksum = sha256_hash.hexdigest()
-        installer._signature = checksum
         try:
-            installer.download(self.mock_disp_broker,
-                               mock_url, repo,
-                               self.username, password, self.release_date)
-        except (SotaError, DispatcherException):
-            self.fail("raised Error unexpectedly!")
+            repo = DirectoryRepo(directory)
+
+            repo.add("test", b"This is a test file.")
+
+            # Calculate the SHA256 checksum
+            sha256_hash = hashlib.sha256()
+            with open(os.path.join(directory, "test"), 'rb') as file:
+                for chunk in iter(lambda: file.read(4096), b''):
+                    sha256_hash.update(chunk)
+            checksum = sha256_hash.hexdigest()
+            installer._signature = checksum
+            try:
+                installer.download(self.mock_disp_broker,
+                                   mock_url, repo,
+                                   self.username, password, self.release_date)
+            except (SotaError, DispatcherException):
+                self.fail("raised Error unexpectedly!")
+        finally:
+            shutil.rmtree(directory)
 
         mock_read_token.assert_called_once()
         mock_download.assert_called_once()
@@ -169,15 +173,18 @@ class TestDownloader(unittest.TestCase):
         assert isinstance(installer, TiberOSDownloader)
 
         directory = tempfile.mkdtemp()
-        repo = DirectoryRepo(directory)
+        try:
+            repo = DirectoryRepo(directory)
 
-        repo.add("test", b"This is a test file.")
+            repo.add("test", b"This is a test file.")
 
-        installer._signature = "invalid checksum"
-        with self.assertRaises(SotaError):
-            installer.download(self.mock_disp_broker,
-                               mock_url, repo,
-                               self.username, password, self.release_date)
+            installer._signature = "invalid checksum"
+            with self.assertRaises(SotaError):
+                installer.download(self.mock_disp_broker,
+                                   mock_url, repo,
+                                   self.username, password, self.release_date)
+        finally:
+            shutil.rmtree(directory)
 
         mock_read_token.assert_called_once()
         mock_download.assert_called_once()
@@ -194,10 +201,13 @@ class TestDownloader(unittest.TestCase):
         assert isinstance(installer, TiberOSDownloader)
 
         directory = tempfile.mkdtemp()
-        repo = DirectoryRepo(directory)
+        try:
+            repo = DirectoryRepo(directory)
 
-        installer._signature = "invalid checksum"
-        with self.assertRaises(SotaError):
-            installer.download(self.mock_disp_broker,
-                               None, repo,
-                               self.username, password, self.release_date)
+            installer._signature = "invalid checksum"
+            with self.assertRaises(SotaError):
+                installer.download(self.mock_disp_broker,
+                                   None, repo,
+                                   self.username, password, self.release_date)
+        finally:
+            shutil.rmtree(directory)

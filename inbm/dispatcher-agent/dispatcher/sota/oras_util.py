@@ -13,12 +13,24 @@ from typing import Optional, Tuple
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_common_lib.utility import CanonicalUri
 from dispatcher.packagemanager.package_manager import verify_source
+from dataclasses import dataclass
 from ..packagemanager.irepo import IRepo
 from ..dispatcher_broker import DispatcherBroker
 from .constants import ORAS_TOKEN_PATH
 from .sota_error import SotaError
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class ParsedURI:
+    source: str
+    registry_server: str
+    image: str
+    image_tag: str
+    image_full_path: str
+    repository_name: str
+    registry_manifest: str
 
 
 def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
@@ -41,8 +53,16 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         raise SotaError("Internal error: uri improperly passed to download function")
 
     try:
-        source, registry_server, image, image_tag, repository_name, image_full_path, registry_manifest = \
-            parse_uri(uri)
+        parsed_uri = parse_uri(uri)
+
+        source = parsed_uri.source
+        registry_server = parsed_uri.registry_server
+        image = parsed_uri.image
+        image_tag = parsed_uri.image_tag
+        repository_name = parsed_uri.repository_name
+        image_full_path = parsed_uri.image_full_path
+        registry_manifest = parsed_uri.registry_manifest
+
     except IndexError as err:
         logger.error(f"IndexError occurs with uri {uri.value}: {err}")
         raise SotaError(err)
@@ -132,8 +152,9 @@ def is_enough_space_to_download(manifest_uri: str,
     logger.debug("Free space needed on destination repo is " + repr(file_size))
     return True if free_space > file_size else False
 
-def parse_uri(uri: CanonicalUri) -> Tuple[str, str, str, str, str, str, str]:
-    """ Parse the uri.
+
+def parse_uri(uri: CanonicalUri) -> ParsedURI:
+    """ Parse a CanonicalUri and extract its components for a container image URI.
 
     In case of uri.value = https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest
     source = https://registry-rs.internal.ledgepark.intel.com/one-intel-edge
@@ -144,8 +165,20 @@ def parse_uri(uri: CanonicalUri) -> Tuple[str, str, str, str, str, str, str]:
     repository_name = one-intel-edge
     registry_manifest = https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifest/latest
 
-    @return: str representing source, registry_server, image, image_tag, image_full_path, repository_name and
-             registry_manifest
+    @param uri: A URI object with a value containing a full image URI.
+    @return: A data structure containing the following fields:
+
+    - source: The base URL of the registry, including the repository (e.g., 'https://registry-rs.internal.ledgepark.intel.com/one-intel-edge')
+    - registry_server: The server hosting the registry (e.g., 'registry-rs.internal.ledgepark.intel.com')
+    - image: The image name (e.g., 'tiberos')
+    - image_tag: The image tag (e.g., 'latest')
+    - image_full_path: The full path to the image with tag (e.g., 'registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest')
+    - repository_name: The repository name (e.g., 'one-intel-edge')
+    - registry_manifest: The URL to the image's manifest (e.g., 'https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifest/latest')
+
+    Raises:
+        ValueError: If the URI path does not contain enough components to extract the necessary information.
+
     """
     source = uri.value[:-(len(uri.value.split('/')[-1]) + 1)]
     parsed_uri = urlparse(uri.value)
@@ -153,14 +186,31 @@ def parse_uri(uri: CanonicalUri) -> Tuple[str, str, str, str, str, str, str]:
     parsed_uri.geturl()
     path_parts = parsed_uri.path.strip('/').split('/')
     if len(path_parts) < 2:
-        raise SotaError(f"Invalid URI format: {uri.value}")
+        raise SotaError(f"URI path does not contain enough components: {uri.value}")
+    # Extract repository name and image details
     repository_name = '/'.join(path_parts[:-1])
+    # Extract image and tag (default tag is 'latest' if not provided)
     image = path_parts[-1].split(':')[0]
     image_tag = path_parts[-1].split(':')[1] if ':' in path_parts[-1] else 'latest'
-    image_full_path = f"{registry_server}/{repository_name}/{image}:{image_tag}"
-    registry_manifest = f"https://{registry_server}/v2/{repository_name}/{image}/manifests/{image_tag}"
 
-    return source, registry_server, image, image_tag, repository_name, image_full_path, registry_manifest
+    # Construct the required fields
+    image_full_path = f"{registry_server}/{repository_name}/{image}:{image_tag}"
+    registry_manifest = (
+        f"{parsed_uri.scheme}://{registry_server}/v2/"
+        f"{repository_name}/{image}/manifest/{image_tag}"
+    )
+
+    # Return the populated ParsedURI data structure
+    return ParsedURI(
+        source=source,
+        registry_server=registry_server,
+        image=str(image),
+        image_tag=image_tag,
+        image_full_path=image_full_path,
+        repository_name=str(repository_name),
+        registry_manifest=registry_manifest,
+    )
+
 
 def read_oras_token() -> str:
     """Read oras JWT token from a path configured by Tiber OS node-agent. The node agent will renew the token when
@@ -169,12 +219,15 @@ def read_oras_token() -> str:
     @return: JWT token to access release server
     """
     token = None
-    if os.path.exists(ORAS_TOKEN_PATH):
-        with open(ORAS_TOKEN_PATH, 'r') as f:
-            token = f.read().strip()
-        return token
-    else:
-        msg = f"{ORAS_TOKEN_PATH} not exist."
+    try:
+        if os.path.exists(ORAS_TOKEN_PATH):
+            with open(ORAS_TOKEN_PATH, 'r') as f:
+                token = f.read().strip()
+            return token
+        else:
+            msg = f"{ORAS_TOKEN_PATH} not exist."
+    except OSError as err:
+        raise SotaError(f"Error while performing TiberOS download: {err}")
 
     if token is None:
         msg = f"No JWT token found."

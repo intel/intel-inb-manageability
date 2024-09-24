@@ -167,14 +167,20 @@ class SOTA:
                                              self._install_check_service)
             if self._repo_type == REMOTE_SOURCE:
                 logger.debug(f"Remote repo URI: {self._uri}")
+                # If uri and signature are provided, pass the uri and signature to the method.
                 if self._uri is not None and self._signature is not None:
                     cmd_list = self.installer.update_remote_source(canonicalize_uri(self._uri),
                                                                    canonicalize_uri(self._signature), repo)
-                elif self._uri is None:
-                    cmd_list = self.installer.update_remote_source(None, None, repo)
+                # If uri is provided but no signature, pass the uri to the method.
+                elif self._uri is not None and self._signature is None:
+                    cmd_list = self.installer.update_remote_source(canonicalize_uri(self._uri),
+                                                                   None, repo)
+                # If signature is provided but no uri, pass the signature to the method.
+                elif self._signature is not None and self._uri is None:
+                    cmd_list = self.installer.update_remote_source(None, canonicalize_uri(self._signature), repo)
+                # If neither URI nor signature is provided, no URI and signature will be passed to the method.
                 else:
-                    cmd_list = self.installer.update_remote_source(
-                        canonicalize_uri(self._uri), None, repo)
+                    cmd_list = self.installer.update_remote_source(None, None, repo)
             else:
                 cmd_list = self.installer.update_local_source(self._local_file_path)
         elif self.sota_cmd == 'upgrade':
@@ -441,8 +447,9 @@ class SOTA:
         @param check_package: True if you want to check the package's status and version and record them in Ubuntu.
         """
         log = {}
+        current_os = detect_os()
         # TODO: Remove Mariner when confirmed that TiberOS is in use
-        if detect_os() == LinuxDistType.TiberOS.name or detect_os() == LinuxDistType.Mariner.name:
+        if current_os == LinuxDistType.TiberOS.name or current_os == LinuxDistType.Mariner.name:
             # Delete the previous log if exist.
             if os.path.exists(GRANULAR_LOG_FILE):
                 remove_file(GRANULAR_LOG_FILE)

@@ -406,11 +406,11 @@ class TiberOSUpdater(OsUpdater):
         return []
 
     def update_local_source(self, file_path: str) -> List[str]:
-        """Concrete class method to create command list to update from a local source for TiberOS OS.
+        """Concrete class method to create command list to update from a local source for TiberOS.
         @param file_path: path to local file
         @return: Command list to execute to perform update.
         """
-        return ["echo FIXME: add actual TiberOS command to update from a local source"]
+        return []
 
     @staticmethod
     def get_estimated_size() -> int:

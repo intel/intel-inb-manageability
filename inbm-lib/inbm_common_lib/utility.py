@@ -278,19 +278,21 @@ def get_os_version() -> str:
 
     @return value of the VERSION
     """
-    if os.path.exists(OS_RELEASE_PATH):
-        with open(OS_RELEASE_PATH, 'r') as version_file:
-            content = version_file.read()
+    try:
+        if os.path.exists(OS_RELEASE_PATH):
+            with open(OS_RELEASE_PATH, 'r') as version_file:
+                content = version_file.read()
 
-        content_dict = parse_os_release(content)
-        for key in content_dict:
-            if key == "VERSION":
-                return content_dict[key]
-        logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
-    else:
-        logger.error(f"{OS_RELEASE_PATH} not exist.")
+            content_dict = parse_os_release(content)
+            version = content_dict.get("VERSION")
+            return version if version else logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
+        else:
+            logger.error(f"{OS_RELEASE_PATH} not exist.")
 
-    return UNKNOWN
+        return UNKNOWN
+    except OSError as err:
+        raise OSError(f"Error while reading the os version: {err}")
+
 
 def parse_os_release(file_content: str) -> Dict[str, str]:
     """
@@ -306,6 +308,7 @@ def parse_os_release(file_content: str) -> Dict[str, str]:
             key, value = parsed
             result[key] = value
     return result
+
 
 def parse_line(line: str) -> Optional[Tuple[str, str]]:
     """
