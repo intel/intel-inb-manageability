@@ -144,7 +144,7 @@ class InbsCloudClient(CloudClient):
         logger.debug(f"Sending node update to INBS: request={request}")
             
         try:
-            response = self._stub.SendNodeUpdate(request)
+            response = self._stub.SendNodeUpdate(request, metadata=self._metadata)
             logger.info(f"Received response from gRPC server: {response}")
         except grpc.RpcError as e:
             logger.error(f"Failed to send node update via gRPC: {e}")
