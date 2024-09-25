@@ -12,7 +12,7 @@ class TestRunner(PseudoShellRunner):
         self.__return_code = return_code
         self.__err = err
 
-    def run(self, cmd: str, cwd: str | None = None, password: str | None = None) -> Tuple[str, str | None, int]:
+    def run(self, cmd: str, cwd: str | None = None, stdin: str | None = None) -> Tuple[str, str | None, int]:
         self.__last_commands.append(cmd)
         return self.__output, self.__err, self.__return_code
 

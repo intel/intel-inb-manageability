@@ -8,6 +8,7 @@ import logging
 import os
 import requests
 import json
+import shlex
 from urllib.parse import urlsplit, urlparse
 from typing import Optional, Tuple
 from inbm_common_lib.shell_runner import PseudoShellRunner
@@ -82,7 +83,7 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         registry_manifest, repo, password)
 
     if not enough_space:
-        err_msg = " Insufficient free space available on " + repo.get_repo_path() + \
+        err_msg = " Insufficient free space available on " + shlex.quote(repo.get_repo_path()) + \
                   " for " + str(uri.value)
         raise SotaError(err_msg)
 
@@ -97,7 +98,7 @@ def oras_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
 
     # Call oras to pull the image. The password is the JWT token.
     (out, err_run, code) = PseudoShellRunner().run(f"oras pull {image_full_path} -o {repo.get_repo_path()} "
-                                                   f"--password-stdin", password=password)
+                                                   f"--password-stdin", stdin=password)
     if code != 0:
         if err_run is not None:
             raise SotaError("Error to download OTA files with ORAS: " + err_run + ". Code: " + str(code))
@@ -136,7 +137,7 @@ def is_enough_space_to_download(manifest_uri: str,
         logger.debug(f"Total file size: {file_size}")
 
     except (TypeError, KeyError, json.JSONDecodeError, SotaError) as err:
-        err_msg = f"Error getting artifact size from {manifest_uri} using token={jwt_token} Error: {err}"
+        err_msg = f"Error getting artifact size from {manifest_uri} with token Error: {err}"
         logger.error(err_msg)
         raise SotaError(err_msg)
 
@@ -145,7 +146,7 @@ def is_enough_space_to_download(manifest_uri: str,
         free_space: int = int(get_free_space)
     else:
         raise SotaError("Repository does not exist : " +
-                                  destination_repo.get_repo_path())
+                                  shlex.quote(destination_repo.get_repo_path()))
 
     logger.debug("get_free_space: " + repr(get_free_space))
     logger.debug("Free space available on destination_repo is " + repr(free_space))
@@ -195,6 +196,7 @@ def parse_uri(uri: CanonicalUri) -> ParsedURI:
 
     # Construct the required fields
     image_full_path = f"{registry_server}/{repository_name}/{image}:{image_tag}"
+    image_full_path = shlex.quote(image_full_path)
     registry_manifest = (
         f"{parsed_uri.scheme}://{registry_server}/v2/"
         f"{repository_name}/{image}/manifests/{image_tag}"

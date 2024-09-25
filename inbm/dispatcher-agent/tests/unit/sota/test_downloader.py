@@ -124,11 +124,11 @@ class TestDownloader(unittest.TestCase):
         password = "mock_password"
         mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
 
-        assert TestDownloader.sota_instance
+        self.assertIsNotNone(TestDownloader.sota_instance)
         TestDownloader.sota_instance.factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
         factory = TestDownloader.sota_instance.factory
-        assert factory
+        self.assertIsNotNone(factory)
         installer = factory.create_downloader()
         assert isinstance(installer, TiberOSDownloader)
 
@@ -164,11 +164,11 @@ class TestDownloader(unittest.TestCase):
         password = "mock_password"
         mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
 
-        assert TestDownloader.sota_instance
+        self.assertIsNotNone(TestDownloader.sota_instance)
         TestDownloader.sota_instance.factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
         factory = TestDownloader.sota_instance.factory
-        assert factory
+        self.assertIsNotNone(factory)
         installer = factory.create_downloader()
         assert isinstance(installer, TiberOSDownloader)
 
@@ -192,11 +192,11 @@ class TestDownloader(unittest.TestCase):
     def test_tiberos_download_with_empty_uri(self) -> None:
         self.release_date = self.username = None
         password = "mock_password"
-        assert TestDownloader.sota_instance
+        self.assertIsNotNone(TestDownloader.sota_instance)
         TestDownloader.sota_instance.factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
         factory = TestDownloader.sota_instance.factory
-        assert factory
+        self.assertIsNotNone(factory)
         installer = factory.create_downloader()
         assert isinstance(installer, TiberOSDownloader)
 

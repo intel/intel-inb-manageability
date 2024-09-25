@@ -410,7 +410,7 @@ class TiberOSUpdater(OsUpdater):
         @param file_path: path to local file
         @return: Command list to execute to perform update.
         """
-        return []
+        raise NotImplementedError()
 
     @staticmethod
     def get_estimated_size() -> int:

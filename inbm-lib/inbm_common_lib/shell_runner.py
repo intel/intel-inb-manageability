@@ -81,7 +81,7 @@ class PseudoShellRunner:
                           cmd: str,
                           log_path: Optional[str],
                           cwd: Optional[str] = None,
-                          password: Optional[str] = None,) -> Tuple[str, Optional[str], int, Optional[str]]:
+                          stdin: Optional[str] = None,) -> Tuple[str, Optional[str], int, Optional[str]]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -90,7 +90,7 @@ class PseudoShellRunner:
         @param cmd: Shell cmd to execute
         @param log_path: string format of log file's absolute path
         @param cwd: if not None, run process from this working directory
-        @param password: if password provided, it will be passed as stdin input
+        @param stdin: if stdin provided, it will be passed as stdin input
         @return: Result of subprocess along with output, error (possibly None), exit status, and absolute log path
         """
         shlex_split_cmd = PseudoShellRunner().interpret_shell_like_command(cmd)
@@ -130,8 +130,8 @@ class PseudoShellRunner:
         logger.debug("")
         if AFULNX_64 in cmd:
             (out, err) = proc.communicate(b'yes\n')
-        elif password:
-            (out, err) = proc.communicate(input=password.encode())
+        elif stdin:
+            (out, err) = proc.communicate(input=stdin.encode())
         else:
             (out, err) = proc.communicate()
 
@@ -147,7 +147,7 @@ class PseudoShellRunner:
         return decoded_out, decoded_err, proc.returncode, abs_log_path
 
     def run(self, cmd: str, cwd: Optional[str] = None,
-            password: Optional[str] = None) -> Tuple[str, Optional[str], int]:
+            stdin: Optional[str] = None) -> Tuple[str, Optional[str], int]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -155,10 +155,10 @@ class PseudoShellRunner:
 
         @param cmd: Shell cmd to execute
         @param cwd: if not None, run process from this working directory
-        @param password: if token provided, it will be passed as stdin input
+        @param stdin: if stdin provided, it will be passed as stdin input
         @return: Result of subprocess along with output, error (possibly None) & exit status
         """
-        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd, password=password)
+        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd, stdin=stdin)
         return out, err, code
 
     def interpret_shell_like_command(self, cmd: str) -> List[str]:

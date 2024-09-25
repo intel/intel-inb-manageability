@@ -8,6 +8,7 @@
 import logging
 import os
 import time
+import threading
 from typing import Any, List, Optional, Union, Mapping
 
 from inbm_common_lib.exceptions import UrlSecurityException
@@ -114,6 +115,7 @@ class SOTA:
         self.sota_mode = parsed_manifest['sota_mode']
         self._update_logger = update_logger
         self._dispatcher_broker = dispatcher_broker
+        self._granular_lock = threading.Lock()
 
         try:
             manifest_package_list = parsed_manifest['package_list']
@@ -170,14 +172,14 @@ class SOTA:
                 # If uri and signature are provided, pass the uri and signature to the method.
                 if self._uri is not None and self._signature is not None:
                     cmd_list = self.installer.update_remote_source(canonicalize_uri(self._uri),
-                                                                   canonicalize_uri(self._signature), repo)
+                                                                   self._signature, repo)
                 # If uri is provided but no signature, pass the uri to the method.
                 elif self._uri is not None and self._signature is None:
                     cmd_list = self.installer.update_remote_source(canonicalize_uri(self._uri),
                                                                    None, repo)
                 # If signature is provided but no uri, pass the signature to the method.
                 elif self._signature is not None and self._uri is None:
-                    cmd_list = self.installer.update_remote_source(None, canonicalize_uri(self._signature), repo)
+                    cmd_list = self.installer.update_remote_source(None, self._signature, repo)
                 # If neither URI nor signature is provided, no URI and signature will be passed to the method.
                 else:
                     cmd_list = self.installer.update_remote_source(None, None, repo)
@@ -449,25 +451,26 @@ class SOTA:
         log = {}
         current_os = detect_os()
         # TODO: Remove Mariner when confirmed that TiberOS is in use
-        if current_os == LinuxDistType.TiberOS.name or current_os == LinuxDistType.Mariner.name:
-            # Delete the previous log if exist.
-            if os.path.exists(GRANULAR_LOG_FILE):
-                remove_file(GRANULAR_LOG_FILE)
+        with self._granular_lock:
+            if current_os == LinuxDistType.TiberOS.name or current_os == LinuxDistType.Mariner.name:
+                # Delete the previous log if exist.
+                if os.path.exists(GRANULAR_LOG_FILE):
+                    remove_file(GRANULAR_LOG_FILE)
 
-            if self._update_logger.detail_status == FAIL or self._update_logger.detail_status == ROLLBACK:
-                log = {
-                    "StatusDetail.Status": self._update_logger.detail_status,
-                    "FailureReason": self._update_logger.error
-                }
-            elif self._update_logger.detail_status == OTA_SUCCESS or self._update_logger.detail_status == OTA_PENDING:
-                log = {
-                    "StatusDetail.Status": self._update_logger.detail_status,
-                    "Version": get_os_version()
-                }
-            # In TiberOS, no package level information needed.
-            self._update_logger.save_granular_log_file(log=log, check_package=False)
-        else:
-            self._update_logger.save_granular_log_file(check_package=check_package)
+                if self._update_logger.detail_status == FAIL or self._update_logger.detail_status == ROLLBACK:
+                    log = {
+                        "StatusDetail.Status": self._update_logger.detail_status,
+                        "FailureReason": self._update_logger.error
+                    }
+                elif self._update_logger.detail_status == OTA_SUCCESS or self._update_logger.detail_status == OTA_PENDING:
+                    log = {
+                        "StatusDetail.Status": self._update_logger.detail_status,
+                        "Version": get_os_version()
+                    }
+                # In TiberOS, no package level information needed.
+                self._update_logger.save_granular_log_file(log=log, check_package=False)
+            else:
+                self._update_logger.save_granular_log_file(check_package=check_package)
 
     def check(self) -> None:
         """Perform manifest checking before SOTA"""
