@@ -9,6 +9,7 @@ import os
 import json
 import datetime
 import logging
+import threading
 from typing import Optional, Dict, List, Any
 
 from inbm_lib.constants import LOG_FILE, GRANULAR_LOG_FILE, SYSTEM_HISTORY_LOG_FILE, OTA_PENDING, FORMAT_VERSION, \
@@ -38,6 +39,7 @@ class UpdateLogger:
         self._time = datetime.datetime.now()
         self.metadata = data
         self.error = ""
+        self._granular_lock = threading.Lock()
 
     def set_time(self) -> None:
         """Set the OTA starting time."""
@@ -202,18 +204,19 @@ class UpdateLogger:
     def update_granular_with_log(self, log: dict) -> None:
         """This function stores the log provided into the granular log file."""
         logger.debug("")
-        try:
-            # Load current data in granular log file.
-            with open(GRANULAR_LOG_FILE, 'r') as f:
-                data = json.load(f)
-            # Append the log to the UpdateLog
-            data['UpdateLog'].append(log)
+        with self._granular_lock:
+            try:
+                # Load current data in granular log file.
+                with open(GRANULAR_LOG_FILE, 'r') as f:
+                    data = json.load(f)
+                # Append the log to the UpdateLog
+                data['UpdateLog'].append(log)
 
-            # Open the file in write mode to save the updated data
-            with open(GRANULAR_LOG_FILE, 'w') as f:
-                json.dump(data, f, indent=4)
-        except (json.JSONDecodeError, OSError) as err:
-            logger.error(f"Error decoding JSON from {GRANULAR_LOG_FILE}: {err}")
+                # Open the file in write mode to save the updated data
+                with open(GRANULAR_LOG_FILE, 'w') as f:
+                    json.dump(data, f, indent=4)
+            except (json.JSONDecodeError, OSError) as err:
+                logger.error(f"Error decoding JSON from {GRANULAR_LOG_FILE}: {err}")
 
     def read_history_log_file(self) -> Optional[str]:
         """Read the apt history log file.
