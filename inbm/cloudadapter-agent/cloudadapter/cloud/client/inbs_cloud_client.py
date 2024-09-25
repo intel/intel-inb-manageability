@@ -119,6 +119,7 @@ class InbsCloudClient(CloudClient):
         @exception PublishError: If publish fails
         """
         # Turn the message into a dict
+        logger.debug(f"Received node update: key={key}, value={value}")
         try:
             message_dict = json.loads(value)
         except json.JSONDecodeError as e:
@@ -127,6 +128,7 @@ class InbsCloudClient(CloudClient):
         
         timestamp = Timestamp()
         timestamp.GetCurrentTime()
+
         request = inbs_sb_pb2.SendNodeUpdateRequest(
             request_id=message_dict.get("request_id", ""),
             job_update=common_pb2.Job(
@@ -137,6 +139,7 @@ class InbsCloudClient(CloudClient):
                 actual_end_time=timestamp,
             )
         )
+        logger.debug(f"Sending node update to INBS: request={request}")
             
         try:
             self._do_socket_connect()
