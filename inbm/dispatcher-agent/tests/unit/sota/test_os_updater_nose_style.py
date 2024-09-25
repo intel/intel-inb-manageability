@@ -72,7 +72,7 @@ class TestOsUpdater(unittest.TestCase):
                     "dpkg --configure -a --force-confdef --force-confold",
                     "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
                     "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"]
-        x_cmd_list = installer.update_remote_source(mock_url, mock_signature_url, TestOsUpdater._build_mock_repo(0))
+        x_cmd_list = installer.update_remote_source(mock_url, mock_signature, TestOsUpdater._build_mock_repo(0))
 
         for (each, expected) in zip(x_cmd_list, cmd_list):
             assert str(each) == str(expected)
@@ -92,7 +92,7 @@ class TestOsUpdater(unittest.TestCase):
                     "apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install",
                     "apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install package1 package2"]
         x_cmd_list = installer.update_remote_source(
-            mock_url, mock_signature_url, TestOsUpdater._build_mock_repo(0))
+            mock_url, mock_signature, TestOsUpdater._build_mock_repo(0))
 
         for (each, expected) in zip(x_cmd_list, cmd_list):
             assert str(each) == str(expected)
@@ -176,7 +176,7 @@ class TestOsUpdater(unittest.TestCase):
         assert factory
         installer = factory.create_os_updater()
         assert installer
-        installer.update_remote_source(mock_url, mock_signature_url, TestOsUpdater._build_mock_repo(0))
+        installer.update_remote_source(mock_url, mock_signature, TestOsUpdater._build_mock_repo(0))
         mock_yocto_os_update.assert_called_once()
 
     @staticmethod
