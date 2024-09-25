@@ -398,28 +398,25 @@ class TestDispatcher(TestCase):
         self.assertIn("Error parsing/validating manifest: XML va", d.do_install(
             xml=xml, schema_location=TEST_SCHEMA_LOCATION).message)
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_any_started_schedule', return_value=None)
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_job_id) -> None:
+    def test_reboot_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>restart</cmd></manifest>'
         d = TestDispatcher._build_dispatcher()
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION)
         mock_workload_orchestration.assert_called()
         mock_perform_cmd_type_operation.assert_called_once()
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_any_started_schedule', return_value=None)
     @patch('dispatcher.dispatcher_class.Dispatcher.invoke_workload_orchestration_check')
     @patch('dispatcher.dispatcher_class.Dispatcher._perform_cmd_type_operation')
-    def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration, mock_job_id) -> None:
+    def test_query_cmd(self, mock_perform_cmd_type_operation, mock_workload_orchestration) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>query</cmd><query><option>status</option></query></manifest>'
         d = TestDispatcher._build_dispatcher()
         d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
         mock_workload_orchestration.assert_called()
         mock_perform_cmd_type_operation.assert_called_once()
 
-    @patch('dispatcher.schedule.sqlite_manager.SqliteManager.get_any_started_schedule', return_value=None)
-    def test_parse_error_invalid_command(self, mock_job_id) -> None:
+    def test_parse_error_invalid_command(self) -> None:
         xml = '<?xml version="1.0" encoding="UTF-8"?><manifest><type>cmd</type><cmd>orange</cmd><orange></orange></manifest>'
         d = TestDispatcher._build_dispatcher()
         status = d.do_install(xml=xml, schema_location=TEST_SCHEMA_LOCATION).status
