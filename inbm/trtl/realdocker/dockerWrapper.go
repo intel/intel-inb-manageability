@@ -45,7 +45,7 @@ type DockerWrapper interface {
 	ContainerStart(string, types.ContainerStartOptions) error
 	ContainerStop(string, *int) error
 	CopyToContainer(string, string, io.Reader, types.CopyToContainerOptions) error
-	Login(types.AuthConfig) (registry.AuthenticateOKBody, error)
+	Login(registry.AuthConfig) (registry.AuthenticateOKBody, error)
 }
 
 // Events makes actual call to docker to get the events and constantly polls.
@@ -294,7 +294,7 @@ func (dw DockerWrap) CopyToContainer(containerID string, path string, content io
 }
 
 // Login authenticates a server with the given authentication credentials
-func (dw DockerWrap) Login(config types.AuthConfig) (registry.AuthenticateOKBody, error) {
+func (dw DockerWrap) Login(config registry.AuthConfig) (registry.AuthenticateOKBody, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return registry.AuthenticateOKBody{}, err
