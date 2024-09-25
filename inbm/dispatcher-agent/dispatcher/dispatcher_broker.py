@@ -9,7 +9,6 @@ import json
 import logging
 from typing import Any, Optional, Callable
 
-from dispatcher.common.result_constants import Result
 from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED
 from dispatcher.schedule.sqlite_manager import SqliteManager
 from dispatcher.schedule.schedules import Schedule
@@ -100,17 +99,16 @@ class DispatcherBroker:
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
         else:
-            # This is a scheduled job           
-            
-            # Turn the formatted_message into a dict
+            # This is a scheduled job            
             try:
+                # Turn the message into a dict
                 message_dict = json.loads(message)
             except json.JSONDecodeError as e:
                 logger.error(f"Cannot convert formatted message to dict: {message}. Error: {e}")
                 self.send_update(str(message))
                 return
 
-            # Update the job_id in the message_dict
+            # Update the job_id in the message
             message_dict['job_id'] = schedule.job_id
 
             # Convert the updated message_dict back to a JSON string

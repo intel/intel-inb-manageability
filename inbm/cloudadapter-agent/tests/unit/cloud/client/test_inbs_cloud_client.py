@@ -49,7 +49,12 @@ class TestInbsCloudClient:
         inbs_client.publish_telemetry(
             key="example_key", value="example_value", time=datetime.now()
         )
-
+    
+    def test_publish_update(self, inbs_client: InbsCloudClient) -> None:
+         #with patch.object(inbs_client, 'SendNodeUpdate', return_value=None) as mock_send_node_update:
+        inbs_client.publish_update(key="example_key", value='{"status": 200, "message": "COMMAND SUCCESSFUL", "job_id": "swupd-0cdce9d5-523b-43d9-8673-d54fd61498fe"}')
+        #    mock_send_node_update.assert_called_once()
+            
     def test_publish_event(self, inbs_client: InbsCloudClient) -> None:
         # this is not expected to do anything yet
         inbs_client.publish_event(key="example_event", value="event_value")

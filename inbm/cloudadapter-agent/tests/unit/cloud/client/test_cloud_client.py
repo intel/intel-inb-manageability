@@ -47,6 +47,11 @@ class TestCloudClient(unittest.TestCase):
         self.cloud_client.publish_attribute(*args)
         assert self.mock_attribute.publish.call_count == 1
 
+    def test_publish_update_succeeds(self) -> None:
+        args = ("key", "value")
+        self.cloud_client.publish_update(*args)
+        assert self.mock_update.publish.call_count == 1
+        
     def test_publish_event_succeeds(self) -> None:
         args = ("key", "value")
         self.cloud_client.publish_event(*args)

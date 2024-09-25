@@ -4,11 +4,12 @@ INBS is different because it is using gRPC instead of MQTT.
 """
 
 from collections.abc import Generator
+import json
 import queue
 import random
 import threading
-import time
-from typing import Callable, Optional, Any
+from google.protobuf.timestamp_pb2 import Timestamp
+from typing import Callable, Optional
 from datetime import datetime
 
 from cloudadapter.cloud.adapters.inbs.operation import (
@@ -68,7 +69,6 @@ class InbsCloudClient(CloudClient):
                 raise AuthenticationError(
                     "TLS certificate path is required when TLS is enabled."
                 )
-
         self._stop_event = threading.Event()
 
     def get_client_id(self) -> Optional[str]:
@@ -115,13 +115,35 @@ class InbsCloudClient(CloudClient):
     def publish_update(self, key: str, value: str) -> None:
         """Publishes an update to the cloud
 
-        @param key: update's key to publish
-        @param value: update to publish
+        @param message: node update message to publish
         @exception PublishError: If publish fails
         """
-
-        # TODO: Implement sending updates to INBS via gRPC
-        pass
+        # Turn the message into a dict
+        try:
+            message_dict = json.loads(value)
+        except json.JSONDecodeError as e:
+            logger.error(f"Cannot convert formatted message to dict: {value}. Error: {e}")
+            return
+        
+        timestamp = Timestamp()
+        timestamp.GetCurrentTime()
+        request = inbs_sb_pb2.SendNodeUpdateRequest(
+            request_id=message_dict.get("request_id", ""),
+            job_update=common_pb2.Job(
+                job_id=message_dict.get("job_id", ""),
+                node_id=self._client_id,
+                status_code=message_dict.get("status", ""),
+                result_msgs=message_dict.get("message", ""),
+                actual_end_time=timestamp,
+            )
+        )
+            
+        try:
+            self._do_socket_connect()
+            response = self.stub.SendNodeUpdate(request)
+            logger.info(f"Received response from gRPC server: {response}")
+        except grpc.RpcError as e:
+            logger.error(f"Failed to send node update via gRPC: {e}")
     
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
@@ -155,14 +177,6 @@ class InbsCloudClient(CloudClient):
 
         # for now ignore all callbacks; only Ping is supported
         self._callbacks[name] = callback
-
-    def _send_node_update(self, request: inbs_sb_pb2.SendNodeUpdateRequest):
-        """Send a node update to INBS as a Request
-
-        @param request: The SendNodeUpdateRequest to send
-        @return: None
-        """        
-        pass
     
     def _handle_inbm_command_request(
         self, request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]

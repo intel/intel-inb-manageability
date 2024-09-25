@@ -80,9 +80,6 @@ class CloudPublisher:
         """
         logger.debug(f"Received node update: {message}")
         try:
-            # Placeholder for actual implementation.
-            # TODO: message needs to be converted to a gRPC message and
-            # sent to UDM via gRPC
             self._adapter.publish_update(message)
         except PublishError as e:
             logger.error(str(e))

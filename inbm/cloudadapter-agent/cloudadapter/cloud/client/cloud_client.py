@@ -58,7 +58,7 @@ class CloudClient:
     def publish_update(self, key: str, value: str) -> None:
         """Publishes an update to the cloud
 
-        @param key: update's key to publish
+        @param key: key to publish
         @param value: update to publish
         @exception PublishError: If publish fails
         """
