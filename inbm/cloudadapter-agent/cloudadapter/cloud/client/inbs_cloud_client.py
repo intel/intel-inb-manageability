@@ -71,6 +71,8 @@ class InbsCloudClient(CloudClient):
                 )
         self._stop_event = threading.Event()
 
+        self._stub = self._make_grpc_channel()  # assumption: this doesn't actually connect until first gRPC command
+
     def get_client_id(self) -> Optional[str]:
         """A readonly property
 
@@ -142,8 +144,7 @@ class InbsCloudClient(CloudClient):
         logger.debug(f"Sending node update to INBS: request={request}")
             
         try:
-            self._do_socket_connect()
-            response = self.stub.SendNodeUpdate(request)
+            response = self._stub.SendNodeUpdate(request)
             logger.info(f"Received response from gRPC server: {response}")
         except grpc.RpcError as e:
             logger.error(f"Failed to send node update via gRPC: {e}")
@@ -291,8 +292,9 @@ class InbsCloudClient(CloudClient):
                 break
         logger.debug("Exiting _handle_inbm_command_request")
 
-    def _do_socket_connect(self):
-        """Handle the socket/TLS/HTTP connection to the gRPC server."""
+    def _make_grpc_channel(self) -> grpc.Channel:
+        """Handle the socket/TLS/HTTP connection to the gRPC server.
+        Assumption: should not connect until first gRPC command."""
         if self._tls_enabled:
             # Create a secure channel with SSL credentials
             logger.debug("Setting up connection to INBS cloud with TLS enabled")
@@ -306,11 +308,11 @@ class InbsCloudClient(CloudClient):
             self.channel = grpc.insecure_channel(
                 f"{self._grpc_hostname}:{self._grpc_port}"
             )
-
-        self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
+        
         logger.info(
             f"Connection set up for {self._grpc_hostname}:{self._grpc_port}; will attempt TCP connection on first request."
         )
+        return inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
 
     def connect(self):
         # Start the background thread
@@ -325,11 +327,10 @@ class InbsCloudClient(CloudClient):
         while not self._stop_event.is_set():
             logger.debug("InbsCloudClient _run loop")
             try:
-                self._do_socket_connect()
                 request_queue: queue.Queue[
                     inbs_sb_pb2.HandleINBMCommandRequest | None
                 ] = queue.Queue()
-                stream = self.stub.HandleINBMCommand(
+                stream = self._stub.HandleINBMCommand(
                     self._handle_inbm_command_request(request_queue),
                     metadata=self._metadata,
                 )
