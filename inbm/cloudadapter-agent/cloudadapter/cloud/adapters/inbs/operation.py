@@ -133,7 +133,7 @@ def convert_rpc_activate_operation_to_xml_manifest(operation: RpcActivateOperati
         ET.SubElement(rpc, 'fetch').text = operation.url
 
     if operation.profile_name:
-        ET.SubElement(rpc, 'ProfileName').text = operation.profile_name
+        ET.SubElement(rpc, 'profileName').text = operation.profile_name
 
     # Generate the XML string with declaration
     xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
