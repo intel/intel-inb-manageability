@@ -16,7 +16,7 @@ from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
 from cloudadapter.constants import METHOD, DEAD
-from cloudadapter.exceptions import AuthenticationError
+from cloudadapter.exceptions import AuthenticationError, PublishError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 import logging
@@ -71,7 +71,7 @@ class InbsCloudClient(CloudClient):
                 )
         self._stop_event = threading.Event()
 
-        self._stub = self._make_grpc_channel()  # assumption: this doesn't actually connect until first gRPC command
+        self._grpc_channel: grpc.Channel | None = None # this will get set after connect is called
 
     def get_client_id(self) -> Optional[str]:
         """A readonly property
@@ -120,6 +120,9 @@ class InbsCloudClient(CloudClient):
         @param message: node update message to publish
         @exception PublishError: If publish fails
         """
+        if self._grpc_channel is None:
+            raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_update")            
+    
         # Turn the message into a dict
         logger.debug(f"Received node update: key={key}, value={value}")
         try:
@@ -153,7 +156,7 @@ class InbsCloudClient(CloudClient):
         logger.debug(f"Sending node update to INBS: request={request}")
             
         try:
-            response = self._stub.SendNodeUpdate(request, metadata=self._metadata)
+            response = self._grpc_channel.SendNodeUpdate(request, metadata=self._metadata)
             logger.info(f"Received response from gRPC server: {response}")
         except grpc.RpcError as e:
             logger.error(f"Failed to send node update via gRPC: {e}")
@@ -324,12 +327,19 @@ class InbsCloudClient(CloudClient):
         return inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
 
     def connect(self):
+        # set up the gRPC channel
+        self._grpc_channel = self._make_grpc_channel()
+
         # Start the background thread
         self.background_thread = threading.Thread(target=self._run)
         self.background_thread.start()
 
     def _run(self):  # pragma: no cover  # multithreaded operation not unit testable
         """INBS cloud loop. Intended to be used inside a background thread."""
+
+        if self._grpc_channel is None:
+            raise RuntimeError("gRPC channel not set up before calling InbsCloudClient._run")            
+
         backoff = 0.1  # Initial fixed backoff delay in seconds
         max_backoff = 4.0  # Maximum backoff delay in seconds
 
@@ -339,7 +349,7 @@ class InbsCloudClient(CloudClient):
                 request_queue: queue.Queue[
                     inbs_sb_pb2.HandleINBMCommandRequest | None
                 ] = queue.Queue()
-                stream = self._stub.HandleINBMCommand(
+                stream = self._grpc_channel.HandleINBMCommand(
                     self._handle_inbm_command_request(request_queue),
                     metadata=self._metadata,
                 )
