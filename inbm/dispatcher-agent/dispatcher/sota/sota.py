@@ -34,7 +34,6 @@ from ..packagemanager.local_repo import DirectoryRepo, IRepo
 from ..install_check_service import InstallCheckService
 from ..update_logger import UpdateLogger
 from ..dispatcher_broker import DispatcherBroker
-from .update_tool_util import update_tool_version_command
 
 logger = logging.getLogger(__name__)
 

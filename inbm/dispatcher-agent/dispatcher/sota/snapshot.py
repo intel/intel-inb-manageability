@@ -16,7 +16,7 @@ from inbm_common_lib.utility import get_os_version
 from inbm_common_lib.constants import UNKNOWN
 from .constants import MENDER_FILE_PATH
 from .mender_util import read_current_mender_version
-from .update_tool_util import update_tool_commit_command
+from .update_tool_util import update_tool_commit_command, update_tool_rollback_command
 from .rebooter import Rebooter
 from ..common import dispatcher_state
 from .sota_error import SotaError
@@ -514,6 +514,7 @@ class TiberOSSnapshot(Snapshot):
         """
         logger.debug("")
         dispatcher_state.clear_dispatcher_state()
+        update_tool_rollback_command()
         time.sleep(time_to_wait_before_reboot)
         rebooter.reboot()
 
@@ -526,6 +527,7 @@ class TiberOSSnapshot(Snapshot):
         """
         logger.debug("time_to_wait_before_reboot = " + str(time_to_wait_before_reboot))
         dispatcher_state.clear_dispatcher_state()
+        update_tool_rollback_command()
         time.sleep(time_to_wait_before_reboot)
         rebooter.reboot()
 
