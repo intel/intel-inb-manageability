@@ -214,6 +214,7 @@ class TiberOSDownloader(Downloader):
         # Multiple files may have been downloaded from OCI.
         # The method below will iterate over all files in the repo, calculate the SHA256sum for each file,
         # and compare it with the provided signature.
+        # FIXME: https://jira.devtools.intel.com/browse/NEXMANAGE-734
         try:
             if self._signature:
                 logger.debug("Perform signature check on the downloaded file.")
