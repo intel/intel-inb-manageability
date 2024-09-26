@@ -128,18 +128,27 @@ class InbsCloudClient(CloudClient):
             logger.error(f"Cannot convert formatted message to dict: {value}. Error: {e}")
             return
         
+        status_code=message_dict.get("status", "")
+        job_state =common_pb2.Job.JobState.PASSED \
+            if status_code == 200 \
+            else common_pb2.Job.JobState.FAILED
+               
+        result_messages = json.dumps(message_dict.get("message", ""))
+        
         timestamp = Timestamp()
         timestamp.GetCurrentTime()
-
-        request = inbs_sb_pb2.SendNodeUpdateRequest(
-            request_id=message_dict.get("request_id", ""),
-            job_update=common_pb2.Job(
+        job=common_pb2.Job(
                 job_id=message_dict.get("job_id", ""),
                 node_id=self._client_id,
-                status_code=message_dict.get("status", ""),
-                result_msgs=message_dict.get("message", ""),
+                status_code=status_code,
+                result_msgs=result_messages,
                 actual_end_time=timestamp,
+                job_state=job_state
             )
+
+        request = inbs_sb_pb2.SendNodeUpdateRequest(
+            request_id="notused",
+            job_update=job,            
         )
         logger.debug(f"Sending node update to INBS: request={request}")
             

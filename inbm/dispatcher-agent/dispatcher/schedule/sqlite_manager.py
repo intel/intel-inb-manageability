@@ -346,8 +346,7 @@ class SqliteManager:
         else:
             raise DispatcherException("Unable to update status in database as the schedule type is not recognized.")
                   
-        logger.debug(f"Update status in database for schedule: {schedule}")
-        logger.debug(f"Update status in database to {status.upper()} with schedule_id={schedule.schedule_id}, task_id={schedule.task_id}")
+        logger.debug(f"Update status in database to {status.upper()} for schedule={schedule}")
         try:
             cursor = self._conn.cursor()
             logger.debug(f"Execute -> {sql}")

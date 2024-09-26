@@ -145,7 +145,6 @@ class Client:
                 sleep(SLEEP_DELAY)
 
         self._cloud_publisher.publish_event("Connected")
-        self._cloud_publisher.publish_update("Connected")
 
         # Log agent states
         self._broker.bind_callback(
