@@ -27,6 +27,7 @@ RUN source /venv-py3/bin/activate && \
         types-requests==2.31.0.1 \
         types-protobuf==5.26.0.20240422 \
     	pytest==7.4.3 \
+        pytest-timeout==2.3.1 \
     	pytest-cov==4.1.0 \
         pytest-mock==3.12.0 \
         pytest-xdist==3.3.1 \
@@ -63,8 +64,8 @@ RUN source /venv-py3/bin/activate && \
     set -o pipefail && \
     mkdir -p /output/coverage && \
     cd tests/unit && \
-    pytest -n 1 --cov=inbm_common_lib --cov-report=term-missing --cov-fail-under=82 inbm_common_lib 2>&1 | tee /output/coverage/inbm-common-lib-coverage.txt && \
-    pytest -n 1 --cov=inbm_lib --cov-report=term-missing --cov-fail-under=82 inbm_lib 2>&1 | tee /output/coverage/inbm-lib-coverage.txt && \
+    pytest --timeout=10 -n 1 --cov=inbm_common_lib --cov-report=term-missing --cov-fail-under=82 inbm_common_lib 2>&1 | tee /output/coverage/inbm-common-lib-coverage.txt && \
+    pytest --timeout=10 -n 1 --cov=inbm_lib --cov-report=term-missing --cov-fail-under=82 inbm_lib 2>&1 | tee /output/coverage/inbm-lib-coverage.txt && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
     touch /passed.txt
 
@@ -92,7 +93,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest -n 1 --cov=inbc --cov-report=term-missing --cov-fail-under=84 tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt
+    pytest --timeout=10 -n 1 --cov=inbc --cov-report=term-missing --cov-fail-under=84 tests/unit 2>&1 | tee /output/coverage/inbc-coverage.txt
 
 # ---diagnostic agent---
 
@@ -118,7 +119,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest -n 1 --cov=diagnostic --cov-report=term-missing --cov-fail-under=80 tests/unit 2>&1 | tee /output/coverage/diagnostic-coverage.txt
+    pytest --timeout=10 -n 1 --cov=diagnostic --cov-report=term-missing --cov-fail-under=80 tests/unit 2>&1 | tee /output/coverage/diagnostic-coverage.txt
 
 # ---dispatcher agent---
 
@@ -148,7 +149,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest -n 3 --cov=dispatcher --cov-report=term-missing --cov-fail-under=81 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
+    pytest --timeout=10 -n 3 --cov=dispatcher --cov-report=term-missing --cov-fail-under=81 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
 
 # ---cloudadapter agent---
 
@@ -174,7 +175,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest -n 10 --cov=cloudadapter --cov-report=term-missing --cov-fail-under=90 tests/unit 2>&1 | tee /output/coverage/cloudadapter-coverage.txt
+    pytest --timeout=10 -n 10 --cov=cloudadapter --cov-report=term-missing --cov-fail-under=90 tests/unit 2>&1 | tee /output/coverage/cloudadapter-coverage.txt
 
 # ---telemetry agent---
 
@@ -200,7 +201,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest -n 1 --cov=telemetry --cov-report=term-missing --cov-fail-under=83 telemetry/tests/unit 2>&1 | tee /output/coverage/telemetry-coverage.txt
+    pytest --timeout=10 -n 1 --cov=telemetry --cov-report=term-missing --cov-fail-under=83 telemetry/tests/unit 2>&1 | tee /output/coverage/telemetry-coverage.txt
 
 # ---configuration agent---
 
@@ -226,7 +227,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest -n 1 --cov=configuration --cov-report=term-missing --cov-fail-under=88 configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt
+    pytest --timeout=10 -n 1 --cov=configuration --cov-report=term-missing --cov-fail-under=88 configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt
 
 # output container
 FROM base AS output
