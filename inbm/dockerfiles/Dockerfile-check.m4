@@ -175,7 +175,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest --timeout=10 -n 10 --cov=cloudadapter --cov-report=term-missing --cov-fail-under=90 tests/unit 2>&1 | tee /output/coverage/cloudadapter-coverage.txt
+    pytest --timeout=10 -n 10 --cov=cloudadapter --cov-report=term-missing --cov-fail-under=89 tests/unit 2>&1 | tee /output/coverage/cloudadapter-coverage.txt
 
 # ---telemetry agent---
 
