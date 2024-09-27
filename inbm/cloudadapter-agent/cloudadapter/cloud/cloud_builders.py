@@ -158,8 +158,7 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     if update:
         update = build_messenger_with_config(update)
     else:
-        raise ClientBuildError(
-            "Missing 'update' MQTT config information while setting up cloud connection.")
+        logger.debug("Missing 'update' MQTT config information while setting up cloud connection. TODO: figure out why this doesn't happen for INBS, but does happen for other clouds.")
     if event:
         event = build_messenger_with_config(event)
     else:

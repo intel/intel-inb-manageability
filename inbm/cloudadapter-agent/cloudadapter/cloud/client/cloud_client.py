@@ -8,12 +8,14 @@ from .messengers.one_way_messenger import OneWayMessenger
 from .handlers.receive_respond_handler import ReceiveRespondHandler
 from typing import Callable, Optional
 from datetime import datetime
+import logging
 
+logger = logging.getLogger(__name__)
 
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 update: OneWayMessenger, attribute: OneWayMessenger, 
+                 update: OneWayMessenger | None, attribute: OneWayMessenger, 
                  handler: ReceiveRespondHandler) -> None:
         """Constructor for CloudClient
 
@@ -27,7 +29,7 @@ class CloudClient:
         self._connection = connection
         self._telemetry = telemetry
         self._event = event
-        self._update = update
+        self._update: OneWayMessenger | None = update
         self._attribute = attribute
         self._handler = handler
 
@@ -62,7 +64,11 @@ class CloudClient:
         @param value: update to publish
         @exception PublishError: If publish fails
         """
-        return self._update.publish(key, value)
+        if self._update is None:
+            logger.error("Received update publish request but no update messenger is configured")
+            return None
+        else:
+            return self._update.publish(key, value)
     
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
