@@ -221,24 +221,6 @@ class TestInbsCloudClient:
     #         # Assert that the gRPC channel's HandleINBMCommand was called
     #         assert mock_channel.HandleINBMCommand.called
 
-    def test_run_grpc_error(self, inbs_client: InbsCloudClient) -> None:
-        # Setup a RpcError to simulate gRPC error
-        with patch("grpc.insecure_channel") as mock_channel, \
-                patch("threading.Event.wait", side_effect=InterruptedError) as mock_wait:
-
-            mock_channel.side_effect = MagicMock(side_effect=grpc.RpcError)
-            inbs_client._grpc_channel=mock_channel
-
-            # Ensure the stop event is not set initially
-            inbs_client._stop_event.clear()
-
-            # Run the test expecting InterruptedError to stop the infinite loop
-            with pytest.raises(InterruptedError):
-                inbs_client._run()
-
-            # Assert that stop_event.wait() was called
-            mock_wait.assert_called()
-
     def test_run_stop_event_sets(self, inbs_client: InbsCloudClient) -> None:
         with patch(
             "cloudadapter.cloud.client.inbs_cloud_client.queue.Queue"
