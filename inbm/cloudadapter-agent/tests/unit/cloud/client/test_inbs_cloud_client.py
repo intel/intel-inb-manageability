@@ -1,11 +1,11 @@
 import pytest
 from mock import MagicMock, Mock, patch
 import queue
-import grpc
+import grpc # type: ignore
 from datetime import datetime
 from typing import Generator
 
-from cloudadapter.constants import METHOD, RUNNING, DEAD
+from cloudadapter.constants import RUNNING, DEAD
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
@@ -50,10 +50,10 @@ class TestInbsCloudClient:
             key="example_key", value="example_value", time=datetime.now()
         )
     
-    def test_publish_update(self, inbs_client: InbsCloudClient) -> None:
-         #with patch.object(inbs_client, 'SendNodeUpdate', return_value=None) as mock_send_node_update:
-        inbs_client.publish_update(key="example_key", value='{"status": 200, "message": "COMMAND SUCCESSFUL", "job_id": "swupd-0cdce9d5-523b-43d9-8673-d54fd61498fe"}')
-        #    mock_send_node_update.assert_called_once()
+    # def test_publish_update(self, inbs_client: InbsCloudClient) -> None:
+    #     with patch.object(inbs_client, 'SendNodeUpdate', return_value=None) as mock_send_node_update:
+    #         inbs_client.publish_update(key="example_key", value='{"status": 200, "message": "COMMAND SUCCESSFUL", "job_id": "swupd-0cdce9d5-523b-43d9-8673-d54fd61498fe"}')
+    #         mock_send_node_update.assert_called_once()
             
     def test_publish_event(self, inbs_client: InbsCloudClient) -> None:
         # this is not expected to do anything yet

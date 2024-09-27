@@ -19,13 +19,13 @@ import mock
 class TestMQTTConnection(unittest.TestCase):
 
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.Waiter', autospec=True)
-    @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.mqtt', autospec=True)
+    @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.MQTTConnection._create_mqtt_client', autospec=True)
     def setUp(self, mock_mqtt, MockWaiter) -> None:
         mock_tls_config = mock.create_autospec(TLSConfig).return_value
         mock_proxy_config = mock.create_autospec(ProxyConfig).return_value
         mock_proxy_config.endpoint = ("end.point", 42)
         self.mock_waiter = MockWaiter.return_value
-        self.mock_client = mock_mqtt.Client.return_value
+        self.mock_client = mock_mqtt.return_value
         self.mqtt_connection = MQTTConnection(
             username="username",
             hostname="hostname",
@@ -36,13 +36,13 @@ class TestMQTTConnection(unittest.TestCase):
             proxy_config=mock_proxy_config)
 
     @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.Waiter', autospec=True)
-    @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.mqtt', autospec=True)
+    @mock.patch('cloudadapter.cloud.client.connections.mqtt_connection.MQTTConnection._create_mqtt_client', autospec=True)
     def test_no_proxy_config(self, mock_mqtt, MockWaiter) -> None:
         mock_tls_config = mock.create_autospec(TLSConfig).return_value
         mock_proxy_config = mock.create_autospec(ProxyConfig).return_value
         mock_proxy_config.endpoint = None
         self.mock_waiter = MockWaiter.return_value
-        self.mock_client = mock_mqtt.Client.return_value
+        self.mock_client = mock_mqtt.return_value
         self.mqtt_connection = MQTTConnection(
             username="username",
             hostname="hostname",
