@@ -170,7 +170,7 @@ class TestInbsCloudClient:
         # Cleanup
         with pytest.raises(StopIteration):
             next(generator)
-
+    
     def test_handle_command_when_dispatcher_is_not_up(self, inbs_client: InbsCloudClient) -> None:
         # Setup
         request_queue: queue.Queue[
@@ -196,30 +196,6 @@ class TestInbsCloudClient:
                     request_id="123",
                     error=common_pb2.Error(message="INBM Cloudadapter: Unable to process request. Please try again"),
                 )
-
-    # AI Generated test - same issue - Remove if able to get test below working
-    #
-    # def test_run_grpc_error(self, inbs_client: InbsCloudClient) -> None:
-    #     with patch.object(inbs_client, '_make_grpc_channel') as mock_make_channel, \
-    #         patch.object(inbs_client, '_stop_event', new_callable=threading.Event) as mock_stop_event:
-
-    #         # Mock the gRPC channel to raise RpcError on HandleINBMCommand
-    #         mock_channel = MagicMock()
-    #         mock_channel.HandleINBMCommand.side_effect = grpc.RpcError
-    #         mock_make_channel.return_value = mock_channel
-    #         inbs_client._grpc_channel=mock_channel
-
-    #         # Ensure the stop event is not set initially
-    #         mock_stop_event.clear()
-
-    #         # Run the test expecting RpcError to be handled in the loop
-    #         inbs_client._run()
-
-    #         # Assert that the stop event was checked
-    #         assert mock_stop_event.is_set.called
-
-    #         # Assert that the gRPC channel's HandleINBMCommand was called
-    #         assert mock_channel.HandleINBMCommand.called
 
     def test_run_stop_event_sets(self, inbs_client: InbsCloudClient) -> None:
         with patch(

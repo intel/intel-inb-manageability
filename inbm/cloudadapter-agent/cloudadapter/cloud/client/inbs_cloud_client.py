@@ -21,7 +21,7 @@ from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 import logging
 
-import grpc
+import grpc # type: ignore
 from .cloud_client import CloudClient
 
 logger = logging.getLogger(__name__)

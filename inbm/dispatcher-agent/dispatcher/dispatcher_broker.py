@@ -99,7 +99,10 @@ class DispatcherBroker:
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
         else:
-            # This is a scheduled job            
+            # This is a scheduled job 
+            
+            # TODO: add error handling NEXMANAGE-743
+                       
             try:
                 # Turn the message into a dict
                 message_dict = json.loads(message)
