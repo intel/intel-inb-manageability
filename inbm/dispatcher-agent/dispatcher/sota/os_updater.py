@@ -395,9 +395,13 @@ class WindowsUpdater(OsUpdater):
 
 
 class TiberOSUpdater(OsUpdater):
-    """TiberOSUpdater class, child of OsUpdater"""
-    def __init__(self) -> None:
+    """TiberOSUpdater class, child of OsUpdater
+
+       @param signature: signature used to verify image
+    """
+    def __init__(self, signature: Optional[str] = None) -> None:
         super().__init__()
+        self._signature = signature
 
     def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
                              repo: irepo.IRepo) -> List[str]:
@@ -426,5 +430,5 @@ class TiberOSUpdater(OsUpdater):
 
     def download_only(self) -> list[str]:
         """Return the UT write command"""
-        cmds = [update_tool_write_command()]
+        cmds = [update_tool_write_command(self._signature)]
         return CommandList(cmds).cmd_list

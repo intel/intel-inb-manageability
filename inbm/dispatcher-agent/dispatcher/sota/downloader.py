@@ -5,8 +5,6 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import os
-import hashlib
 from abc import abstractmethod
 import logging
 from datetime import datetime
@@ -171,14 +169,10 @@ class YoctoDownloader(Downloader):
 
 
 class TiberOSDownloader(Downloader):
-    """TiberOSDownloader class, child of Downloader
+    """TiberOSDownloader class, child of Downloader"""
 
-       @param signature: signature used to preform signature check on downloaded image.
-    """
-
-    def __init__(self, signature: Optional[str] = None) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self._signature = signature
 
     def download(self,
                  dispatcher_broker: DispatcherBroker,
@@ -209,30 +203,6 @@ class TiberOSDownloader(Downloader):
                       umask=UMASK_OTA,
                       username=username,
                       password=password)
-
-        # Perform signature check.
-        # Multiple files may have been downloaded from OCI.
-        # The method below will iterate over all files in the repo, calculate the SHA256sum for each file,
-        # and compare it with the provided signature.
-        # FIXME: https://jira.devtools.intel.com/browse/NEXMANAGE-734
-        try:
-            if self._signature:
-                logger.debug("Perform signature check on the downloaded file.")
-                dest_repo = repo.get_repo_path()
-                for filename in os.listdir(dest_repo):
-                    filepath = os.path.join(dest_repo, filename)
-                    if os.path.isfile(filepath):
-                        with open(filepath, 'rb') as file:
-                            file_checksum = hashlib.sha256(file.read()).hexdigest()
-                            if file_checksum == self._signature:
-                                return
-
-                raise SotaError("Signature checks failed. No matching file found.")
-            else:
-                logger.info("No signature provided. Skip signature check.")
-        except OSError as err:
-            raise SotaError(err)
-
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         raise NotImplementedError()

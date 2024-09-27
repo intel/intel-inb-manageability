@@ -302,7 +302,7 @@ class SOTA:
         # the following line will be optimized out in byte code and only used in unit testing
         assert self.factory  # noqa: S101
         if self._repo_type.lower() == REMOTE_SOURCE:
-            downloader: Downloader = self.factory.create_downloader(self._signature)
+            downloader: Downloader = self.factory.create_downloader()
             logger.debug(f"SOTA Download URI: {self._uri}")
             if self._uri is None:
                 downloader.download(

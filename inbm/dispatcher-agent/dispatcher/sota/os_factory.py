@@ -29,16 +29,19 @@ class SotaOsFactory:
     """
 
     def __init__(self,  dispatcher_broker: DispatcherBroker,
-                 sota_repos: Optional[str] = None, package_list: list[str] = []) -> None:
+                 sota_repos: Optional[str] = None, package_list: list[str] = [],
+                 signature: Optional[str] = None) -> None:
         """Initializes OsFactory.
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param package_list: list of packages to install/update (or empty for all--general upgrade)
+        @param signature: signature used to verify image
         """
         self._sota_repos = sota_repos
         self._package_list = package_list
         self._dispatcher_broker = dispatcher_broker
+        self._signature = signature
 
     @staticmethod
     def verify_os_supported() -> str:
@@ -75,10 +78,10 @@ class SotaOsFactory:
         #TODO: Remove this when confirmed that TiberOS is in use
         elif os_type == LinuxDistType.Mariner.name:
             logger.debug("Mariner returned")
-            return TiberOSBasedSotaOs(self._dispatcher_broker)
+            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature)
         elif os_type == LinuxDistType.TiberOS.name:
             logger.debug("TiberOS returned")
-            return TiberOSBasedSotaOs(self._dispatcher_broker)
+            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature)
         raise ValueError('Unsupported OS type: ' + os_type)
 
 
@@ -112,11 +115,8 @@ class ISotaOs(ABC):
         pass
 
     @abstractmethod
-    def create_downloader(self, signature: Optional[str] = None) -> Downloader:
-        """Create a downloader object
-
-        @param signature: signature used to perform signature check
-        """
+    def create_downloader(self) -> Downloader:
+        """Create a downloader object"""
         pass
 
 
@@ -149,11 +149,8 @@ class YoctoX86_64(ISotaOs):
         return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num,
                              proceed_without_rollback, reboot_device)
 
-    def create_downloader(self, signature: Optional[str] = None) -> Downloader:
-        """ Create a downloader object. Signature is ignored.
-
-        @param signature: signature used to perform signature check
-        """
+    def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         logger.debug("")
         return YoctoDownloader()
 
@@ -183,11 +180,8 @@ class YoctoARM(ISotaOs):
         return YoctoSnapshot(trtl, sota_cmd, self._dispatcher_broker,
                              snap_num, proceed_without_rollback, reboot_device)
 
-    def create_downloader(self, signature: Optional[str] = None) -> Downloader:
-        """ Create a downloader object. Signature is ignored.
-
-        @param signature: signature used to perform signature check
-        """
+    def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         logger.debug("")
         return YoctoDownloader()
 
@@ -227,11 +221,8 @@ class DebianBasedSotaOs(ISotaOs):
         return DebianBasedSnapshot(trtl, sota_cmd, self._dispatcher_broker,
                                    snap_num, proceed_without_rollback, reboot_device)
 
-    def create_downloader(self, signature: Optional[str] = None) -> Downloader:
-        """ Create a downloader object. Signature is ignored.
-
-        @param signature: signature used to perform signature check
-        """
+    def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         return DebianBasedDownloader()
 
 
@@ -262,23 +253,22 @@ class Windows(ISotaOs):
         return WindowsSnapshot(trtl, sota_cmd, snap_num,
                                proceed_without_rollback, reboot_device)
 
-    def create_downloader(self, signature: Optional[str] = None) -> Downloader:
-        """ Create a downloader object. Signature is ignored.
-
-        @param signature: signature used to perform signature check
-        """
+    def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         return WindowsDownloader()
 
 
 class TiberOSBasedSotaOs(ISotaOs):
     """TiberOSBasedSotaOs class, child of ISotaOs"""
 
-    def __init__(self,  dispatcher_broker: DispatcherBroker) -> None:
+    def __init__(self,  dispatcher_broker: DispatcherBroker, signature: Optional[str] = None) -> None:
         """Constructor.
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
+        @param signature: signature used to verify image
         """
         self._dispatcher_broker = dispatcher_broker
+        self._signature = signature
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
@@ -290,7 +280,7 @@ class TiberOSBasedSotaOs(ISotaOs):
 
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
-        return TiberOSUpdater()
+        return TiberOSUpdater(signature=self._signature)
 
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
                            proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
@@ -299,10 +289,7 @@ class TiberOSBasedSotaOs(ISotaOs):
         return TiberOSSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num,
                              proceed_without_rollback, reboot_device)
 
-    def create_downloader(self, signature: Optional[str] = None) -> Downloader:
-        """ Create a downloader object.
-
-        @param signature: signature used to perform signature check
-        """
+    def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         logger.debug("")
-        return TiberOSDownloader(signature=signature)
+        return TiberOSDownloader()
