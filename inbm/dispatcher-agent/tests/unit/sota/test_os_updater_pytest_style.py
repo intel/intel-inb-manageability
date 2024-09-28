@@ -5,7 +5,6 @@ from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
 
 # Test when '-install' argument is present in the help output
 
-
 def test_mender_install_argument_present(mocker) -> None:
     mocked_run = mocker.patch('dispatcher.sota.os_updater.PseudoShellRunner.run')
     mocked_run.return_value = ("Usage of the command with -install option", "", 0)

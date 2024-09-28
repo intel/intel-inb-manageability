@@ -108,18 +108,19 @@ class ScheduleManifestParser:
         in the SingleSchedule object list.
 
         @param schedule (untangle.Element): pointer to the schedule elements
-        @param manifests (list[str]): list of valid Inband manifests to be scheduled
-        @param request_id (str): request ID from manifest
+        @param schedule_details (Schedule): details of the schedule
         """
         single_schedule = schedule.single_schedule
         for ss in single_schedule:
             if not hasattr(ss, 'start_time'):
+                # Immediate request
                 self.immedate_requests.append(
                     SingleSchedule(
                         request_id=schedule_details.request_id,
                         job_id=ss.job_id.cdata,
                         manifests=schedule_details.manifests))
             else:
+                # Single Scheduled request
                 end = ss.end_time.cdata if hasattr(ss, 'end_time') else None
                 self.single_scheduled_requests.append(
                     SingleSchedule(
@@ -134,8 +135,7 @@ class ScheduleManifestParser:
         in the RepeatedSchedule object list.
 
         @param schedule (untangle.Element): pointer to the schedule elements
-        @param manifests (list[str]): list of valid Inband manifests to be scheduled
-        @param request_id (str): request ID from manifest
+        @param schedule_details (Schedule): details of the schedule
         """
         repeated_schedules = schedule.repeated_schedule
         for repeated_schedule in repeated_schedules:

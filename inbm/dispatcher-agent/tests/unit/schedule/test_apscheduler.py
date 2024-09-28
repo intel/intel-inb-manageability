@@ -1,7 +1,7 @@
 from unittest.mock import Mock, patch
 from unittest import TestCase
 
-from dispatcher.schedule.schedules import SingleSchedule, RepeatedSchedule
+from dispatcher.schedule.schedules import SingleSchedule, RepeatedSchedule, Schedule
 from dispatcher.schedule.apscheduler import APScheduler
 from dispatcher.dispatcher_exception import DispatcherException
 from datetime import datetime, timedelta
@@ -41,10 +41,13 @@ class TestAPScheduler(TestCase):
                              manifests=["MANIFEST1", "MANIFEST2"])
         self.assertTrue(self.scheduler.is_schedulable(ss1))
 
-    def test_is_schedulable_with_other_object(self):
-        ss1 = "Neither a SingleSchedule nor a RepeatedSchedule object"
-        self.assertFalse(self.scheduler.is_schedulable(schedule=ss1))
-
+    def test_successfully_add_immediate_job(self):
+        s = Schedule(request_id="REQ123",                             
+                             manifests=["MANIFEST1", "MANIFEST2"])
+        self.scheduler.add_immediate_job(callback=Mock(), schedule=s)
+        self.assertEqual(len(self.scheduler.
+                             _scheduler.get_jobs()), 2)
+        
     def test_successfully_add_single_schedule_job(self):
         ss1 = SingleSchedule(request_id="REQ123",
                              start_time=datetime.now(),

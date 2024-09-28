@@ -37,14 +37,20 @@ erDiagram
         TEXT status "NULL or scheduled"
     }
 
+    IMMEDIATE_SCHEDULE {
+        INTEGER id PK "AUTOINCREMENT"
+        TEXT request_id 
+    }
+
     SINGLE_SCHEDULE {
         INTEGER id PK "AUTOINCREMENT"
-        TEXT request_id "NOT NULL - Format -> 2024-01-01T00:00:00"
+        TEXT request_id 
         TEXT start_time "NOT NULL - Format -> 2024-01-01T00:00:00"
-        TEXT end_time
+        TEXT end_time "NOT NULL - Format -> 2024-01-01T00:00:00"
     }
     JOB ||--o{ SINGLE_SCHEDULE_JOB: performs
     JOB ||--o{ REPEATED_SCHEDULE_JOB : performs
+    JOB ||--o{ IMMEDIATE_SCHEDULE_JOB :performs
 
     JOB {
         INTEGER task_id PK "AUTOINCREMENT"
@@ -52,6 +58,14 @@ erDiagram
         TEXT manifest "NOT NULL"
     }  
     
+    IMMEDIATE_SCHEDULE ||--|{ IMMEDIATE_SCHEDULE_JOB : schedules
+    IMMEDIATE_SCHEDULE_JOB {
+        INTEGER priority "Order the job manifests should run - Starting with 0"
+        INTEGER schedule_id PK,FK "REFERENCES IMMEDIATE_SCHEDULE(schedule_id)"
+        INTEGER task_id PK,FK "REFERENCES job(task_id)"
+        TEXT status "NULL or scheduled"
+    }
+
     REPEATED_SCHEDULE ||--|{ REPEATED_SCHEDULE_JOB : schedules
     REPEATED_SCHEDULE_JOB {
         INTEGER priority "Order the job manifests should run"
@@ -85,6 +99,14 @@ erDiagram
 | 4 | fwupd-718814f3-b12a-432e-ac38-093e8dcb4bd1 | valid Inband Manageability XML manifest - FOTA |
 | 5 | setpwr-d8be8ae4-7512-43c0-9bdd-9a066de17322 | valid Inband Manageability XML manifest - Reboot system |
 
+### IMMEDIATE_SCHEDULE Table
+
+| id | request_id |
+| :---- | :---- |
+| 1  | 6bf587ac-1d70-4e21-9a15-097f6292b9c4 |
+| 2  | 6bf587ac-1d70-4e21-9a15-097f6292b9c4 |
+| 3  | c9b74125-f3bb-440a-ad80-8d02090bd337 |
+
 ### SINGLE_SCHEDULE Table
 
 | id | request_id | start_time | end_time |
@@ -103,6 +125,16 @@ NOTE: These values may not make sense in the real world.  Just for demonstration
 | 2 | 6bf587ac-1d70-4e21-9a15-097f6292b9c4 | P7D | 0 | */6 | * | * | * |
 | 3 | c9b74125-f3bb-440a-ad80-8d02090bd337 | P2D | 0 | */8 | * | * | * |
 | 4 | c9b74125-f3bb-440a-ad80-8d02090bd337 | P14D | 0 | * | * | * | * |
+
+### IMMEDIATE_SCHEDULE_JOB Table
+
+Example: To do a download, install, and reboot of SOTA at the time in schedule 1
+
+| priority | schedule_id | task_id | status |
+| :---- | :---- | :---- | :----- |
+| 0   | 1 | 1 | scheduled |
+| 1   | 1 | 2 | scheduled |
+| 2   | 1 | 3 |   |
 
 ### SINGLE_SCHEDULE_JOB Table
 

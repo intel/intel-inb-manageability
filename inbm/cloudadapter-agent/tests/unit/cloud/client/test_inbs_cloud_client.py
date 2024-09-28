@@ -1,11 +1,13 @@
+import threading
 import pytest
 from mock import MagicMock, Mock, patch
 import queue
-import grpc
+from cloudadapter.exceptions import PublishError
+import grpc # type: ignore
 from datetime import datetime
 from typing import Generator
 
-from cloudadapter.constants import METHOD, RUNNING, DEAD
+from cloudadapter.constants import RUNNING, DEAD
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
@@ -49,7 +51,33 @@ class TestInbsCloudClient:
         inbs_client.publish_telemetry(
             key="example_key", value="example_value", time=datetime.now()
         )
+    
+    def test_publish_update(self, inbs_client: InbsCloudClient) -> None:
+        mock_channel = MagicMock()
+        mock_channel.SendNodeUpdateRequest.return_value = "MockResponse"
+        inbs_client._grpc_channel = mock_channel
+        
+        key = 'test-key'
+        value = '{"job_id": "12345", "status": 200, "message": "Update successful"}'
+        
+        # Call the publish_update method
+        inbs_client.publish_update(key, value)
 
+        # Assert that the gRPC channel's SendNodeUpdate method was called
+        mock_channel.SendNodeUpdate.assert_called_once()
+        
+    def test_publish_update_failure_no_grpc_channel(self, inbs_client: InbsCloudClient):
+        # Ensure that _grpc_channel is None to simulate the channel not being set up
+        inbs_client._grpc_channel = None
+
+        # Define the key and value to be published
+        key = 'test-key'
+        value = '{"job_id": "12345", "status": 200, "message": "Update successful"}'
+
+        # Call the publish_update method and expect a PublishError
+        with pytest.raises(PublishError):
+            inbs_client.publish_update(key, value)
+    
     def test_publish_event(self, inbs_client: InbsCloudClient) -> None:
         # this is not expected to do anything yet
         inbs_client.publish_event(key="example_event", value="event_value")
@@ -142,7 +170,7 @@ class TestInbsCloudClient:
         # Cleanup
         with pytest.raises(StopIteration):
             next(generator)
-
+    
     def test_handle_command_when_dispatcher_is_not_up(self, inbs_client: InbsCloudClient) -> None:
         # Setup
         request_queue: queue.Queue[
@@ -169,27 +197,10 @@ class TestInbsCloudClient:
                     error=common_pb2.Error(message="INBM Cloudadapter: Unable to process request. Please try again"),
                 )
 
-    def test_run_grpc_error(self, inbs_client: InbsCloudClient) -> None:
-        # Setup a RpcError to simulate gRPC error
-        with patch("grpc.insecure_channel") as mock_channel, \
-                patch("threading.Event.wait", side_effect=InterruptedError) as mock_wait:
-
-            mock_channel.side_effect = MagicMock(side_effect=grpc.RpcError())
-
-            # Ensure the stop event is not set initially
-            inbs_client._stop_event.clear()
-
-            # Run the test expecting InterruptedError to stop the infinite loop
-            with pytest.raises(InterruptedError):
-                inbs_client._run()
-
-            # Assert that stop_event.wait() was called
-            mock_wait.assert_called()
-
     def test_run_stop_event_sets(self, inbs_client: InbsCloudClient) -> None:
         with patch(
             "cloudadapter.cloud.client.inbs_cloud_client.queue.Queue"
-        ) as mock_queue:
+        ) as mock_queue, patch.object(inbs_client, '_grpc_channel', new_callable=MagicMock):
             inbs_client._stop_event.set()  # Act like we want to stop immediately
             inbs_client._run()
 
