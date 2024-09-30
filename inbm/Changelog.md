@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
  - Updated proto files to add new RPC calls to allow edge node to update
    its status with INBS.
+ - (NEXMANAGE- 610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
+
 
 ### Fixed
  - (NEXMANAGE-746) Add extra sleeptime in INBM tpm script to resolve ARL platform issue
