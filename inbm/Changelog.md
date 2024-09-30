@@ -17,6 +17,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - Updated 'docker' go library version in trtl to 25.0.6, fixing CVE-2024-41110
  - Updated 'cryptography' Python library in dispatcher to 43.0.1, fixing GHSA-h4gh-qq45-vh27.
 
+### Changed
+ - Removed all references to `future` library as we do not use Python 2
+
 ## 4.2.5 - 2024-09-04
 ### Fixed
  - Added #!/usr/bin/python3 lines to agents to work in source install mode.
