@@ -3,7 +3,7 @@ from unittest import TestCase
 import mock
 from ..common.mock_resources import *
 from dispatcher.fota.bios_factory import *
-from dispatcher.fota.bios_factory import extract_ext, LinuxToolFirmware, LinuxFileFirmware, BiosFactory
+from dispatcher.fota.bios_factory import extract_ext, WindowsBiosNUC, LinuxToolFirmware, LinuxFileFirmware, BiosFactory
 from unittest.mock import patch
 from dispatcher.packagemanager.memory_repo import MemoryRepo
 
@@ -30,16 +30,31 @@ class TestBiosFactory(TestCase):
                            'firmware_file_type': 'xx', 'guid': 'true'}
         self._nuc_dict = {'bios_vendor': 'Intel Corp.', 'operating_system': 'linux',
                           'firmware_tool': 'UpdateBIOS.sh', 'firmware_file_type': 'bio'}
+        self._nuc_windows_dict = {'bios_vendor': 'Intel Corp.', 'operating_system': 'windows',
+                          'firmware_tool': 'UpdateBIOS.sh', 'firmware_file_type': 'bio'}
 
     def test_get_factory_linux_tool_type(self) -> None:
         assert type(BiosFactory.get_factory("test", self._arm_dict,
-                                            self.mock_dispatcher_broker, MemoryRepo("test"))) \
+                                            self.mock_dispatcher_broker, 
+                                            MemoryRepo("test"))) \
             is LinuxToolFirmware
 
     def test_get_factory_linux_file_type(self) -> None:
         assert type(
             BiosFactory.get_factory("test", {'firmware_dest_path': 'abc'},
                                     self.mock_dispatcher_broker, MemoryRepo("test"))) is LinuxFileFirmware
+
+    @patch('platform.system', return_value='Windows')
+    def test_get_factory_windows_bios_nuc(self, mock_os) -> None:
+        assert type(
+            BiosFactory.get_factory('NUC7i5DNKPC', self._nuc_windows_dict,
+                                    self.mock_dispatcher_broker, 
+                                    MemoryRepo("test"))) is WindowsBiosNUC
+    
+    @patch('platform.system', return_value='Windows')
+    def test_raise_unsupported_windows_system(self, mock_os) -> None:
+        self.assertRaises(FotaError, BiosFactory.get_factory, 'NUC', self._nuc_dict,
+                          self.mock_dispatcher_broker, MemoryRepo("test")) 
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run')
     @patch('dispatcher.packagemanager.memory_repo.MemoryRepo.delete')

@@ -16,7 +16,6 @@ from .validators import is_valid_config_params
 from .dispatcher_exception import DispatcherException
 from inbm_lib.xmlhandler import XmlException
 from inbm_lib.xmlhandler import XmlHandler
-from inbm_lib.security_masker import mask_security_info
 from inbm_common_lib.constants import DEFAULT_HASH_ALGORITHM, LOCAL_SOURCE
 
 logger = logging.getLogger(__name__)

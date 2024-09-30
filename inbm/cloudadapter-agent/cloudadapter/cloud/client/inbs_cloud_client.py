@@ -4,23 +4,24 @@ INBS is different because it is using gRPC instead of MQTT.
 """
 
 from collections.abc import Generator
+import json
 import queue
 import random
 import threading
-import time
-from typing import Callable, Optional, Any
+from google.protobuf.timestamp_pb2 import Timestamp
+from typing import Callable, Optional
 from datetime import datetime
 
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
 from cloudadapter.constants import METHOD, DEAD
-from cloudadapter.exceptions import AuthenticationError
+from cloudadapter.exceptions import AuthenticationError, PublishError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 import logging
 
-import grpc
+import grpc # type: ignore
 from .cloud_client import CloudClient
 
 logger = logging.getLogger(__name__)
@@ -68,8 +69,9 @@ class InbsCloudClient(CloudClient):
                 raise AuthenticationError(
                     "TLS certificate path is required when TLS is enabled."
                 )
-
         self._stop_event = threading.Event()
+
+        self._grpc_channel: grpc.Channel | None = None # this will get set after connect is called
 
     def get_client_id(self) -> Optional[str]:
         """A readonly property
@@ -112,6 +114,53 @@ class InbsCloudClient(CloudClient):
 
         pass  # INBS is not yet ready to receive telemetry
 
+    def publish_update(self, key: str, value: str) -> None:
+        """Publishes an update to the cloud
+
+        @param message: node update message to publish
+        @exception PublishError: If publish fails
+        """
+        if self._grpc_channel is None:
+            raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_update")            
+    
+        # Turn the message into a dict
+        logger.debug(f"Received node update: key={key}, value={value}")
+        try:
+            message_dict = json.loads(value)
+        except json.JSONDecodeError as e:
+            logger.error(f"Cannot convert formatted message to dict: {value}. Error: {e}")
+            return
+        
+        status_code=message_dict.get("status", "")
+        job_state =common_pb2.Job.JobState.PASSED \
+            if status_code == 200 \
+            else common_pb2.Job.JobState.FAILED
+               
+        result_messages = json.dumps(message_dict.get("message", ""))
+        
+        timestamp = Timestamp()
+        timestamp.GetCurrentTime()
+        job=common_pb2.Job(
+                job_id=message_dict.get("job_id", ""),
+                node_id=self._client_id,
+                status_code=status_code,
+                result_msgs=result_messages,
+                actual_end_time=timestamp,
+                job_state=job_state
+            )
+
+        request = inbs_sb_pb2.SendNodeUpdateRequest(
+            request_id="notused",
+            job_update=job,            
+        )
+        logger.debug(f"Sending node update to INBS: request={request}")
+            
+        try:
+            response = self._grpc_channel.SendNodeUpdate(request, metadata=self._metadata)
+            logger.info(f"Received response from gRPC server: {response}")
+        except grpc.RpcError as e:
+            logger.error(f"Failed to send node update via gRPC: {e}")
+    
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
 
@@ -144,7 +193,7 @@ class InbsCloudClient(CloudClient):
 
         # for now ignore all callbacks; only Ping is supported
         self._callbacks[name] = callback
-
+    
     def _handle_inbm_command_request(
         self, request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
     ) -> Generator[inbs_sb_pb2.HandleINBMCommandResponse, None, None]:
@@ -255,8 +304,9 @@ class InbsCloudClient(CloudClient):
                 break
         logger.debug("Exiting _handle_inbm_command_request")
 
-    def _do_socket_connect(self):
-        """Handle the socket/TLS/HTTP connection to the gRPC server."""
+    def _make_grpc_channel(self) -> grpc.Channel:
+        """Handle the socket/TLS/HTTP connection to the gRPC server.
+        Assumption: should not connect until first gRPC command."""
         if self._tls_enabled:
             # Create a secure channel with SSL credentials
             logger.debug("Setting up connection to INBS cloud with TLS enabled")
@@ -270,30 +320,36 @@ class InbsCloudClient(CloudClient):
             self.channel = grpc.insecure_channel(
                 f"{self._grpc_hostname}:{self._grpc_port}"
             )
-
-        self.stub = inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
+        
         logger.info(
             f"Connection set up for {self._grpc_hostname}:{self._grpc_port}; will attempt TCP connection on first request."
         )
+        return inbs_sb_pb2_grpc.INBSSBServiceStub(self.channel)
 
     def connect(self):
+        # set up the gRPC channel
+        self._grpc_channel = self._make_grpc_channel()
+
         # Start the background thread
         self.background_thread = threading.Thread(target=self._run)
         self.background_thread.start()
 
     def _run(self):  # pragma: no cover  # multithreaded operation not unit testable
         """INBS cloud loop. Intended to be used inside a background thread."""
+
+        if self._grpc_channel is None:
+            raise RuntimeError("gRPC channel not set up before calling InbsCloudClient._run")            
+
         backoff = 0.1  # Initial fixed backoff delay in seconds
         max_backoff = 4.0  # Maximum backoff delay in seconds
 
         while not self._stop_event.is_set():
             logger.debug("InbsCloudClient _run loop")
             try:
-                self._do_socket_connect()
                 request_queue: queue.Queue[
                     inbs_sb_pb2.HandleINBMCommandRequest | None
                 ] = queue.Queue()
-                stream = self.stub.HandleINBMCommand(
+                stream = self._grpc_channel.HandleINBMCommand(
                     self._handle_inbm_command_request(request_queue),
                     metadata=self._metadata,
                 )

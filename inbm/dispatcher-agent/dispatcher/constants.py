@@ -33,6 +33,8 @@ CSL_CA = 'certFile'
 # Scheduler Sqlite3 DB FILE
 SCHEDULER_DB_FILE = str(INTEL_MANAGEABILITY_VAR_PATH_PREFIX / 'scheduler.db')
 SCHEDULED = "scheduled"
+STARTED = "started"
+COMPLETED = "completed"
 
 # Subscription channels
 TC_REQUEST_CHANNEL = 'manageability/request/#'

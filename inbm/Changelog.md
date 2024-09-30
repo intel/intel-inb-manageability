@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEXMANAGE- 610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
 
 
+### Fixed
+ - (NEXMANAGE-746) Add extra sleeptime in INBM tpm script to resolve ARL platform issue
+
 ### Security
  - Updated 'docker' go library version in trtl to 25.0.6, fixing CVE-2024-41110
  - Updated 'cryptography' Python library in dispatcher to 43.0.1, fixing GHSA-h4gh-qq45-vh27.

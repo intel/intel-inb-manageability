@@ -5,7 +5,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 # Device local cache
-from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, INTEL_MANAGEABILITY_RAW_ETC, \
+from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_RAW_ETC, \
     INTEL_MANAGEABILITY_SHARE_PATH_PREFIX
 import datetime
 
