@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - Updated 'docker' go library version in trtl to 25.0.6, fixing CVE-2024-41110
  - Updated 'cryptography' Python library in dispatcher to 43.0.1, fixing GHSA-h4gh-qq45-vh27.
 
+### Changed
+ - (NEXMANAGE-744) Remove `psutil` in favor if `shutil.disk_usage` to save space
+ - (NEXMANAGE-744) Don't pull in `dmidecode` in `inbm-lib` -- pull in only in `telemetry`
+
 ## 4.2.5 - 2024-09-04
 ### Fixed
  - Added #!/usr/bin/python3 lines to agents to work in source install mode.
