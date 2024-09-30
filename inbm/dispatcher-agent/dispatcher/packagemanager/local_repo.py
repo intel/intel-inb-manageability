@@ -11,7 +11,6 @@ import os
 import shutil
 from typing import List
 
-import psutil
 from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_common_lib.utility import remove_file
 from requests import Response
@@ -123,7 +122,8 @@ class DirectoryRepo(IRepo):  # pragma: no cover
 
         @return: free space on filesystem backing the repo
         """
-        return psutil.disk_usage(self.__directory)[2]
+        stat = os.statvfs(self.__directory)
+        return stat.f_frsize * stat.f_bavail
 
     def delete_all(self) -> None:
         """Remove every object from the repo. For DirectoryRepo, remove all

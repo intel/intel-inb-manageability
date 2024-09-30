@@ -1,7 +1,5 @@
 #Production
 
-psutil==5.9.5
-types-psutil==5.9.5.17
 cryptography==43.0.1
 jsonschema==4.20.0
 types-jsonschema==4.20.0.0
