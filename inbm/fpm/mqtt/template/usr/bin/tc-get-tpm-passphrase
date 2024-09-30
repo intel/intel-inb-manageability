@@ -15,7 +15,7 @@ store_passphrase() {
     tpm2_evictcontrol --hierarchy=o --object-context=seal.ctx "$STORE_SLOT" 1>&2
 }
 
-sleep 1
+sleep 5
 
 # (in case the TPM is in dictionary lockout mode)
 timeout 5 tpm2_dictionarylockout --clear-lockout || true
