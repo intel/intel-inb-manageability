@@ -204,6 +204,7 @@ class Operation(google.protobuf.message.Message):
     SERVICE_TYPE_FIELD_NUMBER: builtins.int
     UPDATE_SYSTEM_SOFTWARE_OPERATION_FIELD_NUMBER: builtins.int
     SET_POWER_STATE_OPERATION_FIELD_NUMBER: builtins.int
+    RPC_ACTIVATE_OPERATION_FIELD_NUMBER: builtins.int
     service_type: global___Operation.ServiceType.ValueType
     @property
     def pre_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PreOperation]: ...
@@ -212,7 +213,9 @@ class Operation(google.protobuf.message.Message):
     @property
     def update_system_software_operation(self) -> global___UpdateSystemSoftwareOperation: ...
     @property
-    def set_power_state_operation(self) -> global___SetPowerStateOperation:
+    def set_power_state_operation(self) -> global___SetPowerStateOperation: ...
+    @property
+    def rpc_activate_operation(self) -> global___RpcActivateOperation:
         """and others"""
 
     def __init__(
@@ -223,12 +226,31 @@ class Operation(google.protobuf.message.Message):
         service_type: global___Operation.ServiceType.ValueType = ...,
         update_system_software_operation: global___UpdateSystemSoftwareOperation | None = ...,
         set_power_state_operation: global___SetPowerStateOperation | None = ...,
+        rpc_activate_operation: global___RpcActivateOperation | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["operation", b"operation", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "service_type", b"service_type", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation", "set_power_state_operation"] | None: ...
+    def HasField(self, field_name: typing.Literal["operation", b"operation", "rpc_activate_operation", b"rpc_activate_operation", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "rpc_activate_operation", b"rpc_activate_operation", "service_type", b"service_type", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation", "set_power_state_operation", "rpc_activate_operation"] | None: ...
 
 global___Operation = Operation
+
+@typing.final
+class RpcActivateOperation(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    URL_FIELD_NUMBER: builtins.int
+    PROFILE_NAME_FIELD_NUMBER: builtins.int
+    url: builtins.str
+    profile_name: builtins.str
+    def __init__(
+        self,
+        *,
+        url: builtins.str = ...,
+        profile_name: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["profile_name", b"profile_name", "url", b"url"]) -> None: ...
+
+global___RpcActivateOperation = RpcActivateOperation
 
 @typing.final
 class UpdateSystemSoftwareOperation(google.protobuf.message.Message):
