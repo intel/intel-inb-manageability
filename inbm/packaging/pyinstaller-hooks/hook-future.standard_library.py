@@ -4,7 +4,6 @@ hiddenimports = [
     'UserDict',
     'itertools',
     'collections',
-    'future.backports.misc',
     'commands',
     'base64',
     '__builtin__',

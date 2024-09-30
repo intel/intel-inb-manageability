@@ -11,6 +11,5 @@ urllib3==1.26.19
 certifi==2024.07.04
 pyinstaller==5.13.1
 setuptools==70.0.0
-future==1.0.0
 untangle==1.2.1
 APScheduler==3.10.4
