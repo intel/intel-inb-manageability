@@ -220,11 +220,11 @@ class AzureAdapter(Adapter):
                                        sha256).digest())
         except ValueError as e:
             raise AdapterConfigureError(f"Error generating SAS Token: {str(e)}")
-        signature = quote(signature)
+        signature_quoted = quote(signature)
 
         return "SharedAccessSignature sr={!s}&sig={!s}&se={}".format(
             resource,
-            signature,
+            signature_quoted,
             expiration
         )
 
