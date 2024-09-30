@@ -11,7 +11,7 @@ from ssl import SSLContext, CERT_REQUIRED, PROTOCOL_TLS, OP_NO_TLSv1_1, OP_NO_TL
     OP_NO_RENEGOTIATION, TLSVersion, OP_NO_SSLv2, OP_NO_SSLv3
 from typing import Union, Tuple, Optional, Dict, Any
 
-from future.moves.urllib.request import getproxies
+from urllib.request import getproxies
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ class ProxyConfig:
         @param hostname: (str) Hostname for proxy without http://
         @param port:     (int) Port for proxy
         """
+        self._endpoint: tuple[str, int] | None
         logger.debug("")
         if hostname and port:
             logger.debug(
@@ -43,7 +44,7 @@ class ProxyConfig:
         """
         return self._endpoint
 
-    def _get_http_proxy(self) -> Tuple[str, int]:
+    def _get_http_proxy(self) -> Tuple[str, int] | None:
         """Obtain HTTP proxy information from the given arguments"""
         proxy = getproxies().get("http")
 
@@ -51,14 +52,14 @@ class ProxyConfig:
 
         if proxy:
             logger.debug("Got proxy: {}".format(str(proxy)))
-            proxy = proxy.split(':')[1:]  # Ignore 'http'
-            endpoint = proxy[0].strip("/")
-            port = int(proxy[1].strip("/"))
-            proxy = (endpoint, port)
+            proxy_parts = proxy.split(':')[1:]  # Ignore 'http'
+            endpoint = proxy_parts[0].strip("/")
+            port = int(proxy_parts[1].strip("/"))
+            return (endpoint, port)
         else:
             logger.debug("Could not get HTTP proxy")
+            return None
 
-        return proxy
 
 
 # ========== Provides TLS configuration

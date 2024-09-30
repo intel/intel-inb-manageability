@@ -11,7 +11,7 @@ import platform
 from threading import Timer
 from typing import Any, Optional, Mapping
 
-from future.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 from dispatcher.packagemanager.constants import DEFAULT_HASH_ALGORITHM
 from dispatcher.update_logger import UpdateLogger
 from inbm_lib.constants import OTA_PENDING

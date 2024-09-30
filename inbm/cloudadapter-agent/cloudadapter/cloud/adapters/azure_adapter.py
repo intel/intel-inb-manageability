@@ -17,7 +17,7 @@ from ..client.cloud_client import CloudClient
 from .adapter import Adapter
 from base64 import b64encode, b64decode
 from hashlib import sha256
-from future.moves.urllib.request import quote
+from urllib.parse import quote
 from hmac import HMAC
 from time import time, sleep
 from typing import Optional, Any, Dict, Callable, Tuple
@@ -220,11 +220,11 @@ class AzureAdapter(Adapter):
                                        sha256).digest())
         except ValueError as e:
             raise AdapterConfigureError(f"Error generating SAS Token: {str(e)}")
-        signature = quote(signature)
+        signature_quoted = quote(signature)
 
         return "SharedAccessSignature sr={!s}&sig={!s}&se={}".format(
             resource,
-            signature,
+            signature_quoted,
             expiration
         )
 
