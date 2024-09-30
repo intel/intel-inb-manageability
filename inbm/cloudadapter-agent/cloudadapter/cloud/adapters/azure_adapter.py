@@ -17,7 +17,7 @@ from ..client.cloud_client import CloudClient
 from .adapter import Adapter
 from base64 import b64encode, b64decode
 from hashlib import sha256
-from future.moves.urllib.request import quote
+from urllib.parse import quote
 from hmac import HMAC
 from time import time, sleep
 from typing import Optional, Any, Dict, Callable, Tuple

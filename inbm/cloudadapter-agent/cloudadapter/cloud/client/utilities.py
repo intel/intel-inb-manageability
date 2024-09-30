@@ -11,7 +11,7 @@ from ssl import SSLContext, CERT_REQUIRED, PROTOCOL_TLS, OP_NO_TLSv1_1, OP_NO_TL
     OP_NO_RENEGOTIATION, TLSVersion, OP_NO_SSLv2, OP_NO_SSLv3
 from typing import Union, Tuple, Optional, Dict, Any
 
-from future.moves.urllib.request import getproxies
+from urllib.request import getproxies
 
 logger = logging.getLogger(__name__)
 
