@@ -11,7 +11,7 @@ setup(
     packages=find_packages(exclude=['tests.*', '*.tests.*', 'tests', '*.tests', 'test_*']),
     include_package_data=True,
     install_requires=['mock', 'pytest', 'pytest-cov', 'pytest-mock', 'packaging',
-                      'future', 'paho-mqtt', 'jsonschema', 'cryptography'],
+                      'paho-mqtt', 'jsonschema', 'cryptography'],
     test_suite='pytest',
     tests_require=['pytest', 'pytest-cov', 'pytest-mock']
 )
