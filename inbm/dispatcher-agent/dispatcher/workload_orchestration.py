@@ -16,7 +16,6 @@ from json.decoder import JSONDecodeError
 from os import path
 
 import requests
-from inbm_common_lib.utility import get_canonical_representation_of_path
 from inbm_lib.count_down_latch import CountDownLatch
 from inbm_common_lib.shell_runner import PseudoShellRunner
 

@@ -20,6 +20,8 @@ URL_NULL_CHAR = '%00'
 RESPONSE_CHANNEL = 'manageability/response'
 EVENT_CHANNEL = 'manageability/event'
 TELEMETRY_CHANNEL = 'manageability/telemetry'
+# Used for Node updates to be sent to UDM
+UPDATE_CHANNEL = 'manageability/update'
 CONFIG_CHANNEL = 'ma/configuration/update/'
 
 # Request constants

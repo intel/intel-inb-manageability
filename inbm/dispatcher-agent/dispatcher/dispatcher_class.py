@@ -148,16 +148,16 @@ class Dispatcher:
             self._perform_startup_tasks()
 
         # Run scheduler to schedule the task during startup.
-        single_schedules = self.sqlite_mgr.get_all_single_schedules_in_priority_order()
+        single_schedules = self.sqlite_mgr.get_single_schedules_in_priority_order()
         logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
         for single_schedule in single_schedules:
-            self.ap_scheduler.add_single_schedule_job(self.do_install, single_schedule)
+            self.ap_scheduler.add_single_schedule_job(self.run_scheduled_job, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
-        repeated_schedules = self.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
+        repeated_schedules = self.sqlite_mgr.get_repeated_schedules_in_priority_order()
         logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
-            self.ap_scheduler.add_repeated_schedule_job(self.do_install, repeated_schedule)
+            self.ap_scheduler.add_repeated_schedule_job(self.run_scheduled_job, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
         self.ap_scheduler.start()
 
@@ -274,18 +274,31 @@ class Dispatcher:
     def _telemetry(self, message: str) -> None:
         self._dispatcher_broker.telemetry(message)
 
-    def _send_result(self, message: str, id: str = "") -> None:
+    def _send_result(self, message: str, request_id: str = "", job_id: str = "") -> None:
         """Sends result message to local MQTT channel
 
-        If id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
+        If request_id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
 
-        Raises ValueError if id contains a slash
+        Raises ValueError if request_id contains a slash
 
         @param message: message to be published to cloud
         """
-        self._dispatcher_broker.send_result(message, id)
+        # Check if this is a request stored in the DB and started from the APScheduler
+        logger.debug(f"Sending result message with id {request_id}: {message}") 
+        self._dispatcher_broker.send_result(message, request_id, job_id)
+            
 
-    def do_install(self, xml: str, schema_location: Optional[str] = None) -> Result:
+    def run_scheduled_job(self, schedule: Schedule, manifest: str) -> None:
+        """Run the scheduled job.
+
+        @param job_id: ID of the job to run.
+        @param manifest: The manifest to be passed to the callback function.
+        """
+        logger.debug(f"Running schedule of type={type(schedule)}, job with JobID={schedule.job_id}, manifest={manifest}")
+        self.sqlite_mgr.update_status(schedule, STARTED)
+        self.do_install(xml=manifest, job_id=schedule.job_id)
+        
+    def do_install(self, xml: str, schema_location: Optional[str] = None, job_id: str = "") -> Result:
         """Delegates the installation to either
         . call a DeviceManager command
         . do_ota_install
@@ -359,9 +372,9 @@ class Dispatcher:
             result = Result(CODE_BAD_REQUEST, str(e))
             self._update_logger.status = FAIL
             self._update_logger.error = str(e)
-        finally:
+        finally:            
             logger.info('Install result: %s', str(result))
-            self._send_result(str(result))
+            self._send_result(message=str(result), job_id=job_id)
             if result.status != CODE_OK and parsed_head:
                 self._update_logger.status = FAIL
                 self._update_logger.error = str(result)
@@ -464,6 +477,13 @@ class Dispatcher:
         elif (usr is None) and pwd:
             raise DispatcherException(f'No Username sent in manifest for {ota}')
 
+    def _add_request_to_queue(self, request_type: str, manifest: str, request_id: Optional[str]) -> None:
+        if not self.update_queue.full():
+            self.update_queue.put((request_type, manifest, request_id))
+        else:
+            self._send_result(
+                str(Result(CODE_FOUND, "Request already in progress; Please try again later")))
+            
     def _on_cloud_request(self, topic: str, payload: str, qos: int) -> None:
         """Called when a message is received from cloud
 
@@ -476,11 +496,7 @@ class Dispatcher:
         request_type = topic.split('/')[2]
         request_id = topic.split('/')[3] if len(topic.split('/')) > 3 else None
         manifest = payload
-        if not self.update_queue.full():
-            self.update_queue.put((request_type, manifest, request_id))
-        else:
-            self._send_result(
-                str(Result(CODE_FOUND, "OTA In Progress, Try Later")))
+        self._add_request_to_queue(request_type, manifest, request_id)
 
     def _on_message(self, topic: str, payload: Any, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
@@ -725,8 +741,7 @@ class Dispatcher:
             dispatcher_state.clear_dispatcher_state()
         else:
             self._telemetry('Dispatcher detects normal boot sequence')
-
-
+      
 def handle_updates(dispatcher: Any,
                    schedule_manifest_schema=SCHEDULE_SCHEMA_LOCATION,
                    manifest_schema=SCHEMA_LOCATION) -> None:
@@ -739,12 +754,15 @@ def handle_updates(dispatcher: Any,
     manifest: str = message[1]
     if message[2]:
         request_id: str = message[2]
+        
+    # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
+        dispatcher._send_result("", request_id)
 
     if request_type == "schedule":
         if not request_id:
             dispatcher._send_result("Error: No request ID provided for schedule request.")
 
-        logger.debug("DEBUG: manifest = " + manifest)
+        logger.debug("DEBUG: schedule manifest = " + manifest)
         try:
             schedule = ScheduleManifestParser(manifest, schedule_manifest_schema, manifest_schema)
         except XmlException as e:
@@ -759,37 +777,34 @@ def handle_updates(dispatcher: Any,
         dispatcher.ap_scheduler.remove_all_jobs()
 
         # Add schedules to the database
-        if schedule.single_scheduled_requests or schedule.repeated_scheduled_requests:
-            def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
-                with sql_lock:
-                    for requests in scheduled_requests:
-                        dispatcher.sqlite_mgr.create_schedule(requests)
-            all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests
-            process_scheduled_requests(all_scheduled_requests)
+        def process_scheduled_requests(scheduled_requests: Sequence[Schedule]):
+            with sql_lock:
+                for requests in scheduled_requests:
+                    dispatcher.sqlite_mgr.create_schedule(requests)
+        all_scheduled_requests = schedule.single_scheduled_requests + schedule.repeated_scheduled_requests + schedule.immedate_requests
+        logger.debug(f"Total scheduled requests: {len(all_scheduled_requests)}")
+        process_scheduled_requests(all_scheduled_requests)
 
         # Add job to the scheduler
-        single_schedules = dispatcher.sqlite_mgr.get_all_single_schedules_in_priority_order()
-        logger.info(f"Total single scheduled tasks: {len(single_schedules)}")
+        immediate_schedules = dispatcher.sqlite_mgr.get_immediate_schedules_in_priority_order()
+        logger.debug(f"Total immediate schedules: {len(immediate_schedules)}")
+        for immediate_schedule in immediate_schedules:
+            dispatcher.ap_scheduler.add_immediate_job(dispatcher.run_scheduled_job, immediate_schedule)
+            logger.debug(f"Immediate schedule: {immediate_schedule}")
+        
+        single_schedules = dispatcher.sqlite_mgr.get_single_schedules_in_priority_order()
+        logger.debug(f"Total single schedules: {len(single_schedules)}")
         for single_schedule in single_schedules:
-            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.do_install, single_schedule)
+            dispatcher.ap_scheduler.add_single_schedule_job(dispatcher.run_scheduled_job, single_schedule)
             logger.debug(f"Scheduled single job: {single_schedule}")
 
-        repeated_schedules = dispatcher.sqlite_mgr.get_all_repeated_schedules_in_priority_order()
-        logger.info(f"Total repeated scheduled jobs: {len(repeated_schedules)}")
+        repeated_schedules = dispatcher.sqlite_mgr.get_repeated_schedules_in_priority_order()
+        logger.debug(f"Total repeated schedules: {len(repeated_schedules)}")
         for repeated_schedule in repeated_schedules:
-            dispatcher.ap_scheduler.add_repeated_schedule_job(
-                dispatcher.do_install, repeated_schedule)
+            dispatcher.ap_scheduler.add_repeated_schedule_job(dispatcher.run_scheduled_job, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
 
-        # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
-        dispatcher._send_result("", request_id)
-        for imm in schedule.immedate_requests:
-            for manifest in imm.manifests:
-                try:
-                    dispatcher.do_install(xml=manifest)
-                except (NotImplementedError, DispatcherException) as e:
-                    # TODO: Save the error for query request
-                    logger.error(str(e))
+
         return
 
     if request_type == "install" or request_type == "query":

@@ -62,7 +62,7 @@ def test_file_download_fetch_fails(setup_xml_handlers, mocker) -> None:
     mock_source = mocker.patch('dispatcher.configuration_helper.verify_source')
 
     with pytest.raises(DispatcherException, match="Configuration File Fetch Failed: {\"status\": 400, "
-                       "\"message\": \"FAILED TO INSTALL\"}"):
+                       "\"message\": \"FAILED TO INSTALL\", \"job_id\": \"\"}"):
 
         ConfigurationHelper(mock_dispatcher_broker).download_config(
             good, memory_repo.MemoryRepo(""))
@@ -75,7 +75,7 @@ def test_file_download_xml_fails(setup_xml_handlers, mocker) -> None:
     mock_source = mocker.patch('dispatcher.configuration_helper.verify_source')
 
     with pytest.raises(DispatcherException, match="Configuration File Fetch Failed: {\"status\": 404, "
-                       "\"message\": \"Not Found\"}"):
+                       "\"message\": \"Not Found\", \"job_id\": \"\"}"):
         ConfigurationHelper(mock_dispatcher_broker).download_config(
             good, memory_repo.MemoryRepo(""))
 

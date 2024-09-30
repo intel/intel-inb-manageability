@@ -289,7 +289,7 @@ class MockDispatcherBroker(DispatcherBroker):
     def start(self, tls: bool) -> None:
         pass
 
-    def send_result(self, message: str, id: str = "") -> None:
+    def send_result(self, message: str, id: str = "", job_id: str = "") -> None:
         pass
 
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:

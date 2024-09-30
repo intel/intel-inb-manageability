@@ -21,18 +21,21 @@ CODE_NOT_FOUND = 404
 # Result object classes
 class Result:
 
-    __slots__ = ("status", "message", "json")
+    __slots__ = ("status", "message", "job_id", "json")
 
-    def __init__(self, status: int = 0, message: str = "") -> None:
+    def __init__(self, status: int = 0, message: str = "", job_id: str = "") -> None:
         """Result object containing a status code and message
 
         @param status: (int) Predefined status code
-        @param message: (str) Result message"""
+        @param message: (str) Result message
+        @param job_id: (str) Job ID"""
         self.status = status
         self.message = message
-        self.json = json.dumps({
+        self.job_id = job_id
+        self.json = json.dumps({            
             "status": status,
-            "message": str(message)
+            "message": str(message),
+            "job_id": job_id
         })
 
     def __eq__(self, other: object) -> bool:

@@ -39,6 +39,5 @@ class TestCommand(TestCase):
         self.assertEqual(payload['id'], '12345')
         self.assertEqual(payload['size'], 100)
 
-
 if __name__ == '__main__':
     unittest.main()
