@@ -803,7 +803,6 @@ def handle_updates(dispatcher: Any,
         for repeated_schedule in repeated_schedules:
             dispatcher.ap_scheduler.add_repeated_schedule_job(dispatcher.run_scheduled_job, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
-
         return
 
     if request_type == "install" or request_type == "query":
