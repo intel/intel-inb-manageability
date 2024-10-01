@@ -36,9 +36,9 @@ echo After reboot, we are looking for /mender-was-run
 echo After reboot, we are looking for /mender-ext4-was-run
 [ -f "/mender-ext4-was-run" ]
 
-echo Also looking for /etc/dispatcher_state to be gone
-! [ -f /etc/dispatcher_state ]
+echo Also looking for /var/intel-manageability/dispatcher_state to be gone
+! [ -f /var/intel-manageability/dispatcher_state ]
 
-rm -rf /etc/force_yocto /etc/dispatcher_state
+rm -rf /etc/force_yocto /var/intel-manageability/dispatcher_state
 
 cleanup_after_test

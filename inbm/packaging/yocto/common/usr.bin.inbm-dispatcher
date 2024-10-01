@@ -48,6 +48,7 @@
   /etc/apt/sources.list rw,
   /etc/apt/sources.list.bak rw,
   /etc/dispatcher_state rw,
+  /var/intel-manageability/dispatcher_state rw,
   /etc/lsb-release r,
   /etc/task_list.yaml r,
   /etc/terminfo/d/dumb r,
