@@ -12,37 +12,6 @@ from cloudadapter.exceptions import AdapterConfigureError, ClientBuildError
 from cloudadapter.cloud.adapters.azure_adapter import AzureAdapter
 from time import time
 
-#class TestAzureAdapterFailures(unittest.TestCase):
-    # @mock.patch('cloudadapter.cloud.adapters.azure_adapter.requests.put')
-    # @mock.patch('cloudadapter.cloud.adapters.azure_adapter.requests.get')
-    # def test_configure_json_decode_error(self, mock_get, mock_put):
-    #     # Set up the AzureAdapter with some dummy configs
-    #     configs = {
-    #         "scope_id": "test_scope_id",
-    #         "device_id": "test_device_id",
-    #         "device_sas_key": "test_device_sas_key"
-    #     }
-    #     adapter = AzureAdapter(configs)
-        
-    #     # Mock the put request to return a response with invalid JSON content
-    #     mock_put_response = MagicMock()
-    #     mock_put_response.ok = True
-    #     mock_put_response.text = "Invalid JSON"
-    #     mock_put.return_value = mock_put_response
-
-    #     # Mock the get request to return a response with valid JSON content
-    #     # This is necessary because the configure method may call get after put
-    #     mock_get_response = MagicMock()
-    #     mock_get_response.ok = True
-    #     mock_get_response.text = json.dumps({"status": "assigned", "registrationState": {"assignedHub": "test_hub"}})
-    #     mock_get.return_value = mock_get_response
-        
-    #     with self.assertRaises(AdapterConfigureError) as context:
-    #         adapter.configure(configs)
-
-    #     # Check that the exception message contains the expected text
-    #     self.assertIn("Error retrieving hostname", str(context.exception))
-
 class TestAzureAdapter(unittest.TestCase):
 
     @mock.patch.object(AzureAdapter, '_retrieve_hostname', autospec=True)
