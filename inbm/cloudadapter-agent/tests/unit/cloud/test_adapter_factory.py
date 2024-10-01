@@ -5,6 +5,7 @@ Unit tests for the adapter_factory
 """
 
 
+import json
 import unittest
 import mock
 
@@ -34,6 +35,24 @@ class TestAdapterFactory(unittest.TestCase):
             f"Configuration file ({ADAPTER_CONFIG_PATH}) is a symbolic link, which is not allowed.",
             str(context.exception),
         )
+
+    @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config')
+    def test_get_adapter_config_filepaths_with_auxiliary_files(self, mock_load):
+        mock_load.return_value = {
+            "auxiliary_files": ["aux_file_1.json", "aux_file_2.json"]
+        }
+        filepaths = adapter_factory.get_adapter_config_filepaths()
+        self.assertIn("aux_file_1.json", filepaths)
+        self.assertIn("aux_file_2.json", filepaths)
+        self.assertIn(ADAPTER_CONFIG_PATH, filepaths)    
+    
+    @mock.patch("os.path.islink", return_value=False)
+    @mock.patch("builtins.open")
+    def test_load_adapter_config_success(self, mock_open, mock_islink) -> None:
+        mock_data = json.dumps({'key': 'value'})
+        mock_open.return_value.__enter__.return_value.read.return_value = mock_data
+        result = load_adapter_config()
+        self.assertEqual(result, {'key': 'value'})       
 
     @mock.patch('cloudadapter.cloud.adapter_factory.AzureAdapter')
     @mock.patch('cloudadapter.cloud.adapter_factory.load_adapter_config', autospec=True)
