@@ -496,7 +496,7 @@ class Dispatcher:
         request_type = topic.split('/')[2]
         request_id = topic.split('/')[3] if len(topic.split('/')) > 3 else None
         manifest = payload
-        self._add_cmd_to_queue(request_type, manifest, request_id)
+        self._add_request_to_queue(request_type, manifest, request_id)
 
     def _on_message(self, topic: str, payload: Any, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
