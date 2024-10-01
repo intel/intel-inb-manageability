@@ -27,8 +27,8 @@ echo After reboot, we are looking for exactly 1 capsule file in /boot/efi/
 ls /boot/efi/
 ls /boot/efi/ | wc -l | grep 1
 
-echo Also looking for /etc/dispatcher_state to be gone
-! [ -f /etc/dispatcher_state ]
+echo Also looking for /var/intel-manageability/dispatcher_state to be gone
+! [ -f /var/intel-manageability/dispatcher_state ]
 
 
 echo "Cleaning up after test"

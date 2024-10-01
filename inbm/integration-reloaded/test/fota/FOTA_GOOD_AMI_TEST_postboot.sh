@@ -23,8 +23,8 @@ echo "Checking health of all services"
 check_health_tc_services
 echo "Health check passed"
 
-echo Also looking for /etc/dispatcher_state to be gone
-! [ -f /etc/dispatcher_state ]
+echo Also looking for /var/intel-manageability/dispatcher_state to be gone
+! [ -f /var/intel-manageability/dispatcher_state ]
 
 echo "Cleaning up after test"
 cleanup_after_test

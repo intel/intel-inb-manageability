@@ -17,7 +17,7 @@ mkdir -p /var/log/sota_test
 
 echo "Triggering SOTA integration test: SOTA YOCTO UPDATE DOWNLOAD"
 echo "<START> SOTA YOCTO UPDATE DOWNLOAD" | systemd-cat
-! [ -f /etc/dispatcher_state ]
+! [ -f /var/intel-manageability/dispatcher_state ]
 touch /etc/force_yocto
 ls -l /etc/force_yocto
 date

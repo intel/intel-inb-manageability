@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
  - Removed all references to `future` library as we do not use Python 2
+ - (NEX-11354) Moved `/etc/dispatcher_state` to `/var/intel-manageability/dispatcher_state`
 
 ## 4.2.5 - 2024-09-04
 ### Fixed

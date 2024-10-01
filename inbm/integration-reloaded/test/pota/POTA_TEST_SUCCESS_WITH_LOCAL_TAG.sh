@@ -30,7 +30,7 @@ cp ${VAGRANT_INPUT_PATH}/${BIOS_FILE} /var/cache/manageability/repository-tool
 
 mkdir -p /var/log/sota_test
 
-! [ -f /etc/dispatcher_state ]
+! [ -f /var/intel-manageability/dispatcher_state ]
 touch /etc/force_yocto
 ls -l /etc/force_yocto
 date
