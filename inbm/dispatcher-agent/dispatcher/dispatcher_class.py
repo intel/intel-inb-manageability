@@ -804,15 +804,6 @@ def handle_updates(dispatcher: Any,
             dispatcher.ap_scheduler.add_repeated_schedule_job(dispatcher.run_scheduled_job, repeated_schedule)
             logger.debug(f"Scheduled repeated job: {repeated_schedule}")
 
-        # Dispatcher sends back the acknowledgement response before processing the immediate scheduling.
-        dispatcher._send_result("", request_id)
-        for imm in schedule.immedate_requests:
-            for manifest in imm.manifests:
-                try:
-                    dispatcher._add_cmd_to_queue(request_type, manifest, request_id)
-                except (NotImplementedError, DispatcherException) as e:
-                    # TODO: Save the error for query request
-                    logger.error(str(e))
         return
 
     if request_type == "install" or request_type == "query":
