@@ -109,20 +109,38 @@ def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:
 def write_dispatcher_state_to_state_file(state: DispatcherState) -> None:  # pragma: no cover
     """Update state file dictionary with state object
 
+    If the old state file exists, read it in, update state, write to new location,
+    and delete the old state file.
+
     @param state: state object to use to update state file
     """
-
     try:
-        # if there's already a state file, read it in so we can update it and write back
-        if is_dispatcher_state_file_exists():
-            with builtins.open(NEW_DISPATCHER_STATE_FILE, 'rb') as fd:
-                # we are reading from a trusted state file here
-                val = pickle.load(fd)  # nosec B301
-                val.update(state)
-                state = val
-            logger.debug(f"STATE WRITTEN: {state}")
+        # Initialize existing_state to empty dict
+        existing_state = {}
+        # Check for state file in both old and new locations
+        state_file_found = False
+        for state_file in [OLD_DISPATCHER_STATE_FILE, NEW_DISPATCHER_STATE_FILE]:
+            if os.path.exists(state_file):
+                with builtins.open(state_file, 'rb') as fd:
+                    # Reading from a trusted state file here
+                    existing_state = pickle.load(fd)  # nosec B301
+                    state_file_found = True
+                break  # Stop after finding the first existing state file
+
+        if state_file_found:
+            existing_state.update(state)
+            state = existing_state
+
+        # Write the updated state to the new location
         with open(NEW_DISPATCHER_STATE_FILE, 'wb') as fd:
             pickle.dump(state, fd)
+
+        # After writing, remove the old state file if it exists
+        if os.path.exists(OLD_DISPATCHER_STATE_FILE):
+            remove_file(OLD_DISPATCHER_STATE_FILE)
+            logger.debug('Removed old dispatcher state file')
+
     except (OSError, pickle.UnpicklingError, AttributeError) as e:
         logger.exception(f"Exception while saving dispatcher state to disk: {e}")
         raise DispatcherException("Exception while saving dispatcher state to disk") from e
+
