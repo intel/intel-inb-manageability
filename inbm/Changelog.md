@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
    its status with INBS.
  - (NEXMANAGE- 610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
 
+### Changed
+ - (NEXARL-306) Update agents' prerm script to prevent them from disabling and stopping if it's an upgrade process
 
 ### Fixed
  - (NEXMANAGE-746) Add extra sleeptime in INBM tpm script to resolve ARL platform issue

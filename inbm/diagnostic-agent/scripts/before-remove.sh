@@ -4,6 +4,12 @@ AGENT=inbm-diagnostic
 
 echo "Running pre-remove steps for ${AGENT} agent..."
 
+# If it is an upgrade, don't stop and disable the agent.
+if [ "$1" = "upgrade" ]; then
+    echo "Upgrade in progress, not stopping or disabling ${AGENT} service."
+    exit 0
+fi
+
 # Stop service
 if systemctl is-active ${AGENT} ; then
 	echo "Stopping ${AGENT} agent."
