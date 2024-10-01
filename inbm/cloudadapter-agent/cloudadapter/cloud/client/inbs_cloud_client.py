@@ -149,6 +149,7 @@ class InbsCloudClient(CloudClient):
                 job_state=job_state
             )
 
+        
         request = inbs_sb_pb2.SendNodeUpdateRequest(
             request_id="notused",
             job_update=job,            

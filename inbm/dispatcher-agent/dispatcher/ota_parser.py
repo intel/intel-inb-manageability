@@ -12,7 +12,7 @@ import abc
 
 from .constants import OtaType
 from .common.uri_utilities import is_valid_uri
-from .validators import is_valid_config_params
+from .validators import is_valid_json_structure
 from .dispatcher_exception import DispatcherException
 from inbm_lib.xmlhandler import XmlException
 from inbm_lib.xmlhandler import XmlHandler
@@ -171,7 +171,7 @@ class AotaParser(OtaParser):
         if 'import' in cmd:
             config_params = '{"execcmd":"/bin/true"}'
 
-        if config_params and not is_valid_config_params(config_params):
+        if config_params and not is_valid_json_structure(config_params):
             logger.info("Config Params not passed correctly"
                         " in manifest, rejected update")
             raise XmlException

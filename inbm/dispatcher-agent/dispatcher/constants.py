@@ -53,6 +53,8 @@ SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
                       'dispatcher-agent' / 'manifest_schema.xsd')
 JSON_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
                            'dispatcher-agent' / 'config_param_schema.json')
+NODE_UPDATE_JSON_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
+                            'dispatcher-agent' / 'node_update_schema.json')
 
 # Client certs and keys path
 CLIENT_CERTS = str(BROKER_ETC_PATH / 'public' /

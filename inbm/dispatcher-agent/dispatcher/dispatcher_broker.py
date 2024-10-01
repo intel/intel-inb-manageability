@@ -9,9 +9,10 @@ import json
 import logging
 from typing import Any, Optional, Callable
 
-from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED
+from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED, NODE_UPDATE_JSON_SCHEMA_LOCATION
 from dispatcher.schedule.sqlite_manager import SqliteManager
 from dispatcher.schedule.schedules import Schedule
+from dispatcher.validators import is_valid_json_structure
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
@@ -108,18 +109,21 @@ class DispatcherBroker:
                 message_dict = json.loads(message)
             except json.JSONDecodeError as e:
                 logger.error(f"Cannot convert formatted message to dict: {message}. Error: {e}")
-                self.send_update(str(message))
                 return
 
             # Update the job_id in the message
             message_dict['job_id'] = schedule.job_id
 
+            is_valid = is_valid_json_structure(message_dict, NODE_UPDATE_JSON_SCHEMA_LOCATION)
+            if not is_valid:
+                logger.error(f"Invalid message format: {message_dict}")
+                return
+            
             # Convert the updated message_dict back to a JSON string
             try:
                 updated_message = json.dumps(message_dict)
             except (TypeError, OverflowError) as e:
                 logger.error(f"Cannot convert Result back to string: {message_dict}. Error: {e}")
-                self.send_update(str(message))
                 return                
        
             logger.debug(f"Sending node update message: {str(updated_message)}")

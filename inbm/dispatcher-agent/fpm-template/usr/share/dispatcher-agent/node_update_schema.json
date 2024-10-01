@@ -1,0 +1,21 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "integer",
+        "description": "The HTTP status code of the response."
+      },
+      "message": {
+        "type": "string",
+        "description": "A message describing the result of the command."
+      },
+      "job_id": {
+        "type": "string",
+        "description": "A unique identifier for the job.",
+        "pattern": "^[a-z0-9-]+$"
+      }
+    },
+    "required": ["status", "message", "job_id"],
+    "additionalProperties": false
+  }

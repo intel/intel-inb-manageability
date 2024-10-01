@@ -17,14 +17,19 @@ from .constants import *
 logger = logging.getLogger(__name__)
 
 
-def get_schema_location(schema_type: str, schema_location: Optional[str] = None) -> str:
+def _get_schema_location(schema_location: Optional[str] = None) -> str:
     if not schema_location:
         schema_location = JSON_SCHEMA_LOCATION
     return schema_location
 
+"""Validates JSON against a JSON schema
 
-def validate_schema(schema_type: str, params: str, schema_location: Optional[str] = None) -> str:
-    schema_location = get_schema_location(schema_type, schema_location)
+@param params: JSON Parameters
+@param schema_location: JSON schema location.  Default=NONE
+@return: Deserialized JSON
+"""
+def _validate_schema(params: str, schema_location: Optional[str] = None) -> str:
+    schema_location = _get_schema_location(schema_location)
 
     if not os.path.exists(schema_location):
         logger.error("JSON Schema file not found")
@@ -36,20 +41,20 @@ def validate_schema(schema_type: str, params: str, schema_location: Optional[str
 
         parsed = json.loads(str(params))
         jsonschema.validate(parsed, schema)
-    except (ValueError, OSError, jsonschema.exceptions.ValidationError):
-        raise ValueError("Schema validation failed!")
+    except (ValueError, OSError, jsonschema.exceptions.ValidationError) as e:
+        raise ValueError(f"Schema validation failed! Error: {e}")
     return parsed
 
 
-def is_valid_config_params(config_params: str, schema_location: Optional[str] = None) -> bool:
-    """Schema validate the configuration parameters
+def is_valid_json_structure(json_params: str, schema_location: Optional[str] = None) -> bool:
+    """Validate the JSON structure against the schema
 
-    @param config_params: params to be validated
+    @param json_params: JSON params to be validated
     @param schema_location: location of schema file; default=None
-    @return (bool): True if schema validated or False on failure or exception
+    @return (bool): True if valid schema; otherwise, False
     """
     try:
-        validate_schema('single', config_params, schema_location)
+        _validate_schema(json_params, schema_location)
     except (ValueError, KeyError, jsonschema.exceptions.ValidationError) as e:
         logger.info("Error received: %s", str(e))
         return False
