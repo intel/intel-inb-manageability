@@ -7,10 +7,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
  - Updated proto files to add new RPC calls to allow edge node to update
    its status with INBS.
+ - (NEXMANAGE- 610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
+
+
+### Fixed
+ - (NEXMANAGE-746) Add extra sleeptime in INBM tpm script to resolve ARL platform issue
 
 ### Security
  - Updated 'docker' go library version in trtl to 25.0.6, fixing CVE-2024-41110
  - Updated 'cryptography' Python library in dispatcher to 43.0.1, fixing GHSA-h4gh-qq45-vh27.
+
+### Changed
+ - Removed all references to `future` library as we do not use Python 2
 
 ## 4.2.5 - 2024-09-04
 ### Fixed

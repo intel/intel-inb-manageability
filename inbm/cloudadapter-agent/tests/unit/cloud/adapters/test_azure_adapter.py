@@ -164,7 +164,7 @@ class TestAzureAdapter(unittest.TestCase):
         assert mock_build_client_with_config.call_count == 1
             
     @mock.patch('base64.b64encode', autospec=True)
-    @mock.patch('future.moves.urllib.request.quote', autospec=True)
+    @mock.patch('urllib.parse.quote', autospec=True)
     def test_generate_sas_token(self, mock_quote, mock_base64encode) -> None:
         res = self.azure_adapter._generate_sas_token('registration', 'sas_token=', int(time()))
         self.assertRegex(res, "SharedAccessSignature")

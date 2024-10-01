@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 from cloudadapter.pb.common.v1.common_pb2 import (
     UpdateSystemSoftwareOperation,
+    RpcActivateOperation,
     Operation,
     PreOperation,
     PostOperation,
@@ -25,9 +26,23 @@ import xml.etree.ElementTree as ET
 # Import the function to be tested
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_system_software_operation_to_xml_manifest,
+    convert_rpc_activate_operation_to_xml_manifest,
     convert_operation_to_xml_manifests,
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
+
+RPC_OPERATION_LARGE = RpcActivateOperation(
+    url="http://example.com/server",
+    profile_name="UDM",
+)
+
+RPC_OPERATION_LARGE_MANIFEST_XML = (
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    "<manifest><type>cmd</type><cmd><header><type>rpc</type></header>"
+    '<type><rpc><fetch>http://example.com/server</fetch><profileName>UDM</profileName>'    
+    "</rpc></type></cmd></manifest>"
+)
+
 
 SOTA_OPERATION_LARGE = UpdateSystemSoftwareOperation(
     url="http://example.com/update",
@@ -202,6 +217,20 @@ def test_convert_system_software_operation_to_xml_manifest_success(
 ):
     xml_manifest = convert_system_software_operation_to_xml_manifest(operation)
     assert xml_manifest == expected_xml
+
+
+# Test cases for function that checks XML manifest creation from rpc activate operations
+@pytest.mark.parametrize(
+    "operation, rpc_expected_xml",
+    [
+        (RPC_OPERATION_LARGE, RPC_OPERATION_LARGE_MANIFEST_XML),
+    ],
+)
+def test_convert_rpc_activate_operation_to_xml_manifest_success(
+    operation, rpc_expected_xml
+):
+    rpc_xml_manifest = convert_rpc_activate_operation_to_xml_manifest(operation)
+    assert rpc_xml_manifest == rpc_expected_xml
 
 
 @pytest.mark.parametrize(

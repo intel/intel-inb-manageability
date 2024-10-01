@@ -138,9 +138,6 @@ cffi
 elementpath
 Copyright (c), 2018-2022, SISSA (Scuola Internazionale Superiore di Studi Avanzati)
 
-future
-Copyright 2013-2019 Python Charmers Pty Ltd, Australia.
-
 six
 Copyright (c) 2010-2020 Benjamin Peterson
 
