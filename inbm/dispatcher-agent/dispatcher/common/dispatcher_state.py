@@ -116,7 +116,7 @@ def write_dispatcher_state_to_state_file(state: DispatcherState) -> None:  # pra
     """
     try:
         # Initialize existing_state to empty dict
-        existing_state = {}
+        existing_state: DispatcherState = DispatcherState()
         # Check for state file in both old and new locations
         state_file_found = False
         for state_file in [OLD_DISPATCHER_STATE_FILE, NEW_DISPATCHER_STATE_FILE]:
