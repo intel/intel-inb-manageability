@@ -13,8 +13,8 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 echo Generating Python proto files.
 cd "$DIR/cloudadapter-agent"
-python -m grpc_tools.protoc -I../proto --python_out=cloudadapter/pb --grpc_python_out=cloudadapter/pb --mypy_out=cloudadapter/pb ../proto/common/v1/common.proto
-python -m grpc_tools.protoc -I../proto --python_out=cloudadapter/pb --grpc_python_out=cloudadapter/pb --mypy_out=cloudadapter/pb ../proto/inbs/v1/inbs_sb.proto
+python3 -m grpc_tools.protoc -I../proto --python_out=cloudadapter/pb --grpc_python_out=cloudadapter/pb --mypy_out=cloudadapter/pb ../proto/common/v1/common.proto
+python3 -m grpc_tools.protoc -I../proto --python_out=cloudadapter/pb --grpc_python_out=cloudadapter/pb --mypy_out=cloudadapter/pb ../proto/inbs/v1/inbs_sb.proto
 
 sed -i 's/ common.v1/ cloudadapter.pb.common.v1/' cloudadapter/pb/*/v1/*.py{,i}
 sed -i 's/\[common.v1.common_pb2/\[cloudadapter.pb.common.v1.common_pb2/' cloudadapter/pb/*/v1/*.py{,i}

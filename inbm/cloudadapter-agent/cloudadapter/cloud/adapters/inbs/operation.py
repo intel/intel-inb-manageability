@@ -6,7 +6,7 @@
 
 import xml.etree.ElementTree as ET
 from google.protobuf.timestamp_pb2 import Timestamp
-from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, Operation, Schedule
+from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, RpcActivateOperation, Operation, Schedule
 from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
 
 
@@ -91,7 +91,7 @@ def convert_updated_scheduled_operations_to_dispatcher_xml(request_id: str, upda
 def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     """Converts an Operation message to an XML manifests element containing manifest_xml subelements for dispatcher."""
 
-    if not operation.HasField('update_system_software_operation'):
+    if not (operation.HasField('update_system_software_operation') or operation.HasField('rpc_activate_operation')):
         raise ValueError("Operation type not supported")
 
     if len(operation.pre_operations) > 0:
@@ -99,12 +99,47 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
 
     if len(operation.post_operations) > 0:
         raise ValueError("Post-operations not supported")
+  
+    result = create_xml_element("manifests")
+    
+    manifest = None
 
-    result = create_xml_element('manifests')
-    for manifest in [convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)]:
-        xml_manifest = create_xml_element('manifest_xml', text=manifest)
-        result.append(xml_manifest)
+    if operation.update_system_software_operation is not None:
+        manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
+    elif operation.rpc_activate_operation is not None:
+        manifest = convert_rpc_activate_operation_to_xml_manifest(operation.rpc_activate_operation)
+    else:
+        raise ValueError("No valid operation found")
+
+    xml_manifest = create_xml_element('manifest_xml', text=manifest)
+    result.append(xml_manifest)
     return result
+
+
+def convert_rpc_activate_operation_to_xml_manifest(operation: RpcActivateOperation) -> str:
+    """Converts a RpcActivateOperation message to an XML manifest string for Dispatcher."""
+    # Create the root element
+    manifest = ET.Element('manifest')
+    ET.SubElement(manifest, 'type').text = 'cmd'
+
+    cmd = ET.SubElement(manifest, 'cmd')
+    header = ET.SubElement(cmd, 'header')
+    ET.SubElement(header, 'type').text = 'rpc'
+
+    type = ET.SubElement(cmd, 'type')
+    rpc = ET.SubElement(type, 'rpc')
+
+    if operation.url:
+        ET.SubElement(rpc, 'fetch').text = operation.url
+
+    if operation.profile_name:
+        ET.SubElement(rpc, 'profileName').text = operation.profile_name
+
+    # Generate the XML string with declaration
+    xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
+    xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')
+    return xml_declaration + '\n' + xml_str
+
 
 
 def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSoftwareOperation) -> str:
