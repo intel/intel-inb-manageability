@@ -1,14 +1,20 @@
 import unittest
+import tempfile
+import shutil
 from typing import Optional
 import os
+
 
 from ..common.mock_resources import *
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.packagemanager.memory_repo import MemoryRepo
-from dispatcher.sota.os_factory import SotaOsFactory
+from dispatcher.packagemanager.local_repo import DirectoryRepo
+from dispatcher.sota.os_factory import SotaOsFactory, TiberOSBasedSotaOs
+from dispatcher.sota.downloader import TiberOSDownloader
 from dispatcher.sota.sota import SOTA
 from dispatcher.sota.sota_error import SotaError
 from inbm_lib.xmlhandler import XmlHandler
+from inbm_lib.constants import CACHE
 from unittest.mock import patch
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
@@ -110,3 +116,56 @@ class TestDownloader(unittest.TestCase):
             for i in range(0, num_files):
                 mem_repo.add("test" + str(i + 1) + ".rpm", b"0123456789")
         return mem_repo
+
+    @patch('dispatcher.sota.downloader.read_oras_token', return_value="mock_password")
+    @patch('dispatcher.sota.downloader.oras_download')
+    def test_tiberos_download_successful(self, mock_download, mock_read_token) -> None:
+        self.release_date = self.username = None
+        password = "mock_password"
+        mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
+
+        assert isinstance(TestDownloader.sota_instance, SOTA)
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+        factory = TestDownloader.sota_instance.factory
+        assert isinstance(factory, TiberOSBasedSotaOs)
+        installer = factory.create_downloader()
+        assert isinstance(installer, TiberOSDownloader)
+
+        directory = tempfile.mkdtemp()
+        try:
+            repo = DirectoryRepo(directory)
+
+            try:
+                installer.download(self.mock_disp_broker,
+                                   mock_url, repo,
+                                   self.username, password, self.release_date)
+            except (SotaError, DispatcherException):
+                self.fail("raised Error unexpectedly!")
+        finally:
+            shutil.rmtree(directory)
+
+        mock_read_token.assert_called_once()
+        mock_download.assert_called_once()
+
+    def test_tiberos_download_with_empty_uri(self) -> None:
+        self.release_date = self.username = None
+        password = "mock_password"
+        assert isinstance(TestDownloader.sota_instance, SOTA)
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+        factory = TestDownloader.sota_instance.factory
+        assert isinstance(factory, TiberOSBasedSotaOs)
+        installer = factory.create_downloader()
+        assert isinstance(installer, TiberOSDownloader)
+
+        directory = tempfile.mkdtemp()
+        try:
+            repo = DirectoryRepo(directory)
+
+            with self.assertRaises(SotaError):
+                installer.download(self.mock_disp_broker,
+                                   None, repo,
+                                   self.username, password, self.release_date)
+        finally:
+            shutil.rmtree(directory)
