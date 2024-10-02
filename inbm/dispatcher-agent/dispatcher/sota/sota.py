@@ -7,6 +7,7 @@
 
 import logging
 import os
+import threading
 import time
 import threading
 from typing import Any, List, Optional, Union, Mapping
@@ -84,6 +85,7 @@ class SOTA:
                  update_logger: UpdateLogger,
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
+                 cancel_event: threading.Event,
                  snapshot: Optional[Any] = None,
                  action: Optional[Any] = None) -> None:
         """SOTA thread instance
@@ -94,6 +96,7 @@ class SOTA:
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param update_logger: UpdateLogger instance--expected to notify it with update status
         @param kwargs:
+        @param cancel_event: Event used to stop the downloading process
         """
 
         self._parsed_manifest = parsed_manifest
@@ -115,6 +118,7 @@ class SOTA:
         self._update_logger = update_logger
         self._dispatcher_broker = dispatcher_broker
         self._granular_log_handler = GranularLogHandler()
+        self._cancel_event = cancel_event
 
         try:
             manifest_package_list = parsed_manifest['package_list']
@@ -341,9 +345,15 @@ class SOTA:
             if setup_helper.pre_processing():
                 if self.sota_mode != 'no-download':
                     self._download_sota_files(sota_cache_repo, release_date)
+                if self._cancel_event.is_set():
+                    sota_cache_repo.delete_all()  # clean cache directory
+                    raise SotaError("Request cancel.")
                 download_success = True
                 snapshotter.take_snapshot()
                 cmd_list = self.calculate_and_execute_sota_upgrade(sota_cache_repo)
+                if self._cancel_event.is_set():
+                    sota_cache_repo.delete_all()  # clean cache directory
+                    raise SotaError("Request cancel.")
                 sota_cache_repo.delete_all()  # clean cache directory
                 if get_command_status(cmd_list) == SUCCESS:
                     self._dispatcher_broker.send_result(

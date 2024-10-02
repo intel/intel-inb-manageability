@@ -3,6 +3,7 @@ import tempfile
 import shutil
 from typing import Optional
 import os
+import threading
 
 
 from ..common.mock_resources import *
@@ -45,6 +46,7 @@ class TestDownloader(unittest.TestCase):
                                  MockDispatcherBroker.build_mock_dispatcher_broker(),
                                  UpdateLogger("SOTA", "metadata"),
                                  None,
+                                 cancel_event=threading.Event(),
                                  install_check_service=MockInstallCheckService())
         cls.sota_instance.factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')

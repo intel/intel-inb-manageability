@@ -1,3 +1,4 @@
+import threading
 import unittest
 from typing import Optional
 import os
@@ -71,7 +72,8 @@ class TestDownloader(unittest.TestCase):
                                  MockDispatcherBroker.build_mock_dispatcher_broker(),
                                  UpdateLogger("SOTA", "metadata"),
                                  None,
-                                 install_check_service=MockInstallCheckService())
+                                 install_check_service=MockInstallCheckService(),
+                                 cancel_event=threading.Event())
         cls.sota_instance.factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
 
