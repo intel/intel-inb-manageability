@@ -15,7 +15,7 @@ import os
 from typing import Any, Optional
 
 from ..dispatcher_broker import DispatcherBroker
-from .constants import APT_SOURCES_LIST_PATH, MENDER_FILE_PATH
+from .constants import APT_SOURCES_LIST_PATH, MENDER_FILE_PATH, TIBER_UPDATE_TOOL_PATH
 from ..common import dispatcher_state
 
 logger = logging.getLogger(__name__)
@@ -185,4 +185,47 @@ class YoctoSetupHelper(SetupHelper):
         FIXME this is not OS generic)
         """
         logger.debug("Yocto post processing")
+        return ""
+
+
+class TiberOSSetupHelper(SetupHelper):
+    """
+    TiberOS specific implementation of SetupHelper.
+    """
+
+    def __init__(self, broker: DispatcherBroker) -> None:
+        """ Initializes TiberOSSetupHelper
+        @param broker: DispatcherBroker instance used to communicate with other INBM agents
+        """
+        self._broker = broker
+        super().__init__()
+
+    def pre_processing(self) -> bool:
+        """Perform checks immediately before applying an OS update or upgrade.
+        TiberOS: if Update Tool is present, it proceeds to perform the OS update
+        @return: True if OK to proceed; False otherwise
+        """
+        logger.debug("TiberOS pre processing")
+        return self._is_update_tool_exists()
+
+    def _is_update_tool_exists(self) -> bool:
+        """Verifies to see if update tool is present to perform the OS update
+        @return: Boolean value to proceed or not with the OS update
+        """
+        logger.debug("Checking to see if update tool exists")
+        if os.path.isfile(TIBER_UPDATE_TOOL_PATH):
+            self._broker.telemetry("Update tool found in " + TIBER_UPDATE_TOOL_PATH +
+                                   ". Proceeding to perform SOTA.")
+            return True
+        else:
+            self._broker.telemetry("Update tool not found in " + TIBER_UPDATE_TOOL_PATH +
+                                   ". Aborting SOTA.")
+            return False
+
+    def get_snapper_snapshot_number(self) -> str:
+        """Gets the snapper snapshot number
+
+        FIXME this is not OS generic)
+        """
+        logger.debug("TiberOS post processing")
         return ""

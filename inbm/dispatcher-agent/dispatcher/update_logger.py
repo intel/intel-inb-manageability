@@ -9,10 +9,13 @@ import os
 import json
 import datetime
 import logging
+import threading
 from typing import Optional, Dict, List, Any
 
 from inbm_lib.constants import LOG_FILE, GRANULAR_LOG_FILE, SYSTEM_HISTORY_LOG_FILE, OTA_PENDING, FORMAT_VERSION, \
     SOTA, OS, APPLICATION, PACKAGE_INSTALL, PACKAGE_UPGRADE
+
+from inbm_lib.detect_os import detect_os, LinuxDistType
 
 from inbm_lib.package_info import get_package_start_date, extract_package_names_and_versions, check_package_status, \
     check_package_version
@@ -30,11 +33,13 @@ class UpdateLogger:
 
     def __init__(self, ota_type: str, data: str) -> None:
         self.status = ""
+        self.detail_status = ""
         self.ota_type = ota_type
         self.package_list: str = ""
         self._time = datetime.datetime.now()
         self.metadata = data
         self.error = ""
+        self._granular_lock = threading.Lock()
 
     def set_time(self) -> None:
         """Set the OTA starting time."""
@@ -79,8 +84,14 @@ class UpdateLogger:
             logger.error(f'Error {e} on opening the file {LOG_FILE}')
             return None
 
-    def save_granular_log_file(self) -> None:
-        """Add package level granular update status data to the granular log file"""
+    def save_granular_log_file(self, log: Optional[dict] = None, check_package: bool = True) -> None:
+        """Add package level granular update status data to the granular log file
+        In TiberOS, the granular log records the reason of failure.
+        If the log is passed in, it will only record the log.
+
+        @param log: granular log to be recorded (dict)
+        @param check_package: Set to True to check the package's status and version and record them.
+        """
         logger.debug("")
         # If the granular log file doesn't exist, create it. The file will be deleted by PUA when update done/failed.
         if not os.path.exists(GRANULAR_LOG_FILE):
@@ -90,13 +101,17 @@ class UpdateLogger:
             }
             with open(GRANULAR_LOG_FILE, "w") as file:
                 json.dump(data, file)
+        if log:
+            self.update_granular_with_log(log)
+            return
         if self.ota_type == SOTA:
-            if self.package_list != "":
-                # SOTA package installation with package list
-                self.update_granular_with_sota_package_list_install()
-            else:
-                # Treat it as regular sota package upgrade
-                self.update_granular_with_sota_package_upgrade()
+            if check_package:
+                if self.package_list != "":
+                    # SOTA package installation with package list
+                    self.update_granular_with_sota_package_list_install()
+                else:
+                    # Treat it as regular sota package upgrade
+                    self.update_granular_with_sota_package_upgrade()
         else:
             logger.debug(f"Unsupported ota_type:{self.ota_type} to record granular data.")
 
@@ -150,7 +165,6 @@ class UpdateLogger:
         except (IndexError, KeyError) as e:
             logger.info(f"No upgrade information found in history log. Error: {e}")
 
-
     def update_granular_with_sota_package_list_install(self) -> None:
         """This function checks the latest package installation information using dpkg-query command.
            It checks all the packages inside package_list and records the package's status and version.
@@ -186,6 +200,23 @@ class UpdateLogger:
             # Open the file in write mode to save the updated data
             with open(GRANULAR_LOG_FILE, 'w') as f:
                 json.dump(data, f, indent=4)
+
+    def update_granular_with_log(self, log: dict) -> None:
+        """This function stores the log provided into the granular log file."""
+        logger.debug("")
+        with self._granular_lock:
+            try:
+                # Load current data in granular log file.
+                with open(GRANULAR_LOG_FILE, 'r') as f:
+                    data = json.load(f)
+                # Append the log to the UpdateLog
+                data['UpdateLog'].append(log)
+
+                # Open the file in write mode to save the updated data
+                with open(GRANULAR_LOG_FILE, 'w') as f:
+                    json.dump(data, f, indent=4)
+            except (json.JSONDecodeError, OSError) as err:
+                logger.error(f"Error decoding JSON from {GRANULAR_LOG_FILE}: {err}")
 
     def read_history_log_file(self) -> Optional[str]:
         """Read the apt history log file.

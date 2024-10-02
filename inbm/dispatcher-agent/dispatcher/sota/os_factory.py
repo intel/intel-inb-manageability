@@ -9,11 +9,12 @@ import platform
 from abc import ABC, abstractmethod
 from enum import Enum
 
-from inbm_lib.detect_os import OsType
+from inbm_lib.detect_os import OsType, LinuxDistType
 
 from .constants import BTRFS
 from .downloader import *
-from .os_updater import DebianBasedUpdater, WindowsUpdater, YoctoX86_64Updater, OsUpdater, YoctoARMUpdater
+from .os_updater import DebianBasedUpdater, WindowsUpdater, YoctoX86_64Updater, OsUpdater, YoctoARMUpdater, \
+    TiberOSUpdater
 from .rebooter import *
 from .setup_helper import *
 from .setup_helper import SetupHelper
@@ -22,30 +23,25 @@ from .snapshot import *
 logger = logging.getLogger(__name__)
 
 
-class LinuxDistType(Enum):
-    """Supported Linux Distributions"""
-    Ubuntu = 0
-    YoctoX86_64 = 1
-    YoctoARM = 2
-    Deby = 3
-    Debian = 4
-
 
 class SotaOsFactory:
     """Creates instances of OsFactory based on detected platform
     """
 
     def __init__(self,  dispatcher_broker: DispatcherBroker,
-                 sota_repos: Optional[str] = None, package_list: list[str] = []) -> None:
+                 sota_repos: Optional[str] = None, package_list: list[str] = [],
+                 signature: Optional[str] = None) -> None:
         """Initializes OsFactory.
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param package_list: list of packages to install/update (or empty for all--general upgrade)
+        @param signature: signature used to verify image
         """
         self._sota_repos = sota_repos
         self._package_list = package_list
         self._dispatcher_broker = dispatcher_broker
+        self._signature = signature
 
     @staticmethod
     def verify_os_supported() -> str:
@@ -79,6 +75,13 @@ class SotaOsFactory:
         elif os_type == OsType.Windows.name:
             logger.debug("Windows returned")
             return Windows(self._dispatcher_broker)
+        #TODO: Remove this when confirmed that TiberOS is in use
+        elif os_type == LinuxDistType.Mariner.name:
+            logger.debug("Mariner returned")
+            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature)
+        elif os_type == LinuxDistType.TiberOS.name:
+            logger.debug("TiberOS returned")
+            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature)
         raise ValueError('Unsupported OS type: ' + os_type)
 
 
@@ -147,6 +150,7 @@ class YoctoX86_64(ISotaOs):
                              proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         logger.debug("")
         return YoctoDownloader()
 
@@ -177,6 +181,7 @@ class YoctoARM(ISotaOs):
                              snap_num, proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         logger.debug("")
         return YoctoDownloader()
 
@@ -217,6 +222,7 @@ class DebianBasedSotaOs(ISotaOs):
                                    snap_num, proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         return DebianBasedDownloader()
 
 
@@ -248,4 +254,42 @@ class Windows(ISotaOs):
                                proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
         return WindowsDownloader()
+
+
+class TiberOSBasedSotaOs(ISotaOs):
+    """TiberOSBasedSotaOs class, child of ISotaOs"""
+
+    def __init__(self,  dispatcher_broker: DispatcherBroker, signature: Optional[str] = None) -> None:
+        """Constructor.
+
+        @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
+        @param signature: signature used to verify image
+        """
+        self._dispatcher_broker = dispatcher_broker
+        self._signature = signature
+
+    def create_setup_helper(self) -> SetupHelper:
+        logger.debug("")
+        return TiberOSSetupHelper(self._dispatcher_broker)
+
+    def create_rebooter(self) -> Rebooter:
+        logger.debug("")
+        return LinuxRebooter(self._dispatcher_broker)
+
+    def create_os_updater(self) -> OsUpdater:
+        logger.debug("")
+        return TiberOSUpdater(signature=self._signature)
+
+    def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
+                           proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
+        logger.debug("")
+        trtl = Trtl(PseudoShellRunner(), BTRFS)
+        return TiberOSSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num,
+                             proceed_without_rollback, reboot_device)
+
+    def create_downloader(self) -> Downloader:
+        """ Create a downloader object"""
+        logger.debug("")
+        return TiberOSDownloader()

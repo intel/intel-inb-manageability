@@ -80,7 +80,8 @@ class PseudoShellRunner:
     def run_with_log_path(self,
                           cmd: str,
                           log_path: Optional[str],
-                          cwd: Optional[str] = None) -> Tuple[str, Optional[str], int, Optional[str]]:
+                          cwd: Optional[str] = None,
+                          stdin: Optional[str] = None,) -> Tuple[str, Optional[str], int, Optional[str]]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -89,6 +90,7 @@ class PseudoShellRunner:
         @param cmd: Shell cmd to execute
         @param log_path: string format of log file's absolute path
         @param cwd: if not None, run process from this working directory
+        @param stdin: if stdin provided, it will be passed as stdin input
         @return: Result of subprocess along with output, error (possibly None), exit status, and absolute log path
         """
         shlex_split_cmd = PseudoShellRunner().interpret_shell_like_command(cmd)
@@ -126,7 +128,12 @@ class PseudoShellRunner:
             abs_log_path = None
 
         logger.debug("")
-        (out, err) = proc.communicate(b'yes\n') if AFULNX_64 in cmd else proc.communicate()
+        if AFULNX_64 in cmd:
+            (out, err) = proc.communicate(b'yes\n')
+        elif stdin:
+            (out, err) = proc.communicate(input=stdin.encode())
+        else:
+            (out, err) = proc.communicate()
 
         # we filter out bad characters but still accept the rest of the string
         # here based on experience running the underlying command
@@ -139,7 +146,8 @@ class PseudoShellRunner:
 
         return decoded_out, decoded_err, proc.returncode, abs_log_path
 
-    def run(self, cmd: str, cwd: Optional[str] = None) -> Tuple[str, Optional[str], int]:
+    def run(self, cmd: str, cwd: Optional[str] = None,
+            stdin: Optional[str] = None) -> Tuple[str, Optional[str], int]:
         """Run/Invoke system commands
 
         NOTE: on Windows, stderr will appear in stdout instead, alongside stdout,
@@ -147,9 +155,10 @@ class PseudoShellRunner:
 
         @param cmd: Shell cmd to execute
         @param cwd: if not None, run process from this working directory
+        @param stdin: if stdin provided, it will be passed as stdin input
         @return: Result of subprocess along with output, error (possibly None) & exit status
         """
-        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd)
+        (out, err, code, _) = PseudoShellRunner().run_with_log_path(cmd, log_path=None, cwd=cwd, stdin=stdin)
         return out, err, code
 
     def interpret_shell_like_command(self, cmd: str) -> List[str]:

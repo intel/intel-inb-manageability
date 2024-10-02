@@ -25,6 +25,7 @@ from .converter import size_to_bytes
 from .sota_error import SotaError
 from ..common import uri_utilities
 from ..packagemanager import irepo
+from .update_tool_util import update_tool_apply_command, update_tool_write_command
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +60,12 @@ class OsUpdater(metaclass=ABCMeta):  # pragma: no cover
         self.cmd_list: List = []
 
     @abstractmethod
-    def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
+    def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
+                             repo: irepo.IRepo) -> List[str]:
         """Abstract class method to create command list to update from a remote source.
 
         @param uri: Original download URI, if given in manifest.
+        @param signature: Signature to be used for verification, if given in manifest.
         @param repo: Directory on disk where update has been downloaded, if given in manifest.
         @return: Command list to execute to perform update.
         """
@@ -112,10 +115,12 @@ class DebianBasedUpdater(OsUpdater):
         self._package_list = package_list
         os.environ["DEBIAN_FRONTEND"] = "noninteractive"
 
-    def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
+    def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
+                             repo: irepo.IRepo) -> List[str]:
         """Concrete class method to create command list to update from a remote source for Debian OS.
 
         @param uri: Original download URI, if given in manifest.
+        @param signature: Signature to be used for verification, if given in manifest.
         @param repo: Directory on disk where update has been downloaded, if given in manifest.
         @return: Command list to execute to perform update.
         """
@@ -253,10 +258,12 @@ class YoctoX86_64Updater(OsUpdater):
     def __init__(self) -> None:
         super().__init__()
 
-    def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
+    def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
+                             repo: irepo.IRepo) -> List[str]:
         """Concrete class method to create command list to update from a remote source for Yocto X86 OS.
 
         @param uri: Original download URI, if given in manifest.
+        @param signature: Signature to be used for verification, if given in manifest.
         @param repo: Directory on disk where update has been downloaded, if given in manifest.
         @return: Command list to execute to perform update.
         """
@@ -303,10 +310,12 @@ class YoctoARMUpdater(OsUpdater):
     def __init__(self) -> None:
         super().__init__()
 
-    def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
+    def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
+                             repo: irepo.IRepo) -> List[str]:
         """Concrete class method to create command list to update from a remote source for Yocto ARM OS.
 
         @param uri: Original download URI, if given in manifest.
+        @param signature: Signature to be used for verification, if given in manifest.
         @param repo: Directory on disk where update has been downloaded, if given in manifest.
         @return: Command list to execute to perform update.
         """
@@ -352,10 +361,12 @@ class WindowsUpdater(OsUpdater):
     def __init__(self) -> None:
         super().__init__()
 
-    def update_remote_source(self, uri: Optional[CanonicalUri], repo: irepo.IRepo) -> List[str]:
+    def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
+                             repo: irepo.IRepo) -> List[str]:
         """Concrete class method to create command list to update from a remote source for Windows OS.
 
         @param uri: Original download URI, if given in manifest.
+        @param signature: Signature to be used for verification, if given in manifest.
         @param repo: Directory on disk where update has been downloaded, if given in manifest.
         @return: Command list to execute to perform update.
         """
@@ -381,3 +392,43 @@ class WindowsUpdater(OsUpdater):
 
     def download_only(self) -> list[str]:
         raise NotImplementedError()
+
+
+class TiberOSUpdater(OsUpdater):
+    """TiberOSUpdater class, child of OsUpdater
+
+       @param signature: signature used to verify image
+    """
+    def __init__(self, signature: Optional[str] = None) -> None:
+        super().__init__()
+        self._signature = signature
+
+    def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
+                             repo: irepo.IRepo) -> List[str]:
+        """Returns empty list for TiberOS --not applicable"""
+        logger.error("SOTA full mode is not supported in TiberOS.")
+        return []
+
+    def update_local_source(self, file_path: str) -> List[str]:
+        """Concrete class method to create command list to update from a local source for TiberOS.
+        @param file_path: path to local file
+        @return: Command list to execute to perform update.
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def get_estimated_size() -> int:
+        """Gets the size of the update
+        @return: Returns 0 if size is freed. Returns in bytes of size consumed
+        """
+        return 0
+
+    def no_download(self) -> list[str]:
+        """Return the UT apply command"""
+        cmds = [update_tool_apply_command()]
+        return CommandList(cmds).cmd_list
+
+    def download_only(self) -> list[str]:
+        """Return the UT write command"""
+        cmds = [update_tool_write_command(self._signature)]
+        return CommandList(cmds).cmd_list
