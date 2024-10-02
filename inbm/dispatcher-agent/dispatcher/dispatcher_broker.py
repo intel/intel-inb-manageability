@@ -16,7 +16,7 @@ from dispatcher.dispatcher_exception import DispatcherException
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
 
-from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL, UPDATE_CHANNEL
+from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL, NODE_UPDATE_CHANNEL
 
 logger = logging.getLogger(__name__)
 
@@ -46,8 +46,8 @@ class DispatcherBroker:
         @param message: message to be published to cloud
         @param job_id: Job ID used to track the request in both UDM and TC
         """
-        logger.debug(f"Sending node update for to {UPDATE_CHANNEL} with message: {message}")
-        self.mqtt_publish(topic=UPDATE_CHANNEL, payload=message)
+        logger.debug(f"Sending node update for to {NODE_UPDATE_CHANNEL} with message: {message}")
+        self.mqtt_publish(topic=NODE_UPDATE_CHANNEL, payload=message)
      
     def _check_db_for_started_job(self) -> Optional[Schedule]:
         sqliteMgr = SqliteManager()

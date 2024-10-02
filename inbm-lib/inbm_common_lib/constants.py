@@ -21,7 +21,7 @@ RESPONSE_CHANNEL = 'manageability/response'
 EVENT_CHANNEL = 'manageability/event'
 TELEMETRY_CHANNEL = 'manageability/telemetry'
 # Used for Node updates to be sent to UDM
-UPDATE_CHANNEL = 'manageability/update'
+NODE_UPDATE_CHANNEL = 'manageability/nodeUpdate'
 CONFIG_CHANNEL = 'ma/configuration/update/'
 
 # Request constants
