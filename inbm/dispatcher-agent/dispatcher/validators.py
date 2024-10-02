@@ -43,7 +43,7 @@ def _validate_schema(params: str, schema_location: Optional[str] = None) -> str:
         jsonschema.validate(parsed, schema)
     except (ValueError, OSError, jsonschema.exceptions.ValidationError) as e:
         raise ValueError(f"Schema validation failed! Error: {e}")
-    return parsed
+    return parsed             
 
 
 def is_valid_json_structure(json_params: str, schema_location: Optional[str] = None) -> bool:

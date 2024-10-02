@@ -10,12 +10,12 @@
         "type": "string",
         "description": "A message describing the result of the command."
       },
-      "job_id": {
+      "jobId": {
         "type": "string",
         "description": "A unique identifier for the job.",
         "pattern": "^[a-z0-9-]+$"
       }
     },
-    "required": ["status", "message", "job_id"],
+    "required": ["status", "message", "jobId"],
     "additionalProperties": false
   }

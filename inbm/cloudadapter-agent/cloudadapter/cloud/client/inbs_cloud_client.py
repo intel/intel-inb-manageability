@@ -141,7 +141,7 @@ class InbsCloudClient(CloudClient):
         timestamp = Timestamp()
         timestamp.GetCurrentTime()
         job=common_pb2.Job(
-                job_id=message_dict.get("job_id", ""),
+                job_id=message_dict.get("jobId", ""),
                 node_id=self._client_id,
                 status_code=status_code,
                 result_msgs=result_messages,
