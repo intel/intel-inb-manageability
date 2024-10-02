@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
 ### Added
+ - (NEXMANAGE-515) Update dispatcher SOTA related classes for supporting TiberOS
+ - (NEXMANAGE-598) Expanding INBC for handling TiberOS update cmd
  - Updated proto files to add new RPC calls to allow edge node to update
    its status with INBS.
  - (NEXMANAGE- 610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS

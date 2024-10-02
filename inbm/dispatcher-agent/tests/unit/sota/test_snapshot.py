@@ -6,7 +6,8 @@ from unittest.mock import mock_open, patch, Mock
 
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.sota.sota_error import SotaError
-from dispatcher.sota.os_factory import DebianBasedSnapshot, YoctoSnapshot, SotaOsFactory
+from dispatcher.sota.os_factory import DebianBasedSnapshot, YoctoSnapshot, SotaOsFactory, TiberOSSnapshot
+from inbm_common_lib.constants import UNKNOWN
 
 
 @ddt
@@ -200,3 +201,81 @@ class TestYoctoSnapshot(unittest.TestCase):
         args, _ = dispatcher_broker.telemetry.call_args
         message, = args
         assert "unsuccessful" in message
+
+
+class TestTiberOSSnapshot(unittest.TestCase):
+    @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
+    @patch('inbm_common_lib.utility.get_os_version', autospec=True)
+    def test_take_snapshot_succeeds(self, mock_version, mock_dispatcher_state) -> None:
+        mock_version.return_value = "2.0.20240802.0213"
+        mock_dispatcher_state.write_dispatcher_state_to_state_file.return_value = True
+
+        dispatcher_broker = Mock()
+
+        tiberos_snapshot = TiberOSSnapshot(Mock(), "command", dispatcher_broker, "1", True, True)
+        tiberos_snapshot.take_snapshot()
+
+        assert dispatcher_broker.telemetry.call_count > 0
+        args, _ = dispatcher_broker.telemetry.call_args
+        message, = args
+        assert "unsuccessful" not in message
+
+    @patch('dispatcher.sota.snapshot.get_os_version', return_value=UNKNOWN)
+    def test_take_snapshot_unknown_version_error(self, mock_version) -> None:
+        dispatcher_broker = Mock()
+
+        tiberos_snapshot = TiberOSSnapshot(Mock(), "command", dispatcher_broker, "1", True, True)
+        with self.assertRaises(SotaError):
+            tiberos_snapshot.take_snapshot()
+        mock_version.assert_called_once()
+
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('', "", 0))
+    @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
+    def test_commit_success(self, mock_dispatcher_state, mock_run) -> None:
+        dispatcher_broker = Mock()
+
+        tiberos_snapshot = TiberOSSnapshot(Mock(), "command", dispatcher_broker, "1", True, True)
+        self.assertEqual(tiberos_snapshot.commit(), 0)
+        mock_run.assert_called_once()
+        assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
+
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('', "", 1))
+    @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
+    def test_commit_failed_with_error(self, mock_dispatcher_state, mock_run) -> None:
+        dispatcher_broker = Mock()
+
+        tiberos_snapshot = TiberOSSnapshot(Mock(), "command", dispatcher_broker, "1", True, True)
+        with self.assertRaises(SotaError):
+            tiberos_snapshot.commit()
+        mock_run.assert_called_once()
+        assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
+
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('', "", 0))
+    @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
+    def test_recover_success(self, mock_dispatcher_state, mock_run) -> None:
+        rebooter = Mock()
+        tiberos_snapshot = TiberOSSnapshot(Mock(), "command", Mock(), "1", True, True)
+        tiberos_snapshot.recover(rebooter, 1)
+        assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
+        assert rebooter.reboot.call_count == 1
+        assert mock_run.call_count == 1
+
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('', "", 0))
+    @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
+    def test_revert_success(self, mock_dispatcher_state, mock_run) -> None:
+        rebooter = Mock()
+        tiberos_snapshot = TiberOSSnapshot(Mock(), "command", Mock(), "1", True, True)
+        tiberos_snapshot.revert(rebooter, 1)
+        assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
+        assert rebooter.reboot.call_count == 1
+        assert mock_run.call_count == 1
+
+    @patch('dispatcher.sota.snapshot.get_os_version', return_value='2.0.20240802.0213')
+    @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
+           return_value={'restart_reason': 'sota', 'tiberos-version': '2.0.20240802.0213'})
+    def test_update_system_raise_error_when_versions_are_same(self, mock_consume_disp_state, mock_version) -> None:
+        tiberos_snapshot = TiberOSSnapshot(Mock(), "command", Mock(), "1", True, True)
+        with self.assertRaises(SotaError):
+            tiberos_snapshot.update_system()
+        mock_consume_disp_state.assert_called_once()
+        mock_version.assert_called_once()

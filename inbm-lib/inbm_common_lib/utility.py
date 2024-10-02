@@ -10,12 +10,12 @@ import url_normalize
 import shutil
 import tarfile
 import logging
-
+import ast
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Iterable, Optional, Union, Dict, Tuple
 
-from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER
+from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER, OS_RELEASE_PATH, UNKNOWN
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 from .constants import URL_NULL_CHAR
@@ -271,3 +271,64 @@ def validate_file_type(path: list[str]) -> None:
     if os.path.exists(TEMP_EXT_FOLDER):
         shutil.rmtree(TEMP_EXT_FOLDER, ignore_errors=True)
     remove_file_list(extracted_file_list)
+
+
+def get_os_version() -> str:
+    """Get os version from os release file.
+
+    @return value of the VERSION
+    """
+    try:
+        if os.path.exists(OS_RELEASE_PATH):
+            with open(OS_RELEASE_PATH, 'r') as version_file:
+                content = version_file.read()
+
+            content_dict = parse_os_release(content)
+            version = content_dict.get("VERSION")
+            if version:
+                return version
+            logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
+        else:
+            logger.error(f"{OS_RELEASE_PATH} not exist.")
+
+        return UNKNOWN
+    except OSError as err:
+        raise OSError(f"Error while reading the os version: {err}")
+
+
+def parse_os_release(file_content: str) -> Dict[str, str]:
+    """
+    Parses the content of an os-release file and returns a dictionary of key-value pairs.
+
+    :param file_content: The content of the os-release file as a string.
+    :return: A dictionary containing key-value pairs from the file.
+    """
+    result: Dict[str, str] = {}
+    for line in file_content.splitlines():
+        parsed = parse_line(line)
+        if parsed:
+            key, value = parsed
+            result[key] = value
+    return result
+
+
+def parse_line(line: str) -> Optional[Tuple[str, str]]:
+    """
+    Parses a line of the os-release file and returns a key-value pair.
+    Returns None if the line is empty or a comment.
+
+    :param line: A line from the os-release file.
+    :return: A tuple of (key, value) if the line contains a key-value pair, else None.
+    """
+    line = line.strip()
+    if not line or line.startswith('#'):
+        return None
+    if '=' not in line:
+        return None
+    key, value = line.split('=', 1)
+    key = key.strip()
+    value = value.strip()
+    if (value.startswith('"') and value.endswith('"')) or \
+       (value.startswith("'") and value.endswith("'")):
+           value = value[1:-1]
+    return key, value

@@ -83,3 +83,19 @@ class TestSetupHelper(unittest.TestCase):
         setup_helper = factory.create_setup_helper()
         setup_helper.pre_processing()
         mock_is_mender_file_exists.assert_called_once()
+
+    @patch('os.path.isfile', return_value=True)
+    def test_tiberos_pre_processing_update_tool_exist(self, mock_is_ut_file_exists) -> None:
+        factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+        setup_helper = factory.create_setup_helper()
+        self.assertTrue(setup_helper.pre_processing())
+        mock_is_ut_file_exists.assert_called_once()
+
+    @patch('os.path.isfile', return_value=False)
+    def test_tiberos_pre_processing_update_tool_not_exist(self, mock_is_ut_file_exists) -> None:
+        factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+        setup_helper = factory.create_setup_helper()
+        self.assertFalse(setup_helper.pre_processing())
+        mock_is_ut_file_exists.assert_called_once()

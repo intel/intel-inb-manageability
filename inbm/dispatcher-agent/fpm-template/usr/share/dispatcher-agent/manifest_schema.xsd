@@ -11,6 +11,11 @@
              <xs:maxLength value="50"/>
          </xs:restriction>
     </xs:simpleType>
+    <xs:simpleType name="Max5000Chars">
+         <xs:restriction base="xs:string">
+             <xs:maxLength value="5000"/>
+         </xs:restriction>
+    </xs:simpleType>
     <xs:simpleType name="MinDecimalZero">
          <xs:restriction base="xs:decimal">
             <xs:minInclusive value="0"/>
@@ -487,7 +492,7 @@
                 <xs:element name="fetch" type="URLMax700Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="signature" type="SigMax1000Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="username" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
-                <xs:element name="password" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
+                <xs:element name="password" type="Max5000Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="release_date" type="xs:date" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="path" type="PathMax1500Chars" minOccurs="0" maxOccurs="1"/>
                 <xs:element name="deviceReboot" type="Max50Chars" minOccurs="0" maxOccurs="1"/>
