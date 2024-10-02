@@ -19,8 +19,8 @@ done
 
 sleep 3
 
-echo Also looking for /etc/dispatcher_state to be gone
-! [ -f /etc/dispatcher_state ]
+echo Also looking for /var/intel-manageability/dispatcher_state to be gone
+! [ -f /var/intel-manageability/dispatcher_state ]
 
 echo "Checking health of all services"
 check_health_tc_services

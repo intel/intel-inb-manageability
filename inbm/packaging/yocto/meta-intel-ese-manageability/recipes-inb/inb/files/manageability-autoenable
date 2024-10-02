@@ -9,7 +9,7 @@ function run_FOTA() {
   # 2. After that, send mender file and perform SOTA.
   # 3. After system reboot, this script will check if there is SOTA perform previously. If SOTA performed previously and
   #    fip binary exist. It will call movisoc tool to flash the fip and reboot.
-  if [  -f /etc/dispatcher_state ]; then
+  if [  -f /var/intel-manageability/dispatcher_state ]; then
     if [  -f /var/cache/manageability/repository-tool/fip* ]; then
           echo "Found FIP."
           movisoc-fwu -a /var/cache/manageability/repository-tool/fip*

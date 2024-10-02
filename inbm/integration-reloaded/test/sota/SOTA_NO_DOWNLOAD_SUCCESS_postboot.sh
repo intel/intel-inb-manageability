@@ -27,11 +27,11 @@ echo "Waiting for dispatcher to finish with sota update success postboot..." | s
 sleep 30
 echo "Done waiting for dispatcher." | systemd-cat
 
-echo looking for /etc/dispatcher_state to be gone
-if [ -f /etc/dispatcher_state ] ; then
-  echo ERROR: /etc/dispatcher_state should be removed and is not | systemd-cat
-  ls -l /etc/dispatcher_state
-  cat /etc/dispatcher_state
+echo looking for /var/intel-manageability/dispatcher_state to be gone
+if [ -f /var/intel-manageability/dispatcher_state ] ; then
+  echo ERROR: /var/intel-manageability/dispatcher_state should be removed and is not | systemd-cat
+  ls -l /var/intel-manageability/dispatcher_state
+  cat /var/intel-manageability/dispatcher_state
   echo "<FAILED> SOTA NO_DOWNLOAD SUCCESS TEST"
   exit 1
 fi

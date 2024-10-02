@@ -21,6 +21,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
  - Removed all references to `future` library as we do not use Python 2
+ - (NEX-11354) Moved `/etc/dispatcher_state` to `/var/intel-manageability/dispatcher_state`
+ - (NEXMANAGE-744) Remove `psutil` in favor if `shutil.disk_usage` to save space
+ - (NEXMANAGE-744) Don't pull in `dmidecode` in `inbm-lib` -- pull in only in `telemetry`
+ - (NEXMANAGE-744) Removed all references to `future` library as we do not use Python 2
 
 ## 4.2.5 - 2024-09-04
 ### Fixed

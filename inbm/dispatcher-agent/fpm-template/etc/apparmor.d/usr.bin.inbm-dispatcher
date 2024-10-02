@@ -65,6 +65,7 @@
   /usr/bin/gpg rUx,
   /bin/gpg rUx,
   /etc/dispatcher_state rw,
+  /var/intel-manageability/dispatcher_state rw,
   /etc/lsb-release r,
   /etc/magic r,
   /etc/mime.types r,

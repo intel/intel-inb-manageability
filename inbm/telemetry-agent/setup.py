@@ -12,7 +12,7 @@ setup(
     packages=find_packages(exclude=('tests', 'doc')),
     include_package_data=True,
     install_requires=['pytest', 'pytest-cov', 'pytest-mock',
-                      'packaging', 'paho-mqtt', 'psutil'],
+                      'packaging', 'paho-mqtt', 'psutil', 'dmidecode'],
     test_suite='pytest',
     tests_require=['pytest', 'pytest-cov', 'pytest-mock']
 )
