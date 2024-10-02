@@ -94,6 +94,7 @@ class Dispatcher:
         # Initialize update_queue with a capacity of 1 to ensure serialized handling of updates.
         self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._thread_count = 1
+        self._thread_list: list[Thread] = []
         self._sota_repos = None
         self.sota_mode = None
         self._package_list: str = ""
@@ -185,7 +186,13 @@ class Dispatcher:
                 if active_count() - active_start_count < self._thread_count:
                     worker = Thread(target=handle_updates, args=(self,))
                     worker.setDaemon(True)
+                    self._thread_list.append(worker)
                     worker.start()
+
+            # Periodically check if processes have finished. If process finished, remove it from the list.
+            for thread in self._thread_list:
+                if not thread.is_alive():
+                    self._thread_list.remove(thread)
             sleep(1)
 
         self._dispatcher_broker.mqtt_publish(f'{AGENT}/state', 'dead', retain=True)
@@ -496,7 +503,37 @@ class Dispatcher:
         request_type = topic.split('/')[2]
         request_id = topic.split('/')[3] if len(topic.split('/')) > 3 else None
         manifest = payload
-        self._add_request_to_queue(request_type, manifest, request_id)
+        if not self._handle_cancel_request(request_type, manifest):
+            self._add_request_to_queue(request_type, manifest, request_id)
+
+    def _handle_cancel_request(self, request_type, manifest) -> bool:
+        """
+        Check if it is a SOTA cancel request. If it is, send the terminate signal to current process.
+
+        @param request_type: type of the request
+        @param manifest: manifest to be processed
+        @return: True if the request has been processed; False if no request has been handled.
+        """
+        if request_type == "install":
+            type_of_manifest, parsed_head = \
+                _check_type_validate_manifest(manifest)
+            if type_of_manifest == 'ota':
+                header = parsed_head.get_children('ota/header')
+                ota_type = header['type']
+                resource = parsed_head.get_children(f'ota/type/{ota_type}')
+                if ota_type == OtaType.SOTA.name.lower():
+                    sota_mode = resource.get('mode', None)
+                    if sota_mode == 'cancel':
+                        logger.debug(f"Receive sota cancel request.")
+                        # The list should only contain one OTA process.
+                        for thread in self._thread_list:
+                            if thread.is_alive() and thread.ident:
+                                logger.debug(f"Terminate thread={thread.ident}.")
+                                signal.pthread_kill(thread.ident, signal.SIGTERM)
+                        logger.debug(f"Request cancel complete.")
+                        self._send_result(str(Result(CODE_OK, "Request complete.")))
+                        return True
+        return False
 
     def _on_message(self, topic: str, payload: Any, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
