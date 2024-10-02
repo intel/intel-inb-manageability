@@ -16,7 +16,7 @@ TEST_NODE_UPDATE_JSON_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
 class TestValidators(TestCase):
 
     def test_validate_node_update_json_structure_pass(self) -> None:
-        json_params = '{"status":200, "message":"COMMAND SUCCESSFUL", "job_id":"swupd-4b151b70-c121-4245-873b-5324ac7a3f7a"}'
+        json_params = '{"status":200, "message":"COMMAND SUCCESSFUL", "jobId":"swupd-4b151b70-c121-4245-873b-5324ac7a3f7a"}'
         result = is_valid_json_structure(json_params, TEST_NODE_UPDATE_JSON_SCHEMA_LOCATION)
         self.assertTrue(result is True)
         
