@@ -27,7 +27,7 @@ cp /scripts/afulnx_64 /opt/afulnx/afulnx_64
 
 mkdir -p /var/log/sota_test
 
-! [ -f /etc/dispatcher_state ]
+! [ -f /var/intel-manageability/dispatcher_state ]
 touch /etc/force_yocto
 ls -l /etc/force_yocto
 date

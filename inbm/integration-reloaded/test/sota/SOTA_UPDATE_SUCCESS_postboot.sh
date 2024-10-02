@@ -32,11 +32,11 @@ echo After reboot, we are looking for exactly 5 files in /var/lib/dispatcher/upl
 ls /var/lib/dispatcher/upload/
 ls /var/lib/dispatcher/upload/ | wc -l | grep 5
 
-echo Also looking for /etc/dispatcher_state to be gone
-if [ -f /etc/dispatcher_state ] ; then
-  echo ERROR: /etc/dispatcher_state should be removed and is not | systemd-cat
-  ls -l /etc/dispatcher_state
-  cat /etc/dispatcher_state
+echo Also looking for /var/intel-manageability/dispatcher_state to be gone
+if [ -f /var/intel-manageability/dispatcher_state ] ; then
+  echo ERROR: /var/intel-manageability/dispatcher_state should be removed and is not | systemd-cat
+  ls -l /var/intel-manageability/dispatcher_state
+  cat /var/intel-manageability/dispatcher_state
   echo "<FAILED> SOTA UPDATE SUCCESS TEST"
   exit 1
 fi

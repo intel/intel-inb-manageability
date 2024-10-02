@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
    its status with INBS.
  - (NEXMANAGE- 610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
 
+### Changed
+ - (NEXARL-306) Update agents' prerm script to prevent them from disabling and stopping if it's an upgrade process
 
 ### Fixed
  - (NEXMANAGE-746) Add extra sleeptime in INBM tpm script to resolve ARL platform issue
@@ -18,6 +20,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - Updated 'cryptography' Python library in dispatcher to 43.0.1, fixing GHSA-h4gh-qq45-vh27.
 
 ### Changed
+ - Removed all references to `future` library as we do not use Python 2
+ - (NEX-11354) Moved `/etc/dispatcher_state` to `/var/intel-manageability/dispatcher_state`
  - (NEXMANAGE-744) Remove `psutil` in favor if `shutil.disk_usage` to save space
  - (NEXMANAGE-744) Don't pull in `dmidecode` in `inbm-lib` -- pull in only in `telemetry`
  - (NEXMANAGE-744) Removed all references to `future` library as we do not use Python 2
