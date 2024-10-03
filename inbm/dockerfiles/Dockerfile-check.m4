@@ -158,6 +158,7 @@ RUN source /venv-py3/bin/activate && \
 FROM venv-py3 AS venv-cloudadapter-py3
 COPY inbm/cloudadapter-agent/requirements.txt /src/cloudadapter-agent/requirements.txt
 COPY inbm/cloudadapter-agent/test-requirements.txt /src/cloudadapter-agent/test-requirements.txt
+COPY inbm/cloudadapter-agent/fpm-template/usr/share/cloudadapter-agent/node_update_schema.json /src/inbm/cloudadapter-agent/fpm-template/usr/share/cloudadapter-agent/node_update_schema.json
 WORKDIR /src/cloudadapter-agent
 RUN source /venv-py3/bin/activate && \
     pip3.12 install -r requirements.txt && \
