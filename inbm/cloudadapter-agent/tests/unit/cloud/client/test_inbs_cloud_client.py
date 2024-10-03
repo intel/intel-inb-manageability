@@ -61,7 +61,7 @@ class TestInbsCloudClient:
         
         # Call the publish_update method
         with patch('cloudadapter.cloud.client.inbs_cloud_client.is_valid_json_structure', return_value=True):
-            inbs_client.publish_update(key, value)
+            inbs_client.publish_node_update(key, value)
 
         # Assert that the gRPC channel's SendNodeUpdate method was called
         mock_channel.SendNodeUpdate.assert_called_once()
