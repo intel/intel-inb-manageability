@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - Updated proto files to add new RPC calls to allow edge node to update
    its status with INBS.
  - (NEXMANAGE-610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
+ - Update TiberOS name to "tiber"
  - (NEXMANAGE-613) Store Scheduled updates in DB, Add nodeUpdate communication stream, and plumbing to return correct jobID on scheduled request.
 
 ### Changed
