@@ -35,7 +35,7 @@ class LinuxDistType(Enum):
     Debian = 4
     CentOS = 5
     Mariner = 6  # TODO: Remove this when confirmed that TiberOS is in use
-    TiberOS = 7
+    tiber = 7
 
 
 def verify_os_supported() -> str:
