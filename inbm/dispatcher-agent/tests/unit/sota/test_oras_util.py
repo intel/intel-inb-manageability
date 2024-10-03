@@ -73,7 +73,7 @@ class TestDownloader(unittest.TestCase):
                                  None,
                                  install_check_service=MockInstallCheckService())
         cls.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
 
     @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
     @patch('json.loads', return_value=mock_resp)
@@ -89,7 +89,7 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()

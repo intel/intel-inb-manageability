@@ -392,7 +392,7 @@ class SOTA:
                 # the artifacts from the OCI registry. The granular log is enabled in TiberOS with the download-only
                 # mode here to record the successful SOTA with current os version.
                 # TODO: Remove Mariner when confirmed that TiberOS is in use
-                elif detect_os() == LinuxDistType.TiberOS.name or detect_os() == LinuxDistType.Mariner.name:
+                elif detect_os() == LinuxDistType.tiber.name or detect_os() == LinuxDistType.Mariner.name:
                     self.save_granular_log()
 
                 # The download-only mode only downloads the packages without installing them.
@@ -417,7 +417,7 @@ class SOTA:
                 # the artifacts from the OCI registry. The granular log is enabled in TiberOS with the download-only
                 # mode because we want to record the artifact download failure.
                 # TODO: Remove Mariner when confirmed that TiberOS is in use
-                if detect_os() == LinuxDistType.TiberOS.name or detect_os() == LinuxDistType.Mariner.name:
+                if detect_os() == LinuxDistType.tiber.name or detect_os() == LinuxDistType.Mariner.name:
                     self.save_granular_log()
                 elif self.sota_mode != 'download-only':
                     self.save_granular_log()
@@ -451,7 +451,7 @@ class SOTA:
         current_os = detect_os()
         # TODO: Remove Mariner when confirmed that TiberOS is in use
         with self._granular_lock:
-            if current_os == LinuxDistType.TiberOS.name or current_os == LinuxDistType.Mariner.name:
+            if current_os == LinuxDistType.tiber.name or current_os == LinuxDistType.Mariner.name:
                 # Delete the previous log if exist.
                 if os.path.exists(GRANULAR_LOG_FILE):
                     remove_file(GRANULAR_LOG_FILE)

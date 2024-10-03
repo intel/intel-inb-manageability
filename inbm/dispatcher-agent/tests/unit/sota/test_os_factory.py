@@ -29,7 +29,7 @@ class TestOsFactory(TestCase):
         assert type(SotaOsFactory(self.mock_disp_broker).get_os('Windows')) is Windows
 
     def test_get_factory_tiberos(self) -> None:
-        assert type(SotaOsFactory(self.mock_disp_broker).get_os('TiberOS')) is TiberOSBasedSotaOs
+        assert type(SotaOsFactory(self.mock_disp_broker).get_os('tiber')) is TiberOSBasedSotaOs
 
     def test_raise_error_unsupported_OsFactory(self) -> None:
         factory = SotaOsFactory(self.mock_disp_broker)
