@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-TPM_FLAG_FILE=/etc/intel-manageability/public/tpm_flag
+TPM_FLAG_FILE=/var/intel-manageability/public/tpm_flag
 
 function detect_tpm {
     if [[ "x$PROVISION_TPM" == "xdisable" ]]; then

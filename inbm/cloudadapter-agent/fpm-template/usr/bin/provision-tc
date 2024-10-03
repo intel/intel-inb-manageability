@@ -30,7 +30,7 @@ function provision {
   if ! [[ $LOCAL_MQTT_PORT =~ $re ]] ; then
     echo "error: Not a number: $LOCAL_MQTT_PORT in setting mqtt port number" >&2; exit 1
   fi
-  echo "$LOCAL_MQTT_PORT" >/etc/intel-manageability/local-mqtt-port.txt
+  echo "$LOCAL_MQTT_PORT" >/var/intel-manageability/local-mqtt-port.txt
   enable_mqtt
   if [[ "x$NO_CLOUD" == "x" ]]; then
     configure_cloud
@@ -76,7 +76,7 @@ function check_requirements {
   fi
 
   # Check for safe mode
-  if [ -f /etc/intel-manageability/secret/SAFE_MODE ]; then
+  if [ -f /var/intel-manageability/secret/SAFE_MODE ]; then
     echo "WARNING: Safe mode is on. Provisioned credentials will go away on next boot."
   fi
 

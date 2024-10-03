@@ -1,15 +1,15 @@
 #!/bin/bash
 set -euxo pipefail
 
-TC_PUBLIC="/etc/intel-manageability/public"
-TC_SECRET="/etc/intel-manageability/secret"
+TC_PUBLIC="/var/intel-manageability/public"
+TC_SECRET="/var/intel-manageability/secret"
 DAYS_EXPIRY="2555"
 
 do_provision() {
     rm -f "$TC_SECRET"/.provisioned
     /usr/bin/inb-provision-certs "$TC_PUBLIC" "$TC_SECRET"
 
-    fix_permissions
+    #fix_permissions
 
     touch "$TC_SECRET"/.provisioned
 }
@@ -89,7 +89,7 @@ if ! [ -f "$TC_SECRET"/.provisioned ] ; then
     do_provision
 else
     # Fix permissions even if we end up not reprovisioning
-    fix_permissions
+    #fix_permissions
 
     # Check for HDDL mode; always reprovision with HDDL mode due to time sync issue.
     KMB_PCIE_EP_STATUS="/proc/device-tree/soc/pcie_ep@37000000/status"
