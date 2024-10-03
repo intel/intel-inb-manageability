@@ -75,17 +75,12 @@ fix_permissions() {
                 echo "Skipping group and user creation for $USER on 'tiber' OS."
             fi
 
-            # Perform chgrp regardless of OS
+            # Perform chgrp/chmod regardless of OS
             chgrp -R "$GROUP" "$dir"
-
-            if [ "$ID" != "tiber" ]; then
-                # Ensure group does not have write, 'other' does not have read, write, or execute
-                chmod -R g-w,o-rwx "$dir"
-                # Ensure user has read/write and group has read
-                chmod -R u+rw,g+r "$dir"
-            else
-                echo "Skipping chmod adjustments on 'tiber' OS for $dir."
-            fi
+            # Ensure group does not have write, 'other' does not have read, write, or execute
+            chmod -R g-w,o-rwx "$dir"
+            # Ensure user has read/write and group has read
+            chmod -R u+rw,g+r "$dir"
         fi
     done    
 
