@@ -205,6 +205,6 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
         connection=connection,
         telemetry=telemetry,
         event=event,
-        update=node_update,
+        node_update=node_update,
         attribute=attribute,
         handler=handler)
