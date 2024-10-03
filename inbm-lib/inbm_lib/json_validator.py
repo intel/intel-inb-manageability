@@ -32,8 +32,8 @@ def _validate_schema(params: str, schema_location: Optional[str] = None) -> Any:
     schema_location = _get_schema_location(schema_location)
 
     if not os.path.exists(schema_location):
-        logger.error("JSON Schema file not found")
-        raise ValueError("JSON Schema file not found")
+        logger.error(f"JSON Schema file not found: {schema_location}")
+        raise ValueError("JSON Schema file not found: {schema_location}")
 
     try:
         with open(get_canonical_representation_of_path(schema_location)) as schema_file:

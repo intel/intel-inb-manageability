@@ -16,13 +16,12 @@ from datetime import datetime
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
-from cloudadapter.constants import METHOD, DEAD
+from cloudadapter.constants import METHOD, DEAD, NODE_UPDATE_JSON_SCHEMA_LOCATION
 from cloudadapter.exceptions import AuthenticationError, PublishError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 
 from inbm_lib.json_validator import is_valid_json_structure
-from inbm_lib.constants import NODE_UPDATE_JSON_SCHEMA_LOCATION
 
 import grpc # type: ignore
 from .cloud_client import CloudClient

@@ -13,6 +13,9 @@ from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_SHARE_PATH_PREFIX, BROKER
 AGENT = 'cloudadapter'
 DISPATCHER = 'dispatcher'
 
+NODE_UPDATE_JSON_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
+                            'cloudadapter-agent' / 'node_update_schema.json')
+
 LOGGERCONFIG = INTEL_MANAGEABILITY_ETC_PATH_PREFIX / 'public' / 'cloudadapter-agent' / 'logging.ini'
 CLIENT_CERTS = BROKER_ETC_PATH / \
     'public' / 'cloudadapter-agent' / 'cloudadapter-agent.crt'
