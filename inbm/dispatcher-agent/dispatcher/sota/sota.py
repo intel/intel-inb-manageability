@@ -347,7 +347,7 @@ class SOTA:
                 sota_cache_repo.delete_all()  # clean cache directory
                 if get_command_status(cmd_list) == SUCCESS:
                     self._dispatcher_broker.send_result(
-                        '{"status": 200, "message": SOTA command status: SUCCESSFUL"}')
+                        '{"status": 200, "message": "SOTA command status: SUCCESSFUL"}')
                     success = True
                 else:
                     self._dispatcher_broker.telemetry(

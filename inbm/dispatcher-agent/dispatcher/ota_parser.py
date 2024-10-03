@@ -12,10 +12,10 @@ import abc
 
 from .constants import OtaType
 from .common.uri_utilities import is_valid_uri
-from .validators import is_valid_config_params
 from .dispatcher_exception import DispatcherException
 from inbm_lib.xmlhandler import XmlException
 from inbm_lib.xmlhandler import XmlHandler
+from inbm_lib.json_validator import is_valid_json_structure
 from inbm_common_lib.constants import DEFAULT_HASH_ALGORITHM, LOCAL_SOURCE
 
 logger = logging.getLogger(__name__)
@@ -171,7 +171,7 @@ class AotaParser(OtaParser):
         if 'import' in cmd:
             config_params = '{"execcmd":"/bin/true"}'
 
-        if config_params and not is_valid_config_params(config_params):
+        if config_params and not is_valid_json_structure(config_params):
             logger.info("Config Params not passed correctly"
                         " in manifest, rejected update")
             raise XmlException

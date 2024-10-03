@@ -15,6 +15,8 @@ from dispatcher.schedule.schedules import Schedule
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
+from inbm_lib.json_validator import is_valid_json_structure
+from inbm_lib.constants import NODE_UPDATE_JSON_SCHEMA_LOCATION
 
 from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL, UPDATE_CHANNEL
 
@@ -48,19 +50,19 @@ class DispatcherBroker:
         """
         logger.debug(f"Sending node update for to {UPDATE_CHANNEL} with message: {message}")
         self.mqtt_publish(topic=UPDATE_CHANNEL, payload=message)
-     
+        
     def _check_db_for_started_job(self) -> Optional[Schedule]:
         sqliteMgr = SqliteManager()
         schedule = sqliteMgr.get_any_started_schedule()
         logger.debug(f"Checking for started schedule in DB: schedule={schedule}")
-        if schedule:          
+        if schedule:
             # Change status to COMPLETED
             sqliteMgr.update_status(schedule, COMPLETED)
         
         del sqliteMgr
         return schedule
         
-    def send_result(self, message: str, request_id: str = "", job_id: str = "") -> None:  # pragma: no cover
+    def send_result(self, message: str, request_id: str = "") -> None:  # pragma: no cover
         """Sends result to local MQTT channel        
 
         Raises ValueError if request_id contains a slash
@@ -81,14 +83,8 @@ class DispatcherBroker:
             logger.error('Cannot send result: dispatcher core not initialized')
             return
 
-        schedule = None
-        # Check if this is a request stored in the DB and started from the APScheduler
-        if job_id != "":
-            schedule = Schedule(request_id=request_id, job_id=job_id)
-        else:   
-            # Some jobs do not call send_result to the dispatcher class to get the
-            # job_id.  In this case, we need to check the DB for the job_id.
-            schedule = self._check_db_for_started_job()
+        schedule = self._check_db_for_started_job()
+        logger.debug(f"Schedule in Broker Send_result: {schedule}")
         
         if not schedule:
             # This is not a scheduled job
@@ -107,20 +103,23 @@ class DispatcherBroker:
                 # Turn the message into a dict
                 message_dict = json.loads(message)
             except json.JSONDecodeError as e:
-                logger.error(f"Cannot convert formatted message to dict: {message}. Error: {e}")
-                self.send_update(str(message))
+                logger.error(f"Cannot convert node update formatted message to a dict type.  message={message} error={e}")
                 return
 
             # Update the job_id in the message
-            message_dict['job_id'] = schedule.job_id
-
+            message_dict['jobId'] = schedule.job_id
+            
             # Convert the updated message_dict back to a JSON string
             try:
                 updated_message = json.dumps(message_dict)
             except (TypeError, OverflowError) as e:
                 logger.error(f"Cannot convert Result back to string: {message_dict}. Error: {e}")
-                self.send_update(str(message))
-                return                
+                return    
+
+            is_valid = is_valid_json_structure(updated_message, NODE_UPDATE_JSON_SCHEMA_LOCATION)
+            if not is_valid:
+                logger.error(f"JSON schema validation failed while verifying node_update message: {updated_message}")
+                return
        
             logger.debug(f"Sending node update message: {str(updated_message)}")
             self.send_update(str(updated_message))        
