@@ -1,6 +1,14 @@
 #!/bin/bash
 set -euxo pipefail
 
+# Retrieve OS Release ID
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+else
+    echo "/etc/os-release not found. Exiting."
+    exit 1
+fi
+
 TC_PUBLIC="/etc/intel-manageability/public"
 TC_SECRET="/etc/intel-manageability/secret"
 DAYS_EXPIRY="2555"
@@ -38,7 +46,11 @@ check_no_insecure_user() {
       true
     else
       echo "User $user_to_check already exists and has insecure shell $user_shell. Changing shell to /usr/sbin/nologin."
-      chsh -s /usr/sbin/nologin "$user_to_check"
+      if [ "$ID" != "tiber" ]; then
+          chsh -s /usr/sbin/nologin "$user_to_check"
+      else
+          echo "Skipping shell change for user $user_to_check on 'tiber' OS."
+      fi
     fi
   fi
 }
@@ -46,21 +58,34 @@ check_no_insecure_user() {
 fix_permissions() {
     # Protect directories by group
     for dir in $(find "$TC_SECRET" -mindepth 1 -maxdepth 1 -type d) ; do
-        GROUP="$(basename $dir)"
-	USER="$GROUP"
-        if ! [ "$GROUP" == "lost+found" ] ; then
+        GROUP="$(basename "$dir")"
+        USER="$GROUP"
+        if [ "$GROUP" != "lost+found" ] ; then
             check_no_insecure_user "$USER"
-            getent group "$GROUP" || groupadd "$GROUP"
-	    if id "$USER" >&/dev/null; then
-                : user already exists
-	    else
-	        useradd -g "$GROUP" -s /usr/sbin/nologin "$USER" # user does not exist
-	    fi
+            
+            if [ "$ID" != "tiber" ]; then
+                # Only add groups and users if not on 'tiber'
+                getent group "$GROUP" || groupadd "$GROUP"
+                if id "$USER" >&/dev/null; then
+                    : # user already exists
+                else
+                    useradd -g "$GROUP" -s /usr/sbin/nologin "$USER" # user does not exist
+                fi
+            else
+                echo "Skipping group and user creation for $USER on 'tiber' OS."
+            fi
+
+            # Perform chgrp regardless of OS
             chgrp -R "$GROUP" "$dir"
-            # Ensure group does not have write, 'other' does not have read, write, or execute
-            chmod -R g-w,o-rwx "$dir"
-            # Ensure user has read/write and group has read
-            chmod -R u+rw,g+r "$dir"
+
+            if [ "$ID" != "tiber" ]; then
+                # Ensure group does not have write, 'other' does not have read, write, or execute
+                chmod -R g-w,o-rwx "$dir"
+                # Ensure user has read/write and group has read
+                chmod -R u+rw,g+r "$dir"
+            else
+                echo "Skipping chmod adjustments on 'tiber' OS for $dir."
+            fi
         fi
     done    
 
@@ -80,7 +105,11 @@ fix_permissions() {
     find /var/cache/manageability -type d -exec chmod g+s {} \;  # Make sure new files have correct group ownership
 
     # Make sure 'docker' group exists for diagnostic agent's .service file
-    getent group docker || groupadd docker
+    if [ "$ID" != "tiber" ]; then
+        getent group docker || groupadd docker
+    else
+        echo "Skipping 'docker' group creation on 'tiber' OS."
+    fi
 }
 
 # Ensure keys are provisioned
