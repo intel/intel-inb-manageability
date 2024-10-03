@@ -129,7 +129,7 @@ class InbsCloudClient(CloudClient):
     
         is_valid = is_valid_json_structure(value, NODE_UPDATE_JSON_SCHEMA_LOCATION)
         if not is_valid:
-            logger.error(f"JSON schema validation failed while verifying node_update message: {updated_message}")
+            logger.error(f"JSON schema validation failed while verifying node_update message: {value}")
             return
             
         # Turn the message into a dict
@@ -137,7 +137,7 @@ class InbsCloudClient(CloudClient):
         try:
             message_dict = json.loads(value)
         except json.JSONDecodeError as e:
-            logger.error(f"Cannot convert formatted message to dict: {value}. Error: {e}")
+            logger.error(f"Cannot convert node update formatted message to a dict type.  message={value} error={e}")
             return
         
         status_code=message_dict.get("status", "")
