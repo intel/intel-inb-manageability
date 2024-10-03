@@ -52,7 +52,7 @@ class TestInbsCloudClient:
             key="example_key", value="example_value", time=datetime.now()
         )
     
-    def test_publish_update(self, inbs_client: InbsCloudClient) -> None:
+    def test_publish_node_update(self, inbs_client: InbsCloudClient) -> None:
         mock_channel = MagicMock()
         mock_channel.SendNodeUpdateRequest.return_value = "MockResponse"
         inbs_client._grpc_channel = mock_channel
@@ -60,8 +60,8 @@ class TestInbsCloudClient:
         key = 'test-key'
         value = '{"job_id": "12345", "status": 200, "message": "Update successful"}'
         
-        # Call the publish_update method
-        inbs_client.publish_update(key, value)
+        # Call the publish_node_update method
+        inbs_client.publish_node_update(key, value)
 
         # Assert that the gRPC channel's SendNodeUpdate method was called
         mock_channel.SendNodeUpdate.assert_called_once()
