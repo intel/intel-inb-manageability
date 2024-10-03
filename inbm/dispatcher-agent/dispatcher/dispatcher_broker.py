@@ -9,13 +9,14 @@ import json
 import logging
 from typing import Any, Optional, Callable
 
-from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED, NODE_UPDATE_JSON_SCHEMA_LOCATION
+from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED
 from dispatcher.schedule.sqlite_manager import SqliteManager
 from dispatcher.schedule.schedules import Schedule
-from dispatcher.validators import is_valid_json_structure
 from dispatcher.dispatcher_exception import DispatcherException
 from inbm_lib.mqttclient.config import DEFAULT_MQTT_HOST, DEFAULT_MQTT_PORT, MQTT_KEEPALIVE_INTERVAL
 from inbm_lib.mqttclient.mqtt import MQTT
+from inbm_lib.json_validator import is_valid_json_structure
+from inbm_lib.constants import NODE_UPDATE_JSON_SCHEMA_LOCATION
 
 from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL, UPDATE_CHANNEL
 
@@ -102,7 +103,7 @@ class DispatcherBroker:
                 # Turn the message into a dict
                 message_dict = json.loads(message)
             except json.JSONDecodeError as e:
-                logger.error(f"Cannot convert formatted message to dict: {message}. Error: {e}")
+                logger.error(f"Cannot convert node update formatted message to a dict type.  message={message} error={e}")
                 return
 
             # Update the job_id in the message
@@ -117,7 +118,7 @@ class DispatcherBroker:
 
             is_valid = is_valid_json_structure(updated_message, NODE_UPDATE_JSON_SCHEMA_LOCATION)
             if not is_valid:
-                logger.error(f"Invalid message format: {updated_message}")
+                logger.error(f"JSON schema validation failed while verifying node_update message: {updated_message}")
                 return
        
             logger.debug(f"Sending node update message: {str(updated_message)}")

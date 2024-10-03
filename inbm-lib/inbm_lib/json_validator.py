@@ -8,18 +8,18 @@ import json
 import logging
 import os
 import jsonschema
-from typing import Optional
+from typing import Optional, Any
 
 from inbm_common_lib.utility import get_canonical_representation_of_path
 
-from .constants import *
+from .constants import CONFIG_JSON_SCHEMA_LOCATION
 
 logger = logging.getLogger(__name__)
 
 
 def _get_schema_location(schema_location: Optional[str] = None) -> str:
     if not schema_location:
-        schema_location = JSON_SCHEMA_LOCATION
+        schema_location = CONFIG_JSON_SCHEMA_LOCATION
     return schema_location
 
 """Validates JSON against a JSON schema
@@ -28,7 +28,7 @@ def _get_schema_location(schema_location: Optional[str] = None) -> str:
 @param schema_location: JSON schema location.  Default=NONE
 @return: Deserialized JSON
 """
-def _validate_schema(params: str, schema_location: Optional[str] = None) -> str:
+def _validate_schema(params: str, schema_location: Optional[str] = None) -> Any:
     schema_location = _get_schema_location(schema_location)
 
     if not os.path.exists(schema_location):
@@ -56,6 +56,6 @@ def is_valid_json_structure(json_params: str, schema_location: Optional[str] = N
     try:
         _validate_schema(json_params, schema_location)
     except (ValueError, KeyError, jsonschema.exceptions.ValidationError) as e:
-        logger.info("Error received: %s", str(e))
+        logger.info("Error validating JSON structure against schema: %s", str(e))
         return False
     return True

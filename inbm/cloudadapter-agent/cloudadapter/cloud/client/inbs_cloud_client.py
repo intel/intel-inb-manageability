@@ -7,6 +7,7 @@ from collections.abc import Generator
 import json
 import queue
 import random
+import logging
 import threading
 from google.protobuf.timestamp_pb2 import Timestamp
 from typing import Callable, Optional
@@ -19,7 +20,9 @@ from cloudadapter.constants import METHOD, DEAD
 from cloudadapter.exceptions import AuthenticationError, PublishError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
-import logging
+
+from inbm_lib.json_validator import is_valid_json_structure
+from inbm_lib.constants import NODE_UPDATE_JSON_SCHEMA_LOCATION
 
 import grpc # type: ignore
 from .cloud_client import CloudClient
@@ -117,12 +120,18 @@ class InbsCloudClient(CloudClient):
     def publish_update(self, key: str, value: str) -> None:
         """Publishes an update to the cloud
 
-        @param message: node update message to publish
+        @param key: key to publish
+        @param value: node update message to publish
         @exception PublishError: If publish fails
         """
         if self._grpc_channel is None:
             raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_update")            
     
+        is_valid = is_valid_json_structure(value, NODE_UPDATE_JSON_SCHEMA_LOCATION)
+        if not is_valid:
+            logger.error(f"JSON schema validation failed while verifying node_update message: {updated_message}")
+            return
+            
         # Turn the message into a dict
         logger.debug(f"Received node update: key={key}, value={value}")
         try:
