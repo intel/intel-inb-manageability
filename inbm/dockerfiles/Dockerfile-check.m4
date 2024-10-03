@@ -58,7 +58,9 @@ RUN source /venv-py3/bin/activate && \
 FROM venv-py3 AS test-inbm-lib
 WORKDIR /src/inbm-lib
 # for unit test
-COPY inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/manifest_schema.xsd /src/inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/manifest_schema.xsd 
+COPY inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/manifest_schema.xsd /src/inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/manifest_schema.xsd
+COPY inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/node_update_schema.json /src/inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/node_update_schema.json
+COPY inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/config_param_schema.json /src/inbm/dispatcher-agent/fpm-template/usr/share/dispatcher-agent/config_param_schema.json
 RUN source /venv-py3/bin/activate && \
     cd /src/inbm-lib && \
     set -o pipefail && \
