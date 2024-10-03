@@ -277,11 +277,11 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
     @patch('dispatcher.sota.sota.get_os_version', return_value='2.0.20240802.0213')
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
     def test_save_granular_in_tiberos_with_success_log(self, mock_run, mock_get_os_version, mock_load, mock_dump) -> None:
         TestSota.sota_instance.factory = SotaOsFactory(
             TestSota.mock_disp_broker,
-            None, []).get_os('TiberOS')
+            None, []).get_os('tiber')
 
         TestSota.sota_instance._update_logger.detail_status = OTA_SUCCESS
 
@@ -303,11 +303,11 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
     @patch('dispatcher.sota.sota.get_os_version', return_value='2.0.20240802.0213')
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
     def test_save_granular_in_tiberos_with_pending_log(self, mock_run, mock_get_os_version, mock_load, mock_dump) -> None:
         TestSota.sota_instance.factory = SotaOsFactory(
             TestSota.mock_disp_broker,
-            None, []).get_os('TiberOS')
+            None, []).get_os('tiber')
 
         TestSota.sota_instance._update_logger.detail_status = OTA_PENDING
 
@@ -327,11 +327,11 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
 
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
     def test_save_granular_in_tiberos_with_fail_log(self, mock_run, mock_load, mock_dump) -> None:
         TestSota.sota_instance.factory = SotaOsFactory(
             TestSota.mock_disp_broker,
-            None, []).get_os('TiberOS')
+            None, []).get_os('tiber')
 
         TestSota.sota_instance._update_logger.detail_status = FAIL
         TestSota.sota_instance._update_logger.error = 'Error getting artifact size from https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifests/latest using token'
@@ -353,11 +353,11 @@ Processing triggers for systemd (245.4-4ubuntu3.23) ...
 
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("TiberOS", "", 0))
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
     def test_save_granular_in_tiberos_with_rollback_log(self, mock_run, mock_load, mock_dump) -> None:
         TestSota.sota_instance.factory = SotaOsFactory(
             TestSota.mock_disp_broker,
-            None, []).get_os('TiberOS')
+            None, []).get_os('tiber')
 
         TestSota.sota_instance._update_logger.detail_status = ROLLBACK
         TestSota.sota_instance._update_logger.error = 'FAILED INSTALL: System has not been properly updated; reverting..'
