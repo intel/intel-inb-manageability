@@ -274,7 +274,7 @@ class Dispatcher:
     def _telemetry(self, message: str) -> None:
         self._dispatcher_broker.telemetry(message)
 
-    def _send_result(self, message: str, request_id: str = "", job_id: str = "") -> None:
+    def _send_result(self, message: str, request_id: str = "") -> None:
         """Sends result message to local MQTT channel
 
         If request_id is specified, the message is sent to RESPONSE_CHANNEL/id instead of RESPONSE_CHANNEL
@@ -284,8 +284,8 @@ class Dispatcher:
         @param message: message to be published to cloud
         """
         # Check if this is a request stored in the DB and started from the APScheduler
-        logger.debug(f"Sending result message with id {request_id}: {message}") 
-        self._dispatcher_broker.send_result(message, request_id, job_id)
+        logger.debug(f"Sending result message with request_id={request_id}, message={message}") 
+        self._dispatcher_broker.send_result(message, request_id)
             
 
     def run_scheduled_job(self, schedule: Schedule, manifest: str) -> None:
@@ -374,7 +374,7 @@ class Dispatcher:
             self._update_logger.error = str(e)
         finally:            
             logger.info('Install result: %s', str(result))
-            self._send_result(message=str(result), job_id=job_id)
+            self._send_result(message=str(result))
             if result.status != CODE_OK and parsed_head:
                 self._update_logger.status = FAIL
                 self._update_logger.error = str(result)

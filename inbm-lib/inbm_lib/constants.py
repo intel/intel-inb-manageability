@@ -4,7 +4,7 @@
     @license: SPDX-License-Identifier: Apache-2.0
 """
 from inbm_common_lib.utility import get_canonical_representation_of_path
-from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, LOG_PATH
+from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, LOG_PATH, INTEL_MANAGEABILITY_SHARE_PATH_PREFIX
 
 COMPOSE = 'compose'
 DOCKER = 'docker'
@@ -82,6 +82,12 @@ PACKAGE_UNKNOWN = "UNKNOWN"
 # Package installation action
 PACKAGE_INSTALL = "install"
 PACKAGE_UPGRADE = "upgrade"
+
+# Default config JSON schema location
+CONFIG_JSON_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
+                           'dispatcher-agent' / 'config_param_schema.json')
+NODE_UPDATE_JSON_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
+                            'dispatcher-agent' / 'node_update_schema.json')
 
 # OTA STATUS
 OTA_SUCCESS = "SUCCESS"

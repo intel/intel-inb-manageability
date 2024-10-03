@@ -126,7 +126,7 @@ class TestDownloader(unittest.TestCase):
 
         assert isinstance(TestDownloader.sota_instance, SOTA)
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
         factory = TestDownloader.sota_instance.factory
         assert isinstance(factory, TiberOSBasedSotaOs)
         installer = factory.create_downloader()
@@ -153,7 +153,7 @@ class TestDownloader(unittest.TestCase):
         password = "mock_password"
         assert isinstance(TestDownloader.sota_instance, SOTA)
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('TiberOS')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
         factory = TestDownloader.sota_instance.factory
         assert isinstance(factory, TiberOSBasedSotaOs)
         installer = factory.create_downloader()

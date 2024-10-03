@@ -1,6 +1,6 @@
 from unittest import TestCase
 from unit.common.mock_resources import *
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
 from dispatcher.aota.factory import get_app_instance, get_app_os
 from dispatcher.aota.aota_command import DockerCompose, Docker
@@ -8,7 +8,6 @@ from dispatcher.config_dbs import ConfigDbs
 from dispatcher.aota.aota_error import AotaError
 from dispatcher.aota.application_command import CentOsApplication, UbuntuApplication
 
-from .test_aota_command import TestAotaCommand
 
 DOCKER_COMPOSE_PARSED_MANIFEST = {'config_params': None, 'version': None,
                                   'container_tag': 'abc', 'uri': 'http://sample/test.tar.gz',

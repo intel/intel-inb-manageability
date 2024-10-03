@@ -79,7 +79,7 @@ class SotaOsFactory:
         elif os_type == LinuxDistType.Mariner.name:
             logger.debug("Mariner returned")
             return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature)
-        elif os_type == LinuxDistType.TiberOS.name:
+        elif os_type == LinuxDistType.tiber.name:
             logger.debug("TiberOS returned")
             return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature)
         raise ValueError('Unsupported OS type: ' + os_type)
