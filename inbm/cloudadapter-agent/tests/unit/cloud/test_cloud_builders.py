@@ -34,9 +34,9 @@ class TestCloudBuilders(unittest.TestCase):
                 "pub": "event_pub",
                 "format": "event_format"
             },
-            "update": {
-                "pub": "update_pub",
-                "format": "update_format"
+            "node_update": {
+                "pub": "node_update_pub",
+                "format": "node_update_format"
             },
             "telemetry": {
                 "pub": "telemetry_pub",
@@ -93,9 +93,9 @@ class TestCloudBuilders(unittest.TestCase):
                 "pub": "event_pub",
                 "format": "event_format"
             },
-            "update": {
-                "pub": "update_pub",
-                "format": "update_format"
+            "node_update": {
+                "pub": "node_update_pub",
+                "format": "node_update_format"
             },
             "command": {
                 "pub": "manageability/request/command",
