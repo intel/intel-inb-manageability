@@ -9,6 +9,7 @@ import queue
 import random
 import logging
 import threading
+import uuid
 from google.protobuf.timestamp_pb2 import Timestamp
 from typing import Callable, Optional
 from datetime import datetime
@@ -25,6 +26,7 @@ from inbm_lib.json_validator import is_valid_json_structure
 
 import grpc # type: ignore
 from .cloud_client import CloudClient
+
 
 logger = logging.getLogger(__name__)
 
@@ -156,10 +158,9 @@ class InbsCloudClient(CloudClient):
                 actual_end_time=timestamp,
                 job_state=job_state
             )
-
         
         request = inbs_sb_pb2.SendNodeUpdateRequest(
-            request_id="notused",
+            request_id=str(uuid.uuid4()),
             job_update=job,            
         )
         logger.debug(f"Sending node update to INBS: request={request}")
@@ -233,7 +234,6 @@ class InbsCloudClient(CloudClient):
                         ),
                     )
                     continue
-
 
                 if command_type:
                     if command_type == "update_scheduled_operations":
