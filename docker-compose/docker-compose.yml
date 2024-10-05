@@ -26,6 +26,8 @@ services:
       - NO_PROXY=${NO_PROXY}
     volumes:
       - ./adapter.cfg:/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # if connecting to a service on the docker host machine
     networks:
       - inbm_network
 
