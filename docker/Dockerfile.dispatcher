@@ -1,3 +1,9 @@
+FROM golang:1.22 AS builder
+
+WORKDIR /go/src/app
+COPY inbm/trtl .
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o trtl .
+
 FROM python:3.12-slim
 
 # Add these lines to set up proxy for the build process
@@ -15,6 +21,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
+
+# Copy the built trtl binary from the builder stage
+COPY --from=builder /go/src/app/trtl /usr/bin/trtl
 
 # Copy the dispatcher-agent directory
 COPY inbm/dispatcher-agent /app/dispatcher-agent
