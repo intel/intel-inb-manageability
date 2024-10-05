@@ -95,7 +95,8 @@ class Telemetry(WindowsService):
 
         docker_stack_present = software_checker.are_docker_and_trtl_on_system()
         poller = Poller()
-        client = broker_init(poller, tls=True, with_docker=docker_stack_present)
+        use_tls = os.getenv('USE_TLS', 'False').lower() in ('true', '1', 't')
+        client = broker_init(poller, tls=use_tls, with_docker=docker_stack_present)
 
         i = 0
         while i < 5 and shared.running:
