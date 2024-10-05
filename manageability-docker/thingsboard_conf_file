@@ -1,6 +1,0 @@
-TB_IP_ADDR= <thingsboard_host_ip_addr>
-TB_PORT=<thingsboard_port>
-DEVICE_TOKEN=<device_token>
-TLS=<set tls to y/n>
-TLS_PEM_FILE_LOCATION=<if tls is set to 'y', provide the path to the thingsboard mqtt tls cert here>
-x509_DEVICE_CERT=<For the x509 based device authentication provide device cert path else leave the field blank. Set the TLS field to 'y' and provide the TLS_PEM_FILE_LOCATION while using x509 device authentication>

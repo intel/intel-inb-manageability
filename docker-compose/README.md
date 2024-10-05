@@ -1,5 +1,7 @@
 This directory provides a `docker-compose` setup to run the INBM agents in a container, with a rapid build. The build is quicker because it doesn't use pyinstaller--instead it simply copies the source files to each container.
 
+The stack will connect and attempt to run a SOTA, but currently fails because there is no lsb_release command.
+
 ## To run
 
 First, create `adapter.cfg` for cloudadapter.  For example,
