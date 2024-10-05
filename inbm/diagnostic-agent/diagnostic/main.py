@@ -53,7 +53,7 @@ class Diagnostic(WindowsService):  # pragma: no cover
         super().__init__(args)
 
         self.running = False
-        use_tls = os.getenv('USE_TLS', 'False').lower() in ('true', '1', 't')
+        use_tls = os.getenv('USE_TLS', 'TRUE').lower() in ('true', '1', 't')
         self.broker: Broker = Broker(tls=use_tls)
 
     def svc_stop(self) -> None:  # pragma: no cover

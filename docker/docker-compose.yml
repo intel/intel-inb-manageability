@@ -65,6 +65,42 @@ services:
     networks:
       - inbm_network
 
+  configuration:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.configuration
+      args:
+        - HTTP_PROXY=${HTTP_PROXY}
+        - HTTPS_PROXY=${HTTPS_PROXY}
+        - NO_PROXY=${NO_PROXY}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - USE_TLS=False
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
+    networks:
+      - inbm_network
+
+  dispatcher:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.dispatcher
+      args:
+        - HTTP_PROXY=${HTTP_PROXY}
+        - HTTPS_PROXY=${HTTPS_PROXY}
+        - NO_PROXY=${NO_PROXY}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - USE_TLS=False
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
+    networks:
+      - inbm_network
+
 networks:
   inbm_network:
     driver: bridge
