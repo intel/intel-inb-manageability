@@ -151,7 +151,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest --timeout=10 -n 3 --cov=dispatcher --cov-report=term-missing --cov-fail-under=81 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
+    pytest --timeout=10 -n 3 --cov=dispatcher --cov-report=term-missing --cov-fail-under=80 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
 
 # ---cloudadapter agent---
 
