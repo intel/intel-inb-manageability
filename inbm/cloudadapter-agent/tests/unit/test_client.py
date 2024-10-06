@@ -31,7 +31,7 @@ class TestClient(unittest.TestCase):
     def test_start_broker_succeed(self) -> None:
         self.client.start()
 
-        self.MockBroker.assert_called_once_with()
+        self.MockBroker.assert_called_once_with(tls=True)
         assert self.MockBroker.return_value.bind_callback.call_count > 0
         self.MockBroker.return_value.start.assert_called_once_with()
 
@@ -57,7 +57,7 @@ class TestClient(unittest.TestCase):
     @mock.patch('cloudadapter.cloud.adapters.adapter.Adapter.get_client_id', return_value="abc123")
     def test_bind_ucc_to_agent(self, mock_get_client) -> None:
         self.client._bind_ucc_to_agent()
-        self.MockBroker.assert_called_once_with()
+        self.MockBroker.assert_called_once_with(tls=True)
         assert self.mock_adapter.bind_callback.call_count > 0
 
     @mock.patch('cloudadapter.client.isinstance',  return_value=True)
