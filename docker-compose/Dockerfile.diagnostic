@@ -26,44 +26,27 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+COPY inbm/diagnostic-agent/requirements.txt /app/diagnostic-agent/requirements.txt
+RUN pip config set global.proxy ${HTTP_PROXY} && \
+    pip install --no-cache-dir -r /app/diagnostic-agent/requirements.txt
 
-# Copy the built trtl binary from the builder stage
-COPY --from=builder /go/src/app/trtl /usr/bin/trtl
-
-# Copy the diagnostic-agent directory
-COPY inbm/diagnostic-agent /app/diagnostic-agent
-
-# Copy any necessary libraries or common files
 COPY inbm-lib /app/inbm-lib
+RUN pip install --no-cache-dir -e /app/inbm-lib
 
-# Copy fpm-template files
+RUN mkdir -p /var/cache/manageability
+COPY inbm/diagnostic-agent /app/diagnostic-agent
 COPY inbm/diagnostic-agent/fpm-template /
 
-# make /var/cache/manageability
-RUN mkdir -p /var/cache/manageability
+COPY --from=builder /go/src/app/trtl /usr/bin/trtl
 
-# Change the debug level from ERROR to DEBUG in the logging.ini file
 RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/diagnostic-agent/logging.ini
-
-# Install dependencies from both sources
-RUN pip config set global.proxy ${HTTP_PROXY} && \
-    pip install --no-cache-dir -r /app/diagnostic-agent/requirements.txt && \
-    pip install --no-cache-dir -e /app/inbm-lib
-
-# Set the Python path to include necessary directories
-ENV PYTHONPATH=/app:/app/diagnostic-agent:/app/inbm-lib
-
-# Set MQTT connection details for docker-compose setup
-ENV MQTT_HOST=mosquitto
-ENV MQTT_PORT=1883
-ENV USE_TLS=False
-
-# Change working directory
-WORKDIR /app/diagnostic-agent
 
 # used by INBM to detect if running in a container
 ENV container=docker
+ENV MQTT_HOST=mosquitto
+ENV MQTT_PORT=1883
+ENV USE_TLS=False
+ENV PYTHONPATH=/app:/app/diagnostic-agent:/app/inbm-lib
 
-# Command to run the Diagnostic agent
+WORKDIR /app/diagnostic-agent
 CMD ["python", "-m", "diagnostic.diagnostic"]

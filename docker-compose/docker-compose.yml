@@ -26,10 +26,10 @@ services:
       - USE_TLS=False
       - HTTP_PROXY=${HTTP_PROXY}
       - HTTPS_PROXY=${HTTPS_PROXY}
-      - NO_PROXY=${NO_PROXY}
+      - NO_PROXY=${NO_PROXY},host.docker.internal
       - http_proxy=${http_proxy}
       - https_proxy=${https_proxy}
-      - no_proxy=${no_proxy}
+      - no_proxy=${no_proxy},host.docker.internal
     volumes:
       - ./adapter.cfg:/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg
     extra_hosts:  # if connecting to a service on the docker host machine

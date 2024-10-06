@@ -20,38 +20,24 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+COPY inbm/telemetry-agent/requirements.txt /app/telemetry-agent/requirements.txt
+RUN pip config set global.proxy ${HTTP_PROXY} && \
+    pip install --no-cache-dir -r /app/telemetry-agent/requirements.txt
 
-# Copy the telemetry-agent directory
-COPY inbm/telemetry-agent /app/telemetry-agent
-
-# Copy any necessary libraries or common files
 COPY inbm-lib /app/inbm-lib
-
-# Copy fpm-template files
+RUN pip install --no-cache-dir -e /app/inbm-lib
+    
+COPY inbm/telemetry-agent /app/telemetry-agent
 COPY inbm/telemetry-agent/fpm-template /
 
-# Change the debug level from ERROR to DEBUG in the logging.ini file
 RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/telemetry-agent/logging.ini
 
-# Install dependencies from both sources
-RUN pip config set global.proxy ${HTTP_PROXY} && \
-    pip install --no-cache-dir -r /app/telemetry-agent/requirements.txt && \
-    pip install --no-cache-dir -e /app/inbm-lib
-
-# Set the Python path to include necessary directories
+# used by INBM to detect if running in a container
+ENV container=docker
 ENV PYTHONPATH=/app:/app/telemetry-agent:/app/inbm-lib
-
-# Set MQTT connection details for docker-compose setup
 ENV MQTT_HOST=mosquitto
 ENV MQTT_PORT=1883
 ENV USE_TLS=False
 
-# Change working directory
 WORKDIR /app/telemetry-agent
-
-# used by INBM to detect if running in a container
-ENV container=docker
-
-# Command to run the Telemetry agent
 CMD ["python", "-m", "telemetry.telemetry"]

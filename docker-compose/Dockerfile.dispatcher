@@ -35,44 +35,27 @@ RUN apt-get update && apt-get install -y \
     && apt-get install -y docker-ce-cli \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+COPY inbm/dispatcher-agent/requirements.txt /app/dispatcher-agent/requirements.txt
+RUN pip config set global.proxy ${HTTP_PROXY} && \
+    pip install --no-cache-dir -r /app/dispatcher-agent/requirements.txt
 
-# Copy the built trtl binary from the builder stage
-COPY --from=builder /go/src/app/trtl /usr/bin/trtl
-
-# Copy the dispatcher-agent directory
-COPY inbm/dispatcher-agent /app/dispatcher-agent
-
-# Copy any necessary libraries or common files
 COPY inbm-lib /app/inbm-lib
+RUN pip install --no-cache-dir -e /app/inbm-lib
 
-# Copy fpm-template files
+COPY inbm/dispatcher-agent /app/dispatcher-agent
 COPY inbm/dispatcher-agent/fpm-template /
 
-# Make /var/intel-manageability
-RUN mkdir -p /var/intel-manageability
+COPY --from=builder /go/src/app/trtl /usr/bin/trtl
 
-# Change the debug level from ERROR to DEBUG in the logging.ini file
+RUN mkdir -p /var/intel-manageability
 RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/dispatcher-agent/logging.ini
 
-# Install dependencies from both sources
-RUN pip config set global.proxy ${HTTP_PROXY} && \
-    pip install --no-cache-dir -r /app/dispatcher-agent/requirements.txt && \
-    pip install --no-cache-dir -e /app/inbm-lib
-
-# Set the Python path to include necessary directories
+# used by INBM to detect if running in a container
+ENV container=docker
 ENV PYTHONPATH=/app:/app/dispatcher-agent:/app/inbm-lib
-
-# Set MQTT connection details for docker-compose setup
 ENV MQTT_HOST=mosquitto
 ENV MQTT_PORT=1883
 ENV USE_TLS=False
 
-# Change working directory
 WORKDIR /app/dispatcher-agent
-
-# used by INBM to detect if running in a container
-ENV container=docker
-
-# Command to run the Dispatcher agent
 CMD ["python", "-m", "dispatcher.dispatcher"]

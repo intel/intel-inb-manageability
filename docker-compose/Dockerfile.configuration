@@ -20,39 +20,26 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+COPY inbm/configuration-agent/requirements.txt /app/configuration-agent/requirements.txt
+RUN pip config set global.proxy ${HTTP_PROXY} && \
+    pip install --no-cache-dir -r /app/configuration-agent/requirements.txt
 
-# Copy the configuration-agent directory
-COPY inbm/configuration-agent /app/configuration-agent
-
-# Copy any necessary libraries or common files
 COPY inbm-lib /app/inbm-lib
+RUN pip install --no-cache-dir -e /app/inbm-lib
 
-# Copy fpm-template files
+COPY inbm/configuration-agent /app/configuration-agent
 COPY inbm/configuration-agent/fpm-template /
 
 RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/configuration-agent/logging.ini
 RUN sed -i '/<sotaSW>/,/<\/sotaSW>/c\        <sotaSW>\n        </sotaSW>' /etc/intel_manageability.conf
 RUN sed -i 's/<dbs>WARN<\/dbs>/<dbs>OFF<\/dbs>/' /etc/intel_manageability.conf
 
-# Install dependencies from both sources
-RUN pip config set global.proxy ${HTTP_PROXY} && \
-    pip install --no-cache-dir -r /app/configuration-agent/requirements.txt && \
-    pip install --no-cache-dir -e /app/inbm-lib
-
-# Set the Python path to include necessary directories
-ENV PYTHONPATH=/app:/app/configuration-agent:/app/inbm-lib
-
-# Set MQTT connection details for docker-compose setup
+# used by INBM to detect if running in a container
+ENV container=docker
 ENV MQTT_HOST=mosquitto
 ENV MQTT_PORT=1883
 ENV USE_TLS=False
+ENV PYTHONPATH=/app:/app/configuration-agent:/app/inbm-lib
 
-# Change working directory
 WORKDIR /app/configuration-agent
-
-# used by INBM to detect if running in a container
-ENV container=docker
-
-# Command to run the Configuration agent
 CMD ["python", "-m", "configuration.configuration"]
