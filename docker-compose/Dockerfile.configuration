@@ -45,5 +45,8 @@ ENV USE_TLS=False
 # Change working directory
 WORKDIR /app/configuration-agent
 
+# used by INBM to detect if running in a container
+ENV container=docker
+
 # Command to run the Configuration agent
 CMD ["python", "-m", "configuration.configuration"]

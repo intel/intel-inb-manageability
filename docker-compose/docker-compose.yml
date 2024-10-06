@@ -30,6 +30,9 @@ services:
       - "host.docker.internal:host-gateway"  # if connecting to a service on the docker host machine
     networks:
       - inbm_network
+    restart: always
+    depends_on:
+      - mosquitto
 
   telemetry:
     build:
@@ -48,6 +51,12 @@ services:
       - NO_PROXY=${NO_PROXY}
     networks:
       - inbm_network
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    depends_on:
+      - mosquitto      
 
   diagnostic:
     build:
@@ -66,6 +75,12 @@ services:
       - NO_PROXY=${NO_PROXY}
     networks:
       - inbm_network
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    depends_on:
+      - mosquitto
 
   configuration:
     build:
@@ -84,6 +99,9 @@ services:
       - NO_PROXY=${NO_PROXY}
     networks:
       - inbm_network
+    restart: always
+    depends_on:
+      - mosquitto
 
   dispatcher:
     build:
@@ -102,6 +120,12 @@ services:
       - NO_PROXY=${NO_PROXY}
     networks:
       - inbm_network
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    depends_on:
+      - mosquitto
 
 networks:
   inbm_network:

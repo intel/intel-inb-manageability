@@ -44,5 +44,8 @@ ENV MQTT_HOST=mosquitto
 ENV MQTT_PORT=1883
 ENV USE_TLS=False
 
+# used by INBM to detect if running in a container
+ENV container=docker
+
 # Command to run the Cloud Adapter agent
 CMD ["python", "-m", "cloudadapter.cloudadapter"]
