@@ -12,7 +12,7 @@ services:
   cloudadapter:
     build:
       context: ..
-      dockerfile: docker-compose/Dockerfile.cloudadapter
+      dockerfile: docker-compose-dev/Dockerfile.cloudadapter
       args:
         - HTTP_PROXY=${HTTP_PROXY}
         - HTTPS_PROXY=${HTTPS_PROXY}
@@ -43,7 +43,7 @@ services:
   telemetry:
     build:
       context: ..
-      dockerfile: docker-compose/Dockerfile.telemetry
+      dockerfile: docker-compose-dev/Dockerfile.telemetry
       args:
         - HTTP_PROXY=${HTTP_PROXY}
         - HTTPS_PROXY=${HTTPS_PROXY}
@@ -73,7 +73,7 @@ services:
   diagnostic:
     build:
       context: ..
-      dockerfile: docker-compose/Dockerfile.diagnostic
+      dockerfile: docker-compose-dev/Dockerfile.diagnostic
       args:
         - HTTP_PROXY=${HTTP_PROXY}
         - HTTPS_PROXY=${HTTPS_PROXY}
@@ -103,7 +103,7 @@ services:
   configuration:
     build:
       context: ..
-      dockerfile: docker-compose/Dockerfile.configuration
+      dockerfile: docker-compose-dev/Dockerfile.configuration
       args:
         - HTTP_PROXY=${HTTP_PROXY}
         - HTTPS_PROXY=${HTTPS_PROXY}
@@ -130,7 +130,7 @@ services:
   dispatcher:
     build:
       context: ..
-      dockerfile: docker-compose/Dockerfile.dispatcher
+      dockerfile: docker-compose-dev/Dockerfile.dispatcher
       args:
         - HTTP_PROXY=${HTTP_PROXY}
         - HTTPS_PROXY=${HTTPS_PROXY}
