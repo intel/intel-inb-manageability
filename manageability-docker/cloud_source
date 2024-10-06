@@ -1,0 +1,16 @@
+#!/bin/bash
+set -eo pipefail
+
+
+cp /src/adapter.cfg /etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg 
+
+# Uncomment the following lines when using the sample mqtt client file provided
+# mkdir -p /var/certs
+# cp /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt /etc/intel-manageability/public/cmd-program/cmd-program.crt /etc/intel-manageability/secret/cmd-program/cmd-program.key /var/certs
+
+# Uncomment the line when using the TLS for Thingsboard server
+# cp /src/thingsboard.pub.pem /etc/intel-manageability/secret/cloudadapter-agent/thingsboard.pub.pem
+
+# Uncomment the line when x509 based device authentication is enabled
+# cp /src/client.nopass.pem /etc/intel-manageability/secret/cloudadapter-agent/client.nopass.pem
+
