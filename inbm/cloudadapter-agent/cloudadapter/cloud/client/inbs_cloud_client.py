@@ -7,7 +7,9 @@ from collections.abc import Generator
 import json
 import queue
 import random
+import logging
 import threading
+import uuid
 from google.protobuf.timestamp_pb2 import Timestamp
 from typing import Callable, Optional
 from datetime import datetime
@@ -15,14 +17,16 @@ from datetime import datetime
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
-from cloudadapter.constants import METHOD, DEAD
+from cloudadapter.constants import METHOD, DEAD, NODE_UPDATE_JSON_SCHEMA_LOCATION
 from cloudadapter.exceptions import AuthenticationError, PublishError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
-import logging
+
+from inbm_lib.json_validator import is_valid_json_structure
 
 import grpc # type: ignore
 from .cloud_client import CloudClient
+
 
 logger = logging.getLogger(__name__)
 
@@ -114,21 +118,27 @@ class InbsCloudClient(CloudClient):
 
         pass  # INBS is not yet ready to receive telemetry
 
-    def publish_update(self, key: str, value: str) -> None:
-        """Publishes an update to the cloud
+    def publish_node_update(self, key: str, value: str) -> None:
+        """Publishes a node update to the cloud
 
-        @param message: node update message to publish
+        @param key: key to publish
+        @param value: node update message to publish
         @exception PublishError: If publish fails
         """
         if self._grpc_channel is None:
-            raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_update")            
+            raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_node_update")            
     
+        is_valid = is_valid_json_structure(value, NODE_UPDATE_JSON_SCHEMA_LOCATION)
+        if not is_valid:
+            logger.error(f"JSON schema validation failed while verifying node_update message: {value}")
+            return
+            
         # Turn the message into a dict
         logger.debug(f"Received node update: key={key}, value={value}")
         try:
             message_dict = json.loads(value)
         except json.JSONDecodeError as e:
-            logger.error(f"Cannot convert formatted message to dict: {value}. Error: {e}")
+            logger.error(f"Cannot convert node update formatted message to a dict type.  message={value} error={e}")
             return
         
         status_code=message_dict.get("status", "")
@@ -141,16 +151,16 @@ class InbsCloudClient(CloudClient):
         timestamp = Timestamp()
         timestamp.GetCurrentTime()
         job=common_pb2.Job(
-                job_id=message_dict.get("job_id", ""),
+                job_id=message_dict.get("jobId", ""),
                 node_id=self._client_id,
                 status_code=status_code,
                 result_msgs=result_messages,
                 actual_end_time=timestamp,
                 job_state=job_state
             )
-
+        
         request = inbs_sb_pb2.SendNodeUpdateRequest(
-            request_id="notused",
+            request_id=str(uuid.uuid4()),
             job_update=job,            
         )
         logger.debug(f"Sending node update to INBS: request={request}")
@@ -224,7 +234,6 @@ class InbsCloudClient(CloudClient):
                         ),
                     )
                     continue
-
 
                 if command_type:
                     if command_type == "update_scheduled_operations":

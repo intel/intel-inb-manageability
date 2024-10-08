@@ -3,14 +3,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - YYYY-MM-DD
+## NEXT - MMMM-DD-YY
+
+
+## 4.2.6 - 2024-10-04
 ### Added
  - (NEXMANAGE-515) Update dispatcher SOTA related classes for supporting TiberOS
  - (NEXMANAGE-598) Expanding INBC for handling TiberOS update cmd
  - Updated proto files to add new RPC calls to allow edge node to update
    its status with INBS.
- - (NEXMANAGE- 610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
+ - (NEXMANAGE-610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
  - Update TiberOS name to "tiber"
+ - (NEXMANAGE-613) Store Scheduled updates in DB, Add nodeUpdate communication stream, and plumbing to return correct jobID on scheduled request.
 
 ### Changed
  - (NEXARL-306) Update agents' prerm script to prevent them from disabling and stopping if it's an upgrade process

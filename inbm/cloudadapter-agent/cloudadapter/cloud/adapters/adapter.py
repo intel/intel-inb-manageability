@@ -53,13 +53,13 @@ class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
         """
         pass
 
-    def publish_update(self, message: str) -> None:
+    def publish_node_update(self, message: str) -> None:
         """Publishes an update to the cloud
 
         @param message: (str) The update message to send
         @exception PublishError: If publish fails
         """
-        self._client.publish_update("update", message)        
+        self._client.publish_node_update("update", message)        
         
     def publish_event(self, message: str) -> None:
         """Publishes an event to the cloud

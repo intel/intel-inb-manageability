@@ -19,7 +19,7 @@ from inbm_lib.constants import DOCKER_STATS
 
 from dispatcher.common.result_constants import INSTALL_FAILURE, CODE_OK
 from dispatcher.config_dbs import ConfigDbs
-from dispatcher.constants import TELEMETRY_UPDATE_CHANNEL, UMASK_OTA
+from dispatcher.constants import UMASK_OTA
 from dispatcher.packageinstaller.package_installer import TrtlContainer
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.packagemanager.package_manager import get

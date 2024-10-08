@@ -117,7 +117,21 @@ def test_update_single_schedule_status_to_scheduled(db_connection: SqliteManager
     results = db_connection.get_single_schedules_in_priority_order()
     assert len(results) == 0
     
-def test_update_repeated_schedule_statu_to_scheduled(db_connection: SqliteManager):
+def test_get_started_immediate_scheduled_job(db_connection: SqliteManager):
+    iss = SingleSchedule(request_id=REQUEST_ID,
+                 job_id=JOB_ID,
+                 manifests=["MANIFEST1"])
+    db_connection.clear_database()
+
+    db_connection.create_schedule(iss)
+    # SQL call only gets results that don't have a status.  
+    results = db_connection.get_immediate_schedules_in_priority_order()
+    assert len(results) == 1
+    db_connection.update_status(results[0], "started")
+    imm_sched = db_connection.get_any_started_schedule()
+    assert imm_sched == SingleSchedule(request_id=REQUEST_ID, job_id=JOB_ID, task_id=1, schedule_id=1)
+    
+def test_update_repeated_schedule_status_to_scheduled(db_connection: SqliteManager):
     rs = RepeatedSchedule(request_id=REQUEST_ID,
                          job_id=JOB_ID,
                          cron_duration="P7D", cron_minutes="0", 

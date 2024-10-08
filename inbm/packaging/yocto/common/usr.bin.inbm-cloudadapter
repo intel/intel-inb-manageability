@@ -37,6 +37,7 @@
   /etc/intel-manageability/public/cloudadapter-agent/** r,
   /etc/intel-manageability/secret/cloudadapter-agent/** r,
   /usr/share/cloudadapter-agent/config_schema.json r,
+  /usr/share/cloudadapter-agent/node_update_schema.json r,
   /etc/intel-manageability/public/cloudadapter-agent/device_id rw,
   /etc/intel-manageability/public/mqtt-ca/mqtt-ca.crt r,
   /var/tmp/* rw,

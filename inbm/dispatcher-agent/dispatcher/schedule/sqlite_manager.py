@@ -106,26 +106,52 @@ class SqliteManager:
         sql = ''' SELECT 
             j.job_id,
             j.task_id,
-            sj.schedule_id,
-            sj.schedule_type,                    
-            COALESCE(iss.request_id, sss.request_id, rss.request_id) AS request_id
+            isj.schedule_id,
+            'immediate' AS schedule_type,
+            imm.request_id
         FROM 
             job j
         JOIN 
-            (
-                SELECT task_id, schedule_id, 'Immediate' AS schedule_type FROM immediate_schedule_job WHERE status = 'started'
-                UNION ALL
-                SELECT task_id, schedule_id, 'Single' AS schedule_type FROM single_schedule_job WHERE status = 'started'
-                UNION ALL
-                SELECT task_id, schedule_id, 'Repeated' AS schedule_type FROM repeated_schedule_job WHERE status = 'started'
-            ) sj ON j.task_id = sj.task_id
-        LEFT JOIN 
-            immediate_schedule iss ON sj.schedule_id = iss.id AND sj.schedule_type = 'Immediate'
-        LEFT JOIN 
-            single_schedule sss ON sj.schedule_id = sss.id AND sj.schedule_type = 'Single'
-        LEFT JOIN 
-            repeated_schedule rss ON sj.schedule_id = rss.id AND sj.schedule_type = 'Repeated'
-            '''
+            immediate_schedule_job isj ON j.task_id = isj.task_id
+        JOIN
+            immediate_schedule imm ON isj.schedule_id = imm.id
+        WHERE
+            isj.status = 'started'
+            
+        UNION
+        
+        SELECT
+            j.job_id,
+            j.task_id,
+            ssj.schedule_id,
+            'single' AS schedule_type,
+            ss.request_id
+        FROM 
+            job j
+        JOIN 
+            single_schedule_job ssj ON j.task_id = ssj.task_id
+        JOIN
+            single_schedule ss ON ssj.schedule_id = ss.id
+        WHERE
+            ssj.status = 'started'
+            
+        UNION
+        
+        SELECT
+            j.job_id,
+            j.task_id,
+            rsj.schedule_id,
+            'repeated' AS schedule_type,
+            rs.request_id
+        FROM 
+            job j
+        JOIN 
+            repeated_schedule_job rsj ON j.task_id = rsj.task_id
+        JOIN
+            repeated_schedule rs ON rsj.schedule_id = rs.id
+        WHERE
+            rsj.status = 'started';
+        '''
       
         cursor = self._conn.cursor()
         try:
@@ -141,9 +167,9 @@ class SqliteManager:
                 request_id = row[0][4]
                 logger.debug(f"Schedule in 'STARTED' state has type={schedule_type}, jobID={job_id}, taskID={task_id}, scheduleID={schedule_id}, requestID={request_id}")
 
-                if schedule_type == 'Immediate':
+                if schedule_type.lower() == 'immediate':
                     return SingleSchedule(request_id=request_id, job_id=job_id, task_id=task_id, schedule_id=schedule_id)
-                elif schedule_type == 'Single':
+                elif schedule_type.lower() == 'single':
                     return SingleSchedule(request_id=request_id, job_id=job_id, task_id=task_id, schedule_id=schedule_id, start_time=datetime.now())
                 else:
                     return RepeatedSchedule(request_id=request_id, job_id=job_id, task_id=task_id, schedule_id=schedule_id)

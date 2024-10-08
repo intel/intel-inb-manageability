@@ -1,4 +1,3 @@
-import threading
 import pytest
 from mock import MagicMock, Mock, patch
 import queue
@@ -52,20 +51,22 @@ class TestInbsCloudClient:
             key="example_key", value="example_value", time=datetime.now()
         )
     
-    def test_publish_update(self, inbs_client: InbsCloudClient) -> None:
+    def test_publish_node_update(self, inbs_client: InbsCloudClient) -> None:
         mock_channel = MagicMock()
         mock_channel.SendNodeUpdateRequest.return_value = "MockResponse"
         inbs_client._grpc_channel = mock_channel
         
-        key = 'test-key'
-        value = '{"job_id": "12345", "status": 200, "message": "Update successful"}'
+        key = 'update'
+        value = '{"status":200, "message":"COMMAND SUCCESSFUL", "jobId":"swupd-4b151b70-c121-4245-873b-5324ac7a3f7a"}'
         
         # Call the publish_update method
-        inbs_client.publish_update(key, value)
+        with patch('cloudadapter.cloud.client.inbs_cloud_client.is_valid_json_structure', return_value=True):
+            inbs_client.publish_node_update(key, value)
 
         # Assert that the gRPC channel's SendNodeUpdate method was called
         mock_channel.SendNodeUpdate.assert_called_once()
-        
+       
+
     def test_publish_update_failure_no_grpc_channel(self, inbs_client: InbsCloudClient):
         # Ensure that _grpc_channel is None to simulate the channel not being set up
         inbs_client._grpc_channel = None
@@ -74,9 +75,9 @@ class TestInbsCloudClient:
         key = 'test-key'
         value = '{"job_id": "12345", "status": 200, "message": "Update successful"}'
 
-        # Call the publish_update method and expect a PublishError
+        # Call the publish_node_update method and expect a PublishError
         with pytest.raises(PublishError):
-            inbs_client.publish_update(key, value)
+            inbs_client.publish_node_update(key, value)
     
     def test_publish_event(self, inbs_client: InbsCloudClient) -> None:
         # this is not expected to do anything yet

@@ -43,6 +43,7 @@ The agent publishes to the following topics:
   - Dynamic telemetry updates: `telemetry/update`
   - Informs diagnostic-agent remediation manager to remove a specific container: `remediation/container`
   - Informs diagnostic-agent remediation manager to remove a specific image:`remediation/image`
+  - Sends the result of a scheduled request received from UDMScheduled node update.  This result is actually sent as a request to cloudadapter: `manageability/nodeupdate`
   - dispatcher-agent state: dispatcher/state` when dead/running
 
 
