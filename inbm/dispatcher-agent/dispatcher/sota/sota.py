@@ -8,6 +8,7 @@
 import logging
 import os
 import time
+import signal
 from typing import Any, List, Optional, Union, Mapping
 
 from inbm_common_lib.exceptions import UrlSecurityException

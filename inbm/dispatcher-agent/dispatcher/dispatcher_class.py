@@ -55,6 +55,7 @@ from .remediationmanager.remediation_manager import RemediationManager
 from .sota.os_factory import SotaOsFactory
 from .sota.sota import SOTA
 from .sota.sota_error import SotaError
+from .sota.cancel import cancel_thread
 from .workload_orchestration import WorkloadOrchestration
 from inbm_lib.xmlhandler import *
 from inbm_lib.version import get_friendly_inbm_version_commit
@@ -514,25 +515,16 @@ class Dispatcher:
         @param manifest: manifest to be processed
         @return: True if the request has been processed; False if no request has been handled.
         """
+        # TODO: Only cancel the sota download-only mode
         if request_type == "install":
             type_of_manifest, parsed_head = \
                 _check_type_validate_manifest(manifest)
-            if type_of_manifest == 'ota':
-                header = parsed_head.get_children('ota/header')
-                ota_type = header['type']
-                resource = parsed_head.get_children(f'ota/type/{ota_type}')
-                if ota_type == OtaType.SOTA.name.lower():
-                    sota_mode = resource.get('mode', None)
-                    if sota_mode == 'cancel':
-                        logger.debug(f"Receive sota cancel request.")
-                        # The list should only contain one OTA process.
-                        for thread in self._thread_list:
-                            if thread.is_alive() and thread.ident:
-                                logger.debug(f"Terminate thread={thread.ident}.")
-                                signal.pthread_kill(thread.ident, signal.SIGTERM)
-                        logger.debug(f"Request cancel complete.")
-                        self._send_result(str(Result(CODE_OK, "Request complete.")))
-                        return True
+
+            result = cancel_thread(type_of_manifest, parsed_head, self._thread_list)
+            if result:
+                logger.debug(f"Request cancel complete.")
+                self._send_result(str(Result(CODE_OK, "Request complete.")))
+                return True
         return False
 
     def _on_message(self, topic: str, payload: Any, qos: int) -> None:
