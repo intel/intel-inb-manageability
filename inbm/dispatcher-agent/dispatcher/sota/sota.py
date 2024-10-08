@@ -11,6 +11,7 @@ import time
 import threading
 from typing import Any, List, Optional, Union, Mapping
 
+from dispatcher.sota.granular_log_handler import GranularLogHandler
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import canonicalize_uri, remove_file, get_os_version
 from inbm_common_lib.request_message_constants import SOTA_FAILURE
@@ -24,7 +25,7 @@ from .command_handler import run_commands, print_execution_summary, get_command_
 from .constants import SUCCESS, SOTA_STATE, SOTA_CACHE, PROCEED_WITHOUT_ROLLBACK_DEFAULT
 from .downloader import Downloader
 from .log_helper import get_log_destination
-from .os_factory import ISotaOs, SotaOsFactory, TiberOSBasedSotaOs
+from .os_factory import ISotaOs, SotaOsFactory
 from .os_updater import OsUpdater
 from .rebooter import Rebooter
 from .setup_helper import SetupHelper
@@ -36,7 +37,6 @@ from ..update_logger import UpdateLogger
 from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
-
 
 class SOTAUtil:  # FIXME intermediate step in refactor
     def check_diagnostic_disk(self,
@@ -114,7 +114,7 @@ class SOTA:
         self.sota_mode = parsed_manifest['sota_mode']
         self._update_logger = update_logger
         self._dispatcher_broker = dispatcher_broker
-        self._granular_lock = threading.Lock()
+        self._granular_log_handler = GranularLogHandler()
 
         try:
             manifest_package_list = parsed_manifest['package_list']
@@ -260,7 +260,7 @@ class SOTA:
             self._update_logger.update_log(FAIL)
             self._update_logger.detail_status = ROLLBACK
             self._update_logger.error = "Critical service failure."
-            self.save_granular_log(check_package=False)
+            self._granular_log_handler.save_granular_log(update_logger=self._update_logger, check_package=False)
             snapshot.revert(rebooter, time_to_wait_before_reboot)
         elif self.sota_state == 'diagnostic_system_healthy':
             try:
@@ -270,7 +270,7 @@ class SOTA:
                 self._dispatcher_broker.send_result(msg)
                 snapshot.commit()
                 self._update_logger.detail_status = OTA_SUCCESS
-                self.save_granular_log(check_package=False)
+                self._granular_log_handler.save_granular_log(update_logger=self._update_logger, check_package=False)
             except SotaError as e:
                 msg = "FAILED INSTALL: System has not been properly updated; reverting."
                 logger.debug(str(e))
@@ -278,7 +278,7 @@ class SOTA:
                 self._update_logger.update_log(FAIL)
                 self._update_logger.detail_status = ROLLBACK
                 self._update_logger.error = f"{msg}. Error: {e}"
-                self.save_granular_log(check_package=False)
+                self._granular_log_handler.save_granular_log(update_logger=self._update_logger, check_package=False)
                 snapshot.revert(rebooter, time_to_wait_before_reboot)
         else:
             self.execute_from_manifest(setup_helper=setup_helper,
@@ -393,13 +393,13 @@ class SOTA:
                 # mode here to record the successful SOTA with current os version.
                 # TODO: Remove Mariner when confirmed that TiberOS is in use
                 elif detect_os() == LinuxDistType.tiber.name or detect_os() == LinuxDistType.Mariner.name:
-                    self.save_granular_log()
+                    self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
 
                 # The download-only mode only downloads the packages without installing them.
                 # Since there is no installation, there will be no changes in the package status or version.
                 # The apt history.log also doesn't record any changes. Therefore we can skip saving granular log.
                 elif self.sota_mode != 'download-only':
-                    self.save_granular_log()
+                    self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
 
 
                 if (self.sota_mode == 'download-only') or (not self._is_reboot_device()):
@@ -418,9 +418,9 @@ class SOTA:
                 # mode because we want to record the artifact download failure.
                 # TODO: Remove Mariner when confirmed that TiberOS is in use
                 if detect_os() == LinuxDistType.tiber.name or detect_os() == LinuxDistType.Mariner.name:
-                    self.save_granular_log()
+                    self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
                 elif self.sota_mode != 'download-only':
-                    self.save_granular_log()
+                    self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
                 self._dispatcher_broker.telemetry(SOTA_FAILURE)
                 self._dispatcher_broker.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)
@@ -439,37 +439,6 @@ class SOTA:
                 if '0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded' in cmd.get_output():
                     return True
         return False
-
-    def save_granular_log(self, check_package: bool = True) -> None:
-        """Save the granular log.
-        In Ubuntu, it saves the package level information.
-        In TiberOS, it saves the detail of the SOTA update.
-
-        @param check_package: True if you want to check the package's status and version and record them in Ubuntu.
-        """
-        log = {}
-        current_os = detect_os()
-        # TODO: Remove Mariner when confirmed that TiberOS is in use
-        with self._granular_lock:
-            if current_os == LinuxDistType.tiber.name or current_os == LinuxDistType.Mariner.name:
-                # Delete the previous log if exist.
-                if os.path.exists(GRANULAR_LOG_FILE):
-                    remove_file(GRANULAR_LOG_FILE)
-
-                if self._update_logger.detail_status == FAIL or self._update_logger.detail_status == ROLLBACK:
-                    log = {
-                        "StatusDetail.Status": self._update_logger.detail_status,
-                        "FailureReason": self._update_logger.error
-                    }
-                elif self._update_logger.detail_status == OTA_SUCCESS or self._update_logger.detail_status == OTA_PENDING:
-                    log = {
-                        "StatusDetail.Status": self._update_logger.detail_status,
-                        "Version": get_os_version()
-                    }
-                # In TiberOS, no package level information needed.
-                self._update_logger.save_granular_log_file(log=log, check_package=False)
-            else:
-                self._update_logger.save_granular_log_file(check_package=check_package)
 
     def check(self) -> None:
         """Perform manifest checking before SOTA"""
