@@ -261,13 +261,13 @@ class Dispatcher:
             self._dispatcher_broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
             return PUBLISH_SUCCESS
         elif cmd == "rpc":
-            url = parsed_head.get_children('type/rpc')['fetch']
-            name = parsed_head.get_children('type/rpc')['profileName']
+            url = parsed_head.get_children('rpc')['fetch']
+            name = parsed_head.get_children('rpc')['profileName']
             rpc_result = RpcActivateOperation.execute_rpc_activation_cmd(url, name)
             if rpc_result == 'success':
-                dispatcher._send_result(str(Result(CODE_OK, rpc_result)))
+                self._send_result(message= "Successful RPC Activation Operation")
             else:
-                dispatcher._send_result(str(Result(CODE_BAD_REQUEST, rpc_result)))
+                self._send_result(message= "Failed RPC Activation Operation")
         elif cmd == "custom":
             header = parsed_head.get_children('custom')
             json_data = header['data']
