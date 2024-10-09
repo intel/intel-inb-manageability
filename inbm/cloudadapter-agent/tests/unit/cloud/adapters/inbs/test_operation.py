@@ -37,10 +37,10 @@ RPC_OPERATION_LARGE = RpcActivateOperation(
 )
 
 RPC_OPERATION_LARGE_MANIFEST_XML = (
-    '<?xml version="1.0" encoding="utf-8"?>\n'
-    "<manifest><type>cmd</type><cmd><header><type>rpc</type></header>"
-    '<type><rpc><fetch>http://example.com/server</fetch><profileName>UDM</profileName>'    
-    "</rpc></type></cmd></manifest>"
+     '<?xml version="1.0" encoding="utf-8"?>\n'
+     "<manifest><type>cmd</type><cmd>rpc</cmd>"
+     "<rpc><fetch>http://example.com/server</fetch><profileName>UDM</profileName>"
+     "</rpc></manifest>"
 )
 
 
