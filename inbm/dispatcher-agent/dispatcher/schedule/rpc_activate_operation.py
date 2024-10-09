@@ -19,6 +19,7 @@ class RpcActivateOperation:
         command = f"./rpc activate -u {url}/activate -n --profile {name}"
         (out, err, code) = PseudoShellRunner().run(command)
         if code == 0 and 'CIRA: Configured' in out:
+
             return "Success"
         else:
             return "Failure"
