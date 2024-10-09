@@ -49,3 +49,23 @@ def cancel_thread(type_of_manifest: str, parsed_head: XmlHandler, thread_list: l
                             logger.error(e)
                 return True
     return False
+
+
+def is_active_ota_sota_download_only(type_of_active_manifest: str, active_parsed_head: XmlHandler) -> bool:
+    """
+    Check whether the current active thread is SOTA download-only mode.
+
+    @param type_of_active_manifest: type of the request
+    @param active_parsed_head: The root parsed xml
+    @return: True if it is SOTA download-only; False if not.
+    """
+    logger.debug("")
+    if type_of_active_manifest == 'ota':
+        header = active_parsed_head.get_children('ota/header')
+        ota_type = header['type']
+        resource = active_parsed_head.get_children(f'ota/type/{ota_type}')
+        if ota_type == OtaType.SOTA.name.lower():
+            sota_mode = resource.get('mode', None)
+            if sota_mode == 'download-only':
+                return True
+    return False

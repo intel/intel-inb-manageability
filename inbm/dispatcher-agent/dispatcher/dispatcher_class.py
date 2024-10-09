@@ -55,7 +55,7 @@ from .remediationmanager.remediation_manager import RemediationManager
 from .sota.os_factory import SotaOsFactory
 from .sota.sota import SOTA
 from .sota.sota_error import SotaError
-from .sota.cancel import cancel_thread
+from .sota.cancel import cancel_thread, is_active_ota_sota_download_only
 from .workload_orchestration import WorkloadOrchestration
 from inbm_lib.xmlhandler import *
 from inbm_lib.version import get_friendly_inbm_version_commit
@@ -96,6 +96,7 @@ class Dispatcher:
         self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._thread_count = 1
         self._thread_list: list[Thread] = []
+        self._active_thread_manifest: Optional[str] = None
         self._sota_repos = None
         self.sota_mode = None
         self._package_list: str = ""
@@ -317,6 +318,7 @@ class Dispatcher:
         result: Result = Result()
         logger.debug("do_install")
         parsed_head = None
+        self._active_thread_manifest = xml
         try:  # TODO: Split into multiple try/except blocks
             type_of_manifest, parsed_head = \
                 _check_type_validate_manifest(xml, schema_location=schema_location)
@@ -515,16 +517,29 @@ class Dispatcher:
         @param manifest: manifest to be processed
         @return: True if the request has been processed; False if no request has been handled.
         """
-        # TODO: Only cancel the sota download-only mode
+        # Check the current running thread's manifest.
+        # If it's a SOTA download-only mode, allowing the cancel request.
+        if self._active_thread_manifest:
+            type_of_active_manifest, active_thread_parsed_head = \
+                _check_type_validate_manifest(self._active_thread_manifest)
+            # If the active thread is not SOTA download-only, forbid the cancel request.
+            if not is_active_ota_sota_download_only(type_of_active_manifest, active_thread_parsed_head):
+                self._send_result(str(Result(CODE_BAD_REQUEST,
+                                             "Current thread is not SOTA download-only. "
+                                             "Cannot proceed with the cancel request.")))
+                return False
+
         if request_type == "install":
             type_of_manifest, parsed_head = \
                 _check_type_validate_manifest(manifest)
-
             result = cancel_thread(type_of_manifest, parsed_head, self._thread_list)
             if result:
                 logger.debug(f"Request cancel complete.")
                 self._send_result(str(Result(CODE_OK, "Request complete.")))
                 return True
+            else:
+                self._send_result(str(Result(CODE_BAD_REQUEST,
+                                             "Failed to cancel the request")))
         return False
 
     def _on_message(self, topic: str, payload: Any, qos: int) -> None:

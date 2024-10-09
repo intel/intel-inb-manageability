@@ -5,7 +5,7 @@ import threading
 from time import sleep
 from inbm_lib.xmlhandler import XmlHandler
 
-from dispatcher.sota.cancel import cancel_thread
+from dispatcher.sota.cancel import cancel_thread, is_active_ota_sota_download_only
 
 TEST_SCHEMA_LOCATION = os.path.join(os.path.dirname(__file__),
                                     '../../../fpm-template/usr/share/dispatcher-agent/'
@@ -37,3 +37,27 @@ class TestCancelThread(unittest.TestCase):
 
         self.assertTrue(cancel_thread(type_of_manifest, parsed_head, thread_list))
         mock_kill.assert_called_once()
+
+    def test_is_active_ota_sota_download_only_return_true(self) -> None:
+
+        sota_download_only_manifest = """<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header>
+        <type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd>
+        <mode>download-only</mode><package_list></package_list><deviceReboot>yes</deviceReboot>
+        </sota></type></ota></manifest> """
+
+        type_of_manifest = "ota"
+        parsed_head = XmlHandler(sota_download_only_manifest, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+
+        self.assertTrue(is_active_ota_sota_download_only(type_of_manifest, parsed_head))
+
+    def test_is_active_ota_sota_download_only_return_false(self) -> None:
+
+        sota_download_only_manifest = """<?xml version="1.0" encoding="utf-8"?><manifest><type>ota</type><ota><header>
+        <type>sota</type><repo>remote</repo></header><type><sota><cmd logtofile="y">update</cmd>
+        <mode>no-download</mode><package_list></package_list><deviceReboot>yes</deviceReboot>
+        </sota></type></ota></manifest> """
+
+        type_of_manifest = "ota"
+        parsed_head = XmlHandler(sota_download_only_manifest, is_file=False, schema_location=TEST_SCHEMA_LOCATION)
+
+        self.assertFalse(is_active_ota_sota_download_only(type_of_manifest, parsed_head))
