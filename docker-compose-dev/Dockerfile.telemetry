@@ -1,0 +1,43 @@
+FROM python:3.12-slim
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
+
+ENV HTTP_PROXY=$HTTP_PROXY
+ENV HTTPS_PROXY=$HTTPS_PROXY
+ENV NO_PROXY=$NO_PROXY
+ENV http_proxy=$http_proxy
+ENV https_proxy=$https_proxy
+ENV no_proxy=$no_proxy
+
+# Install build essentials
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gcc \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY inbm/telemetry-agent/requirements.txt /app/telemetry-agent/requirements.txt
+RUN pip config set global.proxy ${HTTP_PROXY} && \
+    pip install --no-cache-dir -r /app/telemetry-agent/requirements.txt
+
+COPY inbm-lib /app/inbm-lib
+RUN pip install --no-cache-dir -e /app/inbm-lib
+    
+COPY inbm/telemetry-agent /app/telemetry-agent
+COPY inbm/telemetry-agent/fpm-template /
+
+RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/telemetry-agent/logging.ini
+
+# used by INBM to detect if running in a container
+ENV container=docker
+ENV PYTHONPATH=/app:/app/telemetry-agent:/app/inbm-lib
+ENV MQTT_HOST=mosquitto
+ENV MQTT_PORT=1883
+ENV USE_TLS=False
+
+WORKDIR /app/telemetry-agent
+CMD ["python", "-m", "telemetry.telemetry"]
