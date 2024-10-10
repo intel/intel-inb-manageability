@@ -1,0 +1,162 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    networks:
+      - inbm_network
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+
+  cloudadapter:
+    build:
+      context: ..
+      dockerfile: docker-compose-dev/Dockerfile.cloudadapter
+      args:
+        - HTTP_PROXY=${HTTP_PROXY}
+        - HTTPS_PROXY=${HTTPS_PROXY}
+        - NO_PROXY=${NO_PROXY}
+        - http_proxy=${http_proxy}
+        - https_proxy=${https_proxy}
+        - no_proxy=${no_proxy}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - USE_TLS=False
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY},host.docker.internal
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy},host.docker.internal
+    volumes:
+      - ./adapter.cfg:/etc/intel-manageability/secret/cloudadapter-agent/adapter.cfg
+    extra_hosts:  # if connecting to a service on the docker host machine
+      - "host.docker.internal:host-gateway"
+    networks:
+      - inbm_network
+    restart: always
+    depends_on:
+      - mosquitto
+
+  telemetry:
+    build:
+      context: ..
+      dockerfile: docker-compose-dev/Dockerfile.telemetry
+      args:
+        - HTTP_PROXY=${HTTP_PROXY}
+        - HTTPS_PROXY=${HTTPS_PROXY}
+        - NO_PROXY=${NO_PROXY}
+        - http_proxy=${http_proxy}
+        - https_proxy=${https_proxy}
+        - no_proxy=${no_proxy}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - USE_TLS=False
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}
+    networks:
+      - inbm_network
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    depends_on:
+      - mosquitto      
+
+  diagnostic:
+    build:
+      context: ..
+      dockerfile: docker-compose-dev/Dockerfile.diagnostic
+      args:
+        - HTTP_PROXY=${HTTP_PROXY}
+        - HTTPS_PROXY=${HTTPS_PROXY}
+        - NO_PROXY=${NO_PROXY}
+        - http_proxy=${http_proxy}
+        - https_proxy=${https_proxy}
+        - no_proxy=${no_proxy}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - USE_TLS=False
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}
+    networks:
+      - inbm_network
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    depends_on:
+      - mosquitto
+
+  configuration:
+    build:
+      context: ..
+      dockerfile: docker-compose-dev/Dockerfile.configuration
+      args:
+        - HTTP_PROXY=${HTTP_PROXY}
+        - HTTPS_PROXY=${HTTPS_PROXY}
+        - NO_PROXY=${NO_PROXY}
+        - http_proxy=${http_proxy}
+        - https_proxy=${https_proxy}
+        - no_proxy=${no_proxy}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - USE_TLS=False
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}
+    networks:
+      - inbm_network
+    restart: always
+    depends_on:
+      - mosquitto
+
+  dispatcher:
+    build:
+      context: ..
+      dockerfile: docker-compose-dev/Dockerfile.dispatcher
+      args:
+        - HTTP_PROXY=${HTTP_PROXY}
+        - HTTPS_PROXY=${HTTPS_PROXY}
+        - NO_PROXY=${NO_PROXY}
+        - http_proxy=${http_proxy}
+        - https_proxy=${https_proxy}
+        - no_proxy=${no_proxy}
+    environment:
+      - MQTT_HOST=mosquitto
+      - MQTT_PORT=1883
+      - USE_TLS=False
+      - HTTP_PROXY=${HTTP_PROXY}
+      - HTTPS_PROXY=${HTTPS_PROXY}
+      - NO_PROXY=${NO_PROXY}
+      - http_proxy=${http_proxy}
+      - https_proxy=${https_proxy}
+      - no_proxy=${no_proxy}
+    networks:
+      - inbm_network
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /:/host
+    depends_on:
+      - mosquitto
+
+networks:
+  inbm_network:
+    driver: bridge
