@@ -1,0 +1,37 @@
+FROM python:3.12-slim
+
+ARG HTTP_PROXY
+ARG HTTPS_PROXY
+ARG NO_PROXY
+ARG http_proxy
+ARG https_proxy
+ARG no_proxy
+
+ENV HTTP_PROXY=$HTTP_PROXY
+ENV HTTPS_PROXY=$HTTPS_PROXY
+ENV NO_PROXY=$NO_PROXY
+ENV http_proxy=$http_proxy
+ENV https_proxy=$https_proxy
+ENV no_proxy=$no_proxy
+
+COPY inbm/cloudadapter-agent/requirements.txt /app/cloudadapter-agent/requirements.txt
+RUN pip config set global.proxy ${HTTP_PROXY} && \
+    pip install --no-cache-dir -r /app/cloudadapter-agent/requirements.txt
+
+COPY inbm-lib /app/inbm-lib
+RUN pip install --no-cache-dir -e /app/inbm-lib
+
+COPY inbm/cloudadapter-agent /app/cloudadapter-agent
+COPY inbm/cloudadapter-agent/fpm-template /
+
+RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/cloudadapter-agent/logging.ini
+
+# used by INBM to detect if running in a container
+ENV container=docker
+ENV MQTT_HOST=mosquitto
+ENV MQTT_PORT=1883
+ENV USE_TLS=False
+ENV PYTHONPATH=/app:/app/cloudadapter-agent:/app/inbm-lib
+
+WORKDIR /app/cloudadapter-agent
+CMD ["python", "-m", "cloudadapter.cloudadapter"]
