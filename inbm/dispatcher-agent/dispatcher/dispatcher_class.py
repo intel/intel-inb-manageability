@@ -263,7 +263,7 @@ class Dispatcher:
         elif cmd == "rpc":
             url = parsed_head.get_children('rpc')['fetch']
             name = parsed_head.get_children('rpc')['profileName']
-            rpc_result = RpcActivateOperation.execute_rpc_activation_cmd(url, name)
+            rpc_result = RpcActivateOperation().execute_rpc_activation_cmd(url, name)
             if rpc_result == 'success':
                 self._send_result(message= "Successful RPC Activation Operation")
             else:
