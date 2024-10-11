@@ -8,8 +8,7 @@ import os
 import hashlib
 import logging
 from typing import Optional
-from ..packagemanager.irepo import IRepo
-from .constants import TIBER_UPDATE_TOOL_PATH, SOTA_CACHE
+from .constants import TIBER_UPDATE_TOOL_PATH
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from .sota_error import SotaError
 logger = logging.getLogger(__name__)
@@ -24,24 +23,27 @@ def update_tool_rollback_command() -> None:
         raise SotaError(f"Failed to run UT rollback command. Error:{err}")
 
 
-def update_tool_write_command(signature: Optional[str] = None, repo: Optional[IRepo] = None) -> str:
+def update_tool_write_command(signature: Optional[str] = None, file_path: Optional[str] = None) -> str:
     """Call UT command to write the image into secondary partition.
        If signature is provided, it performs signature check and passes the verified file to UT.
 
     @param signature: signature used to verify image
-    @param repo: directory that contains the downloaded artifacts
+    @param file_path: raw image file path
     @return: UT command to run
     """
-    raw_img_path = None
-    if signature:
-        raw_img_path = verify_signature(repo.get_repo_path(), signature) if repo \
-            else verify_signature(SOTA_CACHE, signature)
-    logger.debug("")
+    if signature is None:
+        raise SotaError("Signature is None.")
 
-    if raw_img_path:
-        return str(TIBER_UPDATE_TOOL_PATH + " -w" + " -u " + raw_img_path)
-    else:
-        raise SotaError("Signature checks failed. No matching file found.")
+    if file_path is None:
+        raise SotaError("Raw image file path is None.")
+
+    if signature and file_path:
+        if verify_signature(file_path, signature):
+            logger.debug("Signature check passed.")
+        else:
+            raise SotaError("Signature checks failed.")
+
+    return str(TIBER_UPDATE_TOOL_PATH + " -w" + " -u " + file_path)
 
 
 def update_tool_commit_command() -> int:
@@ -72,23 +74,23 @@ def update_tool_apply_command() -> str:
     return TIBER_UPDATE_TOOL_PATH + " -a"
 
 
-def verify_signature(repo: str, signature: str) -> str:
-    """Perform signature check. Multiple files may have been downloaded from OCI.
-    The method below will iterate over all files in the repo, calculate the SHA256sum for each file,
-    and compare it with the provided signature.
+def verify_signature(file_path: str, signature: str) -> bool:
+    """Perform signature check. The method will calculate the SHA256sum of the file and
+    compare it with the provided signature.
 
-    @return: File that matches the signature
+    @param signature: signature used to verify image
+    @param file_path: raw image file path
+    @return: True if the signature matches; False if the signature verification failed.
     """
     try:
         logger.debug("Perform signature check on the downloaded file.")
-        for filename in os.listdir(repo):
-            filepath = os.path.join(repo, filename)
-            if os.path.isfile(filepath):
-                with open(filepath, 'rb') as file:
-                    file_checksum = hashlib.sha256(file.read()).hexdigest()
-                    if file_checksum == signature:
-                        return filepath
+        with open(file_path, 'rb') as file:
+            file_checksum = hashlib.sha256(file.read()).hexdigest()
+            if file_checksum == signature:
+                return True
 
-        raise SotaError("Signature checks failed. No matching file found.")
+        logger.error("Signature checks failed.")
+        return False
     except OSError as err:
-        raise SotaError(err)
+        logger.error(f"Error during signature checks: {err}")
+        return False
