@@ -239,7 +239,7 @@ class SOTA:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
 
         os_factory = SotaOsFactory(self._dispatcher_broker,
-                                   self._sota_repos, validated_package_list)
+                                   self._sota_repos, validated_package_list, self._signature, self._uri)
         try:
             os_type = detect_os()
         except ValueError as e:
@@ -447,7 +447,7 @@ class SOTA:
         if validated_package_list is None:
             raise SotaError(F'parsing and validating package list: {self._package_list} failed')
         os_factory = SotaOsFactory(self._dispatcher_broker,
-                                   self._sota_repos, validated_package_list)
+                                   self._sota_repos, validated_package_list, self._signature, self._uri)
         try:
             os_type = detect_os()
         except ValueError as e:
