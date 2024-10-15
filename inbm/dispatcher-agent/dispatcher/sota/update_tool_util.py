@@ -15,15 +15,6 @@ from .sota_error import SotaError
 logger = logging.getLogger(__name__)
 
 
-def update_tool_rollback_command() -> None:
-    """Call UT command to perform image rollback.
-    """
-    logger.debug("")
-    (out, err, code) = PseudoShellRunner().run(TIBER_UPDATE_TOOL_PATH + " -r")
-    if code != 0:
-        raise SotaError(f"Failed to run UT rollback command. Error:{err}")
-
-
 def update_tool_write_command(signature: Optional[str] = None, repo: Optional[IRepo] = None) -> str:
     """Call UT command to write the image into secondary partition.
        If signature is provided, it performs signature check and passes the verified file to UT.
