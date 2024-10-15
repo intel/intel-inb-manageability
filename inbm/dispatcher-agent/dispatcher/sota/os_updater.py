@@ -6,18 +6,16 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import abc
 import logging
 import re
 import os
 from pathlib import Path
 from typing import List, Optional, Union
-from abc import ABC, ABCMeta, abstractmethod
-
+from abc import ABCMeta, abstractmethod
+from urllib.parse import urlparse
 from inbm_common_lib.utility import CanonicalUri
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
-from inbm_common_lib.utility import get_canonical_representation_of_path
 
 from .command_list import CommandList
 from .constants import MENDER_FILE_PATH, SOTA_CACHE
@@ -435,7 +433,10 @@ class TiberOSUpdater(OsUpdater):
         # Extract the file path from uri.
         file_path = None
         if self._uri:
-            file_path = os.path.join(SOTA_CACHE, self._uri.split('/')[-1])
+            parsed_uri = urlparse(self._uri)
+            filename = os.path.basename(parsed_uri.path)
+            if filename:
+                file_path = os.path.join(SOTA_CACHE, filename)
 
         cmds = [update_tool_write_command(self._signature, file_path)]
         return CommandList(cmds).cmd_list

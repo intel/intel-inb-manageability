@@ -202,7 +202,7 @@ class TiberOSDownloader(Downloader):
                        repo=repo,
                        umask=UMASK_OTA,
                        username=username,
-                       password=password)
+                       token=password)
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         raise NotImplementedError()

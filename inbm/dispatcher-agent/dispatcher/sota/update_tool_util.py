@@ -26,6 +26,8 @@ def update_tool_rollback_command() -> None:
 def update_tool_write_command(signature: Optional[str] = None, file_path: Optional[str] = None) -> str:
     """Call UT command to write the image into secondary partition.
        If signature is provided, it performs signature check and passes the verified file to UT.
+       TODO: For now the signature matches to hash received from MM or PUA. Please update the method once the
+        integration of the public key into TiberOS is confirmed.
 
     @param signature: signature used to verify image
     @param file_path: raw image file path
@@ -38,8 +40,8 @@ def update_tool_write_command(signature: Optional[str] = None, file_path: Option
         raise SotaError("Raw image file path is None.")
 
     if signature and file_path:
-        if verify_signature(file_path, signature):
-            logger.debug("Signature check passed.")
+        if verify_hash(file_path, signature):
+            logger.debug("Signature checks passed.")
         else:
             raise SotaError("Signature checks failed.")
 
@@ -74,23 +76,23 @@ def update_tool_apply_command() -> str:
     return TIBER_UPDATE_TOOL_PATH + " -a"
 
 
-def verify_signature(file_path: str, signature: str) -> bool:
-    """Perform signature check. The method will calculate the SHA256sum of the file and
-    compare it with the provided signature.
+def verify_hash(file_path: str, hash: str) -> bool:
+    """Perform hash verification checks. The method will calculate the SHA256sum of the file and
+    compare it with the provided hash.
 
-    @param signature: signature used to verify image
+    @param hash: checksum used to verify image
     @param file_path: raw image file path
-    @return: True if the signature matches; False if the signature verification failed.
+    @return: True if the hash matches; False if the hash verification failed.
     """
     try:
-        logger.debug("Perform signature check on the downloaded file.")
+        logger.debug("Perform hash verification checks on the downloaded file.")
         with open(file_path, 'rb') as file:
             file_checksum = hashlib.sha256(file.read()).hexdigest()
-            if file_checksum == signature:
+            if file_checksum == hash:
                 return True
 
-        logger.error("Signature checks failed.")
+        logger.error("Hash verification checks failed.")
         return False
     except OSError as err:
-        logger.error(f"Error during signature checks: {err}")
+        logger.error(f"Error during hash verification checks: {err}")
         return False

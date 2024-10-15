@@ -1,5 +1,5 @@
 """
-    ORAS tool will be called by dispatcher to perform the image downloading in TiberOS.
+    Tiber Util module will be called by dispatcher to perform the image downloading in TiberOS.
 
     Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
@@ -24,14 +24,14 @@ logger = logging.getLogger(__name__)
 
 
 def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
-                   repo: IRepo, username: Optional[str], password: str, umask: int) -> None:
+                   repo: IRepo, username: Optional[str], token: str, umask: int) -> None:
     """Downloads files and places capsule file in path mentioned by manifest file.
 
     @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
     @param uri: URI of the source location
     @param repo: repository for holding the download
     @param username: username to use for download
-    @param password: password to use for download
+    @param token: token to use for download
     @param umask: file permission mask
     @raises SotaError: any exception
     """
@@ -49,15 +49,15 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
     verify_source(source=source, dispatcher_broker=dispatcher_broker)
     dispatcher_broker.telemetry('Source Verification check passed')
 
-    if password:
-        logger.debug("RS password provided.")
+    if token:
+        logger.debug("RS token provided.")
     else:
         err_msg = " No JWT token. Abort the update. "
         raise SotaError(err_msg)
 
     # Specify the token in header.
     headers = {
-        "Authorization": f"Bearer {password}"
+        "Authorization": f"Bearer {token}"
     }
 
     enough_space = is_enough_space_to_download(uri.value, repo, headers)
