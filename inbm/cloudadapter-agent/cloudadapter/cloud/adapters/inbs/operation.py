@@ -3,7 +3,6 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-
 import xml.etree.ElementTree as ET
 from google.protobuf.timestamp_pb2 import Timestamp
 from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, RpcActivateOperation, Operation, Schedule
@@ -115,7 +114,6 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     result.append(xml_manifest)
     return result
 
-
 def convert_rpc_activate_operation_to_xml_manifest(operation: RpcActivateOperation) -> str:
     """Converts a RpcActivateOperation message to an XML manifest string for Dispatcher."""
     # Create the root element
@@ -123,11 +121,7 @@ def convert_rpc_activate_operation_to_xml_manifest(operation: RpcActivateOperati
     ET.SubElement(manifest, 'type').text = 'cmd'
 
     cmd = ET.SubElement(manifest, 'cmd')
-    header = ET.SubElement(cmd, 'header')
-    ET.SubElement(header, 'type').text = 'rpc'
-
-    type = ET.SubElement(cmd, 'type')
-    rpc = ET.SubElement(type, 'rpc')
+    rpc = ET.SubElement(cmd, 'rpc')
 
     if operation.url:
         ET.SubElement(rpc, 'fetch').text = operation.url
@@ -139,8 +133,6 @@ def convert_rpc_activate_operation_to_xml_manifest(operation: RpcActivateOperati
     xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
     xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')
     return xml_declaration + '\n' + xml_str
-
-
 
 def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSoftwareOperation) -> str:
     """Converts a UpdateSystemSoftwareOperation message to an XML manifest string for Dispatcher."""

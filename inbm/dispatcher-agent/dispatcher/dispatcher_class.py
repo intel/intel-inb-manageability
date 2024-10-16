@@ -34,6 +34,7 @@ from inbm_common_lib.platform_info import PlatformInformation
 from inbm_common_lib.exceptions import UrlSecurityException
 
 from .schedule.manifest_parser import ScheduleManifestParser, SCHEDULE_SCHEMA_LOCATION
+from .schedule.rpc_activate_operation import RpcActivateOperation
 from .schedule.schedules import Schedule
 from .schedule.sqlite_manager import SqliteManager
 from .schedule.apscheduler import APScheduler
@@ -260,6 +261,14 @@ class Dispatcher:
         elif cmd == "query":
             self._dispatcher_broker.mqtt_publish(QUERY_CMD_CHANNEL, xml)
             return PUBLISH_SUCCESS
+        elif cmd == "rpc":
+            url = parsed_head.get_children('rpc')['fetch']
+            name = parsed_head.get_children('rpc')['profileName']
+            rpc_result = RpcActivateOperation().execute_rpc_activation_cmd(url, name)
+            if rpc_result == 'success':
+                self._send_result(message= "Successful RPC Activation Operation")
+            else:
+                self._send_result(message= "Failed RPC Activation Operation")
         elif cmd == "custom":
             header = parsed_head.get_children('custom')
             json_data = header['data']
