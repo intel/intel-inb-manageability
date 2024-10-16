@@ -87,7 +87,6 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
                     if cancel_event.is_set():
                         raise SotaError("Download cancelled.")
                     destination_file.write(chunk)
-            repo.add(filename=file_name, contents=response.content)
     except (HTTPError, OSError) as err:
         raise SotaError(f'OTA Fetch Failed: {err}')
 

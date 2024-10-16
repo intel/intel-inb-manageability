@@ -84,6 +84,7 @@ class TestDownloader(unittest.TestCase):
     @patch('dispatcher.sota.tiber_util.verify_source')
     def test_download_successful(self, mock_verify_source, mock_read_token, mock_get) -> None:
         self.release_date = self.username = self.password = None
+        self.cancel_event = threading.Event()
         mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -99,7 +100,7 @@ class TestDownloader(unittest.TestCase):
         try:
             installer.download(self.mock_disp_broker,
                                mock_url, TestDownloader._build_mock_repo(0),
-                               self.username, self.password, self.release_date)
+                               self.username, self.password, self.release_date, self.cancel_event)
         except (SotaError, DispatcherException):
             self.fail("raised Error unexpectedly!")
 
