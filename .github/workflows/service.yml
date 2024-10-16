@@ -1,0 +1,16 @@
+
+    name: CI
+
+    on: [push]
+
+    jobs:
+      build:
+        runs-on: dind
+
+        steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Set up container
+          run: docker pull gar-registry
+    
