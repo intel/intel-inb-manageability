@@ -292,7 +292,8 @@ class SOTA:
                                        time_to_wait_before_reboot=time_to_wait_before_reboot,
                                        release_date=release_date)
 
-    def _download_sota_files(self, sota_cache_repo: IRepo, release_date: Optional[str]) -> None:
+    def _download_sota_files(self, sota_cache_repo: IRepo, release_date: Optional[str],
+                             cancel_event: threading.Event,) -> None:
         """Download SOTA files from either a remote source or use a local source, and clean the cache directory.
 
         This method is responsible for downloading the necessary SOTA files from the specified remote source or
@@ -300,6 +301,7 @@ class SOTA:
 
         @param sota_cache_repo: Repo object to store the downloaded files, and to delete all files from cache directory.
         @param release_date: The release date of the SOTA manifest, used for filtering downloads from the remote source.
+        @param cancel_event: Event used to stop the downloading process
         """
 
         sota_cache_repo.delete_all()  # clean cache directory
@@ -311,12 +313,12 @@ class SOTA:
             if self._uri is None:
                 downloader.download(
                     self._dispatcher_broker, None, sota_cache_repo,
-                    self._username, self._password, release_date)
+                    self._username, self._password, release_date, cancel_event)
             else:
                 downloader.download(
                     self._dispatcher_broker, canonicalize_uri(
                         self._uri), sota_cache_repo,
-                    self._username, self._password, release_date)
+                    self._username, self._password, release_date, cancel_event)
 
     def execute_from_manifest(self,
                               setup_helper: SetupHelper,
@@ -344,16 +346,10 @@ class SOTA:
         try:
             if setup_helper.pre_processing():
                 if self.sota_mode != 'no-download':
-                    self._download_sota_files(sota_cache_repo, release_date)
-                if self._cancel_event.is_set():
-                    sota_cache_repo.delete_all()  # clean cache directory
-                    raise SotaError("Request cancel.")
+                    self._download_sota_files(sota_cache_repo, release_date, self._cancel_event)
                 download_success = True
                 snapshotter.take_snapshot()
                 cmd_list = self.calculate_and_execute_sota_upgrade(sota_cache_repo)
-                if self._cancel_event.is_set():
-                    sota_cache_repo.delete_all()  # clean cache directory
-                    raise SotaError("Request cancel.")
                 sota_cache_repo.delete_all()  # clean cache directory
                 if get_command_status(cmd_list) == SUCCESS:
                     self._dispatcher_broker.send_result(
@@ -365,6 +361,13 @@ class SOTA:
                     if self.sota_mode != 'download-only':
                         snapshotter.recover(rebooter, time_to_wait_before_reboot)
         except (DispatcherException, SotaError, UrlSecurityException, PermissionError) as e:
+            try:
+                # Remove the downloaded files inside the cache repo if error happens.
+                sota_cache_repo.delete_all()
+            except DispatcherException as err:
+                # DispatcherException may raise if the repo doesn't exist.
+                logger.debug(err)
+
             msg = f"Caught exception during SOTA: {str(e)}"
             logger.debug(msg)
             self._dispatcher_broker.telemetry(str(e))
