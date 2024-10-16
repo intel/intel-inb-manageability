@@ -101,6 +101,15 @@ class UpdateLogger:
             }
             with open(GRANULAR_LOG_FILE, "w") as file:
                 json.dump(data, file)
+        # Check if the file is empty. If it's empty, create the template.
+        elif os.path.getsize(GRANULAR_LOG_FILE) == 0:
+            logger.debug(f"File {GRANULAR_LOG_FILE} exists but is empty. Creating template...")
+            template: Dict[str, List[Any]] = {
+                "UpdateLog": []
+            }
+            with open(GRANULAR_LOG_FILE, "w") as file:
+                json.dump(template, file)
+
         if log:
             self.update_granular_with_log(log)
             return

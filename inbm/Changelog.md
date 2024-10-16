@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## NEXT - MMMM-DD-YY
 ### Fixed
  - (NEXMANAGE-872) Fix provision-tc issue in TiberOS - cannot overwrite /etc/dispatcher.environment
+ - (NEXMANAGE-846) Fix granular log raise error when granular log file is empty
 
 ### Changed
  - (NEXMANAGE-874) Remove UT rollback command in dispatcher agent
