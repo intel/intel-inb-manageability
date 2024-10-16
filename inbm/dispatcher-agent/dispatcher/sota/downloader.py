@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Optional
 from .mender_util import read_current_mender_version
 from .sota_error import SotaError
-from .oras_util import oras_download, read_oras_token
+from .tiber_util import read_release_server_token, tiber_download
 from ..constants import UMASK_OTA
 from ..downloader import download
 from ..packagemanager.irepo import IRepo
@@ -195,14 +195,14 @@ class TiberOSDownloader(Downloader):
         if uri is None:
             raise SotaError("URI is None while performing TiberOS download")
 
-        password = read_oras_token()
+        password = read_release_server_token()
 
-        oras_download(dispatcher_broker=dispatcher_broker,
-                      uri=uri,
-                      repo=repo,
-                      umask=UMASK_OTA,
-                      username=username,
-                      password=password)
+        tiber_download(dispatcher_broker=dispatcher_broker,
+                       uri=uri,
+                       repo=repo,
+                       umask=UMASK_OTA,
+                       username=username,
+                       token=password)
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         raise NotImplementedError()

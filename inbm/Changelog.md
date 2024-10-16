@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - MMMM-DD-YY
+### Added
  - (NEXMANAGE-737) Enable sota cancel mode
+
+### Fixed
+ - (NEXMANAGE-872) Fix provision-tc issue in TiberOS - cannot overwrite /etc/dispatcher.environment
+
+### Changed
+ - (NEXMANAGE-874) Remove UT rollback command in dispatcher agent
+ - (NEXMANAGE-853) Remove ORAS and update method
 
 ## 4.2.6 - 2024-10-04
 ### Added

@@ -119,8 +119,8 @@ class TestDownloader(unittest.TestCase):
                 mem_repo.add("test" + str(i + 1) + ".rpm", b"0123456789")
         return mem_repo
 
-    @patch('dispatcher.sota.downloader.read_oras_token', return_value="mock_password")
-    @patch('dispatcher.sota.downloader.oras_download')
+    @patch('dispatcher.sota.downloader.read_release_server_token', return_value="mock_password")
+    @patch('dispatcher.sota.downloader.tiber_download')
     def test_tiberos_download_successful(self, mock_download, mock_read_token) -> None:
         self.release_date = self.username = None
         password = "mock_password"

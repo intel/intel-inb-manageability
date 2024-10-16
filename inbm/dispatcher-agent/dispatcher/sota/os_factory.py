@@ -30,18 +30,20 @@ class SotaOsFactory:
 
     def __init__(self,  dispatcher_broker: DispatcherBroker,
                  sota_repos: Optional[str] = None, package_list: list[str] = [],
-                 signature: Optional[str] = None) -> None:
+                 signature: Optional[str] = None, uri: Optional[str] = None) -> None:
         """Initializes OsFactory.
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param sota_repos: new Ubuntu/Debian mirror (or None)
         @param package_list: list of packages to install/update (or empty for all--general upgrade)
         @param signature: signature used to verify image
+        @param uri: uri provided in the manifest
         """
         self._sota_repos = sota_repos
         self._package_list = package_list
         self._dispatcher_broker = dispatcher_broker
         self._signature = signature
+        self._uri = uri
 
     @staticmethod
     def verify_os_supported() -> str:
@@ -78,10 +80,10 @@ class SotaOsFactory:
         #TODO: Remove this when confirmed that TiberOS is in use
         elif os_type == LinuxDistType.Mariner.name:
             logger.debug("Mariner returned")
-            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature)
+            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature, self._uri)
         elif os_type == LinuxDistType.tiber.name:
             logger.debug("TiberOS returned")
-            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature)
+            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature, self._uri)
         raise ValueError('Unsupported OS type: ' + os_type)
 
 
@@ -261,14 +263,17 @@ class Windows(ISotaOs):
 class TiberOSBasedSotaOs(ISotaOs):
     """TiberOSBasedSotaOs class, child of ISotaOs"""
 
-    def __init__(self,  dispatcher_broker: DispatcherBroker, signature: Optional[str] = None) -> None:
+    def __init__(self,  dispatcher_broker: DispatcherBroker, signature: Optional[str] = None,
+                 uri: Optional[str] = None) -> None:
         """Constructor.
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
         @param signature: signature used to verify image
+        @param uri: uri provided in the manifest
         """
         self._dispatcher_broker = dispatcher_broker
         self._signature = signature
+        self._uri = uri
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
@@ -280,7 +285,7 @@ class TiberOSBasedSotaOs(ISotaOs):
 
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
-        return TiberOSUpdater(signature=self._signature)
+        return TiberOSUpdater(signature=self._signature, uri=self._uri)
 
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
                            proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:

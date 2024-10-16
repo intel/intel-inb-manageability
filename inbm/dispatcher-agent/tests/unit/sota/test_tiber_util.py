@@ -1,16 +1,18 @@
 import threading
 import unittest
-from typing import Optional
+import tempfile
 import os
+import shutil
 
 from ..common.mock_resources import *
 from inbm_common_lib.utility import canonicalize_uri
 from dispatcher.dispatcher_exception import DispatcherException
 from dispatcher.packagemanager.memory_repo import MemoryRepo
+from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.sota.os_factory import SotaOsFactory
 from dispatcher.sota.sota import SOTA
 from dispatcher.sota.sota_error import SotaError
-from dispatcher.sota.oras_util import parse_uri
+from dispatcher.sota.tiber_util import read_release_server_token
 from dispatcher.constants import CACHE
 from inbm_lib.xmlhandler import XmlHandler
 from unittest.mock import patch, MagicMock
@@ -77,12 +79,10 @@ class TestDownloader(unittest.TestCase):
         cls.sota_instance.factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
 
-    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('200', "", 0))
-    @patch('json.loads', return_value=mock_resp)
     @patch('requests.get')
-    @patch('dispatcher.sota.downloader.read_oras_token', return_value="mock_password")
-    @patch('dispatcher.sota.oras_util.verify_source')
-    def test_download_successful(self, mock_verify_source, mock_read_token, mock_get, mock_loads, mock_run) -> None:
+    @patch('dispatcher.sota.downloader.read_release_server_token', return_value="mock_password")
+    @patch('dispatcher.sota.tiber_util.verify_source')
+    def test_download_successful(self, mock_verify_source, mock_read_token, mock_get) -> None:
         self.release_date = self.username = self.password = None
         mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
         mock_response = MagicMock()
@@ -105,20 +105,7 @@ class TestDownloader(unittest.TestCase):
 
         mock_verify_source.assert_called_once()
         mock_read_token.assert_called_once()
-        mock_get.assert_called_once()
-        mock_loads.assert_called_once()
-        mock_run.assert_called_once()
-
-    def test_parse_uri(self) -> None:
-        uri = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/test/tiberos:latest")
-        parsed_uri = parse_uri(uri)
-        self.assertEqual(parsed_uri.source, 'https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/test')
-        self.assertEqual(parsed_uri.registry_server, 'registry-rs.internal.ledgepark.intel.com')
-        self.assertEqual(parsed_uri.image, 'tiberos')
-        self.assertEqual(parsed_uri.image_tag, 'latest')
-        self.assertEqual(parsed_uri.repository_name, 'one-intel-edge/test')
-        self.assertEqual(parsed_uri.image_full_path, 'registry-rs.internal.ledgepark.intel.com/one-intel-edge/test/tiberos:latest')
-        self.assertEqual(parsed_uri.registry_manifest, 'https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/test/tiberos/manifests/latest')
+        assert mock_get.call_count == 2
 
     @staticmethod
     def _build_mock_repo(num_files=0):
@@ -127,3 +114,18 @@ class TestDownloader(unittest.TestCase):
             for i in range(0, num_files):
                 mem_repo.add("test" + str(i + 1) + ".raw.xz", b"0123456789")
         return mem_repo
+
+    def test_read_release_server_token_successful(self) -> None:
+        directory = tempfile.mkdtemp()
+        try:
+            repo = DirectoryRepo(directory)
+            repo.add("rs_access_token", b"mock_token123")
+            token = read_release_server_token(token_path=os.path.join(directory, "rs_access_token"))
+        finally:
+            shutil.rmtree(directory)
+
+        self.assertEqual(token, "mock_token123")
+
+    def test_read_release_server_token_failed_with_fake_path(self) -> None:
+        with self.assertRaises(SotaError):
+            read_release_server_token(token_path="/fake/path/rs_access_token")
