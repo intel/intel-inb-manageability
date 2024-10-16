@@ -6,21 +6,19 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import abc
 import logging
 import re
 import os
 from pathlib import Path
 from typing import List, Optional, Union
-from abc import ABC, ABCMeta, abstractmethod
-
+from abc import ABCMeta, abstractmethod
+from urllib.parse import urlparse
 from inbm_common_lib.utility import CanonicalUri
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
-from inbm_common_lib.utility import get_canonical_representation_of_path
 
 from .command_list import CommandList
-from .constants import MENDER_FILE_PATH
+from .constants import MENDER_FILE_PATH, SOTA_CACHE
 from .converter import size_to_bytes
 from .sota_error import SotaError
 from ..common import uri_utilities
@@ -398,10 +396,12 @@ class TiberOSUpdater(OsUpdater):
     """TiberOSUpdater class, child of OsUpdater
 
        @param signature: signature used to verify image
+       @param uri: uri provided in the manifest
     """
-    def __init__(self, signature: Optional[str] = None) -> None:
+    def __init__(self, signature: Optional[str] = None, uri: Optional[str] = None) -> None:
         super().__init__()
         self._signature = signature
+        self._uri = uri
 
     def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
                              repo: irepo.IRepo) -> List[str]:
@@ -430,5 +430,13 @@ class TiberOSUpdater(OsUpdater):
 
     def download_only(self) -> list[str]:
         """Return the UT write command"""
-        cmds = [update_tool_write_command(self._signature)]
+        # Extract the file path from uri.
+        file_path = None
+        if self._uri:
+            parsed_uri = urlparse(self._uri)
+            filename = os.path.basename(parsed_uri.path)
+            if filename:
+                file_path = os.path.join(SOTA_CACHE, filename)
+
+        cmds = [update_tool_write_command(self._signature, file_path)]
         return CommandList(cmds).cmd_list
