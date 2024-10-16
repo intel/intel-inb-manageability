@@ -1,7 +1,20 @@
 #!/bin/bash
 set -euxo pipefail
+
+# Retrieve OS Release ID
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+else
+    echo "/etc/os-release not found. Exiting."
+    exit 1
+fi
+
 # Ensure mqtt-broker has required permissions
-getent group pmsuser || groupadd pmsuser
+if [ "$ID" != "tiber" ]; then
+    getent group pmsuser || groupadd pmsuser
+else
+    echo "Skipping adding pmsuser group on 'tiber' OS."
+fi
 chgrp mqtt-broker /var/persistent-log/mosquitto
 chmod g+rwx /var/persistent-log/mosquitto
 chmod -R g+rw /var/persistent-log/mosquitto
@@ -37,7 +50,8 @@ sed -i -e "s/listener .* 127.0.0.1/listener $LOCAL_MQTT_PORT 127.0.0.1/g" /etc/i
 
 # If dispatcher.environment exists, patch its port
 if [ -f /etc/dispatcher.environment ]; then
-  sed -i -e "s/MQTT_PORT=.*/MQTT_PORT=$LOCAL_MQTT_PORT/g" /etc/dispatcher.environment
+  temp_file=$(mktemp)
+  sed "s/MQTT_PORT=.*/MQTT_PORT=$LOCAL_MQTT_PORT/g" /etc/dispatcher.environment > "$temp_file" && cat "$temp_file" > /etc/dispatcher.environment
 fi
 
 
