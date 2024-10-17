@@ -99,11 +99,13 @@ class Publisher:
         return MESSAGE.MANIFEST
 
     def publish_schedule(self, schedule: str, request_id: str, timeout_sec: int) -> str | None:
-        """Publishes a schedule update
+        """Publishes a scheduled update
 
         Waits for reply and returns error message: blank for no error.
 
-        @param manifest: The schedule to update with
+        @param schedule: The schedule to update with
+        @param request_id: The request ID to use in both the request and response
+        @param timeout_sec: The timeout in seconds
         @exception ValueError: If an empty manifest is given
         @exception TimeoutError: If no response within timeout_sec seconds
         """
