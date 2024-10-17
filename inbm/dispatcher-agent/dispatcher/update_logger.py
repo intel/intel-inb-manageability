@@ -94,21 +94,24 @@ class UpdateLogger:
         """
         logger.debug("")
         # If the granular log file doesn't exist, create it. The file will be deleted by PUA when update done/failed.
-        if not os.path.exists(GRANULAR_LOG_FILE):
-            logger.debug(f"File not exist. Creating the {GRANULAR_LOG_FILE}...")
-            data: Dict[str, List[Any]] = {
-                "UpdateLog": []
-            }
-            with open(GRANULAR_LOG_FILE, "w") as file:
-                json.dump(data, file)
-        # Check if the file is empty. If it's empty, create the template.
-        elif os.path.getsize(GRANULAR_LOG_FILE) == 0:
-            logger.debug(f"File {GRANULAR_LOG_FILE} exists but is empty. Creating template...")
-            template: Dict[str, List[Any]] = {
-                "UpdateLog": []
-            }
-            with open(GRANULAR_LOG_FILE, "w") as file:
-                json.dump(template, file)
+        try:
+            if not os.path.exists(GRANULAR_LOG_FILE):
+                logger.debug(f"File not exist. Creating the {GRANULAR_LOG_FILE}...")
+                data: Dict[str, List[Any]] = {
+                    "UpdateLog": []
+                }
+                with open(GRANULAR_LOG_FILE, "w") as file:
+                    json.dump(data, file)
+            # Check if the file is empty. If it's empty, create the template.
+            elif os.path.getsize(GRANULAR_LOG_FILE) == 0:
+                logger.debug(f"File {GRANULAR_LOG_FILE} exists but is empty. Creating template...")
+                template: Dict[str, List[Any]] = {
+                    "UpdateLog": []
+                }
+                with open(GRANULAR_LOG_FILE, "w") as file:
+                    json.dump(template, file)
+        except OSError as e:
+            logger.error(f"OSError happens while saving granular log: {e}")
 
         if log:
             self.update_granular_with_log(log)
