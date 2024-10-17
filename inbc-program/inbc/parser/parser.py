@@ -224,7 +224,7 @@ class ArgsParser(object):
         parser_sota.add_argument('--reboot', '-rb', default='yes', required=False, choices=['yes', 'no'],
                                  help='Type of information [ yes | no ]')
         parser_sota.add_argument('--mode', '-m', default='full',
-                                 required=False, choices=['full', 'download-only', 'no-download'])
+                                 required=False, choices=['full', 'download-only', 'no-download', 'cancel'])
         parser_sota.add_argument('--package-list', '-p', required=False,
                                  type=lambda x: validate_package_list(x),
                                  help='Comma-separated list of package names to install')

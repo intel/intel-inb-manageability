@@ -1,3 +1,5 @@
+import threading
+
 import testtools
 import os
 import tempfile
@@ -46,12 +48,14 @@ class TestSota(testtools.TestCase):
                                  UpdateLogger("SOTA", "metadata"),
                                  None,
                                  install_check_service=MockInstallCheckService(),
+                                 cancel_event=threading.Event(),
                                  snapshot=1)
         cls.sota_local_instance = SOTA(parsed_manifest, 'local',
                                        cls.mock_disp_broker,
                                        UpdateLogger("SOTA", "metadata"),
                                        None,
                                        install_check_service=MockInstallCheckService(),
+                                       cancel_event=threading.Event(),
                                        snapshot=1)
         cls.sota_util_instance = SOTAUtil()
 
@@ -126,7 +130,8 @@ class TestSota(testtools.TestCase):
             sota_instance = SOTA(parsed_manifest, 'remote',
                                  mock_disp_broker,
                                  UpdateLogger("SOTA", "metadata"), None,
-                                 MockInstallCheckService(), snapshot=1)
+                                 MockInstallCheckService(), cancel_event=threading.Event(),
+                                 snapshot=1)
             sota_instance.execute(proceed_without_rollback=False, skip_sleeps=True)
             mock_print.assert_called_once()
             if TestSota.sota_instance.proceed_without_rollback:
@@ -151,7 +156,8 @@ class TestSota(testtools.TestCase):
         mock_disp_broker = MockDispatcherBroker.build_mock_dispatcher_broker()
         try:
             sota_instance = SOTA(parsed_manifest, 'remote', mock_disp_broker,
-                                 UpdateLogger("SOTA", "metadata"), None, MockInstallCheckService(), snapshot=1)
+                                 UpdateLogger("SOTA", "metadata"), None, MockInstallCheckService(),
+                                 cancel_event=threading.Event(),snapshot=1)
             sota_instance.execute(proceed_without_rollback=False, skip_sleeps=True)
             mock_print.assert_called_once()
             if TestSota.sota_instance.proceed_without_rollback:
