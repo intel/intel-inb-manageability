@@ -9,6 +9,8 @@ import json
 import logging
 from typing import Any, Optional, Callable
 
+import shortuuid
+
 from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED
 from dispatcher.schedule.sqlite_manager import SqliteManager
 from dispatcher.schedule.schedules import Schedule
@@ -39,17 +41,21 @@ class DispatcherBroker:
         self.mqttc.start()
         self._is_started = True
 
-    def send_update(self, message: str) -> None:
-        """Sends node update to local MQTT 'UPDATE' channel to be published
+    def send_node_update(self, message: str) -> None:
+        """Sends node update to local MQTT 'manageability/nodeupdate' channel to be published
         to the cloudadapter where it will be sent as a reques to INBS (service in UDM)       
 
-        Raises ValueError if id contains a slash
-
-        @param message: message to be published to cloud
-        @param job_id: Job ID used to track the request in both UDM and TC
+        @param message: message to be published to the cloud
         """
         logger.debug(f"Sending node update for to {NODE_UPDATE_CHANNEL} with message: {message}")
-        self.mqtt_publish(topic=NODE_UPDATE_CHANNEL, payload=message)
+        
+
+        """Raise TimeoutError if no response is received within the timeout."""
+        # return self.mqttc.publish_and_wait_response(TC_REQUEST_CHANNEL + SCHEDULE + "/" + request_id,
+        #                                             TC_RESPONSE_CHANNEL + request_id,
+        #                                             manifest,
+        #                                             timeout_seconds)
+        self.mqtt_publish_and_wait(topic=NODE_UPDATE_CHANNEL, payload=message)
 
     def _check_db_for_started_job(self) -> Optional[Schedule]:
         sqliteMgr = SqliteManager()
@@ -122,8 +128,17 @@ class DispatcherBroker:
                 return
        
             logger.debug(f"Sending node update message: {str(updated_message)}")
-            self.send_update(str(updated_message))        
+            self.send_node_update(str(updated_message))        
 
+    def mqtt_publish_and_wait(self, topic: str, payload: Any, timeout_seconds: int) -> Any:  # pragma: no cover
+        """Publish a message and wait for a response on the appropriate channel within a timeout.
+        Raise TimeoutError if no response is received within the timeout."""
+        request_id = shortuuid.uuid()
+        return self.mqttc.publish_and_wait_response(topic + "/" + request_id,
+                                                    RESPONSE_CHANNEL + request_id,
+                                                    payload,
+                                                    timeout_seconds)
+        
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.
 
