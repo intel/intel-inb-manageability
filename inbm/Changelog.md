@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
  - (NEXMANAGE-874) Remove UT rollback command in dispatcher agent
  - (NEXMANAGE-853) Remove ORAS and update method
+ - (NEXMANAGE-683) Remove service_type from Operation in common.proto
 
 ## 4.2.6 - 2024-10-04
 ### Added
@@ -39,8 +40,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEXMANAGE-744) Don't pull in `dmidecode` in `inbm-lib` -- pull in only in `telemetry`
  - (NEXMANAGE-744) Removed all references to `future` library as we do not use Python 2
 
-### Changed
- - (NEXMANAGE-683) Remove service_type from Operation in common.proto
 
 ## 4.2.5 - 2024-09-04
 ### Fixed
