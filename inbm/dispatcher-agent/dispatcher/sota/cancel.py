@@ -60,7 +60,7 @@ def cancel_thread(type_of_manifest: str, parsed_head: XmlHandler, thread_list: l
                         cancel_event.set()
                         # Wait thread to gracefully exit
                         logger.debug(f"Waiting thread to exit...")
-                        thread.join()
+                        thread.join(timeout=300)
                         logger.debug(f"Request cancel complete.")
                         # Reset the event flag
                         cancel_event.clear()
