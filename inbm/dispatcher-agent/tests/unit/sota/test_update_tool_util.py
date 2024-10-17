@@ -20,14 +20,14 @@ class TestDownloader(unittest.TestCase):
 
             # Calculate the SHA256 checksum
             sha256_hash = hashlib.sha256()
-            with open(os.path.join(directory, "test"), 'rb') as file:
+            file_path = os.path.join(directory, "test")
+            with open(file_path, 'rb') as file:
                 for chunk in iter(lambda: file.read(4096), b''):
                     sha256_hash.update(chunk)
             checksum = sha256_hash.hexdigest()
 
-
             expected_cmd = f'{TIBER_UPDATE_TOOL_PATH} -w -u {os.path.join(repo.get_repo_path(), "test")}'
-            cmd = update_tool_write_command(signature=checksum, repo=repo)
+            cmd = update_tool_write_command(signature=checksum, file_path=file_path)
             self.assertEqual(cmd, expected_cmd)
         finally:
             shutil.rmtree(directory)

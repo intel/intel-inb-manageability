@@ -197,6 +197,37 @@ class TestUpdateLogger(TestCase):
         assert mock_run.call_count == 2
         self.assertEqual(granular_log, expected_content)
 
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', side_effect=[("install ok installed", "", 0),
+                                                                              ("1:26.3+1-1ubuntu2", "", 0)])
+    @patch('dispatcher.update_logger.detect_os', return_value='Ubuntu')
+    def test_save_granular_log_file_sota_with_empty_granular_file_exist(self, mock_os, mock_run) -> None:
+        self.update_logger.ota_type = "sota"
+        self.update_logger._time = datetime.datetime(2024, 7, 3, 1, 50, 55, 935223)
+        self.update_logger.package_list = "emacs"
+        expected_content = {
+                            "UpdateLog": [
+                                    {
+                                        "update_type": "application",
+                                        "package_name": "emacs",
+                                        "update_time": "2024-07-03T01:50:55.935223",
+                                        "action": "install",
+                                        "status": "SUCCESS",
+                                        "version": "1:26.3+1-1ubuntu2"
+                                    }
+                                ]
+                            }
+        # Create an empty GRANULAR_LOG_FILE
+        with open(GRANULAR_LOG_FILE, 'w') as file:
+            pass
+
+        self.update_logger.save_granular_log_file()
+
+        with open(GRANULAR_LOG_FILE, 'r') as f:
+            granular_log = json.load(f)
+
+        assert mock_run.call_count == 2
+        self.assertEqual(granular_log, expected_content)
+
     @patch('dispatcher.update_logger.detect_os', return_value='tiber')
     def test_save_granular_log_file_sota_with_tiberos_and_log(self, mock_os) -> None:
         self.update_logger.ota_type = "sota"

@@ -136,7 +136,8 @@ class Dispatcher:
         self.RUNNING = True
         logger.info("Dispatcher agent starting. Version info: " +
                     get_friendly_inbm_version_commit())
-        self._dispatcher_broker.start(tls)
+        use_tls = os.getenv('USE_TLS', 'TRUE').lower() in ('true', '1', 't')
+        self._dispatcher_broker.start(tls=use_tls)
         self._initialize_broker()
 
         self.remediation_instance.run()

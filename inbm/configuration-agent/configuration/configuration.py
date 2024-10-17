@@ -96,7 +96,8 @@ class Configuration(WindowsService):
 
         # Hardcoded to use XML until we have a request to support other tools.
         config = XmlKeyValueStore(XML_LOCATION, True, SCHEMA_LOCATION)
-        broker = Broker(config)
+        use_tls = os.getenv('USE_TLS', 'TRUE').lower() in ('true', '1', 't')
+        broker = Broker(config, tls=use_tls)
 
         broker.publish_initial_values()
 
