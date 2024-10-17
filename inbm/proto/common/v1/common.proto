@@ -52,14 +52,11 @@ message RepeatedSchedule {
 message Operation {
   repeated PreOperation pre_operations = 1;
   repeated PostOperation post_operations = 2;
-  enum ServiceType {
-    SERVICE_TYPE_UNSPECIFIED = 0;
-    SERVICE_TYPE_INBS = 1;
-    SERVICE_TYPE_OOB_AMT = 2;
-    SERVICE_TYPE_OOB_BMC = 3;
-    SERVICE_TYPE_AUTO = 4;
-  }
-  ServiceType service_type = 3;  
+
+  // removed service_type field
+  reserved 3;
+  reserved "service_type"; 
+  
   oneof operation {
     UpdateSystemSoftwareOperation update_system_software_operation = 4;
     SetPowerStateOperation set_power_state_operation = 5;
