@@ -11,7 +11,7 @@ from typing import Any, Optional, Callable
 
 import shortuuid
 
-from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED
+from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED, UPDATE_NODE_MQTT_RESPONSE_TIMEOUT
 from dispatcher.schedule.sqlite_manager import SqliteManager
 from dispatcher.schedule.schedules import Schedule
 from dispatcher.dispatcher_exception import DispatcherException
@@ -51,11 +51,8 @@ class DispatcherBroker:
         
 
         """Raise TimeoutError if no response is received within the timeout."""
-        # return self.mqttc.publish_and_wait_response(TC_REQUEST_CHANNEL + SCHEDULE + "/" + request_id,
-        #                                             TC_RESPONSE_CHANNEL + request_id,
-        #                                             manifest,
-        #                                             timeout_seconds)
         self.mqtt_publish_and_wait(topic=NODE_UPDATE_CHANNEL, payload=message)
+        #self.mqtt_publish(topic=NODE_UPDATE_CHANNEL, payload=message)
 
     def _check_db_for_started_job(self) -> Optional[Schedule]:
         sqliteMgr = SqliteManager()
@@ -130,14 +127,21 @@ class DispatcherBroker:
             logger.debug(f"Sending node update message: {str(updated_message)}")
             self.send_node_update(str(updated_message))        
 
-    def mqtt_publish_and_wait(self, topic: str, payload: Any, timeout_seconds: int) -> Any:  # pragma: no cover
+    def mqtt_publish_and_wait(self, topic: str, payload: Any) -> Any:  # pragma: no cover
         """Publish a message and wait for a response on the appropriate channel within a timeout.
         Raise TimeoutError if no response is received within the timeout."""
+        
+        if self.mqttc is None:
+            raise DispatcherException("Cannot publish on MQTT: client not initialized.")
+
         request_id = shortuuid.uuid()
-        return self.mqttc.publish_and_wait_response(topic + "/" + request_id,
-                                                    RESPONSE_CHANNEL + request_id,
-                                                    payload,
-                                                    timeout_seconds)
+        request_topic = topic + "/" + request_id
+        response_topic = RESPONSE_CHANNEL + "/" + request_id
+        logger.debug("Publishing message to %s with response expected on %s", request_topic, response_topic)
+        return self.mqttc.publish_and_wait_response(topic=request_topic,
+                                                    response_topic=response_topic,
+                                                    payload=payload,
+                                                    timeout_seconds=UPDATE_NODE_MQTT_RESPONSE_TIMEOUT)
         
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.
