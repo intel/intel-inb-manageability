@@ -1,7 +1,10 @@
+import threading
 import unittest
 import tempfile
 import os
 import shutil
+from requests import HTTPError
+from requests.exceptions import ProxyError
 
 from ..common.mock_resources import *
 from inbm_common_lib.utility import canonicalize_uri
@@ -73,7 +76,8 @@ class TestDownloader(unittest.TestCase):
                                  MockDispatcherBroker.build_mock_dispatcher_broker(),
                                  UpdateLogger("SOTA", "metadata"),
                                  None,
-                                 install_check_service=MockInstallCheckService())
+                                 install_check_service=MockInstallCheckService(),
+                                 cancel_event=threading.Event())
         cls.sota_instance.factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
 
@@ -82,7 +86,8 @@ class TestDownloader(unittest.TestCase):
     @patch('dispatcher.sota.tiber_util.verify_source')
     def test_download_successful(self, mock_verify_source, mock_read_token, mock_get) -> None:
         self.release_date = self.username = self.password = None
-        mock_url = canonicalize_uri("https://registry-rs.internal.ledgepark.intel.com/one-intel-edge/tiberos:latest")
+        self.cancel_event = threading.Event()
+        mock_url = canonicalize_uri(" https://files-rs.internal.ledgepark.intel.com/repository/pool/TiberOS/TiberOS-RT/core-rt-1.0.20241001.2251.raw.xz")
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_get.return_value = mock_response
@@ -94,16 +99,119 @@ class TestDownloader(unittest.TestCase):
         assert factory
         installer = factory.create_downloader()
         assert installer
+
+        directory = tempfile.mkdtemp()
+        repo = DirectoryRepo(directory)
         try:
             installer.download(self.mock_disp_broker,
-                               mock_url, TestDownloader._build_mock_repo(0),
-                               self.username, self.password, self.release_date)
+                               mock_url, repo,
+                               self.username, self.password, self.release_date, self.cancel_event)
         except (SotaError, DispatcherException):
             self.fail("raised Error unexpectedly!")
+        finally:
+            shutil.rmtree(directory)
 
         mock_verify_source.assert_called_once()
         mock_read_token.assert_called_once()
         assert mock_get.call_count == 2
+
+    @patch('requests.get')
+    @patch('dispatcher.sota.downloader.read_release_server_token', return_value="mock_password")
+    @patch('dispatcher.sota.tiber_util.verify_source')
+    def test_download_failed_with_HTTPError(self, mock_verify_source, mock_read_token, mock_get) -> None:
+        self.release_date = self.username = self.password = None
+        self.cancel_event = threading.Event()
+        self.cancel_event.set()
+        mock_url = canonicalize_uri(" http://files-rs.internal.ledgepark.intel.com/repository/pool/TiberOS/TiberOS-RT/core-rt-1.0.20241001.2251.raw.xz")
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_get.side_effect = HTTPError
+
+        assert TestDownloader.sota_instance
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
+        factory = TestDownloader.sota_instance.factory
+        assert factory
+        installer = factory.create_downloader()
+        assert installer
+
+        directory = tempfile.mkdtemp()
+        repo = DirectoryRepo(directory)
+        try:
+            with self.assertRaises(SotaError):
+                installer.download(self.mock_disp_broker,
+                                   mock_url, repo,
+                                   self.username, self.password, self.release_date, self.cancel_event)
+        finally:
+            shutil.rmtree(directory)
+
+        mock_verify_source.assert_called_once()
+        mock_read_token.assert_called_once()
+        assert mock_get.call_count == 1
+
+    @patch('requests.get')
+    @patch('dispatcher.sota.downloader.read_release_server_token', return_value="mock_password")
+    @patch('dispatcher.sota.tiber_util.verify_source')
+    def test_download_failed_with_ProxyError(self, mock_verify_source, mock_read_token, mock_get) -> None:
+        self.release_date = self.username = self.password = None
+        self.cancel_event = threading.Event()
+        self.cancel_event.set()
+        mock_url = canonicalize_uri(" http://files-rs.internal.ledgepark.intel.com/repository/pool/TiberOS/TiberOS-RT/core-rt-1.0.20241001.2251.raw.xz")
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+        mock_get.side_effect = ProxyError
+
+        assert TestDownloader.sota_instance
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
+        factory = TestDownloader.sota_instance.factory
+        assert factory
+        installer = factory.create_downloader()
+        assert installer
+
+        directory = tempfile.mkdtemp()
+        repo = DirectoryRepo(directory)
+        try:
+            with self.assertRaises(SotaError):
+                installer.download(self.mock_disp_broker,
+                                   mock_url, repo,
+                                   self.username, self.password, self.release_date, self.cancel_event)
+        finally:
+            shutil.rmtree(directory)
+
+        mock_verify_source.assert_called_once()
+        mock_read_token.assert_called_once()
+        assert mock_get.call_count == 1
+
+    @patch('requests.get')
+    @patch('dispatcher.sota.downloader.read_release_server_token', return_value="mock_password")
+    @patch('dispatcher.sota.tiber_util.verify_source')
+    def test_download_failed_with_non_exist_repo(self, mock_verify_source, mock_read_token, mock_get) -> None:
+        self.release_date = self.username = self.password = None
+        self.cancel_event = threading.Event()
+        self.cancel_event.set()
+        mock_url = canonicalize_uri(
+            " http://files-rs.internal.ledgepark.intel.com/repository/pool/TiberOS/TiberOS-RT/core-rt-1.0.20241001.2251.raw.xz")
+        mock_response = MagicMock()
+        mock_response.status_code = 400
+
+        assert TestDownloader.sota_instance
+        TestDownloader.sota_instance.factory = SotaOsFactory(
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
+        factory = TestDownloader.sota_instance.factory
+        assert factory
+        installer = factory.create_downloader()
+        assert installer
+
+        repo = DirectoryRepo(CACHE)
+        with self.assertRaises(SotaError):
+            installer.download(self.mock_disp_broker,
+                               mock_url, repo,
+                               self.username, self.password, self.release_date, self.cancel_event)
+
+        mock_verify_source.assert_called_once()
+        mock_read_token.assert_called_once()
+        assert mock_get.call_count == 1
 
     @staticmethod
     def _build_mock_repo(num_files=0):

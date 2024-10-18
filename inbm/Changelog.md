@@ -3,7 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## NEXT - MMMM-DD-YY
+## NEXT - YYYY-MM-DD
+
+## 4.2.6.1 - 2024-10-18
+### Added
+ - (NEXMANAGE-737) Enable sota cancel mode
+
 ### Fixed
  - (NEXMANAGE-872) Fix provision-tc issue in TiberOS - cannot overwrite /etc/dispatcher.environment
  - (NEXMANAGE-846) Fix granular log raise error when granular log file is empty
