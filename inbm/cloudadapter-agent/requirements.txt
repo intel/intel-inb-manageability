@@ -7,5 +7,5 @@ PySocks==1.7.1
 psutil==5.9.5
 shortuuid==1.0.1
 pyinstaller==5.13.1
-protobuf==5.26.1
-grpcio==1.62.1
+protobuf==5.28.2
+grpcio==1.67.0
