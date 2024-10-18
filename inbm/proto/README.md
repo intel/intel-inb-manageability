@@ -12,9 +12,9 @@
     pip3 install mypy-protobuf
     ```
 
-3. Generate proto
+3. Generate proto files
 
     ```sh
     cd /path/to/intel-inb-manageability/inbm
-    ./generate-proto
+    ./generate-proto.sh
     ```
