@@ -12,7 +12,7 @@ import platform
 import signal
 import sys
 from queue import Queue
-from threading import Thread, active_count, Lock
+from threading import Thread, active_count, Lock, Event
 from time import sleep
 from typing import Optional, Any, Mapping, Tuple, Sequence
 
@@ -55,6 +55,7 @@ from .remediationmanager.remediation_manager import RemediationManager
 from .sota.os_factory import SotaOsFactory
 from .sota.sota import SOTA
 from .sota.sota_error import SotaError
+from .sota.cancel import cancel_thread
 from .workload_orchestration import WorkloadOrchestration
 from inbm_lib.xmlhandler import *
 from inbm_lib.version import get_friendly_inbm_version_commit
@@ -94,6 +95,8 @@ class Dispatcher:
         # Initialize update_queue with a capacity of 1 to ensure serialized handling of updates.
         self.update_queue: Queue[Tuple[str, str, Optional[str]]] = Queue(1)
         self._thread_count = 1
+        self._thread_list: list[Thread] = []
+        self._active_thread_manifest: Optional[str] = None
         self._sota_repos = None
         self.sota_mode = None
         self._package_list: str = ""
@@ -115,6 +118,7 @@ class Dispatcher:
 
         self.sqlite_mgr = SqliteManager()
         self.ap_scheduler = APScheduler(sqlite_mgr=self.sqlite_mgr)
+        self._cancel_event = Event()
 
     def stop(self) -> None:
         self.RUNNING = False
@@ -186,7 +190,13 @@ class Dispatcher:
                 if active_count() - active_start_count < self._thread_count:
                     worker = Thread(target=handle_updates, args=(self,))
                     worker.setDaemon(True)
+                    self._thread_list.append(worker)
                     worker.start()
+
+            # Periodically check if processes have finished. If process finished, remove it from the list.
+            for thread in self._thread_list[:]:
+                if not thread.is_alive():
+                    self._thread_list.remove(thread)
             sleep(1)
 
         self._dispatcher_broker.mqtt_publish(f'{AGENT}/state', 'dead', retain=True)
@@ -310,6 +320,8 @@ class Dispatcher:
         result: Result = Result()
         logger.debug("do_install")
         parsed_head = None
+        # Assumption is that there is only one active OTA thread at a time
+        self._active_thread_manifest = xml
         try:  # TODO: Split into multiple try/except blocks
             type_of_manifest, parsed_head = \
                 _check_type_validate_manifest(xml, schema_location=schema_location)
@@ -411,7 +423,8 @@ class Dispatcher:
             self._sota_repos,
             self._install_check_service,
             self._update_logger,
-            self.config_dbs)
+            self.config_dbs,
+            self._cancel_event)
 
         p = factory.create_parser()
         # NOTE: p.parse can raise one of the *otaError exceptions
@@ -440,7 +453,8 @@ class Dispatcher:
                 self._sota_repos,
                 self._install_check_service,
                 self._update_logger,
-                self.config_dbs)
+                self.config_dbs,
+                self._cancel_event)
             p = factory.create_parser()
             # NOTE: p.parse can raise one of the *otaError exceptions
             parsed_manifest = p.parse(ota_list[ota], kwargs, parsed_head)
@@ -497,7 +511,32 @@ class Dispatcher:
         request_type = topic.split('/')[2]
         request_id = topic.split('/')[3] if len(topic.split('/')) > 3 else None
         manifest = payload
-        self._add_request_to_queue(request_type, manifest, request_id)
+        if not self._handle_cancel_request(request_type, manifest):
+            self._add_request_to_queue(request_type, manifest, request_id)
+
+    def _handle_cancel_request(self, request_type: str, manifest: str) -> bool:
+        """
+        Check if it is a SOTA cancel request. If it is, send the terminate signal to current process.
+
+        @param request_type: type of the request
+        @param manifest: manifest to be processed
+        @return: True if the request has been processed; False if no request has been handled.
+        """
+        if request_type == "install":
+            type_of_manifest, parsed_head = \
+                _check_type_validate_manifest(manifest)
+            type_of_active_manifest = active_thread_parsed_head = None
+            if self._active_thread_manifest:
+                type_of_active_manifest, active_thread_parsed_head = \
+                    _check_type_validate_manifest(self._active_thread_manifest)
+            result = cancel_thread(type_of_manifest, parsed_head, self._thread_list,
+                                   type_of_active_manifest, active_thread_parsed_head,
+                                   self._dispatcher_broker, self._cancel_event)
+            if result:
+                logger.debug(f"Request cancel complete.")
+                self._send_result(str(Result(CODE_OK, "Request complete.")))
+                return True
+        return False
 
     def _on_message(self, topic: str, payload: Any, qos: int) -> None:
         """Called when a message is received from _telemetry-agent
@@ -619,6 +658,7 @@ class Dispatcher:
                              self._update_logger,
                              self._sota_repos,
                              self._install_check_service,
+                             self._cancel_event,
                              snapshot, action)
 
         sota_instance.execute(self.proceed_without_rollback)

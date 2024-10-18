@@ -7,6 +7,7 @@
 import logging
 import os
 import requests
+import threading
 from requests import HTTPError
 from requests.exceptions import ProxyError, ChunkedEncodingError, ContentDecodingError, ConnectionError
 
@@ -24,7 +25,8 @@ logger = logging.getLogger(__name__)
 
 
 def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
-                   repo: IRepo, username: Optional[str], token: str, umask: int) -> None:
+                   repo: IRepo, username: Optional[str], token: str, umask: int,
+                   cancel_event: threading.Event,) -> None:
     """Downloads files and places capsule file in path mentioned by manifest file.
 
     @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
@@ -33,6 +35,7 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
     @param username: username to use for download
     @param token: token to use for download
     @param umask: file permission mask
+    @param cancel_event: Event used to stop the downloading process
     @raises SotaError: any exception
     """
     dispatcher_broker.telemetry(f'Package to be fetched from {uri.value}')
@@ -60,7 +63,7 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         "Authorization": f"Bearer {token}"
     }
 
-    enough_space = is_enough_space_to_download(uri.value, repo, headers)
+    enough_space = is_enough_space_to_download(uri.value, repo, headers, cancel_event)
 
     if not enough_space:
         err_msg = " Insufficient free space available on " + shlex.quote(repo.get_repo_path()) + \
@@ -76,8 +79,14 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         dispatcher_broker.telemetry(info_msg)
 
     try:
-        with requests.get(url=uri.value, headers=headers) as response:
-            repo.add(filename=file_name, contents=response.content)
+        with requests.get(url=uri.value, headers=headers, stream=True) as response:
+            response.raise_for_status()
+            with open(os.open(os.path.join(repo.get_repo_path(), file_name), os.O_CREAT | os.O_WRONLY), 'wb') \
+                    as destination_file:
+                for chunk in response.iter_content(chunk_size=16384):
+                    if cancel_event.is_set():
+                        raise SotaError("Download cancelled.")
+                    destination_file.write(chunk)
     except (HTTPError, OSError) as err:
         raise SotaError(f'OTA Fetch Failed: {err}')
 
@@ -86,7 +95,8 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
 
 def is_enough_space_to_download(manifest_uri: str,
                                 destination_repo: IRepo,
-                                headers: Any) -> bool:
+                                headers: Any,
+                                cancel_event: threading.Event) -> bool:
     """Checks if enough free space exists on platform to hold download.
 
     Calculates the file size from the OCI server and checks if required free space is available on
@@ -94,11 +104,14 @@ def is_enough_space_to_download(manifest_uri: str,
     @param manifest_uri: registry manifest uri
     @param destination_repo:  desired download destination
     @param headers: headers that contains jwt_token to access the release server
+    @param cancel_event: Event used to stop the downloading process
+
+    @return: True if space is enough; Otherwise False.
     """
     try:
         logger.debug(f"Checking file size with manifest uri: {manifest_uri}")
 
-        with requests.get(url=manifest_uri, headers=headers) as response:
+        with requests.get(url=manifest_uri, headers=headers, stream=True) as response:
             response.raise_for_status()
             # Read Content-Length header
             try:
@@ -111,6 +124,8 @@ def is_enough_space_to_download(manifest_uri: str,
                 for chunk in response.iter_content(chunk_size=16384):
                     if chunk:
                         content_length += len(chunk)
+                    if cancel_event.is_set():
+                        raise SotaError("Download cancelled.")
 
     except HTTPError as e:
         if e.response:

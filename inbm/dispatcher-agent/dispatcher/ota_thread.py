@@ -7,6 +7,7 @@
 import abc
 import logging
 import os
+import threading
 from threading import Lock
 from typing import Optional, Any, Mapping
 
@@ -142,6 +143,7 @@ class SotaThread(OtaThread):
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     @param update_logger: UpdateLogger instance; expected to update when done with OTA
+    @param cancel_event: Event used to stop the downloading process
     @return (dict): dict representation of COMMAND_SUCCESS or OTA_FAILURE/OTA_FAILURE_IN_PROGRESS
     """
 
@@ -152,13 +154,15 @@ class SotaThread(OtaThread):
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
-                 update_logger: UpdateLogger) -> None:
+                 update_logger: UpdateLogger,
+                 cancel_event: threading.Event) -> None:
         super().__init__(repo_type, parsed_manifest,
                          install_check_service=install_check_service)
         self._sota_repos = sota_repos
         self._proceed_without_rollback = proceed_without_rollback
         self._update_logger = update_logger
         self._dispatcher_broker = dispatcher_broker
+        self._cancel_event = cancel_event
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the SOTA thread and which checks for existing locks before delegating to
@@ -177,6 +181,7 @@ class SotaThread(OtaThread):
                                      dispatcher_broker=self._dispatcher_broker,
                                      update_logger=self._update_logger,
                                      sota_repos=self._sota_repos,
+                                     cancel_event=self._cancel_event,
                                      install_check_service=self._install_check_service)
                 try:
                     sota_instance.execute(self._proceed_without_rollback)
@@ -200,6 +205,7 @@ class SotaThread(OtaThread):
                                  dispatcher_broker=self._dispatcher_broker,
                                  update_logger=self._update_logger,
                                  sota_repos=self._sota_repos,
+                                 cancel_event=self._cancel_event,
                                  install_check_service=self._install_check_service)
             sota_instance.check()
         except SotaError as e:
