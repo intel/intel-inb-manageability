@@ -1,3 +1,4 @@
+// DO NOT EDIT: this file is imported by earthly +generate-proto from this location: https://raw.githubusercontent.com/intel/intel-inb-manageability/0a41be1e5ac99e36814f58cb837dba7ddc9b04af/inbm/proto/common/v1/common.proto
 syntax = "proto3";
 
 package common.v1;
@@ -63,14 +64,9 @@ message Operation {
   oneof operation {
     UpdateSystemSoftwareOperation update_system_software_operation = 4;
     SetPowerStateOperation set_power_state_operation = 5;
-    RpcActivateOperation rpc_activate_operation = 6;
+    UpdateFirmwareOperation update_firmware_operation = 6;
     // and others
   }
-}
-
-message RpcActivateOperation {
-  string url = 1;
-  string profile_name = 2;
 }
 
 message UpdateSystemSoftwareOperation {
@@ -96,6 +92,16 @@ message SetPowerStateOperation {
         POWER_STATE_RESET = 10;
     }
     PowerState opcode = 1;
+}
+
+message UpdateFirmwareOperation {
+  string url = 1; // URL from which to remotely retrieve the package
+  string bios_version = 2; // BIOS version of the new firmware update.
+  string vendor = 3; // Vendor of the new firmware update.
+  string manufacturer = 4; // Manufacturer of the new firmware update.
+  string product_name = 5; // Product name of the new firmware update.
+  google.protobuf.Timestamp release_date = 6; // Release date of the new SW update.
+  bool do_not_reboot = 7;  // Whether to reboot the node after the firmware update attempt
 }
 
 message PreOperation {
@@ -143,3 +149,4 @@ message Job {
   string result_msgs = 10;  // JSON string for result messages of all tasks ran
   google.protobuf.Timestamp create_time = 11;
 }
+option go_package = "github.com/intel-innersource/frameworks.edge.one-intel-edge.manageability.unified-device-management/pkg/api/common/v1";
