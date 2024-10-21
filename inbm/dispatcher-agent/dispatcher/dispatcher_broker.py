@@ -49,10 +49,8 @@ class DispatcherBroker:
         """
         logger.debug(f"Sending node update for to {NODE_UPDATE_CHANNEL} with message: {message}")
         
-
         """Raise TimeoutError if no response is received within the timeout."""
         self.mqtt_publish_and_wait(topic=NODE_UPDATE_CHANNEL, payload=message)
-        #self.mqtt_publish(topic=NODE_UPDATE_CHANNEL, payload=message)
 
     def _check_db_for_started_job(self) -> Optional[Schedule]:
         sqliteMgr = SqliteManager()
@@ -110,7 +108,7 @@ class DispatcherBroker:
                 return
 
             # Update the job_id in the message
-            message_dict['jobId'] = schedule.job_id
+            message_dict['job_id'] = schedule.job_id
             
             # Convert the updated message_dict back to a JSON string
             try:
