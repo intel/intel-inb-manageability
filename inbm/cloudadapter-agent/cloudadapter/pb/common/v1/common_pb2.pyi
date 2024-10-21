@@ -205,7 +205,6 @@ class Operation(google.protobuf.message.Message):
     UPDATE_SYSTEM_SOFTWARE_OPERATION_FIELD_NUMBER: builtins.int
     SET_POWER_STATE_OPERATION_FIELD_NUMBER: builtins.int
     RPC_ACTIVATE_OPERATION_FIELD_NUMBER: builtins.int
-    UPDATE_FIRMWARE_OPERATION_FIELD_NUMBER: builtins.int
     service_type: global___Operation.ServiceType.ValueType
     @property
     def pre_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PreOperation]: ...
@@ -216,9 +215,7 @@ class Operation(google.protobuf.message.Message):
     @property
     def set_power_state_operation(self) -> global___SetPowerStateOperation: ...
     @property
-    def rpc_activate_operation(self) -> global___RpcActivateOperation: ...
-    @property
-    def update_firmware_operation(self) -> global___UpdateFirmwareOperation:
+    def rpc_activate_operation(self) -> global___RpcActivateOperation:
         """and others"""
 
     def __init__(
@@ -230,11 +227,10 @@ class Operation(google.protobuf.message.Message):
         update_system_software_operation: global___UpdateSystemSoftwareOperation | None = ...,
         set_power_state_operation: global___SetPowerStateOperation | None = ...,
         rpc_activate_operation: global___RpcActivateOperation | None = ...,
-        update_firmware_operation: global___UpdateFirmwareOperation | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["operation", b"operation", "rpc_activate_operation", b"rpc_activate_operation", "set_power_state_operation", b"set_power_state_operation", "update_firmware_operation", b"update_firmware_operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "rpc_activate_operation", b"rpc_activate_operation", "service_type", b"service_type", "set_power_state_operation", b"set_power_state_operation", "update_firmware_operation", b"update_firmware_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation", "set_power_state_operation", "rpc_activate_operation", "update_firmware_operation"] | None: ...
+    def HasField(self, field_name: typing.Literal["operation", b"operation", "rpc_activate_operation", b"rpc_activate_operation", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "rpc_activate_operation", b"rpc_activate_operation", "service_type", b"service_type", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation", "set_power_state_operation", "rpc_activate_operation"] | None: ...
 
 global___Operation = Operation
 
@@ -349,49 +345,6 @@ class SetPowerStateOperation(google.protobuf.message.Message):
     def ClearField(self, field_name: typing.Literal["opcode", b"opcode"]) -> None: ...
 
 global___SetPowerStateOperation = SetPowerStateOperation
-
-@typing.final
-class UpdateFirmwareOperation(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    URL_FIELD_NUMBER: builtins.int
-    BIOS_VERSION_FIELD_NUMBER: builtins.int
-    VENDOR_FIELD_NUMBER: builtins.int
-    MANUFACTURER_FIELD_NUMBER: builtins.int
-    PRODUCT_NAME_FIELD_NUMBER: builtins.int
-    RELEASE_DATE_FIELD_NUMBER: builtins.int
-    DO_NOT_REBOOT_FIELD_NUMBER: builtins.int
-    url: builtins.str
-    """URL from which to remotely retrieve the package"""
-    bios_version: builtins.str
-    """BIOS version of the new firmware update."""
-    vendor: builtins.str
-    """Vendor of the new firmware update."""
-    manufacturer: builtins.str
-    """Manufacturer of the board."""
-    product_name: builtins.str
-    """Product name of the board."""
-    do_not_reboot: builtins.bool
-    """Whether to reboot the node after the firmware update attempt"""
-    @property
-    def release_date(self) -> google.protobuf.timestamp_pb2.Timestamp:
-        """Release date of the new SW update."""
-
-    def __init__(
-        self,
-        *,
-        url: builtins.str = ...,
-        bios_version: builtins.str = ...,
-        vendor: builtins.str = ...,
-        manufacturer: builtins.str = ...,
-        product_name: builtins.str = ...,
-        release_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        do_not_reboot: builtins.bool = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["release_date", b"release_date"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["bios_version", b"bios_version", "do_not_reboot", b"do_not_reboot", "manufacturer", b"manufacturer", "product_name", b"product_name", "release_date", b"release_date", "url", b"url", "vendor", b"vendor"]) -> None: ...
-
-global___UpdateFirmwareOperation = UpdateFirmwareOperation
 
 @typing.final
 class PreOperation(google.protobuf.message.Message):
