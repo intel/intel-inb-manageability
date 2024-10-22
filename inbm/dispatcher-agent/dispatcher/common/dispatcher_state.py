@@ -92,9 +92,10 @@ def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:
             logger.exception(f"Exception while extracting dispatcher state from {state_file}: {e}")
             state = None  # Ensure state is None if this attempt fails
 
+    # If there is no state, the dispatcher will record the restart_reason and snapshot_num.
     if state is None:
         logger.error("Failed to extract dispatcher state from all state files.")
-        raise DispatcherException("Exception while extracting dispatcher state from disk")
+
 
     if not read:
         try:

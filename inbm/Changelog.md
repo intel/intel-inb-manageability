@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
+### Fixed
+ - (NEXMANAGE-899) Fix dispatcher not recording state file and causing snapshot failure
 
 ## 4.2.6.1 - 2024-10-18
 ### Added
