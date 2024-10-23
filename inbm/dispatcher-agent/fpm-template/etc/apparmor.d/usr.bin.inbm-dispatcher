@@ -90,6 +90,7 @@
   /etc/task_list.yaml r,
   /etc/trtl.conf w,
   /opt/afulnx/afulnx_64 rUx,
+  /opt/sota rw,
   /usr/bin/afulnx_64 rUx,
   /proc/1/comm r,
   /proc/device-tree/firmware/bios/** r,

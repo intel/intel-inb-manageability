@@ -19,6 +19,7 @@ if platform.system() == 'Windows':
     INTEL_MANAGEABILITY_CACHE_PATH_PREFIX = INBM_PATH / 'cache'
     INTEL_MANAGEABILITY_BINARY_SEARCH_PATHS = [
         C_COLON / 'Windows' / 'System32' / 'wbem']  # wmic tool
+    INTEL_MANAGEABILITY_OPT = INBM_PATH / 'opt'
     LOG_PATH = INTEL_MANAGEABILITY_VAR_PATH_PREFIX / 'log'
 else:
     ROOT = Path('/')
@@ -32,4 +33,5 @@ else:
                                                ROOT / 'usr' / 'sbin',
                                                ROOT / 'usr' / 'bin',
                                                ROOT / 'sbin']
+    INTEL_MANAGEABILITY_OPT = ROOT / 'opt'
     LOG_PATH = ROOT / 'var' / 'log'

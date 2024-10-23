@@ -18,7 +18,7 @@ from inbm_common_lib.shell_runner import PseudoShellRunner
 from inbm_lib.constants import DOCKER_CHROOT_PREFIX, CHROOT_PREFIX
 
 from .command_list import CommandList
-from .constants import MENDER_FILE_PATH, SOTA_CACHE
+from .constants import MENDER_FILE_PATH, SOTA_OPT_PATH
 from .converter import size_to_bytes
 from .sota_error import SotaError
 from ..common import uri_utilities
@@ -436,7 +436,7 @@ class TiberOSUpdater(OsUpdater):
             parsed_uri = urlparse(self._uri)
             filename = os.path.basename(parsed_uri.path)
             if filename:
-                file_path = os.path.join(SOTA_CACHE, filename)
+                file_path = os.path.join(SOTA_OPT_PATH, filename)
 
         cmds = [update_tool_write_command(self._signature, file_path)]
         return CommandList(cmds).cmd_list
