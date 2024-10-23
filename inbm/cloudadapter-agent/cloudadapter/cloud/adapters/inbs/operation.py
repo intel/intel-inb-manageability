@@ -92,7 +92,8 @@ def convert_updated_scheduled_operations_to_dispatcher_xml(request_id: str, upda
 def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     """Converts an Operation message to an XML manifests element containing manifest_xml subelements for dispatcher."""
 
-    if not (operation.HasField('update_system_software_operation') or operation.HasField('rpc_activate_operation') 
+    if not (operation.HasField('update_system_software_operation') 
+            or operation.HasField('rpc_activate_operation') 
             or operation.HasField('update_firmware_operation')):
         raise ValueError("Operation type not supported")
 
@@ -105,13 +106,13 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     result = create_xml_element("manifests")
     
     manifest = None
-
-    if operation.update_system_software_operation is not None:
+    
+    if operation.HasField('update_system_software_operation'):
         logger.debug("Converting UpdateSystemSoftwareOperation to XML manifest")
         manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
-    elif operation.rpc_activate_operation is not None:
+    elif operation.HasField('rpc_activate_operation'):
         manifest = convert_rpc_activate_operation_to_xml_manifest(operation.rpc_activate_operation)
-    elif operation.update_firmware_operation is not None:
+    elif operation.HasField('update_firmware_operation'):
         logger.debug("Converting UpdateFirmwareOperation to XML manifest")
         manifest = convert_firmware_operation_to_xml_manifest(operation.update_firmware_operation)
     else:
@@ -147,7 +148,7 @@ def convert_rpc_activate_operation_to_xml_manifest(operation: RpcActivateOperati
     return xml_declaration + '\n' + xml_str
 
 def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperation) -> str:
-    """Converts a UpdateSystemSoftwareOperation message to an XML manifest string for Dispatcher."""
+    """Converts a UpdateFirmwareOperation message to an XML manifest string for Dispatcher."""
     # Create the root element
     manifest = ET.Element('manifest')
     ET.SubElement(manifest, 'type').text = 'ota'
@@ -157,7 +158,9 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
     ET.SubElement(header, 'repo').text = 'remote'
 
     type = ET.SubElement(ota, 'type')
-    fota = ET.SubElement(type, 'fota')
+    fota = ET.SubElement(type, 'fota', name="")
+    #ET.SubElement(sota, 'cmd', logtofile="y").text = 'update'
+    #fota.attrib['name'] = ''
 
     # Fetch URL
     if operation.url != '':
@@ -165,6 +168,12 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
         
     if operation.bios_version:
         ET.SubElement(fota, 'biosversion').text = operation.bios_version
+        
+    if operation.signature_version:
+        ET.SubElement(fota, 'signatureversion').text = str(operation.signature_version)
+        
+    if operation.signature:
+        ET.SubElement(fota, 'signature').text = operation.signature
         
     if operation.manufacturer:
         ET.SubElement(fota, 'manufacturer').text = operation.manufacturer
@@ -180,6 +189,18 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
         release_date = Timestamp()
         release_date.FromDatetime(operation.release_date.ToDatetime())
         ET.SubElement(fota, 'releasedate').text = release_date.ToDatetime().strftime('%Y-%m-%d')
+
+    if operation.guid:
+        ET.SubElement(fota, 'guid').text = operation.guid
+        
+    if operation.tooloptions:
+        ET.SubElement(fota, 'tooloptions').text = operation.tooloptions
+        
+    if operation.username:
+        ET.SubElement(fota, 'username').text = operation.username
+        
+    if operation.password:
+        ET.SubElement(fota, 'password').text = operation.password
 
     # Device reboot
     device_reboot = 'no' if operation.do_not_reboot else 'yes'

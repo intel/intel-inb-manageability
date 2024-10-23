@@ -100,6 +100,41 @@ FOTA_OPERATION_SMALL_MANIFEST_XML = (
     "</fota></type>"
     "</ota></manifest>"
 )
+FOTA_OPERATION_LARGE = UpdateFirmwareOperation(
+    url="http://example.com/update",
+    bios_version="1.0.0",
+    signature_version=384,
+    signature="signature",
+    manufacturer="Intel",
+    product_name="Intel NUC",
+    vendor="Intel",    
+    release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),
+    guid="101ae945-7b9f-4765-ad7e-987e2381ad3b",    
+    tooloptions="/b /n",
+    username="user",
+    password="password",
+    do_not_reboot=False,
+)
+FOTA_OPERATION_LARGE_MANIFEST_XML = (
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    "<manifest><type>ota</type><ota><header><type>fota</type><repo>remote</repo></header>"
+    "<type><fota>"
+    "<fetch>http://example.com/update</fetch>"
+    "<biosversion>1.0.0</biosversion>"
+    "<signatureversion>384</signatureversion>"
+    "<signature>signature</signature>"
+    "<manufacturer>Intel</manufacturer>"
+    "<product>Intel NUC</product>"
+    "<vendor>Intel</vendor>"    
+    "<releasedate>2023-01-01</releasedate>"
+    "<guid>101ae945-7b9f-4765-ad7e-987e2381ad3b</guid>"
+    "<tooloptions>/b /n</tooloptions>"
+    "<username>user</username>"
+    "<password>password</password>"
+    "<deviceReboot>yes</deviceReboot>"
+    "</fota></type>"
+    "</ota></manifest>"
+)
 
 
 # Test cases to convert UpdateScheduledOperations -> dispatcher XML (success)
@@ -233,6 +268,7 @@ def test_convert_update_scheduled_operations_to_xml_manifest_exception(
     "operation, expected_xml",
     [
         (FOTA_OPERATION_SMALL, FOTA_OPERATION_SMALL_MANIFEST_XML),
+        (FOTA_OPERATION_LARGE, FOTA_OPERATION_LARGE_MANIFEST_XML),
     ],
 )
 def test_convert_firmware_operation_to_xml_manifest_success(
