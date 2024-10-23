@@ -5,7 +5,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX
+from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_CACHE_PATH_PREFIX, INTEL_MANAGEABILITY_OPT
 from inbm_common_lib.utility import get_canonical_representation_of_path
 
 # Mender file path
@@ -32,6 +32,8 @@ PROCEED_WITHOUT_ROLLBACK_DEFAULT = False
 # Device local cache for SOTA
 SOTA_CACHE = str(INTEL_MANAGEABILITY_CACHE_PATH_PREFIX / 'repository-tool' / 'sota')
 
+# Download folder for SOTA in TiberOS
+SOTA_OPT_PATH = str(INTEL_MANAGEABILITY_OPT/ 'sota')
 
 FAILED = "Failed"
 SUCCESS = "Success"

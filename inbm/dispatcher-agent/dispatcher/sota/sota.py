@@ -23,7 +23,7 @@ from inbm_lib.constants import OTA_PENDING, FAIL, OTA_SUCCESS, OTA_NO_UPDATE, RO
 
 from dispatcher.dispatcher_exception import DispatcherException
 from .command_handler import run_commands, print_execution_summary, get_command_status
-from .constants import SUCCESS, SOTA_STATE, SOTA_CACHE, PROCEED_WITHOUT_ROLLBACK_DEFAULT
+from .constants import SUCCESS, SOTA_STATE, SOTA_CACHE, PROCEED_WITHOUT_ROLLBACK_DEFAULT, SOTA_OPT_PATH
 from .downloader import Downloader
 from .log_helper import get_log_destination
 from .os_factory import ISotaOs, SotaOsFactory
@@ -223,18 +223,36 @@ class SOTA:
         if self.sota_cmd is None:
             raise SotaError('sota_cmd is None')
         release_date = self._parsed_manifest['release_date']
-        if not os.path.exists(SOTA_CACHE):
-            try:
-                os.mkdir(SOTA_CACHE)
-            except OSError as e:
-                logger.debug(f"SOTA cache directory {SOTA_CACHE} cannot be created: {e}")
-                raise SotaError("SOTA cache directory cannot be created") from e
-        elif not os.path.isdir(SOTA_CACHE):
-            logger.debug(
-                f"SOTA cache directory {SOTA_CACHE} already exists and is not a directory")
-            raise SotaError(
-                "SOTA cache directory already exists and is not a directory")
-        sota_cache_repo = DirectoryRepo(SOTA_CACHE)
+
+        # In TiberOS, we use different path to download the file
+        # TODO: Remove Mariner when confirmed that TiberOS is in use
+        os_type = detect_os()
+        if os_type == LinuxDistType.tiber.name or os_type == LinuxDistType.Mariner.name:
+            if not os.path.exists(SOTA_OPT_PATH):
+                try:
+                    os.mkdir(SOTA_OPT_PATH)
+                except OSError as e:
+                    logger.debug(f"SOTA cache directory {SOTA_OPT_PATH} cannot be created: {e}")
+                    raise SotaError("SOTA cache directory cannot be created") from e
+            elif not os.path.isdir(SOTA_OPT_PATH):
+                logger.debug(
+                    f"SOTA cache directory {SOTA_OPT_PATH} already exists and is not a directory")
+                raise SotaError(
+                    "SOTA cache directory already exists and is not a directory")
+            sota_cache_repo = DirectoryRepo(SOTA_OPT_PATH)
+        else:
+            if not os.path.exists(SOTA_CACHE):
+                try:
+                    os.mkdir(SOTA_CACHE)
+                except OSError as e:
+                    logger.debug(f"SOTA cache directory {SOTA_CACHE} cannot be created: {e}")
+                    raise SotaError("SOTA cache directory cannot be created") from e
+            elif not os.path.isdir(SOTA_CACHE):
+                logger.debug(
+                    f"SOTA cache directory {SOTA_CACHE} already exists and is not a directory")
+                raise SotaError(
+                    "SOTA cache directory already exists and is not a directory")
+            sota_cache_repo = DirectoryRepo(SOTA_CACHE)
 
         time_to_wait_before_reboot = 2 if not skip_sleeps else 0
 
