@@ -159,8 +159,6 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
 
     type = ET.SubElement(ota, 'type')
     fota = ET.SubElement(type, 'fota', name="")
-    #ET.SubElement(sota, 'cmd', logtofile="y").text = 'update'
-    #fota.attrib['name'] = ''
 
     # Fetch URL
     if operation.url != '':

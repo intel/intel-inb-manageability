@@ -89,7 +89,7 @@ FOTA_OPERATION_SMALL = UpdateFirmwareOperation(
 FOTA_OPERATION_SMALL_MANIFEST_XML = (
     '<?xml version="1.0" encoding="utf-8"?>\n'
     "<manifest><type>ota</type><ota><header><type>fota</type><repo>remote</repo></header>"
-    "<type><fota>"
+    "<type><fota name=\"\">"
     "<fetch>http://example.com/update</fetch>"
     "<biosversion>1.0.0</biosversion>"
     "<manufacturer>Intel</manufacturer>"
@@ -118,7 +118,7 @@ FOTA_OPERATION_LARGE = UpdateFirmwareOperation(
 FOTA_OPERATION_LARGE_MANIFEST_XML = (
     '<?xml version="1.0" encoding="utf-8"?>\n'
     "<manifest><type>ota</type><ota><header><type>fota</type><repo>remote</repo></header>"
-    "<type><fota>"
+    "<type><fota name=\"\">"
     "<fetch>http://example.com/update</fetch>"
     "<biosversion>1.0.0</biosversion>"
     "<signatureversion>384</signatureversion>"
