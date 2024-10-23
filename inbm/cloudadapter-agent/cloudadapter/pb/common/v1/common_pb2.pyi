@@ -354,6 +354,21 @@ global___SetPowerStateOperation = SetPowerStateOperation
 class UpdateFirmwareOperation(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    class _SignatureVersion:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _SignatureVersionEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[UpdateFirmwareOperation._SignatureVersion.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        SIGNATURE_VERSION_UNSPECIFIED: UpdateFirmwareOperation._SignatureVersion.ValueType  # 0
+        SIGNATURE_VERSION_256: UpdateFirmwareOperation._SignatureVersion.ValueType  # 1
+        SIGNATURE_VERSION_384: UpdateFirmwareOperation._SignatureVersion.ValueType  # 2
+
+    class SignatureVersion(_SignatureVersion, metaclass=_SignatureVersionEnumTypeWrapper): ...
+    SIGNATURE_VERSION_UNSPECIFIED: UpdateFirmwareOperation.SignatureVersion.ValueType  # 0
+    SIGNATURE_VERSION_256: UpdateFirmwareOperation.SignatureVersion.ValueType  # 1
+    SIGNATURE_VERSION_384: UpdateFirmwareOperation.SignatureVersion.ValueType  # 2
+
     URL_FIELD_NUMBER: builtins.int
     BIOS_VERSION_FIELD_NUMBER: builtins.int
     SIGNATURE_VERSION_FIELD_NUMBER: builtins.int
@@ -371,10 +386,10 @@ class UpdateFirmwareOperation(google.protobuf.message.Message):
     """URL from which to remotely retrieve the firmware update package"""
     bios_version: builtins.str
     """BIOS version of the new firmware update."""
-    signature_version: builtins.str
+    signature_version: global___UpdateFirmwareOperation.SignatureVersion.ValueType
     """Signature version of the new firmware package."""
     signature: builtins.str
-    """Digistal signature of *.tar file"""
+    """Digital signature of *.tar file"""
     vendor: builtins.str
     """Vendor of the new firmware update."""
     manufacturer: builtins.str
@@ -400,7 +415,7 @@ class UpdateFirmwareOperation(google.protobuf.message.Message):
         *,
         url: builtins.str = ...,
         bios_version: builtins.str = ...,
-        signature_version: builtins.str = ...,
+        signature_version: global___UpdateFirmwareOperation.SignatureVersion.ValueType = ...,
         signature: builtins.str = ...,
         vendor: builtins.str = ...,
         manufacturer: builtins.str = ...,
