@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 from cloudadapter.pb.common.v1.common_pb2 import (
     UpdateSystemSoftwareOperation,
+    UpdateFirmwareOperation,
     RpcActivateOperation,
     Operation,
     PreOperation,
@@ -26,6 +27,7 @@ import xml.etree.ElementTree as ET
 # Import the function to be tested
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_system_software_operation_to_xml_manifest,
+    convert_firmware_operation_to_xml_manifest,
     convert_rpc_activate_operation_to_xml_manifest,
     convert_operation_to_xml_manifests,
     convert_updated_scheduled_operations_to_dispatcher_xml,
@@ -73,6 +75,29 @@ SOTA_OPERATION_SMALL_MANIFEST_XML = (
     "<mode>full</mode>"
     "<deviceReboot>yes</deviceReboot>"
     "</sota></type>"
+    "</ota></manifest>"
+)
+FOTA_OPERATION_SMALL = UpdateFirmwareOperation(
+    url="http://example.com/update",
+    bios_version="1.0.0",
+    manufacturer="Intel",
+    product_name="Intel NUC",
+    vendor="Intel",    
+    release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+    do_not_reboot=False,
+)
+FOTA_OPERATION_SMALL_MANIFEST_XML = (
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    "<manifest><type>ota</type><ota><header><type>fota</type><repo>remote</repo></header>"
+    "<type><fota>"
+    "<fetch>http://example.com/update</fetch>"
+    "<biosversion>1.0.0</biosversion>"
+    "<manufacturer>Intel</manufacturer>"
+    "<product>Intel NUC</product>"
+    "<vendor>Intel</vendor>"    
+    "<releasedate>2023-01-01</releasedate>"
+    "<deviceReboot>yes</deviceReboot>"
+    "</fota></type>"
     "</ota></manifest>"
 )
 
@@ -203,6 +228,18 @@ def test_convert_update_scheduled_operations_to_xml_manifest_exception(
         convert_updated_scheduled_operations_to_dispatcher_xml(request_id, uso)
     assert expected_exception_message == str(exc_info.value)
 
+# Test cases for function that checks XML manifest creation from software update operations
+@pytest.mark.parametrize(
+    "operation, expected_xml",
+    [
+        (FOTA_OPERATION_SMALL, FOTA_OPERATION_SMALL_MANIFEST_XML),
+    ],
+)
+def test_convert_firmware_operation_to_xml_manifest_success(
+    operation, expected_xml
+):
+    xml_manifest = convert_firmware_operation_to_xml_manifest(operation)
+    assert xml_manifest == expected_xml
 
 # Test cases for function that checks XML manifest creation from software update operations
 @pytest.mark.parametrize(

@@ -3,12 +3,13 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-
+import logging
 import xml.etree.ElementTree as ET
 from google.protobuf.timestamp_pb2 import Timestamp
 from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, UpdateFirmwareOperation, RpcActivateOperation, Operation, Schedule
 from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
 
+logger = logging.getLogger(__name__)
 
 def create_xml_element(tag: str, text: str | None = None, attrib: dict[str, str] | None = None) -> ET.Element:
     """Create an XML element with optional text and attributes."""
@@ -106,11 +107,13 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     manifest = None
 
     if operation.update_system_software_operation is not None:
+        logger.debug("Converting UpdateSystemSoftwareOperation to XML manifest")
         manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
     elif operation.rpc_activate_operation is not None:
         manifest = convert_rpc_activate_operation_to_xml_manifest(operation.rpc_activate_operation)
     elif operation.update_firmware_operation is not None:
-        manifest = convert_firmware_operation_to_xml_manifest(operation.rpc_firmware_operation)
+        logger.debug("Converting UpdateFirmwareOperation to XML manifest")
+        manifest = convert_firmware_operation_to_xml_manifest(operation.update_firmware_operation)
     else:
         raise ValueError("No valid operation found")
 
@@ -155,29 +158,28 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
 
     type = ET.SubElement(ota, 'type')
     fota = ET.SubElement(type, 'fota')
-    ET.SubElement(fota, 'cmd', logtofile="y").text = 'update'
 
-    if operation.manufacturer:
-        ET.SubElement(fota, 'manufacturer').text = operation.manufacturer
-        
-    if operation.productName:
-        ET.SubElement(fota, 'productName').text = operation.productName
-        
-    if operation.vendor:
-        ET.SubElement(fota, 'vendor').text = operation.vendor
-        
-    if operation.biosVersion:
-        ET.SubElement(fota, 'biosVersion').text = operation.biosVersion
-        
     # Fetch URL
     if operation.url != '':
         ET.SubElement(fota, 'fetch').text = operation.url
-
+        
+    if operation.bios_version:
+        ET.SubElement(fota, 'biosversion').text = operation.bios_version
+        
+    if operation.manufacturer:
+        ET.SubElement(fota, 'manufacturer').text = operation.manufacturer
+        
+    if operation.product_name:
+        ET.SubElement(fota, 'product').text = operation.product_name
+        
+    if operation.vendor:
+        ET.SubElement(fota, 'vendor').text = operation.vendor       
+    
     # Release date in the required format
     if operation.release_date.ToSeconds() > 0:
         release_date = Timestamp()
         release_date.FromDatetime(operation.release_date.ToDatetime())
-        ET.SubElement(fota, 'releaseDate').text = release_date.ToDatetime().strftime('%Y-%m-%d')
+        ET.SubElement(fota, 'releasedate').text = release_date.ToDatetime().strftime('%Y-%m-%d')
 
     # Device reboot
     device_reboot = 'no' if operation.do_not_reboot else 'yes'

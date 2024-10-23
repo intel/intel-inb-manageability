@@ -100,13 +100,19 @@ message SetPowerStateOperation {
 }
 
 message UpdateFirmwareOperation {
-    string url = 1; // URL from which to remotely retrieve the package
-    string bios_version = 2; // BIOS version of the new firmware update.
-    string vendor = 3; // Vendor of the new firmware update.
-    string manufacturer = 4; // Manufacturer of the board.
-    string product_name = 5; // Product name of the board.
-    google.protobuf.Timestamp release_date = 6; // Release date of the new firmware update.
-    bool do_not_reboot = 7;  // Whether to reboot the node after the firmware update attempt
+  string url = 1; // URL from which to remotely retrieve the firmware update package
+  string bios_version = 2; // BIOS version of the new firmware update.
+  string signature_version = 3; // Signature version of the new firmware package.
+  string signature = 4; // Digistal signature of *.tar file
+  string vendor = 5; // Vendor of the new firmware update.
+  string manufacturer = 6; // Manufacturer of the board.
+  string product_name = 7; // Product name of the board.
+  google.protobuf.Timestamp release_date = 8; // Release date of the new firmware update.
+  string guid = 9; // GUID to match on the platform.  Check for 'System Firmware type' when running the command: 'fwupdate -i'
+  string tooloptions = 10; // Optional switches to be used with vendor software tool during the update.
+  string username = 11; // Username to be used during fetch from remote repository.
+  string password = 12; // Password to be used during fetch from remote repository.
+  bool do_not_reboot = 13;  // Whether to reboot the node after the firmware update attempt
 }
 
 message PreOperation {

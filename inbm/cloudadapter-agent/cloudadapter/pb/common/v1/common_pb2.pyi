@@ -356,21 +356,39 @@ class UpdateFirmwareOperation(google.protobuf.message.Message):
 
     URL_FIELD_NUMBER: builtins.int
     BIOS_VERSION_FIELD_NUMBER: builtins.int
+    SIGNATURE_VERSION_FIELD_NUMBER: builtins.int
+    SIGNATURE_FIELD_NUMBER: builtins.int
     VENDOR_FIELD_NUMBER: builtins.int
     MANUFACTURER_FIELD_NUMBER: builtins.int
     PRODUCT_NAME_FIELD_NUMBER: builtins.int
     RELEASE_DATE_FIELD_NUMBER: builtins.int
+    GUID_FIELD_NUMBER: builtins.int
+    TOOLOPTIONS_FIELD_NUMBER: builtins.int
+    USERNAME_FIELD_NUMBER: builtins.int
+    PASSWORD_FIELD_NUMBER: builtins.int
     DO_NOT_REBOOT_FIELD_NUMBER: builtins.int
     url: builtins.str
-    """URL from which to remotely retrieve the package"""
+    """URL from which to remotely retrieve the firmware update package"""
     bios_version: builtins.str
     """BIOS version of the new firmware update."""
+    signature_version: builtins.str
+    """Signature version of the new firmware package."""
+    signature: builtins.str
+    """Digistal signature of *.tar file"""
     vendor: builtins.str
     """Vendor of the new firmware update."""
     manufacturer: builtins.str
     """Manufacturer of the board."""
     product_name: builtins.str
     """Product name of the board."""
+    guid: builtins.str
+    """GUID to match on the platform.  Check for 'System Firmware type' when running the command: 'fwupdate -i'"""
+    tooloptions: builtins.str
+    """Optional switches to be used with vendor software tool during the update."""
+    username: builtins.str
+    """Username to be used during fetch from remote repository."""
+    password: builtins.str
+    """Password to be used during fetch from remote repository."""
     do_not_reboot: builtins.bool
     """Whether to reboot the node after the firmware update attempt"""
     @property
@@ -382,14 +400,20 @@ class UpdateFirmwareOperation(google.protobuf.message.Message):
         *,
         url: builtins.str = ...,
         bios_version: builtins.str = ...,
+        signature_version: builtins.str = ...,
+        signature: builtins.str = ...,
         vendor: builtins.str = ...,
         manufacturer: builtins.str = ...,
         product_name: builtins.str = ...,
         release_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        guid: builtins.str = ...,
+        tooloptions: builtins.str = ...,
+        username: builtins.str = ...,
+        password: builtins.str = ...,
         do_not_reboot: builtins.bool = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["release_date", b"release_date"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["bios_version", b"bios_version", "do_not_reboot", b"do_not_reboot", "manufacturer", b"manufacturer", "product_name", b"product_name", "release_date", b"release_date", "url", b"url", "vendor", b"vendor"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["bios_version", b"bios_version", "do_not_reboot", b"do_not_reboot", "guid", b"guid", "manufacturer", b"manufacturer", "password", b"password", "product_name", b"product_name", "release_date", b"release_date", "signature", b"signature", "signature_version", b"signature_version", "tooloptions", b"tooloptions", "url", b"url", "username", b"username", "vendor", b"vendor"]) -> None: ...
 
 global___UpdateFirmwareOperation = UpdateFirmwareOperation
 
