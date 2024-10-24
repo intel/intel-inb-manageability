@@ -64,6 +64,7 @@ message Operation {
     UpdateSystemSoftwareOperation update_system_software_operation = 4;
     SetPowerStateOperation set_power_state_operation = 5;
     RpcActivateOperation rpc_activate_operation = 6;
+    UpdateFirmwareOperation update_firmware_operation = 7;
     // and others
   }
 }
@@ -96,6 +97,27 @@ message SetPowerStateOperation {
         POWER_STATE_RESET = 10;
     }
     PowerState opcode = 1;
+}
+
+message UpdateFirmwareOperation {
+  string url = 1; // URL from which to remotely retrieve the firmware update package
+  string bios_version = 2; // BIOS version of the new firmware update.
+  enum SignatureVersion {
+    SIGNATURE_VERSION_UNSPECIFIED = 0;
+    SIGNATURE_VERSION_256 = 1;
+    SIGNATURE_VERSION_384 = 2;    
+  }
+  SignatureVersion signature_version = 3; // Signature version of the new firmware package.
+  string signature = 4; // Digital signature of *.tar file
+  string vendor = 5; // Vendor of the new firmware update.
+  string manufacturer = 6; // Manufacturer of the board.
+  string product_name = 7; // Product name of the board.
+  google.protobuf.Timestamp release_date = 8; // Release date of the new firmware update.
+  string guid = 9; // GUID to match on the platform.  Check for 'System Firmware type' when running the command: 'fwupdate -i'
+  string tooloptions = 10; // Optional switches to be used with vendor software tool during the update.
+  string username = 11; // Username to be used during fetch from remote repository.
+  string password = 12; // Password to be used during fetch from remote repository.
+  bool do_not_reboot = 13;  // Whether to reboot the node after the firmware update attempt
 }
 
 message PreOperation {

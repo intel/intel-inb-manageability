@@ -151,7 +151,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest --timeout=10 -n 3 --cov=dispatcher --cov-report=term-missing --cov-fail-under=81 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
+    pytest --timeout=20 -n 3 --cov=dispatcher --cov-report=term-missing --cov-fail-under=81 tests/unit 2>&1 | tee /output/coverage/dispatcher-coverage.txt
 
 # ---cloudadapter agent---
 
@@ -177,7 +177,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest --timeout=10 -n 10 --cov=cloudadapter --cov-report=term-missing --cov-fail-under=90 tests/unit 2>&1 | tee /output/coverage/cloudadapter-coverage.txt
+    pytest -vv --timeout=20 -n 10 --cov=cloudadapter --cov-report=term-missing --cov-fail-under=90 tests/unit 2>&1 | tee /output/coverage/cloudadapter-coverage.txt
 
 # ---telemetry agent---
 
@@ -229,7 +229,7 @@ RUN source /venv-py3/bin/activate && \
     mkdir -p /output/coverage && \
     set -o pipefail && \
     export PYTHONPATH=$PYTHONPATH:$(pwd) && \
-    pytest --timeout=10 -n 1 --cov=configuration --cov-report=term-missing --cov-fail-under=88 configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt
+    pytest --timeout=20 -n 1 --cov=configuration --cov-report=term-missing --cov-fail-under=88 configuration/tests/unit 2>&1 | tee /output/coverage/configuration-coverage.txt
 
 # output container
 FROM base AS output

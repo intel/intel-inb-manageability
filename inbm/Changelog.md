@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
+### Added
+ - (NEXMANAGE-900) Add UpdateFirmware to the common proto file
+
 ### Fixed
  - (NEXMANAGE-899) Fix dispatcher not recording state file and causing snapshot failure
 
