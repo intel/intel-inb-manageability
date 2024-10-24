@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
+### Added
+ - (NEXMANAGE-900) Add UpdateFirmware to the common proto file
+ - 
 ### Changed
  - (NEXMANAGE-906) Truncate the granular log instead of removing it
 
