@@ -4,13 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
- - (NEXMANAGE-837) Fix schema validation issue on failed UDM request sent from
- dispatcher to cloudadapter
+### Added
  - (NEXMANAGE-900) Add UpdateFirmware to the common proto file
  - 
 ### Changed
  - (NEXMANAGE-906) Truncate the granular log instead of removing it
 
+### Fixed
+ - (NEXMANAGE-837) Fix schema validation issue on failed UDM request sent from
+ dispatcher to cloudadapter
+ - (NEXMANAGE-899) Fix dispatcher not recording state file and causing snapshot failure
 
 ## 4.2.6.1 - 2024-10-18
 ### Added

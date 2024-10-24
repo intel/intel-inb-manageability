@@ -138,7 +138,7 @@ class DebianBasedSnapshot(Snapshot):
                 restart_reason = None
 
                 state: dispatcher_state.DispatcherState | None = dispatcher_state.consume_dispatcher_state_file(
-                    read=True)
+                    readonly=True)
                 if state:
                     restart_reason = state.get('restart_reason')
                 if restart_reason:
@@ -357,7 +357,7 @@ class YoctoSnapshot(Snapshot):
             content = read_current_mender_version()
             state: dispatcher_state.DispatcherState
             if dispatcher_state.is_dispatcher_state_file_exists():
-                consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)
+                consumed_state = dispatcher_state.consume_dispatcher_state_file(readonly=True)
                 restart_reason = None
                 if consumed_state:
                     restart_reason = consumed_state.get('restart_reason', None)
@@ -473,7 +473,7 @@ class TiberOSSnapshot(Snapshot):
                 raise SotaError("Failed to get os version.")
             state: dispatcher_state.DispatcherState
             if dispatcher_state.is_dispatcher_state_file_exists():
-                consumed_state = dispatcher_state.consume_dispatcher_state_file(read=True)
+                consumed_state = dispatcher_state.consume_dispatcher_state_file(readonly=True)
                 restart_reason = None
                 if consumed_state:
                     restart_reason = consumed_state.get('restart_reason', None)
