@@ -9,7 +9,9 @@ import json
 import logging
 from typing import Any, Optional, Callable
 
-from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED
+import shortuuid
+
+from dispatcher.constants import AGENT, CLIENT_CERTS, CLIENT_KEYS, COMPLETED, UPDATE_NODE_MQTT_RESPONSE_TIMEOUT
 from dispatcher.schedule.sqlite_manager import SqliteManager
 from dispatcher.schedule.schedules import Schedule
 from dispatcher.dispatcher_exception import DispatcherException
@@ -39,17 +41,16 @@ class DispatcherBroker:
         self.mqttc.start()
         self._is_started = True
 
-    def send_update(self, message: str) -> None:
-        """Sends node update to local MQTT 'UPDATE' channel to be published
+    def send_node_update(self, message: str) -> None:
+        """Sends node update to local MQTT 'manageability/nodeupdate' channel to be published
         to the cloudadapter where it will be sent as a reques to INBS (service in UDM)       
 
-        Raises ValueError if id contains a slash
-
-        @param message: message to be published to cloud
-        @param job_id: Job ID used to track the request in both UDM and TC
+        @param message: message to be published to the cloud
         """
         logger.debug(f"Sending node update for to {NODE_UPDATE_CHANNEL} with message: {message}")
-        self.mqtt_publish(topic=NODE_UPDATE_CHANNEL, payload=message)
+        
+        """Raise TimeoutError if no response is received within the timeout."""
+        self.mqtt_publish_and_wait(topic=NODE_UPDATE_CHANNEL, payload=message)
 
     def _check_db_for_started_job(self) -> Optional[Schedule]:
         sqliteMgr = SqliteManager()
@@ -122,8 +123,24 @@ class DispatcherBroker:
                 return
        
             logger.debug(f"Sending node update message: {str(updated_message)}")
-            self.send_update(str(updated_message))        
+            self.send_node_update(str(updated_message))        
 
+    def mqtt_publish_and_wait(self, topic: str, payload: Any) -> Any:  # pragma: no cover
+        """Publish a message and wait for a response on the appropriate channel within a timeout.
+        Raise TimeoutError if no response is received within the timeout."""
+        
+        if self.mqttc is None:
+            raise DispatcherException("Cannot publish on MQTT: client not initialized.")
+
+        request_id = shortuuid.uuid()
+        request_topic = topic + "/" + request_id
+        response_topic = RESPONSE_CHANNEL + "/" + request_id
+        logger.debug("Publishing message to %s with response expected on %s", request_topic, response_topic)
+        return self.mqttc.publish_and_wait_response(topic=request_topic,
+                                                    response_topic=response_topic,
+                                                    payload=payload,
+                                                    timeout_seconds=UPDATE_NODE_MQTT_RESPONSE_TIMEOUT)
+        
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
         """Publish arbitrary message on arbitrary topic.
 

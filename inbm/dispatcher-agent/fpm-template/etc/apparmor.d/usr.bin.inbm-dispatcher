@@ -73,6 +73,7 @@
   /etc/trtl.conf wr,
   /etc/ssl/certs/csl-ca-cert.pem r,
   /etc/ssl/certs/csl-ca-cert.crt r,
+  /etc/timezone r,
   /lib/systemd/system/ r,
   /lib/systemd/system/configuration.service rw,
   /lib/systemd/system/diagnostic.service rw,

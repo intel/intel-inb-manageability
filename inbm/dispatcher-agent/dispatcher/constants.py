@@ -48,6 +48,8 @@ CUSTOM_CMD_CHANNEL = 'manageability/cmd/custom'
 DIAGNOSTIC_CMD_CHANNEL = 'diagnostic/command/'
 TELEMETRY_UPDATE_CHANNEL = 'telemetry/update'
 
+UPDATE_NODE_MQTT_RESPONSE_TIMEOUT = 5
+
 # Schema location
 SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
                       'dispatcher-agent' / 'manifest_schema.xsd')
