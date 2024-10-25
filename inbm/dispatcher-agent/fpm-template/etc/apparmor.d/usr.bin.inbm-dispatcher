@@ -47,7 +47,7 @@
   /etc/dpkg/dpkg.cfg r,
   /etc/dpkg/dpkg.cfg.d/ r,
   /etc/dpkg/dpkg.cfg.d/* r,
-  /etc/intel_edge_node/tokens/release-service/rs_access_token r,
+  /etc/intel_edge_node/tokens/release-service/access_token r,
   /etc/intel_manageability.conf wr,
   /etc/firmware_tool_info.conf r,
   /etc/fstab r,
