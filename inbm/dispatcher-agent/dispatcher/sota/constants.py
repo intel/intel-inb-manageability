@@ -18,8 +18,8 @@ MENDER_ARTIFACT_PATH = get_canonical_representation_of_path("/etc/mender/artifac
 TIBER_UPDATE_TOOL_PATH = get_canonical_representation_of_path('/usr/bin/os-update-tool.sh')
 
 # Release server access token path
-RELEASE_SERVER_TOKEN_PATH = get_canonical_representation_of_path('/etc/intel_edge_node/tokens/platform-update-agent/'
-                                                       'rs_access_token')
+RELEASE_SERVER_TOKEN_PATH = get_canonical_representation_of_path('/etc/intel_edge_node/tokens/release-service/'
+                                                       'access_token')
 
 SOTA_STATE = 'normal'
 

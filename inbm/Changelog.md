@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - 
 ### Changed
  - (NEXMANAGE-906) Truncate the granular log instead of removing it
+ - Change release server token path to /etc/intel_edge_node/tokens/release-service/access_token
 
 ### Fixed
  - (NEXMANAGE-837) Fix schema validation issue on failed UDM request sent from
