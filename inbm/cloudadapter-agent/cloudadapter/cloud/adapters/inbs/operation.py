@@ -6,7 +6,8 @@
 import logging
 import xml.etree.ElementTree as ET
 from google.protobuf.timestamp_pb2 import Timestamp
-from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, UpdateFirmwareOperation, RpcActivateOperation, Operation, Schedule
+from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, \
+    UpdateFirmwareOperation, SetPowerStateOperation, RpcActivateOperation, Operation, Schedule
 from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
 
 logger = logging.getLogger(__name__)
@@ -189,7 +190,7 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
     ET.SubElement(fota, 'vendor').text = operation.vendor       
     
     # Release date in the required format
-    if not operation.release_date:
+    if operation.release_date == Timestamp():
         raise ValueError("Release date cannot be unspecified")
     
     if operation.release_date.ToSeconds() > 0:
@@ -269,10 +270,30 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
 
 def convert_power_state_operation_to_xml_manifest(operation: SetPowerStateOperation) -> str:    
     """Converts a SetPowerStateOperation message to an XML manifest string for Dispatcher."""
+
+    if operation.opcode == SetPowerStateOperation.POWER_STATE_UNSPECIFIED:
+        raise ValueError("Power state cannot be unspecified")
+    
+    if operation.opcode == SetPowerStateOperation.POWER_STATE_ON:
+        raise ValueError("Power state ON is not supported as an Inband operation")
+
+    if operation.opcode == SetPowerStateOperation.POWER_STATE_RESET:
+        raise ValueError("Power state RESET is not supported as an Inband operation")
+    
+    power_state = ''
+    if operation.opcode == SetPowerStateOperation.POWER_STATE_OFF:
+        power_state = 'shutdown'    
+    elif operation.opcode == SetPowerStateOperation.POWER_STATE_CYCLE:
+        power_state = 'restart'
+    else:
+        raise ValueError("Invalid power state")
+        
     # Create the root element
     manifest = ET.Element('manifest')
-    ET.SubElement(manifest, 'type').text = 'ota'
-    ota = ET.SubElement(manifest, 'ota')
-    header = ET.SubElement(ota, 'header')
-    ET.SubElement(header, 'type').text = 'sota'
-    ET.SubElement(header, 'repo').text = 'remote'
+    ET.SubElement(manifest, 'type').text = 'cmd'
+    cmd = ET.SubElement(manifest, 'cmd').text = power_state
+    
+    # Generate the XML string with declaration
+    xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
+    xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')
+    return xml_declaration + '\n' + xml_str
