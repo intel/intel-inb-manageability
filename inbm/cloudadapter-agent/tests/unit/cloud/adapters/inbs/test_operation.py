@@ -305,7 +305,78 @@ def test_convert_rpc_activate_operation_to_xml_manifest_success(
     rpc_xml_manifest = convert_rpc_activate_operation_to_xml_manifest(operation)
     assert rpc_xml_manifest == rpc_expected_xml
 
-
+@pytest.mark.parametrize(
+    "operation, exception_message",
+    [
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                manufacturer="Intel",
+                product_name="Intel NUC",
+                vendor="Intel",    
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "BIOS Version cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                bios_version="1.0",
+                manufacturer="Intel",
+                product_name="Intel NUC",
+                vendor="Intel",    
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "Fetch URL cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                bios_version="1.0",
+                product_name="Intel NUC",
+                vendor="Intel",    
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "Manufacturer cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                bios_version="1.0",
+                manufacturer="Intel",
+                product_name="Intel NUC",  
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "Vendor cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                bios_version="1.0",
+                manufacturer="Intel",
+                vendor="Intel", 
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "Product name cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                bios_version="1.0",
+                manufacturer="Intel",
+                product_name="Intel NUC",
+                vendor="Intel", 
+            ),
+            "Release date cannot be unspecified",
+        ),
+    ],
+)
+def test_convert_firmware_operation_to_xml_manifest_unspecified_error(
+    operation, exception_message
+):
+    with pytest.raises(ValueError) as excinfo:
+        convert_firmware_operation_to_xml_manifest(operation)
+    assert exception_message in str(excinfo.value)
+   
 @pytest.mark.parametrize(
     "operation, exception_message",
     [

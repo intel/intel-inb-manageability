@@ -94,7 +94,8 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
 
     if not (operation.HasField('update_system_software_operation') 
             or operation.HasField('rpc_activate_operation') 
-            or operation.HasField('update_firmware_operation')):
+            or operation.HasField('update_firmware_operation')
+            or operation.HasField('set_power_state_operation')):
         raise ValueError("Operation type not supported")
 
     if len(operation.pre_operations) > 0:
@@ -108,13 +109,13 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     manifest = None
     
     if operation.HasField('update_system_software_operation'):
-        logger.debug("Converting UpdateSystemSoftwareOperation to XML manifest")
-        manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
+         manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
     elif operation.HasField('rpc_activate_operation'):
         manifest = convert_rpc_activate_operation_to_xml_manifest(operation.rpc_activate_operation)
     elif operation.HasField('update_firmware_operation'):
-        logger.debug("Converting UpdateFirmwareOperation to XML manifest")
         manifest = convert_firmware_operation_to_xml_manifest(operation.update_firmware_operation)
+    elif operation.HasField('set_power_state_operation'):
+        manifest = convert_power_state_operation_to_xml_manifest(operation.set_power_state_operation)
     else:
         raise ValueError("No valid operation found")
 
@@ -161,11 +162,13 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
     fota = ET.SubElement(type, 'fota', name="")
 
     # Fetch URL
-    if operation.url != '':
-        ET.SubElement(fota, 'fetch').text = operation.url
+    if not operation.url:
+        raise ValueError("Fetch URL cannot be unspecified")
+    ET.SubElement(fota, 'fetch').text = operation.url
         
-    if operation.bios_version:
-        ET.SubElement(fota, 'biosversion').text = operation.bios_version
+    if not operation.bios_version:
+        raise ValueError("BIOS Version cannot be unspecified")
+    ET.SubElement(fota, 'biosversion').text = operation.bios_version
         
     if operation.signature_version:
         ET.SubElement(fota, 'signatureversion').text = str(operation.signature_version)
@@ -173,16 +176,22 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
     if operation.signature:
         ET.SubElement(fota, 'signature').text = operation.signature
         
-    if operation.manufacturer:
-        ET.SubElement(fota, 'manufacturer').text = operation.manufacturer
+    if not operation.manufacturer:
+        raise ValueError("Manufacturer cannot be unspecified")
+    ET.SubElement(fota, 'manufacturer').text = operation.manufacturer
         
-    if operation.product_name:
-        ET.SubElement(fota, 'product').text = operation.product_name
+    if not operation.product_name:
+        raise ValueError("Product name cannot be unspecified")
+    ET.SubElement(fota, 'product').text = operation.product_name
         
-    if operation.vendor:
-        ET.SubElement(fota, 'vendor').text = operation.vendor       
+    if not operation.vendor:
+        raise ValueError("Vendor cannot be unspecified")
+    ET.SubElement(fota, 'vendor').text = operation.vendor       
     
     # Release date in the required format
+    if not operation.release_date:
+        raise ValueError("Release date cannot be unspecified")
+    
     if operation.release_date.ToSeconds() > 0:
         release_date = Timestamp()
         release_date.FromDatetime(operation.release_date.ToDatetime())
@@ -257,3 +266,13 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
     xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
     xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')
     return xml_declaration + '\n' + xml_str
+
+def convert_power_state_operation_to_xml_manifest(operation: SetPowerStateOperation) -> str:    
+    """Converts a SetPowerStateOperation message to an XML manifest string for Dispatcher."""
+    # Create the root element
+    manifest = ET.Element('manifest')
+    ET.SubElement(manifest, 'type').text = 'ota'
+    ota = ET.SubElement(manifest, 'ota')
+    header = ET.SubElement(ota, 'header')
+    ET.SubElement(header, 'type').text = 'sota'
+    ET.SubElement(header, 'repo').text = 'remote'
