@@ -15,7 +15,7 @@ setup(
     license='Intel Proprietary',
     packages=['inbm_lib', 'inbm_common_lib'],
     include_package_data=True,
-    install_requires=['paho-mqtt==1.6.0', 'types-paho-mqtt==1.6.0.7', 'xmlschema==1.5.3', 'defusedxml==0.7.1', 'url-normalize==1.4.3', 'snoop==0.4.3', 'types-setuptools==71.1.0.20240813', 'jsonschema==4.20.0', 'types-jsonschema==4.20.0.0'],
+    install_requires=['paho-mqtt==2.1.0', 'types-paho-mqtt==1.6.0.20240321', 'xmlschema==3.4.2', 'defusedxml==0.7.1', 'url-normalize==1.4.3', 'snoop==0.6.0', 'types-setuptools==75.2.0.20241025', 'jsonschema==4.23.0', 'types-jsonschema==4.23.0.20240813'],
     test_suite='pytest',
     tests_require=test_deps,
     extras_require=extras,
