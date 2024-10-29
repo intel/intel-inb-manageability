@@ -11,13 +11,13 @@ from dispatcher.update_logger import UpdateLogger
 from inbm_lib.constants import OTA_SUCCESS, OTA_PENDING, FAIL, ROLLBACK
 
 class TestGranularLogHandler(testtools.TestCase):
-    @patch('dispatcher.sota.granular_log_handler.remove_file')
+    @patch('typing.IO.truncate')
     @patch('os.path.exists', return_value=False)
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
     @patch('dispatcher.sota.granular_log_handler.get_os_version', return_value='2.0.20240802.0213')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
-    def test_save_granular_in_tiberos_with_success_log(self, mock_run, mock_get_os_version, mock_load, mock_dump, mock_exists, mock_remove_file) -> None:
+    def test_save_granular_in_tiberos_with_success_log(self, mock_run, mock_get_os_version, mock_load, mock_dump, mock_exists, mock_truncate) -> None:
         update_logger = UpdateLogger("SOTA", "metadata")
         update_logger.detail_status = OTA_SUCCESS
 
@@ -36,13 +36,13 @@ class TestGranularLogHandler(testtools.TestCase):
         mock_dump.assert_called_with(expected_content, m_open(), indent=4)
 
 
-    @patch('dispatcher.sota.granular_log_handler.remove_file')
+    @patch('typing.IO.truncate')
     @patch('os.path.exists', return_value=False)
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
     @patch('dispatcher.sota.granular_log_handler.get_os_version', return_value='2.0.20240802.0213')    
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
-    def test_save_granular_in_tiberos_with_pending_log(self, mock_run, mock_get_os_version, mock_load, mock_dump, mock_exists, mock_remove_file) -> None:
+    def test_save_granular_in_tiberos_with_pending_log(self, mock_run, mock_get_os_version, mock_load, mock_dump, mock_exists, mock_truncate) -> None:
         update_logger = UpdateLogger("SOTA", "metadata")
         update_logger.detail_status = OTA_PENDING
 
@@ -60,12 +60,12 @@ class TestGranularLogHandler(testtools.TestCase):
 
         mock_dump.assert_called_with(expected_content, m_open(), indent=4)
 
-    @patch('dispatcher.sota.granular_log_handler.remove_file')
+    @patch('typing.IO.truncate')
     @patch('os.path.exists', return_value=False)
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
-    def test_save_granular_in_tiberos_with_fail_log(self, mock_run, mock_load, mock_dump, mock_exists, mock_remove_file) -> None:
+    def test_save_granular_in_tiberos_with_fail_log(self, mock_run, mock_load, mock_dump, mock_exists, mock_truncate) -> None:
         update_logger = UpdateLogger("SOTA", "metadata")
         update_logger.detail_status = FAIL
         update_logger.error = 'Error getting artifact size from https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifests/latest using token'
@@ -85,12 +85,12 @@ class TestGranularLogHandler(testtools.TestCase):
         mock_dump.assert_called_with(expected_content, m_open(), indent=4)
 
 
-    @patch('dispatcher.sota.granular_log_handler.remove_file')
+    @patch('typing.IO.truncate')
     @patch('os.path.exists', return_value=False)
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
-    def test_save_granular_in_tiberos_with_rollback_log(self, mock_run, mock_load, mock_dump, mock_exists, mock_remove_file) -> None:
+    def test_save_granular_in_tiberos_with_rollback_log(self, mock_run, mock_load, mock_dump, mock_exists, mock_truncate) -> None:
         update_logger = UpdateLogger("SOTA", "metadata")
         update_logger.detail_status = ROLLBACK
         update_logger.error = 'FAILED INSTALL: System has not been properly updated; reverting..'
@@ -102,6 +102,33 @@ class TestGranularLogHandler(testtools.TestCase):
                 {
                     "StatusDetail.Status": ROLLBACK,
                     "FailureReason": 'FAILED INSTALL: System has not been properly updated; reverting..'
+                }
+            ]
+        }
+
+        mock_dump.assert_called_with(expected_content, m_open(), indent=4)
+
+
+    @patch('os.path.exists', side_effect=[True, False])
+    @patch('json.dump')
+    @patch('json.load', return_value={"UpdateLog":[]})
+    @patch('dispatcher.sota.granular_log_handler.get_os_version', return_value='2.0.20240802.0213')
+    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
+    def test_save_granular_in_tiberos_with_truncate_file_being_called(self, mock_run, mock_get_os_version, mock_load, mock_dump, mock_exists) -> None:
+        update_logger = UpdateLogger("SOTA", "metadata")
+        update_logger.detail_status = OTA_SUCCESS
+
+        with patch('builtins.open', mock_open()) as m_open:
+            mock_file = m_open.return_value.__enter__.return_value
+            mock_file.truncate.return_value = None
+            GranularLogHandler().save_granular_log(update_logger=update_logger, check_package=False)
+            mock_file.truncate.assert_called_once()
+
+        expected_content = {
+            "UpdateLog": [
+                {
+                    "StatusDetail.Status": OTA_SUCCESS,
+                    "Version": '2.0.20240802.0213'
                 }
             ]
         }

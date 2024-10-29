@@ -65,12 +65,12 @@ DispatcherState = TypedDict('DispatcherState', {
 }, total=False)
 
 
-def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:
+def consume_dispatcher_state_file(readonly: bool = False) -> DispatcherState | None:
     """Read dispatcher state file and return state object, clearing state file on success
 
     Try old location first, then new location.
 
-    @param read: Set to True to read file info without removing the file
+    @param readonly: Set to True to read file info without removing the file
     @return: State object from state file; None on error
     """
     logger.debug("Starting consume_dispatcher_state_file")
@@ -92,17 +92,18 @@ def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:
             logger.exception(f"Exception while extracting dispatcher state from {state_file}: {e}")
             state = None  # Ensure state is None if this attempt fails
 
+    # If there is no state, the dispatcher will record the restart_reason and snapshot_num.
     if state is None:
-        logger.error("Failed to extract dispatcher state from all state files.")
-        raise DispatcherException("Exception while extracting dispatcher state from disk")
+        logger.error("Failed to extract dispatcher state from all state files.")        
 
-    if not read:
+
+    if not readonly:
         try:
             logger.debug("Clearing dispatcher state files")
             clear_dispatcher_state()
         except Exception as e:
             logger.exception(f"Failed to clear dispatcher state files: {e}")
-            # Depending on requirements, you might want to raise or handle this differently
+            # Nothing more can be done if clearing the state file fails
 
     return state
 

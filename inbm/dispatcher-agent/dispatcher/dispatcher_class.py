@@ -757,7 +757,7 @@ class Dispatcher:
         """
 
         if dispatcher_state.is_dispatcher_state_file_exists():
-            state = dispatcher_state.consume_dispatcher_state_file(read=True)
+            state = dispatcher_state.consume_dispatcher_state_file(readonly=True)
             if state is None:
                 raise DispatcherException("Unable to get dispatcher state file")
             logger.debug(str(state))
