@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
-
+### Changed
+ - (NEXMANAGE-949) Check the IMAGE_BUILD_DATE instead of VERSION for TiberOS SOTA verification
 
 
 ## 4.2.6.2 - 2024-10-25

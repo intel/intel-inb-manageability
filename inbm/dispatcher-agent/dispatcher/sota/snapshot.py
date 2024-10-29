@@ -12,7 +12,7 @@ from abc import ABC, ABCMeta, abstractmethod
 from inbm_lib.trtl import Trtl
 from typing import Any, Dict, Optional
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_common_lib.utility import get_os_version
+from inbm_common_lib.utility import get_image_build_date
 from inbm_common_lib.constants import UNKNOWN
 from .constants import MENDER_FILE_PATH
 from .mender_util import read_current_mender_version
@@ -468,9 +468,9 @@ class TiberOSSnapshot(Snapshot):
             "SOTA attempting to create a dispatcher state file before SOTA {}...".
             format(self.sota_cmd))
         try:
-            content = get_os_version()
+            content = get_image_build_date()
             if content == UNKNOWN:
-                raise SotaError("Failed to get os version.")
+                raise SotaError("Failed to get image build date.")
             state: dispatcher_state.DispatcherState
             if dispatcher_state.is_dispatcher_state_file_exists():
                 consumed_state = dispatcher_state.consume_dispatcher_state_file(readonly=True)
@@ -539,7 +539,7 @@ class TiberOSSnapshot(Snapshot):
         state = dispatcher_state.consume_dispatcher_state_file()
         if state is not None and 'tiberos-version' in state:
             logger.debug("got tiberos-version from state: " + str(state['tiberos-version']))
-            version = get_os_version()
+            version = get_image_build_date()
             current_tiberos_version = version
             previous_tiberos_version = state['tiberos-version']
 

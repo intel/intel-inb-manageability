@@ -14,7 +14,7 @@ from typing import Any, List, Optional, Union, Mapping
 
 from dispatcher.sota.granular_log_handler import GranularLogHandler
 from inbm_common_lib.exceptions import UrlSecurityException
-from inbm_common_lib.utility import canonicalize_uri, remove_file, get_os_version
+from inbm_common_lib.utility import canonicalize_uri, remove_file
 from inbm_common_lib.request_message_constants import SOTA_FAILURE
 from inbm_common_lib.constants import REMOTE_SOURCE, LOCAL_SOURCE
 from inbm_lib.validate_package_list import parse_and_validate_package_list
