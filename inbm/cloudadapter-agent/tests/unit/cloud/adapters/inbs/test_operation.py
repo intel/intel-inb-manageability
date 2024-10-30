@@ -59,7 +59,7 @@ SOTA_OPERATION_LARGE_MANIFEST_XML = (
     '<?xml version="1.0" encoding="utf-8"?>\n'
     "<manifest><type>ota</type><ota><header><type>sota</type><repo>remote</repo></header>"
     '<type><sota><cmd logtofile="y">update</cmd><mode>full</mode>'
-    "<packageList>package1,package2</packageList>"
+    "<package_list>package1,package2</package_list>"
     "<fetch>http://example.com/update</fetch>"
     "<releaseDate>2023-01-01</releaseDate>"
     "<deviceReboot>yes</deviceReboot>"
