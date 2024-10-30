@@ -10,6 +10,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
  - (NEXMANAGE-950) Add Set Power State Capability to cloudadapter from UDM
 
+### Fixed
+ - (NEXMANAGE-733) Fixed typo in package_list during conversion from INBS to cloudadapter
+
 ## 4.2.6.2 - 2024-10-25
 ### Added
  - (NEXMANAGE-900) Add UpdateFirmware to the common proto file and cloudadapter support from UDM
