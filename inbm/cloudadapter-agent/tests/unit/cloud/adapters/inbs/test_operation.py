@@ -13,6 +13,7 @@ from cloudadapter.pb.common.v1.common_pb2 import (
     PreOperation,
     PostOperation,
     ScheduledOperation,
+    SetPowerStateOperation,
     Schedule,
     SingleSchedule,
     RepeatedSchedule,
@@ -31,6 +32,7 @@ from cloudadapter.cloud.adapters.inbs.operation import (
     convert_rpc_activate_operation_to_xml_manifest,
     convert_operation_to_xml_manifests,
     convert_updated_scheduled_operations_to_dispatcher_xml,
+    convert_power_state_operation_to_xml_manifest
 )
 
 RPC_OPERATION_LARGE = RpcActivateOperation(
@@ -135,7 +137,20 @@ FOTA_OPERATION_LARGE_MANIFEST_XML = (
     "</fota></type>"
     "</ota></manifest>"
 )
-
+RESTART_OPERATION = SetPowerStateOperation(
+    opcode=SetPowerStateOperation.POWER_STATE_CYCLE
+)
+RESTART_XML = (
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    "<manifest><type>cmd</type><cmd>restart</cmd></manifest>"
+)
+SHUTDOWN_OPERATION = SetPowerStateOperation(
+    opcode=SetPowerStateOperation.POWER_STATE_OFF
+)
+SHUTDOWN_XML = (
+    '<?xml version="1.0" encoding="utf-8"?>\n'
+    "<manifest><type>cmd</type><cmd>shutdown</cmd></manifest>"
+)
 
 # Test cases to convert UpdateScheduledOperations -> dispatcher XML (success)
 @pytest.mark.parametrize(
@@ -267,6 +282,20 @@ def test_convert_update_scheduled_operations_to_xml_manifest_exception(
 @pytest.mark.parametrize(
     "operation, expected_xml",
     [
+        (RESTART_OPERATION, RESTART_XML),
+        (SHUTDOWN_OPERATION, SHUTDOWN_XML),
+    ],
+)
+def test_convert_power_state_operation_to_xml_manifest_success(
+    operation, expected_xml
+):
+    xml_manifest = convert_power_state_operation_to_xml_manifest(operation)
+    assert xml_manifest == expected_xml
+    
+# Test cases for function that checks XML manifest creation from software update operations
+@pytest.mark.parametrize(
+    "operation, expected_xml",
+    [
         (FOTA_OPERATION_SMALL, FOTA_OPERATION_SMALL_MANIFEST_XML),
         (FOTA_OPERATION_LARGE, FOTA_OPERATION_LARGE_MANIFEST_XML),
     ],
@@ -304,6 +333,104 @@ def test_convert_rpc_activate_operation_to_xml_manifest_success(
 ):
     rpc_xml_manifest = convert_rpc_activate_operation_to_xml_manifest(operation)
     assert rpc_xml_manifest == rpc_expected_xml
+
+@pytest.mark.parametrize(
+    "operation, exception_message",
+    [
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                manufacturer="Intel",
+                product_name="Intel NUC",
+                vendor="Intel",    
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "BIOS Version cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                bios_version="1.0",
+                manufacturer="Intel",
+                product_name="Intel NUC",
+                vendor="Intel",    
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "Fetch URL cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                bios_version="1.0",
+                product_name="Intel NUC",
+                vendor="Intel",    
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "Manufacturer cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                bios_version="1.0",
+                manufacturer="Intel",
+                product_name="Intel NUC",  
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "Vendor cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                bios_version="1.0",
+                manufacturer="Intel",
+                vendor="Intel", 
+                release_date=Timestamp(seconds=int(datetime(2023, 1, 1).timestamp())),    
+            ),
+            "Product name cannot be unspecified",
+        ),
+        (
+            UpdateFirmwareOperation(
+                url="http://example.com/update",
+                bios_version="1.0",
+                manufacturer="Intel",
+                product_name="Intel NUC",
+                vendor="Intel", 
+            ),
+            "Release date cannot be unspecified",
+        ),
+    ],
+)
+def test_convert_firmware_operation_to_xml_manifest_unspecified_error(
+    operation, exception_message
+):
+    with pytest.raises(ValueError) as excinfo:
+        convert_firmware_operation_to_xml_manifest(operation)
+    assert exception_message in str(excinfo.value)
+   
+@pytest.mark.parametrize(
+    "power_state, exception_message",
+    [
+        (
+            SetPowerStateOperation.POWER_STATE_UNSPECIFIED,
+            "Power state cannot be unspecified",
+        ),
+        (
+            SetPowerStateOperation.POWER_STATE_ON,
+            "Power state ON is not supported as an Inband operation",
+        ),
+        (
+            SetPowerStateOperation.POWER_STATE_RESET,
+            "Power state RESET is not supported as an Inband operation",
+        ),
+    ],
+)
+def test_convert_power_state_operation_to_xml_manifest_unspecified_error(
+    power_state, exception_message
+):
+    operation = SetPowerStateOperation()
+    operation.opcode = power_state
+    with pytest.raises(ValueError) as excinfo:
+        convert_power_state_operation_to_xml_manifest(operation)
+    assert exception_message in str(excinfo.value)
 
 
 @pytest.mark.parametrize(

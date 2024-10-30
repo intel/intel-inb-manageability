@@ -15,9 +15,9 @@ class TestGranularLogHandler(testtools.TestCase):
     @patch('os.path.exists', return_value=False)
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
-    @patch('dispatcher.sota.granular_log_handler.get_os_version', return_value='2.0.20240802.0213')
+    @patch('dispatcher.sota.granular_log_handler.get_image_build_date', return_value='20241026100955')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
-    def test_save_granular_in_tiberos_with_success_log(self, mock_run, mock_get_os_version, mock_load, mock_dump, mock_exists, mock_truncate) -> None:
+    def test_save_granular_in_tiberos_with_success_log(self, mock_run, mock_get_image_build_date, mock_load, mock_dump, mock_exists, mock_truncate) -> None:
         update_logger = UpdateLogger("SOTA", "metadata")
         update_logger.detail_status = OTA_SUCCESS
 
@@ -28,7 +28,7 @@ class TestGranularLogHandler(testtools.TestCase):
             "UpdateLog": [
                 {
                     "StatusDetail.Status": OTA_SUCCESS,
-                    "Version": '2.0.20240802.0213'
+                    "Version": '20241026100955'
                 }
             ]
         }
@@ -40,9 +40,9 @@ class TestGranularLogHandler(testtools.TestCase):
     @patch('os.path.exists', return_value=False)
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
-    @patch('dispatcher.sota.granular_log_handler.get_os_version', return_value='2.0.20240802.0213')    
+    @patch('dispatcher.sota.granular_log_handler.get_image_build_date', return_value='20241026100955')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
-    def test_save_granular_in_tiberos_with_pending_log(self, mock_run, mock_get_os_version, mock_load, mock_dump, mock_exists, mock_truncate) -> None:
+    def test_save_granular_in_tiberos_with_pending_log(self, mock_run, mock_get_image_build_date, mock_load, mock_dump, mock_exists, mock_truncate) -> None:
         update_logger = UpdateLogger("SOTA", "metadata")
         update_logger.detail_status = OTA_PENDING
 
@@ -53,7 +53,7 @@ class TestGranularLogHandler(testtools.TestCase):
             "UpdateLog": [
                 {
                     "StatusDetail.Status": OTA_PENDING,
-                    "Version": '2.0.20240802.0213'
+                    "Version": '20241026100955'
                 }
             ]
         }
@@ -112,9 +112,9 @@ class TestGranularLogHandler(testtools.TestCase):
     @patch('os.path.exists', side_effect=[True, False])
     @patch('json.dump')
     @patch('json.load', return_value={"UpdateLog":[]})
-    @patch('dispatcher.sota.granular_log_handler.get_os_version', return_value='2.0.20240802.0213')
+    @patch('dispatcher.sota.granular_log_handler.get_image_build_date', return_value='20241026100955')
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("tiber", "", 0))
-    def test_save_granular_in_tiberos_with_truncate_file_being_called(self, mock_run, mock_get_os_version, mock_load, mock_dump, mock_exists) -> None:
+    def test_save_granular_in_tiberos_with_truncate_file_being_called(self, mock_run, mock_get_image_build_date, mock_load, mock_dump, mock_exists) -> None:
         update_logger = UpdateLogger("SOTA", "metadata")
         update_logger.detail_status = OTA_SUCCESS
 
@@ -128,7 +128,7 @@ class TestGranularLogHandler(testtools.TestCase):
             "UpdateLog": [
                 {
                     "StatusDetail.Status": OTA_SUCCESS,
-                    "Version": '2.0.20240802.0213'
+                    "Version": '20241026100955'
                 }
             ]
         }
