@@ -80,6 +80,9 @@ class CloudPublisher:
         """
         logger.debug(f"Received node update: {message}")
         try:
+            # Publish response back to Dispatcher
+            self._adapter.publish_node_update_response()
+            
             # Publishes update to UDM
             self._adapter.publish_node_update(message)
         except PublishError as e:

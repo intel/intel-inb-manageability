@@ -70,6 +70,20 @@ class CloudClient:
         else:
             return self._node_update.publish(key, value)
     
+    def publish_node_update_response(self, key: str, value: str) -> None:
+        """Publishes a response to the cloud
+
+        @param key: key to publish
+        @param value: response to publish
+        @exception PublishError: If publish fails
+        # """
+        
+        # if self._node_update is None:
+        #     logger.error("Received update response publish request but no update messenger is configured")
+        #     return None
+        # else:
+        #     return self._node_update.publish(key, value)
+    
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud
 
