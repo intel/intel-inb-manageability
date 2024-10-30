@@ -51,5 +51,5 @@ AFULNX_64 = 'afulnx_64'
 # Default signature version
 DEFAULT_HASH_ALGORITHM = 384
 
-# Os release path
-OS_RELEASE_PATH = '/etc/os-release'
+# Image id path
+IMAGE_ID_PATH = '/etc/image-id'
