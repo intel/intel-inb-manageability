@@ -5,7 +5,8 @@ Copyright (C) 2017-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
-from inbm_common_lib.constants import NODE_UPDATE_CHANNEL, TELEMETRY_CHANNEL, RESPONSE_CHANNEL, EVENT_CHANNEL
+from inbm_common_lib.constants import TELEMETRY_CHANNEL, NODE_UPDATE_CHANNEL, \
+     RESPONSE_CHANNEL, EVENT_CHANNEL
 from inbm_lib.constants import DOCKER_STATS
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_ETC_PATH_PREFIX
 from inbm_lib.path_prefixes import INTEL_MANAGEABILITY_SHARE_PATH_PREFIX, BROKER_ETC_PATH
@@ -34,15 +35,13 @@ UCC_ENABLED_FLAG = "TRUE"
 
 STATE_CHANNEL = '+/state'
 
-
 class TC_TOPIC:
     STATE = tuple([STATE_CHANNEL])
     TELEMETRY = tuple([TELEMETRY_CHANNEL])  # Shared by TC and UCC
     EVENT = tuple([EVENT_CHANNEL, RESPONSE_CHANNEL])  # TODO: What's up with response?
-    NODE_UPDATE = tuple([NODE_UPDATE_CHANNEL]) # Used for Node updates to be sent to UDM
+    NODE_UPDATE = tuple([NODE_UPDATE_CHANNEL + "+"]) # Used for Node updates from dispatcher that are to be sent to UDM
 
 # ========== Publishing channels
-
 
 TC_REQUEST_CHANNEL = 'manageability/request/'
 TC_RESPONSE_CHANNEL = 'manageability/response/'

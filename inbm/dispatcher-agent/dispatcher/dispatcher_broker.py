@@ -20,7 +20,8 @@ from inbm_lib.mqttclient.mqtt import MQTT
 from inbm_lib.json_validator import is_valid_json_structure
 from inbm_lib.constants import NODE_UPDATE_JSON_SCHEMA_LOCATION
 
-from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL, NODE_UPDATE_CHANNEL
+from inbm_common_lib.constants import RESPONSE_CHANNEL, EVENT_CHANNEL, NODE_UPDATE_CHANNEL, \
+    NODE_UPDATE_RESPONSE_CHANNEL
 
 logger = logging.getLogger(__name__)
 
@@ -42,13 +43,12 @@ class DispatcherBroker:
         self._is_started = True
 
     def send_node_update(self, message: str) -> None:
-        """Sends node update to local MQTT 'manageability/nodeupdate' channel to be published
+        """Sends node update to local MQTT 'manageability/nodeupdate/{id}' channel to be published
         to the cloudadapter where it will be sent as a reques to INBS (service in UDM)       
 
         @param message: message to be published to the cloud
         """
-        logger.debug(f"Sending node update for to {NODE_UPDATE_CHANNEL} with message: {message}")
-        
+ 
         """Raise TimeoutError if no response is received within the timeout."""
         self.mqtt_publish_and_wait(topic=NODE_UPDATE_CHANNEL, payload=message)
 
@@ -96,10 +96,7 @@ class DispatcherBroker:
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
         else:
-            # This is a scheduled job 
-            
-            # TODO: add error handling NEXMANAGE-743
-                       
+            # This is a scheduled job                      
             try:
                 # Turn the message into a dict
                 message_dict = json.loads(message)
@@ -133,8 +130,8 @@ class DispatcherBroker:
             raise DispatcherException("Cannot publish on MQTT: client not initialized.")
 
         request_id = shortuuid.uuid()
-        request_topic = topic + "/" + request_id
-        response_topic = RESPONSE_CHANNEL + "/" + request_id
+        request_topic = topic + request_id
+        response_topic = NODE_UPDATE_RESPONSE_CHANNEL + request_id
         logger.debug("Publishing message to %s with response expected on %s", request_topic, response_topic)
         return self.mqttc.publish_and_wait_response(topic=request_topic,
                                                     response_topic=response_topic,

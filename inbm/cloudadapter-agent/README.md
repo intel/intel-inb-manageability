@@ -42,6 +42,7 @@ The agent uses MQTT for communication with other agents.
 The agent publishes to the following topics:
   - cloudadapter-agent state: `cloudadapter/state` when dead/running
   - Manifest install requests: `manageability/request/`
+  - Node Update Response: `manageability/response/{id}`
 
 #### Subscribe channels
 The agent subscribes to the following topics:
@@ -49,7 +50,7 @@ The agent subscribes to the following topics:
   - Agent events: `manageability/event`
   - Responses: `manageability/response`
   - Device telemetry: `manageability/telemetry`
-  - Update from scheduled requests: `manageability/nodeupdate`
+  - Update from scheduled requests: `manageability/nodeupdate/{id}`
 
 ❗`+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
 

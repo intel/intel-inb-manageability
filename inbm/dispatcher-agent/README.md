@@ -31,7 +31,7 @@
   - Before install OTA check is done for all scenarios.  
   - After install OTA check is done only for successful installations.
 
-## Agent Communication 
+## Agent Communication
 
 Uses MQTT for communication with other tools/agents
 
@@ -43,7 +43,7 @@ The agent publishes to the following topics:
   - Dynamic telemetry updates: `telemetry/update`
   - Informs diagnostic-agent remediation manager to remove a specific container: `remediation/container`
   - Informs diagnostic-agent remediation manager to remove a specific image:`remediation/image`
-  - Sends the result of a scheduled request received from UDMScheduled node update.  This result is actually sent as a request to cloudadapter: `manageability/nodeupdate`
+  - Sends the result of a scheduled request received from UDM Scheduled node update.  This result is sent as a request to cloudadapter: `manageability/nodeupdate/{id}`
   - dispatcher-agent state: dispatcher/state` when dead/running
 
 
