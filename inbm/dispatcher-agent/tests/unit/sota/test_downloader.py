@@ -3,6 +3,7 @@ import tempfile
 import shutil
 from typing import Optional
 import os
+import threading
 
 
 from ..common.mock_resources import *
@@ -45,6 +46,7 @@ class TestDownloader(unittest.TestCase):
                                  MockDispatcherBroker.build_mock_dispatcher_broker(),
                                  UpdateLogger("SOTA", "metadata"),
                                  None,
+                                 cancel_event=threading.Event(),
                                  install_check_service=MockInstallCheckService())
         cls.sota_instance.factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('YoctoX86_64')
@@ -64,7 +66,7 @@ class TestDownloader(unittest.TestCase):
         try:
             installer.download(self.mock_disp_broker,
                                mock_url, TestDownloader._build_mock_repo(0),
-                               self.username, self.password, self.release_date)
+                               self.username, self.password, self.release_date, threading.Event())
         except (SotaError, DispatcherException):
             self.fail("raised Error unexpectedly!")
 
@@ -85,7 +87,7 @@ class TestDownloader(unittest.TestCase):
         try:
             installer.download(self.mock_disp_broker,
                                mock_url, TestDownloader._build_mock_repo(0),
-                               self.username, self.password, self.release_date)
+                               self.username, self.password, self.release_date, threading.Event())
         except DispatcherException as e:
             self.assertRaises(DispatcherException)
             self.assertEqual(str(e), "foo")
@@ -105,7 +107,7 @@ class TestDownloader(unittest.TestCase):
             installer.download(self.mock_disp_broker, mock_url,
                                TestDownloader._build_mock_repo(
                                    0),
-                               self.username, self.password, self.release_date)
+                               self.username, self.password, self.release_date, threading.Event())
         except SotaError as e:
             self.assertEqual(str(e), 'Missing manifest Release date field')
 
@@ -139,7 +141,7 @@ class TestDownloader(unittest.TestCase):
             try:
                 installer.download(self.mock_disp_broker,
                                    mock_url, repo,
-                                   self.username, password, self.release_date)
+                                   self.username, password, self.release_date, threading.Event())
             except (SotaError, DispatcherException):
                 self.fail("raised Error unexpectedly!")
         finally:
@@ -166,6 +168,6 @@ class TestDownloader(unittest.TestCase):
             with self.assertRaises(SotaError):
                 installer.download(self.mock_disp_broker,
                                    None, repo,
-                                   self.username, password, self.release_date)
+                                   self.username, password, self.release_date, threading.Event())
         finally:
             shutil.rmtree(directory)

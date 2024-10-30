@@ -107,7 +107,7 @@ class DispatcherBroker:
                 return
 
             # Update the job_id in the message
-            message_dict['jobId'] = schedule.job_id
+            message_dict['job_id'] = schedule.job_id
             
             # Convert the updated message_dict back to a JSON string
             try:

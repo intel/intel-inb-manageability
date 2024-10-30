@@ -7,7 +7,7 @@ import logging
 import os
 import threading
 
-from inbm_common_lib.utility import remove_file, get_os_version
+from inbm_common_lib.utility import get_image_build_date
 from inbm_lib.detect_os import detect_os, LinuxDistType
 from inbm_lib.constants import OTA_PENDING, FAIL, OTA_SUCCESS, ROLLBACK, GRANULAR_LOG_FILE
 
@@ -33,7 +33,8 @@ class GranularLogHandler:
             if current_os == LinuxDistType.tiber.name or current_os == LinuxDistType.Mariner.name:
                 # Delete the previous log if exist.
                 if os.path.exists(GRANULAR_LOG_FILE):
-                    remove_file(GRANULAR_LOG_FILE)
+                    with open(GRANULAR_LOG_FILE, "r+") as file:
+                        file.truncate(0)
 
                 if update_logger.detail_status == FAIL or update_logger.detail_status == ROLLBACK:
                     log = {
@@ -43,7 +44,7 @@ class GranularLogHandler:
                 elif update_logger.detail_status == OTA_SUCCESS or update_logger.detail_status == OTA_PENDING:
                     log = {
                         "StatusDetail.Status": update_logger.detail_status,
-                        "Version": get_os_version()
+                        "Version": get_image_build_date()
                     }
                 # In TiberOS, no package level information needed.
                 update_logger.save_granular_log_file(log=log, check_package=False)

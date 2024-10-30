@@ -57,7 +57,7 @@ class TestInbsCloudClient:
         inbs_client._grpc_channel = mock_channel
         
         key = 'update'
-        value = '{"status":200, "message":"COMMAND SUCCESSFUL", "jobId":"swupd-4b151b70-c121-4245-873b-5324ac7a3f7a"}'
+        value = '{"status":200, "message":"COMMAND SUCCESSFUL", "job_id":"swupd-4b151b70-c121-4245-873b-5324ac7a3f7a"}'
         
         # Call the publish_update method
         with patch('cloudadapter.cloud.client.inbs_cloud_client.is_valid_json_structure', return_value=True):

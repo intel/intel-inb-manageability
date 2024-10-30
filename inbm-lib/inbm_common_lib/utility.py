@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Optional, Union, Dict, Tuple
 
-from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER, OS_RELEASE_PATH, UNKNOWN
+from inbm_common_lib.constants import VALID_MAGIC_FILE_TYPE_PREFIXES, TEMP_EXT_FOLDER, IMAGE_ID_PATH, UNKNOWN
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 from .constants import URL_NULL_CHAR
@@ -273,34 +273,34 @@ def validate_file_type(path: list[str]) -> None:
     remove_file_list(extracted_file_list)
 
 
-def get_os_version() -> str:
-    """Get os version from os release file.
+def get_image_build_date() -> str:
+    """Get image build date from image id file.
 
-    @return value of the VERSION
+    @return value of the IMAGE_BUILD_DATE
     """
     try:
-        if os.path.exists(OS_RELEASE_PATH):
-            with open(OS_RELEASE_PATH, 'r') as version_file:
+        if os.path.exists(IMAGE_ID_PATH):
+            with open(IMAGE_ID_PATH, 'r') as version_file:
                 content = version_file.read()
 
-            content_dict = parse_os_release(content)
-            version = content_dict.get("VERSION")
-            if version:
-                return version
-            logger.error(f"VERSION not found in {OS_RELEASE_PATH}.")
+            content_dict = parse_image_id(content)
+            build_date = content_dict.get("IMAGE_BUILD_DATE")
+            if build_date:
+                return build_date
+            logger.error(f"IMAGE_BUILD_DATE not found in {IMAGE_ID_PATH}.")
         else:
-            logger.error(f"{OS_RELEASE_PATH} not exist.")
+            logger.error(f"{IMAGE_ID_PATH} not exist.")
 
         return UNKNOWN
     except OSError as err:
-        raise OSError(f"Error while reading the os version: {err}")
+        raise OSError(f"Error while reading the image build date: {err}")
 
 
-def parse_os_release(file_content: str) -> Dict[str, str]:
+def parse_image_id(file_content: str) -> Dict[str, str]:
     """
-    Parses the content of an os-release file and returns a dictionary of key-value pairs.
+    Parses the content of an image-id file and returns a dictionary of key-value pairs.
 
-    :param file_content: The content of the os-release file as a string.
+    :param file_content: The content of the image id file as a string.
     :return: A dictionary containing key-value pairs from the file.
     """
     result: Dict[str, str] = {}

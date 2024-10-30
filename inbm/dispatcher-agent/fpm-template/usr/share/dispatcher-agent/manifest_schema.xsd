@@ -465,6 +465,7 @@
             <xs:enumeration value="full"/>
             <xs:enumeration value="no-download"/>
             <xs:enumeration value="download-only"/>
+            <xs:enumeration value="cancel"/>
     	</xs:restriction>
     </xs:simpleType>
 

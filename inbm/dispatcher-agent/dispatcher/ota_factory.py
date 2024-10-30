@@ -6,6 +6,7 @@
 """
 import abc
 import logging
+import threading
 from typing import Any, Optional, Mapping
 
 from .config_dbs import ConfigDbs
@@ -53,7 +54,8 @@ class OtaFactory(metaclass=abc.ABCMeta):
                     sota_repos: Optional[str],
                     install_check_service: InstallCheckService,
                     update_logger: UpdateLogger,
-                    dbs: ConfigDbs) -> "OtaFactory":
+                    dbs: ConfigDbs,
+                    cancel_event: threading.Event) -> "OtaFactory":
         """Create an OTA factory of a specified OTA type
 
         @param ota_type: The OTA type
@@ -64,6 +66,7 @@ class OtaFactory(metaclass=abc.ABCMeta):
         @param install_check_service: provides install_check
         @param update_logger: UpdateLogger (expected to update after OTA) 
         @param dbs: ConfigDbs.ON or ConfigDbs.WARN or ConfigDbs.OFF
+        @param cancel_event: Event used to stop the downloading process
         @raise ValueError: Unsupported OTA type
         """
 
@@ -72,7 +75,7 @@ class OtaFactory(metaclass=abc.ABCMeta):
             return FotaFactory(repo_type, dispatcher_broker, install_check_service, update_logger)
         if ota_type == OtaType.SOTA.name:
             return SotaFactory(repo_type, dispatcher_broker, proceed_without_rollback,
-                               sota_repos, install_check_service, update_logger)
+                               sota_repos, install_check_service, update_logger, cancel_event)
         if ota_type == OtaType.AOTA.name:
             return AotaFactory(repo_type, dispatcher_broker, install_check_service, update_logger, dbs=dbs)
         if ota_type == OtaType.POTA.name:
@@ -116,7 +119,8 @@ class SotaFactory(OtaFactory):
     @param proceed_without_rollback: Is it OK to run SOTA without rollback ability?
     @param install_check_service: provides InstallCheckService
     @param sota_repos: new Ubuntu/Debian mirror (or None)
-    @param update_logger: UpdateLogger (expected to update after OTA) 
+    @param update_logger: UpdateLogger (expected to update after OTA)
+    @param cancel_event: Event used to stop the downloading process
     """
 
     def __init__(self,
@@ -125,13 +129,15 @@ class SotaFactory(OtaFactory):
                  proceed_without_rollback: bool,
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
-                 update_logger: UpdateLogger) -> None:
+                 update_logger: UpdateLogger,
+                 cancel_event: threading.Event) -> None:
 
         super().__init__(repo_type, install_check_service)
         self._sota_repos = sota_repos
         self._proceed_without_rollback = proceed_without_rollback
         self._update_logger = update_logger
         self._dispatcher_broker = dispatcher_broker
+        self._cancel_event = cancel_event
 
     def create_parser(self) -> OtaParser:
         logger.debug(" ")
@@ -145,7 +151,8 @@ class SotaFactory(OtaFactory):
                           self._sota_repos,
                           self._install_check_service,
                           parsed_manifest,
-                          self._update_logger)
+                          self._update_logger,
+                          self._cancel_event)
 
 
 class AotaFactory(OtaFactory):
