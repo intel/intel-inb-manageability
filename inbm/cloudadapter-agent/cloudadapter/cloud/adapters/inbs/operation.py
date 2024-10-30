@@ -247,7 +247,7 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
     # Convert package list to comma-separated string
     if len(operation.package_list) > 0:
         package_list_str = ','.join(operation.package_list)
-        ET.SubElement(sota, 'packageList').text = package_list_str
+        ET.SubElement(sota, 'package_list').text = package_list_str
 
     # Fetch URL
     if operation.url != '':
