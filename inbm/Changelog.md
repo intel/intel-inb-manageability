@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - (NEXMANAGE-733) Fixed typo in package_list during conversion from INBS to cloudadapter
+ - (NEXMANAGE-827) Fixed error logged incorrectly when reading dispatcher_state file
 
 ## 4.2.6.2 - 2024-10-25
 ### Added
