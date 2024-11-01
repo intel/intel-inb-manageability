@@ -118,13 +118,23 @@ class InbsCloudClient(CloudClient):
 
         pass  # INBS is not yet ready to receive telemetry
 
+    def publish_node_update_response(self, key: str, value: str) -> None:
+        """Publishes a response to the node update message to the dispatcher
+
+        @param key: key to publish
+        @param value: node update response to publish
+        @exception PublishError: If publish fails
+        """
+        logger.debug("Publishing node update response from DISPATCHER")
+        self._node_update_response.publish(key, value)
+
     def publish_node_update(self, key: str, value: str) -> None:
         """Publishes a node update to the cloud
 
         @param key: key to publish
         @param value: node update message to publish
         @exception PublishError: If publish fails
-        """
+        """        
         if self._grpc_channel is None:
             raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_node_update")            
     

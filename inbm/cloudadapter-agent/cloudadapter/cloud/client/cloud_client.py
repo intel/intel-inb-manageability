@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 node_update: OneWayMessenger | None, attribute: OneWayMessenger, 
+                 node_update: OneWayMessenger | None, 
+                 node_update_response: OneWayMessenger | None, 
+                 attribute: OneWayMessenger, 
                  handler: ReceiveRespondHandler) -> None:
         """Constructor for CloudClient
 
@@ -30,6 +32,7 @@ class CloudClient:
         self._telemetry = telemetry
         self._event = event
         self._node_update: OneWayMessenger | None = node_update
+        self._node_update_response: OneWayMessenger | None = node_update_response
         self._attribute = attribute
         self._handler = handler
 
@@ -55,34 +58,25 @@ class CloudClient:
         @param time: timestamp for this telemetry publish
         @exception PublishError: If publish fails
         """
-        return self._telemetry.publish(key, value, time)
+        self._telemetry.publish(key, value, time)
+
+    def publish_node_update_response(self, key: str, value: str) -> None:
+        """Publishes a response to the node update message to the dispatcher
+
+        @param key: key to publish
+        @param value: node update response to publish
+        @exception PublishError: If publish fails
+        """        
+        pass  # Only used with INBS cloud client
 
     def publish_node_update(self, key: str, value: str) -> None:
         """Publishes an update to the cloud
 
         @param key: key to publish
-        @param value: update to publish
+        @param value: node update to publish
         @exception PublishError: If publish fails
         """
-        if self._node_update is None:
-            logger.error("Received update publish request but no update messenger is configured")
-            return None
-        else:
-            return self._node_update.publish(key, value)
-    
-    def publish_node_update_response(self, key: str, value: str) -> None:
-        """Publishes a response to the cloud
-
-        @param key: key to publish
-        @param value: response to publish
-        @exception PublishError: If publish fails
-        # """
-        
-        # if self._node_update is None:
-        #     logger.error("Received update response publish request but no update messenger is configured")
-        #     return None
-        # else:
-        #     return self._node_update.publish(key, value)
+        pass  # Only used with INBS cloud client
     
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud

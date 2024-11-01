@@ -143,7 +143,6 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     telemetry = config.get("telemetry")
     attribute = config.get("attribute")
     event = config.get("event")
-    node_update = config.get("node_update")
 
     if telemetry:
         telemetry = build_messenger_with_config(telemetry)
@@ -155,10 +154,10 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     else:
         raise ClientBuildError(
             "Missing 'attribute' MQTT config information while setting up cloud connection.")
-    if node_update:
-        node_update = build_messenger_with_config(node_update)
-    else:
-        logger.debug("Missing 'node_update' MQTT config information while setting up cloud connection. TODO: figure out why this doesn't happen for INBS, but does happen for other clouds.")
+    # if node_update:
+    #     node_update = build_messenger_with_config(node_update)
+    # else:
+    #     logger.debug("Missing 'node_update' MQTT config information while setting up cloud connection. TODO: figure out why this doesn't happen for INBS, but does happen for other clouds.")
     if event:
         event = build_messenger_with_config(event)
     else:
@@ -191,6 +190,18 @@ def build_client_with_config(config: Dict[str, Any]) -> CloudClient:
     echoer_configs = config.get("echoers", [])
     for config in echoer_configs:
         EchoHandler(
+            topic_formatter=Formatter(
+                formatting=config.get("pub"),
+                defaults=defaults),
+            payload_formatter=Formatter(
+                formatting=config.get("format"),
+                defaults=defaults),
+            subscribe_topic=config.get("sub"),
+            connection=connection)
+        
+    node_update_configs = config.get("node_update", [])
+    for config in node_update_configs:
+        NodeUpdateHandler(
             topic_formatter=Formatter(
                 formatting=config.get("pub"),
                 defaults=defaults),

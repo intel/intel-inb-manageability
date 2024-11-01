@@ -59,7 +59,7 @@ class Adapter(metaclass=abc.ABCMeta):  # pragma: no cover
         @param message: (str) The update message to send
         @exception PublishError: If publish fails
         """
-        self._client.publish_node_update("update", message) 
+        self._client.publish_node_update("node_update", message) 
     
     def publish_node_update_response(self) -> None:
         """Publishes a response to the cloud
