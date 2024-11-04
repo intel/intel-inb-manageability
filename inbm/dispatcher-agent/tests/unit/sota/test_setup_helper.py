@@ -17,12 +17,16 @@ class TestSetupHelper(unittest.TestCase):
         setup_helper.update_sources('')
         mock_apt_source.assert_called_once()
 
+    @patch('dispatcher.common.dispatcher_state.clear_dispatcher_state')
     @patch("pickle.load", return_value={'restart_reason': 'rollback', 'snapshot_num': 1})
-    def test_ubuntu_extract_snap_num_from_disk(self, mock_pickle) -> None:
+    @patch("os.path.exists", return_value=True)
+    def test_ubuntu_extract_snap_num_from_disk(self, mock_exist, mock_pickle, mock_clear) -> None:
         with patch('builtins.open', new_callable=mock_open()) as m:
             setup_helper = DebianBasedSetupHelper(None)
             setup_helper.extract_snap_num_from_disk()
+            mock_exist.assert_called_once()
             mock_pickle.assert_called_once()
+            mock_clear.assert_called_once()
 
     def test_ubuntu_update_apt_sources_fixtures(self) -> None:
 
