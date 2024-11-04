@@ -6,7 +6,8 @@
 import logging
 import xml.etree.ElementTree as ET
 from google.protobuf.timestamp_pb2 import Timestamp
-from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, UpdateFirmwareOperation, RpcActivateOperation, Operation, Schedule
+from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, \
+    UpdateFirmwareOperation, SetPowerStateOperation, RpcActivateOperation, Operation, Schedule
 from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
 
 logger = logging.getLogger(__name__)
@@ -94,7 +95,8 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
 
     if not (operation.HasField('update_system_software_operation') 
             or operation.HasField('rpc_activate_operation') 
-            or operation.HasField('update_firmware_operation')):
+            or operation.HasField('update_firmware_operation')
+            or operation.HasField('set_power_state_operation')):
         raise ValueError("Operation type not supported")
 
     if len(operation.pre_operations) > 0:
@@ -108,13 +110,13 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     manifest = None
     
     if operation.HasField('update_system_software_operation'):
-        logger.debug("Converting UpdateSystemSoftwareOperation to XML manifest")
-        manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
+         manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
     elif operation.HasField('rpc_activate_operation'):
         manifest = convert_rpc_activate_operation_to_xml_manifest(operation.rpc_activate_operation)
     elif operation.HasField('update_firmware_operation'):
-        logger.debug("Converting UpdateFirmwareOperation to XML manifest")
         manifest = convert_firmware_operation_to_xml_manifest(operation.update_firmware_operation)
+    elif operation.HasField('set_power_state_operation'):
+        manifest = convert_power_state_operation_to_xml_manifest(operation.set_power_state_operation)
     else:
         raise ValueError("No valid operation found")
 
@@ -161,11 +163,13 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
     fota = ET.SubElement(type, 'fota', name="")
 
     # Fetch URL
-    if operation.url != '':
-        ET.SubElement(fota, 'fetch').text = operation.url
+    if not operation.url:
+        raise ValueError("Fetch URL cannot be unspecified")
+    ET.SubElement(fota, 'fetch').text = operation.url
         
-    if operation.bios_version:
-        ET.SubElement(fota, 'biosversion').text = operation.bios_version
+    if not operation.bios_version:
+        raise ValueError("BIOS Version cannot be unspecified")
+    ET.SubElement(fota, 'biosversion').text = operation.bios_version
         
     if operation.signature_version:
         ET.SubElement(fota, 'signatureversion').text = str(operation.signature_version)
@@ -173,16 +177,22 @@ def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperatio
     if operation.signature:
         ET.SubElement(fota, 'signature').text = operation.signature
         
-    if operation.manufacturer:
-        ET.SubElement(fota, 'manufacturer').text = operation.manufacturer
+    if not operation.manufacturer:
+        raise ValueError("Manufacturer cannot be unspecified")
+    ET.SubElement(fota, 'manufacturer').text = operation.manufacturer
         
-    if operation.product_name:
-        ET.SubElement(fota, 'product').text = operation.product_name
+    if not operation.product_name:
+        raise ValueError("Product name cannot be unspecified")
+    ET.SubElement(fota, 'product').text = operation.product_name
         
-    if operation.vendor:
-        ET.SubElement(fota, 'vendor').text = operation.vendor       
+    if not operation.vendor:
+        raise ValueError("Vendor cannot be unspecified")
+    ET.SubElement(fota, 'vendor').text = operation.vendor       
     
     # Release date in the required format
+    if operation.release_date == Timestamp():
+        raise ValueError("Release date cannot be unspecified")
+    
     if operation.release_date.ToSeconds() > 0:
         release_date = Timestamp()
         release_date.FromDatetime(operation.release_date.ToDatetime())
@@ -237,7 +247,7 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
     # Convert package list to comma-separated string
     if len(operation.package_list) > 0:
         package_list_str = ','.join(operation.package_list)
-        ET.SubElement(sota, 'packageList').text = package_list_str
+        ET.SubElement(sota, 'package_list').text = package_list_str
 
     # Fetch URL
     if operation.url != '':
@@ -253,6 +263,36 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
     device_reboot = 'no' if operation.do_not_reboot else 'yes'
     ET.SubElement(sota, 'deviceReboot').text = device_reboot
 
+    # Generate the XML string with declaration
+    xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
+    xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')
+    return xml_declaration + '\n' + xml_str
+
+def convert_power_state_operation_to_xml_manifest(operation: SetPowerStateOperation) -> str:    
+    """Converts a SetPowerStateOperation message to an XML manifest string for Dispatcher."""
+
+    if operation.opcode == SetPowerStateOperation.POWER_STATE_UNSPECIFIED:
+        raise ValueError("Power state cannot be unspecified")
+    
+    if operation.opcode == SetPowerStateOperation.POWER_STATE_ON:
+        raise ValueError("Power state ON is not supported as an Inband operation")
+
+    if operation.opcode == SetPowerStateOperation.POWER_STATE_RESET:
+        raise ValueError("Power state RESET is not supported as an Inband operation")
+    
+    power_state = ''
+    if operation.opcode == SetPowerStateOperation.POWER_STATE_OFF:
+        power_state = 'shutdown'    
+    elif operation.opcode == SetPowerStateOperation.POWER_STATE_CYCLE:
+        power_state = 'restart'
+    else:
+        raise ValueError("Invalid power state")
+        
+    # Create the root element
+    manifest = ET.Element('manifest')
+    ET.SubElement(manifest, 'type').text = 'cmd'
+    cmd = ET.SubElement(manifest, 'cmd').text = power_state
+    
     # Generate the XML string with declaration
     xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
     xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')

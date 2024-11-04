@@ -4,12 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
+### Changed
+ - (NEXMANAGE-949) Check the IMAGE_BUILD_DATE instead of VERSION for TiberOS SOTA verification
 
+### Added
+ - (NEXMANAGE-950) Add Set Power State Capability to cloudadapter from UDM
 
+### Fixed
+ - (NEXMANAGE-733) Fixed typo in package_list during conversion from INBS to cloudadapter
+ - (NEXMANAGE-827) Fixed error logged incorrectly when reading dispatcher_state file
 
 ## 4.2.6.2 - 2024-10-25
 ### Added
- - (NEXMANAGE-900) Add UpdateFirmware to the common proto file
+ - (NEXMANAGE-900) Add UpdateFirmware to the common proto file and cloudadapter support from UDM
   
 ### Changed
  - (NEXMANAGE-906) Truncate the granular log instead of removing it
@@ -31,6 +38,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
  - (NEXMANAGE-874) Remove UT rollback command in dispatcher agent
  - (NEXMANAGE-853) Remove ORAS and update method
+ - (NEXMANAGE-683) Remove service_type from Operation in common.proto
 
 ## 4.2.6 - 2024-10-04
 ### Added
@@ -58,6 +66,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEXMANAGE-744) Remove `psutil` in favor if `shutil.disk_usage` to save space
  - (NEXMANAGE-744) Don't pull in `dmidecode` in `inbm-lib` -- pull in only in `telemetry`
  - (NEXMANAGE-744) Removed all references to `future` library as we do not use Python 2
+
 
 ## 4.2.5 - 2024-09-04
 ### Fixed
