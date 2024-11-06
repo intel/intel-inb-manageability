@@ -1,7 +1,7 @@
 #Production
 netifaces==0.11.0
-psutil==6.1.0
-types-psutil==6.1.0.20241022
+psutil==5.9.5
+types-psutil==5.9.5.17
 shortuuid==1.0.13
 pyinstaller==6.11.0
 setuptools==75.2.0
