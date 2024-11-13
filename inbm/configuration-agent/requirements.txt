@@ -1,4 +1,4 @@
 #Production
 
-pyinstaller==5.13.1
-setuptools==70.0.0
+pyinstaller==6.11.0
+setuptools==75.2.0
