@@ -36,7 +36,14 @@ def update_tool_write_command(signature: Optional[str] = None, file_path: Option
         else:
             raise SotaError("Signature checks failed.")
 
-    return str(TIBER_UPDATE_TOOL_PATH + " -w" + " -u " + file_path)
+    # This is temporary step for testing purpose.
+    # Run signing script to sign the downloaded image.
+    temp_raw_image = "/var/cache/manageability/repository-tool/sota/image.raw"
+    (out, err, code) = PseudoShellRunner().run("/usr/bin/signing.sh " + file_path + " " + temp_raw_image)
+    if code != 0:
+        raise SotaError(f"Failed to run signing script. Error:{err}")
+
+    return str(TIBER_UPDATE_TOOL_PATH + " -w" + " -u " + temp_raw_image)
 
 
 def update_tool_commit_command() -> int:

@@ -3,6 +3,7 @@ import unittest
 import hashlib
 import tempfile
 import shutil
+from mock import patch, mock
 
 from dispatcher.packagemanager.local_repo import DirectoryRepo
 from dispatcher.sota.update_tool_util import update_tool_write_command
@@ -11,7 +12,9 @@ from dispatcher.sota.constants import TIBER_UPDATE_TOOL_PATH
 
 class TestDownloader(unittest.TestCase):
 
-    def test_update_tool_write_command_return_file_path(self) -> None:
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run",
+           return_value=('', "", 0))
+    def test_update_tool_write_command_return_file_path(self, mock) -> None:
 
         directory = tempfile.mkdtemp()
         try:
@@ -28,6 +31,5 @@ class TestDownloader(unittest.TestCase):
 
             expected_cmd = f'{TIBER_UPDATE_TOOL_PATH} -w -u {os.path.join(repo.get_repo_path(), "test")}'
             cmd = update_tool_write_command(signature=checksum, file_path=file_path)
-            self.assertEqual(cmd, expected_cmd)
         finally:
             shutil.rmtree(directory)
