@@ -40,3 +40,33 @@ FILE = "FILE"
 CLOUD = "CLOUD"
 
 BTRFS = "btrfs"
+
+# Constants for mapping failure_reason in granular log
+FAILURE_REASON_UNSPECIFIED = "unspecified"
+FAILURE_REASON_NO_FAILURE = "nofailure"
+FAILURE_REASON_DOWNLOAD = "download"
+FAILURE_REASON_INSTALLATION = "installation"
+FAILURE_REASON_BOOTLOADER = "bootloader"
+FAILURE_REASON_INSUFFICIENT_STORAGE = "insufficientstorage"
+FAILURE_REASON_RS_AUTHENTICATION = "rsauthentication"
+FAILURE_REASON_SIGNATURE_CHECK = "signaturecheck"
+FAILURE_REASON_UT_WRITE = "utwrite"
+FAILURE_REASON_UT_BOOT_CONFIGURATION = "utbootconfiguration"
+FAILURE_REASON_CRITICAL_SERVICES = "criticalservices"
+FAILURE_REASON_INBM = "inbm"
+FAILURE_REASON_OS_COMMIT = "oscommit"
+
+# Keywords used to map failure reason
+DOWNLOAD_ERROR = "OTA Fetch Failed"
+BOOTLOADER_ERROR = "Requested update version is the same as previous version installed"
+INSUFFICIENT_STORAGE_ERROR = "Insufficient free space"
+RS_AUTHENTICATION_ERROR_LIST = ["No JWT token", "Invalid URI or Token"]
+SIGNATURE_CHECK_ERROR_LIST = ["Signature is None", "Signature checks failed"]
+CRITICAL_SERVICES_ERROR = "Critical service failure"
+INBM_ERROR_LIST = ["Source verification failed", "Repository does not exist"]
+# UT related failure
+UT_WRITE_ERROR = "/usr/bin/os-update-tool.sh -w -u"   # ut write error. TODO: low confident. Need to test it.
+UT_BOOT_CONFIGURATION_ERROR = "/usr/bin/os-update-tool.sh -a"  # ut apply error TODO: low confident. Need to test it.
+UT_OS_COMMIT_ERROR = "Failed to run UT commit command"  # ut commit error
+
+
