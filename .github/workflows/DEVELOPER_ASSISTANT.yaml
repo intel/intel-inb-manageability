@@ -25,10 +25,9 @@ jobs:
       - name: Smart Devops PR Agent Action
         id: pragent
         run: |
-          docker run --rm 011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable sh -c "
+          docker run --rm 011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable bash -c "
             . /genai_agent/genai_env/bin/activate && /genai_agent/get_pr_agent_details.sh
           "
-        shell: bash 
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
           GITHUB_ACTION.AUTO_REVIEW: true
