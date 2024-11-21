@@ -17,7 +17,7 @@ jobs:
 
       - name: Login to Amazon ECR Registry
         run: |
-          aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin 011528261982.dkr.ecr.us-west-2.amazonaws.com
+          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 011528261982.dkr.ecr.us-west-2.amazonaws.com
 
       - name: Pull the Docker image from ECR registry
         run: docker pull 011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable
