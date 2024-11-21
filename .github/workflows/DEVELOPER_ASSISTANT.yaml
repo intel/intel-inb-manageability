@@ -27,7 +27,18 @@ jobs:
         run: |
           docker run --rm \
             -e GITHUB_CONTEXT="${GITHUB_CONTEXT}" \
-            -e PUSH_TOKEN="${{ secrets.PUSH_TOKEN }}" \
+            -e GITHUB_ACTION.AUTO_REVIEW="${GITHUB_ACTION.AUTO_REVIEW}" \
+            -e GITHUB_ACTION.AUTO_DESCRIBE="${GITHUB_ACTION.AUTO_DESCRIBE}" \
+            -e GITHUB_ACTION.UPDATE_TITLE="${GITHUB_ACTION.UPDATE_TITLE}" \
+            -e PR_NUMBER="${PR_NUMBER}" \
+            -e API_KEY="${API_KEY}" \
+            -e API_BASE="${API_BASE}" \
+            -e STABLE_API_VERSION="${STABLE_API_VERSION}" \
+            -e PREVIEW_API_VERSION="${PREVIEW_API_VERSION}" \
+            -e DEPLOY_NAME="${DEPLOY_NAME}" \
+            -e PUSH_TOKEN="${PUSH_TOKEN}" \
+            -e CLIENT_ID="${CLIENT_ID}" \
+            -e CLIENT_SECRET="${CLIENT_SECRET}"
             011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable bash -c "
             . /genai_agent/genai_env/bin/activate && /genai_agent/get_pr_agent_details.sh
           "
