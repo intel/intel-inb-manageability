@@ -35,7 +35,7 @@ jobs:
             -e DEPLOY_NAME="${DEPLOY_NAME}" \
             -e PUSH_TOKEN="${PUSH_TOKEN}" \
             -e CLIENT_ID="${CLIENT_ID}" \
-            -e CLIENT_SECRET="${CLIENT_SECRET}"
+            -e CLIENT_SECRET="${CLIENT_SECRET}" \
             011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable bash -c "
             . /genai_agent/genai_env/bin/activate && /genai_agent/get_pr_agent_details.sh
           "
