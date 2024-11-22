@@ -27,6 +27,9 @@ jobs:
         run: |
           docker run --rm \
             -e GITHUB_CONTEXT="${GITHUB_CONTEXT}" \
+            -e GITHUB_ACTION.AUTO_REVIEW="${GITHUB_ACTION.AUTO_REVIEW}" \
+            -e GITHUB_ACTION.AUTO_DESCRIBE="${GITHUB_ACTION.AUTO_DESCRIBE}" \
+            -e GITHUB_ACTION.UPDATE_TITLE="${GITHUB_ACTION.UPDATE_TITLE}" \
             -e PR_NUMBER="${PR_NUMBER}" \
             -e API_KEY="${API_KEY}" \
             -e API_BASE="${API_BASE}" \
