@@ -25,11 +25,9 @@ jobs:
       - name: Smart Devops PR Agent Action
         id: pragent
         run: |
-          docker run --rm \
+          env 'GITHUB_ACTION.AUTO_REVIEW=${GITHUB_ACTION_AUTO_REVIEW}' docker run --rm \
             -e GITHUB_CONTEXT="${GITHUB_CONTEXT}" \
             -e GITHUB_ACTION.AUTO_REVIEW="${GITHUB_ACTION.AUTO_REVIEW}" \
-            -e GITHUB_ACTION.AUTO_DESCRIBE="${GITHUB_ACTION.AUTO_DESCRIBE}" \
-            -e GITHUB_ACTION.UPDATE_TITLE="${GITHUB_ACTION.UPDATE_TITLE}" \
             -e PR_NUMBER="${PR_NUMBER}" \
             -e API_KEY="${API_KEY}" \
             -e API_BASE="${API_BASE}" \
@@ -44,7 +42,7 @@ jobs:
           "
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
-          GITHUB_ACTION.AUTO_REVIEW: true
+          GITHUB_ACTION_AUTO_REVIEW: true
           GITHUB_ACTION.AUTO_DESCRIBE: true
           GITHUB_ACTION.UPDATE_TITLE: false
           PR_NUMBER: ${{ github.event.number }}
