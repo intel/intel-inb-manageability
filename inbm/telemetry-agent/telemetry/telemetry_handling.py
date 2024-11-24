@@ -35,6 +35,7 @@ from .command import Command
 from .telemetry_exception import TelemetryException
 from inbm_lib.version import get_friendly_inbm_version_commit
 from telemetry import software_bom_list
+from .power_capabilities import get_power_capabilities
 
 logger = logging.getLogger(__name__)
 
@@ -346,7 +347,8 @@ def get_static_telemetry_info() -> Dict:
                  'systemManufacturer': platform_info.platform_mfg,
                  'systemProductName': platform_info.platform_product,
                  'osInformation': get_os_information(),
-                 'diskInformation': get_disk_information()}
+                 'diskInformation': get_disk_information(),
+                 'powerCapabilities': get_power_capabilities()}
 
     clean_telemetry: dict[str, Optional[Any]] = {k: (UNKNOWN if v == [] else v)
                                                  for k, v in telemetry.items()}
