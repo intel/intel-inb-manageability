@@ -1,33 +1,31 @@
 """
-    Handles retrieving power state capabities on the system.
+    Central telemetry service for the manageability framework 
 
     Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
-import dbus
-import logging
+#import subprocess
+from inbm_common_lib.shell_runner import PseudoShellRunner
 
-logger = logging.getLogger(__name__)
+class PowerCapabilitiesLinux:
+    """Class to get power capabilities on Linux"""
+    
+    @staticmethod
+    def _check_command(command: list[str]) -> bool:
+        combined_cmd = " ".join(command)
+        out, _, code = PseudoShellRunner().run(combined_cmd)
+        if code != 0:
+            return False
+        return True if "1 unit files listed." in out else False
 
-def get_power_capabilities() -> dict[str, bool]:
-    power_states = {
-    "shutdown": False,
-    "reboot": False,
-    "suspend": False,
-    "hibernate": False
-    }
-
-    bus = dbus.SystemBus()
-    try:
-        proxy = bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1')
-        interface = dbus.Interface(proxy, 'org.freedesktop.login1.Manager')
-
-        power_states["shutdown"] = str(interface.CanPowerOff()) == 'yes'
-        power_states["reboot"] = str(interface.CanReboot()) == 'yes'
-        power_states["suspend"] = str(interface.CanSuspend()) == 'yes'
-        power_states["hibernate"] = str(interface.CanHibernate()) == 'yes'
-    except dbus.DBusException as e:
-        logger.error("DBus error gathering power capabilities: {e}")
-
-    return power_states
+    @staticmethod
+    def get_power_capabilities() -> str:
+        """Return a dictionary of power capabilities."""
+        power_states = {
+            "shutdown": True,  # Always supported
+            "reboot": True,    # Always supported
+            "suspend": PowerCapabilitiesLinux._check_command(["systemctl", "list-unit-files", "suspend.target"]),
+            "hibernate": PowerCapabilitiesLinux._check_command(["systemctl", "list-unit-files", "hibernate.target"])
+        }
         
+        return str(power_states)    

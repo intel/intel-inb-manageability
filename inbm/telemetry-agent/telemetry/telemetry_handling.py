@@ -35,7 +35,7 @@ from .command import Command
 from .telemetry_exception import TelemetryException
 from inbm_lib.version import get_friendly_inbm_version_commit
 from telemetry import software_bom_list
-from .power_capabilities import get_power_capabilities
+from .power_capabilities import PowerCapabilitiesLinux
 
 logger = logging.getLogger(__name__)
 
@@ -336,6 +336,12 @@ def get_static_telemetry_info() -> Dict:
         else:
             platform_info = get_dmi_system_info()
             cpu_id = get_cpu_id()
+            
+        if platform.system() == 'Linux':
+            power_cap = PowerCapabilitiesLinux.get_power_capabilities()
+        else:
+            # Power capabilities reporting is not currently supported on Windows
+            power_cap = ""
     except (KeyError, ValueError, WmiException) as e:
         raise TelemetryException(f"Error gathering BIOS information: {e}")
 
@@ -348,7 +354,7 @@ def get_static_telemetry_info() -> Dict:
                  'systemProductName': platform_info.platform_product,
                  'osInformation': get_os_information(),
                  'diskInformation': get_disk_information(),
-                 'powerCapabilities': get_power_capabilities()}
+                 'powerCapabilities': power_cap}
 
     clean_telemetry: dict[str, Optional[Any]] = {k: (UNKNOWN if v == [] else v)
                                                  for k, v in telemetry.items()}
