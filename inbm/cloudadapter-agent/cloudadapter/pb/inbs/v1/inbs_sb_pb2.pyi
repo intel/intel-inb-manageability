@@ -125,6 +125,26 @@ class SendNodeUpdateRequest(google.protobuf.message.Message):
 global___SendNodeUpdateRequest = SendNodeUpdateRequest
 
 @typing.final
+class SendStaticTelemetryRequest(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    REQUEST_ID_FIELD_NUMBER: builtins.int
+    STATIC_TELEMETRY_FIELD_NUMBER: builtins.int
+    request_id: builtins.str
+    @property
+    def static_telemetry(self) -> cloudadapter.pb.common.v1.common_pb2.StaticTelemetry: ...
+    def __init__(
+        self,
+        *,
+        request_id: builtins.str = ...,
+        static_telemetry: cloudadapter.pb.common.v1.common_pb2.StaticTelemetry | None = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["static_telemetry", b"static_telemetry"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["request_id", b"request_id", "static_telemetry", b"static_telemetry"]) -> None: ...
+
+global___SendStaticTelemetryRequest = SendStaticTelemetryRequest
+
+@typing.final
 class SendNodeUpdateResponse(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 

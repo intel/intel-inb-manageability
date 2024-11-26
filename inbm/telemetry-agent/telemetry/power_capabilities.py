@@ -5,6 +5,7 @@
     SPDX-License-Identifier: Apache-2.0
 """
 #import subprocess
+import json
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
 class PowerCapabilitiesLinux:
@@ -28,4 +29,4 @@ class PowerCapabilitiesLinux:
             "hibernate": PowerCapabilitiesLinux._check_command(["systemctl", "list-unit-files", "hibernate.target"])
         }
         
-        return str(power_states)    
+        return json.dumps(power_states)    

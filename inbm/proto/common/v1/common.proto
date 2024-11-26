@@ -129,6 +129,18 @@ message PostOperation {
 //  }
 }
 
+message StaticTelemetry {
+  int64 total_physical_memory_bytes = 1;
+  string cpu_id = 2;
+  string bios_vendor = 3;
+  string bios_version = 4;
+  google.protobuf.Timestamp bios_release_date = 5;
+  string system_manufacturer = 6;
+  string system_product_name = 7;
+  string os_information = 8;
+  string disk_information = 9;
+  string power_capabilities = 10;
+}
 
 // this message represents a Job and can be used in multiple contexts; see RPC definitions
 // for some definitions fields may be ignored; e.g., when reporting job status up from a node,

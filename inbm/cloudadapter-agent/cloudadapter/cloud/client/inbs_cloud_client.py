@@ -12,7 +12,7 @@ import threading
 import uuid
 from google.protobuf.timestamp_pb2 import Timestamp
 from typing import Callable, Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
@@ -115,8 +115,8 @@ class InbsCloudClient(CloudClient):
         @param time: timestamp for this telemetry publish
         @exception PublishError: If publish fails
         """
-
-        pass  # INBS is not yet ready to receive telemetry
+        
+        pass  # INBS is not yet ready to receive events
 
     def publish_node_update(self, key: str, value: str) -> None:
         """Publishes a node update to the cloud
@@ -189,7 +189,37 @@ class InbsCloudClient(CloudClient):
         @exception PublishError: If publish fails
         """
 
-        pass  # INBS is not yet ready to receive attributes
+        logger.debug(f"Received telemetry: key={key}, value={value}")
+        # TODO: Check if static or dynamic telemetry
+        # Only send static telemetry to INBS
+        
+        bios_release_date = Timestamp()
+        bios_release_date.FromDatetime(datetime.utcnow() - timedelta(days=30))
+
+        static_telemetry=common_pb2.StaticTelemetry(
+            total_physical_memory_bytes = 1,
+            cpu_id = "",
+            bios_vendor = "",
+            bios_version = "",
+            bios_release_date = bios_release_date,
+            system_manufacturer = "",
+            system_product_name = "",
+            os_information = "",
+            disk_information = "",
+            power_capabilities = ""
+        ) 
+         
+        request = inbs_sb_pb2.SendStaticTelemetryRequest(
+            request_id=str(uuid.uuid4()),
+            static_telemetry=static_telemetry,            
+        )
+        logger.debug(f"Sending static telemetry to INBS: request={request}")
+
+        try:
+            response = self._grpc_channel.SendStaticTelemetry(request, metadata=self._metadata)
+            logger.info(f"Received response from gRPC server: {response}")
+        except grpc.RpcError as e:
+            logger.error(f"Failed to send static telemetry via gRPC: {e}")
 
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud

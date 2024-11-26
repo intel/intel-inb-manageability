@@ -441,6 +441,50 @@ class PostOperation(google.protobuf.message.Message):
 global___PostOperation = PostOperation
 
 @typing.final
+class StaticTelemetry(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    TOTAL_PHYSICAL_MEMORY_BYTES_FIELD_NUMBER: builtins.int
+    CPU_ID_FIELD_NUMBER: builtins.int
+    BIOS_VENDOR_FIELD_NUMBER: builtins.int
+    BIOS_VERSION_FIELD_NUMBER: builtins.int
+    BIOS_RELEASE_DATE_FIELD_NUMBER: builtins.int
+    SYSTEM_MANUFACTURER_FIELD_NUMBER: builtins.int
+    SYSTEM_PRODUCT_NAME_FIELD_NUMBER: builtins.int
+    OS_INFORMATION_FIELD_NUMBER: builtins.int
+    DISK_INFORMATION_FIELD_NUMBER: builtins.int
+    POWER_CAPABILITIES_FIELD_NUMBER: builtins.int
+    total_physical_memory_bytes: builtins.int
+    cpu_id: builtins.str
+    bios_vendor: builtins.str
+    bios_version: builtins.str
+    system_manufacturer: builtins.str
+    system_product_name: builtins.str
+    os_information: builtins.str
+    disk_information: builtins.str
+    power_capabilities: builtins.str
+    @property
+    def bios_release_date(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
+    def __init__(
+        self,
+        *,
+        total_physical_memory_bytes: builtins.int = ...,
+        cpu_id: builtins.str = ...,
+        bios_vendor: builtins.str = ...,
+        bios_version: builtins.str = ...,
+        bios_release_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        system_manufacturer: builtins.str = ...,
+        system_product_name: builtins.str = ...,
+        os_information: builtins.str = ...,
+        disk_information: builtins.str = ...,
+        power_capabilities: builtins.str = ...,
+    ) -> None: ...
+    def HasField(self, field_name: typing.Literal["bios_release_date", b"bios_release_date"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["bios_release_date", b"bios_release_date", "bios_vendor", b"bios_vendor", "bios_version", b"bios_version", "cpu_id", b"cpu_id", "disk_information", b"disk_information", "os_information", b"os_information", "power_capabilities", b"power_capabilities", "system_manufacturer", b"system_manufacturer", "system_product_name", b"system_product_name", "total_physical_memory_bytes", b"total_physical_memory_bytes"]) -> None: ...
+
+global___StaticTelemetry = StaticTelemetry
+
+@typing.final
 class Job(google.protobuf.message.Message):
     """this message represents a Job and can be used in multiple contexts; see RPC definitions
     for some definitions fields may be ignored; e.g., when reporting job status up from a node,
