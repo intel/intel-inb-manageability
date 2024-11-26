@@ -9,6 +9,9 @@ service INBSSBService {
 
   // Used to send any kind of node status update
   rpc SendNodeUpdate(SendNodeUpdateRequest) returns (SendNodeUpdateResponse);
+
+  // Used to send static telemetry data
+  rpc SendStaticTelemetry(SendStaticTelemetryRequest) returns (SendNodeUpdateResponse);
 }
 
 message HandleINBMCommandRequest {
