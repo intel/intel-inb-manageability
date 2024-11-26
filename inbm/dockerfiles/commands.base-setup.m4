@@ -13,8 +13,6 @@ RUN apt-get update && \
     ruby-dev \
     rubygems \
     pkg-config \
-    libdbus-1-dev \
-    libglib2.0-dev \
     rpm \
     wget \
     unzip \
