@@ -1,40 +1,44 @@
 name: DEVELOPER ASSISTANT
 on:
   pull_request:
-    types:
-      - opened
+    types: [opened, reopened]
   issue_comment:
-permissions: read-all
 jobs:
   pr_agent_job:
-    permissions:
-      contents: write
-      pull-requests: write
-    if: ((contains(github.event.comment.body, '/review') ||
-        contains(github.event.comment.body, '/describe' ) ||
-        contains(github.event.comment.body, '/add_docs') ||  
-        contains(github.event.comment.body, '/update_changelog')) && github.event.comment.user.login != 'nex-maximus') ||
-        github.event_name == 'pull_request' && github.event.pull_request.user.login != 'nex-maximus'
-    runs-on: [intel-ubuntu-latest, smart-devops-code-review]
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ai-review') && ((contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/describe') || contains(github.event.comment.body, '/add_docs') || contains(github.event.comment.body, '/update_changelog')) && github.event.comment.user.login != 'nex-maximus' || (github.event_name == 'pull_request' && github.event.pull_request.user.login != 'nex-maximus')) }}
+    runs-on: ["ubuntu-latest"]
+    container: 
+      image: 011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable
+      options: --pull always
+      credentials:
+      # Make sure to add the AWS access key and secret key to github secrets vault
+        username: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        password: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
     steps:
-      - name: PR Agent action step
+      - name: Smart Devops PR Agent Action 
         id: pragent
         run: |
-         cd  ../../../genai_pr_agent
-         chmod +x ./get_pr_agent_details.sh
-         echo runner | sudo -S chmod +777 /home/runner/scripts/.env
-         echo runner | sudo cp /home/runner/scripts/.env /home/runner/scripts/.env_copy
-         ./get_pr_agent_details.sh          
+          . /genai_agent/genai_env/bin/activate && /genai_agent/get_pr_agent_details.sh
+        shell: bash
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
-          GITHUB_ACTION.AUTO_REVIEW: false
-          GITHUB_ACTION.AUTO_DESCRIBE: false
+          GITHUB_ACTION.AUTO_REVIEW: true
+          GITHUB_ACTION.AUTO_DESCRIBE: true
           GITHUB_ACTION.UPDATE_TITLE: false
-          USE_CUSTOM_MODEL: false
-          CUSTOM_PROD_API_BASE: ${{ secrets.CUSTOM_PROD_API_BASE }}
-          CUSTOM_PROD_API_KEY: ${{ secrets.CUSTOM_PROD_API_KEY }}
-          GPT4128K_DEPLOY_NAME: ${{ secrets.GPT4128K_DEPLOY_NAME }}
-          CUSTOM_API_VERSION: ${{ secrets.CUSTOM_API_VERSION }}
+          PR_NUMBER: ${{ github.event.number }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_BASE: ${{ secrets.API_BASE }}
+          STABLE_API_VERSION: ${{ secrets.STABLE_API_VERSION }}
+          PREVIEW_API_VERSION: ${{ secrets.PREVIEW_API_VERSION }}
+          DEPLOY_NAME: ${{ secrets.DEPLOY_NAME }}
+          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+          # Below secrets to fetch the auth token for Intel's API gateway 
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          
+          # Uncomment the line below to enable the pre-merge checks (Ensure to provide the keywords to Code Review Dev Team to include in pre-merge checks)
+          # GITHUB_ACTION.ENABLE_PRE_MERGE_CHECKS: true
+          
           # Uncomment the line below to add any extra instructions you wish to give to the LLM
           # GITHUB_ACTION.EXTRA_INSTRUCTIONS: 'Please give clear review for the user'
 
@@ -44,3 +48,29 @@ jobs:
           # To enable dependent context from external repo/internal repo, uncomment the line below and add details in .github/dependent_files.json.
           # Please refer to the wiki for the sample json file.
           # GITHUB_ACTION.ENABLE_DEPENDENT_CONTEXT: true
+
+          # Uncomment the comma separated string below and modify it accordingly to skip specific aspects during review. Refer to the wiki for supported tags
+          # GITHUB_ACTION.IGNORE_ISSUE_TAGS: coding style
+
+          # Uncomment the line below to publish the review as a single comment instead of being published as separate comments for every suggestion
+          # GITHUB_ACTION.SINGLE_REVIEW_COMMENT: true
+
+          # Uncomment any of the required language macro from below and mention the version of the language being used in the project to get tailored suggestions as per mentioned version
+          # LANG_VERSION.PYTHON: "NA"
+          # LANG_VERSION.JAVASCRIPT: "NA"
+          # LANG_VERSION.TYPESCRIPT: "NA"
+          # LANG_VERSION.GO: "NA"
+          # LANG_VERSION.CPP: "NA"
+          # LANG_VERSION.C: "NA"
+          # LANG_VERSION.SWIFT: "NA"
+          # LANG_VERSION.PHP: "NA"
+          # LANG_VERSION.RUBY: "NA"
+          # LANG_VERSION.RUST: "NA"
+          # LANG_VERSION.SCALA: "NA"
+          # LANG_VERSION.KOTLIN: "NA"
+          # LANG_VERSION.PERL: "NA"
+          # LANG_VERSION.MARKDOWN: "NA"
+
+          # Uncomment the line below to consider the ICP and Kernel Coding Guidelines for C Language Code
+          # CODING_GUIDELINES.C_ICP_GUIDELINES: true
+          # CODING_GUIDELINES.C_KERNEL_GUIDELINES: true
