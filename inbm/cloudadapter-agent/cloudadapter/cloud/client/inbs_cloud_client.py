@@ -163,7 +163,7 @@ class InbsCloudClient(CloudClient):
             request_id=str(uuid.uuid4()),
             job_update=job,            
         )
-        logger.debug(f"Sending node update to INBS: request={request}")
+        logger.debug(f"Sending node update job status to INBS: request={request}")
             
         try:
             response = self._grpc_channel.SendNodeUpdate(request, metadata=self._metadata)
@@ -209,17 +209,17 @@ class InbsCloudClient(CloudClient):
             power_capabilities = ""
         ) 
          
-        request = inbs_sb_pb2.SendStaticTelemetryRequest(
+        request = inbs_sb_pb2.SendNodeUpdateRequest(
             request_id=str(uuid.uuid4()),
             static_telemetry=static_telemetry,            
         )
-        logger.debug(f"Sending static telemetry to INBS: request={request}")
-
+        logger.debug(f"Sending node update of static telemetry to INBS: request={request}")
+            
         try:
-            response = self._grpc_channel.SendStaticTelemetry(request, metadata=self._metadata)
+            response = self._grpc_channel.SendNodeUpdate(request, metadata=self._metadata)
             logger.info(f"Received response from gRPC server: {response}")
         except grpc.RpcError as e:
-            logger.error(f"Failed to send static telemetry via gRPC: {e}")
+            logger.error(f"Failed to send node update via gRPC: {e}")
 
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud

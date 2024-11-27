@@ -26,8 +26,6 @@ type INBSSBServiceClient interface {
 	HandleINBMCommand(ctx context.Context, opts ...grpc.CallOption) (INBSSBService_HandleINBMCommandClient, error)
 	// Used to send any kind of node status update
 	SendNodeUpdate(ctx context.Context, in *SendNodeUpdateRequest, opts ...grpc.CallOption) (*SendNodeUpdateResponse, error)
-	// Used to send static telemetry data
-	SendStaticTelemetry(ctx context.Context, in *SendStaticTelemetryRequest, opts ...grpc.CallOption) (*SendNodeUpdateResponse, error)
 }
 
 type iNBSSBServiceClient struct {
@@ -78,15 +76,6 @@ func (c *iNBSSBServiceClient) SendNodeUpdate(ctx context.Context, in *SendNodeUp
 	return out, nil
 }
 
-func (c *iNBSSBServiceClient) SendStaticTelemetry(ctx context.Context, in *SendStaticTelemetryRequest, opts ...grpc.CallOption) (*SendNodeUpdateResponse, error) {
-	out := new(SendNodeUpdateResponse)
-	err := c.cc.Invoke(ctx, "/inbs.v1.INBSSBService/SendStaticTelemetry", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // INBSSBServiceServer is the server API for INBSSBService service.
 // All implementations must embed UnimplementedINBSSBServiceServer
 // for forward compatibility
@@ -95,8 +84,6 @@ type INBSSBServiceServer interface {
 	HandleINBMCommand(INBSSBService_HandleINBMCommandServer) error
 	// Used to send any kind of node status update
 	SendNodeUpdate(context.Context, *SendNodeUpdateRequest) (*SendNodeUpdateResponse, error)
-	// Used to send static telemetry data
-	SendStaticTelemetry(context.Context, *SendStaticTelemetryRequest) (*SendNodeUpdateResponse, error)
 	mustEmbedUnimplementedINBSSBServiceServer()
 }
 
@@ -109,9 +96,6 @@ func (UnimplementedINBSSBServiceServer) HandleINBMCommand(INBSSBService_HandleIN
 }
 func (UnimplementedINBSSBServiceServer) SendNodeUpdate(context.Context, *SendNodeUpdateRequest) (*SendNodeUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SendNodeUpdate not implemented")
-}
-func (UnimplementedINBSSBServiceServer) SendStaticTelemetry(context.Context, *SendStaticTelemetryRequest) (*SendNodeUpdateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendStaticTelemetry not implemented")
 }
 func (UnimplementedINBSSBServiceServer) mustEmbedUnimplementedINBSSBServiceServer() {}
 
@@ -170,24 +154,6 @@ func _INBSSBService_SendNodeUpdate_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
-func _INBSSBService_SendStaticTelemetry_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SendStaticTelemetryRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(INBSSBServiceServer).SendStaticTelemetry(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/inbs.v1.INBSSBService/SendStaticTelemetry",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(INBSSBServiceServer).SendStaticTelemetry(ctx, req.(*SendStaticTelemetryRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // INBSSBService_ServiceDesc is the grpc.ServiceDesc for INBSSBService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -198,10 +164,6 @@ var INBSSBService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SendNodeUpdate",
 			Handler:    _INBSSBService_SendNodeUpdate_Handler,
-		},
-		{
-			MethodName: "SendStaticTelemetry",
-			Handler:    _INBSSBService_SendStaticTelemetry_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
