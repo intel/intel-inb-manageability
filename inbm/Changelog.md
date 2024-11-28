@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## NEXT - YYYY-MM-DD
+## Next Release
+### Changed
+ - (NEXMANAGE-513) Record the granular log in download-only mode
+   
+### Added
+- (NEXMANAGE-826) Update granular log to support architecture independent package
 
 ## 4.2.7 - 2024-11-8
 ### Changed
@@ -11,7 +17,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
  - (NEXMANAGE-950) Add Set Power State Capability to cloudadapter from UDM
- - (NEXMANAGE-826) Update granular log to support architecture independent package
 
 ### Fixed
  - (NEXMANAGE-733) Fixed typo in package_list during conversion from INBS to cloudadapter
