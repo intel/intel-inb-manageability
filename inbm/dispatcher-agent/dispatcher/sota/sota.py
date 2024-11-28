@@ -402,18 +402,7 @@ class SOTA:
                 if self._is_ota_no_update_available(cmd_list) and self._package_list == "":
                     # if no package upgrade/install, set the status to OTA_NO_UPDATE and skip saving the granular data.
                     self._update_logger.status = OTA_NO_UPDATE
-
-                # Always save the granular log in TiberOS. In TiberOS, the download-only mode is used to download
-                # the artifacts from the OCI registry. The granular log is enabled in TiberOS with the download-only
-                # mode here to record the successful SOTA with current os version.
-                # TODO: Remove Mariner when confirmed that TiberOS is in use
-                elif detect_os() == LinuxDistType.tiber.name or detect_os() == LinuxDistType.Mariner.name:
-                    self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
-
-                # The download-only mode only downloads the packages without installing them.
-                # Since there is no installation, there will be no changes in the package status or version.
-                # The apt history.log also doesn't record any changes. Therefore we can skip saving granular log.
-                elif self.sota_mode != 'download-only':
+                else:
                     self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
 
 
@@ -428,14 +417,7 @@ class SOTA:
                 # Save the log before reboot
                 self._update_logger.status = FAIL
                 self._update_logger.save_log()
-                # Always save the granular log in TiberOS. In TiberOS, the download-only mode is used to download
-                # the artifacts from the OCI registry. The granular log is enabled in TiberOS with the download-only
-                # mode because we want to record the artifact download failure.
-                # TODO: Remove Mariner when confirmed that TiberOS is in use
-                if detect_os() == LinuxDistType.tiber.name or detect_os() == LinuxDistType.Mariner.name:
-                    self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
-                elif self.sota_mode != 'download-only':
-                    self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
+                self._granular_log_handler.save_granular_log(update_logger=self._update_logger)
                 self._dispatcher_broker.telemetry(SOTA_FAILURE)
                 self._dispatcher_broker.send_result(SOTA_FAILURE)
                 raise SotaError(SOTA_FAILURE)
