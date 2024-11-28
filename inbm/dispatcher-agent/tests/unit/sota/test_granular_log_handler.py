@@ -77,7 +77,7 @@ class TestGranularLogHandler(testtools.TestCase):
             "UpdateLog": [
                 {
                     "StatusDetail.Status": FAIL,
-                    "FailureReason": 'Error getting artifact size from https://registry-rs.internal.ledgepark.intel.com/v2/one-intel-edge/tiberos/manifests/latest using token'
+                    "FailureReason": 'download'
                 }
             ]
         }
@@ -101,7 +101,7 @@ class TestGranularLogHandler(testtools.TestCase):
             "UpdateLog": [
                 {
                     "StatusDetail.Status": ROLLBACK,
-                    "FailureReason": 'FAILED INSTALL: System has not been properly updated; reverting..'
+                    "FailureReason": 'bootloader'
                 }
             ]
         }

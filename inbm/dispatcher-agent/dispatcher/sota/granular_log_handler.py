@@ -61,24 +61,24 @@ class GranularLogHandler:
         @param error_log: Error message to be checked
         @return: Corresponding mapping of the failure reason
         """
-
-        if self.search_keyword(error_log, [DOWNLOAD_ERROR]):
+        logger.debug("")
+        if self.search_keyword(error_log, DOWNLOAD_ERROR_LIST):
             return FAILURE_REASON_DOWNLOAD
 
-        if self.search_keyword(error_log, [INSUFFICIENT_STORAGE_ERROR]):
+        if self.search_keyword(error_log, INSUFFICIENT_STORAGE_ERROR_LIST):
             return FAILURE_REASON_INSUFFICIENT_STORAGE
 
-        if self.search_keyword(error_log, [RS_AUTHENTICATION_ERROR_LIST]):
+        if self.search_keyword(error_log, RS_AUTHENTICATION_ERROR_LIST):
             return FAILURE_REASON_RS_AUTHENTICATION
 
-        if self.search_keyword(error_log, [SIGNATURE_CHECK_ERROR_LIST]):
+        if self.search_keyword(error_log, SIGNATURE_CHECK_ERROR_LIST):
             return FAILURE_REASON_SIGNATURE_CHECK
 
         # Can source verification error considered as inbm failure?
-        if self.search_keyword(error_log, [INBM_ERROR_LIST]):
+        if self.search_keyword(error_log, INBM_ERROR_LIST):
             return FAILURE_REASON_INBM
 
-        if self.search_keyword(error_log, [BOOTLOADER_ERROR]):
+        if self.search_keyword(error_log, BOOTLOADER_ERROR_LIST):
             return FAILURE_REASON_BOOTLOADER
 
         if self.search_keyword(error_log, [CRITICAL_SERVICES_ERROR]):
