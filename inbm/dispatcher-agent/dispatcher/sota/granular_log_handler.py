@@ -83,15 +83,15 @@ class GranularLogHandler:
         if self.search_keyword(error_log, SIGNATURE_CHECK_ERROR_LIST):
             return FAILURE_REASON_SIGNATURE_CHECK
 
-        # Can source verification error considered as inbm failure?
-        if self.search_keyword(error_log, INBM_ERROR_LIST):
-            return FAILURE_REASON_INBM
-
         if self.search_keyword(error_log, BOOTLOADER_ERROR_LIST):
             return FAILURE_REASON_BOOTLOADER
 
         if self.search_keyword(error_log, [CRITICAL_SERVICES_ERROR]):
             return FAILURE_REASON_CRITICAL_SERVICES
+
+        # Can source verification error considered as inbm failure?
+        if self.search_keyword(error_log, INBM_ERROR_LIST):
+            return FAILURE_REASON_INBM
 
         # Other error returns as unspecified
         return FAILURE_REASON_UNSPECIFIED

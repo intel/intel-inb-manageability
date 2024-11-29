@@ -56,7 +56,7 @@ FAILURE_REASON_INBM = "inbm"
 FAILURE_REASON_OS_COMMIT = "oscommit"
 
 # Keywords used to map failure reason
-DOWNLOAD_ERROR_LIST = ["OTA Fetch Failed", "Error getting artifact size"]
+DOWNLOAD_ERROR_LIST = ["OTA Fetch Failed", "Error getting artifact size", "Download cancelled"]
 BOOTLOADER_ERROR_LIST = ["Requested update version is the same as previous version installed", "System has not been properly updated; reverting"]
 INSUFFICIENT_STORAGE_ERROR_LIST = ["Insufficient free space", "Pre OTA check failed"]
 RS_AUTHENTICATION_ERROR_LIST = ["No JWT token", "Invalid URI or Token"]
