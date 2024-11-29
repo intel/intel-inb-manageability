@@ -43,9 +43,8 @@ BTRFS = "btrfs"
 
 # Constants for mapping failure_reason in granular log
 FAILURE_REASON_UNSPECIFIED = "unspecified"
-FAILURE_REASON_NO_FAILURE = "nofailure"
+FAILURE_REASON_NO_FAILURE = "nofailure" # to be used for empty failure_reason in future if we plan to include the failure_reason field in the case of a successful update.
 FAILURE_REASON_DOWNLOAD = "download"
-FAILURE_REASON_INSTALLATION = "installation"
 FAILURE_REASON_BOOTLOADER = "bootloader"
 FAILURE_REASON_INSUFFICIENT_STORAGE = "insufficientstorage"
 FAILURE_REASON_RS_AUTHENTICATION = "rsauthentication"

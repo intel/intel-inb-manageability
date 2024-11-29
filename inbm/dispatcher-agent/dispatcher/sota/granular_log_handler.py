@@ -62,6 +62,15 @@ class GranularLogHandler:
         @return: Corresponding mapping of the failure reason
         """
         logger.debug("")
+        if self.search_keyword(error_log, [UT_WRITE_ERROR]):
+            return FAILURE_REASON_UT_WRITE
+
+        if self.search_keyword(error_log, [UT_BOOT_CONFIGURATION_ERROR]):
+            return FAILURE_REASON_UT_BOOT_CONFIGURATION
+
+        if self.search_keyword(error_log, [UT_OS_COMMIT_ERROR]):
+            return FAILURE_REASON_OS_COMMIT
+
         if self.search_keyword(error_log, DOWNLOAD_ERROR_LIST):
             return FAILURE_REASON_DOWNLOAD
 
