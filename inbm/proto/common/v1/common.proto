@@ -130,16 +130,17 @@ message PostOperation {
 }
 
 message StaticTelemetry {
-  int64 total_physical_memory_bytes = 1;
-  string cpu_id = 2;
-  string bios_vendor = 3;
-  string bios_version = 4;
-  google.protobuf.Timestamp bios_release_date = 5;
-  string system_manufacturer = 6;
-  string system_product_name = 7;
-  string os_information = 8;
-  string disk_information = 9;
-  string power_capabilities = 10;
+  string node_id = 1;
+  int64 total_physical_memory_bytes = 2;
+  string cpu_id = 3;
+  string bios_vendor = 4;
+  string bios_version = 5;
+  google.protobuf.Timestamp bios_release_date = 6;
+  string system_manufacturer = 7;
+  string system_product_name = 8;
+  string os_information = 9;
+  string disk_information = 10;
+  string power_capabilities = 11;
 }
 
 // this message represents a Job and can be used in multiple contexts; see RPC definitions
