@@ -161,7 +161,8 @@ class InbsCloudClient(CloudClient):
         
         request = inbs_sb_pb2.SendNodeUpdateRequest(
             request_id=str(uuid.uuid4()),
-            job_update=job,            
+            job_update=job,
+            static_telemetry=None,         
         )
         logger.debug(f"Sending node update job status to INBS: request={request}")
             
@@ -190,27 +191,37 @@ class InbsCloudClient(CloudClient):
         """
 
         logger.debug(f"Received telemetry: key={key}, value={value}")
-        # TODO: Check if static or dynamic telemetry
-        # Only send static telemetry to INBS
         
         bios_release_date = Timestamp()
         bios_release_date.FromDatetime(datetime.utcnow() - timedelta(days=30))
 
         static_telemetry=common_pb2.StaticTelemetry(
-            total_physical_memory_bytes = 1,
-            cpu_id = "",
-            bios_vendor = "",
-            bios_version = "",
-            bios_release_date = bios_release_date,
-            system_manufacturer = "",
-            system_product_name = "",
-            os_information = "",
-            disk_information = "",
-            power_capabilities = ""
         ) 
+        
+        if key == "biosReleaseDate":
+            static_telemetry.bios_release_date = value
+        elif key == "biosVersion":
+            static_telemetry.bios_version = value
+        elif key == "biosVendor":
+            static_telemetry.bios_vendor = value
+        elif key == "cpuId":
+            static_telemetry.cpu_id = value
+        elif key == "systemManufacturer":
+            static_telemetry.system_manufacturer = value
+        elif key == "systemProductName":
+            static_telemetry.system_product_name = value
+        elif key == "totalPhysicalMemory":
+            static_telemetry.total_physical_memory_bytes = int(value)
+        elif key == "powerCapabilities":
+            static_telemetry.power_capabilities = value
+        elif key == "osInformation":
+            static_telemetry.os_information = value
+        elif key == "diskInformation":
+            static_telemetry.disk_information = value            
          
         request = inbs_sb_pb2.SendNodeUpdateRequest(
             request_id=str(uuid.uuid4()),
+            job_update=None,
             static_telemetry=static_telemetry,            
         )
         logger.debug(f"Sending node update of static telemetry to INBS: request={request}")
