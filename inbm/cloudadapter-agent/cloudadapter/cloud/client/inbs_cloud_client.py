@@ -221,6 +221,7 @@ class InbsCloudClient(CloudClient):
          
         request = inbs_sb_pb2.SendNodeUpdateRequest(
             request_id=str(uuid.uuid4()),
+            node_id=self._client_id,
             job_update=None,
             static_telemetry=static_telemetry,            
         )
