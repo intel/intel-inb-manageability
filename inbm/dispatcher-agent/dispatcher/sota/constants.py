@@ -64,8 +64,8 @@ SIGNATURE_CHECK_ERROR_LIST = ["Signature is None", "Signature checks failed"]
 CRITICAL_SERVICES_ERROR = "Critical service failure"
 INBM_ERROR_LIST = ["Source verification failed", "Repository does not exist"]
 # UT related failure
-UT_WRITE_ERROR = "/usr/bin/os-update-tool.sh -w -u"   # ut write error. TODO: low confident. Need to test it.
-UT_BOOT_CONFIGURATION_ERROR = "/usr/bin/os-update-tool.sh -a"  # ut apply error TODO: low confident. Need to test it.
-UT_OS_COMMIT_ERROR = "Failed to run UT commit command"  # ut commit error
+UT_WRITE_ERROR = "/usr/bin/os-update-tool.sh -w -u"
+UT_BOOT_CONFIGURATION_ERROR = "/usr/bin/os-update-tool.sh -a"
+UT_OS_COMMIT_ERROR = "Failed to run UT commit command"
 
 
