@@ -11,8 +11,8 @@ import logging
 import threading
 import uuid
 from google.protobuf.timestamp_pb2 import Timestamp
-from typing import Callable, Optional
-from datetime import datetime, timedelta
+from typing import Callable, Optional, Any
+from datetime import datetime, timezone
 
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
@@ -186,16 +186,14 @@ class InbsCloudClient(CloudClient):
         """Publishes a device attribute to the cloud
 
         @param key: attribute's key
-        @param value: value to set for the attribute
+        @param value: attribute's value
         @exception PublishError: If publish fails
         """
 
         logger.debug(f"Received telemetry: key={key}, value={value}")
         
-        bios_release_date = Timestamp()
-        bios_release_date.FromDatetime(datetime.utcnow() - timedelta(days=30))
-
         static_telemetry=common_pb2.StaticTelemetry(
+            node_id=self._client_id,
         ) 
         
         if key == "biosReleaseDate":
@@ -217,11 +215,13 @@ class InbsCloudClient(CloudClient):
         elif key == "osInformation":
             static_telemetry.os_information = value
         elif key == "diskInformation":
-            static_telemetry.disk_information = value            
+            static_telemetry.disk_information = value   
+        else:
+            logger.error(f"Unknown telemetry key: {key}")
+            return         
          
         request = inbs_sb_pb2.SendNodeUpdateRequest(
             request_id=str(uuid.uuid4()),
-            node_id=self._client_id,
             job_update=None,
             static_telemetry=static_telemetry,            
         )

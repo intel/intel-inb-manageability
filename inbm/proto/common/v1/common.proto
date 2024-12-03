@@ -131,11 +131,11 @@ message PostOperation {
 
 message StaticTelemetry {
   string node_id = 1;
-  int64 total_physical_memory_bytes = 2;
+  string total_physical_memory_bytes = 2;
   string cpu_id = 3;
   string bios_vendor = 4;
   string bios_version = 5;
-  google.protobuf.Timestamp bios_release_date = 6;
+  string bios_release_date = 6;
   string system_manufacturer = 7;
   string system_product_name = 8;
   string os_information = 9;

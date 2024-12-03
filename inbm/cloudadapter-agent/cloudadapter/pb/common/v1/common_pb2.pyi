@@ -456,33 +456,31 @@ class StaticTelemetry(google.protobuf.message.Message):
     DISK_INFORMATION_FIELD_NUMBER: builtins.int
     POWER_CAPABILITIES_FIELD_NUMBER: builtins.int
     node_id: builtins.str
-    total_physical_memory_bytes: builtins.int
+    total_physical_memory_bytes: builtins.str
     cpu_id: builtins.str
     bios_vendor: builtins.str
     bios_version: builtins.str
+    bios_release_date: builtins.str
     system_manufacturer: builtins.str
     system_product_name: builtins.str
     os_information: builtins.str
     disk_information: builtins.str
     power_capabilities: builtins.str
-    @property
-    def bios_release_date(self) -> google.protobuf.timestamp_pb2.Timestamp: ...
     def __init__(
         self,
         *,
         node_id: builtins.str = ...,
-        total_physical_memory_bytes: builtins.int = ...,
+        total_physical_memory_bytes: builtins.str = ...,
         cpu_id: builtins.str = ...,
         bios_vendor: builtins.str = ...,
         bios_version: builtins.str = ...,
-        bios_release_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
+        bios_release_date: builtins.str = ...,
         system_manufacturer: builtins.str = ...,
         system_product_name: builtins.str = ...,
         os_information: builtins.str = ...,
         disk_information: builtins.str = ...,
         power_capabilities: builtins.str = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["bios_release_date", b"bios_release_date"]) -> builtins.bool: ...
     def ClearField(self, field_name: typing.Literal["bios_release_date", b"bios_release_date", "bios_vendor", b"bios_vendor", "bios_version", b"bios_version", "cpu_id", b"cpu_id", "disk_information", b"disk_information", "node_id", b"node_id", "os_information", b"os_information", "power_capabilities", b"power_capabilities", "system_manufacturer", b"system_manufacturer", "system_product_name", b"system_product_name", "total_physical_memory_bytes", b"total_physical_memory_bytes"]) -> None: ...
 
 global___StaticTelemetry = StaticTelemetry
