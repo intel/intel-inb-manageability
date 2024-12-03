@@ -209,7 +209,7 @@ class InbsCloudClient(CloudClient):
         elif key == "systemProductName":
             static_telemetry.system_product_name = value
         elif key == "totalPhysicalMemory":
-            static_telemetry.total_physical_memory_bytes = int(value)
+            static_telemetry.total_physical_memory_bytes = value
         elif key == "powerCapabilities":
             static_telemetry.power_capabilities = value
         elif key == "osInformation":

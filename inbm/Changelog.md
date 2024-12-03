@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## Next Release
 ### Changed
  - (NEXMANAGE-513) Record the granular log in download-only mode
+ - (NEXMANAGE-1022) Adds Power Capabilities to Static Telemetry data and sends it to INBS
    
 ### Added
 - (NEXMANAGE-826) Update granular log to support architecture independent package
