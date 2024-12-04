@@ -12,16 +12,6 @@ from cloudadapter.pb.inbs.v1 import inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
 
-# @pytest.fixture
-# def client():
-#     client = InbsCloudClient()
-#     client._client_id = "test_client_id"
-#     client._grpc_channel = MagicMock()
-#     client._metadata = [("key", "value")]
-#     return client
-
-
-
 @pytest.fixture
 def inbs_client() -> Generator[InbsCloudClient, None, None]:
     hostname = "localhost"
