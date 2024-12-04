@@ -11,8 +11,8 @@ import logging
 import threading
 import uuid
 from google.protobuf.timestamp_pb2 import Timestamp
-from typing import Callable, Optional, Any
-from datetime import datetime, timezone
+from typing import Callable, Optional
+from datetime import datetime
 
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
