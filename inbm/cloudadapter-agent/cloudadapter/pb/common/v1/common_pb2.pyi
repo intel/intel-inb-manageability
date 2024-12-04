@@ -445,43 +445,19 @@ class StaticTelemetry(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
     NODE_ID_FIELD_NUMBER: builtins.int
-    TOTAL_PHYSICAL_MEMORY_BYTES_FIELD_NUMBER: builtins.int
-    CPU_ID_FIELD_NUMBER: builtins.int
-    BIOS_VENDOR_FIELD_NUMBER: builtins.int
-    BIOS_VERSION_FIELD_NUMBER: builtins.int
-    BIOS_RELEASE_DATE_FIELD_NUMBER: builtins.int
-    SYSTEM_MANUFACTURER_FIELD_NUMBER: builtins.int
-    SYSTEM_PRODUCT_NAME_FIELD_NUMBER: builtins.int
-    OS_INFORMATION_FIELD_NUMBER: builtins.int
-    DISK_INFORMATION_FIELD_NUMBER: builtins.int
-    POWER_CAPABILITIES_FIELD_NUMBER: builtins.int
+    KEY_FIELD_NUMBER: builtins.int
+    VALUE_FIELD_NUMBER: builtins.int
     node_id: builtins.str
-    total_physical_memory_bytes: builtins.str
-    cpu_id: builtins.str
-    bios_vendor: builtins.str
-    bios_version: builtins.str
-    bios_release_date: builtins.str
-    system_manufacturer: builtins.str
-    system_product_name: builtins.str
-    os_information: builtins.str
-    disk_information: builtins.str
-    power_capabilities: builtins.str
+    key: builtins.str
+    value: builtins.str
     def __init__(
         self,
         *,
         node_id: builtins.str = ...,
-        total_physical_memory_bytes: builtins.str = ...,
-        cpu_id: builtins.str = ...,
-        bios_vendor: builtins.str = ...,
-        bios_version: builtins.str = ...,
-        bios_release_date: builtins.str = ...,
-        system_manufacturer: builtins.str = ...,
-        system_product_name: builtins.str = ...,
-        os_information: builtins.str = ...,
-        disk_information: builtins.str = ...,
-        power_capabilities: builtins.str = ...,
+        key: builtins.str = ...,
+        value: builtins.str = ...,
     ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["bios_release_date", b"bios_release_date", "bios_vendor", b"bios_vendor", "bios_version", b"bios_version", "cpu_id", b"cpu_id", "disk_information", b"disk_information", "node_id", b"node_id", "os_information", b"os_information", "power_capabilities", b"power_capabilities", "system_manufacturer", b"system_manufacturer", "system_product_name", b"system_product_name", "total_physical_memory_bytes", b"total_physical_memory_bytes"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["key", b"key", "node_id", b"node_id", "value", b"value"]) -> None: ...
 
 global___StaticTelemetry = StaticTelemetry
 

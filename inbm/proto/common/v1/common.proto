@@ -131,16 +131,8 @@ message PostOperation {
 
 message StaticTelemetry {
   string node_id = 1;
-  string total_physical_memory_bytes = 2;
-  string cpu_id = 3;
-  string bios_vendor = 4;
-  string bios_version = 5;
-  string bios_release_date = 6;
-  string system_manufacturer = 7;
-  string system_product_name = 8;
-  string os_information = 9;
-  string disk_information = 10;
-  string power_capabilities = 11;
+  string key = 2;
+  string value = 3;
 }
 
 // this message represents a Job and can be used in multiple contexts; see RPC definitions

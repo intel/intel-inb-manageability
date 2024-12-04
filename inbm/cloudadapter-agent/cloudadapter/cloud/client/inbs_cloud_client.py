@@ -200,29 +200,8 @@ class InbsCloudClient(CloudClient):
             node_id=self._client_id,
         ) 
         
-        if key == "biosReleaseDate":
-            static_telemetry.bios_release_date = value
-        elif key == "biosVersion":
-            static_telemetry.bios_version = value
-        elif key == "biosVendor":
-            static_telemetry.bios_vendor = value
-        elif key == "cpuId":
-            static_telemetry.cpu_id = value
-        elif key == "systemManufacturer":
-            static_telemetry.system_manufacturer = value
-        elif key == "systemProductName":
-            static_telemetry.system_product_name = value
-        elif key == "totalPhysicalMemory":
-            static_telemetry.total_physical_memory_bytes = value
-        elif key == "powerCapabilities":
-            static_telemetry.power_capabilities = value
-        elif key == "osInformation":
-            static_telemetry.os_information = value
-        elif key == "diskInformation":
-            static_telemetry.disk_information = value   
-        else:
-            logger.error(f"Unknown telemetry key: {key}")
-            return         
+        static_telemetry.key = key
+        static_telemetry.value = value       
          
         request = inbs_sb_pb2.SendNodeUpdateRequest(
             request_id=str(uuid.uuid4()),
