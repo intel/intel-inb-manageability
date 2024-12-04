@@ -192,6 +192,10 @@ class InbsCloudClient(CloudClient):
 
         logger.debug(f"Received telemetry: key={key}, value={value}")
         
+        if self._grpc_channel is None:
+            raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_node_update")            
+
+        
         static_telemetry=common_pb2.StaticTelemetry(
             node_id=self._client_id,
         ) 
