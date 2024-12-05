@@ -441,6 +441,27 @@ class PostOperation(google.protobuf.message.Message):
 global___PostOperation = PostOperation
 
 @typing.final
+class StaticTelemetry(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    NODE_ID_FIELD_NUMBER: builtins.int
+    KEY_FIELD_NUMBER: builtins.int
+    VALUE_FIELD_NUMBER: builtins.int
+    node_id: builtins.str
+    key: builtins.str
+    value: builtins.str
+    def __init__(
+        self,
+        *,
+        node_id: builtins.str = ...,
+        key: builtins.str = ...,
+        value: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["key", b"key", "node_id", b"node_id", "value", b"value"]) -> None: ...
+
+global___StaticTelemetry = StaticTelemetry
+
+@typing.final
 class Job(google.protobuf.message.Message):
     """this message represents a Job and can be used in multiple contexts; see RPC definitions
     for some definitions fields may be ignored; e.g., when reporting job status up from a node,

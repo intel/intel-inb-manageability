@@ -19,26 +19,31 @@
 
 The Intel Manageability agent which is the central telemetry and logging service.
 
-## Agent Communication 
+## Agent Communication
 
 Uses MQTT for communication with other tools/agents
 
 ### Publish Channels
+
 The agent publishes to the following topics:
-  - Telemetry events to the cloud or INBC: `manageability/telemetry`
-  - Sends a command request to the diagnostic-agent: `diagnostic/command/{command}`
-  - Telemetry-agent state: `telemetry/state` when dead/running
+
+- Telemetry events to the cloud or INBC: `manageability/telemetry`
+- Sends a command request to the diagnostic-agent: `diagnostic/command/{command}`
+- Telemetry-agent state: `telemetry/state` when dead/running
 
 ### Subscribe Channels
+
 The agent subscribes to the following topics:
-  - Dynamic telemetry updates: `telemetry/update`
-  - [Telemetry Configuration Settings](#../../docs/Configuration%20Parameters.md#telemetry): `configuration/update/telemetry/+`
-  - Response from diagnostic command request: `diagnostic/response/{id}`
-  - Agent states: `+/state`
+
+- Dynamic telemetry updates: `telemetry/update`
+- [Telemetry Configuration Settings](#../../docs/Configuration%20Parameters.md#telemetry): `configuration/update/telemetry/+`
+- Response from diagnostic command request: `diagnostic/response/{id}`
+- Agent states: `+/state`
  
 ❗`+` is a wild-card indicating single level thus matching `telemetry/state` or `<another-agent>/state`
 
 ## Install from Source
+
 ❗ Use a Python version greater than 3.12 is installed
 
 1. [Build INBM](#../../README.md#build-instructions)
@@ -50,7 +55,7 @@ The agent subscribes to the following topics:
 ❗Some commands will require root privileges (sudo)  
 ❗Run commands in the `inbm/telemetry-agent` directory
 
-### Changing the logging level:
+### Changing the logging level
 
 - Run: `make logging LEVEL=DEBUG`
 - Valid values for `LEVEL`:
@@ -58,21 +63,24 @@ The agent subscribes to the following topics:
   - `ERROR`
   - `INFO`
 
-### Running the agent:
+### Running the agent
 
 - Run: `make run`
 
-### Testing the agent:
+### Testing the agent
 
 - Run: `make tests`
 
 ## Debian package (DEB)
 
 ### Install (For Ubuntu)
+
 After building the above package, if you only want to install the telemetry-agent, you can do so by following these steps:
+
 - `cd dist/inbm`
 - Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
 - Install package: `dpkg -i telemetry-agent<latest>.deb`
 
 ### Uninstall (For Ubuntu)
+
 - `dpkg --purge telemetry-agent`
