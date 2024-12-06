@@ -79,23 +79,19 @@ def consume_dispatcher_state_file(readonly: bool = False) -> DispatcherState | N
     state_files = [OLD_DISPATCHER_STATE_FILE, NEW_DISPATCHER_STATE_FILE]
 
     for state_file in state_files:
-        try:
-            logger.debug(f"Attempting to open file {state_file}")
-            with builtins.open(state_file, 'rb') as fd:
-                logger.debug("Attempting to unpickle from state file")
-                state = pickle.load(fd)  # nosec
-                logger.debug("Unpickling succeeded")
-                logger.debug(f"Dispatcher State file info: {state}")
-            # Successfully read the state file, no need to try others
-            break
-        except (OSError, pickle.UnpicklingError, AttributeError, FileNotFoundError) as e:
-            logger.exception(f"Exception while extracting dispatcher state from {state_file}: {e}")
-            state = None  # Ensure state is None if this attempt fails
-
-    # If there is no state, the dispatcher will record the restart_reason and snapshot_num.
-    if state is None:
-        logger.error("Failed to extract dispatcher state from all state files.")        
-
+        if os.path.exists(state_file):
+            try:
+                logger.debug(f"Attempting to open file {state_file}")
+                with builtins.open(state_file, 'rb') as fd:
+                    logger.debug("Attempting to unpickle from state file")
+                    state = pickle.load(fd)  # nosec
+                    logger.debug("Unpickling succeeded")
+                    logger.debug(f"Dispatcher State file info: {state}")
+                # Successfully read the state file, no need to try others
+                break
+            except (OSError, pickle.UnpicklingError, AttributeError, FileNotFoundError) as e:
+                logger.exception(f"Exception while extracting dispatcher state from {state_file}: {e}")
+                state = None  # Ensure state is None if this attempt fails
 
     if not readonly:
         try:

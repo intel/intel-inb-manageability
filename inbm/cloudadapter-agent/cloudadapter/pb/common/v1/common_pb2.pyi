@@ -180,33 +180,12 @@ global___RepeatedSchedule = RepeatedSchedule
 class Operation(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
-    class _ServiceType:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
-
-    class _ServiceTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Operation._ServiceType.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-        SERVICE_TYPE_UNSPECIFIED: Operation._ServiceType.ValueType  # 0
-        SERVICE_TYPE_INBS: Operation._ServiceType.ValueType  # 1
-        SERVICE_TYPE_OOB_AMT: Operation._ServiceType.ValueType  # 2
-        SERVICE_TYPE_OOB_BMC: Operation._ServiceType.ValueType  # 3
-        SERVICE_TYPE_AUTO: Operation._ServiceType.ValueType  # 4
-
-    class ServiceType(_ServiceType, metaclass=_ServiceTypeEnumTypeWrapper): ...
-    SERVICE_TYPE_UNSPECIFIED: Operation.ServiceType.ValueType  # 0
-    SERVICE_TYPE_INBS: Operation.ServiceType.ValueType  # 1
-    SERVICE_TYPE_OOB_AMT: Operation.ServiceType.ValueType  # 2
-    SERVICE_TYPE_OOB_BMC: Operation.ServiceType.ValueType  # 3
-    SERVICE_TYPE_AUTO: Operation.ServiceType.ValueType  # 4
-
     PRE_OPERATIONS_FIELD_NUMBER: builtins.int
     POST_OPERATIONS_FIELD_NUMBER: builtins.int
-    SERVICE_TYPE_FIELD_NUMBER: builtins.int
     UPDATE_SYSTEM_SOFTWARE_OPERATION_FIELD_NUMBER: builtins.int
     SET_POWER_STATE_OPERATION_FIELD_NUMBER: builtins.int
     RPC_ACTIVATE_OPERATION_FIELD_NUMBER: builtins.int
     UPDATE_FIRMWARE_OPERATION_FIELD_NUMBER: builtins.int
-    service_type: global___Operation.ServiceType.ValueType
     @property
     def pre_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PreOperation]: ...
     @property
@@ -226,14 +205,13 @@ class Operation(google.protobuf.message.Message):
         *,
         pre_operations: collections.abc.Iterable[global___PreOperation] | None = ...,
         post_operations: collections.abc.Iterable[global___PostOperation] | None = ...,
-        service_type: global___Operation.ServiceType.ValueType = ...,
         update_system_software_operation: global___UpdateSystemSoftwareOperation | None = ...,
         set_power_state_operation: global___SetPowerStateOperation | None = ...,
         rpc_activate_operation: global___RpcActivateOperation | None = ...,
         update_firmware_operation: global___UpdateFirmwareOperation | None = ...,
     ) -> None: ...
     def HasField(self, field_name: typing.Literal["operation", b"operation", "rpc_activate_operation", b"rpc_activate_operation", "set_power_state_operation", b"set_power_state_operation", "update_firmware_operation", b"update_firmware_operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "rpc_activate_operation", b"rpc_activate_operation", "service_type", b"service_type", "set_power_state_operation", b"set_power_state_operation", "update_firmware_operation", b"update_firmware_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
+    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "rpc_activate_operation", b"rpc_activate_operation", "set_power_state_operation", b"set_power_state_operation", "update_firmware_operation", b"update_firmware_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
     def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation", "set_power_state_operation", "rpc_activate_operation", "update_firmware_operation"] | None: ...
 
 global___Operation = Operation
@@ -461,6 +439,27 @@ class PostOperation(google.protobuf.message.Message):
     ) -> None: ...
 
 global___PostOperation = PostOperation
+
+@typing.final
+class StaticTelemetry(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    NODE_ID_FIELD_NUMBER: builtins.int
+    KEY_FIELD_NUMBER: builtins.int
+    VALUE_FIELD_NUMBER: builtins.int
+    node_id: builtins.str
+    key: builtins.str
+    value: builtins.str
+    def __init__(
+        self,
+        *,
+        node_id: builtins.str = ...,
+        key: builtins.str = ...,
+        value: builtins.str = ...,
+    ) -> None: ...
+    def ClearField(self, field_name: typing.Literal["key", b"key", "node_id", b"node_id", "value", b"value"]) -> None: ...
+
+global___StaticTelemetry = StaticTelemetry
 
 @typing.final
 class Job(google.protobuf.message.Message):
