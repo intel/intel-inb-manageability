@@ -129,11 +129,6 @@ message PostOperation {
 //  }
 }
 
-message StaticTelemetry {
-  string node_id = 1;
-  string key = 2;
-  string value = 3;
-}
 
 // this message represents a Job and can be used in multiple contexts; see RPC definitions
 // for some definitions fields may be ignored; e.g., when reporting job status up from a node,

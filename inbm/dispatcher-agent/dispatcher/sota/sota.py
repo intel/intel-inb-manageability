@@ -358,9 +358,6 @@ class SOTA:
                 else:
                     self._dispatcher_broker.telemetry(
                         '{"status": 400, "message": "SOTA command status: FAILURE"}')
-                    self._update_logger.status = FAIL
-                    self._update_logger.detail_status = FAIL
-                    self._update_logger.error = str(["Command: {}  status: {}  errors: {}".format(str(cmd), cmd.get_status(), ','.join(cmd.get_errors())) for cmd in cmd_list])
                     if self.sota_mode != 'download-only':
                         snapshotter.recover(rebooter, time_to_wait_before_reboot)
         except (DispatcherException, SotaError, UrlSecurityException, PermissionError) as e:

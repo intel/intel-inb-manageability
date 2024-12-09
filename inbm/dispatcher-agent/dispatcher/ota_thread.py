@@ -13,7 +13,7 @@ from typing import Optional, Any, Mapping
 
 from .install_check_service import InstallCheckService
 
-from inbm_lib.constants import TRTL_PATH, FAIL
+from inbm_lib.constants import TRTL_PATH
 from inbm_common_lib.exceptions import UrlSecurityException
 
 from .aota import aota
@@ -29,7 +29,6 @@ from .fota.fota import FOTA
 from .fota.fota_error import FotaError
 from .sota.sota import SOTA
 from .sota.sota_error import SotaError
-from .sota.granular_log_handler import GranularLogHandler
 from .update_logger import UpdateLogger
 from .dispatcher_broker import DispatcherBroker
 
@@ -172,14 +171,7 @@ class SotaThread(OtaThread):
         @return (dict): result of the OTA
         """
         logger.debug(" ")
-        # We want to capture the pre-install check failure and save to granular log.
-        try:
-            super().pre_install_check()
-        except DispatcherException as err:
-            self._update_logger.detail_status = FAIL
-            self._update_logger.error = str(err)
-            GranularLogHandler().save_granular_log(update_logger=self._update_logger, check_package=False)
-            raise DispatcherException(err)
+        super().pre_install_check()
 
         global ota_lock
         if ota_lock.acquire(False):
