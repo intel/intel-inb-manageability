@@ -6,6 +6,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## X.X.X - YYYY-MM-DD
  - (NEX-15262) Returns failure reason that matches the format required by MM
 
+### Fixed
+ - (NEXMANAGE-1101) Fix History Log Issue
+
 ## 4.2.8 - 2024-11-29
 ### Changed
  - (NEXMANAGE-513) Record the granular log in download-only mode
