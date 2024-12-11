@@ -52,16 +52,18 @@ message RepeatedSchedule {
 message Operation {
   repeated PreOperation pre_operations = 1;
   repeated PostOperation post_operations = 2;
-
-  // removed service_type field
-  reserved 3;
-  reserved "service_type"; 
-  
+  enum ServiceType {
+    SERVICE_TYPE_UNSPECIFIED = 0;
+    SERVICE_TYPE_INBS = 1;
+    SERVICE_TYPE_OOB_AMT = 2;
+    SERVICE_TYPE_OOB_BMC = 3;
+    SERVICE_TYPE_AUTO = 4;
+  }
+  ServiceType service_type = 3;  
   oneof operation {
     UpdateSystemSoftwareOperation update_system_software_operation = 4;
     SetPowerStateOperation set_power_state_operation = 5;
     RpcActivateOperation rpc_activate_operation = 6;
-    UpdateFirmwareOperation update_firmware_operation = 7;
     // and others
   }
 }
@@ -96,27 +98,6 @@ message SetPowerStateOperation {
     PowerState opcode = 1;
 }
 
-message UpdateFirmwareOperation {
-  string url = 1; // URL from which to remotely retrieve the firmware update package
-  string bios_version = 2; // BIOS version of the new firmware update.
-  enum SignatureVersion {
-    SIGNATURE_VERSION_UNSPECIFIED = 0;
-    SIGNATURE_VERSION_256 = 1;
-    SIGNATURE_VERSION_384 = 2;    
-  }
-  SignatureVersion signature_version = 3; // Signature version of the new firmware package.
-  string signature = 4; // Digital signature of *.tar file
-  string vendor = 5; // Vendor of the new firmware update.
-  string manufacturer = 6; // Manufacturer of the board.
-  string product_name = 7; // Product name of the board.
-  google.protobuf.Timestamp release_date = 8; // Release date of the new firmware update.
-  string guid = 9; // GUID to match on the platform.  Check for 'System Firmware type' when running the command: 'fwupdate -i'
-  string tooloptions = 10; // Optional switches to be used with vendor software tool during the update.
-  string username = 11; // Username to be used during fetch from remote repository.
-  string password = 12; // Password to be used during fetch from remote repository.
-  bool do_not_reboot = 13;  // Whether to reboot the node after the firmware update attempt
-}
-
 message PreOperation {
 //  oneof pre_operation {
 //    // ...
@@ -129,11 +110,6 @@ message PostOperation {
 //  }
 }
 
-message StaticTelemetry {
-  string node_id = 1;
-  string key = 2;
-  string value = 3;
-}
 
 // this message represents a Job and can be used in multiple contexts; see RPC definitions
 // for some definitions fields may be ignored; e.g., when reporting job status up from a node,

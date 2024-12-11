@@ -9,7 +9,7 @@ import datetime
 import logging
 from typing import Dict
 from inbm_common_lib.shell_runner import PseudoShellRunner
-from inbm_lib.constants import PACKAGE_SUCCESS, PACKAGE_PENDING, PACKAGE_UNKNOWN
+from inbm_lib.constants import PACKAGE_SUCCESS, PACKAGE_PENDING, PACKAGE_FAIL, PACKAGE_UNKNOWN
 
 logger = logging.getLogger(__name__)
 
@@ -68,19 +68,7 @@ def check_package_status(package_name: str) -> str:
         "dpkg-query -W -f='${Status}\n' " + package_name)
     if err:
         logger.error(f"Error in getting the package's status: {package_name} Error: {err}")
-        # Some packages are architecture independent.
-        # For example, using dpkg, the package is showing <pacakge>:all instead of <package>:amd64
-        # We will check the status again with independent architecture - "all"
-        try:
-            split_pkg_and_arch = package_name.split(':')
-            arch_independent_pkg = split_pkg_and_arch[0] + ':all'
-            out, err, code = shell.run(
-                "dpkg-query -W -f='${Status}\n' " + arch_independent_pkg)
-            if err:
-                return PACKAGE_UNKNOWN
-        except IndexError:
-            logger.error(f"Failed to split package and architecture for package {package_name}")
-            return PACKAGE_UNKNOWN
+        return PACKAGE_FAIL
 
     if "unknown ok not-installed" in out or "deinstall ok config-files" in out:
         return PACKAGE_PENDING

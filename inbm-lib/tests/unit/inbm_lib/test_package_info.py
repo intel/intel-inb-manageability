@@ -1,7 +1,7 @@
 from unittest import TestCase
 from inbm_lib.package_info import get_package_start_date, extract_package_names_and_versions, check_package_status, \
     check_package_version
-from inbm_lib.constants import PACKAGE_SUCCESS, PACKAGE_PENDING, PACKAGE_UNKNOWN
+from inbm_lib.constants import PACKAGE_SUCCESS, PACKAGE_PENDING, PACKAGE_FAIL, PACKAGE_UNKNOWN
 
 from unittest.mock import patch, Mock
 
@@ -56,12 +56,8 @@ class TestPackageInfo(TestCase):
         self.assertEqual(check_package_status("mock_package"), PACKAGE_PENDING)
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("", "error", 0))
-    def test_check_package_status_error_return_unknown(self, mock_run: Mock) -> None:
-        self.assertEqual(check_package_status("mock_package"), PACKAGE_UNKNOWN)
-
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', side_effect = [("", "error", 0), ("install ok installed", "", 0)])
-    def test_check_package_status_return_success_with_arch_independent_package(self, mock_run: Mock) -> None:
-        self.assertEqual(check_package_status("mock_package"), PACKAGE_SUCCESS)
+    def test_check_package_status_error_return_fail(self, mock_run: Mock) -> None:
+        self.assertEqual(check_package_status("mock_package"), PACKAGE_FAIL)
 
     @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("2.4.12-0ubuntu0.20.04.2", "", 0))
     def test_check_package_version_pass(self, mock_run: Mock) -> None:

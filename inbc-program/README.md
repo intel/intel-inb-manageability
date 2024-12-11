@@ -1,4 +1,4 @@
-# Intel® In-band Manageability Command-line Utility (INBC)
+# Intel® In-band Manageability Command-line Utility (INBC) 
 
 <details>
 <summary>Table of Contents</summary>
@@ -26,7 +26,7 @@
    14. [Source OS Add](#source-os-add)
    15. [Source OS Remove](#source-os-remove)
    16. [Source OS Update](#source-os-update)
-   17. [Source OS List](#source-os-list)
+   15. [Source OS List](#source-os-list)
 6. [Status Codes](#status-codes)
 7. [Return and Exit Codes](#return-and-exit-codes)
    

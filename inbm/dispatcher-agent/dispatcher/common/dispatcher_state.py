@@ -65,12 +65,12 @@ DispatcherState = TypedDict('DispatcherState', {
 }, total=False)
 
 
-def consume_dispatcher_state_file(readonly: bool = False) -> DispatcherState | None:
+def consume_dispatcher_state_file(read: bool = False) -> DispatcherState | None:
     """Read dispatcher state file and return state object, clearing state file on success
 
     Try old location first, then new location.
 
-    @param readonly: Set to True to read file info without removing the file
+    @param read: Set to True to read file info without removing the file
     @return: State object from state file; None on error
     """
     logger.debug("Starting consume_dispatcher_state_file")
@@ -79,27 +79,30 @@ def consume_dispatcher_state_file(readonly: bool = False) -> DispatcherState | N
     state_files = [OLD_DISPATCHER_STATE_FILE, NEW_DISPATCHER_STATE_FILE]
 
     for state_file in state_files:
-        if os.path.exists(state_file):
-            try:
-                logger.debug(f"Attempting to open file {state_file}")
-                with builtins.open(state_file, 'rb') as fd:
-                    logger.debug("Attempting to unpickle from state file")
-                    state = pickle.load(fd)  # nosec
-                    logger.debug("Unpickling succeeded")
-                    logger.debug(f"Dispatcher State file info: {state}")
-                # Successfully read the state file, no need to try others
-                break
-            except (OSError, pickle.UnpicklingError, AttributeError, FileNotFoundError) as e:
-                logger.exception(f"Exception while extracting dispatcher state from {state_file}: {e}")
-                state = None  # Ensure state is None if this attempt fails
+        try:
+            logger.debug(f"Attempting to open file {state_file}")
+            with builtins.open(state_file, 'rb') as fd:
+                logger.debug("Attempting to unpickle from state file")
+                state = pickle.load(fd)  # nosec
+                logger.debug("Unpickling succeeded")
+                logger.debug(f"Dispatcher State file info: {state}")
+            # Successfully read the state file, no need to try others
+            break
+        except (OSError, pickle.UnpicklingError, AttributeError, FileNotFoundError) as e:
+            logger.exception(f"Exception while extracting dispatcher state from {state_file}: {e}")
+            state = None  # Ensure state is None if this attempt fails
 
-    if not readonly:
+    if state is None:
+        logger.error("Failed to extract dispatcher state from all state files.")
+        raise DispatcherException("Exception while extracting dispatcher state from disk")
+
+    if not read:
         try:
             logger.debug("Clearing dispatcher state files")
             clear_dispatcher_state()
         except Exception as e:
             logger.exception(f"Failed to clear dispatcher state files: {e}")
-            # Nothing more can be done if clearing the state file fails
+            # Depending on requirements, you might want to raise or handle this differently
 
     return state
 

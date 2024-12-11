@@ -9,7 +9,6 @@ import queue
 import random
 import logging
 import threading
-import uuid
 from google.protobuf.timestamp_pb2 import Timestamp
 from typing import Callable, Optional
 from datetime import datetime
@@ -26,7 +25,6 @@ from inbm_lib.json_validator import is_valid_json_structure
 
 import grpc # type: ignore
 from .cloud_client import CloudClient
-
 
 logger = logging.getLogger(__name__)
 
@@ -115,18 +113,18 @@ class InbsCloudClient(CloudClient):
         @param time: timestamp for this telemetry publish
         @exception PublishError: If publish fails
         """
-        
-        pass  # INBS is not yet ready to receive events
 
-    def publish_node_update(self, key: str, value: str) -> None:
-        """Publishes a node update to the cloud
+        pass  # INBS is not yet ready to receive telemetry
+
+    def publish_update(self, key: str, value: str) -> None:
+        """Publishes an update to the cloud
 
         @param key: key to publish
         @param value: node update message to publish
         @exception PublishError: If publish fails
         """
         if self._grpc_channel is None:
-            raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_node_update")            
+            raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_update")            
     
         is_valid = is_valid_json_structure(value, NODE_UPDATE_JSON_SCHEMA_LOCATION)
         if not is_valid:
@@ -151,20 +149,20 @@ class InbsCloudClient(CloudClient):
         timestamp = Timestamp()
         timestamp.GetCurrentTime()
         job=common_pb2.Job(
-                job_id=message_dict.get("job_id", ""),
+                job_id=message_dict.get("jobId", ""),
                 node_id=self._client_id,
                 status_code=status_code,
                 result_msgs=result_messages,
                 actual_end_time=timestamp,
                 job_state=job_state
             )
+
         
         request = inbs_sb_pb2.SendNodeUpdateRequest(
-            request_id=str(uuid.uuid4()),
-            job_update=job,
-            static_telemetry=None,         
+            request_id="notused",
+            job_update=job,            
         )
-        logger.debug(f"Sending node update job status to INBS: request={request}")
+        logger.debug(f"Sending node update to INBS: request={request}")
             
         try:
             response = self._grpc_channel.SendNodeUpdate(request, metadata=self._metadata)
@@ -186,35 +184,11 @@ class InbsCloudClient(CloudClient):
         """Publishes a device attribute to the cloud
 
         @param key: attribute's key
-        @param value: attribute's value
+        @param value: value to set for the attribute
         @exception PublishError: If publish fails
         """
 
-        logger.debug(f"Received telemetry: key={key}, value={value}")
-        
-        if self._grpc_channel is None:
-            raise PublishError("gRPC channel not set up before calling InbsCloudClient.publish_node_update")            
-
-        
-        static_telemetry=common_pb2.StaticTelemetry(
-            node_id=self._client_id,
-        ) 
-        
-        static_telemetry.key = key
-        static_telemetry.value = value       
-         
-        request = inbs_sb_pb2.SendNodeUpdateRequest(
-            request_id=str(uuid.uuid4()),
-            job_update=None,
-            static_telemetry=static_telemetry,            
-        )
-        logger.debug(f"Sending node update of static telemetry to INBS: request={request}")
-            
-        try:
-            response = self._grpc_channel.SendNodeUpdate(request, metadata=self._metadata)
-            logger.info(f"Received response from gRPC server: {response}")
-        except grpc.RpcError as e:
-            logger.error(f"Failed to send node update via gRPC: {e}")
+        pass  # INBS is not yet ready to receive attributes
 
     def bind_callback(self, name: str, callback: Callable) -> None:
         """Bind a callback to be triggered by a method called on the cloud
@@ -259,6 +233,7 @@ class InbsCloudClient(CloudClient):
                         ),
                     )
                     continue
+
 
                 if command_type:
                     if command_type == "update_scheduled_operations":

@@ -3,14 +3,12 @@
     SPDX-License-Identifier: Apache-2.0
 """
 
-import logging
+
 import xml.etree.ElementTree as ET
 from google.protobuf.timestamp_pb2 import Timestamp
-from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, \
-    UpdateFirmwareOperation, SetPowerStateOperation, RpcActivateOperation, Operation, Schedule
+from cloudadapter.pb.common.v1.common_pb2 import UpdateSystemSoftwareOperation, RpcActivateOperation, Operation, Schedule
 from cloudadapter.pb.inbs.v1.inbs_sb_pb2 import UpdateScheduledOperations
 
-logger = logging.getLogger(__name__)
 
 def create_xml_element(tag: str, text: str | None = None, attrib: dict[str, str] | None = None) -> ET.Element:
     """Create an XML element with optional text and attributes."""
@@ -93,10 +91,7 @@ def convert_updated_scheduled_operations_to_dispatcher_xml(request_id: str, upda
 def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     """Converts an Operation message to an XML manifests element containing manifest_xml subelements for dispatcher."""
 
-    if not (operation.HasField('update_system_software_operation') 
-            or operation.HasField('rpc_activate_operation') 
-            or operation.HasField('update_firmware_operation')
-            or operation.HasField('set_power_state_operation')):
+    if not (operation.HasField('update_system_software_operation') or operation.HasField('rpc_activate_operation')):
         raise ValueError("Operation type not supported")
 
     if len(operation.pre_operations) > 0:
@@ -108,15 +103,11 @@ def convert_operation_to_xml_manifests(operation: Operation) -> ET.Element:
     result = create_xml_element("manifests")
     
     manifest = None
-    
-    if operation.HasField('update_system_software_operation'):
-         manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
-    elif operation.HasField('rpc_activate_operation'):
+
+    if operation.update_system_software_operation is not None:
+        manifest = convert_system_software_operation_to_xml_manifest(operation.update_system_software_operation)
+    elif operation.rpc_activate_operation is not None:
         manifest = convert_rpc_activate_operation_to_xml_manifest(operation.rpc_activate_operation)
-    elif operation.HasField('update_firmware_operation'):
-        manifest = convert_firmware_operation_to_xml_manifest(operation.update_firmware_operation)
-    elif operation.HasField('set_power_state_operation'):
-        manifest = convert_power_state_operation_to_xml_manifest(operation.set_power_state_operation)
     else:
         raise ValueError("No valid operation found")
 
@@ -149,75 +140,7 @@ def convert_rpc_activate_operation_to_xml_manifest(operation: RpcActivateOperati
     xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')
     return xml_declaration + '\n' + xml_str
 
-def convert_firmware_operation_to_xml_manifest(operation: UpdateFirmwareOperation) -> str:
-    """Converts a UpdateFirmwareOperation message to an XML manifest string for Dispatcher."""
-    # Create the root element
-    manifest = ET.Element('manifest')
-    ET.SubElement(manifest, 'type').text = 'ota'
-    ota = ET.SubElement(manifest, 'ota')
-    header = ET.SubElement(ota, 'header')
-    ET.SubElement(header, 'type').text = 'fota'
-    ET.SubElement(header, 'repo').text = 'remote'
 
-    type = ET.SubElement(ota, 'type')
-    fota = ET.SubElement(type, 'fota', name="")
-
-    # Fetch URL
-    if not operation.url:
-        raise ValueError("Fetch URL cannot be unspecified")
-    ET.SubElement(fota, 'fetch').text = operation.url
-        
-    if not operation.bios_version:
-        raise ValueError("BIOS Version cannot be unspecified")
-    ET.SubElement(fota, 'biosversion').text = operation.bios_version
-        
-    if operation.signature_version:
-        ET.SubElement(fota, 'signatureversion').text = str(operation.signature_version)
-        
-    if operation.signature:
-        ET.SubElement(fota, 'signature').text = operation.signature
-        
-    if not operation.manufacturer:
-        raise ValueError("Manufacturer cannot be unspecified")
-    ET.SubElement(fota, 'manufacturer').text = operation.manufacturer
-        
-    if not operation.product_name:
-        raise ValueError("Product name cannot be unspecified")
-    ET.SubElement(fota, 'product').text = operation.product_name
-        
-    if not operation.vendor:
-        raise ValueError("Vendor cannot be unspecified")
-    ET.SubElement(fota, 'vendor').text = operation.vendor       
-    
-    # Release date in the required format
-    if operation.release_date == Timestamp():
-        raise ValueError("Release date cannot be unspecified")
-    
-    if operation.release_date.ToSeconds() > 0:
-        release_date = Timestamp()
-        release_date.FromDatetime(operation.release_date.ToDatetime())
-        ET.SubElement(fota, 'releasedate').text = release_date.ToDatetime().strftime('%Y-%m-%d')
-
-    if operation.guid:
-        ET.SubElement(fota, 'guid').text = operation.guid
-        
-    if operation.tooloptions:
-        ET.SubElement(fota, 'tooloptions').text = operation.tooloptions
-        
-    if operation.username:
-        ET.SubElement(fota, 'username').text = operation.username
-        
-    if operation.password:
-        ET.SubElement(fota, 'password').text = operation.password
-
-    # Device reboot
-    device_reboot = 'no' if operation.do_not_reboot else 'yes'
-    ET.SubElement(fota, 'deviceReboot').text = device_reboot
-
-    # Generate the XML string with declaration
-    xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
-    xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')
-    return xml_declaration + '\n' + xml_str
 
 def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSoftwareOperation) -> str:
     """Converts a UpdateSystemSoftwareOperation message to an XML manifest string for Dispatcher."""
@@ -247,7 +170,7 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
     # Convert package list to comma-separated string
     if len(operation.package_list) > 0:
         package_list_str = ','.join(operation.package_list)
-        ET.SubElement(sota, 'package_list').text = package_list_str
+        ET.SubElement(sota, 'packageList').text = package_list_str
 
     # Fetch URL
     if operation.url != '':
@@ -263,36 +186,6 @@ def convert_system_software_operation_to_xml_manifest(operation: UpdateSystemSof
     device_reboot = 'no' if operation.do_not_reboot else 'yes'
     ET.SubElement(sota, 'deviceReboot').text = device_reboot
 
-    # Generate the XML string with declaration
-    xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
-    xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')
-    return xml_declaration + '\n' + xml_str
-
-def convert_power_state_operation_to_xml_manifest(operation: SetPowerStateOperation) -> str:    
-    """Converts a SetPowerStateOperation message to an XML manifest string for Dispatcher."""
-
-    if operation.opcode == SetPowerStateOperation.POWER_STATE_UNSPECIFIED:
-        raise ValueError("Power state cannot be unspecified")
-    
-    if operation.opcode == SetPowerStateOperation.POWER_STATE_ON:
-        raise ValueError("Power state ON is not supported as an Inband operation")
-
-    if operation.opcode == SetPowerStateOperation.POWER_STATE_RESET:
-        raise ValueError("Power state RESET is not supported as an Inband operation")
-    
-    power_state = ''
-    if operation.opcode == SetPowerStateOperation.POWER_STATE_OFF:
-        power_state = 'shutdown'    
-    elif operation.opcode == SetPowerStateOperation.POWER_STATE_CYCLE:
-        power_state = 'restart'
-    else:
-        raise ValueError("Invalid power state")
-        
-    # Create the root element
-    manifest = ET.Element('manifest')
-    ET.SubElement(manifest, 'type').text = 'cmd'
-    cmd = ET.SubElement(manifest, 'cmd').text = power_state
-    
     # Generate the XML string with declaration
     xml_declaration = '<?xml version="1.0" encoding="utf-8"?>'
     xml_str = ET.tostring(manifest, encoding='utf-8', method='xml').decode('utf-8')

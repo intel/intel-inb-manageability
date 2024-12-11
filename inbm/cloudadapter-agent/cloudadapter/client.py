@@ -5,7 +5,6 @@ Copyright (C) 2017-2024 Intel Corporation
 SPDX-License-Identifier: Apache-2.0
 """
 
-import os
 from .cloud import adapter_factory as adapter_factory
 from .cloud.cloud_publisher import CloudPublisher
 from .cloud.adapters.inbs_adapter import InbsAdapter
@@ -33,9 +32,8 @@ class Client:
         @exception BadConfigError: If the adapter configuration is bad
         """
 
-        use_tls = os.getenv('USE_TLS', 'TRUE').lower() in ('true', '1', 't')
-
-        self._broker = Broker(tls=use_tls)
+        # These statements set up INBM-side communication
+        self._broker = Broker()
         self._publisher = Publisher(self._broker)
         self._device_manager = DeviceManager(self._broker)
 
@@ -65,8 +63,8 @@ class Client:
                 lambda _, payload: self._cloud_publisher.publish_event(payload)
             )
             self._broker.bind_callback(
-                TC_TOPIC.NODE_UPDATE,
-                lambda _, payload: self._cloud_publisher.publish_node_update(payload)
+                TC_TOPIC.UPDATE,
+                lambda _, payload: self._cloud_publisher.publish_update(payload)
             )
 
     def _bind_ucc_to_agent(self) -> None:
