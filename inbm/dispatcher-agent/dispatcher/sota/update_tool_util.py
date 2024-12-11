@@ -54,7 +54,7 @@ def update_tool_commit_command() -> int:
     logger.debug("")
     (out, err, code) = PseudoShellRunner().run(TIBER_UPDATE_TOOL_PATH + " -c")
     if code != 0:
-        raise SotaError(f"Failed to run UT commit command. Error:{err}")
+        raise SotaError(f"Failed to run UT commit command {TIBER_UPDATE_TOOL_PATH} -c . Error:{err}")
     return code
 
 
