@@ -144,7 +144,7 @@ class UpdateLogger:
                     # Only look at entries >= SOTA time, removing the old entries
                     for upgrade_part in upgrade_parts_shadow:
                         upgrade_time = get_package_start_date(upgrade_part)
-                        if datetime.datetime.strptime(upgrade_time, '%Y-%m-%d  %H:%M:%S') < self._time:
+                        if datetime.datetime.fromisoformat(upgrade_time) < self._time:
                             upgrade_parts.remove(upgrade_part)
 
                 # After filtering, if there are entries, save all entries into the granular log.

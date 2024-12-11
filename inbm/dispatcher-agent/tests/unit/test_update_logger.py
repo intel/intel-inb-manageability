@@ -72,6 +72,7 @@ class TestUpdateLogger(TestCase):
     @patch('dispatcher.update_logger.detect_os', return_value='Ubuntu')
     def test_save_granular_log_file_sota_without_package_list(self, mock_os, mock_status) -> None:
         self.update_logger.ota_type = "sota"
+        self.update_logger._time = datetime.datetime(2024, 7, 2)
 
         history_content = """
         Start-Date: 2024-07-03  19:28:53
@@ -106,6 +107,7 @@ class TestUpdateLogger(TestCase):
 
     def test_save_granular_log_file_sota_without_package_list_without_upgrade_but_with_upgrade_keyword_in_text(self) -> None:
         self.update_logger.ota_type = "sota"
+        self.update_logger._time = datetime.datetime(2024, 7, 2)
 
         history_content = """
         Start-Date: 2024-08-06  06:26:14
@@ -141,6 +143,7 @@ class TestUpdateLogger(TestCase):
 
     def test_save_granular_log_file_sota_without_package_list_without_update_keyword(self) -> None:
         self.update_logger.ota_type = "sota"
+        self.update_logger._time = datetime.datetime(2024, 7, 2)
 
         history_content = """
         Start-Date: 2024-08-06  07:45:30
