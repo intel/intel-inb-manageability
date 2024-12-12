@@ -140,40 +140,47 @@ class UpdateLogger:
                 # Filter parts that contain 'upgrade'
                 upgrade_parts = [part for part in parts if 'upgrade' in part.lower()]
                 if upgrade_parts:
-                    latest_upgrade = upgrade_parts[-1]
-                else:
-                    raise KeyError
-                update_time = get_package_start_date(latest_upgrade)
-                package_dict = extract_package_names_and_versions(latest_upgrade)
+                    upgrade_parts_shadow = upgrade_parts.copy()
+                    # Only look at entries >= SOTA time, removing the old entries
+                    for upgrade_part in upgrade_parts_shadow:
+                        upgrade_time = get_package_start_date(upgrade_part)
+                        if datetime.datetime.fromisoformat(upgrade_time) < self._time:
+                            upgrade_parts.remove(upgrade_part)
 
-                # Load current data in granular log file.
-                with open(GRANULAR_LOG_FILE, 'r') as f:
-                    data = json.load(f)
+                # After filtering, if there are entries, save all entries into the granular log.
+                if upgrade_parts:
+                    for upgrade_part in upgrade_parts:
+                        update_time = get_package_start_date(upgrade_part)
+                        package_dict = extract_package_names_and_versions(upgrade_part)
 
-                # Create the package information and store it
-                for package_name, version in package_dict.items():
-                    logger.debug(f"Package: {package_name}, Version: {version}")
+                        # Load current data in granular log file.
+                        with open(GRANULAR_LOG_FILE, 'r') as f:
+                            data = json.load(f)
 
-                    # Get status using dpkg-query
-                    status = check_package_status(package_name)
+                        # Create the package information and store it
+                        for package_name, version in package_dict.items():
+                            logger.debug(f"Package: {package_name}, Version: {version}")
 
-                    package_info = {
-                        "update_type": OS,
-                        "package_name": package_name,
-                        "update_time": update_time,
-                        "action": PACKAGE_UPGRADE,
-                        "status": status,
-                        "version": version
-                    }
-                    # Remove previous entries with the same package_name from the UpdateLog list
-                    data['UpdateLog'] = [log for log in data['UpdateLog'] if
-                                         log['package_name'] != package_info['package_name']]
-                    # Append the new package information to the UpdateLog list
-                    data['UpdateLog'].append(package_info)
+                            # Get status using dpkg-query
+                            status = check_package_status(package_name)
 
-                # Open the file in write mode to save the updated data
-                with open(GRANULAR_LOG_FILE, 'w') as f:
-                    json.dump(data, f, indent=4)
+                            package_info = {
+                                "update_type": OS,
+                                "package_name": package_name,
+                                "update_time": update_time,
+                                "action": PACKAGE_UPGRADE,
+                                "status": status,
+                                "version": version
+                            }
+                            # Remove previous entries with the same package_name from the UpdateLog list
+                            data['UpdateLog'] = [log for log in data['UpdateLog'] if
+                                                 log['package_name'] != package_info['package_name']]
+                            # Append the new package information to the UpdateLog list
+                            data['UpdateLog'].append(package_info)
+
+                        # Open the file in write mode to save the updated data
+                        with open(GRANULAR_LOG_FILE, 'w') as f:
+                            json.dump(data, f, indent=4)
         except (IndexError, KeyError) as e:
             logger.info(f"No upgrade information found in history log. Error: {e}")
 
