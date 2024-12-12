@@ -1,4 +1,4 @@
-import uuid
+import threading
 import pytest
 from mock import MagicMock, Mock, patch
 import queue
@@ -12,6 +12,7 @@ from cloudadapter.pb.inbs.v1 import inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
 from cloudadapter.cloud.client.inbs_cloud_client import InbsCloudClient
 
+
 @pytest.fixture
 def inbs_client() -> Generator[InbsCloudClient, None, None]:
     hostname = "localhost"
@@ -20,7 +21,6 @@ def inbs_client() -> Generator[InbsCloudClient, None, None]:
     tls_enabled = False
     tls_cert = None
     token = None
-    
 
     with patch(
         "cloudadapter.cloud.client.inbs_cloud_client.grpc.insecure_channel"
@@ -42,33 +42,6 @@ class TestInbsCloudClient:
         assert inbs_client._client_id == "node_id"
         assert inbs_client._metadata == [("node-id", "node_id")]
 
-    def test_publish_attribute(self, inbs_client: InbsCloudClient) -> None:
-        key = "biosReleaseDate"
-        value = "2021-01-01T00:00:00"
-        inbs_client._grpc_channel = MagicMock()
-        inbs_client.publish_attribute(key, value)
-
-        expected_static_telemetry = common_pb2.StaticTelemetry(
-            node_id=inbs_client._client_id,
-            key=key,
-            value=value
-        )
-        expected_request = inbs_sb_pb2.SendNodeUpdateRequest(
-            request_id=str(uuid.uuid4()),
-            job_update=None,
-            static_telemetry=expected_static_telemetry
-        )
-
-        inbs_client._grpc_channel.SendNodeUpdate.assert_called_once()
-        args, kwargs = inbs_client._grpc_channel.SendNodeUpdate.call_args
-        actual_request = args[0]
-
-        assert actual_request.static_telemetry.node_id == expected_request.static_telemetry.node_id        
-        assert actual_request.static_telemetry.key == expected_request.static_telemetry.key
-        assert actual_request.static_telemetry.value == expected_request.static_telemetry.value
-            
-        assert kwargs['metadata'] == inbs_client._metadata
- 
     def test_get_client_id(self, inbs_client: InbsCloudClient) -> None:
         client_id = inbs_client.get_client_id()
         assert client_id == "node_id"
@@ -79,17 +52,17 @@ class TestInbsCloudClient:
             key="example_key", value="example_value", time=datetime.now()
         )
     
-    def test_publish_node_update(self, inbs_client: InbsCloudClient) -> None:
+    def test_publish_update(self, inbs_client: InbsCloudClient) -> None:
         mock_channel = MagicMock()
         mock_channel.SendNodeUpdateRequest.return_value = "MockResponse"
         inbs_client._grpc_channel = mock_channel
         
         key = 'update'
-        value = '{"status":200, "message":"COMMAND SUCCESSFUL", "job_id":"swupd-4b151b70-c121-4245-873b-5324ac7a3f7a"}'
+        value = '{"status":200, "message":"COMMAND SUCCESSFUL", "jobId":"swupd-4b151b70-c121-4245-873b-5324ac7a3f7a"}'
         
         # Call the publish_update method
         with patch('cloudadapter.cloud.client.inbs_cloud_client.is_valid_json_structure', return_value=True):
-            inbs_client.publish_node_update(key, value)
+            inbs_client.publish_update(key, value)
 
         # Assert that the gRPC channel's SendNodeUpdate method was called
         mock_channel.SendNodeUpdate.assert_called_once()
@@ -103,13 +76,17 @@ class TestInbsCloudClient:
         key = 'test-key'
         value = '{"job_id": "12345", "status": 200, "message": "Update successful"}'
 
-        # Call the publish_node_update method and expect a PublishError
+        # Call the publish_update method and expect a PublishError
         with pytest.raises(PublishError):
-            inbs_client.publish_node_update(key, value)
+            inbs_client.publish_update(key, value)
     
     def test_publish_event(self, inbs_client: InbsCloudClient) -> None:
         # this is not expected to do anything yet
         inbs_client.publish_event(key="example_event", value="event_value")
+
+    def test_publish_attribute(self, inbs_client: InbsCloudClient) -> None:
+        # this is not expected to do anything yet
+        inbs_client.publish_attribute(key="example_attribute", value="attribute_value")
 
     @pytest.mark.parametrize(
         "request_id, dispatcher_error_response, command_type, expected_response, expected_xml",

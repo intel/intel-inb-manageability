@@ -72,7 +72,6 @@ class TestUpdateLogger(TestCase):
     @patch('dispatcher.update_logger.detect_os', return_value='Ubuntu')
     def test_save_granular_log_file_sota_without_package_list(self, mock_os, mock_status) -> None:
         self.update_logger.ota_type = "sota"
-        self.update_logger._time = datetime.datetime(2024, 7, 2)
 
         history_content = """
         Start-Date: 2024-07-03  19:28:53
@@ -105,94 +104,8 @@ class TestUpdateLogger(TestCase):
         mock_status.assert_called_once()
         self.assertEqual(granular_log, expected_content)
 
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', return_value=("install ok installed", "", 0))
-    @patch('dispatcher.update_logger.detect_os', return_value='Ubuntu')
-    def test_save_granular_log_file_sota_upgrade_history_log(self, mock_os, mock_status) -> None:
-        self.update_logger.ota_type = "sota"
-        self.update_logger._time = datetime.datetime(2024, 7, 3)
-
-        history_content = """
-        
-        Start-Date: 2024-07-02  06:00:37
-        Commandline: apt install --only-upgrade -y inbc-program trtl inbm-cloudadapter-agent inbm-dispatcher-agent inbm-configuration-agent inbm-telemetry-agent inbm-diagnostic-agent mqtt tpm-provision
-        Requested-By: platform-update-agent (997)
-        Upgrade: inbm-diagnostic-agent:amd64 (4.2.6.1-1, 4.2.8-1), inbm-configuration-agent:amd64 (4.2.6.1-1, 4.2.8-1), inbm-cloudadapter-agent:amd64 (4.2.6.1-1, 4.2.8-1), mqtt:amd64 (4.2.6.1-1, 4.2.8-1), inbc-pro>
-        End-Date: 2024-07-02  06:00:51
-
-        Start-Date: 2024-07-03  19:28:53
-        Commandline: /bin/apt-get -yq -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --with-new-pkgs upgrade
-        Upgrade: terraform:amd64 (1.9.0-1, 1.9.1-1)
-        End-Date: 2024-07-03  19:28:53
-
-        Start-Date: 2024-07-04  03:53:31
-        Commandline: apt install platform-update-agent
-        Upgrade: platform-update-agent:amd64 (1.2.11, 1.2.18)
-        End-Date: 2024-07-04  03:53:32
-
-        """
-
-        expected_content = {
-                            "UpdateLog": [
-                                    {
-                                        "update_type": "os",
-                                        "package_name": "terraform:amd64",
-                                        "update_time": "2024-07-03T19:28:53",
-                                        "action": "upgrade",
-                                        "status": "SUCCESS",
-                                        "version": "1.9.0-1, 1.9.1-1"
-                                    },
-                                    {
-                                        "update_type": "os",
-                                        "package_name": "platform-update-agent:amd64",
-                                        "update_time": "2024-07-04T03:53:31",
-                                        "action": "upgrade",
-                                        "status": "SUCCESS",
-                                        "version": "1.2.11, 1.2.18"
-                                    }
-                                ]
-                            }
-
-        with open(SYSTEM_HISTORY_LOG_FILE, "w") as file:
-            file.write(history_content)
-
-        self.update_logger.save_granular_log_file()
-
-        with open(GRANULAR_LOG_FILE, 'r') as f:
-            granular_log = json.load(f)
-
-        assert mock_status.call_count == 2
-        self.assertEqual(granular_log, expected_content)
-
-    @patch('dispatcher.update_logger.detect_os', return_value='Ubuntu')
-    def test_save_granular_log_file_sota_upgrade_history_log_start_time_before_sota_time(self, mock_os) -> None:
-        self.update_logger.ota_type = "sota"
-        self.update_logger._time = datetime.datetime(2024, 7, 3)
-
-        history_content = """
-        Start-Date: 2024-07-02  19:28:53
-        Commandline: /bin/apt-get -yq -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold --with-new-pkgs upgrade
-        Upgrade: terraform:amd64 (1.9.0-1, 1.9.1-1)
-        End-Date: 2024-07-02  19:28:53
-        """
-
-        expected_content: dict = {
-                            "UpdateLog": [
-                                ]
-                            }
-
-        with open(SYSTEM_HISTORY_LOG_FILE, "w") as file:
-            file.write(history_content)
-
-        self.update_logger.save_granular_log_file()
-
-        with open(GRANULAR_LOG_FILE, 'r') as f:
-            granular_log = json.load(f)
-
-        self.assertEqual(granular_log, expected_content)
-
     def test_save_granular_log_file_sota_without_package_list_without_upgrade_but_with_upgrade_keyword_in_text(self) -> None:
         self.update_logger.ota_type = "sota"
-        self.update_logger._time = datetime.datetime(2024, 7, 2)
 
         history_content = """
         Start-Date: 2024-08-06  06:26:14
@@ -228,7 +141,6 @@ class TestUpdateLogger(TestCase):
 
     def test_save_granular_log_file_sota_without_package_list_without_update_keyword(self) -> None:
         self.update_logger.ota_type = "sota"
-        self.update_logger._time = datetime.datetime(2024, 7, 2)
 
         history_content = """
         Start-Date: 2024-08-06  07:45:30
@@ -276,37 +188,6 @@ class TestUpdateLogger(TestCase):
                                     }
                                 ]
                             }
-
-        self.update_logger.save_granular_log_file()
-
-        with open(GRANULAR_LOG_FILE, 'r') as f:
-            granular_log = json.load(f)
-
-        assert mock_run.call_count == 2
-        self.assertEqual(granular_log, expected_content)
-
-    @patch('inbm_common_lib.shell_runner.PseudoShellRunner.run', side_effect=[("install ok installed", "", 0),
-                                                                              ("1:26.3+1-1ubuntu2", "", 0)])
-    @patch('dispatcher.update_logger.detect_os', return_value='Ubuntu')
-    def test_save_granular_log_file_sota_with_empty_granular_file_exist(self, mock_os, mock_run) -> None:
-        self.update_logger.ota_type = "sota"
-        self.update_logger._time = datetime.datetime(2024, 7, 3, 1, 50, 55, 935223)
-        self.update_logger.package_list = "emacs"
-        expected_content = {
-                            "UpdateLog": [
-                                    {
-                                        "update_type": "application",
-                                        "package_name": "emacs",
-                                        "update_time": "2024-07-03T01:50:55.935223",
-                                        "action": "install",
-                                        "status": "SUCCESS",
-                                        "version": "1:26.3+1-1ubuntu2"
-                                    }
-                                ]
-                            }
-        # Create an empty GRANULAR_LOG_FILE
-        with open(GRANULAR_LOG_FILE, 'w') as file:
-            pass
 
         self.update_logger.save_granular_log_file()
 

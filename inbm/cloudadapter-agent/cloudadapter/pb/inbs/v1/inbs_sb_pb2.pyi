@@ -107,26 +107,20 @@ class SendNodeUpdateRequest(google.protobuf.message.Message):
 
     REQUEST_ID_FIELD_NUMBER: builtins.int
     JOB_UPDATE_FIELD_NUMBER: builtins.int
-    STATIC_TELEMETRY_FIELD_NUMBER: builtins.int
     request_id: builtins.str
     @property
     def job_update(self) -> cloudadapter.pb.common.v1.common_pb2.Job:
         """node_id will be filled in by INBS; schedule_id, executed_by, desired_start_time, create_time will be ignored"""
-
-    @property
-    def static_telemetry(self) -> cloudadapter.pb.common.v1.common_pb2.StaticTelemetry:
-        """more types of updates from nodes can be added in the future"""
 
     def __init__(
         self,
         *,
         request_id: builtins.str = ...,
         job_update: cloudadapter.pb.common.v1.common_pb2.Job | None = ...,
-        static_telemetry: cloudadapter.pb.common.v1.common_pb2.StaticTelemetry | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["job_update", b"job_update", "static_telemetry", b"static_telemetry", "update", b"update"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["job_update", b"job_update", "request_id", b"request_id", "static_telemetry", b"static_telemetry", "update", b"update"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["update", b"update"]) -> typing.Literal["job_update", "static_telemetry"] | None: ...
+    def HasField(self, field_name: typing.Literal["job_update", b"job_update", "update", b"update"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["job_update", b"job_update", "request_id", b"request_id", "update", b"update"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["update", b"update"]) -> typing.Literal["job_update"] | None: ...
 
 global___SendNodeUpdateRequest = SendNodeUpdateRequest
 

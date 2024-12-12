@@ -15,21 +15,21 @@ logger = logging.getLogger(__name__)
 class CloudClient:
 
     def __init__(self, connection: MQTTConnection, telemetry: OneWayMessenger, event: OneWayMessenger,
-                 node_update: OneWayMessenger | None, attribute: OneWayMessenger, 
+                 update: OneWayMessenger | None, attribute: OneWayMessenger, 
                  handler: ReceiveRespondHandler) -> None:
         """Constructor for CloudClient
 
         @param connection: Connection associated with this CloudClient
         @param telemetry: Messenger to send telemetry
         @param event: Messenger to send events
-        @param node_update: Messenger to send node updates
+        @param update: Messenger to send updates
         @param attribute: Messenger to send attributes
         @param handler: Handler to deal with cloud method calls
         """
         self._connection = connection
         self._telemetry = telemetry
         self._event = event
-        self._node_update: OneWayMessenger | None = node_update
+        self._update: OneWayMessenger | None = update
         self._attribute = attribute
         self._handler = handler
 
@@ -57,18 +57,18 @@ class CloudClient:
         """
         return self._telemetry.publish(key, value, time)
 
-    def publish_node_update(self, key: str, value: str) -> None:
+    def publish_update(self, key: str, value: str) -> None:
         """Publishes an update to the cloud
 
         @param key: key to publish
         @param value: update to publish
         @exception PublishError: If publish fails
         """
-        if self._node_update is None:
+        if self._update is None:
             logger.error("Received update publish request but no update messenger is configured")
             return None
         else:
-            return self._node_update.publish(key, value)
+            return self._update.publish(key, value)
     
     def publish_event(self, key: str, value: str) -> None:
         """Publishes an event to the cloud

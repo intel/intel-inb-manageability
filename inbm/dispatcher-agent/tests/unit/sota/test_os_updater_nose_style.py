@@ -1,7 +1,6 @@
 import unittest
 from typing import Optional
 import os
-import threading
 
 from ..common.mock_resources import *
 from dispatcher.sota.os_factory import SotaOsFactory
@@ -46,7 +45,6 @@ class TestOsUpdater(unittest.TestCase):
                                  cls.mock_disp_obj._update_logger,
                                  None,
                                  MockInstallCheckService(),
-                                 cancel_event=threading.Event(),
                                  snapshot=1)
 
         parsed_manifest_packages = {'resource': cls.resource,
@@ -59,7 +57,6 @@ class TestOsUpdater(unittest.TestCase):
                                           cls.mock_disp_obj._update_logger,
                                           None,
                                           MockInstallCheckService(),
-                                          cancel_event=threading.Event(),
                                           snapshot=1)
 
     def test_create_no_download_cmd_with_no_package_list(self) -> None:

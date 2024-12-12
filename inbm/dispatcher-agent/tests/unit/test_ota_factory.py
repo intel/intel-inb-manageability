@@ -1,5 +1,3 @@
-import threading
-
 import pytest
 
 from unit.common.mock_resources import *
@@ -30,8 +28,7 @@ def test_get_factory(ota_type, expected_factory, mock_disp_obj, mock_disp_broker
         None,
         MockInstallCheckService(),
         UpdateLogger(ota_type=ota_type, data="metadata"),
-        ConfigDbs.ON,
-        cancel_event=threading.Event()
+        ConfigDbs.ON
     )
     assert isinstance(factory, expected_factory)
 
@@ -46,8 +43,7 @@ def test_raise_error_unsupported_ota(mock_disp_obj, mock_disp_broker) -> None:
             None,
             MockInstallCheckService(),
             UpdateLogger(ota_type="IOTA", data="metadata"),
-            ConfigDbs.OFF,
-            cancel_event=threading.Event()
+            ConfigDbs.OFF
         )
 
 
@@ -65,8 +61,7 @@ def test_create_parser(ota_type, expected_parser, mock_disp_obj, mock_disp_broke
         None,
         MockInstallCheckService(),
         UpdateLogger(ota_type=ota_type, data="metadata"),
-        ConfigDbs.ON,
-        cancel_event=threading.Event()
+        ConfigDbs.ON
     ).create_parser()
     assert isinstance(parser, expected_parser)
 
@@ -85,7 +80,6 @@ def test_create_thread(ota_type, expected_thread, mock_disp_obj, mock_disp_broke
         None,
         MockInstallCheckService(),
         UpdateLogger(ota_type=ota_type, data="metadata"),
-        ConfigDbs.ON,
-        cancel_event=threading.Event()
+        ConfigDbs.ON
     ).create_thread({'abc': 'def'})
     assert isinstance(thread, expected_thread)

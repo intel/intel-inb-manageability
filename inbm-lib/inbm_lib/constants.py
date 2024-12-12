@@ -76,6 +76,7 @@ SYSTEM_HISTORY_LOG_FILE = str(LOG_PATH / "apt" / "history.log")
 # Package Status
 PACKAGE_SUCCESS = "SUCCESS"
 PACKAGE_PENDING = "PENDING"
+PACKAGE_FAIL = "FAIL"
 PACKAGE_UNKNOWN = "UNKNOWN"
 
 # Package installation action

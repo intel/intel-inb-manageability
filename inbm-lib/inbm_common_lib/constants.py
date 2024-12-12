@@ -21,7 +21,7 @@ RESPONSE_CHANNEL = 'manageability/response'
 EVENT_CHANNEL = 'manageability/event'
 TELEMETRY_CHANNEL = 'manageability/telemetry'
 # Used for Node updates to be sent to UDM
-NODE_UPDATE_CHANNEL = 'manageability/nodeupdate'
+UPDATE_CHANNEL = 'manageability/update'
 CONFIG_CHANNEL = 'ma/configuration/update/'
 
 # Request constants
@@ -51,5 +51,5 @@ AFULNX_64 = 'afulnx_64'
 # Default signature version
 DEFAULT_HASH_ALGORITHM = 384
 
-# Image id path
-IMAGE_ID_PATH = '/etc/image-id'
+# Os release path
+OS_RELEASE_PATH = '/etc/os-release'

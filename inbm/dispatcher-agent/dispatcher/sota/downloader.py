@@ -7,13 +7,12 @@
 
 from abc import abstractmethod
 import logging
-import threading
 from datetime import datetime
 
 from typing import Optional
 from .mender_util import read_current_mender_version
 from .sota_error import SotaError
-from .tiber_util import read_release_server_token, tiber_download
+from .oras_util import oras_download, read_oras_token
 from ..constants import UMASK_OTA
 from ..downloader import download
 from ..packagemanager.irepo import IRepo
@@ -36,8 +35,7 @@ class Downloader:
                  repo: IRepo,
                  username: Optional[str],
                  password: Optional[str],
-                 release_date: Optional[str],
-                 cancel_event: threading.Event) -> None:
+                 release_date: Optional[str]) -> None:
         """Downloads update/upgrade and places capsule file in local cache.
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
@@ -46,7 +44,6 @@ class Downloader:
         @param username: username to use for download
         @param password: password to use for download
         @param release_date: manifest release date
-        @param cancel_event: Event used to stop the downloading process
         """
         logger.debug("")
 
@@ -87,8 +84,7 @@ class DebianBasedDownloader(Downloader):
                  repo: IRepo,
                  username: Optional[str],
                  password: Optional[str],
-                 release_date: Optional[str],
-                 cancel_event: threading.Event) -> None:
+                 release_date: Optional[str]) -> None:
         """downloads Debian-based update"""
 
         logger.debug("Debian-based OS does not require a file download to "
@@ -113,8 +109,7 @@ class WindowsDownloader(Downloader):
                  repo: IRepo,
                  username: Optional[str],
                  password: Optional[str],
-                 release_date: Optional[str],
-                 cancel_event: threading.Event) -> None:
+                 release_date: Optional[str]) -> None:
         """STUB: downloads Windows update
 
         @param uri: URI of the source location
@@ -123,7 +118,6 @@ class WindowsDownloader(Downloader):
         @param password: password to use for download
         @param release_date: manifest release date
         @raises SotaError: release date is not valid
-        @param cancel_event: Event used to stop the downloading process
         """
 
         logger.debug("")
@@ -144,8 +138,7 @@ class YoctoDownloader(Downloader):
                  repo: IRepo,
                  username: Optional[str],
                  password: Optional[str],
-                 release_date: Optional[str],
-                 cancel_event: threading.Event) -> None:
+                 release_date: Optional[str]) -> None:
         """Downloads files and places image in local cache
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
@@ -155,7 +148,6 @@ class YoctoDownloader(Downloader):
         @param password: password to use for download
         @param release_date: manifest release date
         @raises SotaError: release date is not valid
-        @param cancel_event: Event used to stop the downloading process
         """
 
         if not self.check_release_date(release_date):
@@ -188,8 +180,7 @@ class TiberOSDownloader(Downloader):
                  repo: IRepo,
                  username: Optional[str],
                  password: Optional[str],
-                 release_date: Optional[str],
-                 cancel_event: threading.Event) -> None:
+                 release_date: Optional[str]) -> None:
         """Downloads files and places image in local cache
 
         @param dispatcher_broker: DispatcherBroker object used to communicate with other INBM services
@@ -199,21 +190,19 @@ class TiberOSDownloader(Downloader):
         @param password: password to use for download
         @param release_date: manifest release date
         @raises SotaError: release date is not valid
-        @param cancel_event: Event used to stop the downloading process
         """
 
         if uri is None:
             raise SotaError("URI is None while performing TiberOS download")
 
-        password = read_release_server_token()
+        password = read_oras_token()
 
-        tiber_download(dispatcher_broker=dispatcher_broker,
-                       uri=uri,
-                       repo=repo,
-                       umask=UMASK_OTA,
-                       username=username,
-                       token=password,
-                       cancel_event=cancel_event)
+        oras_download(dispatcher_broker=dispatcher_broker,
+                      uri=uri,
+                      repo=repo,
+                      umask=UMASK_OTA,
+                      username=username,
+                      password=password)
 
     def check_release_date(self, release_date: Optional[str]) -> bool:
         raise NotImplementedError()

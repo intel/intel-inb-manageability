@@ -5,7 +5,7 @@ from unittest import TestCase
 
 from inbm_common_lib.exceptions import UrlSecurityException
 from inbm_common_lib.utility import clean_input, get_canonical_representation_of_path, canonicalize_uri, \
-    validate_file_type, remove_file, copy_file, move_file, create_file_with_contents, get_image_build_date
+    validate_file_type, remove_file, copy_file, move_file, create_file_with_contents, get_os_version
 from inbm_common_lib.constants import UNKNOWN
 
 
@@ -112,20 +112,18 @@ class TestUtility(TestCase):
         except IOError as e:
             self.fail(f"Unexpected exception raised during test: {e}")
 
-    @patch('builtins.open', new_callable=mock_open, read_data='IMAGE_BUILD_DATE="20241026100955"')
-    @patch('os.path.exists', return_value=True)
-    def test_get_image_build_date_successfully(self, mock_exist: Mock, mock_open: Mock) -> None:
+    @patch('builtins.open', new_callable=mock_open, read_data='VERSION="2.0.20240802.0213"')
+    def test_get_os_version_successfully(self, mock_open: Mock) -> None:
         try:
-            self.assertEqual(get_image_build_date(), "20241026100955")
+            self.assertEqual(get_os_version(), "2.0.20240802.0213")
         except IOError as e:
             self.fail(f"Unexpected exception raised during test: {e}")
-        mock_open.assert_called_once_with('/etc/image-id', 'r')
+        mock_open.assert_called_once_with('/etc/os-release', 'r')
 
     @patch('builtins.open', new_callable=mock_open, read_data='')
-    @patch('os.path.exists', return_value=True)
-    def test_get_image_build_date_with_no_version_found(self, mock_exist: Mock, mock_open: Mock) -> None:
+    def test_get_os_version_with_no_version_found(self, mock_open: Mock) -> None:
         try:
-            self.assertEqual(get_image_build_date(), UNKNOWN)
+            self.assertEqual(get_os_version(), UNKNOWN)
         except IOError as e:
             self.fail(f"Unexpected exception raised during test: {e}")
-        mock_open.assert_called_once_with('/etc/image-id', 'r')
+        mock_open.assert_called_once_with('/etc/os-release', 'r')

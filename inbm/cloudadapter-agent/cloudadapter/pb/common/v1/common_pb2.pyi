@@ -180,12 +180,32 @@ global___RepeatedSchedule = RepeatedSchedule
 class Operation(google.protobuf.message.Message):
     DESCRIPTOR: google.protobuf.descriptor.Descriptor
 
+    class _ServiceType:
+        ValueType = typing.NewType("ValueType", builtins.int)
+        V: typing_extensions.TypeAlias = ValueType
+
+    class _ServiceTypeEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[Operation._ServiceType.ValueType], builtins.type):
+        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
+        SERVICE_TYPE_UNSPECIFIED: Operation._ServiceType.ValueType  # 0
+        SERVICE_TYPE_INBS: Operation._ServiceType.ValueType  # 1
+        SERVICE_TYPE_OOB_AMT: Operation._ServiceType.ValueType  # 2
+        SERVICE_TYPE_OOB_BMC: Operation._ServiceType.ValueType  # 3
+        SERVICE_TYPE_AUTO: Operation._ServiceType.ValueType  # 4
+
+    class ServiceType(_ServiceType, metaclass=_ServiceTypeEnumTypeWrapper): ...
+    SERVICE_TYPE_UNSPECIFIED: Operation.ServiceType.ValueType  # 0
+    SERVICE_TYPE_INBS: Operation.ServiceType.ValueType  # 1
+    SERVICE_TYPE_OOB_AMT: Operation.ServiceType.ValueType  # 2
+    SERVICE_TYPE_OOB_BMC: Operation.ServiceType.ValueType  # 3
+    SERVICE_TYPE_AUTO: Operation.ServiceType.ValueType  # 4
+
     PRE_OPERATIONS_FIELD_NUMBER: builtins.int
     POST_OPERATIONS_FIELD_NUMBER: builtins.int
+    SERVICE_TYPE_FIELD_NUMBER: builtins.int
     UPDATE_SYSTEM_SOFTWARE_OPERATION_FIELD_NUMBER: builtins.int
     SET_POWER_STATE_OPERATION_FIELD_NUMBER: builtins.int
     RPC_ACTIVATE_OPERATION_FIELD_NUMBER: builtins.int
-    UPDATE_FIRMWARE_OPERATION_FIELD_NUMBER: builtins.int
+    service_type: global___Operation.ServiceType.ValueType
     @property
     def pre_operations(self) -> google.protobuf.internal.containers.RepeatedCompositeFieldContainer[global___PreOperation]: ...
     @property
@@ -195,9 +215,7 @@ class Operation(google.protobuf.message.Message):
     @property
     def set_power_state_operation(self) -> global___SetPowerStateOperation: ...
     @property
-    def rpc_activate_operation(self) -> global___RpcActivateOperation: ...
-    @property
-    def update_firmware_operation(self) -> global___UpdateFirmwareOperation:
+    def rpc_activate_operation(self) -> global___RpcActivateOperation:
         """and others"""
 
     def __init__(
@@ -205,14 +223,14 @@ class Operation(google.protobuf.message.Message):
         *,
         pre_operations: collections.abc.Iterable[global___PreOperation] | None = ...,
         post_operations: collections.abc.Iterable[global___PostOperation] | None = ...,
+        service_type: global___Operation.ServiceType.ValueType = ...,
         update_system_software_operation: global___UpdateSystemSoftwareOperation | None = ...,
         set_power_state_operation: global___SetPowerStateOperation | None = ...,
         rpc_activate_operation: global___RpcActivateOperation | None = ...,
-        update_firmware_operation: global___UpdateFirmwareOperation | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["operation", b"operation", "rpc_activate_operation", b"rpc_activate_operation", "set_power_state_operation", b"set_power_state_operation", "update_firmware_operation", b"update_firmware_operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "rpc_activate_operation", b"rpc_activate_operation", "set_power_state_operation", b"set_power_state_operation", "update_firmware_operation", b"update_firmware_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation", "set_power_state_operation", "rpc_activate_operation", "update_firmware_operation"] | None: ...
+    def HasField(self, field_name: typing.Literal["operation", b"operation", "rpc_activate_operation", b"rpc_activate_operation", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["operation", b"operation", "post_operations", b"post_operations", "pre_operations", b"pre_operations", "rpc_activate_operation", b"rpc_activate_operation", "service_type", b"service_type", "set_power_state_operation", b"set_power_state_operation", "update_system_software_operation", b"update_system_software_operation"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["operation", b"operation"]) -> typing.Literal["update_system_software_operation", "set_power_state_operation", "rpc_activate_operation"] | None: ...
 
 global___Operation = Operation
 
@@ -329,88 +347,6 @@ class SetPowerStateOperation(google.protobuf.message.Message):
 global___SetPowerStateOperation = SetPowerStateOperation
 
 @typing.final
-class UpdateFirmwareOperation(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    class _SignatureVersion:
-        ValueType = typing.NewType("ValueType", builtins.int)
-        V: typing_extensions.TypeAlias = ValueType
-
-    class _SignatureVersionEnumTypeWrapper(google.protobuf.internal.enum_type_wrapper._EnumTypeWrapper[UpdateFirmwareOperation._SignatureVersion.ValueType], builtins.type):
-        DESCRIPTOR: google.protobuf.descriptor.EnumDescriptor
-        SIGNATURE_VERSION_UNSPECIFIED: UpdateFirmwareOperation._SignatureVersion.ValueType  # 0
-        SIGNATURE_VERSION_256: UpdateFirmwareOperation._SignatureVersion.ValueType  # 1
-        SIGNATURE_VERSION_384: UpdateFirmwareOperation._SignatureVersion.ValueType  # 2
-
-    class SignatureVersion(_SignatureVersion, metaclass=_SignatureVersionEnumTypeWrapper): ...
-    SIGNATURE_VERSION_UNSPECIFIED: UpdateFirmwareOperation.SignatureVersion.ValueType  # 0
-    SIGNATURE_VERSION_256: UpdateFirmwareOperation.SignatureVersion.ValueType  # 1
-    SIGNATURE_VERSION_384: UpdateFirmwareOperation.SignatureVersion.ValueType  # 2
-
-    URL_FIELD_NUMBER: builtins.int
-    BIOS_VERSION_FIELD_NUMBER: builtins.int
-    SIGNATURE_VERSION_FIELD_NUMBER: builtins.int
-    SIGNATURE_FIELD_NUMBER: builtins.int
-    VENDOR_FIELD_NUMBER: builtins.int
-    MANUFACTURER_FIELD_NUMBER: builtins.int
-    PRODUCT_NAME_FIELD_NUMBER: builtins.int
-    RELEASE_DATE_FIELD_NUMBER: builtins.int
-    GUID_FIELD_NUMBER: builtins.int
-    TOOLOPTIONS_FIELD_NUMBER: builtins.int
-    USERNAME_FIELD_NUMBER: builtins.int
-    PASSWORD_FIELD_NUMBER: builtins.int
-    DO_NOT_REBOOT_FIELD_NUMBER: builtins.int
-    url: builtins.str
-    """URL from which to remotely retrieve the firmware update package"""
-    bios_version: builtins.str
-    """BIOS version of the new firmware update."""
-    signature_version: global___UpdateFirmwareOperation.SignatureVersion.ValueType
-    """Signature version of the new firmware package."""
-    signature: builtins.str
-    """Digital signature of *.tar file"""
-    vendor: builtins.str
-    """Vendor of the new firmware update."""
-    manufacturer: builtins.str
-    """Manufacturer of the board."""
-    product_name: builtins.str
-    """Product name of the board."""
-    guid: builtins.str
-    """GUID to match on the platform.  Check for 'System Firmware type' when running the command: 'fwupdate -i'"""
-    tooloptions: builtins.str
-    """Optional switches to be used with vendor software tool during the update."""
-    username: builtins.str
-    """Username to be used during fetch from remote repository."""
-    password: builtins.str
-    """Password to be used during fetch from remote repository."""
-    do_not_reboot: builtins.bool
-    """Whether to reboot the node after the firmware update attempt"""
-    @property
-    def release_date(self) -> google.protobuf.timestamp_pb2.Timestamp:
-        """Release date of the new firmware update."""
-
-    def __init__(
-        self,
-        *,
-        url: builtins.str = ...,
-        bios_version: builtins.str = ...,
-        signature_version: global___UpdateFirmwareOperation.SignatureVersion.ValueType = ...,
-        signature: builtins.str = ...,
-        vendor: builtins.str = ...,
-        manufacturer: builtins.str = ...,
-        product_name: builtins.str = ...,
-        release_date: google.protobuf.timestamp_pb2.Timestamp | None = ...,
-        guid: builtins.str = ...,
-        tooloptions: builtins.str = ...,
-        username: builtins.str = ...,
-        password: builtins.str = ...,
-        do_not_reboot: builtins.bool = ...,
-    ) -> None: ...
-    def HasField(self, field_name: typing.Literal["release_date", b"release_date"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["bios_version", b"bios_version", "do_not_reboot", b"do_not_reboot", "guid", b"guid", "manufacturer", b"manufacturer", "password", b"password", "product_name", b"product_name", "release_date", b"release_date", "signature", b"signature", "signature_version", b"signature_version", "tooloptions", b"tooloptions", "url", b"url", "username", b"username", "vendor", b"vendor"]) -> None: ...
-
-global___UpdateFirmwareOperation = UpdateFirmwareOperation
-
-@typing.final
 class PreOperation(google.protobuf.message.Message):
     """ oneof pre_operation {
        // ...
@@ -439,27 +375,6 @@ class PostOperation(google.protobuf.message.Message):
     ) -> None: ...
 
 global___PostOperation = PostOperation
-
-@typing.final
-class StaticTelemetry(google.protobuf.message.Message):
-    DESCRIPTOR: google.protobuf.descriptor.Descriptor
-
-    NODE_ID_FIELD_NUMBER: builtins.int
-    KEY_FIELD_NUMBER: builtins.int
-    VALUE_FIELD_NUMBER: builtins.int
-    node_id: builtins.str
-    key: builtins.str
-    value: builtins.str
-    def __init__(
-        self,
-        *,
-        node_id: builtins.str = ...,
-        key: builtins.str = ...,
-        value: builtins.str = ...,
-    ) -> None: ...
-    def ClearField(self, field_name: typing.Literal["key", b"key", "node_id", b"node_id", "value", b"value"]) -> None: ...
-
-global___StaticTelemetry = StaticTelemetry
 
 @typing.final
 class Job(google.protobuf.message.Message):

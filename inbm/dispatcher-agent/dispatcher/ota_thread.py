@@ -7,13 +7,12 @@
 import abc
 import logging
 import os
-import threading
 from threading import Lock
 from typing import Optional, Any, Mapping
 
 from .install_check_service import InstallCheckService
 
-from inbm_lib.constants import TRTL_PATH, FAIL
+from inbm_lib.constants import TRTL_PATH
 from inbm_common_lib.exceptions import UrlSecurityException
 
 from .aota import aota
@@ -29,7 +28,6 @@ from .fota.fota import FOTA
 from .fota.fota_error import FotaError
 from .sota.sota import SOTA
 from .sota.sota_error import SotaError
-from .sota.granular_log_handler import GranularLogHandler
 from .update_logger import UpdateLogger
 from .dispatcher_broker import DispatcherBroker
 
@@ -144,7 +142,6 @@ class SotaThread(OtaThread):
     @param install_check_service: provides install_check
     @param parsed_manifest: parameters from OTA manifest
     @param update_logger: UpdateLogger instance; expected to update when done with OTA
-    @param cancel_event: Event used to stop the downloading process
     @return (dict): dict representation of COMMAND_SUCCESS or OTA_FAILURE/OTA_FAILURE_IN_PROGRESS
     """
 
@@ -155,15 +152,13 @@ class SotaThread(OtaThread):
                  sota_repos: Optional[str],
                  install_check_service: InstallCheckService,
                  parsed_manifest: Mapping[str, Optional[Any]],
-                 update_logger: UpdateLogger,
-                 cancel_event: threading.Event) -> None:
+                 update_logger: UpdateLogger) -> None:
         super().__init__(repo_type, parsed_manifest,
                          install_check_service=install_check_service)
         self._sota_repos = sota_repos
         self._proceed_without_rollback = proceed_without_rollback
         self._update_logger = update_logger
         self._dispatcher_broker = dispatcher_broker
-        self._cancel_event = cancel_event
 
     def start(self) -> Result:  # pragma: no cover
         """Starts the SOTA thread and which checks for existing locks before delegating to
@@ -172,14 +167,7 @@ class SotaThread(OtaThread):
         @return (dict): result of the OTA
         """
         logger.debug(" ")
-        # We want to capture the pre-install check failure and save to granular log.
-        try:
-            super().pre_install_check()
-        except DispatcherException as err:
-            self._update_logger.detail_status = FAIL
-            self._update_logger.error = str(err)
-            GranularLogHandler().save_granular_log(update_logger=self._update_logger, check_package=False)
-            raise DispatcherException(err)
+        super().pre_install_check()
 
         global ota_lock
         if ota_lock.acquire(False):
@@ -189,7 +177,6 @@ class SotaThread(OtaThread):
                                      dispatcher_broker=self._dispatcher_broker,
                                      update_logger=self._update_logger,
                                      sota_repos=self._sota_repos,
-                                     cancel_event=self._cancel_event,
                                      install_check_service=self._install_check_service)
                 try:
                     sota_instance.execute(self._proceed_without_rollback)
@@ -213,7 +200,6 @@ class SotaThread(OtaThread):
                                  dispatcher_broker=self._dispatcher_broker,
                                  update_logger=self._update_logger,
                                  sota_repos=self._sota_repos,
-                                 cancel_event=self._cancel_event,
                                  install_check_service=self._install_check_service)
             sota_instance.check()
         except SotaError as e:

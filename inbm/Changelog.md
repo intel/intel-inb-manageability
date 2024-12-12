@@ -3,58 +3,6 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## X.X.X - YYYY-MM-DD
- - (NEX-15262) Returns failure reason that matches the format required by MM
- - (NEXMANAGE-1100) Downgrade jsonschema to v2.6.0
-
-### Fixed
- - (NEXMANAGE-1101) Fix History Log Issue
-
-## 4.2.8 - 2024-11-29
-### Changed
- - (NEXMANAGE-513) Record the granular log in download-only mode
- - (NEXMANAGE-1022) Adds Power Capabilities to Static Telemetry data.  Sends Static Telemetry data to INBS via the INBS Cloud Client in CloudAdapter.
-   
-### Added
- - (NEXMANAGE-826) Update granular log to support architecture independent package
-
-## 4.2.7 - 2024-11-8
-### Changed
- - (NEXMANAGE-949) Check the IMAGE_BUILD_DATE instead of VERSION for TiberOS SOTA verification
-
-### Added
- - (NEXMANAGE-950) Add Set Power State Capability to cloudadapter from UDM
-
-### Fixed
- - (NEXMANAGE-733) Fixed typo in package_list during conversion from INBS to cloudadapter
- - (NEXMANAGE-827) Fixed error logged incorrectly when reading dispatcher_state file
-
-## 4.2.6.2 - 2024-10-25
-### Added
- - (NEXMANAGE-900) Add UpdateFirmware to the common proto file and cloudadapter support from UDM
-  
-### Changed
- - (NEXMANAGE-906) Truncate the granular log instead of removing it
- - Change release server token path to /etc/intel_edge_node/tokens/release-service/access_token
-
-### Fixed
- - (NEXMANAGE-837) Fix schema validation issue on failed UDM request sent from
- dispatcher to cloudadapter
- - (NEXMANAGE-899) Fix dispatcher not recording state file and causing snapshot failure
-
-## 4.2.6.1 - 2024-10-18
-### Added
- - (NEXMANAGE-737) Enable sota cancel mode
-
-### Fixed
- - (NEXMANAGE-872) Fix provision-tc issue in TiberOS - cannot overwrite /etc/dispatcher.environment
- - (NEXMANAGE-846) Fix granular log raise error when granular log file is empty
-
-### Changed
- - (NEXMANAGE-874) Remove UT rollback command in dispatcher agent
- - (NEXMANAGE-853) Remove ORAS and update method
- - (NEXMANAGE-683) Remove service_type from Operation in common.proto
-
 ## 4.2.6 - 2024-10-04
 ### Added
  - (NEXMANAGE-515) Update dispatcher SOTA related classes for supporting TiberOS
@@ -81,7 +29,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEXMANAGE-744) Remove `psutil` in favor if `shutil.disk_usage` to save space
  - (NEXMANAGE-744) Don't pull in `dmidecode` in `inbm-lib` -- pull in only in `telemetry`
  - (NEXMANAGE-744) Removed all references to `future` library as we do not use Python 2
-
 
 ## 4.2.5 - 2024-09-04
 ### Fixed

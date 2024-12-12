@@ -205,9 +205,9 @@ class TestYoctoSnapshot(unittest.TestCase):
 
 class TestTiberOSSnapshot(unittest.TestCase):
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
-    @patch('dispatcher.sota.snapshot.get_image_build_date', autospec=True)
+    @patch('inbm_common_lib.utility.get_os_version', autospec=True)
     def test_take_snapshot_succeeds(self, mock_version, mock_dispatcher_state) -> None:
-        mock_version.return_value = "20241026100955"
+        mock_version.return_value = "2.0.20240802.0213"
         mock_dispatcher_state.write_dispatcher_state_to_state_file.return_value = True
 
         dispatcher_broker = Mock()
@@ -220,7 +220,7 @@ class TestTiberOSSnapshot(unittest.TestCase):
         message, = args
         assert "unsuccessful" not in message
 
-    @patch('dispatcher.sota.snapshot.get_image_build_date', return_value=UNKNOWN)
+    @patch('dispatcher.sota.snapshot.get_os_version', return_value=UNKNOWN)
     def test_take_snapshot_unknown_version_error(self, mock_version) -> None:
         dispatcher_broker = Mock()
 
@@ -250,25 +250,29 @@ class TestTiberOSSnapshot(unittest.TestCase):
         mock_run.assert_called_once()
         assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
 
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('', "", 0))
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
-    def test_recover_success(self, mock_dispatcher_state) -> None:
+    def test_recover_success(self, mock_dispatcher_state, mock_run) -> None:
         rebooter = Mock()
         tiberos_snapshot = TiberOSSnapshot(Mock(), "command", Mock(), "1", True, True)
         tiberos_snapshot.recover(rebooter, 1)
         assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
         assert rebooter.reboot.call_count == 1
+        assert mock_run.call_count == 1
 
+    @patch("inbm_common_lib.shell_runner.PseudoShellRunner.run", return_value=('', "", 0))
     @patch('dispatcher.sota.snapshot.dispatcher_state', autospec=True)
-    def test_revert_success(self, mock_dispatcher_state) -> None:
+    def test_revert_success(self, mock_dispatcher_state, mock_run) -> None:
         rebooter = Mock()
         tiberos_snapshot = TiberOSSnapshot(Mock(), "command", Mock(), "1", True, True)
         tiberos_snapshot.revert(rebooter, 1)
         assert mock_dispatcher_state.clear_dispatcher_state.call_count == 1
         assert rebooter.reboot.call_count == 1
+        assert mock_run.call_count == 1
 
-    @patch('dispatcher.sota.snapshot.get_image_build_date', return_value='20241026100955')
+    @patch('dispatcher.sota.snapshot.get_os_version', return_value='2.0.20240802.0213')
     @patch('dispatcher.common.dispatcher_state.consume_dispatcher_state_file',
-           return_value={'restart_reason': 'sota', 'tiberos-version': '20241026100955'})
+           return_value={'restart_reason': 'sota', 'tiberos-version': '2.0.20240802.0213'})
     def test_update_system_raise_error_when_versions_are_same(self, mock_consume_disp_state, mock_version) -> None:
         tiberos_snapshot = TiberOSSnapshot(Mock(), "command", Mock(), "1", True, True)
         with self.assertRaises(SotaError):
