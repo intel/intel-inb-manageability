@@ -523,19 +523,23 @@ class Dispatcher:
         @return: True if the request has been processed; False if no request has been handled.
         """
         if request_type == "install":
-            type_of_manifest, parsed_head = \
-                _check_type_validate_manifest(manifest)
-            type_of_active_manifest = active_thread_parsed_head = None
-            if self._active_thread_manifest:
-                type_of_active_manifest, active_thread_parsed_head = \
-                    _check_type_validate_manifest(self._active_thread_manifest)
-            result = cancel_thread(type_of_manifest, parsed_head, self._thread_list,
-                                   type_of_active_manifest, active_thread_parsed_head,
-                                   self._dispatcher_broker, self._cancel_event)
-            if result:
-                logger.debug(f"Request cancel complete.")
-                self._send_result(str(Result(CODE_OK, "Request complete.")))
-                return True
+            try:                
+                type_of_manifest, parsed_head = \
+                    _check_type_validate_manifest(manifest)
+                type_of_active_manifest = active_thread_parsed_head = None
+                if self._active_thread_manifest:
+                    type_of_active_manifest, active_thread_parsed_head = \
+                        _check_type_validate_manifest(self._active_thread_manifest)
+                result = cancel_thread(type_of_manifest, parsed_head, self._thread_list,
+                                    type_of_active_manifest, active_thread_parsed_head,
+                                    self._dispatcher_broker, self._cancel_event)
+                if result:
+                    logger.debug(f"Request cancel complete.")
+                    self._send_result(str(Result(CODE_OK, "Request complete.")))
+                    return True
+            except XmlException:
+                logger.error("XML validation failed for manifest")
+                return False                        
         return False
 
     def _on_message(self, topic: str, payload: Any, qos: int) -> None:
