@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
  - (NEX-15262) Returns failure reason that matches the format required by MM
+ - (NEXMANAGE-1100) Downgrade jsonschema to v2.6.0
 
 ### Fixed
  - (NEXMANAGE-1101) Fix History Log Issue
