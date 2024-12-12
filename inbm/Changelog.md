@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEX-15262) Returns failure reason that matches the format required by MM
  - (NEXMANAGE-1100) Downgrade jsonschema to v2.6.0
 
+### Fixed
+ - (NEXMANAGE-1101) Fix History Log Issue
+
 ## 4.2.8 - 2024-11-29
 ### Changed
  - (NEXMANAGE-513) Record the granular log in download-only mode
