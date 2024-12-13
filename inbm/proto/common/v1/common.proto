@@ -4,7 +4,7 @@ package common.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
-import "validate/validate.proto";
+import "buf/validate/validate.proto";
 
 message Error {
   string message = 1;
