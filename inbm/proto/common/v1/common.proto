@@ -4,6 +4,7 @@ package common.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
+import "buf/validate/validate.proto";
 
 message Error {
   string message = 1;
@@ -72,7 +73,11 @@ message RpcActivateOperation {
 }
 
 message UpdateSystemSoftwareOperation {
-    string url = 1; // URL from which to remotely retrieve the package
+    string url = 1 [(buf.validate.field).cel = {
+      id: "valid_uri"
+      message: "url must be a valid URL."
+      expression: "this.isUri()"
+    }]; // URL from which to remotely retrieve the package
     google.protobuf.Timestamp release_date = 2; // Release date of the new SW update.
     enum DownloadMode {
         DOWNLOAD_MODE_UNSPECIFIED = 0;

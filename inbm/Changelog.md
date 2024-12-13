@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEXMANAGE-1100) Downgrade jsonschema to v2.6.0
  - (NEXMANAGE-1102) XML schema validator run into exception when field tag is not complete in manifest
 
+### Added
+ - Apply protovalidate in common.proto
+
 ### Fixed
  - (NEXMANAGE-1101) Fix History Log Issue
 
