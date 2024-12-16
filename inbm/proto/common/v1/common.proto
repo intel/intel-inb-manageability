@@ -4,7 +4,7 @@ package common.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
-import "validate/validate.proto";
+import "buf/validate/validate.proto";
 
 message Error {
   string message = 1;
@@ -68,12 +68,20 @@ message Operation {
 }
 
 message RpcActivateOperation {
-  string url = 1;
+  string url = 1 [(buf.validate.field).cel = {
+      id: "valid_uri"
+      message: "url must be a valid URL."
+      expression: "this.isUri()"
+    }];;
   string profile_name = 2;
 }
 
 message UpdateSystemSoftwareOperation {
-    string url = 1 [(validate.rules).string.uri = true]; // URL from which to remotely retrieve the package
+    string url = 1 [(buf.validate.field).cel = {
+      id: "valid_uri"
+      message: "url must be a valid URL."
+      expression: "this.isUri()"
+    }]; // URL from which to remotely retrieve the package
     google.protobuf.Timestamp release_date = 2; // Release date of the new SW update.
     enum DownloadMode {
         DOWNLOAD_MODE_UNSPECIFIED = 0;
@@ -98,7 +106,11 @@ message SetPowerStateOperation {
 }
 
 message UpdateFirmwareOperation {
-  string url = 1; // URL from which to remotely retrieve the firmware update package
+  string url = 1[(buf.validate.field).cel = {
+      id: "valid_uri"
+      message: "url must be a valid URL."
+      expression: "this.isUri()"
+    }]; // URL from which to remotely retrieve the firmware update package
   string bios_version = 2; // BIOS version of the new firmware update.
   enum SignatureVersion {
     SIGNATURE_VERSION_UNSPECIFIED = 0;
