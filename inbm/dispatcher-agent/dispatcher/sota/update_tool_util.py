@@ -36,7 +36,7 @@ def update_tool_write_command(signature: Optional[str] = None, file_path: Option
         else:
             raise SotaError("Signature checks failed.")
 
-    return str(TIBER_UPDATE_TOOL_PATH + " -w" + " -u " + file_path)
+    return str(TIBER_UPDATE_TOOL_PATH + " -w" + " -u " + file_path + " -s " + signature)
 
 
 def update_tool_commit_command() -> int:
