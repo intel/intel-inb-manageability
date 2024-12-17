@@ -26,7 +26,7 @@ class TestDownloader(unittest.TestCase):
                     sha256_hash.update(chunk)
             checksum = sha256_hash.hexdigest()
 
-            expected_cmd = f'{TIBER_UPDATE_TOOL_PATH} -w -u {os.path.join(repo.get_repo_path(), "test")}'
+            expected_cmd = f'{TIBER_UPDATE_TOOL_PATH} -w -u {os.path.join(repo.get_repo_path(), "test")} -s {checksum}'
             cmd = update_tool_write_command(signature=checksum, file_path=file_path)
             self.assertEqual(cmd, expected_cmd)
         finally:
