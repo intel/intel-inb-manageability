@@ -94,10 +94,16 @@ fix_permissions() {
     fi
 
     # Set up temp file permissions
-    chown -R root.root /var/cache/manageability
+    chown -R root.mqtt-ca /var/cache/manageability
     chmod -R o-rwx /var/cache/manageability
     chmod -R ug+rw /var/cache/manageability
     find /var/cache/manageability -type d -exec chmod g+s {} \;  # Make sure new files have correct group ownership
+
+    # Set up repository-tool directory permissions
+    mkdir -p /var/cache/manageability/repository-tool
+    chown -R root.root /var/cache/manageability/repository-tool
+    chmod -R o-rwx /var/cache/manageability/repository-tool
+    chmod -R ug+rw /var/cache/manageability/repository-tool
 
     # Make sure 'docker' group exists for diagnostic agent's .service file
     if [ "$ID" != "tiber" ]; then
