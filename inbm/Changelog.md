@@ -3,9 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## X.X.X - YYYY-MM-DD
+## Next Release - YYYY-MM-DD
+### Changed
+ - (NEXMANAGE-1121) Remove mqtt-ca group from /var/cache/manageability directory
+
+## 4.2.8.1 - 2024-12-17
  - (NEX-15262) Returns failure reason that matches the format required by MM
- - (NEXMANAGE-1100) Downgrade jsonschema to v2.6.0
  - (NEXMANAGE-1102) XML schema validator run into exception when field tag is not complete in manifest
 
 ### Added
@@ -13,6 +16,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
  - (NEXMANAGE-1101) Fix History Log Issue
+
+### Added
+ - (NEXMANAGE-1113) Provide hash to UT
 
 ## 4.2.8 - 2024-11-29
 ### Changed
