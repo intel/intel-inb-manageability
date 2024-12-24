@@ -52,7 +52,7 @@ message RepeatedSchedule {
 
 message Operation {
   repeated PreOperation pre_operations = 1 [(buf.validate.field).repeated = {min_items: 1}];
-  repeated PostOperation post_operations = 2;
+  repeated PostOperation post_operations = 2 [(buf.validate.field).repeated = {min_items: 1}];
 
   // removed service_type field
   reserved 3;
