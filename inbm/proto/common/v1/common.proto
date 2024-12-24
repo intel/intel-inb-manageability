@@ -84,7 +84,7 @@ message UpdateSystemSoftwareOperation {
       expression: "this.isUri()"
     },
     (buf.validate.field).required = true]; // URL from which to remotely retrieve the package
-    google.protobuf.Timestamp release_date = 2 [(buf.validate.field).message.required = true]; // Release date of the new SW update.
+    google.protobuf.Timestamp release_date = 2 [(buf.validate.field).required = true]; // Release date of the new SW update.
     enum DownloadMode {
         DOWNLOAD_MODE_UNSPECIFIED = 0;
         DOWNLOAD_MODE_FULL = 1; // Both download the package and install the package
@@ -140,7 +140,7 @@ message UpdateFirmwareOperation {
   string vendor = 5; // Vendor of the new firmware update.
   string manufacturer = 6; // Manufacturer of the board.
   string product_name = 7; // Product name of the board.
-  google.protobuf.Timestamp release_date = 8 [(buf.validate.field).message.required = true]; // Release date of the new firmware update.
+  google.protobuf.Timestamp release_date = 8 [(buf.validate.field).required = true]; // Release date of the new firmware update.
   string guid = 9; // GUID to match on the platform.  Check for 'System Firmware type' when running the command: 'fwupdate -i'
   string tooloptions = 10; // Optional switches to be used with vendor software tool during the update.
   string username = 11; // Username to be used during fetch from remote repository.
