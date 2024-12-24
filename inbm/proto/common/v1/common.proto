@@ -94,8 +94,8 @@ message UpdateSystemSoftwareOperation {
     DownloadMode mode = 3 [
         (buf.validate.field).enum = {
             defined_only: true
-        }
-    ]; // Mode for installing the softare update regarding download and install steps.
+        },
+    (buf.validate.field).required = true]; // Mode for installing the softare update regarding download and install steps.
     bool do_not_reboot = 4;  // Whether to reboot the node after the firmware update attempt
     repeated string package_list = 5 [(buf.validate.field).repeated = {
         unique: true,
