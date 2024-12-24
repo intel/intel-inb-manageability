@@ -56,7 +56,7 @@ message Operation {
 
   // removed service_type field
   reserved 3;
-  reserved "service_type" [(buf.validate.rules).message.required = true];
+  reserved "service_type";
   
   oneof operation {
     UpdateSystemSoftwareOperation update_system_software_operation = 4;
