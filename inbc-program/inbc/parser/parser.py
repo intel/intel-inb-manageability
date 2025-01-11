@@ -39,6 +39,7 @@ class ArgsParser(object):
         self.parse_append_args()
         self.parse_remove_args()
         self.parse_restart_args()
+        self.parse_get_power_state_args()
         self.parse_query_args()
         self.parse_source_args()
 
@@ -312,6 +313,11 @@ class ArgsParser(object):
         """Parse restart arguments"""
         restart_parser = self.inbc_subparsers.add_parser('restart')
         restart_parser.set_defaults(func=restart)
+        
+    def parse_get_power_state_args(self) -> None:
+        """Parse get power state arguments"""
+        get_power_state_parser = self.inbc_subparsers.add_parser('get_power_state')
+        get_power_state_parser.set_defaults(func=get_power_state)
 
     def parse_query_args(self) -> None:
         """Parse set arguments"""
@@ -332,6 +338,20 @@ def restart(args: argparse.Namespace) -> str:
                 '<manifest>' +
                 '<type>cmd</type>' +
                 '<cmd>restart</cmd>' +
+                '</manifest>')
+    print("manifest {0}".format(manifest))
+    return manifest
+
+def get_power_state(args: argparse.Namespace) -> str:
+    """Create manifest in XML format.
+    
+    @param args: Arguments provided by the user from command line
+    @return: Generated XML manifest string
+    """
+    manifest = ('<?xml version="1.0" encoding="utf-8"?>' +
+                '<manifest>' +
+                '<type>cmd</type>' +
+                '<cmd>get_power_state</cmd>' +
                 '</manifest>')
     print("manifest {0}".format(manifest))
     return manifest

@@ -1,12 +1,20 @@
 # Last Modified: Mon Nov 13 15:13:26 2017
 #include <tunables/global>
-
+      
 /usr/bin/inbm-dispatcher {
   #include <abstractions/base>
   #include <abstractions/bash>
   #include <abstractions/nameservice>
   #include <abstractions/python>
 
+  # Allow D-Bus method call to org.freedesktop.DBus.Properties.Get
+  dbus (send)
+      bus=system
+      path=/org/freedesktop/login1
+      interface=org.freedesktop.DBus.Properties
+      member=Get
+      peer=(label=unconfined),
+      
   capability chown,
   capability dac_override,
   capability fsetid,

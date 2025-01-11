@@ -77,6 +77,7 @@
                             <xs:enumeration value="query"/>
                             <xs:enumeration value="shutdown"/>
                             <xs:enumeration value="restart"/>
+                            <xs:enumeration value="get_power_state"/>
                             <xs:enumeration value="decommission"/>
                         </xs:restriction>
                     </xs:simpleType>

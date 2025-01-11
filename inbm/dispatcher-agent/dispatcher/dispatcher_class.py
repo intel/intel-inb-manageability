@@ -865,6 +865,8 @@ def handle_updates(dispatcher: Any,
             result = dispatcher.device_manager.shutdown()
         elif request_type == "restart":
             result = dispatcher.device_manager.restart()
+        elif request_type == "get_power_state":
+            result = dispatcher.device_manager.get_power_state()
         elif request_type == "decommission":
             result = dispatcher.device_manager.decommission()
         else:

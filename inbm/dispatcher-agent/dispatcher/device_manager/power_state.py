@@ -14,7 +14,7 @@ def _is_system_sleeping() -> Any:
     try:
         bus = dbus.SystemBus()
         proxy = bus.get_object('org.freedesktop.login1', '/org/freedesktop/login1')
-        interface = dbus.Interface(proxy, 'org.freedesktop.login1.Manager')
+        interface = dbus.Interface(proxy, 'org.freedesktop.DBus.Properties')
         sleep_state = interface.Get('org.freedesktop.login1.Manager', 'PreparingForSleep')
         return sleep_state
     except dbus.DBusException as e:
