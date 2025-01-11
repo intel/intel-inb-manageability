@@ -17,11 +17,12 @@ from ..utility import search_keyword
 
 from inbm_lib.timer import Timer
 from inbm_lib.constants import RESTART, QUERY
-from inbm_common_lib.request_message_constants import COMMAND_SUCCESSFUL, DYNAMIC_TELEMETRY, \
+from inbm_common_lib.request_message_constants import DYNAMIC_TELEMETRY, \
     RESTART_SUCCESS, RESTART_FAILURE, QUERY_SUCCESS, QUERY_FAILURE, OTA_IN_PROGRESS, \
-    QUERY_HOST_SUCCESS, QUERY_HOST_FAILURE, QUERY_HOST_KEYWORD
+    MANIFEST_PUBLISH_SUCCESS, FAILURE, QUERY_HOST_KEYWORD, GET_POWER_STATE_SUCCESS, \
+    GET_POWER_STATE_FAILURE
 from inbm_common_lib.request_message_constants import DBS_LOG, DOCKER_NAME, DOCKER_MESSAGE
-from inbm_lib.constants import HOST_QUERY_CHANNEL, RESTART_CMD_CHANNEL
+from inbm_lib.constants import HOST_QUERY_CHANNEL, RESTART_CMD_CHANNEL, GET_POWER_STATE_CMD_CHANNEL
 
 logger = logging.getLogger(__name__)
 
@@ -189,16 +190,62 @@ class QueryCommand(Command):
         @param payload: payload received in which to search
         """
         print("\n" + payload)
-        if search_keyword(payload, [QUERY_HOST_SUCCESS]):
+        if search_keyword(payload, [MANIFEST_PUBLISH_SUCCESS]):
             self._success_code = InbcCode.SUCCESS.value
             print("\n Waiting for last query result...")
-        elif search_keyword(payload, [QUERY_HOST_FAILURE]):
+        elif search_keyword(payload, [FAILURE]):
             self._success_code = InbcCode.FAIL.value
             self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
 
     def search_event(self, payload: Any, topic: str) -> None:
         """Search for keywords in event message
 
+        @param payload: payload received in which to search
+        @param topic: topic from which message was received
+        """
+        print("\n" + payload)
+        if search_keyword(payload, [QUERY_HOST_KEYWORD]):
+            self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
+
+class GetPowerStateCommand(Command):
+    def __init__(self, broker: IBroker) -> None:
+        """Get Power State command
+        @param broker: Broker object
+        """
+        super().__init__(MAX_TIME_LIMIT, broker, GET_POWER_STATE_CMD_CHANNEL)
+
+    def invoke_update(self, args: Any) -> None:
+        """Trigger the command-line utility tool to invoke get power state.
+        @param args: arguments passed to command-line tool.
+        """
+        super()._send_manifest(args, GET_POWER_STATE_CMD_CHANNEL)
+
+    def search_response(self, payload: Any) -> None:
+        """Search for keywords in response message
+        @param payload: payload received in which to search
+        """
+        self.search_host_response(payload)
+        if search_keyword(payload, [GET_POWER_STATE_SUCCESS]):
+            self.terminate_operation(COMMAND_SUCCESS, InbcCode.SUCCESS.value)
+        elif search_keyword(payload, [GET_POWER_STATE_FAILURE]):
+            self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
+        else:
+            super().search_response(payload)
+
+    def search_host_response(self, payload: Any) -> None:
+        """INBC will not exit immediately, it will wait for query result.
+        @param payload: payload received in which to search
+        """
+        print("\n" + payload)
+        if search_keyword(payload, [MANIFEST_PUBLISH_SUCCESS]):
+            self._success_code = InbcCode.SUCCESS.value
+            print("\n Waiting for last query result...")
+        elif search_keyword(payload, [FAILURE]):
+            self._success_code = InbcCode.FAIL.value
+            self.terminate_operation(COMMAND_FAIL, InbcCode.FAIL.value)
+
+    def search_event(self, payload: Any, topic: str) -> None:
+        """Search for keywords in event message
         @param payload: payload received in which to search
         @param topic: topic from which message was received
         """
