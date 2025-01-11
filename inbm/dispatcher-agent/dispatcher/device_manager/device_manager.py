@@ -11,6 +11,7 @@ import os
 
 from inbm_common_lib.shell_runner import PseudoShellRunner
 from ..dispatcher_exception import DispatcherException
+from .power_state import get_current_power_state
 from ..device_manager.constants import (
     LINUX_POWER, LINUX_SHUTDOWN, LINUX_RESTART,
     WIN_POWER, WIN_SHUTDOWN, WIN_RESTART,
@@ -48,6 +49,10 @@ class LinuxDeviceManager(DeviceManager):
 
     def __init__(self) -> None:
         self.runner = PseudoShellRunner()
+        
+    def get_power_state(self) -> str:
+        logger.debug("Get power state command received")
+        return get_current_power_state()
 
     def restart(self) -> str:
         logger.debug("Restart Linux system command received")

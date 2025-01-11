@@ -6,14 +6,14 @@
 """
 from ..ibroker import IBroker
 from ..inbc_exception import InbcException
-from .command import Command, RestartCommand, QueryCommand
+from .command import Command, RestartCommand, QueryCommand, GetPowerStateCommand
 from .ota_command import FotaCommand, SotaCommand, PotaCommand, AotaCommand
 from .config_command import GetConfigCommand, SetConfigCommand, LoadConfigCommand, AppendConfigCommand, \
     RemoveConfigCommand
 from .source_command import SourceCommand
 
 from inbm_common_lib.constants import CONFIG_LOAD, CONFIG_APPEND, CONFIG_REMOVE
-from inbm_lib.constants import AOTA, FOTA, SOTA, POTA, RESTART, QUERY, SOURCE
+from inbm_lib.constants import AOTA, FOTA, SOTA, POTA, RESTART, QUERY, SOURCE, GET_POWER_STATE
 
 
 def create_command_factory(cmd: str, broker: IBroker) -> Command:
@@ -33,6 +33,8 @@ def create_command_factory(cmd: str, broker: IBroker) -> Command:
         return AotaCommand(broker)
     if cmd == RESTART:
         return RestartCommand(broker)
+    if cmd == GET_POWER_STATE:
+        return GetPowerStateCommand(broker)
     if cmd == QUERY:
         return QueryCommand(broker)
     if cmd == CONFIG_LOAD:
