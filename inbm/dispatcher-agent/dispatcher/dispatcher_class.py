@@ -11,6 +11,7 @@ import json
 import platform
 import signal
 import sys
+import os
 from logging.config import fileConfig
 from queue import Queue
 from threading import Thread, active_count
@@ -27,7 +28,7 @@ from inbm_lib import wmi
 from inbm_lib.detect_os import detect_os, LinuxDistType, OsType
 from inbm_lib.wmi_exception import WmiException
 from inbm_lib.validate_package_list import parse_and_validate_package_list
-from inbm_lib.constants import QUERY_CMD_CHANNEL, OTA_SUCCESS, FAIL
+from inbm_lib.constants import QUERY_CMD_CHANNEL, GET_POWER_STATE_CMD_CHANNEL, OTA_SUCCESS, FAIL
 from inbm_common_lib.constants import REMOTE_SOURCE, UNKNOWN
 from inbm_common_lib.dmi import is_dmi_path_exists, get_dmi_system_info
 from inbm_common_lib.device_tree import get_device_tree_system_info
@@ -243,6 +244,9 @@ class Dispatcher:
 
         if cmd == "shutdown":
             message = self.device_manager.shutdown()
+        elif cmd == "get_power_state":
+            self._dispatcher_broker.mqtt_publish(GET_POWER_STATE_CMD_CHANNEL, xml)
+            return PUBLISH_SUCCESS
         elif cmd == "restart":
             logger.info("Restart command received.  Restarting system...")
             message = self.device_manager.restart()

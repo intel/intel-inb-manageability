@@ -50,6 +50,7 @@ HOST_QUERY_CHANNEL = 'manageability/request/query'
 
 # RESTART
 RESTART_CMD_CHANNEL = 'manageability/request/restart'
+GET_POWER_STATE_CMD_CHANNEL = 'manageability/request/get_power_state'
 
 # OTA types
 AOTA = "aota"
@@ -59,6 +60,7 @@ POTA = "pota"
 
 RESTART = "restart"
 QUERY = "query"
+GET_POWER_STATE = "get_power_state"
 
 # Source command and types.  Used by INBC and Dispatcher
 SOURCE = "source"

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from ddt import data, ddt, unpack
+from ddt import ddt
 
 from ..common import mock_resources
 from inbm_lib.xmlhandler import XmlHandler
