@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## X.X.X - YYYY-MM-DD
+
 ## 4.2.8.2 - 2024-12-18
 ### Changed
  - (NEXMANAGE-1121) Remove mqtt-ca group from /var/cache/manageability/repository-tool directory
