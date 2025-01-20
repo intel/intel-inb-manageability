@@ -3,9 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## Next Release - YYYY-MM-DD
+## X.X.X - YYYY-MM-DD
+
+## 4.2.8.2 - 2024-12-18
 ### Changed
- - (NEXMANAGE-1121) Remove mqtt-ca group from /var/cache/manageability directory
+ - (NEXMANAGE-1121) Remove mqtt-ca group from /var/cache/manageability/repository-tool directory
+ - Update CI setup script to install rchardet v1.8.0
 
 ## 4.2.8.1 - 2024-12-17
  - (NEX-15262) Returns failure reason that matches the format required by MM
