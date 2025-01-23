@@ -73,7 +73,7 @@ class InbsAdapter(Adapter):
                 raise AdapterConfigureError("Missing jwt_token in onboarding.json")
 
             tls_cert = None  # TLS cert always comes from system
-            tls_enabled = True  # TLS is always enabled in this mode
+            tls_enabled = False  # Today, INBS does _not_ support TLS in this mode, but later we will enable it
 
         else:
             # Existing mode
