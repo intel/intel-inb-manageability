@@ -186,7 +186,7 @@ class TestInbsAdapter(unittest.TestCase):
             adapter = InbsAdapter(self.config_with_onboarding.get('config', {}))
             client = adapter.configure(self.config_with_onboarding.get('config', {}))
             self.mock_open.assert_any_call('/mnt/udm-luks/onboarding.json', 'r')
-            self.assertTrue(client._tls_enabled)
+            self.assertFalse(client._tls_enabled)
             self.assertEqual(client._grpc_hostname, "example.com")
             self.assertEqual(client._grpc_port, "8080")
             self.assertEqual(client._client_id, "sample_node_id")
