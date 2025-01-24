@@ -67,7 +67,6 @@ class InbsAdapter(Adapter):
             except ValueError:
                 raise AdapterConfigureError("Port must be an integer")
 
-            # Get the token (assuming jwt_token is used as token)
             token = onboarding_data.get("jwt_token")
             if not token:
                 raise AdapterConfigureError("Missing jwt_token in onboarding.json")
@@ -122,7 +121,7 @@ class InbsAdapter(Adapter):
             hostname=hostname,
             port=port,
             node_id=node_id,
-            token=token if tls_enabled else None,
+            token=token,
             tls_enabled=tls_enabled,
             tls_cert=tls_cert if tls_enabled else None
         )
