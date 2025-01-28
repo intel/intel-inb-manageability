@@ -320,6 +320,9 @@ EOF
 
   chgrp -R cloudadapter-agent "$ADAPTER_CFG_DIR"
   chmod 640 "$ADAPTER_CFG_FILE"
+
+  chgrp cloudadapter-agent "$ONBOARDING_JSON"
+  chmod 640 "$ONBOARDING_JSON"
 }
 
 if grep -q "TRUE" /etc/intel-manageability/public/ucc_flag ; then
