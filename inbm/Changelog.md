@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - (NEXMANAGE-956) Improve failure reason from TC that is logged in Mjunct DB for FOTA
 - (NEXMANAGE-1194) provision-tc/mqtt services will now handle UDM 
 
+### Added
+- (NEXMANAGE-1222) Add support for Ubuntu 24.04
+
 ## 4.2.8.2 - 2024-12-18
 ### Changed
  - (NEXMANAGE-1121) Remove mqtt-ca group from /var/cache/manageability/repository-tool directory
