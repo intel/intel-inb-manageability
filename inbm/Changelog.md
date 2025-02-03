@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 - (NEXMANAGE-956) Improve failure reason from TC that is logged in Mjunct DB for FOTA
 - (NEXMANAGE-1194) provision-tc/mqtt services will now handle UDM 
+- (NEXMANAGE-1236) Upgrade golang.org/x/net from 0.23.0 to 0.33.0
 
 ### Added
 - (NEXMANAGE-1222) Add support for Ubuntu 24.04
