@@ -41,7 +41,7 @@ RPC_OPERATION_LARGE = RpcActivateOperation(
 )
 
 RPC_OPERATION_LARGE_MANIFEST_XML = (
-    '<?xml version="1.0" encoding="utf-8"?>'
+    '<?xml version="1.0" encoding="utf-8"?>\n'
     '<manifest><type>cmd</type><cmd>rpc</cmd>'
     '<rpc><fetch>wss://1.1.1.1</fetch>'
     '<profileName>udmProfile</profileName>'
