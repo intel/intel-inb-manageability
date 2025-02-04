@@ -130,9 +130,8 @@ def convert_rpc_activate_operation_to_xml_manifest(operation: RpcActivateOperati
     # Create the root element
     manifest = ET.Element('manifest')
     ET.SubElement(manifest, 'type').text = 'cmd'
-
-    cmd = ET.SubElement(manifest, 'cmd')
-    rpc = ET.SubElement(cmd, 'rpc')
+    ET.SubElement(manifest, 'cmd').text = 'rpc'
+    rpc = ET.SubElement(manifest, 'rpc')
 
     if operation.url:
         ET.SubElement(rpc, 'fetch').text = operation.url
