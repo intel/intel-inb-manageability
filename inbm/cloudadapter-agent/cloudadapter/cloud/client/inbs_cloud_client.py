@@ -251,7 +251,7 @@ class InbsCloudClient(CloudClient):
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
                 command_type = item.command.WhichOneof("inbm_command")
 
-                if self.get_dispatcher_state() == DEAD and command_type != "ping":
+                if self.get_dispatcher_state() == DEAD and not (command_type in ["ping", "decommission"]):
                     logger.error(
                         f"Dispatcher not in running state. Unable to process request - {request_id}"
                     )
@@ -312,6 +312,14 @@ class InbsCloudClient(CloudClient):
                         logger.debug(
                             f"Received ping command for request_id {request_id}"
                         )
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(
+                            request_id=request_id
+                        )
+                    elif command_type == "decommission":
+                        logger.debug(
+                            f"Received decommission command for request_id {request_id}"
+                        )
+                        # TODO: actually decommission, return ack or error
                         yield inbs_sb_pb2.HandleINBMCommandResponse(
                             request_id=request_id
                         )
