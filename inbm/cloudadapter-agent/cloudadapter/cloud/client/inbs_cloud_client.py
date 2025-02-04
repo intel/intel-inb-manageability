@@ -64,15 +64,18 @@ class InbsCloudClient(CloudClient):
         self._disp_state_lock = threading.Lock()
 
         self._metadata: list[tuple[str, str]] = [("node-id", node_id)]
-        if tls_enabled:
-            if token is None:
-                raise AuthenticationError("Token is required when TLS is enabled.")
-            else:
-                self._metadata.append(("token", token))
-            if tls_cert is None:
-                raise AuthenticationError(
-                    "TLS certificate path is required when TLS is enabled."
-                )
+
+        # this code will be used when TLS is available in INBS
+        # if tls_enabled:
+        #     if token is None:
+        #         raise AuthenticationError("Token is required when TLS is enabled.")
+        #     else:
+        #         self._metadata.append(("authorization", "Bearer " + token))
+        #     # if tls_cert is None, this is OK; implied that we have it installed system wide
+        # instead, we will simply use the token if it exists
+
+        if token is not None:
+            self._metadata.append(("authorization", "Bearer " + token))
         self._stop_event = threading.Event()
 
         self._grpc_channel: grpc.Channel | None = None # this will get set after connect is called
@@ -344,7 +347,10 @@ class InbsCloudClient(CloudClient):
         if self._tls_enabled:
             # Create a secure channel with SSL credentials
             logger.debug("Setting up connection to INBS cloud with TLS enabled")
-            credentials = grpc.ssl_channel_credentials(root_certificates=self._tls_cert)
+            if self._tls_cert is None:  # assume cert is installed system wide
+                credentials = grpc.ssl_channel_credentials()
+            else:    
+                credentials = grpc.ssl_channel_credentials(root_certificates=self._tls_cert)
             self.channel = grpc.secure_channel(
                 f"{self._grpc_hostname}:{self._grpc_port}", credentials
             )
