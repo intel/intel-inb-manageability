@@ -17,7 +17,7 @@ from datetime import datetime
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
-from cloudadapter.constants import METHOD, DEAD, NODE_UPDATE_JSON_SCHEMA_LOCATION
+from cloudadapter.constants import METHOD, DEAD, NODE_UPDATE_JSON_SCHEMA_LOCATION, UDM_ONBOARDING_JSON_PATH
 from cloudadapter.exceptions import AuthenticationError, PublishError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
@@ -319,9 +319,22 @@ class InbsCloudClient(CloudClient):
                         logger.debug(
                             f"Received decommission command for request_id {request_id}"
                         )
-                        # TODO: actually decommission, return ack or error
+                        error = "" # default no error
+                        try:
+                            with open(UDM_ONBOARDING_JSON_PATH, "w") as _:
+                                pass # truncate onboarding.json, which will remove the device's key to access the cloud
+                        except FileNotFoundError:
+                            pass # this is still success
+                        except PermissionError as e:
+                            error = f"permission denied opening onboarding.json: {e}"
+                            logger.error(error)
+                        except OSError as e:
+                            error = f"IO error occurred opening onboarding.json: {e}"
+                            logger.error(error)
+
                         yield inbs_sb_pb2.HandleINBMCommandResponse(
-                            request_id=request_id
+                            request_id=request_id,
+                            error=error
                         )
                     else:
                         logger.error(
