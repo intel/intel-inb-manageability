@@ -31,6 +31,8 @@ class RpcActivateOperation:
             (out, err, code) = PseudoShellRunner().run(command)
             if code == 0:
                 return "success"
+            else:
+                logger.error(f"Failed to execute rpc command. out={out}, err={err}, code={code}")
         except FileNotFoundError as err:
             logger.error(err)
 
