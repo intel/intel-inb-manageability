@@ -4,10 +4,12 @@
     Copyright (C) 2025 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
-from typing import Optional
+
+import logging
 import shlex
 from inbm_common_lib.shell_runner import PseudoShellRunner
 
+logger = logging.getLogger(__name__)
 
 class RpcActivateOperation:
     def __init__(self) -> None:
@@ -25,8 +27,11 @@ class RpcActivateOperation:
         url = shlex.quote(url)
         name = shlex.quote(name)
         command = f"rpc activate -u {url}/activate -n -profile {name}"
-        (out, err, code) = PseudoShellRunner().run(command)
-        if code == 0:
-            return "success"
-        else:
-            return "failure"
+        try:
+            (out, err, code) = PseudoShellRunner().run(command)
+            if code == 0:
+                return "success"
+        except FileNotFoundError as err:
+            logger.error(err)
+
+        return "failure"
