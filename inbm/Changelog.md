@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - (NEXMANAGE-1222) Add support for Ubuntu 24.04
+- (NEXMANAGE-610, NEXMANAGE-692) Add support to handle OOB AMT RPC activation command
 
 ## 4.2.8.2 - 2024-12-18
 ### Changed

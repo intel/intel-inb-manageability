@@ -30,6 +30,7 @@
   /bin/gzip rix,
   /bin/lsb_release rUx,
   /usr/bin/lsb_release rUx,
+  /usr/bin/rpc rix,
   /usr/bin/tar rix,
   /usr/bin/gzip rix,
   /bin/uname rix,
