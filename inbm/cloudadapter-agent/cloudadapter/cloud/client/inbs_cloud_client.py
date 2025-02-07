@@ -340,10 +340,17 @@ class InbsCloudClient(CloudClient):
                         )
                         error = self.decommission()
 
+                        # Only set the error field if there's an actual error message
+                        if error:
+                            response_error = common_pb2.Error(
+                                message=f"cloudadapter: error decommissioning: {error}"
+                            )
+                        else:
+                            response_error = None
+
                         yield inbs_sb_pb2.HandleINBMCommandResponse(
                             request_id=request_id,
-                            error=common_pb2.Error(
-                                message=f"cloudadapter: error decommissioning: {error}"),
+                            error=response_error,
                         )
                     else:
                         logger.error(
