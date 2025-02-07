@@ -236,7 +236,7 @@ class InbsCloudClient(CloudClient):
         """Decommission the device by truncating the onboarding.json file containing the device tokens.
         Returns an empty string on success, otherwise returns an error string"""
         error = "" # default, no error
-        
+
         try:
             with open(UDM_ONBOARDING_JSON_PATH, "w") as _:
                 pass # truncate onboarding.json, which will remove the device's key to access the cloud
@@ -342,7 +342,8 @@ class InbsCloudClient(CloudClient):
 
                         yield inbs_sb_pb2.HandleINBMCommandResponse(
                             request_id=request_id,
-                            error=error
+                            error=common_pb2.Error(
+                                message=f"cloudadapter: error decommissioning: {error}"),
                         )
                     else:
                         logger.error(
