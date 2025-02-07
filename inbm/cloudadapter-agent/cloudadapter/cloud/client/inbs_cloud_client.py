@@ -231,6 +231,23 @@ class InbsCloudClient(CloudClient):
 
         # for now ignore all callbacks; only Ping is supported
         self._callbacks[name] = callback
+
+    def decommission(self) -> str:  # pragma: no cover
+        """Decommission the device by truncating the onboarding.json file containing the device tokens.
+        Returns an empty string on success, otherwise returns an error string"""
+        try:
+            with open(UDM_ONBOARDING_JSON_PATH, "w") as _:
+                pass # truncate onboarding.json, which will remove the device's key to access the cloud
+        except FileNotFoundError:
+            pass # this is still success
+        except PermissionError as e:
+            error = f"permission denied opening onboarding.json: {e}"
+            logger.error(error)
+        except OSError as e:
+            error = f"IO error occurred opening onboarding.json: {e}"
+            logger.error(error)
+        return error
+
     
     def _handle_inbm_command_request(
         self, request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
@@ -319,18 +336,7 @@ class InbsCloudClient(CloudClient):
                         logger.debug(
                             f"Received decommission command for request_id {request_id}"
                         )
-                        error = "" # default no error
-                        try:
-                            with open(UDM_ONBOARDING_JSON_PATH, "w") as _:
-                                pass # truncate onboarding.json, which will remove the device's key to access the cloud
-                        except FileNotFoundError:
-                            pass # this is still success
-                        except PermissionError as e:
-                            error = f"permission denied opening onboarding.json: {e}"
-                            logger.error(error)
-                        except OSError as e:
-                            error = f"IO error occurred opening onboarding.json: {e}"
-                            logger.error(error)
+                        error = self.decommission()
 
                         yield inbs_sb_pb2.HandleINBMCommandResponse(
                             request_id=request_id,
