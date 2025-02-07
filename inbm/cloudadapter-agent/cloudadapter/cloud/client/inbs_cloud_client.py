@@ -235,6 +235,8 @@ class InbsCloudClient(CloudClient):
     def decommission(self) -> str:  # pragma: no cover
         """Decommission the device by truncating the onboarding.json file containing the device tokens.
         Returns an empty string on success, otherwise returns an error string"""
+        error = "" # default, no error
+        
         try:
             with open(UDM_ONBOARDING_JSON_PATH, "w") as _:
                 pass # truncate onboarding.json, which will remove the device's key to access the cloud
