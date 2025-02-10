@@ -78,6 +78,7 @@
                             <xs:enumeration value="shutdown"/>
                             <xs:enumeration value="restart"/>
                             <xs:enumeration value="decommission"/>
+                            <xs:enumeration value="rpc"/>
                         </xs:restriction>
                     </xs:simpleType>
                 </xs:element>
@@ -139,6 +140,15 @@
                                     </xs:restriction>
                                 </xs:simpleType>
                             </xs:element>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="rpc" minOccurs="0">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="fetch" type="Max50Chars"/>
+                            <xs:element name="profileName" type="Max50Chars"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
