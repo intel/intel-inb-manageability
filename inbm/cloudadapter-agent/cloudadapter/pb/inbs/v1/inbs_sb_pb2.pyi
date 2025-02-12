@@ -59,19 +59,23 @@ class INBMCommand(google.protobuf.message.Message):
 
     UPDATE_SCHEDULED_OPERATIONS_FIELD_NUMBER: builtins.int
     PING_FIELD_NUMBER: builtins.int
+    DECOMMISSION_FIELD_NUMBER: builtins.int
     @property
     def update_scheduled_operations(self) -> global___UpdateScheduledOperations: ...
     @property
     def ping(self) -> global___Ping: ...
+    @property
+    def decommission(self) -> global___Decommission: ...
     def __init__(
         self,
         *,
         update_scheduled_operations: global___UpdateScheduledOperations | None = ...,
         ping: global___Ping | None = ...,
+        decommission: global___Decommission | None = ...,
     ) -> None: ...
-    def HasField(self, field_name: typing.Literal["inbm_command", b"inbm_command", "ping", b"ping", "update_scheduled_operations", b"update_scheduled_operations"]) -> builtins.bool: ...
-    def ClearField(self, field_name: typing.Literal["inbm_command", b"inbm_command", "ping", b"ping", "update_scheduled_operations", b"update_scheduled_operations"]) -> None: ...
-    def WhichOneof(self, oneof_group: typing.Literal["inbm_command", b"inbm_command"]) -> typing.Literal["update_scheduled_operations", "ping"] | None: ...
+    def HasField(self, field_name: typing.Literal["decommission", b"decommission", "inbm_command", b"inbm_command", "ping", b"ping", "update_scheduled_operations", b"update_scheduled_operations"]) -> builtins.bool: ...
+    def ClearField(self, field_name: typing.Literal["decommission", b"decommission", "inbm_command", b"inbm_command", "ping", b"ping", "update_scheduled_operations", b"update_scheduled_operations"]) -> None: ...
+    def WhichOneof(self, oneof_group: typing.Literal["inbm_command", b"inbm_command"]) -> typing.Literal["update_scheduled_operations", "ping", "decommission"] | None: ...
 
 global___INBMCommand = INBMCommand
 
@@ -100,6 +104,16 @@ class Ping(google.protobuf.message.Message):
     ) -> None: ...
 
 global___Ping = Ping
+
+@typing.final
+class Decommission(google.protobuf.message.Message):
+    DESCRIPTOR: google.protobuf.descriptor.Descriptor
+
+    def __init__(
+        self,
+    ) -> None: ...
+
+global___Decommission = Decommission
 
 @typing.final
 class SendNodeUpdateRequest(google.protobuf.message.Message):

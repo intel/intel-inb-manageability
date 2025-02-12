@@ -25,6 +25,7 @@ message INBMCommand {
   oneof inbm_command {
     UpdateScheduledOperations update_scheduled_operations = 1;
     Ping ping = 2;
+    Decommission decommission = 3;
   }
 }
 
@@ -33,6 +34,8 @@ message UpdateScheduledOperations {
 }
 
 message Ping {}
+
+message Decommission {}
 
 message SendNodeUpdateRequest {
   string request_id = 1;
