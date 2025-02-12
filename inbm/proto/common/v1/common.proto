@@ -4,6 +4,7 @@ package common.v1;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/duration.proto";
+import "buf/validate/validate.proto";
 
 message Error {
   string message = 1;
@@ -50,12 +51,12 @@ message RepeatedSchedule {
 }
 
 message Operation {
-  repeated PreOperation pre_operations = 1;
-  repeated PostOperation post_operations = 2;
+  repeated PreOperation pre_operations = 1 [(buf.validate.field).repeated = {min_items: 0}];
+  repeated PostOperation post_operations = 2 [(buf.validate.field).repeated = {min_items: 0}];
 
   // removed service_type field
   reserved 3;
-  reserved "service_type"; 
+  reserved "service_type";
   
   oneof operation {
     UpdateSystemSoftwareOperation update_system_software_operation = 4;
@@ -67,22 +68,43 @@ message Operation {
 }
 
 message RpcActivateOperation {
-  string url = 1;
+  string url = 1 [(buf.validate.field).cel = {
+      id: "valid_uri"
+      message: "url must be a valid URL."
+      expression: "this.isUri()"
+    },
+    (buf.validate.field).required = true];;
   string profile_name = 2;
 }
 
 message UpdateSystemSoftwareOperation {
-    string url = 1; // URL from which to remotely retrieve the package
-    google.protobuf.Timestamp release_date = 2; // Release date of the new SW update.
+    string url = 1 [(buf.validate.field).cel = {
+      id: "valid_uri"
+      message: "url must be a valid URL."
+      expression: "this.isUri()"
+    },
+    (buf.validate.field).required = true]; // URL from which to remotely retrieve the package
+    google.protobuf.Timestamp release_date = 2 [(buf.validate.field).required = true]; // Release date of the new SW update.
     enum DownloadMode {
         DOWNLOAD_MODE_UNSPECIFIED = 0;
         DOWNLOAD_MODE_FULL = 1; // Both download the package and install the package
         DOWNLOAD_MODE_NO_DOWNLOAD = 2; // Do not download the package.  Only install.
         DOWNLOAD_MODE_DOWNLOAD_ONLY = 3; // Only download the package.  Do not install.
     }
-    DownloadMode mode = 3; // Mode for installing the softare update regarding download and install steps.
+    DownloadMode mode = 3 [
+        (buf.validate.field).enum = {
+            defined_only: true
+        },
+    (buf.validate.field).required = true]; // Mode for installing the softare update regarding download and install steps.
     bool do_not_reboot = 4;  // Whether to reboot the node after the firmware update attempt
-    repeated string package_list = 5; // List of packages to install if whole package update isn't desired.
+    repeated string package_list = 5 [(buf.validate.field).repeated = {
+        unique: true,
+        items: {
+            string: {
+                pattern: "^[a-zA-Z0-9_-]+$" // Adjust the pattern as needed
+            }
+        }
+    }]; // List of packages to install if whole package update isn't desired.
 }
 
 message SetPowerStateOperation {
@@ -97,19 +119,28 @@ message SetPowerStateOperation {
 }
 
 message UpdateFirmwareOperation {
-  string url = 1; // URL from which to remotely retrieve the firmware update package
+  string url = 1[(buf.validate.field).cel = {
+      id: "valid_uri"
+      message: "url must be a valid URL."
+      expression: "this.isUri()"
+    },
+    (buf.validate.field).required = true]; // URL from which to remotely retrieve the firmware update package
   string bios_version = 2; // BIOS version of the new firmware update.
   enum SignatureVersion {
     SIGNATURE_VERSION_UNSPECIFIED = 0;
     SIGNATURE_VERSION_256 = 1;
     SIGNATURE_VERSION_384 = 2;    
   }
-  SignatureVersion signature_version = 3; // Signature version of the new firmware package.
+  SignatureVersion signature_version = 3 [
+        (buf.validate.field).enum = {
+            defined_only: true
+        }
+    ]; // Signature version of the new firmware package.
   string signature = 4; // Digital signature of *.tar file
   string vendor = 5; // Vendor of the new firmware update.
   string manufacturer = 6; // Manufacturer of the board.
   string product_name = 7; // Product name of the board.
-  google.protobuf.Timestamp release_date = 8; // Release date of the new firmware update.
+  google.protobuf.Timestamp release_date = 8 [(buf.validate.field).required = true]; // Release date of the new firmware update.
   string guid = 9; // GUID to match on the platform.  Check for 'System Firmware type' when running the command: 'fwupdate -i'
   string tooloptions = 10; // Optional switches to be used with vendor software tool during the update.
   string username = 11; // Username to be used during fetch from remote repository.
