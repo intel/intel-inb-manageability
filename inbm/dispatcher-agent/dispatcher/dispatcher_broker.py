@@ -74,7 +74,6 @@ class DispatcherBroker:
             extra_log = f" with id {request_id}"
         else:
             extra_log = ""
-        logger.debug("% in DispatcherBroker send_result")
         logger.debug(f"Sending result message{extra_log}: {message}")
 
         if "/" in request_id:
@@ -84,12 +83,10 @@ class DispatcherBroker:
             logger.error('Cannot send result: dispatcher core not initialized')
             return
         
-        logger.debug("% Checking if there is a started job in DB")
         schedule = self._check_db_for_started_job()
         logger.debug(f"Schedule in Broker Send_result: {schedule}")
         
         if not schedule:
-            logger.debug("% This is not a scheduled job")
             # This is not a scheduled job
             logger.debug(f"Sending result message with id {request_id}: {message}")
             if request_id != "":
@@ -98,7 +95,6 @@ class DispatcherBroker:
             else:
                 self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
         else:
-            logger.debug("% This is a scheduled job")
             # This is a scheduled job 
             
             # TODO: add error handling NEXMANAGE-743
@@ -126,7 +122,6 @@ class DispatcherBroker:
                 return
        
             logger.debug(f"Sending node update message: {str(updated_message)}")
-            logger.debug("% Sending node update message for send_result")
             self.send_update(str(updated_message))        
 
     def mqtt_publish(self, topic: str, payload: Any, qos: int = 0, retain: bool = False) -> None:  # pragma: no cover
