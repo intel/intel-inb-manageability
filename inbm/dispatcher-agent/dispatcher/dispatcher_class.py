@@ -265,6 +265,7 @@ class Dispatcher:
         elif cmd == "restart":
             logger.info("Restart command received.  Restarting system...")
             message = self.device_manager.restart()
+            logger.debug("% Returned from device_manager.restart")
             if message == SUCCESS_RESTART:
                 state: dispatcher_state.DispatcherState = {'restart_reason': 'restart_cmd'}
                 dispatcher_state.write_dispatcher_state_to_state_file(state)
@@ -304,6 +305,7 @@ class Dispatcher:
         @param message: message to be published to cloud
         """
         # Check if this is a request stored in the DB and started from the APScheduler
+        logger.debug("% in Dispatcher _send_result")
         logger.debug(f"Sending result message with request_id={request_id}, message={message}") 
         self._dispatcher_broker.send_result(message, request_id)
             
@@ -316,7 +318,9 @@ class Dispatcher:
         """
         logger.debug(f"Running schedule of type={type(schedule)}, job with JobID={schedule.job_id}, manifest={manifest}")
         self.sqlite_mgr.update_status(schedule, STARTED)
+        logger.debug("% run_scheduled_job calling do_install")
         self.do_install(xml=manifest, job_id=schedule.job_id)
+        logger.debug("% do_install coming back to run_scheduled_job")
         
     def do_install(self, xml: str, schema_location: Optional[str] = None, job_id: str = "") -> Result:
         """Delegates the installation to either
@@ -339,6 +343,7 @@ class Dispatcher:
             if type_of_manifest == 'cmd':
                 logger.debug("Running command sent down ")
                 result = self._perform_cmd_type_operation(parsed_head, xml)
+                logger.debug("% Returned from _perform_cmd_type_operation")
             elif type_of_manifest == 'source':
                 logger.debug('Running source command')
                 # FIXME: actually detect OS
@@ -394,7 +399,8 @@ class Dispatcher:
             result = Result(CODE_BAD_REQUEST, str(e))
             self._update_logger.status = FAIL
             self._update_logger.error = str(e)
-        finally:            
+        finally:  
+            logger.debug("% In do_install finally block.. result is " + str(result))          
             logger.info('Install result: %s', str(result))
             self._send_result(message=str(result))
             if result.status != CODE_OK and parsed_head:

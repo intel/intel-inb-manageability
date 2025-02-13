@@ -51,9 +51,13 @@ class LinuxDeviceManager(DeviceManager):
 
     def restart(self) -> str:
         logger.debug("Restart Linux system command received")
+        logger.debug("% Trying to run shutdown")
         (out, err, code) = self.runner.run(LINUX_POWER + LINUX_RESTART)
+        logger.debug("% Shutdown run ")
         if code != 0:
+            logger.debug("% Code != 0")
             raise DispatcherException(f"Restart FAILED. Error:{err}")
+        logger.debug("% Shutdown successful")
         return SUCCESS_RESTART
 
     def shutdown(self) -> str:
