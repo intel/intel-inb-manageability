@@ -276,9 +276,9 @@ class Dispatcher:
             name = parsed_head.get_children('rpc')['profileName']
             rpc_result = RpcActivateOperation().execute_rpc_activation_cmd(url, name)
             if rpc_result == 'success':
-                self._send_result(message="Successful RPC Activation Operation")
+                self._send_result(str(Result(CODE_OK, "Successful RPC Activation Operation.")))
             else:
-                self._send_result(message="Failed RPC Activation Operation")
+                self._send_result(str(Result(CODE_BAD_REQUEST, "Failed RPC Activation Operation")))
         elif cmd == "custom":
             header = parsed_head.get_children('custom')
             json_data = header['data']
