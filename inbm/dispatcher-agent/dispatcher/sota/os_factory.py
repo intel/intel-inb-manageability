@@ -14,7 +14,7 @@ from inbm_lib.detect_os import OsType, LinuxDistType
 from .constants import BTRFS
 from .downloader import *
 from .os_updater import DebianBasedUpdater, WindowsUpdater, YoctoX86_64Updater, OsUpdater, YoctoARMUpdater, \
-    TiberOSUpdater
+    TiberUpdater
 from .rebooter import *
 from .setup_helper import *
 from .setup_helper import SetupHelper
@@ -77,13 +77,13 @@ class SotaOsFactory:
         elif os_type == OsType.Windows.name:
             logger.debug("Windows returned")
             return Windows(self._dispatcher_broker)
-        #TODO: Remove this when confirmed that TiberOS is in use
+        #TODO: Remove this when confirmed that Tiber is in use
         elif os_type == LinuxDistType.Mariner.name:
             logger.debug("Mariner returned")
-            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature, self._uri)
+            return TiberBasedSotaOs(self._dispatcher_broker, self._signature, self._uri)
         elif os_type == LinuxDistType.tiber.name:
-            logger.debug("TiberOS returned")
-            return TiberOSBasedSotaOs(self._dispatcher_broker, self._signature, self._uri)
+            logger.debug("Tiber returned")
+            return TiberBasedSotaOs(self._dispatcher_broker, self._signature, self._uri)
         raise ValueError('Unsupported OS type: ' + os_type)
 
 
@@ -260,8 +260,8 @@ class Windows(ISotaOs):
         return WindowsDownloader()
 
 
-class TiberOSBasedSotaOs(ISotaOs):
-    """TiberOSBasedSotaOs class, child of ISotaOs"""
+class TiberBasedSotaOs(ISotaOs):
+    """TiberBasedSotaOs class, child of ISotaOs"""
 
     def __init__(self,  dispatcher_broker: DispatcherBroker, signature: Optional[str] = None,
                  uri: Optional[str] = None) -> None:
@@ -277,7 +277,7 @@ class TiberOSBasedSotaOs(ISotaOs):
 
     def create_setup_helper(self) -> SetupHelper:
         logger.debug("")
-        return TiberOSSetupHelper(self._dispatcher_broker)
+        return TiberSetupHelper(self._dispatcher_broker)
 
     def create_rebooter(self) -> Rebooter:
         logger.debug("")
@@ -285,16 +285,16 @@ class TiberOSBasedSotaOs(ISotaOs):
 
     def create_os_updater(self) -> OsUpdater:
         logger.debug("")
-        return TiberOSUpdater(signature=self._signature, uri=self._uri)
+        return TiberUpdater(signature=self._signature, uri=self._uri)
 
     def create_snapshotter(self, sota_cmd: str, snap_num: Optional[str],
                            proceed_without_rollback: bool, reboot_device: bool) -> Snapshot:
         logger.debug("")
         trtl = Trtl(PseudoShellRunner(), BTRFS)
-        return TiberOSSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num,
+        return TiberSnapshot(trtl, sota_cmd, self._dispatcher_broker, snap_num,
                              proceed_without_rollback, reboot_device)
 
     def create_downloader(self) -> Downloader:
         """ Create a downloader object"""
         logger.debug("")
-        return TiberOSDownloader()
+        return TiberDownloader()

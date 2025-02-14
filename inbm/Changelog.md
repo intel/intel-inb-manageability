@@ -44,7 +44,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## 4.2.7 - 2024-11-8
 ### Changed
- - (NEXMANAGE-949) Check the IMAGE_BUILD_DATE instead of VERSION for TiberOS SOTA verification
+ - (NEXMANAGE-949) Check the IMAGE_BUILD_DATE instead of VERSION for Tiber SOTA verification
 
 ### Added
  - (NEXMANAGE-950) Add Set Power State Capability to cloudadapter from UDM
@@ -71,7 +71,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEXMANAGE-737) Enable sota cancel mode
 
 ### Fixed
- - (NEXMANAGE-872) Fix provision-tc issue in TiberOS - cannot overwrite /etc/dispatcher.environment
+ - (NEXMANAGE-872) Fix provision-tc issue in Tiber - cannot overwrite /etc/dispatcher.environment
  - (NEXMANAGE-846) Fix granular log raise error when granular log file is empty
 
 ### Changed
@@ -81,12 +81,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## 4.2.6 - 2024-10-04
 ### Added
- - (NEXMANAGE-515) Update dispatcher SOTA related classes for supporting TiberOS
- - (NEXMANAGE-598) Expanding INBC for handling TiberOS update cmd
+ - (NEXMANAGE-515) Update dispatcher SOTA related classes for supporting Tiber
+ - (NEXMANAGE-598) Expanding INBC for handling Tiber update cmd
  - Updated proto files to add new RPC calls to allow edge node to update
    its status with INBS.
  - (NEXMANAGE-610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
- - Update TiberOS name to "tiber"
+ - Update Tiber name to "tiber"
  - (NEXMANAGE-613) Store Scheduled updates in DB, Add nodeUpdate communication stream, and plumbing to return correct jobID on scheduled request.
 
 ### Changed

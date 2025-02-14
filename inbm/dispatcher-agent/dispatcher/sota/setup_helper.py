@@ -188,13 +188,13 @@ class YoctoSetupHelper(SetupHelper):
         return ""
 
 
-class TiberOSSetupHelper(SetupHelper):
+class TiberSetupHelper(SetupHelper):
     """
-    TiberOS specific implementation of SetupHelper.
+    Tiber specific implementation of SetupHelper.
     """
 
     def __init__(self, broker: DispatcherBroker) -> None:
-        """ Initializes TiberOSSetupHelper
+        """ Initializes TiberSetupHelper
         @param broker: DispatcherBroker instance used to communicate with other INBM agents
         """
         self._broker = broker
@@ -202,10 +202,10 @@ class TiberOSSetupHelper(SetupHelper):
 
     def pre_processing(self) -> bool:
         """Perform checks immediately before applying an OS update or upgrade.
-        TiberOS: if Update Tool is present, it proceeds to perform the OS update
+        Tiber: if Update Tool is present, it proceeds to perform the OS update
         @return: True if OK to proceed; False otherwise
         """
-        logger.debug("TiberOS pre processing")
+        logger.debug("Tiber pre processing")
         return self._is_update_tool_exists()
 
     def _is_update_tool_exists(self) -> bool:
@@ -227,5 +227,5 @@ class TiberOSSetupHelper(SetupHelper):
 
         FIXME this is not OS generic)
         """
-        logger.debug("TiberOS post processing")
+        logger.debug("Tiber post processing")
         return ""
