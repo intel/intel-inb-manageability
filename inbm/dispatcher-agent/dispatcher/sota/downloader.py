@@ -176,8 +176,8 @@ class YoctoDownloader(Downloader):
         return self.is_valid_release_date(release_date)
 
 
-class TiberOSDownloader(Downloader):
-    """TiberOSDownloader class, child of Downloader"""
+class TiberDownloader(Downloader):
+    """TiberDownloader class, child of Downloader"""
 
     def __init__(self) -> None:
         super().__init__()
@@ -203,7 +203,7 @@ class TiberOSDownloader(Downloader):
         """
 
         if uri is None:
-            raise SotaError("URI is None while performing TiberOS download")
+            raise SotaError("URI is None while performing Tiber download")
 
         password = read_release_server_token()
 

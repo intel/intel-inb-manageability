@@ -24,13 +24,13 @@ class GranularLogHandler:
     def save_granular_log(self, update_logger: UpdateLogger, check_package: bool = True) -> None:
         """Save the granular log.
         In Ubuntu, it saves the package level information.
-        In TiberOS, it saves the detail of the SOTA update.
+        In Tiber, it saves the detail of the SOTA update.
 
         @param check_package: True if you want to check the package's status and version and record them in Ubuntu.
         """
         log = {}
         current_os = detect_os()
-        # TODO: Remove Mariner when confirmed that TiberOS is in use
+        # TODO: Remove Mariner when confirmed that Tiber is in use
         with self._granular_lock:
             if current_os == LinuxDistType.tiber.name or current_os == LinuxDistType.Mariner.name:
                 # Delete the previous log if exist.
@@ -49,14 +49,14 @@ class GranularLogHandler:
                         "StatusDetail.Status": update_logger.detail_status,
                         "Version": get_image_build_date()
                     }
-                # In TiberOS, no package level information needed.
+                # In Tiber, no package level information needed.
                 update_logger.save_granular_log_file(log=log, check_package=False)
             else:
                 update_logger.save_granular_log_file(check_package=check_package)
 
     def map_failure_reason(self, error_log: str) -> str:
         """ This method parses the error log to map the enum of failure reasons as required by MM.
-        It is only used for TiberOS.
+        It is only used for Tiber.
 
         @param error_log: Error message to be checked
         @return: Corresponding mapping of the failure reason

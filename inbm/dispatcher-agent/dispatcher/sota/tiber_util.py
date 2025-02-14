@@ -1,5 +1,5 @@
 """
-    Tiber Util module will be called by dispatcher to perform the image downloading in TiberOS.
+    Tiber Util module will be called by dispatcher to perform the image downloading in Tiber.
 
     Copyright (C) 2017-2024 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
@@ -153,7 +153,7 @@ def is_enough_space_to_download(manifest_uri: str,
 
 
 def read_release_server_token(token_path: str = RELEASE_SERVER_TOKEN_PATH) -> str:
-    """Read release server JWT token from a path configured by Tiber OS node-agent. The node agent will renew
+    """Read release server JWT token from a path configured by Tiber node-agent. The node agent will renew
     the token when the token is expired.
 
     @return: JWT token to access release server
@@ -167,10 +167,10 @@ def read_release_server_token(token_path: str = RELEASE_SERVER_TOKEN_PATH) -> st
         else:
             msg = f"{token_path} not exist."
     except OSError as err:
-        raise SotaError(f"Error while performing TiberOS download: {err}")
+        raise SotaError(f"Error while performing Tiber download: {err}")
 
     if token is None:
         msg = f"No JWT token found."
 
     logger.error(msg)
-    raise SotaError(f"Error while performing TiberOS download: {msg}")
+    raise SotaError(f"Error while performing Tiber download: {msg}")
