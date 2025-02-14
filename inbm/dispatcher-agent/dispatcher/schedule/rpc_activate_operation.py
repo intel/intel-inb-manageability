@@ -28,7 +28,9 @@ class RpcActivateOperation:
         name = shlex.quote(name)
         command = f"rpc activate -u {url}/activate -n -profile {name}"
         try:
-            (out, err, code) = PseudoShellRunner().run(command)
+            # This is a temporary solution that involves hardcoding the password in the command.
+            # TODO: Find a way to securely obtain the password and replace the stdin string below.
+            (out, err, code) = PseudoShellRunner().run(command, stdin="P@ssw0rd")
             if code == 0:
                 return "success"
             else:

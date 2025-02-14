@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
+### Fixed
+ - (NEXMANAGE-1265) Fix AMT provision issue
+
 ### Changed
 - (NEXMANAGE-956) Improve failure reason from TC that is logged in Mjunct DB for FOTA
 - (NEXMANAGE-1194) provision-tc/mqtt services will now handle UDM
