@@ -3,10 +3,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## X.X.X - YYYY-MM-DD
+## 4.2.8.3 - 2025-02-14
 ### Added
  - (NEXMANAGE-1222) Add support for Ubuntu 24.04
 
+### Changed
+ - Renamed/corrected some Tiber references
 
 ## 4.2.8.2 - 2024-12-18
 ### Changed
