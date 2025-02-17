@@ -2,8 +2,7 @@ name: DEVELOPER ASSISTANT
 on:
   pull_request:
     types: [opened, reopened]
-  issue_comment:
-permissions:
+  issue_comment:permissions:
   actions: read
   pull-requests: read
   statuses: read
@@ -31,23 +30,20 @@ jobs:
       - name: Smart Devops PR Agent Action
         id: pragent
         run: |
-          export GITHUB_ACTION_AUTO_REVIEW="${GITHUB_ACTION_AUTO_REVIEW}"
-          export GITHUB_ACTION_AUTO_DESCRIBE="${GITHUB_ACTION_AUTO_DESCRIBE}"
-          export GITHUB_ACTION_UPDATE_TITLE="${GITHUB_ACTION_UPDATE_TITLE}"
           docker run --rm \
-            -e GITHUB_CONTEXT="${GITHUB_CONTEXT}" \
-            -e GITHUB_ACTION.AUTO_REVIEW="${GITHUB_ACTION_AUTO_REVIEW}" \
-            -e GITHUB_ACTION.AUTO_DESCRIBE="${GITHUB_ACTION_AUTO_DESCRIBE}" \
-            -e GITHUB_ACTION.UPDATE_TITLE="${GITHUB_ACTION_UPDATE_TITLE}" \
-            -e PR_NUMBER="${PR_NUMBER}" \
-            -e API_KEY="${API_KEY}" \
-            -e API_BASE="${API_BASE}" \
-            -e STABLE_API_VERSION="${STABLE_API_VERSION}" \
-            -e PREVIEW_API_VERSION="${PREVIEW_API_VERSION}" \
-            -e DEPLOY_NAME="${DEPLOY_NAME}" \
-            -e PUSH_TOKEN="${PUSH_TOKEN}" \
-            -e CLIENT_ID="${CLIENT_ID}" \
-            -e CLIENT_SECRET="${CLIENT_SECRET}" \
+            -e GITHUB_CONTEXT="${{ toJson(github) }}" \
+            -e GITHUB_ACTION_AUTO_REVIEW=true \
+            -e GITHUB_ACTION_AUTO_DESCRIBE=true \
+            -e GITHUB_ACTION_UPDATE_TITLE=false \
+            -e PR_NUMBER="${{ github.event.number }}" \
+            -e API_KEY="${{ secrets.API_KEY }}" \
+            -e API_BASE="${{ secrets.API_BASE }}" \
+            -e STABLE_API_VERSION="${{ secrets.STABLE_API_VERSION }}" \
+            -e PREVIEW_API_VERSION="${{ secrets.PREVIEW_API_VERSION }}" \
+            -e DEPLOY_NAME="${{ secrets.DEPLOY_NAME }}" \
+            -e PUSH_TOKEN="${{ secrets.PUSH_TOKEN }}" \
+            -e CLIENT_ID="${{ secrets.CLIENT_ID }}" \
+            -e CLIENT_SECRET="${{ secrets.CLIENT_SECRET }}" \
             011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable bash -c "
             . /genai_agent/genai_env/bin/activate && /genai_agent/get_pr_agent_details.sh
           "
