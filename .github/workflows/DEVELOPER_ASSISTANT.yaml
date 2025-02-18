@@ -3,6 +3,7 @@ on:
   pull_request:
     types: [opened, reopened]
   issue_comment:
+permissions:
   actions: read
   pull-requests: read
   statuses: read
