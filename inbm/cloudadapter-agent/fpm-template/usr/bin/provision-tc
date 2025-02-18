@@ -38,11 +38,6 @@ function provision {
     if [[ "$NO_CLOUD" == "" ]]; then
       configure_cloud
     fi
-    if ! [[ -v UCC_MODE ]]; then
-      if [[ "$NO_OTA_CERT" == "" ]]; then
-        inb-provision-ota-cert
-      fi
-    fi
   else
     configure_cloud_udm_mode
   fi
