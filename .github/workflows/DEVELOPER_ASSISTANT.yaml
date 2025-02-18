@@ -9,7 +9,6 @@ permissions:
   statuses: read
   contents: read
   issues: read
-  metadata: read
 
 jobs:
   pr_agent_job:
