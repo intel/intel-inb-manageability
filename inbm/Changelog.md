@@ -3,13 +3,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## Next Release - YYYY-MM-DD
+## X.X.X - YYYY-MM-DD
 ### Changed
- - (NEXMANAGE-1121) Remove mqtt-ca group from /var/cache/manageability directory
+- (NEXMANAGE-956) Improve failure reason from TC that is logged in Mjunct DB for FOTA
+- (NEXMANAGE-1194) provision-tc/mqtt services will now handle UDM
+- (NEXMANAGE-1253) Implement INBS (UDM) decommission command, which removes device credentials
+
+### Security
+- (NEXMANAGE-1236) Upgrade golang.org/x/net from 0.23.0 to 0.33.0, fixing CVE-2024-45338
+
+### Added
+- (NEXMANAGE-1222) Add support for Ubuntu 24.04
+- (NEXMANAGE-610, NEXMANAGE-692) Add support to handle OOB AMT RPC activation command
+
+## 4.2.8.2 - 2024-12-18
+### Changed
+ - (NEXMANAGE-1121) Remove mqtt-ca group from /var/cache/manageability/repository-tool directory
+ - Update CI setup script to install rchardet v1.8.0
 
 ## 4.2.8.1 - 2024-12-17
  - (NEX-15262) Returns failure reason that matches the format required by MM
  - (NEXMANAGE-1102) XML schema validator run into exception when field tag is not complete in manifest
+
+### Added
+ - (NEXMANAGE-354) Apply protovalidate in common.proto
 
 ### Fixed
  - (NEXMANAGE-1101) Fix History Log Issue

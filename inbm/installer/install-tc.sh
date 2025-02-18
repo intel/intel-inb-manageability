@@ -56,7 +56,7 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Ensure we're running a supported OS
-verified_os_list=("Ubuntu 20.04" "Ubuntu 22.04")
+verified_os_list=("Ubuntu 20.04" "Ubuntu 22.04" "Ubuntu 24.04")
 
 if [[ ${verified_os_list[@]} == *"$(lsb_release -rs)"* ]]; then
   OS_TYPE="Ubuntu-$(lsb_release -rs)"

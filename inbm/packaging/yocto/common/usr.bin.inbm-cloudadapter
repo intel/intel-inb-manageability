@@ -49,4 +49,5 @@
   /usr/bin/lsb_release rUx,
   /bin/busybox.nosuid rUx,
   /usr/bin/busybox.nosuid rUx,
+  /mnt/udm-luks/onboarding.json r,
 }
