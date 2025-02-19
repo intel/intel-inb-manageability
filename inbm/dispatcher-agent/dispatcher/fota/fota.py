@@ -175,8 +175,6 @@ class FOTA:
             logger.error(error)
             self._dispatcher_broker.telemetry(error)
             return_message = INSTALL_FAILURE
-            return_message.message = f"{return_message.message}. {error}"
-            return_message.update_json()
             self._repo.delete(self._pkg_filename)
             # In POTA, mender file needs to be deleted also.
             if hold_reboot:

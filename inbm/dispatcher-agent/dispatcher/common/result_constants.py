@@ -32,14 +32,10 @@ class Result:
         self.status = status
         self.message = message
         self.job_id = job_id
-        self.json = ""
-        self.update_json()
-
-    def update_json(self) -> None:
-        self.json = json.dumps({
-            "status": self.status,
-            "message": str(self.message),
-            "job_id": self.job_id
+        self.json = json.dumps({            
+            "status": status,
+            "message": str(message),
+            "job_id": job_id
         })
 
     def __eq__(self, other: object) -> bool:

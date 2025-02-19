@@ -125,5 +125,3 @@ GENERIC_SCHEMA_PATH = INTEL_MANAGEABILITY_SHARE_PATH_PREFIX / \
     
 NODE_UPDATE_JSON_SCHEMA_LOCATION = str(INTEL_MANAGEABILITY_SHARE_PATH_PREFIX /
                             'cloudadapter-agent' / 'node_update_schema.json')
-
-UDM_ONBOARDING_JSON_PATH = "/mnt/udm-luks/onboarding.json"

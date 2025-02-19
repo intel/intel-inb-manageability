@@ -51,8 +51,8 @@ func authStreamInterceptor(srv interface{}, stream grpc.ServerStream, info *grpc
 		return status.Errorf(codes.Unauthenticated, "Missing node-id in client metadata")
 	}
 
-	token, ok := md["authorization"]
-	if !ok || len(token) == 0 || token[0] != "Bearer good_token" { // Replace with your expected token.
+	token, ok := md["token"]
+	if !ok || len(token) == 0 || token[0] != "good_token" { // Replace with your expected token.
 		log.Print("Invalid token given by client, or token missing")
 		return status.Errorf(codes.Unauthenticated, "invalid token")
 	}

@@ -28,56 +28,6 @@ class TestClient(unittest.TestCase):
 
         self.client = Client()
 
-    @mock.patch("cloudadapter.client.make_threaded", lambda logger: logger)
-    def test_with_log_success(self):
-        """
-        Test that a function decorated with _with_log returns its result and 
-        the logger is invoked with that result.
-        """
-        # Dummy function that returns a computed message.
-        def dummy_func(x):
-            return f"success-{x}"
-        
-        # Create a MagicMock to simulate a logger.
-        dummy_logger = mock.MagicMock()
-        
-        # Decorate the dummy function.
-        decorated = self.client._with_log(dummy_func, dummy_logger)
-        
-        # Call the decorated function.
-        result = decorated("test")
-        
-        # Verify the original function's return value is propagated.
-        self.assertEqual(result, "success-test")
-        # Verify that the logger was called exactly once with the same message.
-        dummy_logger.assert_called_once_with("success-test")
-
-    @mock.patch("cloudadapter.client.make_threaded", lambda logger: logger)
-    def test_with_log_exception(self):
-        """
-        Test that if the decorated function raises an exception (ValueError,
-        KeyError, or TypeError), _with_log catches it, returns a formatted error 
-        message, and logs that error message.
-        """
-        # Dummy function that always raises a ValueError.
-        def failing_func(x):
-            raise ValueError("oops")
-        
-        # Create a MagicMock to simulate a logger.
-        dummy_logger = mock.MagicMock()
-        
-        # Decorate the failing function.
-        decorated = self.client._with_log(failing_func, dummy_logger)
-        
-        # Call the decorated function.
-        result = decorated("bad input")
-        
-        expected_message = "Command failing_func failed: oops"
-        # Verify the return value is the formatted error message.
-        self.assertEqual(result, expected_message)
-        # Verify that the logger was invoked exactly once with the error message.
-        dummy_logger.assert_called_once_with(expected_message)
-
     def test_start_broker_succeed(self) -> None:
         self.client.start()
 

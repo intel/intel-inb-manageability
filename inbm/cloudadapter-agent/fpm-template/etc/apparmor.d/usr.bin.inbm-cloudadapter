@@ -42,5 +42,4 @@
   /etc/ssl/openssl.cnf r,
   /usr/bin/file rix,
   /usr/** r,
-  /mnt/udm-luks/onboarding.json rw,
 }

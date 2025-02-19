@@ -45,4 +45,4 @@ Be sure to replace `"path/to/your/certfile.crt"` and `"path/to/your/keyfile.key"
 
 ## Additional Information
 
-The server utilizes gRPC interceptors for basic authentication. For testing purposes, ensure that the client sends the correct metadata with an "authorization" key having the value "Bearer good_token".
+The server utilizes gRPC interceptors for basic authentication. For testing purposes, ensure that the client sends the correct metadata with a "token" key having the value "good_token".
