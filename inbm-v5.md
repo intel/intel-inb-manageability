@@ -154,11 +154,38 @@ Technology Stack
 Implementation
 ~~~~~~~~~~~~~~
 
-.. 
-   Guidelines:
-   1. Information about how the app was implemented.
+Here are some preliminary phases for initial implementation:
 
-[Content of Implementation]
+Foundation/skeleton
+* Repo branch set up
+* installer/uninstaller working
+* .debs available
+* SPEC in TiberOS branch for .rpms
+* Turtle creek daemon running as systemd service
+* inbc able to talk to turtle creek daemon via UNIX socket
+* CI/CD and scans working
+* integration test in place
+* `provision-tc` skeleton that enables and starts service
+
+Security
+* TPM/LUKS set up so that it is available for Turtle Creek daemon on startup
+* apparmor profile in place and enforced
+* selinux for Tiber
+
+Basic SOTA
+* INBC SOTA working on Ubuntu (no rollback/health check); with correct manifest format
+* INBC SOTA working on Ubuntu with rollback/health check on reboot
+* INBC SOTA working on Tiber A/B--download+update initially
+
+Clouds
+* Able to connect to Azure and handle SOTA via manifest
+* Able to connect to INBS/UDM and handle SOTA via gRPC
+
+Telemetry
+* Detect and send telemetry to Azure--static
+* Detect and send telemetry to Azure--dynamic
+* ..any telemetry features required by UDM
+
 
 System Diagram
 ~~~~~~~~~~~~~~
