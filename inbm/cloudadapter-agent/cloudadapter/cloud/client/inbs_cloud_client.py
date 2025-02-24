@@ -17,7 +17,7 @@ from datetime import datetime
 from cloudadapter.cloud.adapters.inbs.operation import (
     convert_updated_scheduled_operations_to_dispatcher_xml,
 )
-from cloudadapter.constants import METHOD, DEAD, NODE_UPDATE_JSON_SCHEMA_LOCATION
+from cloudadapter.constants import METHOD, DEAD, NODE_UPDATE_JSON_SCHEMA_LOCATION, UDM_ONBOARDING_JSON_PATH
 from cloudadapter.exceptions import AuthenticationError, PublishError
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2_grpc, inbs_sb_pb2
 from cloudadapter.pb.common.v1 import common_pb2
@@ -64,15 +64,18 @@ class InbsCloudClient(CloudClient):
         self._disp_state_lock = threading.Lock()
 
         self._metadata: list[tuple[str, str]] = [("node-id", node_id)]
-        if tls_enabled:
-            if token is None:
-                raise AuthenticationError("Token is required when TLS is enabled.")
-            else:
-                self._metadata.append(("token", token))
-            if tls_cert is None:
-                raise AuthenticationError(
-                    "TLS certificate path is required when TLS is enabled."
-                )
+
+        # this code will be used when TLS is available in INBS
+        # if tls_enabled:
+        #     if token is None:
+        #         raise AuthenticationError("Token is required when TLS is enabled.")
+        #     else:
+        #         self._metadata.append(("authorization", "Bearer " + token))
+        #     # if tls_cert is None, this is OK; implied that we have it installed system wide
+        # instead, we will simply use the token if it exists
+
+        if token is not None:
+            self._metadata.append(("authorization", "Bearer " + token))
         self._stop_event = threading.Event()
 
         self._grpc_channel: grpc.Channel | None = None # this will get set after connect is called
@@ -228,6 +231,25 @@ class InbsCloudClient(CloudClient):
 
         # for now ignore all callbacks; only Ping is supported
         self._callbacks[name] = callback
+
+    def decommission(self) -> str:  # pragma: no cover
+        """Decommission the device by truncating the onboarding.json file containing the device tokens.
+        Returns an empty string on success, otherwise returns an error string"""
+        error = "" # default, no error
+
+        try:
+            with open(UDM_ONBOARDING_JSON_PATH, "w") as _:
+                pass # truncate onboarding.json, which will remove the device's key to access the cloud
+        except FileNotFoundError:
+            pass # this is still success
+        except PermissionError as e:
+            error = f"permission denied opening onboarding.json: {e}"
+            logger.error(error)
+        except OSError as e:
+            error = f"IO error occurred opening onboarding.json: {e}"
+            logger.error(error)
+        return error
+
     
     def _handle_inbm_command_request(
         self, request_queue: queue.Queue[inbs_sb_pb2.HandleINBMCommandRequest | None]
@@ -248,7 +270,7 @@ class InbsCloudClient(CloudClient):
                 logger.debug(f"Processing gRPC request: request_id {request_id}")
                 command_type = item.command.WhichOneof("inbm_command")
 
-                if self.get_dispatcher_state() == DEAD and command_type != "ping":
+                if self.get_dispatcher_state() == DEAD and not (command_type in ["ping", "decommission"]):
                     logger.error(
                         f"Dispatcher not in running state. Unable to process request - {request_id}"
                     )
@@ -312,6 +334,24 @@ class InbsCloudClient(CloudClient):
                         yield inbs_sb_pb2.HandleINBMCommandResponse(
                             request_id=request_id
                         )
+                    elif command_type == "decommission":
+                        logger.debug(
+                            f"Received decommission command for request_id {request_id}"
+                        )
+                        error = self.decommission()
+
+                        # Only set the error field if there's an actual error message
+                        if error:
+                            response_error = common_pb2.Error(
+                                message=f"cloudadapter: error decommissioning: {error}"
+                            )
+                        else:
+                            response_error = None
+
+                        yield inbs_sb_pb2.HandleINBMCommandResponse(
+                            request_id=request_id,
+                            error=response_error,
+                        )
                     else:
                         logger.error(
                             f"Received unknown command {command_type} for request_id {request_id}"
@@ -344,7 +384,10 @@ class InbsCloudClient(CloudClient):
         if self._tls_enabled:
             # Create a secure channel with SSL credentials
             logger.debug("Setting up connection to INBS cloud with TLS enabled")
-            credentials = grpc.ssl_channel_credentials(root_certificates=self._tls_cert)
+            if self._tls_cert is None:  # assume cert is installed system wide
+                credentials = grpc.ssl_channel_credentials()
+            else:    
+                credentials = grpc.ssl_channel_credentials(root_certificates=self._tls_cert)
             self.channel = grpc.secure_channel(
                 f"{self._grpc_hostname}:{self._grpc_port}", credentials
             )

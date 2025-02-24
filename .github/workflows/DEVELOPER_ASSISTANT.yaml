@@ -1,0 +1,113 @@
+name: DEVELOPER ASSISTANT
+on:
+  pull_request:
+    types: [opened, reopened]
+  issue_comment:
+permissions:
+  actions: read
+  pull-requests: read
+  statuses: read
+  contents: read
+  issues: read
+
+jobs:
+  pr_agent_job:
+    if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ai-review') && ((contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/describe') || contains(github.event.comment.body, '/add_docs') || contains(github.event.comment.body, '/update_changelog')) && github.event.comment.user.login != 'nex-maximus' || (github.event_name == 'pull_request' && github.event.pull_request.user.login != 'nex-maximus')) }}
+    runs-on: ["ubuntu-latest"]
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR Registry
+        run: |
+          aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin 011528261982.dkr.ecr.us-west-2.amazonaws.com
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+
+      - name: Pull the Docker image from ECR registry
+        run: docker pull 011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable
+      
+      - name: Smart Devops PR Agent Action
+        id: pragent
+        run: |
+          export GITHUB_ACTION_AUTO_REVIEW="${GITHUB_ACTION_AUTO_REVIEW}"
+          export GITHUB_ACTION_AUTO_DESCRIBE="${GITHUB_ACTION_AUTO_DESCRIBE}"
+          export GITHUB_ACTION_UPDATE_TITLE="${GITHUB_ACTION_UPDATE_TITLE}"
+          docker run --rm \
+            -e GITHUB_CONTEXT="${GITHUB_CONTEXT}" \
+            -e GITHUB_EVENT_NAME="${GITHUB_EVENT_NAME}" \
+            -e GITHUB_EVENT_PATH="${GITHUB_EVENT_PATH}" \
+            -e GITHUB_ACTION.AUTO_REVIEW="${GITHUB_ACTION_AUTO_REVIEW}" \
+            -e GITHUB_ACTION.AUTO_DESCRIBE="${GITHUB_ACTION_AUTO_DESCRIBE}" \
+            -e GITHUB_ACTION.UPDATE_TITLE="${GITHUB_ACTION_UPDATE_TITLE}" \
+            -e PR_NUMBER="${PR_NUMBER}" \
+            -e API_KEY="${API_KEY}" \
+            -e API_BASE="${API_BASE}" \
+            -e STABLE_API_VERSION="${STABLE_API_VERSION}" \
+            -e PREVIEW_API_VERSION="${PREVIEW_API_VERSION}" \
+            -e DEPLOY_NAME="${DEPLOY_NAME}" \
+            -e PUSH_TOKEN="${PUSH_TOKEN}" \
+            -e CLIENT_ID="${CLIENT_ID}" \
+            -e CLIENT_SECRET="${CLIENT_SECRET}" \
+            011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable bash -c "
+            . /genai_agent/genai_env/bin/activate && /genai_agent/get_pr_agent_details.sh
+          "
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
+          GITHUB_ACTION_AUTO_REVIEW: true
+          GITHUB_ACTION_AUTO_DESCRIBE: true
+          GITHUB_ACTION_UPDATE_TITLE: false
+          PR_NUMBER: ${{ github.event.number }}
+          API_KEY: ${{ secrets.API_KEY }}
+          API_BASE: ${{ secrets.API_BASE }}
+          STABLE_API_VERSION: ${{ secrets.STABLE_API_VERSION }}
+          PREVIEW_API_VERSION: ${{ secrets.PREVIEW_API_VERSION }}
+          DEPLOY_NAME: ${{ secrets.DEPLOY_NAME }}
+          PUSH_TOKEN: ${{ secrets.PUSH_TOKEN }}
+          CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          
+          # Uncomment the line below to enable the pre-merge checks (Ensure to provide the keywords to Code Review Dev Team to include in pre-merge checks)
+          # GITHUB_ACTION.ENABLE_PRE_MERGE_CHECKS: true
+          
+          # Uncomment the line below to add any extra instructions you wish to give to the LLM
+          # GITHUB_ACTION.EXTRA_INSTRUCTIONS: 'Please give clear review for the user'
+
+          # Uncomment the line below to push all the suggestions for all the files as a batch instead of pushing it per file in the PR
+          # GITHUB_ACTION.BATCH_SUGGESTION_PUSH: true
+
+          # To enable dependent context from external repo/internal repo, uncomment the line below and add details in .github/dependent_files.json.
+          # Please refer to the wiki for the sample json file.
+          # GITHUB_ACTION.ENABLE_DEPENDENT_CONTEXT: true
+
+          # Uncomment the comma separated string below and modify it accordingly to skip specific aspects during review. Refer to the wiki for supported tags
+          # GITHUB_ACTION.IGNORE_ISSUE_TAGS: coding style
+
+          # Uncomment the line below to publish the review as a single comment instead of being published as separate comments for every suggestion
+          # GITHUB_ACTION.SINGLE_REVIEW_COMMENT: true
+
+          # Uncomment any of the required language macro from below and mention the version of the language being used in the project to get tailored suggestions as per mentioned version
+          # LANG_VERSION.PYTHON: "NA"
+          # LANG_VERSION.JAVASCRIPT: "NA"
+          # LANG_VERSION.TYPESCRIPT: "NA"
+          # LANG_VERSION.GO: "NA"
+          # LANG_VERSION.CPP: "NA"
+          # LANG_VERSION.C: "NA"
+          # LANG_VERSION.SWIFT: "NA"
+          # LANG_VERSION.PHP: "NA"
+          # LANG_VERSION.RUBY: "NA"
+          # LANG_VERSION.RUST: "NA"
+          # LANG_VERSION.SCALA: "NA"
+          # LANG_VERSION.KOTLIN: "NA"
+          # LANG_VERSION.PERL: "NA"
+          # LANG_VERSION.MARKDOWN: "NA"
+
+          # Uncomment the line below to consider the ICP and Kernel Coding Guidelines for C Language Code
+          # CODING_GUIDELINES.C_ICP_GUIDELINES: true
+          # CODING_GUIDELINES.C_KERNEL_GUIDELINES: true
