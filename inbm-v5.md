@@ -8,10 +8,10 @@ In-band Manageability 5.0 (a.k.a. INBMv5) is a reimplementation of INBM in Golan
 
 `Re-architecting` and `Re-implementing` INBM is a major undertaking which was driven by the below listed motivation points:
 
-1. **Reduce complexity**: INBM primarily being a solution which is self-contained on a single compute device (Edge Node, IOT device etc.) was not leveraging `micro-services` architecture's inherent advantages but instead introduced additional complexity of managing and securing the services and their communication channels. With the re-architecture we plan on bringing all the `business-logic` of various agent within a single application/service thereby reducing complexity. 
+1. **Reduce complexity**: INBM primarily being a solution which is self-contained on a single compute device (Edge Node, IOT device etc.) was not leveraging `micro-services` architecture's inherent advantages but instead introduced additional complexity of managing and securing the services and their communication channels. With the re-architecture we plan on bringing all the `business-logic` of various agent within a single application/service thereby reducing complexity.
 1. **Improve performance**: Re-implementation of INBM will be done in `Golang` which is inherently better in performance w.r.t. Python being a compiled language as compared to interpreted.
 1. **Reduce footprint**: With all the functionality being brought into a single application the binary footprint overhead introduced by including common dependencies and Python interpreter in each agent will be removed.
-1. **Improve security and scalability**: Golang's characteristics of `statically typed`, `concurrency` and `memory management` helps building a more secure and optimized application. 
+1. **Improve security and scalability**: Golang's characteristics of `statically typed`, `concurrency` and `memory management` helps building a more secure and optimized application.
 
 ### Backward compatibility and features
 
@@ -45,7 +45,7 @@ Below is a high-level architecture diagram for INBMv5 leveraging Golang's `multi
    - **Function**: Main manageability application which runs in the background
    - **Main Tasks**:
       - Spawns other `persistant` or `long-living` threads like `cloud-client`, `dispatcher-queue` and `telemetry-reporter`.
-      - Acts as a server and accepts incoming requests from `inbc` and `cloud-connect` over unix socket and pushes the over-the-air update commands to dispatcher-queue. 
+      - Acts as a server and accepts incoming requests from `inbc` and `cloud-connect` over unix socket and pushes the over-the-air update commands to dispatcher-queue.
 
 1. #### inbc
 
@@ -209,45 +209,44 @@ Extensibility in INBM's context can be defined by providing hooks in place to ex
 
 [Content of Deployment]
 
-
-Technology Stack
-----------------
-
-Implementation
-~~~~~~~~~~~~~~
+## Implementation
 
 Here are some preliminary phases for initial implementation:
 
 Foundation/skeleton
-* Repo branch set up
-* installer/uninstaller working
-* .debs available
-* SPEC in TiberOS branch for .rpms
-* Turtle creek daemon running as systemd service
-* inbc able to talk to turtle creek daemon via UNIX socket
-* CI/CD and scans working
-* integration test in place
-* `provision-tc` skeleton that enables and starts service
+
+- Repo branch set up
+- installer/uninstaller working
+- .debs available
+- SPEC in TiberOS branch for .rpms
+- Turtle creek daemon running as systemd service
+- inbc able to talk to turtle creek daemon via UNIX socket
+- CI/CD and scans working
+- integration test in place
+- `provision-tc` skeleton that enables and starts service
 
 Security
-* TPM/LUKS set up so that it is available for Turtle Creek daemon on startup
-* apparmor profile in place and enforced
-* selinux for Tiber
+
+- TPM/LUKS set up so that it is available for Turtle Creek daemon on startup
+- apparmor profile in place and enforced
+- selinux for Tiber
 
 Basic SOTA
-* INBC SOTA working on Ubuntu (no rollback/health check); with correct manifest format
-* INBC SOTA working on Ubuntu with rollback/health check on reboot
-* INBC SOTA working on Tiber A/B--download+update initially
+
+- INBC SOTA working on Ubuntu (no rollback/health check); with correct manifest format
+- INBC SOTA working on Ubuntu with rollback/health check on reboot
+- INBC SOTA working on Tiber A/B--download+update initially
 
 Clouds
-* Able to connect to Azure and handle SOTA via manifest
-* Able to connect to INBS/UDM and handle SOTA via gRPC
+
+- Able to connect to Azure and handle SOTA via manifest
+- Able to connect to INBS/UDM and handle SOTA via gRPC
 
 Telemetry
-* Detect and send telemetry to Azure--static
-* Detect and send telemetry to Azure--dynamic
-* ..any telemetry features required by UDM
 
+- Detect and send telemetry to Azure--static
+- Detect and send telemetry to Azure--dynamic
+- ..any telemetry features required by UDM
 
 ## System Diagram
 
@@ -329,36 +328,3 @@ Guidelines:
 
 - `API Guide <./APIs.rst>`_
 - `User Guide <./User.rst>`_
-
-Appendix
---------
-
-Appendix A: [Title of Appendix A]
-~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Provide a brief introduction or description of the appendix content.
-   2. Include any relevant details, data, or supplementary information.
-
-[Content of Appendix A]
-
-Appendix B: [Title of Appendix B]
-~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Provide a brief introduction or description of the appendix content.
-   2. Include any relevant details, data, or supplementary information.
-
-[Content of Appendix B]
-
-Appendix C: [Title of Appendix C]
-~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Provide a brief introduction or description of the appendix content.
-   2. Include any relevant details, data, or supplementary information.
-
-[Content of Appendix C]
