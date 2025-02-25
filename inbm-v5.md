@@ -209,13 +209,45 @@ Extensibility in INBM's context can be defined by providing hooks in place to ex
 
 [Content of Deployment]
 
-## Implementation
 
-Guidelines:
+Technology Stack
+----------------
 
- 1. Information about how the app was implemented.
+Implementation
+~~~~~~~~~~~~~~
 
-[Content of Implementation]
+Here are some preliminary phases for initial implementation:
+
+Foundation/skeleton
+* Repo branch set up
+* installer/uninstaller working
+* .debs available
+* SPEC in TiberOS branch for .rpms
+* Turtle creek daemon running as systemd service
+* inbc able to talk to turtle creek daemon via UNIX socket
+* CI/CD and scans working
+* integration test in place
+* `provision-tc` skeleton that enables and starts service
+
+Security
+* TPM/LUKS set up so that it is available for Turtle Creek daemon on startup
+* apparmor profile in place and enforced
+* selinux for Tiber
+
+Basic SOTA
+* INBC SOTA working on Ubuntu (no rollback/health check); with correct manifest format
+* INBC SOTA working on Ubuntu with rollback/health check on reboot
+* INBC SOTA working on Tiber A/B--download+update initially
+
+Clouds
+* Able to connect to Azure and handle SOTA via manifest
+* Able to connect to INBS/UDM and handle SOTA via gRPC
+
+Telemetry
+* Detect and send telemetry to Azure--static
+* Detect and send telemetry to Azure--dynamic
+* ..any telemetry features required by UDM
+
 
 ## System Diagram
 
@@ -295,5 +327,38 @@ Guidelines:
    1. Provide links to related documentation or tools.
    2. Include troubleshooting guides and community resources.
 
-- `API Guide <./APIs.rst>`
-- `User Guide <./User.rst>`
+- `API Guide <./APIs.rst>`_
+- `User Guide <./User.rst>`_
+
+Appendix
+--------
+
+Appendix A: [Title of Appendix A]
+~~~~~~~~~
+
+.. 
+   Guidelines:
+   1. Provide a brief introduction or description of the appendix content.
+   2. Include any relevant details, data, or supplementary information.
+
+[Content of Appendix A]
+
+Appendix B: [Title of Appendix B]
+~~~~~~~~~
+
+.. 
+   Guidelines:
+   1. Provide a brief introduction or description of the appendix content.
+   2. Include any relevant details, data, or supplementary information.
+
+[Content of Appendix B]
+
+Appendix C: [Title of Appendix C]
+~~~~~~~~~
+
+.. 
+   Guidelines:
+   1. Provide a brief introduction or description of the appendix content.
+   2. Include any relevant details, data, or supplementary information.
+
+[Content of Appendix C]
