@@ -1,10 +1,10 @@
-# In-band Manageability 5.0: Architecture 
+# In-band Manageability 5.0: Architecture
 
 ## Overview
 
-In-band Manageability 5.0 (a.k.a. INBMv5) is a reimplementation of INBM in Golang. 
+In-band Manageability 5.0 (a.k.a. INBMv5) is a reimplementation of INBM in Golang.
 
-### Motivation 
+### Motivation
 
 `Re-architecting` and `Re-implementing` INBM is a major undertaking which was driven by the below listed motivation points:
 
@@ -18,16 +18,16 @@ In-band Manageability 5.0 (a.k.a. INBMv5) is a reimplementation of INBM in Golan
 Like the earlier releases, the intension is to have as minimal an impact as possible for external consumers of INBM. This `backwards compatibility` requirement for INBMv5 insures that
 
 - the primary OTA feature set that INBM provided remain the same i.e.:
-    - OS Update
-    - Firmware Update
-    - Application update
-    - Basic telemetry and events reporting
+  - OS Update
+  - Firmware Update
+  - Application update
+  - Basic telemetry and events reporting
 
 - the primary `device-management` interfaces used and provided by INBM remain the same i.e.:
-    - `inbc`, command-line interface for local usage
-    - Azure IOT Central connectivity for `CSP` enablement
-    - ThingsBoard connectivity for `on-premise` device management 
- 
+  - `inbc`, command-line interface for local usage
+  - Azure IOT Central connectivity for `CSP` enablement
+  - ThingsBoard connectivity for `on-premise` device management
+
 > **NOTE** The availability of these features shall be staged in multiple releases starting with INBM v5.0
 
 ## Architecture Diagram
@@ -41,40 +41,48 @@ Below is a high-level architecture diagram for INBMv5 leveraging Golang's `multi
 ### Key Components
 
 1. #### inbm-daemon
+
    - **Function**: Main manageability application which runs in the background
-   - **Main Tasks**: 
-      - Spawns other `persistant` or `long-living` threads like `cloud-client`, `dispatcher-queue`, `telemetry-reporter` and `aggregator`. 
+   - **Main Tasks**:
+      - Spawns other `persistant` or `long-living` threads like `cloud-client`, `dispatcher-queue` and `telemetry-reporter`.
       - Acts as a server and accepts incoming requests from `inbc` and `cloud-connect` over unix socket and pushes the over-the-air update commands to dispatcher-queue. 
 
 1. #### inbc
+
    - **Function**: In-band manageability's commandline interface
-   - **Main Tasks**: 
+   - **Main Tasks**:
       - `inbc` acts as the commandline interace to other `previlaged` user-space applications to perform device-management actions (like os updates or firmware update etc) on the underlying host.
       - a `trusted client` application which communicates with `inbm-daemon` over unix-sockets, translating manageability commands into gRPC API calls.
-   - **Example Use**: 
-        ``` 
+   - **Example Use**:
+
+      ```code
         inbc sota {--uri, -u=URI} 
         [--releasedate, -r RELEASE_DATE; default="2026-12-31"] 
         [--username, -un USERNAME]
         [--mode, -m MODE; default="full", choices=["full","no-download", "download-only"] ]
         [--reboot, -rb; default=yes]
         [--package-list, -p=PACKAGES]
-        ```
+      ```
+
     For detailed usage of `inbc` refer to ![inbc usage guide](inbc-readme-link)
 
 1. #### cloud-client
+
    - **Function**: Cloud `device management service` (DMS) connecting thread
    - **Main Tasks**:
       - North-bound acts MQTT client connecting to DMS (e.g. Azure IOT Central or ThingsBoard)
       - South-bound acts as `inbm-daemon` client translating over-the-air (ota) commands from DMS to `inbm-daemon` gRPC API's
+      - Checks on any `state` file to perform additional tasks on startup, e.g. post a OS update related bootup.
 
 1. #### dispatcher-queue
+
    - **Function**: Management command queue
-   - **Main Tasks**: 
+   - **Main Tasks**:
       - implements a simple queue of size `1` for device management commands
       - invokes `updater` thread based on the type of update command e.g. firmware or os or application
 
 1. #### updater threads
+
    - **Function**: A `transieant` thread performing update on underlying host
    - **Main Tasks**:
       - _Firmware updater_: Perfomrs firmware update related tasks like:
@@ -82,89 +90,137 @@ Below is a high-level architecture diagram for INBMv5 leveraging Golang's `multi
          - download capsule file and perform signature checks if applicable
          - invoke IBV's firmware update tool based on firmware-update config file look up.
          - update logging and state files
-         - send intermediate results to `aggregator` for reporting
+         - send intermediate results to `inbm-daemon` for reporting
          - trigger reboot of platform if applicable
       - _OS updater_: Perfomrs OS update related tasks like:
          - check applicability, e.g. checks available disk space
          - download OS image file and perform signature checks if applicable
          - invoke OS update tool based on underlying OS type/distribution.
          - update logging and state files
-         - send intermediate results to `aggregator` for reporting
+         - send intermediate results to `inbm-daemon` for reporting
          - trigger reboot of platform if applicable
       - _Application updater_: Perfomrs application update related tasks like:
          - check applicability, e.g. checks available disk space
          - invoke underlying OS distributions `package manager` to perfomr the required installation tasks.
          - update logging and state files
-         - send results to `aggregator` for reporting
+         - send results to `inbm-daemon` for reporting
 
 1. #### telemerty-reporter
+
    - **Function**: Thread performing basic platform telemetry collection and reporting
    - **Main Tasks**: Basic plaform telemetry being collected by `telemetry-reporter` can be catogarized as `static` and `dynamic`
       - _Static_: Information that remains same for the most part of the a devices life cycle (e.g. UUID, Serial number etc) or only changes on updates (e.g. Firmware version, OS version etc)
       - _Dynamic_: Information which constantly changes and is ideal to be plotted on a `time-sereis` database (e.g. CPU usage, memory usage etc)
 
-1. #### aggregator
-   - **Function**: Thread reporting status to `inbm-daemon`
-   - **Main Tasks**: This thread performs the task of combining and reporting information from platform to be sent to the cloud or `inbc` tool:
-      - _Event_: information that needs to be sent during the update process to indicat the progress
-      - _Status_: final result of an update
-      - _Telemetry_: `static` and `dynamic` telemetry
+## Data Flow
 
-Data Flow
----------
+INBM on Edge Node can be used in two modes:
 
-.. 
-   Guidelines:
-   1. Break down the system’s data flow into stages.
-   2. Highlight how components interact and communicate.
+1. _cloud-connect_: when INBM is provisioned to connect to a `DMS` and receives update related `ota`commands from cloud.
+1. _local-host_: when INBM is provisioned to be only invoked by a `privilaged` user-space application running on the same host OS.
 
-Workflow Stages
-~~~~~~~~~~~~~~~
+Described below are the different data flow paths based on the provisioning modes for commands and information:
 
-1. **Stage 1: Input**:
-   - Example: Resource requests submitted via APIs or command-line tools.
+### Cloud-connect data flow
 
-2. **Stage 2: Processing**:
-   - Example: Scheduling, allocation of resources, or preprocessing of data.
+```mermaid
+sequenceDiagram
+  box Device Management Server
+    actor admin
+    participant DMS
+  end
+  
+  box INBM
+    participant cc as Cloud Client
+    participant inbmd as inbm-daemon
+    participant dispQ as dispatcher-queue
+    participant ota as ota-updater
+  end
 
-3. **Stage 3: Output**:
-   - Example: Execution of workloads, generation of results, or API responses.
+  box Update tool
+    participant isv as ISV tool
+  end 
+  
+  admin -->> DMS : Trigger OTA cmd
+  DMS ->> cc : mqtt/tls pub (e.g. /methods/POST/) <br/> OTA cmd
+  cc -->> inbmd : OTA cmd
+  inbmd -->> dispQ : OTA cmd
+  dispQ -->> dispQ : parse OTA cmd <br/> updater-type
+  dispQ --> ota : OTA cmd
+  ota ->> isv : update_tool_cmd <args>
+  isv ->> ota : status <OK/ERROR>
+  ota --> inbmd: status <OK/ERROR, msg>
+  inbmd -->> cc : status <OK/ERROR, msg>
+  cc ->> DMS : mqtt/tls pub (e.g. /status/)
 
-Extensibility
--------------
+```
 
-.. 
-   Guidelines:
-   1. Explain how the system can be customized or extended.
-   2. Include modular integration points or plugin options.
+### local-host data flow
 
-- **Adding Components**: [Explain how to add new modules or features].
-- **Customizing Workflows**: [Describe how to adapt the system to unique requirements].
-- **Integration Points**: [List APIs or interfaces for external integrations].
+```mermaid
+sequenceDiagram
+  box sudo
+    participant sudo as Previlaged App
+  end
+  
+  box INBM
+    participant inbc as INBC
+    participant inbmd as inbm-daemon
+    participant dispQ as dispatcher-queue
+    participant ota as ota-updater
+  end
 
-Deployment
-----------
+  box Update tool
+    participant isv as ISV tool
+  end 
+  
+  sudo ->> inbc : Trigger OTA cmd
+  inbc -->> inbmd : unix sock: OTA cmd
+  inbmd -->> dispQ : OTA cmd
+  dispQ -->> dispQ : parse OTA cmd <br/> updater-type
+  dispQ --> ota : OTA cmd
+  ota ->> isv : update_tool_cmd <args>
+  isv ->> ota : status <OK/ERROR>
+  ota --> inbmd: status <OK/ERROR, msg>
+  inbmd -->> inbc : status <OK/ERROR, msg>
+  inbc ->> sudo : status <OK/ERROR, msg>
+
+```
+
+## Extensibility
+
+Extensibility in INBM's context can be defined by providing hooks in place to extend support:
+
+- connecting to a new device management server (dms), e.g. Amazon or Googles device management solutions
+  - this would involve adding new adapter in `cloud-client` which adhears to the protocol supported by the dms.
+
+- executing new OTA cmd type, to enable a customer's specific usecase for e.g. install drivers or run specific applications
+  - adding a new OTA cmd typically will involve adding new handlers in:
+    - `cloud-client` - additional handler for the new cmd
+    - `inbm-daemon` - additional logic to spawn a new type of ota thread
+    - `new-thread` - buisness logic executing the new cmd and reporting result
+
+- sending additional telemetry from device, e.g. GPU utilization
+  - add data collection routin in `telemerty-reporter`
+  - add `key:value` pairs for the new telemetry data getting collected
+  - possible update in `cloud-client` to send this data to `dms`
+
+## Deployment
 
 [Content of Deployment]
 
+## Implementation
 
-Technology Stack
-----------------
+Guidelines:
 
-Implementation
-~~~~~~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Information about how the app was implemented.
+ 1. Information about how the app was implemented.
 
 [Content of Implementation]
 
-System Diagram
-~~~~~~~~~~~~~~
+## System Diagram
 
-.. 
-   Guidelines:
+Guidelines:
+
    1. Include a diagram to illustrate how the system is deployed and what other applications it may be connected to.
    2. Clearly label components, workflows, and integration points.
 
@@ -173,163 +229,71 @@ System Diagram
 
    Figure 1: Technology Stack of [System or Tool Name]
 
-Integrations
-~~~~~~~~~~~~
+## Integrations
 
-.. 
-   Guidelines:
+Guidelines:
+
    1. List the integrations between this application and other tech stack applications or systems.
    2. Include links to additional material if available, including the development project, code, diagrams, and issues.
 
 [Content of Integrations]
 
-Security
---------
+## Security
 
-.. 
-   Guidelines:
+Guidelines:
+
    1. Provide a brief overview of the security measures in place.
    2. Explain the importance of security for the project.
 
-Security Policies
-~~~~~~~~~~~~~~~~~
+### Security Policies
 
-.. 
-   Guidelines:
+Guidelines:
+
    1. Describe the security policies in place.
    2. Include information on data protection, user privacy, and compliance.
 
 [Content of security policies]
 
-Authentication
-~~~~~~~~~~~~~~
+### Authentication
 
-.. 
-   Guidelines:
+Guidelines:
+
    1. Explain the authentication mechanisms used.
    2. Include information on password policies, multi-factor authentication, and session management.
 
 [Content of Authentication]
 
-Access Control
-~~~~~~~~~~~~~~
+### Access Control
 
-.. 
-   Guidelines:
+Guidelines:
+
    1. Describe the access control mechanisms in place.
    2. Include information on role-based access control (RBAC), permissions, and user roles.
 
 [Content of Access Control]
 
-Auditing
-~~~~~~~~
+### Auditing
 
-.. 
-   Guidelines:
+Guidelines:
+
    1. Explain the auditing mechanisms in place.
    2. Include information on logging, monitoring, and audit trails.
 
 [Content of Auditing]
 
-Incident Response
-~~~~~~~~~~~~~~~~~
+## Scalability
 
-.. 
-   Guidelines:
-   1. Describe the incident response plan.
-   2. Include information on detection, reporting, and mitigation of security incidents.
+Guidelines:
 
-[Content of Incident Response]
-
-Scalability
------------
-
-.. 
-   Guidelines:
    1. Provide a brief overview of the scalability considerations.
    2. Explain the importance of scalability for the project.
 
-Scalability Support
-~~~~~~~~~~~~~~~~~~~
+## Supporting Resources
 
-.. 
-   Guidelines:
-   1. Describe the key support strategies used to achieve scalability.
+Guidelines:
 
-[Content of Scalability Support]
-
-Scalability Mechanisms
-~~~~~~~~~~~~~~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Describe the mechanisms that help to achieve given scale.
-
-[Content of Scalability Mechanisms]
-
-Background
-----------
-
-.. 
-   Guidelines:
-   1. Provide a brief history including key milestones and developments.
-
-[Content of Background]
-
-Target Audience
-~~~~~~~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Describe the target audience. 
-
-[Content of target audience]
-
-Concepts
-~~~~~~~~
-
-Refer to the User Guide for information on `Concepts <./Concepts.rst>`_ 
-
-Supporting Resources
---------------------
-
-.. 
-   Guidelines:
    1. Provide links to related documentation or tools.
    2. Include troubleshooting guides and community resources.
 
-- `API Guide <./APIs.rst>`_
-- `User Guide <./User.rst>`_
-
-Appendix
---------
-
-Appendix A: [Title of Appendix A]
-~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Provide a brief introduction or description of the appendix content.
-   2. Include any relevant details, data, or supplementary information.
-
-[Content of Appendix A]
-
-Appendix B: [Title of Appendix B]
-~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Provide a brief introduction or description of the appendix content.
-   2. Include any relevant details, data, or supplementary information.
-
-[Content of Appendix B]
-
-Appendix C: [Title of Appendix C]
-~~~~~~~~~
-
-.. 
-   Guidelines:
-   1. Provide a brief introduction or description of the appendix content.
-   2. Include any relevant details, data, or supplementary information.
-
-[Content of Appendix C]
+- `API Guide <./APIs.rst>`
+- `User Guide <./User.rst>`
