@@ -7,6 +7,9 @@ permissions:
   actions: read
   pull-requests: read
   statuses: read
+  contents: read
+  issues: read
+
 jobs:
   pr_agent_job:
     if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-ai-review') && ((contains(github.event.comment.body, '/review') || contains(github.event.comment.body, '/describe') || contains(github.event.comment.body, '/add_docs') || contains(github.event.comment.body, '/update_changelog')) && github.event.comment.user.login != 'nex-maximus' || (github.event_name == 'pull_request' && github.event.pull_request.user.login != 'nex-maximus')) }}
@@ -36,6 +39,8 @@ jobs:
           export GITHUB_ACTION_UPDATE_TITLE="${GITHUB_ACTION_UPDATE_TITLE}"
           docker run --rm \
             -e GITHUB_CONTEXT="${GITHUB_CONTEXT}" \
+            -e GITHUB_EVENT_NAME="${GITHUB_EVENT_NAME}" \
+            -e GITHUB_EVENT_PATH="${GITHUB_EVENT_PATH}" \
             -e GITHUB_ACTION.AUTO_REVIEW="${GITHUB_ACTION_AUTO_REVIEW}" \
             -e GITHUB_ACTION.AUTO_DESCRIBE="${GITHUB_ACTION_AUTO_DESCRIBE}" \
             -e GITHUB_ACTION.UPDATE_TITLE="${GITHUB_ACTION_UPDATE_TITLE}" \
@@ -53,6 +58,8 @@ jobs:
           "
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
           GITHUB_ACTION_AUTO_REVIEW: true
           GITHUB_ACTION_AUTO_DESCRIBE: true
           GITHUB_ACTION_UPDATE_TITLE: false
