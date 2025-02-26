@@ -87,7 +87,7 @@ class TestDownloader(unittest.TestCase):
     def test_download_successful(self, mock_verify_source, mock_read_token, mock_get) -> None:
         self.release_date = self.username = self.password = None
         self.cancel_event = threading.Event()
-        mock_url = canonicalize_uri(" https://files-rs.internal.ledgepark.intel.com/repository/pool/TiberOS/TiberOS-RT/core-rt-1.0.20241001.2251.raw.xz")
+        mock_url = canonicalize_uri(" https://files-rs.internal.ledgepark.intel.com/repository/pool/Tiber/Tiber-RT/core-rt-1.0.20241001.2251.raw.xz")
         mock_response = MagicMock()
         mock_response.status_code = 200
         mock_get.return_value = mock_response
@@ -122,7 +122,7 @@ class TestDownloader(unittest.TestCase):
         self.release_date = self.username = self.password = None
         self.cancel_event = threading.Event()
         self.cancel_event.set()
-        mock_url = canonicalize_uri(" http://files-rs.internal.ledgepark.intel.com/repository/pool/TiberOS/TiberOS-RT/core-rt-1.0.20241001.2251.raw.xz")
+        mock_url = canonicalize_uri(" http://files-rs.internal.ledgepark.intel.com/repository/pool/Tiber/Tiber-RT/core-rt-1.0.20241001.2251.raw.xz")
         mock_response = MagicMock()
         mock_response.status_code = 400
         mock_get.side_effect = HTTPError
@@ -156,7 +156,7 @@ class TestDownloader(unittest.TestCase):
         self.release_date = self.username = self.password = None
         self.cancel_event = threading.Event()
         self.cancel_event.set()
-        mock_url = canonicalize_uri(" http://files-rs.internal.ledgepark.intel.com/repository/pool/TiberOS/TiberOS-RT/core-rt-1.0.20241001.2251.raw.xz")
+        mock_url = canonicalize_uri(" http://files-rs.internal.ledgepark.intel.com/repository/pool/Tiber/Tiber-RT/core-rt-1.0.20241001.2251.raw.xz")
         mock_response = MagicMock()
         mock_response.status_code = 400
         mock_get.side_effect = ProxyError
@@ -191,7 +191,7 @@ class TestDownloader(unittest.TestCase):
         self.cancel_event = threading.Event()
         self.cancel_event.set()
         mock_url = canonicalize_uri(
-            " http://files-rs.internal.ledgepark.intel.com/repository/pool/TiberOS/TiberOS-RT/core-rt-1.0.20241001.2251.raw.xz")
+            " http://files-rs.internal.ledgepark.intel.com/repository/pool/Tiber/Tiber-RT/core-rt-1.0.20241001.2251.raw.xz")
         mock_response = MagicMock()
         mock_response.status_code = 400
 
