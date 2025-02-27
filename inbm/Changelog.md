@@ -10,7 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - (NEXMANAGE-1253) Implement INBS (UDM) decommission command, which removes device credentials
 
 ### Security
-- (NEXMANAGE-1236) Upgrade golang.org/x/net from 0.23.0 to 0.33.0, fixing CVE-2024-45338
+- (NEXMANAGE-1236) Upgrade golang.org/x/net in trtl to 0.35.0, fixing CVE-2024-45338
 
 ### Added
 - (NEXMANAGE-1222) Add support for Ubuntu 24.04
