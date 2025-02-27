@@ -441,8 +441,8 @@ class YoctoSnapshot(Snapshot):
                 f"'mender-version' not in state or state is not available. state = {str(state)}")
 
 
-class TiberOSSnapshot(Snapshot):
-    """ Snapshot for TiberOS.
+class TiberSnapshot(Snapshot):
+    """ Snapshot for Tiber.
 
     @param trtl: TRTL instance
     @param sota_cmd: SOTA command (update)
@@ -459,11 +459,11 @@ class TiberOSSnapshot(Snapshot):
         self._dispatcher_broker = dispatcher_broker
 
     def take_snapshot(self) -> None:
-        """This method saves the current TiberOS artifact version info in a dispatcher state file
+        """This method saves the current Tiber artifact version info in a dispatcher state file
 
         @raises SotaError: When failed to create a dispatcher state file
         """
-        logger.debug("TiberOS take_snapshot")
+        logger.debug("Tiber take_snapshot")
         self._dispatcher_broker.telemetry(
             "SOTA attempting to create a dispatcher state file before SOTA {}...".
             format(self.sota_cmd))
@@ -478,11 +478,11 @@ class TiberOSSnapshot(Snapshot):
                 if consumed_state:
                     restart_reason = consumed_state.get('restart_reason', None)
                 if restart_reason:
-                    state = {'tiberos-version': content}
+                    state = {'tiber-version': content}
             else:
                 state = (
                     {'restart_reason': "sota",
-                     'tiberos-version': content}
+                     'tiber-version': content}
                 )
             dispatcher_state.write_dispatcher_state_to_state_file(state)
         except (DispatcherException, SotaError) as err:
@@ -494,7 +494,7 @@ class TiberOSSnapshot(Snapshot):
             "Dispatcher state file creation successful.")
 
     def commit(self) -> int:
-        """On TiberOS, this method runs a UT commit command
+        """On Tiber, this method runs a UT commit command
 
         Also, delete dispatcher state file.
         """
@@ -507,7 +507,7 @@ class TiberOSSnapshot(Snapshot):
     def recover(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Recover from a failed SOTA.
 
-        On TiberOS, no action is required other than deleting the
+        On Tiber, no action is required other than deleting the
         state file and rebooting.
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
@@ -520,7 +520,7 @@ class TiberOSSnapshot(Snapshot):
     def revert(self, rebooter: Rebooter, time_to_wait_before_reboot: int) -> None:
         """Revert after second system SOTA boot when we see a problem with startup.
 
-        On TiberOS, we just reboot without commit
+        On Tiber, we just reboot without commit
         @param rebooter: Object implementing reboot() method
         @param time_to_wait_before_reboot: If we are rebooting, wait this many seconds first.
         """
@@ -532,24 +532,24 @@ class TiberOSSnapshot(Snapshot):
     def update_system(self) -> None:
         """If the system supports it, check whether the system was updated, after rebooting.
 
-        For TiberOS, we compare the image's version stored in dispatcher state file and current os version.
+        For Tiber, we compare the image's version stored in dispatcher state file and current os version.
         """
 
         logger.debug("attempting to get dispatcher state from state file")
         state = dispatcher_state.consume_dispatcher_state_file()
-        if state is not None and 'tiberos-version' in state:
-            logger.debug("got tiberos-version from state: " + str(state['tiberos-version']))
+        if state is not None and 'tiber-version' in state:
+            logger.debug("got tiber-version from state: " + str(state['tiber-version']))
             version = get_image_build_date()
-            current_tiberos_version = version
-            previous_tiberos_version = state['tiberos-version']
+            current_tiber_version = version
+            previous_tiber_version = state['tiber-version']
 
-            if current_tiberos_version == previous_tiberos_version:
+            if current_tiber_version == previous_tiber_version:
                 raise SotaError(
                     f"Requested update version is the same as previous version installed. VERSION: "
-                    f"{current_tiberos_version}")
+                    f"{current_tiber_version}")
             else:
-                logger.debug("success; tiberos version changed")
+                logger.debug("success; tiber version changed")
 
         else:
             raise SotaError(
-                f"'tiberos-version' not in state or state is not available. state = {str(state)}")
+                f"'tiber-version' not in state or state is not available. state = {str(state)}")

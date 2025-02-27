@@ -89,7 +89,7 @@ class TestSetupHelper(unittest.TestCase):
         mock_is_mender_file_exists.assert_called_once()
 
     @patch('os.path.isfile', return_value=True)
-    def test_tiberos_pre_processing_update_tool_exist(self, mock_is_ut_file_exists) -> None:
+    def test_tiber_pre_processing_update_tool_exist(self, mock_is_ut_file_exists) -> None:
         factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
         setup_helper = factory.create_setup_helper()
@@ -97,7 +97,7 @@ class TestSetupHelper(unittest.TestCase):
         mock_is_ut_file_exists.assert_called_once()
 
     @patch('os.path.isfile', return_value=False)
-    def test_tiberos_pre_processing_update_tool_not_exist(self, mock_is_ut_file_exists) -> None:
+    def test_tiber_pre_processing_update_tool_not_exist(self, mock_is_ut_file_exists) -> None:
         factory = SotaOsFactory(
             MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
         setup_helper = factory.create_setup_helper()

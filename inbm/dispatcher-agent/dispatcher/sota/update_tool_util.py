@@ -18,7 +18,7 @@ def update_tool_write_command(signature: Optional[str] = None, file_path: Option
     """Call UT command to write the image into secondary partition.
        If signature is provided, it performs signature check and passes the verified file to UT.
        TODO: For now the signature matches to hash received from MM or PUA. Please update the method once the
-        integration of the public key into TiberOS is confirmed.
+        integration of the public key into Tiber is confirmed.
 
     @param signature: signature used to verify image
     @param file_path: raw image file path
