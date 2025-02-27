@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
 ### Changed
+- (NEXMANAGE-1272) Fix /var/intel-manageability directory not being created when using LUKS which is needed for sqlite3
 - (NEXMANAGE-956) Improve failure reason from TC that is logged in Mjunct DB for FOTA
 - (NEXMANAGE-1194) provision-tc/mqtt services will now handle UDM
 - (NEXMANAGE-1253) Implement INBS (UDM) decommission command, which removes device credentials
