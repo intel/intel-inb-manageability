@@ -83,8 +83,8 @@ message UpdateSystemSoftwareOperation {
       message: "url must be a valid URL."
       expression: "this.isUri()"
     },
-    (buf.validate.field).required = true]; // URL from which to remotely retrieve the package
-    google.protobuf.Timestamp release_date = 2 [(buf.validate.field).required = true]; // Release date of the new SW update.
+    (buf.validate.field).required = false]; // URL from which to remotely retrieve the package
+    google.protobuf.Timestamp release_date = 2 [(buf.validate.field).required = false]; // Release date of the new SW update.
     enum DownloadMode {
         DOWNLOAD_MODE_UNSPECIFIED = 0;
         DOWNLOAD_MODE_FULL = 1; // Both download the package and install the package
