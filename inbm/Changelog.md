@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - (NEXMANAGE-1236) Upgrade golang.org/x/net from 0.23.0 to 0.33.0, fixing CVE-2024-45338
 - (N/A) Fix two 3rd party CVEs: CVE-2024-45338, CVE-2024-12797
 
+### Fixed
+- (NEXMANAGE-1280) Software Update Release Date and URL should not be required in common.proto
+
 ### Added
 - (NEXMANAGE-1222) Add support for Ubuntu 24.04
 - (NEXMANAGE-610, NEXMANAGE-692) Add support to handle OOB AMT RPC activation command
