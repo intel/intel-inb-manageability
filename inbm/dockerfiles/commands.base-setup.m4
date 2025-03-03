@@ -16,7 +16,7 @@ RUN apt-get update && \
     git && \
     apt-get clean
 RUN gem install dotenv -v 2.8.1
-RUN gem install --no-document fpm -v 1.14.0
+RUN gem install --no-document fpm -v 1.16.0
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
     software-properties-common && \

@@ -7,7 +7,7 @@ For a full reference, see https://fpm.readthedocs.io/en/latest/installing.html#i
 On Ubuntu 20.04:
 
 * `sudo apt install ruby ruby-dev rubygems build-essential`
-* `sudo gem install --no-document fpm -v 1.14.0`
+* `sudo gem install --no-document fpm -v 1.16.0`
 
 ### Set up jfrog
 
