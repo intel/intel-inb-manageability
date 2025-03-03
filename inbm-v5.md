@@ -260,48 +260,17 @@ Also depicted in the diagram are different Edge Node types on which TC can be in
 
 ![INBMv5 System Diagram](./INBMv5-system-diag.png)
 
-## Security Overview
+## Security implications
 
-Guidelines:
+Security is paramount for any and all software solution and in INBM's case the stakes are even higher as the use-case involves updating components (OS, application, firmware) on the Edge Node.
 
-   1. Provide a brief overview of the security measures in place.
-   2. Explain the importance of security for the project.
+The change in architecture in INBM v5 is designed to inherently bring in security advantages and reduces complexity. While some of the advantages comes in from the chosen language of implementation – Go, e.g. static-typing, binary-compilation etc, other are achieved by purposeful design changes as outlined below:
 
-### Security Policies
+- Single (monolithic) service: moving away from `micro-services` to `single-service`. Moving to a single service implementation removes the need of inter-services authentication, thus removing the requirement of generating, storing and access controlling of inter-process-communication credential.
+- Unix-sockets:  Using unix sockets for ipc instead of mqtt pub/sub removes the inherent requirement of managing and securing mqtt-broker and maintaining an ACL.
 
-Guidelines:
-
-   1. Describe the security policies in place.
-   2. Include information on data protection, user privacy, and compliance.
-
-[Content of security policies]
-
-### Authentication
-
-Guidelines:
-
-   1. Explain the authentication mechanisms used.
-   2. Include information on password policies, multi-factor authentication, and session management.
-
-[Content of Authentication]
-
-### Access Control
-
-Guidelines:
-
-   1. Describe the access control mechanisms in place.
-   2. Include information on role-based access control (RBAC), permissions, and user roles.
-
-[Content of Access Control]
-
-### Auditing
-
-Guidelines:
-
-   1. Explain the auditing mechanisms in place.
-   2. Include information on logging, monitoring, and audit trails.
-
-[Content of Auditing]
+> **IMPORTANT NOTE** The security requirements and measures to ensure secure communication between `DMS` and INBM's `cloud-client` remains unchanged.</br>
+Also security hardening mechanism like access control enforcement done via OS/kernel tool like `AppArmor` or `SELinux` are also still applicable and used in INBM v5
 
 ## Scalability
 
