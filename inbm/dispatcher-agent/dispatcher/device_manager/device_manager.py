@@ -51,13 +51,23 @@ class LinuxDeviceManager(DeviceManager):
 
     def restart(self) -> str:
         logger.debug("Restart Linux system command received")
-        (out, err, code) = self.runner.run(LINUX_POWER + LINUX_RESTART)
-        if code != 0:
-            raise DispatcherException(f"Restart FAILED. Error:{err}")
+        try:
+            (out, err, code) = self.runner.run(LINUX_POWER + LINUX_RESTART)
+            if code != 0:
+                raise DispatcherException(f"Restart FAILED. Error:{err}")
+        except FileNotFoundError as e:
+            raise DispatcherException(
+                f"Restart failed: unable to find command '{LINUX_POWER}': ") from e
         return SUCCESS_RESTART
 
     def shutdown(self) -> str:
-        self.runner.run(LINUX_POWER + LINUX_SHUTDOWN)
+        try:
+            (out, err, code) = self.runner.run(LINUX_POWER + LINUX_SHUTDOWN)
+            if code != 0:
+                raise DispatcherException(f"Restart FAILED. Error:{err}")
+        except FileNotFoundError as e:
+            raise DispatcherException(
+                f"Shutdown failed: unable to find command '{LINUX_POWER}': ") from e
         return SUCCESS_SHUTDOWN
 
     def decommission(self) -> str:
