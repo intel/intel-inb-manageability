@@ -2,7 +2,7 @@
 
 ## Overview
 
-In-band Manageability 5.0 (a.k.a. INBMv5) is a reimplementation of INBM in Golang.
+In-band Manageability 5.0 (a.k.a. INBMv5, Turtle Creek v5) is a reimplementation of INBM in Golang.
 
 ### Motivation
 
@@ -187,7 +187,7 @@ sequenceDiagram
 
 ```
 
-## Extensibility
+## Extensibility and Integration
 
 Extensibility in INBM's context can be defined by providing hooks in place to extend support:
 
@@ -207,13 +207,13 @@ Extensibility in INBM's context can be defined by providing hooks in place to ex
 
 ## Deployment
 
-[Content of Deployment]
+INBM shall be deployed as a `native` or `bare-metal-agent` OS application on the Edge Node with `root` privileges.
 
 ## Implementation
 
 Here are some preliminary phases for initial implementation:
 
-Foundation/skeleton
+### Foundation/skeleton
 
 - Repo branch set up
 - installer/uninstaller working
@@ -225,24 +225,24 @@ Foundation/skeleton
 - integration test in place
 - `provision-tc` skeleton that enables and starts service
 
-Security
+### Security
 
 - TPM/LUKS set up so that it is available for Turtle Creek daemon on startup
 - apparmor profile in place and enforced
 - selinux for Tiber
 
-Basic SOTA
+### Basic SOTA
 
 - INBC SOTA working on Ubuntu (no rollback/health check); with correct manifest format
 - INBC SOTA working on Ubuntu with rollback/health check on reboot
 - INBC SOTA working on Tiber A/B--download+update initially
 
-Clouds
+### Clouds
 
 - Able to connect to Azure and handle SOTA via manifest
 - Able to connect to INBS/UDM and handle SOTA via gRPC
 
-Telemetry
+### Telemetry
 
 - Detect and send telemetry to Azure--static
 - Detect and send telemetry to Azure--dynamic
@@ -250,26 +250,17 @@ Telemetry
 
 ## System Diagram
 
-Guidelines:
+Below represents a wholistic view of how Turtle Creek (TC) fits into a Device Management system.
 
-   1. Include a diagram to illustrate how the system is deployed and what other applications it may be connected to.
-   2. Clearly label components, workflows, and integration points.
+As depicted in the below diagram, TC is a `self-contained` Edge Node component which works in conjunction with a `DMS` to enable a `Day 2` device management task or usecase, e.g. software update.
 
-.. figure:: ./images/stack-diagram.png
-   :alt: Technology Stack of [System or Tool Name]
+TC, when provisioned to connect to a DMS, shall `reach out` to the server based on the protocol that DMS supports (e.g. MQTT).
 
-   Figure 1: Technology Stack of [System or Tool Name]
+Also depicted in the diagram are different Edge Node types on which TC can be installed on, as well as the location of the Edge Nodes covering cases when the nodes are behind a company firewall/proxy gateway as well as on field with direct internet connectivity.
 
-## Integrations
+![INBMv5 System Diagram](./INBMv5-system-diag.png)
 
-Guidelines:
-
-   1. List the integrations between this application and other tech stack applications or systems.
-   2. Include links to additional material if available, including the development project, code, diagrams, and issues.
-
-[Content of Integrations]
-
-## Security
+## Security Overview
 
 Guidelines:
 
@@ -314,17 +305,4 @@ Guidelines:
 
 ## Scalability
 
-Guidelines:
-
-   1. Provide a brief overview of the scalability considerations.
-   2. Explain the importance of scalability for the project.
-
-## Supporting Resources
-
-Guidelines:
-
-   1. Provide links to related documentation or tools.
-   2. Include troubleshooting guides and community resources.
-
-- `API Guide <./APIs.rst>`_
-- `User Guide <./User.rst>`_
+INBM being a self contained Edge Node software component with the requirement of having one instance of it running on the physical device does not have any specific design considerations for scalability.
