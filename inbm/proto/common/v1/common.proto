@@ -81,7 +81,7 @@ message UpdateSystemSoftwareOperation {
     string url = 1 [(buf.validate.field).cel = {
       id: "valid_uri"
       message: "url must be a valid URL."
-      expression: "this.isUri()"
+      expression: "this == '' || this.isUri()"
     },
     (buf.validate.field).required = false]; // URL from which to remotely retrieve the package
     google.protobuf.Timestamp release_date = 2 [(buf.validate.field).required = false]; // Release date of the new SW update.
