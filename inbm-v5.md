@@ -211,42 +211,85 @@ INBM shall be deployed as a `native` or `bare-metal-agent` OS application on the
 
 ## Implementation
 
-Here are some preliminary phases for initial implementation:
+Definition of done for all stories (once integration test is ready) -must- include 80% unit test coverage and 
+at least one happy and one failure path per major feature. Can reuse Turtle Creek v4 integration tests if needed.
 
-### Foundation/skeleton
+Starting epics/stories:
 
-- Repo branch set up
-- installer/uninstaller working
-- .debs available
-- SPEC in TiberOS branch for .rpms
-- Turtle creek daemon running as systemd service
-- inbc able to talk to turtle creek daemon via UNIX socket
-- CI/CD and scans working
-- integration test in place
-- `provision-tc` skeleton that enables and starts service
+### Epic 1: Foundation & Skeleton
+**Goal:** Provide a “walking skeleton” with code structure, basic installers, a daemon, CLI tool, UNIX socket communication, a provision-tc skeleton, and automated CI/CD.
 
-### Security
+- **Story 1.1:** Repository & Branch Setup  
+  - Properly structured repository and branching strategy  
+  - Repo structured, branch conventions defined, README included. Decide on branch name for INBM v5.
 
-- TPM/LUKS set up so that it is available for Turtle Creek daemon on startup
-- apparmor profile in place and enforced
-- selinux for Tiber
+- **Story 1.2:** Installer/Uninstaller & .deb Package  
+  - Install/uninstall Turtle Creek daemon and inbc CLI using .deb packages  
+  - *single* .deb package created, installer shell script works, uninstall shell script works.
 
-### Basic SOTA
+- **Story 1.3:** Turtle Creek Daemon as a systemd Service  
+  - Turtle Creek daemon to run automatically on system boot  
+  - systemd service file created, daemon auto-starts, logs configured.
 
-- INBC SOTA working on Ubuntu (no rollback/health check); with correct manifest format
-- INBC SOTA working on Ubuntu with rollback/health check on reboot
-- INBC SOTA working on Tiber A/B--download+update initially
+- **Story 1.4:** inbc <-> Daemon Communication via UNIX Socket  
+  - inbc CLI communicates with the Turtle Creek daemon through a UNIX socket  
+  - UNIX socket communication established, error handling for invalid commands.
 
-### Clouds
+- **Story 1.5:** provision-tc Skeleton & Service Enablement  
+  - Run a `provision-tc` command that enables and starts the Turtle Creek daemon  
+  - `provision-tc` script/command enabling daemon, logging actions. Maintain compatibility with Turtle Creek v4.
 
-- Able to connect to Azure and handle SOTA via manifest
-- Able to connect to INBS/UDM and handle SOTA via gRPC
+- **Story 1.6:** CI/CD Setup with Scans & Integration Tests  
+  - Automated builds/tests to run in Jenkins with security scans  
+  - Jenkins pipeline configured, scanning tools integrated, basic integration test set up.
 
-### Telemetry
+### Epic 2: Security
+**Goal:** Implement foundational security features such as TPM/LUKS for startup, AppArmor profile, and SELinux for Tiber.
 
-- Detect and send telemetry to Azure--static
-- Detect and send telemetry to Azure--dynamic
-- ..any telemetry features required by UDM
+- **Story 2.1:** TPM/LUKS Setup (Reuse v4 Scripts)  
+  - System uses TPM/LUKS encryption at startup  
+  - TPM/LUKS scripts integrated: can borrow from Turtle Creek v4; use same scheme/directory layout.
+
+- **Story 2.2:** AppArmor Profile  
+  - AppArmor profile for the Turtle Creek daemon  
+  - AppArmor profile enforced when Turtle Creek is installed
+
+### Epic 3: Basic SOTA
+**Goal:** Implement basic SOTA updates for Ubuntu and Tiber, with optional rollback/health checks.
+
+- **Story 3.1:** Ubuntu SOTA Without Rollback/Health Check  
+  - Deploy SOTA updates via inbc without rollback or health checks  
+  - Manifest format defined, update applied, success/failure logged.
+
+- **Story 3.2:** Ubuntu SOTA with Rollback/Health Check  
+  - Rollback/health checks on system reboot  
+  - Health-check implemented, rollback logic added, reboot scenarios tested.
+
+- **Story 3.3:** Tiber A/B Updates Initially  
+  - Deploy A/B updates  
+  - Download, update, and rollback on failure should function properly (use Turtle Creek v4 as reference).
+
+### Epic 4: Clouds
+**Goal:** Connect to cloud backends (Azure or INBS/UDM) for SOTA updates, configured via `adapter.cfg`.
+
+- **Story 4.1:** Azure SOTA via Manifest  
+  - System connects to Azure for SOTA using a manifest  
+  - Connect to Azure working; Turtle Creek logs events to Azure; Turtle Creek responds to SOTA manifest properly and reconnects on reboot  
+
+- **Story 4.2:** INBS/UDM SOTA via gRPC  
+  - System connects to INBS/UDM over gRPC  
+  - `adapter.cfg` for INBS, Turtle Creek should respond to pings and to SOTA requests; only need to support 'immediate' requests (no scheduling needed); should send job status when done.
+
+### Epic 5: Telemetry
+**Goal:** Enable telemetry for Azure or UDM, initially static data followed by dynamic data.
+
+- **Story 5.1:** Static Telemetry to Azure  
+  - Send predefined static telemetry to Azure  
+  - Implement all static telemetry supported in Turtle Creek v4; send on startup (once connected to Azure)
+
+- **Story 5.2:** Dynamic Telemetry to Azure  
+  - Send dynamic telemetry to Azure  
+  - Implement all dynamic telemetry supported in Turtle Creek v4; send periodically
 
 ## System Diagram
 
