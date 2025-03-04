@@ -250,7 +250,7 @@ Starting epics/stories:
 
 ### Epic 2: Security
 
-**Goal:** Implement foundational security features such as TPM/LUKS for startup, AppArmor profile, and SELinux for Tiber.
+**Goal:** Implement foundational security features such as TPM/LUKS for startup, AppArmor profile.
 
 - **Story 2.1:** TPM/LUKS Setup (Reuse v4 Scripts)  
   - System uses TPM/LUKS encryption at startup  
