@@ -22,6 +22,7 @@ Like the earlier releases, the intension is to have as minimal an impact as poss
   - Firmware Update
   - Application update
   - Basic telemetry and events reporting
+  - Device power control - reboot and shutdown
 
 - the primary `device-management` interfaces used and provided by INBM remain the same i.e.:
   - `inbc`, command-line interface for local usage
@@ -205,6 +206,9 @@ Extensibility in INBM's context can be defined by providing hooks in place to ex
   - add `key:value` pairs for the new telemetry data getting collected
   - possible update in `cloud-client` to send this data to `dms`
 
+- adding firmware update support for a new platform and bios vendor
+  - this includes adding a new entry to firmware update configuration file
+
 ## Deployment
 
 INBM shall be deployed as a `native` or `bare-metal-agent` OS application on the Edge Node with `root` privileges.
@@ -217,6 +221,7 @@ at least one happy and one failure path per major feature. Can reuse Turtle Cree
 Starting epics/stories:
 
 ### Epic 1: Foundation & Skeleton
+
 **Goal:** Provide a “walking skeleton” with code structure, basic installers, a daemon, CLI tool, UNIX socket communication, a provision-tc skeleton, and automated CI/CD.
 
 - **Story 1.1:** Repository & Branch Setup  
@@ -244,6 +249,7 @@ Starting epics/stories:
   - Jenkins pipeline configured, scanning tools integrated, basic integration test set up.
 
 ### Epic 2: Security
+
 **Goal:** Implement foundational security features such as TPM/LUKS for startup, AppArmor profile, and SELinux for Tiber.
 
 - **Story 2.1:** TPM/LUKS Setup (Reuse v4 Scripts)  
@@ -255,6 +261,7 @@ Starting epics/stories:
   - AppArmor profile enforced when Turtle Creek is installed
 
 ### Epic 3: Basic SOTA
+
 **Goal:** Implement basic SOTA updates for Ubuntu and Tiber, with optional rollback/health checks.
 
 - **Story 3.1:** Ubuntu SOTA Without Rollback/Health Check  
@@ -270,6 +277,7 @@ Starting epics/stories:
   - Download, update, and rollback on failure should function properly (use Turtle Creek v4 as reference).
 
 ### Epic 4: Clouds
+
 **Goal:** Connect to cloud backends (Azure or INBS/UDM) for SOTA updates, configured via `adapter.cfg`.
 
 - **Story 4.1:** Azure SOTA via Manifest  
@@ -281,6 +289,7 @@ Starting epics/stories:
   - `adapter.cfg` for INBS, Turtle Creek should respond to pings and to SOTA requests; only need to support 'immediate' requests (no scheduling needed); should send job status when done.
 
 ### Epic 5: Telemetry
+
 **Goal:** Enable telemetry for Azure or UDM, initially static data followed by dynamic data.
 
 - **Story 5.1:** Static Telemetry to Azure  
