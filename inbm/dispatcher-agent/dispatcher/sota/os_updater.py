@@ -392,8 +392,8 @@ class WindowsUpdater(OsUpdater):
         raise NotImplementedError()
 
 
-class TiberOSUpdater(OsUpdater):
-    """TiberOSUpdater class, child of OsUpdater
+class TiberUpdater(OsUpdater):
+    """TiberUpdater class, child of OsUpdater
 
        @param signature: signature used to verify image
        @param uri: uri provided in the manifest
@@ -405,12 +405,12 @@ class TiberOSUpdater(OsUpdater):
 
     def update_remote_source(self, uri: Optional[CanonicalUri], signature: Optional[str],
                              repo: irepo.IRepo) -> List[str]:
-        """Returns empty list for TiberOS --not applicable"""
-        logger.error("SOTA full mode is not supported in TiberOS.")
+        """Returns empty list for Tiber --not applicable"""
+        logger.error("SOTA full mode is not supported in Tiber.")
         return []
 
     def update_local_source(self, file_path: str) -> List[str]:
-        """Concrete class method to create command list to update from a local source for TiberOS.
+        """Concrete class method to create command list to update from a local source for Tiber.
         @param file_path: path to local file
         @return: Command list to execute to perform update.
         """

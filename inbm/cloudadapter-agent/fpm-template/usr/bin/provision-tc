@@ -38,11 +38,6 @@ function provision {
     if [[ "$NO_CLOUD" == "" ]]; then
       configure_cloud
     fi
-    if ! [[ -v UCC_MODE ]]; then
-      if [[ "$NO_OTA_CERT" == "" ]]; then
-        inb-provision-ota-cert
-      fi
-    fi
   else
     configure_cloud_udm_mode
   fi
@@ -322,7 +317,7 @@ EOF
   chmod 640 "$ADAPTER_CFG_FILE"
 
   chgrp cloudadapter-agent "$ONBOARDING_JSON"
-  chmod 640 "$ONBOARDING_JSON"
+  chmod 660 "$ONBOARDING_JSON"  # cloudadapter needs to be able to truncate $ONBOARDING_JSON during decommission
 }
 
 if grep -q "TRUE" /etc/intel-manageability/public/ucc_flag ; then
