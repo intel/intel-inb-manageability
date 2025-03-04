@@ -5,7 +5,7 @@ import warnings
 
 from cloudadapter.pb.inbs.v1 import inbs_sb_pb2 as inbs_dot_v1_dot_inbs__sb__pb2
 
-GRPC_GENERATED_VERSION = '1.70.0'
+GRPC_GENERATED_VERSION = '1.68.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
