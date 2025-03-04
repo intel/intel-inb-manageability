@@ -8,7 +8,7 @@ On Ubuntu 20.04:
 
 * `sudo apt install ruby ruby-dev rubygems build-essential`
 * `sudo gem install public_suffix -v 5.1.1`
-* `sudo gem install --no-document fpm -v 1.16.0`
+* `sudo gem install --no-document fpm -v 1.14.0`
 
 ### Set up jfrog
 
