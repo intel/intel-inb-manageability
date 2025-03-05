@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Fixed
 - (NEXMANAGE-1280) Software Update Release Date and URL should not be required in common.proto
 - (NEXMANAGE-1284) Timed out waiting for INBM Dispatcher response after trigger first run for power heuristic operation
+- Fixed that when `shutdown` binary was not available, status was not reported back to INBS correctly for in-band power cycle
 
 ### Added
 - (NEXMANAGE-1222) Add support for Ubuntu 24.04
