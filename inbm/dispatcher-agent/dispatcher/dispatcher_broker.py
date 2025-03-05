@@ -82,7 +82,7 @@ class DispatcherBroker:
         if not self.is_started():
             logger.error('Cannot send result: dispatcher core not initialized')
             return
-
+        
         schedule = self._check_db_for_started_job()
         logger.debug(f"Schedule in Broker Send_result: {schedule}")
 

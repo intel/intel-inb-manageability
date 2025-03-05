@@ -394,7 +394,7 @@ class Dispatcher:
             result = Result(CODE_BAD_REQUEST, str(e))
             self._update_logger.status = FAIL
             self._update_logger.error = str(e)
-        finally:            
+        finally:  
             logger.info('Install result: %s', str(result))
             self._send_result(message=str(result))
             if result.status != CODE_OK and parsed_head:
