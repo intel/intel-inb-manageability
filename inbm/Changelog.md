@@ -5,19 +5,27 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
 ### Changed
+- (NEXMANAGE-1272) Fix /var/intel-manageability directory not being created when using LUKS which is needed for sqlite3
 - (NEXMANAGE-956) Improve failure reason from TC that is logged in Mjunct DB for FOTA
 - (NEXMANAGE-1194) provision-tc/mqtt services will now handle UDM
 - (NEXMANAGE-1253) Implement INBS (UDM) decommission command, which removes device credentials
+- Rename Tiber references from old name to Tiber in code
 
 ### Security
 - (NEXMANAGE-1236) Upgrade golang.org/x/net from 0.23.0 to 0.33.0, fixing CVE-2024-45338
+- (N/A) Fix two 3rd party CVEs: CVE-2024-45338, CVE-2024-12797
+
+### Fixed
+- (NEXMANAGE-1280) Software Update Release Date and URL should not be required in common.proto
+- (NEXMANAGE-1284) Timed out waiting for INBM Dispatcher response after trigger first run for power heuristic operation
+- Fixed that when `shutdown` binary was not available, status was not reported back to INBS correctly for in-band power cycle
 
 ### Added
 - (NEXMANAGE-1222) Add support for Ubuntu 24.04
 - (NEXMANAGE-610, NEXMANAGE-692) Add support to handle OOB AMT RPC activation command
 
 ### Fixed
-- Fixed that when `shutdown` binary was not available, status was not reported back to INBS correctly for in-band power cycle
+- (NEXMANAGE-1281) Result message empty when shutdown binary is missing
 
 ## 4.2.8.2 - 2024-12-18
 ### Changed
@@ -47,7 +55,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## 4.2.7 - 2024-11-8
 ### Changed
- - (NEXMANAGE-949) Check the IMAGE_BUILD_DATE instead of VERSION for TiberOS SOTA verification
+ - (NEXMANAGE-949) Check the IMAGE_BUILD_DATE instead of VERSION for Tiber SOTA verification
 
 ### Added
  - (NEXMANAGE-950) Add Set Power State Capability to cloudadapter from UDM
@@ -74,7 +82,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
  - (NEXMANAGE-737) Enable sota cancel mode
 
 ### Fixed
- - (NEXMANAGE-872) Fix provision-tc issue in TiberOS - cannot overwrite /etc/dispatcher.environment
+ - (NEXMANAGE-872) Fix provision-tc issue in Tiber - cannot overwrite /etc/dispatcher.environment
  - (NEXMANAGE-846) Fix granular log raise error when granular log file is empty
 
 ### Changed
@@ -84,12 +92,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## 4.2.6 - 2024-10-04
 ### Added
- - (NEXMANAGE-515) Update dispatcher SOTA related classes for supporting TiberOS
- - (NEXMANAGE-598) Expanding INBC for handling TiberOS update cmd
+ - (NEXMANAGE-515) Update dispatcher SOTA related classes for supporting Tiber
+ - (NEXMANAGE-598) Expanding INBC for handling Tiber update cmd
  - Updated proto files to add new RPC calls to allow edge node to update
    its status with INBS.
  - (NEXMANAGE-610) Add functionality to INBM Cloudadapter-agent to support OOB AMT RPC command requests from INBS
- - Update TiberOS name to "tiber"
+ - Update Tiber name to "tiber"
  - (NEXMANAGE-613) Store Scheduled updates in DB, Add nodeUpdate communication stream, and plumbing to return correct jobID on scheduled request.
 
 ### Changed

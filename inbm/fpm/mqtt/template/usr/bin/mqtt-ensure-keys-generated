@@ -49,7 +49,7 @@ check_no_insecure_user() {
       if [ "$ID" != "tiber" ]; then
           chsh -s /usr/sbin/nologin "$user_to_check"
       else
-          echo "Skipping shell change for user $user_to_check on 'tiber' OS."
+          echo "Skipping shell change for user $user_to_check on 'tiber'."
       fi
     fi
   fi
@@ -72,7 +72,7 @@ fix_permissions() {
                     useradd -g "$GROUP" -s /usr/sbin/nologin "$USER" # user does not exist
                 fi
             else
-                echo "Skipping group and user creation for $USER on 'tiber' OS."
+                echo "Skipping group and user creation for $USER on 'tiber'."
             fi
 
             # Perform chgrp/chmod regardless of OS
@@ -109,7 +109,7 @@ fix_permissions() {
     if [ "$ID" != "tiber" ]; then
         getent group docker || groupadd docker
     else
-        echo "Skipping 'docker' group creation on 'tiber' OS."
+        echo "Skipping 'docker' group creation on 'tiber'."
     fi
 }
 

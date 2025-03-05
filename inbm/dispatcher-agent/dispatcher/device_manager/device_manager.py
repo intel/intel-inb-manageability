@@ -57,10 +57,19 @@ class LinuxDeviceManager(DeviceManager):
             raise DispatcherException(f"Restart FAILED. Error:{e}")
         if code != 0:
             raise DispatcherException(f"Restart FAILED. Error:{err}")
+        except FileNotFoundError:
+            raise DispatcherException(
+                f"Restart failed: unable to find command '{LINUX_POWER}'")
         return SUCCESS_RESTART
 
     def shutdown(self) -> str:
-        self.runner.run(LINUX_POWER + LINUX_SHUTDOWN)
+        try:
+            (out, err, code) = self.runner.run(LINUX_POWER + LINUX_SHUTDOWN)
+            if code != 0:
+                raise DispatcherException(f"Restart FAILED. Error:{err}")
+        except FileNotFoundError:
+            raise DispatcherException(
+                f"Shutdown failed: unable to find command '{LINUX_POWER}'")
         return SUCCESS_SHUTDOWN
 
     def decommission(self) -> str:
