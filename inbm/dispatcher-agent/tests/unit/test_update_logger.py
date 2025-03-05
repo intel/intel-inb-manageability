@@ -317,7 +317,7 @@ class TestUpdateLogger(TestCase):
         self.assertEqual(granular_log, expected_content)
 
     @patch('dispatcher.update_logger.detect_os', return_value='tiber')
-    def test_save_granular_log_file_sota_with_tiberos_and_log(self, mock_os) -> None:
+    def test_save_granular_log_file_sota_with_tiber_and_log(self, mock_os) -> None:
         self.update_logger.ota_type = "sota"
         self.update_logger._time = datetime.datetime(2024, 7, 3, 1, 50, 55, 935223)
         log = {

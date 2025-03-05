@@ -12,7 +12,9 @@
     pip3 install mypy-protobuf
     ```
 
-3. Generate proto files
+3. Copy proto/buf/validate/validate.proto file from UDM repository
+
+4. Generate proto files
 
     ```sh
     cd /path/to/intel-inb-manageability/inbm

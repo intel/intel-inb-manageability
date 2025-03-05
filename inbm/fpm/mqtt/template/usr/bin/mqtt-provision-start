@@ -13,7 +13,7 @@ fi
 if [ "$ID" != "tiber" ]; then
     getent group pmsuser || groupadd pmsuser
 else
-    echo "Skipping adding pmsuser group on 'tiber' OS."
+    echo "Skipping adding pmsuser group on 'tiber'."
 fi
 chgrp mqtt-broker /var/persistent-log/mosquitto
 chmod g+rwx /var/persistent-log/mosquitto
