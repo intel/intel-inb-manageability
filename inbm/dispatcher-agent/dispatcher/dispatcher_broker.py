@@ -85,17 +85,18 @@ class DispatcherBroker:
 
         schedule = self._check_db_for_started_job()
         logger.debug(f"Schedule in Broker Send_result: {schedule}")
-        
-        if not schedule:
-            # This is not a scheduled job
-            logger.debug(f"Sending result message with id {request_id}: {message}")
-            if request_id != "":
-                topic = RESPONSE_CHANNEL + "/" + request_id
-                self.mqtt_publish(topic=topic, payload=message)
-            else:
-                self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
+
+        if request_id != "":
+            # This is a response to a specific request ID -- unrelated to scheduling
+            logger.debug(f"Sending result message with id {request_id}: {message}")                    
+            topic = RESPONSE_CHANNEL + "/" + request_id
+            self.mqtt_publish(topic=topic, payload=message)
+        elif not schedule:
+            # This is not a scheduled job (and no request ID)
+            logger.debug(f"Sending result message: {message}")
+            self.mqtt_publish(topic=RESPONSE_CHANNEL, payload=message)
         else:
-            # This is a scheduled job 
+            # This is a scheduled job (and no request ID)
             
             # TODO: add error handling NEXMANAGE-743
                        
