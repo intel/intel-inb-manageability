@@ -2,7 +2,7 @@
 
 ## Overview
 
-In-band Manageability 5.0 (a.k.a. INBMv5, Turtle Creek v5) is a reimplementation of INBM in Golang.
+In-band Manageability 5.0 (a.k.a. INBMv5, Turtle Creek v5) is a re-implementation of INBM in Golang.
 
 ### Motivation
 
@@ -15,7 +15,7 @@ In-band Manageability 5.0 (a.k.a. INBMv5, Turtle Creek v5) is a reimplementation
 
 ### Backward compatibility and features
 
-Like the earlier releases, the intension is to have as minimal an impact as possible for external consumers of INBM. This `backwards compatibility` requirement for INBMv5 insures that
+Like the earlier releases, the intention is to have as minimal an impact as possible for external consumers of INBM. This `backwards compatibility` requirement for INBMv5 insures that
 
 - the primary OTA feature set that INBM provided remain the same i.e.:
   - OS Update
@@ -45,14 +45,14 @@ Below is a high-level architecture diagram for INBMv5 leveraging Golang's `multi
 
    - **Function**: Main manageability application which runs in the background
    - **Main Tasks**:
-      - Spawns other `persistant` or `long-living` threads like `cloud-client`, `dispatcher-queue` and `telemetry-reporter`.
+      - Spawns other `persistent` or `long-living` threads like `cloud-client`, `dispatcher-queue` and `telemetry-reporter`.
       - Acts as a server and accepts incoming requests from `inbc` and `cloud-connect` over unix socket and pushes the over-the-air update commands to dispatcher-queue.
 
 1. #### inbc
 
    - **Function**: In-band manageability's commandline interface
    - **Main Tasks**:
-      - `inbc` acts as the commandline interace to other `previlaged` user-space applications to perform device-management actions (like os updates or firmware update etc) on the underlying host.
+      - `inbc` acts as the commandline interface to other `privileged` user-space applications to perform device-management actions (like OS updates or firmware update etc) on the underlying host.
       - a `trusted client` application which communicates with `inbm-daemon` over unix-sockets, translating manageability commands into gRPC API calls.
    - **Example Use**:
 
@@ -84,41 +84,41 @@ Below is a high-level architecture diagram for INBMv5 leveraging Golang's `multi
 
 1. #### updater threads
 
-   - **Function**: A `transieant` thread performing update on underlying host
+   - **Function**: A `transient` thread performing update on underlying host
    - **Main Tasks**:
-      - _Firmware updater_: Perfomrs firmware update related tasks like:
-         - check applicability, i.e. verdor, version and date checks
+      - _Firmware updater_: Performs firmware update related tasks like:
+         - check applicability, i.e. vendor, version and date checks
          - download capsule file and perform signature checks if applicable
          - invoke IBV's firmware update tool based on firmware-update config file look up.
          - update logging and state files
          - send intermediate results to `inbm-daemon` for reporting
          - trigger reboot of platform if applicable
-      - _OS updater_: Perfomrs OS update related tasks like:
+      - _OS updater_: Performs OS update related tasks like:
          - check applicability, e.g. checks available disk space
          - download OS image file and perform signature checks if applicable
          - invoke OS update tool based on underlying OS type/distribution.
          - update logging and state files
          - send intermediate results to `inbm-daemon` for reporting
          - trigger reboot of platform if applicable
-      - _Application updater_: Perfomrs application update related tasks like:
+      - _Application updater_: Performs application update related tasks like:
          - check applicability, e.g. checks available disk space
-         - invoke underlying OS distributions `package manager` to perfomr the required installation tasks.
+         - invoke underlying OS distributions `package manager` to perform the required installation tasks.
          - update logging and state files
          - send results to `inbm-daemon` for reporting
 
-1. #### telemerty-reporter
+1. #### telemetry-reporter
 
    - **Function**: Thread performing basic platform telemetry collection and reporting
-   - **Main Tasks**: Basic plaform telemetry being collected by `telemetry-reporter` can be catogarized as `static` and `dynamic`
+   - **Main Tasks**: Basic platform telemetry being collected by `telemetry-reporter` can be categorized as `static` and `dynamic`
       - _Static_: Information that remains same for the most part of the a devices life cycle (e.g. UUID, Serial number etc) or only changes on updates (e.g. Firmware version, OS version etc)
-      - _Dynamic_: Information which constantly changes and is ideal to be plotted on a `time-sereis` database (e.g. CPU usage, memory usage etc)
+      - _Dynamic_: Information which constantly changes and is ideal to be plotted on a `time-series` database (e.g. CPU usage, memory usage etc)
 
 ## Data Flow
 
 INBM on Edge Node can be used in two modes:
 
 1. _cloud-connect_: when INBM is provisioned to connect to a `DMS` and receives update related `ota`commands from cloud.
-1. _local-host_: when INBM is provisioned to be only invoked by a `privilaged` user-space application running on the same host OS.
+1. _local-host_: when INBM is provisioned to be only invoked by a `privileged` user-space application running on the same host OS.
 
 Described below are the different data flow paths based on the provisioning modes for commands and information:
 
@@ -161,7 +161,7 @@ sequenceDiagram
 ```mermaid
 sequenceDiagram
   box sudo
-    participant sudo as Previlaged App
+    participant sudo as Privileged App
   end
   
   box INBM
@@ -193,21 +193,23 @@ sequenceDiagram
 Extensibility in INBM's context can be defined by providing hooks in place to extend support:
 
 - connecting to a new device management server (dms), e.g. Amazon or Googles device management solutions
-  - this would involve adding new adapter in `cloud-client` which adhears to the protocol supported by the dms.
+  - this would involve adding new adapter in `cloud-client` which adheres to the protocol supported by the dms.
 
 - executing new OTA cmd type, to enable a customer's specific usecase for e.g. install drivers or run specific applications
   - adding a new OTA cmd typically will involve adding new handlers in:
     - `cloud-client` - additional handler for the new cmd
     - `inbm-daemon` - additional logic to spawn a new type of ota thread
-    - `new-thread` - buisness logic executing the new cmd and reporting result
+    - `new-thread` - business logic executing the new cmd and reporting result
 
 - sending additional telemetry from device, e.g. GPU utilization
-  - add data collection routin in `telemerty-reporter`
+  - add data collection routing in `telemetry-reporter`
   - add `key:value` pairs for the new telemetry data getting collected
   - possible update in `cloud-client` to send this data to `dms`
 
 - adding firmware update support for a new platform and bios vendor
   - this includes adding a new entry to firmware update configuration file
+
+- INBC will be developed initially and will use gRPC proto definitions to convey the parameters in place of using our current manifest format.
 
 ## Deployment
 
@@ -215,8 +217,7 @@ INBM shall be deployed as a `native` or `bare-metal-agent` OS application on the
 
 ## Implementation
 
-Definition of done for all stories (once integration test is ready) -must- include 80% unit test coverage and 
-at least one happy and one failure path per major feature. Can reuse Turtle Creek v4 integration tests if needed.
+Definition of done for all stories (once integration test is ready) -must- include 80% unit test coverage and at least one happy and one failure path per major feature. Can reuse Turtle Creek v4 integration tests if needed.
 
 Starting epics/stories:
 
@@ -229,15 +230,15 @@ Starting epics/stories:
   - Repo structured, branch conventions defined, README included. Decide on branch name for INBM v5.
 
 - **Story 1.2:** Installer/Uninstaller & .deb Package  
-  - Install/uninstall Turtle Creek daemon and inbc CLI using .deb packages  
+  - Install/uninstall Turtle Creek daemon and INBC CLI using .deb packages  
   - *single* .deb package created, installer shell script works, uninstall shell script works.
 
 - **Story 1.3:** Turtle Creek Daemon as a systemd Service  
   - Turtle Creek daemon to run automatically on system boot  
   - systemd service file created, daemon auto-starts, logs configured.
 
-- **Story 1.4:** inbc <-> Daemon Communication via UNIX Socket  
-  - inbc CLI communicates with the Turtle Creek daemon through a UNIX socket  
+- **Story 1.4:** INBC <-> Daemon Communication via UNIX Socket  
+  - INBC CLI communicates with the Turtle Creek daemon through a UNIX socket  
   - UNIX socket communication established, error handling for invalid commands.
 
 - **Story 1.5:** provision-tc Skeleton & Service Enablement  
