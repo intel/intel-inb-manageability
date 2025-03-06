@@ -301,6 +301,16 @@ Starting epics/stories:
   - Send dynamic telemetry to Azure  
   - Implement all dynamic telemetry supported in Turtle Creek v4; send periodically
 
+### Epic 6: INBC
+
+**Goal:** Provide an easy to use command line tool for test/debug purposes similar to the existing TC v4 INBC tool.
+
+- **Story 6.1:** Define Command structure
+  - Determine the command line structure that makes sense to support the proposed and future commands necessary for OTA and Source updates.
+
+- **Story 6.2:** Build Initial INBC Framework
+  - Build the initial Framework using Golang Cobra to support the INBC tool
+
 ## System Diagram
 
 Below represents a wholistic view of how Turtle Creek (TC) fits into a Device Management system.
