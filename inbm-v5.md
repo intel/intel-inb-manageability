@@ -311,6 +311,14 @@ Starting epics/stories:
 - **Story 6.2:** Build Initial INBC Framework
   - Build the initial Framework using Golang Cobra to support the INBC tool
 
+### Epic 7: DMS
+
+**Goal:** Provide a dispatcher service for dispatching and executing received commands/operation from the cloud or INBC.
+
+- **Story 7.1:** Define Northbound API and Framework
+  - Define NB Protobuf API to support incoming requests from INBC and Cloud services for supported commands.
+  - Build initial framework to support gRPC and NB Protobuf definitions.
+
 ## System Diagram
 
 Below represents a wholistic view of how Turtle Creek (TC) fits into a Device Management system.
