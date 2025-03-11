@@ -17,6 +17,13 @@ To run client:
 
 This will connect to the server `inbd` via `/tmp/inbd.sock` and send a simple gRPC query.
 
+To run server as a service:
+* Build the inbd binary: `make inbd`
+* Copy the binary to /usr/bin: `cp output/inbd /usr/bin`
+* Copy the service file to systemd folder: `cp configs/systemd/inbd.service /lib/systemd/system/inbd.service'
+* Start the service: `systemctl start inbd`
+* Check the service's log: `journalctl -fu inbd`
+
 # Branching Strategy
 
 ## Pre-Release Development
