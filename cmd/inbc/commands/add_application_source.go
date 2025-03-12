@@ -25,12 +25,12 @@ func AddApplicationSourceCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "add",
 		Short: "Adds a new application source",
-		Long:  `Add command is used to add a new application source to the list of sources.`,
+		Long:  "Add command is used to add a new application source to the list of sources.",
 		RunE:  handleAddApplicationSource(&socket, &sources, &filename, &gpgKeyURI, &gpgKeyName),
 	}
 
 	cmd.Flags().StringVar(&socket, "socket", "/var/run/inbd.sock", "UNIX domain socket path")
-	cmd.Flags().StringSliceVar(&sources, "sources", nil, "List of sources to add")
+	cmd.Flags().StringSliceVar(&sources, "sources", nil, "List of application sources to add")
 	cmd.MarkFlagRequired("sources")
 	cmd.Flags().StringVar(&filename, "filename", "", "Filename of the source")
 	cmd.MarkFlagRequired("filename")
