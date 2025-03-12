@@ -1,67 +1,42 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"log"
 	"net"
 	"os"
 	"syscall"
 
-	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	"google.golang.org/grpc"
+
+	"github.com/intel/intel-inb-manageability/internal/inbd"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
-type inbdServer struct {
-	pb.UnimplementedInbServiceServer
-}
-
-func (s *inbdServer) UpdateSystemSoftware(ctx context.Context, req *pb.UpdateSystemSoftwareRequest) (*pb.UpdateResponse, error) {
-	log.Printf("Received UpdateSystemSoftware request")
-	return &pb.UpdateResponse{StatusCode: 501, Error: "Not implemented"}, nil
-}
-
-func (s *inbdServer) UpdateOSSource(ctx context.Context, req *pb.UpdateOSSourceRequest) (*pb.UpdateResponse, error) {
-	log.Printf("Received UpdateOSSource request")
-	return &pb.UpdateResponse{StatusCode: 501, Error: "Not implemented"}, nil
-}
-
-func (s *inbdServer) AddApplicationSource(ctx context.Context, req *pb.AddApplicationSourceRequest) (*pb.UpdateResponse, error) {
-	log.Printf("Received AddApplicationSource request")
-	return &pb.UpdateResponse{StatusCode: 501, Error: "Not implemented"}, nil
-}
-
-func (s *inbdServer) RemoveApplicationSource(ctx context.Context, req *pb.RemoveApplicationSourceRequest) (*pb.UpdateResponse, error) {
-	log.Printf("Received RemoveApplicationSource request")
-	return &pb.UpdateResponse{StatusCode: 501, Error: "Not implemented"}, nil
-}
-
 func main() {
-	var socket = flag.String("s", "/var/run/inbd.sock", "UNIX domain socket path")
+	socket := flag.String("s", "/var/run/inbd.sock", "UNIX domain socket path")
 	flag.Parse()
 
-	if _, err := os.Stat(*socket); err == nil {
-		err := os.Remove(*socket)
-		if err != nil {
-			log.Fatalf("Error removing %s", *socket)
-		}
+	// Build our dependency struct using real functions.
+	deps := inbd.ServerDeps{
+		Socket:        *socket,
+		Stat:          os.Stat,
+		Remove:        os.Remove,
+		NetListen:     net.Listen,
+		Umask:         syscall.Umask,
+		NewGRPCServer: grpc.NewServer,
+		RegisterService: func(gs *grpc.Server) {
+			// Register our inbdServer implementation.
+			pb.RegisterInbServiceServer(gs, &inbd.InbdServer{})
+		},
+		ServeFunc: func(gs *grpc.Server, lis net.Listener) error {
+			log.Printf("Server listening on %s", *socket)
+			return gs.Serve(lis)
+		},
 	}
 
-	// when creating the socket, we need it to be with 0600 permissions, atomically
-	oldUmask := syscall.Umask(0177)
-	lis, err := net.Listen("unix", *socket)
-	if err != nil {
-		log.Fatalf("Error listening to %s: %v", *socket, err)
-	}
-	syscall.Umask(oldUmask)
-
-	grpcServer := grpc.NewServer()
-
-	pb.RegisterInbServiceServer(grpcServer, &inbdServer{})
-	log.Printf("Server listening on %s", *socket)
-
-	err = grpcServer.Serve(lis)
-	if err != nil {
-		log.Fatalf("Failed to serve: %v", err)
+	// Run the server (returning an error instead of calling log.Fatal internally).
+	if err := inbd.RunServer(deps); err != nil {
+		log.Fatalf("Server failed: %v", err)
 	}
 }
