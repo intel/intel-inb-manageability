@@ -1,28 +1,34 @@
 # inbm-v5
 
-To generate protobuf:
+Prerequisite for development: install Earthly. See https://earthly.dev/get-earthly. 
 
-* Install `buf` tool. See https://buf.build/docs/cli/installation/
-* Run: `buf generate`
+To run lint checks:
+* Run: `earthly +lint`
+
+To build:
+* Run: `earthly +build`
+
+To run tests:
+* Run: `earthly +test`
 
 To run server:
 
-* Run: `go run ./cmd/inbd -s /tmp/inbd.sock`
+* Run: `./build/inbd -s /tmp/inbd.sock`
 
 This will wait for a client connection on `/tmp/inbd.sock`.
 
 To run client:
 
-* Run: `go run ./cmd/inbc --socket /tmp/inbd.sock sota --mode full`
+* Run: `./build/inbc --socket /tmp/inbd.sock sota --mode full`
 
 (Should respond with 501-Not Implemented)
 
 This will connect to the server `inbd` via `/tmp/inbd.sock` and send a simple gRPC query.
 
 To run server as a service:
-* Build the inbd binary: `make inbd`
-* Copy the binary to /usr/bin: `cp output/inbd /usr/bin`
-* Copy the service file to systemd folder: `cp configs/systemd/inbd.service /lib/systemd/system/inbd.service'
+* Build `inbd` -- see above.
+* Copy the binary to /usr/bin: `cp ./build/inbd /usr/bin`
+* Copy the service file to systemd folder: `cp configs/systemd/inbd.service /lib/systemd/system/inbd.service`
 * Start the service: `systemctl start inbd`
 * Check the service's log: `journalctl -fu inbd`
 * To start inbd automatically on system boot: `systemctl enable inbd`
