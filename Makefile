@@ -1,6 +1,6 @@
 NAME ?= inbd
 BUILD_DIR ?= output
-INBM_VERSION ?= 0.1.0
+INBM_VERSION ?= 5.0.0-dev
 
 inbd:
 	@# Help: builds INBM daemon binary

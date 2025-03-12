@@ -6,10 +6,7 @@ Requires=network.target
 # ExecStart command is only run when everything else has loaded
 Type=idle
 User=root
-EnvironmentFile=-/etc/environment
-Environment='REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt'
-Environment='SSL_CERT_FILE=/etc/ssl/certs/ca-certificates.crt'
-ExecStart=/usr/bin/inbd -s /tmp/inbd.sock
+ExecStart=/usr/bin/inbd -s /var/run/inbd.sock
 RestartSec=5s
 Restart=on-failure
 WorkingDirectory=/etc/systemd/system/
