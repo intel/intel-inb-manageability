@@ -1,10 +1,14 @@
 package commands
 
 import (
+	"context"
 	"testing"
 
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
+	"google.golang.org/grpc"
 )
 
 func TestAddApplicationSourceCmd(t *testing.T) {
@@ -39,14 +43,62 @@ func TestAddApplicationSourceCmd(t *testing.T) {
 
 func TestHandleAddApplicationSource(t *testing.T) {
 	socket := "/var/run/inbd.sock"
-	sources := []string{"source1", "source2"}
-	filename := "testfile"
-	gpgKeyURI := "http://example.com/key"
-	gpgKeyName := "testkey"
+    filename := "testfile"
+    sources := []string{"source1", "source2"}
+    gpgKeyURI := "http://example.com/key"
+    gpgKeyName := "testkey"
+    cmd := &cobra.Command{}
+    args := []string{}
+    mockClient := new(MockInbServiceClient)
 
-	cmd := &cobra.Command{}
-	args := []string{}
 
-	err := handleAddApplicationSource(&socket, &sources, &filename, &gpgKeyURI, &gpgKeyName)(cmd, args)
-	assert.NoError(t, err, "handleAddApplicationSource should not return an error")
+	t.Run("successful add application source", func(t *testing.T) {
+		mockClient.On("AddApplicationSource", mock.Anything, mock.Anything, mock.Anything).Return(&pb.UpdateResponse{
+			StatusCode: 200,
+			Error:      "",
+		}, nil)
+
+		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, *grpc.ClientConn, error) {
+			return MockDialer(ctx, socket, mockClient, false)
+		}
+
+		err := handleAddApplicationSource(&socket, &sources, &filename, &gpgKeyURI, &gpgKeyName, dialer)(cmd, args)
+		assert.NoError(t, err, "handleAddApplicationSource should not return an error")
+
+		mockClient.AssertExpectations(t)
+	})
+
+	t.Run("duplicate source in sources list", func(t *testing.T) {
+		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, *grpc.ClientConn, error) {
+			return MockDialer(ctx, socket, new(MockInbServiceClient), false)
+		}
+
+		sameSources := []string{"source1", "source1"}
+
+		err := handleAddApplicationSource(&socket, &sameSources, &filename, &gpgKeyURI, &gpgKeyName, dialer)(cmd, args)
+		assert.Error(t, err, "duplicate source in the sources list: source1")
+	})
+
+	t.Run("gRPC client setup error", func(t *testing.T) {
+		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, *grpc.ClientConn, error) {
+			return MockDialer(ctx, socket, new(MockInbServiceClient), true)
+		}
+
+		err := handleAddApplicationSource(&socket, &sources, &filename, &gpgKeyURI, &gpgKeyName, dialer)(cmd, args)
+		assert.Error(t, err, "error setting up new gRPC client")
+	})
+
+	t.Run("gRPC AddApplicationSource error", func(t *testing.T) {
+        mockClient.On("AddApplicationSource", mock.Anything, mock.Anything, mock.Anything).Return(&pb.UpdateResponse{
+            StatusCode: 500,
+            Error:      "error adding application source",
+        }, nil)
+
+        dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, *grpc.ClientConn, error) {
+            return MockDialer(ctx, socket, mockClient, false)
+        }
+
+        err := handleAddApplicationSource(&socket, &sources, &filename, &gpgKeyURI, &gpgKeyName, dialer)(cmd, args)
+        assert.Error(t, err, "error adding application source")
+    })
 }
