@@ -203,7 +203,7 @@ class TiberDownloader(Downloader):
         """
 
         if uri is None:
-            raise SotaError("URI is None while performing Tiber download")
+            raise SotaError("URI is None while performing emt download")
 
         password = read_release_server_token()
 

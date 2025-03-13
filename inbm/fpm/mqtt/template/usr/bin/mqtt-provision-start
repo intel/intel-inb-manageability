@@ -10,10 +10,10 @@ else
 fi
 
 # Ensure mqtt-broker has required permissions
-if [ "$ID" != "tiber" ]; then
+if [ "$ID" != "Edge Microvisor Toolkit" ]; then
     getent group pmsuser || groupadd pmsuser
 else
-    echo "Skipping adding pmsuser group on 'tiber'."
+    echo "Skipping adding pmsuser group on 'Edge Microvisor Toolkit'."
 fi
 chgrp mqtt-broker /var/persistent-log/mosquitto
 chmod g+rwx /var/persistent-log/mosquitto

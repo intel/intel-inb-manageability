@@ -9,23 +9,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - (NEXMANAGE-956) Improve failure reason from TC that is logged in Mjunct DB for FOTA
 - (NEXMANAGE-1194) provision-tc/mqtt services will now handle UDM
 - (NEXMANAGE-1253) Implement INBS (UDM) decommission command, which removes device credentials
-- Rename Tiber references from old name to Tiber in code
+- (NEXMANAGE-1297) Update OS detection method
 
 ### Security
-- (NEXMANAGE-1236) Upgrade golang.org/x/net from 0.23.0 to 0.33.0, fixing CVE-2024-45338
 - (N/A) Fix two 3rd party CVEs: CVE-2024-45338, CVE-2024-12797
 
 ### Fixed
+- (NEXMANAGE-1281) Result message empty when shutdown binary is missing
 - (NEXMANAGE-1280) Software Update Release Date and URL should not be required in common.proto
 - (NEXMANAGE-1284) Timed out waiting for INBM Dispatcher response after trigger first run for power heuristic operation
 - Fixed that when `shutdown` binary was not available, status was not reported back to INBS correctly for in-band power cycle
 
 ### Added
-- (NEXMANAGE-1222) Add support for Ubuntu 24.04
 - (NEXMANAGE-610, NEXMANAGE-692) Add support to handle OOB AMT RPC activation command
 
-### Fixed
-- (NEXMANAGE-1281) Result message empty when shutdown binary is missing
+## 4.2.8.4 - 2025-02-14
+### Changed
+- Rename Tiber references from old name to Tiber in code
+
+### Security
+- (NEXMANAGE-1236) Upgrade golang.org/x/net from 0.23.0 to 0.33.0, fixing CVE-2024-45338
+
+### Added
+- (NEXMANAGE-1222) Add support for Ubuntu 24.04
+
 
 ## 4.2.8.2 - 2024-12-18
 ### Changed
