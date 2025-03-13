@@ -11,6 +11,7 @@ import (
 
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 )
 
 // RemoveApplicationSourceCmd returns a cobra command for the RemoveApplicationSource command
@@ -48,7 +49,11 @@ func handleRemoveApplicationSource(socket *string, filename *string, gpgKeyName 
 		if err != nil {
 			log.Fatalf("Error setting up new gRPC client: %v", err)
 		}
-		defer conn.Close()
+		defer func() {
+			if c, ok := conn.(*grpc.ClientConn); ok {
+				c.Close()
+			}
+		}()
 
 		resp, err := client.RemoveApplicationSource(context.Background(), request)
 		if err != nil {

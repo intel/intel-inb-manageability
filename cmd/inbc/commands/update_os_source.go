@@ -12,6 +12,7 @@ import (
 
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 )
 
 // UpdateOSSourceCmd returns a cobra command for the Update OS Source command
@@ -56,7 +57,11 @@ func handleUpdateOSSource(socket *string, sources *[]string) func(*cobra.Command
 		if err != nil {
 			log.Fatalf("Error setting up new gRPC client: %v", err)
 		}
-		defer conn.Close()
+		defer func() {
+			if c, ok := conn.(*grpc.ClientConn); ok {
+				c.Close()
+			}
+		}()
 
 		resp, err := client.UpdateOSSource(context.Background(), request)
 		if err != nil {

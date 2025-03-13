@@ -18,7 +18,7 @@ import (
 type Dialer func(ctx context.Context, addr string) (pb.InbServiceClient, *grpc.ClientConn, error)
 
 // Dial returns a new gRPC client
-func Dial(ctx context.Context, addr string) (pb.InbServiceClient, *grpc.ClientConn, error) {
+func Dial(ctx context.Context, addr string) (pb.InbServiceClient, grpc.ClientConnInterface, error) {
 	dialer := func(ctx context.Context, addr string) (net.Conn, error) {
 		// cut off the unix:// part
 		addr = addr[7:]

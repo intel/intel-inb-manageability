@@ -53,10 +53,10 @@ func (m *MockClientConn) Close() error {
 }
 
 // MockDialer is a mock implementation of the Dialer function
-func MockDialer(_ context.Context, _ string, client *MockInbServiceClient, shouldError bool) (pb.InbServiceClient, *grpc.ClientConn, error) {
+func MockDialer(_ context.Context, _ string, client *MockInbServiceClient, shouldError bool) (pb.InbServiceClient, grpc.ClientConnInterface, error) {
 	if shouldError {
 		return nil, nil, fmt.Errorf("mock dialer error")
 	}
 	
-	return client, nil, nil
+	return client, &MockClientConn{}, nil
 }

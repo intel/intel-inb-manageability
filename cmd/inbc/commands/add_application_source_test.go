@@ -2,6 +2,7 @@ package commands
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
@@ -43,22 +44,21 @@ func TestAddApplicationSourceCmd(t *testing.T) {
 
 func TestHandleAddApplicationSource(t *testing.T) {
 	socket := "/var/run/inbd.sock"
-    filename := "testfile"
-    sources := []string{"source1", "source2"}
-    gpgKeyURI := "http://example.com/key"
-    gpgKeyName := "testkey"
-    cmd := &cobra.Command{}
-    args := []string{}
-    mockClient := new(MockInbServiceClient)
-
+	filename := "testfile"
+	sources := []string{"source1", "source2"}
+	gpgKeyURI := "http://example.com/key"
+	gpgKeyName := "testkey"
+	cmd := &cobra.Command{}
+	args := []string{}
 
 	t.Run("successful add application source", func(t *testing.T) {
+		mockClient := new(MockInbServiceClient)
 		mockClient.On("AddApplicationSource", mock.Anything, mock.Anything, mock.Anything).Return(&pb.UpdateResponse{
 			StatusCode: 200,
 			Error:      "",
 		}, nil)
 
-		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, *grpc.ClientConn, error) {
+		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, grpc.ClientConnInterface, error) {
 			return MockDialer(ctx, socket, mockClient, false)
 		}
 
@@ -69,7 +69,7 @@ func TestHandleAddApplicationSource(t *testing.T) {
 	})
 
 	t.Run("duplicate source in sources list", func(t *testing.T) {
-		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, *grpc.ClientConn, error) {
+		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, grpc.ClientConnInterface, error) {
 			return MockDialer(ctx, socket, new(MockInbServiceClient), false)
 		}
 
@@ -80,7 +80,7 @@ func TestHandleAddApplicationSource(t *testing.T) {
 	})
 
 	t.Run("gRPC client setup error", func(t *testing.T) {
-		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, *grpc.ClientConn, error) {
+		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, grpc.ClientConnInterface, error) {
 			return MockDialer(ctx, socket, new(MockInbServiceClient), true)
 		}
 
@@ -89,16 +89,14 @@ func TestHandleAddApplicationSource(t *testing.T) {
 	})
 
 	t.Run("gRPC AddApplicationSource error", func(t *testing.T) {
-        mockClient.On("AddApplicationSource", mock.Anything, mock.Anything, mock.Anything).Return(&pb.UpdateResponse{
-            StatusCode: 500,
-            Error:      "error adding application source",
-        }, nil)
+		mockClient := new(MockInbServiceClient)
+		mockClient.On("AddApplicationSource", mock.Anything, mock.Anything, mock.Anything).Return(&pb.UpdateResponse{}, errors.New("error adding application source"))
 
-        dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, *grpc.ClientConn, error) {
-            return MockDialer(ctx, socket, mockClient, false)
-        }
+		dialer := func(ctx context.Context, socket string) (pb.InbServiceClient, grpc.ClientConnInterface, error) {
+			return MockDialer(ctx, socket, mockClient, false)
+		}
 
-        err := handleAddApplicationSource(&socket, &sources, &filename, &gpgKeyURI, &gpgKeyName, dialer)(cmd, args)
-        assert.Error(t, err, "error adding application source")
-    })
+		err := handleAddApplicationSource(&socket, &sources, &filename, &gpgKeyURI, &gpgKeyName, dialer)(cmd, args)
+		assert.Error(t, err, "error adding application source")
+	})
 }

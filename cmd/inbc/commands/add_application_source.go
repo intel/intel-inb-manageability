@@ -2,7 +2,7 @@
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
  * SPDX-License-Identifier: LicenseRef-Intel
  */
- // Package commands are the commands that are used by the INBC tool.
+// Package commands are the commands that are used by the INBC tool.
 package commands
 
 import (
@@ -11,6 +11,7 @@ import (
 
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 )
 
 // AddApplicationSourceCmd returns a cobra command for the AddApplicationSource command
@@ -46,7 +47,7 @@ func handleAddApplicationSource(
 	filename *string,
 	gpgKeyURI *string,
 	gpgKeyName *string,
-	dialer Dialer,
+	dialer func(context.Context, string) (pb.InbServiceClient, grpc.ClientConnInterface, error),
 ) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
 		fmt.Printf("SOURCE APPLICATION ADD INBC Command was invoked.\n")
@@ -71,12 +72,15 @@ func handleAddApplicationSource(
 		if err != nil {
 			return fmt.Errorf("error setting up new gRPC client: %v", err)
 		}
-		defer conn.Close()
+		defer func() {
+			if c, ok := conn.(*grpc.ClientConn); ok {
+				c.Close()
+			}
+		}()
 
 		resp, err := inbdClient.AddApplicationSource(context.Background(), request)
 		if err != nil {
 			return fmt.Errorf("error adding application source: %v", err)
-
 		}
 
 		fmt.Printf("SOURCE APPLICATION ADD Command Response: %d-%s\n", resp.GetStatusCode(), string(resp.GetError()))

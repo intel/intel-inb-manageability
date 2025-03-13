@@ -13,6 +13,7 @@ import (
 
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	"github.com/spf13/cobra"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -95,7 +96,11 @@ func handleSOTA(socket *string, url *string, releaseDate *string, mode *string, 
 		if err != nil {
 			log.Fatalf("Error setting up new grpc client: %v", err)
 		}
-		defer conn.Close()
+		defer func() {
+			if c, ok := conn.(*grpc.ClientConn); ok {
+				c.Close()
+			}
+		}()
 
 		resp, err := client.UpdateSystemSoftware(context.Background(), request)
 		if err != nil {
