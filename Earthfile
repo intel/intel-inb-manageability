@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: (C) 2024-2025 Intel Corporation
 # SPDX-License-Identifier: LicenseRef-Intel
-VERSION 0.7
+VERSION 0.8
 
 LOCALLY
 ARG http_proxy=$(echo $http_proxy)
@@ -43,6 +43,7 @@ golang-base:
     WORKDIR /work
     COPY go.mod .
     COPY go.sum .
+    RUN go mod download # for caching
     COPY cmd/ ./cmd
     COPY pkg/ ./pkg
     COPY proto/ ./proto
