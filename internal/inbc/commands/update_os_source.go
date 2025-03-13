@@ -2,7 +2,7 @@
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
  * SPDX-License-Identifier: LicenseRef-Intel
  */
- 
+
 // Package commands are the commands that are used by the INBC tool.
 package commands
 
@@ -29,14 +29,14 @@ func UpdateOSSourceCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&socket, "socket", "/var/run/inbd.sock", "UNIX domain socket path")
 	cmd.Flags().StringSliceVar(&sources, "sources", nil, "List of sources to add")
-	cmd.MarkFlagRequired("sources")
+	must(cmd.MarkFlagRequired("sources"))
 
 	return cmd
 }
 
 // handleUpdateOSSource is a helper function to handle the UpdateOSSource command
 func handleUpdateOSSource(
-	socket *string, 
+	socket *string,
 	sources *[]string,
 	dialer func(context.Context, string) (pb.InbServiceClient, grpc.ClientConnInterface, error),
 ) func(*cobra.Command, []string) error {

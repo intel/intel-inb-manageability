@@ -2,7 +2,7 @@
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
  * SPDX-License-Identifier: LicenseRef-Intel
  */
- 
+
 // Package commands are the commands that are used by the INBC tool.
 package commands
 
@@ -30,7 +30,7 @@ func RemoveApplicationSourceCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&socket, "socket", "/var/run/inbd.sock", "UNIX domain socket path")
 	cmd.Flags().StringVar(&filename, "filename", "", "Filename of the source")
-	cmd.MarkFlagRequired("filename")
+	must(cmd.MarkFlagRequired("filename"))
 	cmd.Flags().StringVar(&gpgKeyName, "gpg-key-name", "", "GPG key name")
 
 	return cmd
@@ -38,12 +38,12 @@ func RemoveApplicationSourceCmd() *cobra.Command {
 
 // handleRemoveApplicationSource is a helper function to handle the RemoveApplicationSource command
 func handleRemoveApplicationSource(
-	socket *string, 
-	filename *string, 
+	socket *string,
+	filename *string,
 	gpgKeyName *string,
 	dialer func(context.Context, string) (pb.InbServiceClient, grpc.ClientConnInterface, error),
 ) func(*cobra.Command, []string) error {
-		return func(cmd *cobra.Command, args []string) error {
+	return func(cmd *cobra.Command, args []string) error {
 		fmt.Printf("SOURCE APPLICATION REMOVE INBC Command was invoked.\n")
 
 		request := &pb.RemoveApplicationSourceRequest{

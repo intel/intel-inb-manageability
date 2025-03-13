@@ -31,9 +31,9 @@ func AddApplicationSourceCmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&socket, "socket", "/var/run/inbd.sock", "UNIX domain socket path")
 	cmd.Flags().StringSliceVar(&sources, "sources", nil, "List of application sources to add")
-	cmd.MarkFlagRequired("sources")
+	must(cmd.MarkFlagRequired("sources"))
 	cmd.Flags().StringVar(&filename, "filename", "", "Filename of the source")
-	cmd.MarkFlagRequired("filename")
+	must(cmd.MarkFlagRequired("filename"))
 	cmd.Flags().StringVar(&gpgKeyURI, "gpg-key-uri", "", "GPG key URI")
 	cmd.Flags().StringVar(&gpgKeyName, "gpg-key-name", "", "GPG key name")
 
