@@ -12,7 +12,6 @@ gantt
         E3 SOTA & Demo Prep (Gavin/YL)    :sotademo, after inbc, 10d
         TiberOS integrate (Gavin/YL) :spec, after sotademo, 10d
         TiberOS Demo                              :milestone, :demo, 2025-03-31, 0d
-        Ongoing Unit Tests (BLR)          :unit, after foundation, 15d
 
     section CICD
         Meet with CI/CD team (Gavin/Nat)          :milestone, :meetcicd, 2025-03-17, 0d
