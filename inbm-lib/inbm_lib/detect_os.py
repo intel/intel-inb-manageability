@@ -34,7 +34,7 @@ class LinuxDistType(Enum):
     Deby = 3
     Debian = 4
     CentOS = 5
-    Microvisor = 6
+    microvisor = 6
 
 
 def verify_os_supported() -> str:
@@ -101,6 +101,9 @@ def detect_os() -> str:
 
         if lsb_release_name is not None and lsb_release_name in LinuxDistType.__members__:
             logger.debug("Detected OS with lsb_release: " + lsb_release_name)
+            os_name = lsb_release_name
+        elif lsb_release_name is not None and LinuxDistType.microvisor.name in lsb_release_name.lower():
+            logger.debug("Detected EMT OS with lsb_release: " + lsb_release_name)
             os_name = lsb_release_name
         elif path.exists(SYSTEM_IS_YOCTO_PATH):
             if not path.exists(MENDER_FILE_PATH):

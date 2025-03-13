@@ -31,7 +31,7 @@ class GranularLogHandler:
         log = {}
         current_os = detect_os()
         with self._granular_lock:
-            if LinuxDistType.Microvisor.name in current_os.lower():
+            if LinuxDistType.microvisor.name in current_os.lower():
                 # Delete the previous log if exist.
                 if os.path.exists(GRANULAR_LOG_FILE):
                     with open(GRANULAR_LOG_FILE, "r+") as file:
