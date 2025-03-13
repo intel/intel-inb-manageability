@@ -10,7 +10,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/intel/intel-inb-manageability/cmd/inbc/commands"
+	"github.com/intel/intel-inb-manageability/internal/inbc/commands"
 )
 
 // Version is set with linker flags at build time.
