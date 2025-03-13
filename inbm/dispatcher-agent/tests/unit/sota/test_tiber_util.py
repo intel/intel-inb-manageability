@@ -79,7 +79,7 @@ class TestDownloader(unittest.TestCase):
                                  install_check_service=MockInstallCheckService(),
                                  cancel_event=threading.Event())
         cls.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Edge Microvisor Toolkit')
 
     @patch('requests.get')
     @patch('dispatcher.sota.downloader.read_release_server_token', return_value="mock_password")
@@ -94,7 +94,7 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Edge Microvisor Toolkit')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
@@ -129,7 +129,7 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Edge Microvisor Toolkit')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
@@ -163,7 +163,7 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Edge Microvisor Toolkit')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
@@ -197,7 +197,7 @@ class TestDownloader(unittest.TestCase):
 
         assert TestDownloader.sota_instance
         TestDownloader.sota_instance.factory = SotaOsFactory(
-            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('tiber')
+            MockDispatcherBroker.build_mock_dispatcher_broker(), None, []).get_os('Edge Microvisor Toolkit')
         factory = TestDownloader.sota_instance.factory
         assert factory
         installer = factory.create_downloader()
