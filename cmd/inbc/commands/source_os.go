@@ -2,7 +2,9 @@
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
  * SPDX-License-Identifier: LicenseRef-Intel
  */
- package commands
+ 
+// Package commands are the commands that are used by the INBC tool.
+package commands
 
  import (
 	 "github.com/spf13/cobra"
