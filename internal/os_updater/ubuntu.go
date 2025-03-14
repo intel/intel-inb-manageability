@@ -1,0 +1,34 @@
+/*
+ * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+ * SPDX-License-Identifier: LicenseRef-Intel
+ */
+
+// Package osupdater updates the OS.
+package osupdater
+
+// UbuntuDownloader is the concrete implementation of the IDownloader interface
+// for the Ubuntu OS.
+type UbuntuDownloader struct{}
+
+// download implements IDownloader.
+func (u *UbuntuDownloader) download() error {
+	panic("unimplemented")
+}
+
+// UbuntuUpdater is the concrete implementation of the IUpdater interface
+// for the Ubuntu OS.
+type UbuntuUpdater struct{}
+
+// Update method for Ubuntu
+func (u *UbuntuUpdater) update() error {
+	panic("unimplemented")
+}
+
+// UbuntuRebooter is the concrete implementation of the IUpdater interface
+// for the Ubuntu OS.
+type UbuntuRebooter struct{}
+
+// Reboot method for Tiber
+func (u *UbuntuRebooter) reboot() error {
+	panic("unimplemented")
+}
