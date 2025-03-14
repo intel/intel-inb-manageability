@@ -1,8 +1,8 @@
 /*
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
- * SPDX-License-Identifier: LicenseRef-Intel
+ * SPDX-License-Identifier: Apache-2.0
  */
- 
+
 // Package commands are the commands that are used by the INBC tool.
 package commands
 
@@ -59,6 +59,6 @@ func MockDialer(_ context.Context, _ string, client *MockInbServiceClient, shoul
 	if shouldError {
 		return nil, nil, fmt.Errorf("mock dialer error")
 	}
-	
+
 	return client, &MockClientConn{}, nil
 }

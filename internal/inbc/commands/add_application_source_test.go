@@ -1,3 +1,9 @@
+/*
+ * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Package commands are the commands that are used by the INBC tool.
 package commands
 
 import (

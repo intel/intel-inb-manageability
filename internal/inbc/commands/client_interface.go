@@ -1,6 +1,6 @@
 /*
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
- * SPDX-License-Identifier: LicenseRef-Intel
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 // Package commands are the commands that are used by the INBC tool.
@@ -22,7 +22,7 @@ type ClientInterface interface {
 }
 
 // RealClient wraps the client package calls.
-type RealClient struct{
+type RealClient struct {
 	client pb.InbServiceClient
 }
 
