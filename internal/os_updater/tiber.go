@@ -15,11 +15,6 @@ func (t *TiberDownloader) download() error {
 	panic("unimplemented")
 }
 
-// Update method for Tiber
-func (tu *TiberUpdater) download() error {
-	panic("unimplemented")
-}
-
 // TiberUpdater is the concrete implementation of the IUpdater interface
 // for the Tiber OS.
 type TiberUpdater struct{}
