@@ -77,12 +77,8 @@ class SotaOsFactory:
         elif os_type == OsType.Windows.name:
             logger.debug("Windows returned")
             return Windows(self._dispatcher_broker)
-        #TODO: Remove this when confirmed that Tiber is in use
-        elif os_type == LinuxDistType.Mariner.name:
-            logger.debug("Mariner returned")
-            return TiberBasedSotaOs(self._dispatcher_broker, self._signature, self._uri)
-        elif os_type == LinuxDistType.tiber.name:
-            logger.debug("Tiber returned")
+        elif LinuxDistType.microvisor.name in os_type.lower():
+            logger.debug("EMT returned")
             return TiberBasedSotaOs(self._dispatcher_broker, self._signature, self._uri)
         raise ValueError('Unsupported OS type: ' + os_type)
 

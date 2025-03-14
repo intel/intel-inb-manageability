@@ -7,6 +7,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Security
 - Upgrade cryptography to 44.0.1, fixing CVE-2024-12797
 
+### Changed
+- (NEXMANAGE-1297) Update EMT OS detection method 
+
 ## 4.2.8.4 - 2025-02-14
 ### Security
 - (NEXMANAGE-1236) Upgrade golang.org/x/net from 0.23.0 to 0.33.0, fixing CVE-2024-45338
