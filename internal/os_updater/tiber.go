@@ -1,6 +1,6 @@
 /*
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
- * SPDX-License-Identifier: LicenseRef-Intel
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 // Package osupdater updates the OS.
@@ -11,7 +11,7 @@ package osupdater
 type TiberDownloader struct{}
 
 // download implements IDownloader.
-func (t *TiberDownloader) download() error {
+func (t *TiberDownloader) download() error {	
 	panic("unimplemented")
 }
 

@@ -1,13 +1,13 @@
 /*
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
- * SPDX-License-Identifier: LicenseRef-Intel
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 // Package osupdater updates the OS.
 package osupdater
 
-// IUpdater is an interface that contains the method to update the OS.
-type IUpdater interface {
+// Updater is an interface that contains the method to update the OS.
+type Updater interface {
 	update() error
 }
 

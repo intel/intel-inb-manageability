@@ -1,13 +1,13 @@
 /*
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
- * SPDX-License-Identifier: LicenseRef-Intel
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 // Package osupdater updates the OS.
 package osupdater
 
-// IDownloader is an interface that contains the method to download the update.
-type IDownloader interface {
+// Downloader is an interface that contains the method to download the update.
+type Downloader interface {
 	download() error
 }
 

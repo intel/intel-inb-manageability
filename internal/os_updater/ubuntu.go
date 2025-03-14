@@ -1,6 +1,6 @@
 /*
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
- * SPDX-License-Identifier: LicenseRef-Intel
+ * SPDX-License-Identifier: Apache-2.0
  */
 
 // Package osupdater updates the OS.
@@ -28,7 +28,7 @@ func (u *UbuntuUpdater) update() error {
 // for the Ubuntu OS.
 type UbuntuRebooter struct{}
 
-// Reboot method for Tiber
+// Reboot method for Ubuntu
 func (u *UbuntuRebooter) reboot() error {
 	panic("unimplemented")
 }
