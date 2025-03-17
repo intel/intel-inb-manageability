@@ -7,20 +7,21 @@ package osupdater
 import (
     "testing"
 
+    pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
     "github.com/stretchr/testify/assert"
 )
 
 func TestGetOSUpdaterFactory(t *testing.T) {
-    t.Run("returns TiberUpdater for Tiber OS", func(t *testing.T) {
-        factory, err := GetOSUpdaterFactory("Tiber")
+    t.Run("returns EMTUpdater for EMT OS", func(t *testing.T) {
+        factory, err := GetOSUpdaterFactory("EMT")
         assert.NoError(t, err)
-        assert.IsType(t, &TiberUpdater{}, factory)
+        assert.IsType(t, &EMTFactory{}, factory)
     })
 
     t.Run("returns UbuntuUpdater for Ubuntu OS", func(t *testing.T) {
         factory, err := GetOSUpdaterFactory("Ubuntu")
         assert.NoError(t, err)
-        assert.IsType(t, &UbuntuUpdater{}, factory)
+        assert.IsType(t, &UbuntuFactory{}, factory)
     })
 
     t.Run("returns error for unsupported OS", func(t *testing.T) {
@@ -30,40 +31,40 @@ func TestGetOSUpdaterFactory(t *testing.T) {
     })
 }
 
-func TestTiberUpdater(t *testing.T) {
-    tiberUpdater := &TiberUpdater{}
+func TestEMTUpdater(t *testing.T) {
+    emtUpdater := &EMTFactory{}
 
-    t.Run("createDownloader returns TiberDownloader", func(t *testing.T) {
-        downloader := tiberUpdater.createDownloader()
-        assert.IsType(t, &TiberDownloader{}, downloader)
+    t.Run("createDownloader returns EMTDownloader", func(t *testing.T) {
+        downloader := emtUpdater.CreateDownloader(*pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY.Enum())
+        assert.IsType(t, &EMTDownloader{}, downloader)
     })
 
-    t.Run("createUpdater returns TiberUpdater", func(t *testing.T) {
-        updater := tiberUpdater.createUpdater()
-        assert.IsType(t, &TiberUpdater{}, updater)
+    t.Run("createUpdater returns EMTUpdater", func(t *testing.T) {
+        updater := emtUpdater.CreateUpdater()
+        assert.IsType(t, &EMTUpdater{}, updater)
     })
 
-    t.Run("createRebooter returns TiberRebooter", func(t *testing.T) {
-        rebooter := tiberUpdater.createRebooter()
-        assert.IsType(t, &TiberRebooter{}, rebooter)
+    t.Run("createRebooter returns EMTRebooter", func(t *testing.T) {
+        rebooter := emtUpdater.CreateRebooter()
+        assert.IsType(t, &EMTRebooter{}, rebooter)
     })
 }
 
 func TestUbuntuUpdater(t *testing.T) {
-    ubuntuUpdater := &UbuntuUpdater{}
+    ubuntuUpdater := &UbuntuFactory{}
 
     t.Run("createDownloader returns UbuntuDownloader", func(t *testing.T) {
-        downloader := ubuntuUpdater.createDownloader()
+        downloader := ubuntuUpdater.CreateDownloader(pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_FULL)
         assert.IsType(t, &UbuntuDownloader{}, downloader)
     })
 
     t.Run("createUpdater returns UbuntuUpdater", func(t *testing.T) {
-        updater := ubuntuUpdater.createUpdater()
+        updater := ubuntuUpdater.CreateUpdater()
         assert.IsType(t, &UbuntuUpdater{}, updater)
     })
 
     t.Run("createRebooter returns UbuntuRebooter", func(t *testing.T) {
-        rebooter := ubuntuUpdater.createRebooter()
+        rebooter := ubuntuUpdater.CreateRebooter()
         assert.IsType(t, &UbuntuRebooter{}, rebooter)
     })
 }

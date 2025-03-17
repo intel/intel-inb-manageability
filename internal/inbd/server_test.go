@@ -259,7 +259,7 @@ func TestInbdServer_UpdateSystemSoftware(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
 	}
-	if resp.StatusCode != 501 || resp.Error != "Not implemented" {
+	if resp.StatusCode != 413 || resp.Error != "executable file not found in $PATH" {
 		t.Errorf("Unexpected response: %+v", resp)
 	}
 }

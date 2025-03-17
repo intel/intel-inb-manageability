@@ -8,12 +8,13 @@ package osupdater
 
 // Downloader is an interface that contains the method to download the update.
 type Downloader interface {
-	download() error
+	Download() error
 }
 
-type downloader struct {}
+// OSDownloader is the struct to hold parameters to download the OS update
+type OSDownloader struct {}
 
-// Abstract downloader method
-func (d *downloader) download() error {
+// Download is an abstract downloader method
+func (d *OSDownloader) Download() error {
 	return nil
 }

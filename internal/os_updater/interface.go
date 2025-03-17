@@ -6,53 +6,63 @@
 // Package osupdater updates the OS.
 package osupdater
 
-import "fmt"
+import (
+	"fmt"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+)
 
 // UpdaterFactory is an interface that contains the methods to create the concrete classes for the OS updater.
 type UpdaterFactory interface {
-	createRebooter() Rebooter
-	createUpdater() Updater
-	createDownloader() Downloader
+	CreateRebooter() Rebooter
+	CreateUpdater() Updater
+	CreateDownloader(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader
 }
 
 // GetOSUpdaterFactory returns the correct concrete classes for the OS updater based on the OS type.
 func GetOSUpdaterFactory(os string) (UpdaterFactory, error) {
-	if os == "Tiber" {
-		return &TiberUpdater{}, nil
+	if os == "EMT" {
+		return &EMTFactory{}, nil
 	}
 
 	if os == "Ubuntu" {
-		return &UbuntuUpdater{}, nil
+		return &UbuntuFactory{}, nil
 	}
 	return nil, fmt.Errorf("Unsupported OS")
 }
 
-// CreateDownloader creates a downloader concrete class for Tiber OS.	
-func (t *TiberUpdater) createDownloader() Downloader {
-	return &TiberDownloader{}
+// EMTFactory represents an EMT factory.
+type EMTFactory struct{}
+
+// CreateDownloader creates a downloader concrete class for EMT OS.
+func (f *EMTFactory) CreateDownloader(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
+	return &EMTDownloader{}
 }
 
-// CreateOSUpdater creates an OS updater concrete class for Tiber OS.
-func (t *TiberUpdater) createUpdater() Updater {
-	return &TiberUpdater{}
+
+// CreateUpdater creates an OS updater concrete class for EMT OS.
+func (f *EMTFactory) CreateUpdater() Updater {
+	return &EMTUpdater{}
 }
 
-// CreateRebooter creates a rebooter concrete class for Tiber OS.
-func (t *TiberUpdater) createRebooter() Rebooter {
-	return &TiberRebooter{}
+// CreateRebooter creates a rebooter concrete class for EMT OS.
+func (f *EMTFactory) CreateRebooter() Rebooter {
+	return &EMTRebooter{}
 }
 
-// CreateDownloader creates a downloader concrete class for Ubuntu OS.
-func (u *UbuntuUpdater) createDownloader() Downloader {
+// UbuntuFactory represents an EMT factory.
+type UbuntuFactory struct{}
+
+// CreateDownloader creates a downloader concrete class for EMT OS.
+func (f *UbuntuFactory) CreateDownloader(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
 	return &UbuntuDownloader{}
 }
 
-// CreateOSUpdater creates an OS updater concrete class for Ubuntu OS.
-func (u *UbuntuUpdater) createUpdater() Updater {
+// CreateUpdater creates an OS updater concrete class for Ubuntu OS.
+func (f *UbuntuFactory) CreateUpdater() Updater {
 	return &UbuntuUpdater{}
 }
 
 // CreateRebooter creates a rebooter concrete class for Ubuntu OS.
-func (u *UbuntuUpdater) createRebooter() Rebooter {
+func (f *UbuntuFactory) CreateRebooter() Rebooter {
 	return &UbuntuRebooter{}
 }

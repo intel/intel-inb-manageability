@@ -8,12 +8,12 @@ package osupdater
 
 // Updater is an interface that contains the method to update the OS.
 type Updater interface {
-	update() error
+	Update() error
 }
 
 type updater struct {}
 
 // Abstract update method
-func (u *updater) update() error {
+func (u *updater) Update() error {
 	return nil
 }
