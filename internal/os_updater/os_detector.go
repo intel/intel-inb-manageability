@@ -8,5 +8,5 @@ package osupdater
 
 func detectOS() string {
 	// TODO: Implement OS detection
-	return "Tiber"
+	return "Emt"
 }

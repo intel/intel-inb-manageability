@@ -11,10 +11,10 @@ import (
 )
 
 func TestGetOSUpdaterFactory(t *testing.T) {
-    t.Run("returns TiberUpdater for Tiber OS", func(t *testing.T) {
-        factory, err := GetOSUpdaterFactory("Tiber")
+    t.Run("returns EmtUpdater for Emt OS", func(t *testing.T) {
+        factory, err := GetOSUpdaterFactory("Emt")
         assert.NoError(t, err)
-        assert.IsType(t, &TiberUpdater{}, factory)
+        assert.IsType(t, &EmtUpdater{}, factory)
     })
 
     t.Run("returns UbuntuUpdater for Ubuntu OS", func(t *testing.T) {
@@ -30,22 +30,22 @@ func TestGetOSUpdaterFactory(t *testing.T) {
     })
 }
 
-func TestTiberUpdater(t *testing.T) {
-    tiberUpdater := &TiberUpdater{}
+func TestEmtUpdater(t *testing.T) {
+    emtUpdater := &EmtUpdater{}
 
-    t.Run("createDownloader returns TiberDownloader", func(t *testing.T) {
-        downloader := tiberUpdater.createDownloader()
-        assert.IsType(t, &TiberDownloader{}, downloader)
+    t.Run("createDownloader returns EmtDownloader", func(t *testing.T) {
+        downloader := emtUpdater.createDownloader()
+        assert.IsType(t, &EmtDownloader{}, downloader)
     })
 
-    t.Run("createUpdater returns TiberUpdater", func(t *testing.T) {
-        updater := tiberUpdater.createUpdater()
-        assert.IsType(t, &TiberUpdater{}, updater)
+    t.Run("createUpdater returns EmtUpdater", func(t *testing.T) {
+        updater := emtUpdater.createUpdater()
+        assert.IsType(t, &EmtUpdater{}, updater)
     })
 
-    t.Run("createRebooter returns TiberRebooter", func(t *testing.T) {
-        rebooter := tiberUpdater.createRebooter()
-        assert.IsType(t, &TiberRebooter{}, rebooter)
+    t.Run("createRebooter returns EmtRebooter", func(t *testing.T) {
+        rebooter := emtUpdater.createRebooter()
+        assert.IsType(t, &EmtRebooter{}, rebooter)
     })
 }
 

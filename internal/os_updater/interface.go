@@ -12,13 +12,13 @@ import "fmt"
 type UpdaterFactory interface {
 	createRebooter() Rebooter
 	createUpdater() Updater
-	createDownloader() Downloader
+	createDownloader(url string) Downloader
 }
 
 // GetOSUpdaterFactory returns the correct concrete classes for the OS updater based on the OS type.
 func GetOSUpdaterFactory(os string) (UpdaterFactory, error) {
-	if os == "Tiber" {
-		return &TiberUpdater{}, nil
+	if os == "Emt" {
+		return &EmtUpdater{}, nil
 	}
 
 	if os == "Ubuntu" {
@@ -27,19 +27,19 @@ func GetOSUpdaterFactory(os string) (UpdaterFactory, error) {
 	return nil, fmt.Errorf("Unsupported OS")
 }
 
-// CreateDownloader creates a downloader concrete class for Tiber OS.	
-func (t *TiberUpdater) createDownloader() Downloader {
-	return &TiberDownloader{}
+// CreateDownloader creates a downloader concrete class for Emt OS.	
+func (t *EmtUpdater) createDownloader(url string) Downloader {
+	return &EmtDownloader{url: url}
 }
 
-// CreateOSUpdater creates an OS updater concrete class for Tiber OS.
-func (t *TiberUpdater) createUpdater() Updater {
-	return &TiberUpdater{}
+// CreateOSUpdater creates an OS updater concrete class for Emt OS.
+func (t *EmtUpdater) createUpdater() Updater {
+	return &EmtUpdater{}
 }
 
-// CreateRebooter creates a rebooter concrete class for Tiber OS.
-func (t *TiberUpdater) createRebooter() Rebooter {
-	return &TiberRebooter{}
+// CreateRebooter creates a rebooter concrete class for Emt OS.
+func (t *EmtUpdater) createRebooter() Rebooter {
+	return &EmtRebooter{}
 }
 
 // CreateDownloader creates a downloader concrete class for Ubuntu OS.
