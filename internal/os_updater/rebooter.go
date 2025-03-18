@@ -10,11 +10,3 @@ package osupdater
 type Rebooter interface {
 	Reboot() error
 }
-
-// OSRebooter is the struct to hold parameters to reboot the OS
-type OSRebooter struct {}
-
-// Reboot is an abstract method
-func (r *OSRebooter) Reboot() error {
-	return nil
-}

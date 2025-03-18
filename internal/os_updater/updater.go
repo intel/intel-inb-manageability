@@ -10,10 +10,3 @@ package osupdater
 type Updater interface {
 	Update() error
 }
-
-type updater struct {}
-
-// Abstract update method
-func (u *updater) Update() error {
-	return nil
-}
