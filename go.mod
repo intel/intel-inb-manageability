@@ -19,7 +19,6 @@ require (
 )
 
 require (
-	github.com/golang/mock v1.6.0
 	github.com/spf13/cobra v1.9.1
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/sys v0.29.0 // indirect
