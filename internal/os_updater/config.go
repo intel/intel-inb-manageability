@@ -1,7 +1,7 @@
 package os_updater
 
 import (
-    "encoding/xml"
+    "gopkg.in/yaml.v3"
     "fmt"
     "os"
     "strings"
@@ -9,8 +9,7 @@ import (
 
 // Configurations represents the structure of the XML configuration file
 type Configurations struct {
-    XMLName            xml.Name `xml:"configurations"`
-    TrustedRepositories []string `xml:"trustedRepositories"`
+    TrustedRepositories []string `yaml:"trustedRepositories"`
 }
 
 // LoadConfig loads the XML configuration file
@@ -21,13 +20,13 @@ func LoadConfig(filename string) (*Configurations, error) {
     }
     defer file.Close()
 
-    content, err := os.Readfile(file)
+    content, err := os.Readfile(filename)
     if err != nil {
         return nil, err
     }
 
     var config Configurations
-    err = xml.Unmarshal(content, &config)
+    err = yaml.Unmarshal(content, &config)
     if err != nil {
         return nil, err
     }
