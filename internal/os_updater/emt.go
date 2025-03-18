@@ -8,28 +8,38 @@ package osupdater
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+	"strings"
 	"syscall"
 )
 
-const (
+var (
 	configFilePath = "/etc/intel_manageability.conf"
-	jwtTokenPath = "/etc/intel_edge_node/tokens/release-service/access_token"
-	downloadDir = "/var/cache/manageability/repository-tool/sota"
+	jwtTokenPath   = "/etc/intel_edge_node/tokens/release-service/access_token"
+	downloadDir    = "/var/cache/manageability/repository-tool/sota"
+	// OsUpdateTool will be changed in 3.1 release. Have to change the name and API call.
+	// Check https://github.com/intel-sandbox/os.linux.tiberos.ab-update.go/blob/main/README.md
+	osUpdateToolPath = "/usr/bin/os-update-tool.sh"
+
+	inbcSotaDownloadOnlyCommand = []string{
+		"sudo", "inbc", "sota", "--mode", "download-only", "--reboot", "no",
+	}
 )
 
 // EmtDownloader is the concrete implementation of the IDownloader interface
 // for the Emt OS.
-type EmtDownloader struct{
+type EmtDownloader struct {
 	url string // download link url
 }
 
 // download implements IDownloader.
-func (t *EmtDownloader) download() error {	
+func (t *EmtDownloader) download() error {
 	config, err := LoadConfig(configFilePath)
 	if err != nil {
-        fmt.Println("Error loading intel_manageability.conf:", err)
-        return err
-    }
+		fmt.Println("Error loading intel_manageability.conf:", err)
+		return err
+	}
 
 	// Perform source verification
 	if !IsTrustedRepository(t.url, config) {
@@ -54,22 +64,22 @@ func (t *EmtDownloader) download() error {
 }
 
 // readJwtToken reads the JWT token that is used for accessing RS server.
-func (t *EmtDownloader) readJwtToken() (string, error) {	
+func (t *EmtDownloader) readJwtToken() (string, error) {
 	file, err := os.Open(jwtTokenPath)
-    if err != nil {
-        return nil, err
-    }
-    defer file.Close()
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
 
-    token, err := os.Readfile(file)
-    if err != nil {
-        return nil, err
-    }
-    return token, nil
+	token, err := os.Readfile(file)
+	if err != nil {
+		return nil, err
+	}
+	return token, nil
 }
 
 // checkDiskSpace checks if there is enough disk space to download the artifacts.
-func (t *EmtDownloader) checkDiskSpace() bool {	
+func (t *EmtDownloader) checkDiskSpace() bool {
 	// Get available disk space
 	var stat syscall.Statfs_t
 	syscall.Statfs("/var/cache/manageability/", &stat)
@@ -150,9 +160,9 @@ func (t *EmtDownloader) downloadFile() error {
 	}
 	defer resp.Body.Close()
 
-    // Extract the file name from the URL
-    urlParts := strings.Split(t.url, "/")
-    fileName := urlParts[len(urlParts)-1]
+	// Extract the file name from the URL
+	urlParts := strings.Split(t.url, "/")
+	fileName := urlParts[len(urlParts)-1]
 
 	// Create the file
 	file, err := os.Create(downloadDir + "/" + fileName)
@@ -171,15 +181,20 @@ func (t *EmtDownloader) downloadFile() error {
 
 	return nil
 
-}	
+}
 
 // EmtUpdater is the concrete implementation of the IUpdater interface
 // for the Emt OS.
 type EmtUpdater struct{}
 
 // Update method for Emt
-func (tu *EmtUpdater) update() error {
-	panic("unimplemented")
+func (tu *EmtUpdater) update(mode string) error {
+
+	if mode == "download-only" {
+		fmt.Println("Execute download-only command for Emt OS.")
+
+	}
+
 }
 
 // EmtRebooter is the concrete implementation of the IUpdater interface

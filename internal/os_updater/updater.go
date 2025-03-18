@@ -11,9 +11,9 @@ type Updater interface {
 	update() error
 }
 
-type updater struct {}
+type updater struct{}
 
 // Abstract update method
-func (u *updater) update() error {
+func (u *updater) update(mode string) error {
 	return nil
 }
