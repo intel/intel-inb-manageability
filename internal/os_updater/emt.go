@@ -12,6 +12,8 @@ import (
 	"net/http"
 	"strings"
 	"syscall"
+
+	"github.com/intel/intel-inb-manageability/tree/emt-download-only-support/internal/inbd/utils"
 )
 
 var (
@@ -21,10 +23,6 @@ var (
 	// OsUpdateTool will be changed in 3.1 release. Have to change the name and API call.
 	// Check https://github.com/intel-sandbox/os.linux.tiberos.ab-update.go/blob/main/README.md
 	osUpdateToolPath = "/usr/bin/os-update-tool.sh"
-
-	inbcSotaDownloadOnlyCommand = []string{
-		"sudo", "inbc", "sota", "--mode", "download-only", "--reboot", "no",
-	}
 )
 
 // EmtDownloader is the concrete implementation of the IDownloader interface
@@ -55,7 +53,12 @@ func (t *EmtDownloader) download() error {
 
 	fmt.Println("Disk space enough. Proceeding to download the artifact.")
 
-	t.downloadFile()
+	// Download file
+	err = t.downloadFile()
+	if err != nil {
+		fmt.Println("Error downloading the file:", err)
+		return err
+	}
 
 	fmt.Println("Download completed.")
 
@@ -185,19 +188,39 @@ func (t *EmtDownloader) downloadFile() error {
 
 // EmtUpdater is the concrete implementation of the IUpdater interface
 // for the Emt OS.
-type EmtUpdater struct{}
+type EmtUpdater struct {
+	commandExecutor utils.Executor
+}
+
+func NewEmtUpdater(commandExecutor utils.Executor, filePath string, signature string) *EmtUpdater {
+	return &EmtUpdater{
+		commandExecutor: commandExecutor,
+		filePath:        filePath,
+		signature:       signature,
+	}
+}
 
 // Update method for Emt
 func (tu *EmtUpdater) update(mode string) error {
 
 	if mode == "download-only" {
-		fmt.Println("Execute download-only command for Emt OS.")
-
+		fmt.Println("Execute update tool write command.")
+		updateToolWriteCommand = []string{
+			"sudo", osUpdateToolPath, "-w", "-u", tu.filePath, "-s", tu.signature,
+		}
+		if _, err := tu.commandExecutor.Execute(updateToolWriteCommand); err != nil {
+			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolWriteCommand, err)
+		}
 	}
 
 	if mode == "no-download" {
-		fmt.Println("Execute no-download command for Emt OS.")
-		panic("unimplemented")
+		fmt.Println("Execute update tool apply command.")
+		updateToolApplyCommand = []string{
+			"sudo", osUpdateToolPath, "-a",
+		}
+		if _, err := tu.commandExecutor.Execute(updateToolApplyCommand); err != nil {
+			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
+		}
 	}
 
 }
