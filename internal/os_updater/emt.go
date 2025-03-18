@@ -195,6 +195,11 @@ func (tu *EmtUpdater) update(mode string) error {
 
 	}
 
+	if mode == "no-download" {
+		fmt.Println("Execute no-download command for Emt OS.")
+		panic("unimplemented")
+	}
+
 }
 
 // EmtRebooter is the concrete implementation of the IUpdater interface
