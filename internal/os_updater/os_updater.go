@@ -11,32 +11,24 @@ import (
 )
 
 // UpdateOS updates the OS depending on the OS type.
-func UpdateOS(req *pb.UpdateSystemSoftwareRequest) (*pb.UpdateResponse, error) {
-	os, err := DetectOS()
-	if err != nil {
-		return &pb.UpdateResponse{StatusCode: 415, Error: err.Error()}, nil
-	}
-	sotaFactory, err := GetOSUpdaterFactory(os)
-	if err != nil {
-		return &pb.UpdateResponse{StatusCode: 415, Error: err.Error()}, nil
-	}
+func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.UpdateResponse, error) {
 	
 	// Download the update
-	downloader := sotaFactory.CreateDownloader(req.Mode)
-	err = downloader.Download()
+	downloader := factory.CreateDownloader(req.Mode)
+	err := downloader.Download()
 	if err != nil {
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
 	}
 
 	// Update the OS
-	updater := sotaFactory.CreateUpdater()
+	updater := factory.CreateUpdater()
 	err = updater.Update()
 	if err != nil {
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
 	}
 
 	// Reboot the system
-	rebooter := sotaFactory.CreateRebooter()
+	rebooter := factory.CreateRebooter()
 	err = rebooter.Reboot()
 	if err != nil {
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil

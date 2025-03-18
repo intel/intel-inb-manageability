@@ -13,9 +13,9 @@ import (
 
 // UpdaterFactory is an interface that contains the methods to create the concrete classes for the OS updater.
 type UpdaterFactory interface {
-	CreateRebooter() Rebooter
-	CreateUpdater() Updater
 	CreateDownloader(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader
+	CreateUpdater() Updater
+	CreateRebooter() Rebooter	
 }
 
 // GetOSUpdaterFactory returns the correct concrete classes for the OS updater based on the OS type.

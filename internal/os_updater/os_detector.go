@@ -23,6 +23,19 @@ const (
 	unsupportedOS
 )
 
+// CommandRunner is a function type that runs a command and returns its combined output.
+type CommandRunner func(name string, arg ...string) ([]byte, error)
+
+// OSGetter is a function type that returns the OS type.
+type OSGetter func() string
+
+var (
+	execCommand CommandRunner = func(name string, arg ...string) ([]byte, error) {
+		cmd := exec.Command(name, arg...)
+		return cmd.CombinedOutput()
+	}
+    getOS       OSGetter      = func() string { return runtime.GOOS }
+)
 // DetectOS detects the OS.
 func DetectOS() (string, error) {
 	osType := getOSType()
@@ -34,8 +47,7 @@ func DetectOS() (string, error) {
 }
 
 func detectLinuxDistribution() (string, error) {
-	cmd := exec.Command("lsb_release", "-a")
-	output, err := cmd.CombinedOutput()
+	output, err := execCommand("lsb_release", "-a")
 	if err != nil {
 		return "", err
 	}
@@ -52,7 +64,7 @@ func detectLinuxDistribution() (string, error) {
 }
 
 func getOSType() OSType {
-	os := runtime.GOOS
+	os := getOS()
 
 	switch os {
 	case "linux":

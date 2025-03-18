@@ -20,7 +20,17 @@ type InbdServer struct {
 // UpdateSystemSoftware updates the system software
 func (s *InbdServer) UpdateSystemSoftware(ctx context.Context, req *pb.UpdateSystemSoftwareRequest) (*pb.UpdateResponse, error) {
 	log.Printf("Received UpdateSystemSoftware request")
-	resp, err := osUpdater.UpdateOS(req)
+	os, err := osUpdater.DetectOS()
+	if err != nil {
+		return &pb.UpdateResponse{StatusCode: 415, Error: err.Error()}, nil
+	}
+
+	sotaFactory, err := osUpdater.GetOSUpdaterFactory(os)
+	if err != nil {
+		return &pb.UpdateResponse{StatusCode: 415, Error: err.Error()}, nil
+	}
+
+	resp, err := osUpdater.UpdateOS(req, sotaFactory)
 	if err != nil {
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
 	}
