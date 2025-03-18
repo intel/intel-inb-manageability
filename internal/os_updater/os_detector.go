@@ -34,8 +34,9 @@ var (
 		cmd := exec.Command(name, arg...)
 		return cmd.CombinedOutput()
 	}
-    getOS       OSGetter      = func() string { return runtime.GOOS }
+	getOS OSGetter = func() string { return runtime.GOOS }
 )
+
 // DetectOS detects the OS.
 func DetectOS() (string, error) {
 	osType := getOSType()
