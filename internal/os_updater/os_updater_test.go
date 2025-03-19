@@ -1,9 +1,9 @@
 package osupdater
 
 import (
-	//"fmt"
 	"fmt"
-	"testing"
+    "testing"
+    "github.com/intel/intel-inb-manageability/internal/inbd/utils"
 
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	"github.com/stretchr/testify/assert"
@@ -11,16 +11,16 @@ import (
 
 func TestUpdateOS_Success(t *testing.T) {
 	mockFactory := &MockUpdaterFactory{
-		CreateDownloaderFunc: func(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
-			return &MockDownloader{
-				DownloadFunc: func() error { return nil },
-			}
-		},
-		CreateUpdaterFunc: func() Updater {
-			return &MockUpdater{
-				UpdateFunc: func() error { return nil },
-			}
-		},
+        CreateDownloaderFunc: func(*pb.UpdateSystemSoftwareRequest) Downloader {
+            return &MockDownloader{
+                DownloadFunc: func() error { return nil },
+                }
+        },
+        CreateUpdaterFunc: func(executor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater {
+            return &MockUpdater{
+                UpdateFunc: func() error { return nil },
+            }
+        },
 		CreateRebooterFunc: func() Rebooter {
 			return &MockRebooter{
 				RebootFunc: func() error { return nil },
@@ -28,7 +28,7 @@ func TestUpdateOS_Success(t *testing.T) {
 		},
 	}
 
-    req := &pb.UpdateSystemSoftwareRequest{Mode: pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_FULL}
+    req := &pb.UpdateSystemSoftwareRequest{Mode: *pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD.Enum()}
     resp, err := UpdateOS(req, mockFactory)
 
     assert.NoError(t, err)
@@ -38,7 +38,7 @@ func TestUpdateOS_Success(t *testing.T) {
 
 func TestUpdateOS_DownloadError(t *testing.T) {
     mockFactory := &MockUpdaterFactory{
-        CreateDownloaderFunc: func(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
+        CreateDownloaderFunc: func(*pb.UpdateSystemSoftwareRequest) Downloader {
             return &MockDownloader{
                 DownloadFunc: func() error { return fmt.Errorf("download error") },
             }
@@ -55,12 +55,12 @@ func TestUpdateOS_DownloadError(t *testing.T) {
 
 func TestUpdateOS_UpdateError(t *testing.T) {
     mockFactory := &MockUpdaterFactory{
-        CreateDownloaderFunc: func(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
+        CreateDownloaderFunc: func(*pb.UpdateSystemSoftwareRequest) Downloader {
             return &MockDownloader{
                 DownloadFunc: func() error { return nil },
             }
         },
-        CreateUpdaterFunc: func() Updater {
+        CreateUpdaterFunc: func(utils.Executor, *pb.UpdateSystemSoftwareRequest) Updater {
             return &MockUpdater{
                 UpdateFunc: func() error { return fmt.Errorf("update error") },
             }
@@ -77,12 +77,12 @@ func TestUpdateOS_UpdateError(t *testing.T) {
 
 func TestUpdateOS_RebootError(t *testing.T) {
     mockFactory := &MockUpdaterFactory{
-        CreateDownloaderFunc: func(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
+        CreateDownloaderFunc: func(*pb.UpdateSystemSoftwareRequest) Downloader {
             return &MockDownloader{
                 DownloadFunc: func() error { return nil },
             }
         },
-        CreateUpdaterFunc: func() Updater {
+        CreateUpdaterFunc: func(utils.Executor, *pb.UpdateSystemSoftwareRequest) Updater {
             return &MockUpdater{
                 UpdateFunc: func() error { return nil },
             }

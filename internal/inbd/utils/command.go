@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+// Package utils provides utility functions.
 package utils
 
 import (
@@ -12,6 +13,7 @@ import (
 	"strings"
 )
 
+// NewExecutor creates a new executor.
 func NewExecutor[C any](createCmdFn func(name string, args ...string) *C, execCmdFn func(*C) (out []byte, e error)) Executor {
 	return &executor[C]{
 		createExecutableCommand: createCmdFn,
@@ -19,6 +21,7 @@ func NewExecutor[C any](createCmdFn func(name string, args ...string) *C, execCm
 	}
 }
 
+// Executor is an interface that contains the method to execute a command.
 type Executor interface {
 	Execute(args []string) ([]byte, error)
 }
@@ -58,8 +61,8 @@ func ExecuteAndReadOutput(executableCommand *exec.Cmd) (stdout []byte, err error
 	return out, nil
 }
 
+// IsSymlink checks if a file is a symlink.
 func IsSymlink(filePath string) error {
-
 	fileInfo, err := os.Lstat(filePath)
 
 	if err != nil {

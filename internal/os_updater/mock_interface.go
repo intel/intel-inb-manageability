@@ -6,7 +6,10 @@
 // Package osupdater updates the OS.
 package osupdater
 
-import pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+import (
+	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+)
 
 // MockDownloader is a mock implementation of the Downloader interface.
 type MockDownloader struct {
@@ -40,19 +43,19 @@ func (m *MockRebooter) Reboot() error {
 
 // MockUpdaterFactory is a mock implementation of the UpdaterFactory interface.
 type MockUpdaterFactory struct {
-    CreateDownloaderFunc func(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader
-    CreateUpdaterFunc    func() Updater
+    CreateDownloaderFunc func(*pb.UpdateSystemSoftwareRequest) Downloader
+    CreateUpdaterFunc    func(utils.Executor, *pb.UpdateSystemSoftwareRequest) Updater
     CreateRebooterFunc   func() Rebooter
 }
 
 // CreateDownloader calls the CreateDownloaderFunc.
-func (m *MockUpdaterFactory) CreateDownloader(mode pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
-    return m.CreateDownloaderFunc(mode)
+func (m *MockUpdaterFactory) CreateDownloader(req *pb.UpdateSystemSoftwareRequest) Downloader {
+    return m.CreateDownloaderFunc(req)
 }
 
 // CreateUpdater calls the CreateUpdaterFunc.
-func (m *MockUpdaterFactory) CreateUpdater() Updater {
-    return m.CreateUpdaterFunc()
+func (m *MockUpdaterFactory) CreateUpdater(cmdExec utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater {
+    return m.CreateUpdaterFunc(cmdExec, req)
 }
 
 // CreateRebooter calls the CreateRebooterFunc.

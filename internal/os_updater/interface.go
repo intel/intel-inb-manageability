@@ -15,8 +15,8 @@ import (
 
 // UpdaterFactory is an interface that contains the methods to create the concrete classes for the OS updater.
 type UpdaterFactory interface {
-	CreateDownloader(req pb.UpdateSystemSoftwareRequest) Downloader
-	CreateUpdater(commandExecutor utils.Executor, req pb.UpdateSystemSoftwareRequest) Updater
+	CreateDownloader(req *pb.UpdateSystemSoftwareRequest) Downloader
+	CreateUpdater(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater
 	CreateRebooter() Rebooter
 }
 
@@ -36,30 +36,30 @@ func GetOSUpdaterFactory(os string) (UpdaterFactory, error) {
 type EMTFactory struct{}
 
 // CreateDownloader creates a downloader concrete class for EMT OS.
-func (f *EMTFactory) CreateDownloader(req pb.UpdateSystemSoftwareRequest) Downloader {
-	return NewEmtDownloader(req)
+func (f *EMTFactory) CreateDownloader(req *pb.UpdateSystemSoftwareRequest) Downloader {
+	return NewEMTDownloader(req)
 }
 
 // CreateUpdater creates an OS updater concrete class for EMT OS.
-func (f *EMTFactory) CreateUpdater(commandExecutor utils.Executor, req pb.UpdateSystemSoftwareRequest) Updater {
-	return NewEmtUpdater(commandExecutor, req)
+func (f *EMTFactory) CreateUpdater(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater {
+	return NewEMTUpdater(commandExecutor, req)
 }
 
 // CreateRebooter creates a rebooter concrete class for EMT OS.
 func (f *EMTFactory) CreateRebooter() Rebooter {
-	return &EmtRebooter{}
+	return &EMTRebooter{}
 }
 
 // UbuntuFactory represents an EMT factory.
 type UbuntuFactory struct{}
 
 // CreateDownloader creates a downloader concrete class for EMT OS.
-func (f *UbuntuFactory) CreateDownloader(req pb.UpdateSystemSoftwareRequest) Downloader {
+func (f *UbuntuFactory) CreateDownloader(req *pb.UpdateSystemSoftwareRequest) Downloader {
 	return &UbuntuDownloader{request: req}
 }
 
 // CreateUpdater creates an OS updater concrete class for Ubuntu OS.
-func (f *UbuntuFactory) CreateUpdater(commandExecutor utils.Executor, req pb.UpdateSystemSoftwareRequest) Updater {
+func (f *UbuntuFactory) CreateUpdater(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater {
 	return &UbuntuUpdater{
 		commandExecutor: commandExecutor,
 		request:         req,

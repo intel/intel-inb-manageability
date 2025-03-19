@@ -17,14 +17,14 @@ import (
 func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.UpdateResponse, error) {
 
 	// Download the update
-	downloader := factory.CreateDownloader(*req)
+	downloader := factory.CreateDownloader(req)
 	err := downloader.Download()
 	if err != nil {
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
 	}
 
 	// Update the OS
-	updater := factory.CreateUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), *req)
+	updater := factory.CreateUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), req)
 	err = updater.Update()
 	if err != nil {
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil

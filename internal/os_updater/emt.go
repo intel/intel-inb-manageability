@@ -7,6 +7,7 @@
 package osupdater
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -20,27 +21,28 @@ import (
 
 var (
 	configFilePath = "/etc/intel_manageability.conf"
-	jwtTokenPath   = "/etc/intel_edge_node/tokens/release-service/access_token"
+	JWTTokenPath   = "/etc/intel_edge_node/tokens/release-service/access_token"
 	downloadDir    = "/var/cache/manageability/repository-tool/sota"
 	// OsUpdateTool will be changed in 3.1 release. Have to change the name and API call.
 	// Check https://github.com/intel-sandbox/os.linux.tiberos.ab-update.go/blob/main/README.md
 	osUpdateToolPath = "/usr/bin/os-update-tool.sh"
 )
 
-// EmtDownloader is the concrete implementation of the IDownloader interface
+// EMTDownloader is the concrete implementation of the IDownloader interface
 // for the Emt OS.
-type EmtDownloader struct {
-	request pb.UpdateSystemSoftwareRequest
+type EMTDownloader struct {
+	request *pb.UpdateSystemSoftwareRequest
 }
 
-func NewEmtDownloader(request pb.UpdateSystemSoftwareRequest) *EmtDownloader {
-	return &EmtDownloader{
+// NewEMTDownloader creates a new EMTDownloader.
+func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *EMTDownloader {
+	return &EMTDownloader{
 		request: request,
 	}
 }
 
-// download implements IDownloader.
-func (t *EmtDownloader) Download() error {
+// Download implements IDownloader.
+func (t *EMTDownloader) Download() error {
 	config, err := LoadConfig(configFilePath)
 	if err != nil {
 		fmt.Println("Error loading intel_manageability.conf:", err)
@@ -51,7 +53,7 @@ func (t *EmtDownloader) Download() error {
 	if !IsTrustedRepository(t.request.Url, config) {
 		errMsg := fmt.Sprintf("URL '%s' is not in the list of trusted repositories.", t.request.Url)
 		fmt.Println(errMsg)
-		return fmt.Errorf(errMsg)
+		return errors.New(errMsg)
 	}
 
 	fmt.Println("Downloading update from", t.request.Url)
@@ -60,13 +62,13 @@ func (t *EmtDownloader) Download() error {
 	isDiskEnough, err := t.checkDiskSpace()
 	if err != nil {
 		fmt.Println("Error checking disk space:", err)
-		return fmt.Errorf(err.Error())
+		return errors.New(err.Error())
 	}
 
 	if !isDiskEnough {
 		errMsg := "Insufficient disk space."
 		fmt.Println(errMsg)
-		return fmt.Errorf(errMsg)
+		return errors.New(errMsg)
 	}
 
 	fmt.Println("Disk space enough. Proceeding to download the artifact.")
@@ -81,18 +83,17 @@ func (t *EmtDownloader) Download() error {
 	fmt.Println("Download completed.")
 
 	return nil
-
 }
 
-// readJwtToken reads the JWT token that is used for accessing RS server.
-func (t *EmtDownloader) readJwtToken() (string, error) {
-	file, err := os.Open(jwtTokenPath)
+// readJWTToken reads the JWT token that is used for accessing RS server.
+func (t *EMTDownloader) readJWTToken() (string, error) {
+	file, err := os.Open(JWTTokenPath)
 	if err != nil {
 		return "", err
 	}
 	defer file.Close()
 
-	token, err := os.ReadFile(jwtTokenPath)
+	token, err := os.ReadFile(JWTTokenPath)
 	if err != nil {
 		return "", err
 	}
@@ -100,7 +101,7 @@ func (t *EmtDownloader) readJwtToken() (string, error) {
 }
 
 // checkDiskSpace checks if there is enough disk space to download the artifacts.
-func (t *EmtDownloader) checkDiskSpace() (bool, error) {
+func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	// Get available disk space
 	var stat unix.Statfs_t
 	err := unix.Statfs("/var/cache/manageability/", &stat)
@@ -111,7 +112,7 @@ func (t *EmtDownloader) checkDiskSpace() (bool, error) {
 	availableSpace := stat.Bavail * uint64(stat.Bsize)
 
 	//Read JWT token
-	token, err := t.readJwtToken()
+	token, err := t.readJWTToken()
 	if err != nil {
 		fmt.Println("Error reading JWT token:", err)
 		return false, err
@@ -121,7 +122,7 @@ func (t *EmtDownloader) checkDiskSpace() (bool, error) {
 	if token == "" {
 		errMsg := "JWT token is empty."
 		fmt.Println(errMsg)
-		return false, fmt.Errorf(errMsg)
+		return false, errors.New(errMsg)
 	}
 
 	// Create a new HTTP request
@@ -181,7 +182,7 @@ func (t *EmtDownloader) checkDiskSpace() (bool, error) {
 }
 
 // downloadFile downloads the file from the url.
-func (t *EmtDownloader) downloadFile() error {
+func (t *EMTDownloader) downloadFile() error {
 	// Create a new HTTP request
 	req, err := http.NewRequest("GET", t.request.Url, nil)
 	if err != nil {
@@ -190,7 +191,7 @@ func (t *EmtDownloader) downloadFile() error {
 	}
 
 	// Add the JWT token to the request header
-	token, err := t.readJwtToken()
+	token, err := t.readJWTToken()
 	if err != nil {
 		fmt.Println("Error reading JWT token:", err)
 		return err
@@ -229,22 +230,23 @@ func (t *EmtDownloader) downloadFile() error {
 
 }
 
-// EmtUpdater is the concrete implementation of the IUpdater interface
+// EMTUpdater is the concrete implementation of the IUpdater interface
 // for the Emt OS.
-type EmtUpdater struct {
+type EMTUpdater struct {
 	commandExecutor utils.Executor
-	request         pb.UpdateSystemSoftwareRequest
+	request         *pb.UpdateSystemSoftwareRequest
 }
 
-func NewEmtUpdater(commandExecutor utils.Executor, request pb.UpdateSystemSoftwareRequest) *EmtUpdater {
-	return &EmtUpdater{
+// NewEMTUpdater creates a new EMTUpdater.
+func NewEMTUpdater(commandExecutor utils.Executor, request *pb.UpdateSystemSoftwareRequest) *EMTUpdater {
+	return &EMTUpdater{
 		commandExecutor: commandExecutor,
 		request:         request,
 	}
 }
 
 // Update method for Emt
-func (tu *EmtUpdater) Update() error {
+func (tu *EMTUpdater) Update() error {
 	// Print the value of tu.request.Mode
 	fmt.Printf("Mode: %v\n", tu.request.Mode)
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
@@ -276,14 +278,13 @@ func (tu *EmtUpdater) Update() error {
 	}
 
 	return nil
-
 }
 
-// EmtRebooter is the concrete implementation of the IUpdater interface
-// for the Emt OS.
-type EmtRebooter struct{}
+// EMTRebooter is the concrete implementation of the IUpdater interface
+// for the EMT OS.
+type EMTRebooter struct{}
 
-// Reboot method for Emt
-func (tu *EmtRebooter) Reboot() error {
+// Reboot method for EMT
+func (tu *EMTRebooter) Reboot() error {
 	panic("unimplemented")
 }

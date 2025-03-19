@@ -5,10 +5,12 @@
 package osupdater
 
 import (
-    "testing"
+	"testing"
+    "os/exec"
 
-    pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
-    "github.com/stretchr/testify/assert"
+	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetOSUpdaterFactory(t *testing.T) {
@@ -33,14 +35,19 @@ func TestGetOSUpdaterFactory(t *testing.T) {
 
 func TestEMTUpdater(t *testing.T) {
     emtUpdater := &EMTFactory{}
+    req := &pb.UpdateSystemSoftwareRequest{
+        Mode: pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY,
+        DoNotReboot: true,
+        Signature: "signature",
+    }
 
     t.Run("createDownloader returns EMTDownloader", func(t *testing.T) {
-        downloader := emtUpdater.CreateDownloader(*pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY.Enum())
+        downloader := emtUpdater.CreateDownloader(req)
         assert.IsType(t, &EMTDownloader{}, downloader)
     })
 
     t.Run("createUpdater returns EMTUpdater", func(t *testing.T) {
-        updater := emtUpdater.CreateUpdater()
+        updater := emtUpdater.CreateUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), req)
         assert.IsType(t, &EMTUpdater{}, updater)
     })
 
@@ -52,14 +59,19 @@ func TestEMTUpdater(t *testing.T) {
 
 func TestUbuntuUpdater(t *testing.T) {
     ubuntuUpdater := &UbuntuFactory{}
+    req := pb.UpdateSystemSoftwareRequest{
+        Mode: pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY,
+        DoNotReboot: true,
+        Signature: "signature",
+    }
 
     t.Run("createDownloader returns UbuntuDownloader", func(t *testing.T) {
-        downloader := ubuntuUpdater.CreateDownloader(pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_FULL)
+        downloader := ubuntuUpdater.CreateDownloader(&req)
         assert.IsType(t, &UbuntuDownloader{}, downloader)
     })
 
     t.Run("createUpdater returns UbuntuUpdater", func(t *testing.T) {
-        updater := ubuntuUpdater.CreateUpdater()
+        updater := ubuntuUpdater.CreateUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &req)
         assert.IsType(t, &UbuntuUpdater{}, updater)
     })
 

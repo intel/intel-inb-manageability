@@ -14,7 +14,7 @@ import (
 // UbuntuDownloader is the concrete implementation of the IDownloader interface
 // for the Ubuntu OS.
 type UbuntuDownloader struct {
-	request pb.UpdateSystemSoftwareRequest
+	request *pb.UpdateSystemSoftwareRequest
 }
 
 // Download method for Ubuntu
@@ -26,7 +26,7 @@ func (u *UbuntuDownloader) Download() error {
 // for the Ubuntu OS.
 type UbuntuUpdater struct {
 	commandExecutor utils.Executor
-	request         pb.UpdateSystemSoftwareRequest
+	request         *pb.UpdateSystemSoftwareRequest
 }
 
 // Update method for Ubuntu

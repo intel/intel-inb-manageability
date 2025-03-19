@@ -44,7 +44,7 @@ func DetectOS() (string, error) {
 	if osType == linux {
 		return detectLinuxDistribution()
 	}
-	return "", fmt.Errorf("unsupported OS type detected: %v", osType)
+	return "", fmt.Errorf("unsupported OS type detected")
 }
 
 func detectLinuxDistribution() (string, error) {
