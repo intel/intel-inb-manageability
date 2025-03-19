@@ -49,7 +49,9 @@ func (t *EmtDownloader) Download() error {
 
 	// Perform source verification
 	if !IsTrustedRepository(t.request.Url, config) {
-		return fmt.Errorf("URL is not in the list of trusted repositories.")
+		errMsg := fmt.Sprintf("URL '%s' is not in the list of trusted repositories.", t.request.Url)
+		fmt.Println(errMsg)
+		return fmt.Errorf(errMsg)
 	}
 
 	fmt.Println("Downloading update from", t.request.Url)
@@ -58,10 +60,13 @@ func (t *EmtDownloader) Download() error {
 	isDiskEnough, err := t.checkDiskSpace()
 	if err != nil {
 		fmt.Println("Error checking disk space:", err)
+		return fmt.Errorf(err.Error())
 	}
 
 	if !isDiskEnough {
-		return fmt.Errorf("Insufficient disk space.")
+		errMsg := "Insufficient disk space."
+		fmt.Println(errMsg)
+		return fmt.Errorf(errMsg)
 	}
 
 	fmt.Println("Disk space enough. Proceeding to download the artifact.")
@@ -91,7 +96,7 @@ func (t *EmtDownloader) readJwtToken() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return string(token), nil
+	return strings.TrimSpace(string(token)), nil
 }
 
 // checkDiskSpace checks if there is enough disk space to download the artifacts.
@@ -114,8 +119,9 @@ func (t *EmtDownloader) checkDiskSpace() (bool, error) {
 
 	// Check if the token exists
 	if token == "" {
-		fmt.Println("JWT token is empty.")
-		return false, err
+		errMsg := "JWT token is empty."
+		fmt.Println(errMsg)
+		return false, fmt.Errorf(errMsg)
 	}
 
 	// Create a new HTTP request
@@ -140,8 +146,22 @@ func (t *EmtDownloader) checkDiskSpace() (bool, error) {
 	// Get the Content-Length header
 	contentLength := resp.Header.Get("Content-Length")
 	if contentLength == "" {
-		fmt.Println("Content-Length header is missing")
-		return false, fmt.Errorf("Content-Length header is missing")
+		fmt.Println("Content-Length header is missing. Falling back to GET request.")
+		// Perform a GET request to determine the file size
+		req.Method = "GET"
+		resp, err = client.Do(req)
+		if err != nil {
+			fmt.Printf("Error performing GET request: %v\n", err)
+			return false, err
+		}
+		defer resp.Body.Close()
+
+		// Get the Content-Length header from the GET response
+		contentLength = resp.Header.Get("Content-Length")
+		if contentLength == "" {
+			fmt.Println("Content-Length header is still missing after GET request.")
+			return false, fmt.Errorf("Content-Length header is missing")
+		}
 	}
 
 	// Parse the Content-Length to an integer

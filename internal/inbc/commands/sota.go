@@ -80,11 +80,11 @@ func handleSOTA(
 		var downloadMode int32
 		switch *mode {
 		case "full":
-			downloadMode = 0
-		case "no-download":
 			downloadMode = 1
-		case "download-only":
+		case "no-download":
 			downloadMode = 2
+		case "download-only":
+			downloadMode = 3
 		default:
 			return fmt.Errorf("invalid mode. Use one of full, no-download, download-only")
 		}
