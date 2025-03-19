@@ -13,7 +13,8 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/intel/intel-inb-manageability/tree/emt-download-only-support/internal/inbd/utils"
+	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
 var (
@@ -28,7 +29,13 @@ var (
 // EmtDownloader is the concrete implementation of the IDownloader interface
 // for the Emt OS.
 type EmtDownloader struct {
-	url string // download link url
+	request pb.UpdateSystemSoftwareRequest
+}
+
+func NewEmtDownloader(request pb.UpdateSystemSoftwareRequest) *EmtUpdater {
+	return &EmtDownloader{
+		request: request,
+	}
 }
 
 // download implements IDownloader.
@@ -190,30 +197,38 @@ func (t *EmtDownloader) downloadFile() error {
 // for the Emt OS.
 type EmtUpdater struct {
 	commandExecutor utils.Executor
+	request         pb.UpdateSystemSoftwareRequest
 }
 
-func NewEmtUpdater(commandExecutor utils.Executor, filePath string, signature string) *EmtUpdater {
+func NewEmtUpdater(commandExecutor utils.Executor, request pb.UpdateSystemSoftwareRequest) *EmtUpdater {
 	return &EmtUpdater{
 		commandExecutor: commandExecutor,
-		filePath:        filePath,
-		signature:       signature,
+		request:         request,
 	}
 }
 
 // Update method for Emt
-func (tu *EmtUpdater) update(mode string) error {
+func (tu *EmtUpdater) update() error {
 
-	if mode == "download-only" {
+	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
 		fmt.Println("Execute update tool write command.")
+
+		// Extract the file name from the URL
+		urlParts := strings.Split(tu.request.Url, "/")
+		fileName := urlParts[len(urlParts)-1]
+
+		// Create the file
+		filePath := downloadDir + "/" + fileName
+
 		updateToolWriteCommand = []string{
-			"sudo", osUpdateToolPath, "-w", "-u", tu.filePath, "-s", tu.signature,
+			"sudo", osUpdateToolPath, "-w", "-u", filePath, "-s", tu.request.Signature,
 		}
 		if _, err := tu.commandExecutor.Execute(updateToolWriteCommand); err != nil {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolWriteCommand, err)
 		}
 	}
 
-	if mode == "no-download" {
+	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
 		fmt.Println("Execute update tool apply command.")
 		updateToolApplyCommand = []string{
 			"sudo", osUpdateToolPath, "-a",
@@ -222,6 +237,8 @@ func (tu *EmtUpdater) update(mode string) error {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
 		}
 	}
+
+	return nil
 
 }
 

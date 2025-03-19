@@ -8,14 +8,16 @@ package osupdater
 
 import (
 	"fmt"
+
+	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
 // UpdaterFactory is an interface that contains the methods to create the concrete classes for the OS updater.
 type UpdaterFactory interface {
-	CreateDownloader(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader
-	CreateUpdater() Updater
-	CreateRebooter() Rebooter	
+	CreateDownloader(req pb.UpdateSystemSoftwareRequest) Downloader
+	CreateUpdater(commandExecutor utils.Executor, req pb.UpdateSystemSoftwareRequest) Updater
+	CreateRebooter() Rebooter
 }
 
 // GetOSUpdaterFactory returns the correct concrete classes for the OS updater based on the OS type.
@@ -34,14 +36,15 @@ func GetOSUpdaterFactory(os string) (UpdaterFactory, error) {
 type EMTFactory struct{}
 
 // CreateDownloader creates a downloader concrete class for EMT OS.
-func (f *EMTFactory) CreateDownloader(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
-	return &EMTDownloader{url: url}
+func (f *EMTFactory) CreateDownloader(req pb.UpdateSystemSoftwareRequest) Downloader {
+	return NewEmtDownloader{request: req}
 }
 
-
 // CreateUpdater creates an OS updater concrete class for EMT OS.
-func (f *EMTFactory) CreateUpdater() Updater {
-	return &EMTUpdater{}
+func (f *EMTFactory) CreateUpdater(commandExecutor utils.Executor, req pb.UpdateSystemSoftwareRequest) Updater {
+	return NewEmtUpdater{
+		commandExecutor: commandExecutor,
+		request:         req}
 }
 
 // CreateRebooter creates a rebooter concrete class for EMT OS.
@@ -53,13 +56,13 @@ func (f *EMTFactory) CreateRebooter() Rebooter {
 type UbuntuFactory struct{}
 
 // CreateDownloader creates a downloader concrete class for EMT OS.
-func (f *UbuntuFactory) CreateDownloader(pb.UpdateSystemSoftwareRequest_DownloadMode) Downloader {
-	return &UbuntuDownloader{}
+func (f *UbuntuFactory) CreateDownloader(req pb.UpdateSystemSoftwareRequest) Downloader {
+	return &UbuntuDownloader{request: req}
 }
 
 // CreateUpdater creates an OS updater concrete class for Ubuntu OS.
-func (f *UbuntuFactory) CreateUpdater() Updater {
-	return &UbuntuUpdater{}
+func (f *UbuntuFactory) CreateUpdater(req pb.UpdateSystemSoftwareRequest) Updater {
+	return &UbuntuUpdater{request: req}
 }
 
 // CreateRebooter creates a rebooter concrete class for Ubuntu OS.
