@@ -245,7 +245,8 @@ func NewEmtUpdater(commandExecutor utils.Executor, request pb.UpdateSystemSoftwa
 
 // Update method for Emt
 func (tu *EmtUpdater) Update() error {
-
+	// Print the value of tu.request.Mode
+	fmt.Printf("Mode: %v\n", tu.request.Mode)
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
 		fmt.Println("Execute update tool write command.")
 

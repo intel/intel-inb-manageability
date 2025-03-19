@@ -31,7 +31,7 @@ func SOTACmd() *cobra.Command {
 		Use:   "sota",
 		Short: "Performs System Software Update",
 		Long:  `Updates the system software on the device.`,
-		RunE:  handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, Dial),
+		RunE:  handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, &signature, Dial),
 	}
 
 	cmd.Flags().StringVar(&socket, "socket", "/var/run/inbd.sock", "UNIX domain socket path")
@@ -54,6 +54,7 @@ func handleSOTA(
 	mode *string,
 	reboot *bool,
 	packageList *[]string,
+	signature *string,
 	dialer func(context.Context, string) (pb.InbServiceClient, grpc.ClientConnInterface, error),
 ) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
