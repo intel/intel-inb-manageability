@@ -16,6 +16,7 @@ import (
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	"github.com/spf13/afero"
 	"golang.org/x/sys/unix"
 )
 
@@ -31,14 +32,29 @@ var (
 // EMTDownloader is the concrete implementation of the IDownloader interface
 // for the Emt OS.
 type EMTDownloader struct {
-	request *pb.UpdateSystemSoftwareRequest
+	request          *pb.UpdateSystemSoftwareRequest
+	readJWTTokenFunc func() (string, error)
+	statfs           func(path string, stat *unix.Statfs_t) error
+	httpClient       *http.Client
+	requestCreator   func(method, url string, body io.Reader) (*http.Request, error)
+	fs               afero.Fs
 }
 
 // NewEMTDownloader creates a new EMTDownloader.
 func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *EMTDownloader {
 	return &EMTDownloader{
-		request: request,
+		request:          request,
+		readJWTTokenFunc: defaultReadJWTToken,
+		statfs:           unix.Statfs,
+		httpClient:       &http.Client{},
+		requestCreator:   http.NewRequest,
+		fs:               afero.NewOsFs(),
 	}
+}
+
+func defaultReadJWTToken() (string, error) {
+	// Implement the actual JWT token reading logic here
+	return "", nil
 }
 
 // Download implements IDownloader.
@@ -87,13 +103,13 @@ func (t *EMTDownloader) Download() error {
 
 // readJWTToken reads the JWT token that is used for accessing RS server.
 func (t *EMTDownloader) readJWTToken() (string, error) {
-	file, err := os.Open(JWTTokenPath)
+	file, err := t.fs.Open(JWTTokenPath)
 	if err != nil {
 		return "", err
 	}
 	defer file.Close()
-
-	token, err := os.ReadFile(JWTTokenPath)
+	
+	token, err := afero.ReadFile(t.fs, JWTTokenPath)
 	if err != nil {
 		return "", err
 	}
@@ -104,7 +120,7 @@ func (t *EMTDownloader) readJWTToken() (string, error) {
 func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	// Get available disk space
 	var stat unix.Statfs_t
-	err := unix.Statfs("/var/cache/manageability/", &stat)
+	err := t.statfs("/var/cache/manageability/", &stat)
 	if err != nil {
 		fmt.Printf("Error getting disk space: %v\n", err)
 		return false, err
@@ -112,7 +128,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	availableSpace := stat.Bavail * uint64(stat.Bsize)
 
 	//Read JWT token
-	token, err := t.readJWTToken()
+	token, err := t.readJWTTokenFunc()
 	if err != nil {
 		fmt.Println("Error reading JWT token:", err)
 		return false, err
@@ -120,13 +136,13 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 
 	// Check if the token exists
 	if token == "" {
-		errMsg := "JWT token is empty."
+		errMsg := "empty JWT token"
 		fmt.Println(errMsg)
 		return false, errors.New(errMsg)
 	}
 
 	// Create a new HTTP request
-	req, err := http.NewRequest("HEAD", t.request.Url, nil)
+	req, err := t.requestCreator("HEAD", t.request.Url, nil)
 	if err != nil {
 		fmt.Printf("Error creating request: %v\n", err)
 		return false, err
@@ -136,8 +152,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	req.Header.Add("Authorization", "Bearer "+token)
 
 	// Perform the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := t.httpClient.Do(req)
 	if err != nil {
 		fmt.Printf("Error performing request: %v\n", err)
 		return false, err
@@ -150,7 +165,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		fmt.Println("Content-Length header is missing. Falling back to GET request.")
 		// Perform a GET request to determine the file size
 		req.Method = "GET"
-		resp, err = client.Do(req)
+		resp, err = t.httpClient.Do(req)
 		if err != nil {
 			fmt.Printf("Error performing GET request: %v\n", err)
 			return false, err
@@ -178,7 +193,6 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		return false, nil
 	}
 	return true, nil
-
 }
 
 // downloadFile downloads the file from the url.

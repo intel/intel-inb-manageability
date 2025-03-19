@@ -1,0 +1,241 @@
+/*
+ * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Package osupdater updates the OS.
+package osupdater
+
+import (
+	"errors"
+	"io"
+	"net/http"
+	"os"
+	"testing"
+
+	"github.com/spf13/afero"
+	"golang.org/x/sys/unix"
+	"github.com/stretchr/testify/assert"
+)
+
+func TestEMTDownloader_readJWTToken(t *testing.T) {
+    fs := afero.NewMemMapFs()
+    downloader := &EMTDownloader{
+        fs: fs,
+    }
+
+    t.Run("successful read", func(t *testing.T) {
+        afero.WriteFile(fs, JWTTokenPath, []byte("valid-token"), 0644)
+        token, err := downloader.readJWTToken()
+        assert.NoError(t, err)
+        assert.Equal(t, "valid-token", token)
+    })
+
+    t.Run("file not found", func(t *testing.T) {
+        fs.Remove(JWTTokenPath)
+        token, err := downloader.readJWTToken()
+        assert.Error(t, err)
+        assert.Equal(t, "", token)
+        assert.True(t, os.IsNotExist(err))
+    })
+
+	t.Run("error reading file", func(t *testing.T) {
+		err := afero.WriteFile(fs, JWTTokenPath, []byte("token"), 0644)
+		if err != nil {
+			t.Fatalf("failed to write file: %v", err)
+		}
+		
+		err = fs.Chmod(JWTTokenPath, 0000)
+		if err != nil {
+			t.Fatalf("failed to change file permissions: %v", err)
+		}
+
+		token, err := downloader.readJWTToken()
+		assert.Error(t, err, "expected an error due to permission issues")
+		assert.Equal(t, "", token)
+		assert.True(t, os.IsPermission(err), "expected a permission error")
+	})
+}
+
+func TestEMTDownloader_checkDiskSpace(t *testing.T) {
+	tests := []struct {
+		name           string
+		statfs         func(path string, stat *unix.Statfs_t) error
+		readJWTToken   func() (string, error)
+		httpClient     *http.Client
+		requestCreator func(method, url string, body io.Reader) (*http.Request, error)
+		expectedResult bool
+		expectedError  error
+	}{
+		{
+            name: "successful check with enough disk space",
+            statfs: func(path string, stat *unix.Statfs_t) error {
+                stat.Bavail = 1000
+                stat.Bsize = 4096
+                return nil
+            },
+            readJWTToken: func() (string, error) {
+                return "valid-token", nil
+            },
+            httpClient: &http.Client{
+                Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+                    return &http.Response{
+                        StatusCode: 200,
+                        Header:     http.Header{"Content-Length": []string{"4096000"}},
+                    }
+                }),
+            },
+            requestCreator: http.NewRequest,
+            expectedResult: true,
+            expectedError:  nil,
+        },
+		{
+			name: "error getting disk space",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				return errors.New("disk space error")
+			},
+			readJWTToken: func() (string, error) {
+				return "", nil
+			},
+			httpClient:     &http.Client{},
+		 requestCreator: http.NewRequest,
+			expectedResult: false,
+			expectedError:  errors.New("disk space error"),
+		},
+		{
+			name: "error reading JWT token",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func() (string, error) {
+				return "", errors.New("token error")
+			},
+			httpClient:     &http.Client{},
+		requestCreator: http.NewRequest,
+			expectedResult: false,
+			expectedError:  errors.New("token error"),
+		},
+		{
+			name: "JWT token is empty",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func() (string, error) {
+				return "", nil
+			},
+			httpClient:     &http.Client{},
+		 requestCreator: http.NewRequest,
+			expectedResult: false,
+			expectedError:  errors.New("empty JWT token"),
+		},
+		{
+			name: "error creating request",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient:     &http.Client{},
+		 requestCreator: func(method, url string, body io.Reader) (*http.Request, error) {
+			  return nil, errors.New("error creating request")
+		 },
+		 	expectedResult: false,
+			expectedError:  errors.New("error creating request"),
+		},
+		{
+			name: "error performing request",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 500,
+						Body:       http.NoBody,
+					}
+				}),
+			},
+			expectedResult: false,
+			expectedError:  errors.New("error performing request"),
+		},
+		{
+			name: "content length header missing",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Header:     http.Header{},
+					}
+				}),
+			},
+			expectedResult: false,
+			expectedError:  errors.New("Content-Length header is missing"),
+		},
+		{
+			name: "not enough disk space",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 100
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Header:     http.Header{"Content-Length": []string{"4096000"}},
+					}
+				}),
+			},
+			expectedResult: false,
+			expectedError:  nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			downloader := &EMTDownloader{
+				statfs:           tt.statfs,
+				readJWTTokenFunc: tt.readJWTToken,
+				httpClient:       tt.httpClient,
+			}
+
+			result, err := downloader.checkDiskSpace()
+			assert.Equal(t, tt.expectedResult, result)
+			if tt.expectedError != nil {
+				assert.EqualError(t, err, tt.expectedError.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+// roundTripperFunc is a helper type to mock http.RoundTripper
+type roundTripperFunc func(req *http.Request) *http.Response
+
+func (f roundTripperFunc) RoundTrip(req *http.Request) (*http.Response, error) {
+	return f(req), nil
+}
