@@ -2,15 +2,14 @@
  * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
  * SPDX-License-Identifier: Apache-2.0
  */
- 
+
 package inbd
 
 import (
 	"context"
-	"log"
-
-	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	"github.com/intel/intel-inb-manageability/internal/logger"
 	osUpdater "github.com/intel/intel-inb-manageability/internal/os_updater"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
 type InbdServer struct {
@@ -19,7 +18,7 @@ type InbdServer struct {
 
 // UpdateSystemSoftware updates the system software
 func (s *InbdServer) UpdateSystemSoftware(ctx context.Context, req *pb.UpdateSystemSoftwareRequest) (*pb.UpdateResponse, error) {
-	log.Printf("Received UpdateSystemSoftware request")
+	logger.Debug("Received UpdateSystemSoftware request")
 	os, err := osUpdater.DetectOS()
 	if err != nil {
 		return &pb.UpdateResponse{StatusCode: 415, Error: err.Error()}, nil
@@ -40,16 +39,18 @@ func (s *InbdServer) UpdateSystemSoftware(ctx context.Context, req *pb.UpdateSys
 
 // UpdateOSSource creates a new /etc/apt/sources.list file with only the sources provided
 func (s *InbdServer) UpdateOSSource(ctx context.Context, req *pb.UpdateOSSourceRequest) (*pb.UpdateResponse, error) {
-	log.Printf("Received UpdateOSSource request")
+	logger.Debug("Received UpdateOSSource request")
 	return &pb.UpdateResponse{StatusCode: 501, Error: "Not implemented"}, nil
 }
 
+// AddApplicationSource adds a new source to the /etc/apt/sources.list.d/ directory
 func (s *InbdServer) AddApplicationSource(ctx context.Context, req *pb.AddApplicationSourceRequest) (*pb.UpdateResponse, error) {
-	log.Printf("Received AddApplicationSource request")
+	logger.Debug("Received AddApplicationSource request")
 	return &pb.UpdateResponse{StatusCode: 501, Error: "Not implemented"}, nil
 }
 
+// RemoveApplicationSource removes a source from the /etc/apt/sources.list.d/ directory
 func (s *InbdServer) RemoveApplicationSource(ctx context.Context, req *pb.RemoveApplicationSourceRequest) (*pb.UpdateResponse, error) {
-	log.Printf("Received RemoveApplicationSource request")
+	logger.Debug("Received RemoveApplicationSource request")
 	return &pb.UpdateResponse{StatusCode: 501, Error: "Not implemented"}, nil
 }

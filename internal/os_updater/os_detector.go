@@ -11,6 +11,8 @@ import (
 	"fmt"
 	"os/exec"
 	"runtime"
+
+	"github.com/intel/intel-inb-manageability/internal/logger"
 )
 
 // OSType represents the type of OS.
@@ -56,12 +58,14 @@ func detectLinuxDistribution() (string, error) {
 
 	switch {
 	case bytes.Contains(output, []byte("Ubuntu")):
+		logger.Debug("Detected Ubuntu OS")
 		return "Ubuntu", nil
 	case bytes.Contains(output, []byte("microvisor")):
+		logger.Debug("Detected EMT OS")
 		return "EMT", nil
+	default:
+		return "", fmt.Errorf("unsupported Linux distribution detected")
 	}
-
-	return string(output), nil
 }
 
 func getOSType() OSType {
@@ -69,8 +73,10 @@ func getOSType() OSType {
 
 	switch os {
 	case "linux":
+		logger.Debug("Detected Linux OS")
 		return linux
 	default:
+		logger.Error("Unsupported OS type detected")
 		return unsupportedOS
 	}
 }
