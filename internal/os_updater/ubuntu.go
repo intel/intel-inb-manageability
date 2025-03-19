@@ -6,13 +6,20 @@
 // Package osupdater updates the OS.
 package osupdater
 
+import (
+	"fmt"
+	"os"
+	"time"
+)
+
 // UbuntuDownloader is the concrete implementation of the IDownloader interface
 // for the Ubuntu OS.
 type UbuntuDownloader struct{}
 
 // Download method for Ubuntu
 func (u *UbuntuDownloader) Download() error {
-	panic("unimplemented")
+	fmt.Printf("Debian-based OS does not require a file download to perform a software update")
+	return nil
 }
 
 // UbuntuUpdater is the concrete implementation of the IUpdater interface
@@ -30,5 +37,22 @@ type UbuntuRebooter struct{}
 
 // Reboot method for Ubuntu
 func (u *UbuntuRebooter) Reboot() error {
-	panic("unimplemented")
+	fmt.Print("Rebooting ")
+	time.Sleep(2 * time.Second)
+	
+	isDockerApp := os.Getenv("container") != ""
+	cmd := "/sbin/reboot"
+
+	if isDockerApp {
+		_, err := execCommand(DockerChrootPrefix + cmd)
+		if err != nil {
+			return fmt.Errorf("SOTA Aborted: Reboot Failed: %s", err)
+		}
+	} else {
+		_, err := execCommand(cmd)
+		if err != nil {
+			return fmt.Errorf("SOTA Aborted: Reboot Failed: %s", err)
+		}
+	}
+	return nil
 }
