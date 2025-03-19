@@ -25,6 +25,7 @@ func SOTACmd() *cobra.Command {
 	var mode string
 	var reboot bool
 	var packageList []string
+	var signature string
 
 	cmd := &cobra.Command{
 		Use:   "sota",
@@ -40,6 +41,7 @@ func SOTACmd() *cobra.Command {
 	must(cmd.MarkFlagRequired("mode"))
 	cmd.Flags().BoolVar(&reboot, "reboot", true, "Whether to reboot the node after the software update attempt")
 	cmd.Flags().StringSliceVar(&packageList, "package-list", []string{}, "List of packages to install if whole package update isn't desired")
+	cmd.Flags().StringVar(&signature, "signature", "", "Signature of the package")
 
 	return cmd
 }
@@ -95,6 +97,7 @@ func handleSOTA(
 			Mode:        pb.UpdateSystemSoftwareRequest_DownloadMode(downloadMode),
 			DoNotReboot: !*reboot,
 			PackageList: *packageList,
+			Signature:   *signature,
 		}
 
 		client, conn, err := dialer(context.Background(), *socket)
