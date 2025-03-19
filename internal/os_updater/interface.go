@@ -61,8 +61,11 @@ func (f *UbuntuFactory) CreateDownloader(req pb.UpdateSystemSoftwareRequest) Dow
 }
 
 // CreateUpdater creates an OS updater concrete class for Ubuntu OS.
-func (f *UbuntuFactory) CreateUpdater(req pb.UpdateSystemSoftwareRequest) Updater {
-	return &UbuntuUpdater{request: req}
+func (f *UbuntuFactory) CreateUpdater(commandExecutor utils.Executor, req pb.UpdateSystemSoftwareRequest) Updater {
+	return &UbuntuUpdater{
+		commandExecutor: commandExecutor,
+		request:         req,
+	}
 }
 
 // CreateRebooter creates a rebooter concrete class for Ubuntu OS.

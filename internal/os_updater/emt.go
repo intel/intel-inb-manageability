@@ -10,11 +10,12 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
 	"strings"
-	"syscall"
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	"golang.org/x/sys/unix"
 )
 
 var (
@@ -32,7 +33,7 @@ type EmtDownloader struct {
 	request pb.UpdateSystemSoftwareRequest
 }
 
-func NewEmtDownloader(request pb.UpdateSystemSoftwareRequest) *EmtUpdater {
+func NewEmtDownloader(request pb.UpdateSystemSoftwareRequest) *EmtDownloader {
 	return &EmtDownloader{
 		request: request,
 	}
@@ -47,14 +48,19 @@ func (t *EmtDownloader) download() error {
 	}
 
 	// Perform source verification
-	if !IsTrustedRepository(t.url, config) {
+	if !IsTrustedRepository(t.request.Url, config) {
 		return fmt.Errorf("URL is not in the list of trusted repositories.")
 	}
 
-	fmt.Println("Downloading update from", t.url)
+	fmt.Println("Downloading update from", t.request.Url)
 
 	// Check available space on disk
-	if !t.checkDiskSpace() {
+	isDiskEnough, err := t.checkDiskSpace()
+	if err != nil {
+		fmt.Println("Error checking disk space:", err)
+	}
+
+	if !isDiskEnough {
 		return fmt.Errorf("Insufficient disk space.")
 	}
 
@@ -77,47 +83,57 @@ func (t *EmtDownloader) download() error {
 func (t *EmtDownloader) readJwtToken() (string, error) {
 	file, err := os.Open(jwtTokenPath)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	defer file.Close()
 
-	token, err := os.Readfile(file)
+	token, err := os.ReadFile(jwtTokenPath)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return token, nil
+	return string(token), nil
 }
 
 // checkDiskSpace checks if there is enough disk space to download the artifacts.
-func (t *EmtDownloader) checkDiskSpace() bool {
+func (t *EmtDownloader) checkDiskSpace() (bool, error) {
 	// Get available disk space
-	var stat syscall.Statfs_t
-	syscall.Statfs("/var/cache/manageability/", &stat)
+	var stat unix.Statfs_t
+	err := unix.Statfs("/var/cache/manageability/", &stat)
+	if err != nil {
+		fmt.Printf("Error getting disk space: %v\n", err)
+		return false, err
+	}
 	availableSpace := stat.Bavail * uint64(stat.Bsize)
 
 	//Read JWT token
 	token, err := t.readJwtToken()
 	if err != nil {
 		fmt.Println("Error reading JWT token:", err)
-		return err
+		return false, err
+	}
+
+	// Check if the token exists
+	if token == "" {
+		fmt.Println("JWT token is empty.")
+		return false, err
 	}
 
 	// Create a new HTTP request
-	req, err := http.NewRequest("HEAD", t.url, nil)
+	req, err := http.NewRequest("HEAD", t.request.Url, nil)
 	if err != nil {
 		fmt.Printf("Error creating request: %v\n", err)
-		return
+		return false, err
 	}
 
 	// Add the JWT token to the request header
-	req.Header.Add("Authorization", "Bearer "+jwtToken)
+	req.Header.Add("Authorization", "Bearer "+token)
 
 	// Perform the request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
 		fmt.Printf("Error performing request: %v\n", err)
-		return
+		return false, err
 	}
 	defer resp.Body.Close()
 
@@ -125,7 +141,7 @@ func (t *EmtDownloader) checkDiskSpace() bool {
 	contentLength := resp.Header.Get("Content-Length")
 	if contentLength == "" {
 		fmt.Println("Content-Length header is missing")
-		return
+		return false, fmt.Errorf("Content-Length header is missing")
 	}
 
 	// Parse the Content-Length to an integer
@@ -133,21 +149,21 @@ func (t *EmtDownloader) checkDiskSpace() bool {
 	_, err = fmt.Sscanf(contentLength, "%d", &requiredSpace)
 	if err != nil {
 		fmt.Printf("Error parsing Content-Length: %v\n", err)
-		return
+		return false, err
 	}
 
 	// Check if there is enough space
 	if availableSpace < requiredSpace {
-		return false
+		return false, nil
 	}
-	return true
+	return true, nil
 
 }
 
 // downloadFile downloads the file from the url.
 func (t *EmtDownloader) downloadFile() error {
 	// Create a new HTTP request
-	req, err := http.NewRequest("GET", t.url, nil)
+	req, err := http.NewRequest("GET", t.request.Url, nil)
 	if err != nil {
 		fmt.Printf("Error creating request: %v\n", err)
 		return err
@@ -171,7 +187,7 @@ func (t *EmtDownloader) downloadFile() error {
 	defer resp.Body.Close()
 
 	// Extract the file name from the URL
-	urlParts := strings.Split(t.url, "/")
+	urlParts := strings.Split(t.request.Url, "/")
 	fileName := urlParts[len(urlParts)-1]
 
 	// Create the file
@@ -220,7 +236,7 @@ func (tu *EmtUpdater) update() error {
 		// Create the file
 		filePath := downloadDir + "/" + fileName
 
-		updateToolWriteCommand = []string{
+		updateToolWriteCommand := []string{
 			"sudo", osUpdateToolPath, "-w", "-u", filePath, "-s", tu.request.Signature,
 		}
 		if _, err := tu.commandExecutor.Execute(updateToolWriteCommand); err != nil {
@@ -230,7 +246,7 @@ func (tu *EmtUpdater) update() error {
 
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
 		fmt.Println("Execute update tool apply command.")
-		updateToolApplyCommand = []string{
+		updateToolApplyCommand := []string{
 			"sudo", osUpdateToolPath, "-a",
 		}
 		if _, err := tu.commandExecutor.Execute(updateToolApplyCommand); err != nil {

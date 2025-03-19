@@ -1,46 +1,45 @@
-package os_updater
+package osupdater
 
 import (
-    "gopkg.in/yaml.v3"
-    "fmt"
-    "os"
-    "strings"
+	"os"
+	"strings"
+
+	"gopkg.in/yaml.v3"
 )
 
 // Configurations represents the structure of the XML configuration file
 type Configurations struct {
-    TrustedRepositories []string `yaml:"trustedRepositories"`
+	TrustedRepositories []string `yaml:"trustedRepositories"`
 }
 
 // LoadConfig loads the XML configuration file
 func LoadConfig(filename string) (*Configurations, error) {
-    file, err := os.Open(filename)
-    if err != nil {
-        return nil, err
-    }
-    defer file.Close()
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
 
-    content, err := os.Readfile(filename)
-    if err != nil {
-        return nil, err
-    }
+	content, err := os.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
 
-    var config Configurations
-    err = yaml.Unmarshal(content, &config)
-    if err != nil {
-        return nil, err
-    }
+	var config Configurations
+	err = yaml.Unmarshal(content, &config)
+	if err != nil {
+		return nil, err
+	}
 
-    return &config, nil
+	return &config, nil
 }
 
 // IsTrustedRepository checks if the given URL is in the list of trusted repositories
 func IsTrustedRepository(url string, config *Configurations) bool {
-    for _, repo := range config.TrustedRepositories {
-        if strings.HasPrefix(url, repo) {
-            return true
-        }
-    }
-    return false
+	for _, repo := range config.TrustedRepositories {
+		if strings.HasPrefix(url, repo) {
+			return true
+		}
+	}
+	return false
 }
-
