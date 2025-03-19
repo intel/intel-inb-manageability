@@ -40,7 +40,7 @@ func NewEmtDownloader(request pb.UpdateSystemSoftwareRequest) *EmtDownloader {
 }
 
 // download implements IDownloader.
-func (t *EmtDownloader) download() error {
+func (t *EmtDownloader) Download() error {
 	config, err := LoadConfig(configFilePath)
 	if err != nil {
 		fmt.Println("Error loading intel_manageability.conf:", err)
@@ -224,7 +224,7 @@ func NewEmtUpdater(commandExecutor utils.Executor, request pb.UpdateSystemSoftwa
 }
 
 // Update method for Emt
-func (tu *EmtUpdater) update() error {
+func (tu *EmtUpdater) Update() error {
 
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
 		fmt.Println("Execute update tool write command.")
@@ -263,6 +263,6 @@ func (tu *EmtUpdater) update() error {
 type EmtRebooter struct{}
 
 // Reboot method for Emt
-func (tu *EmtRebooter) reboot() error {
+func (tu *EmtRebooter) Reboot() error {
 	panic("unimplemented")
 }

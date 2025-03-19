@@ -37,19 +37,17 @@ type EMTFactory struct{}
 
 // CreateDownloader creates a downloader concrete class for EMT OS.
 func (f *EMTFactory) CreateDownloader(req pb.UpdateSystemSoftwareRequest) Downloader {
-	return NewEmtDownloader{request: req}
+	return NewEmtDownloader(req)
 }
 
 // CreateUpdater creates an OS updater concrete class for EMT OS.
 func (f *EMTFactory) CreateUpdater(commandExecutor utils.Executor, req pb.UpdateSystemSoftwareRequest) Updater {
-	return NewEmtUpdater{
-		commandExecutor: commandExecutor,
-		request:         req}
+	return NewEmtUpdater(commandExecutor, req)
 }
 
 // CreateRebooter creates a rebooter concrete class for EMT OS.
 func (f *EMTFactory) CreateRebooter() Rebooter {
-	return &EMTRebooter{}
+	return &EmtRebooter{}
 }
 
 // UbuntuFactory represents an EMT factory.
