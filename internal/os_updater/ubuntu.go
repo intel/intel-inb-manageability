@@ -10,8 +10,8 @@ package osupdater
 // for the Ubuntu OS.
 type UbuntuDownloader struct{}
 
-// download implements IDownloader.
-func (u *UbuntuDownloader) download() error {
+// Download method for Ubuntu
+func (u *UbuntuDownloader) Download() error {
 	panic("unimplemented")
 }
 
@@ -20,7 +20,7 @@ func (u *UbuntuDownloader) download() error {
 type UbuntuUpdater struct{}
 
 // Update method for Ubuntu
-func (u *UbuntuUpdater) update() error {
+func (u *UbuntuUpdater) Update() error {
 	panic("unimplemented")
 }
 
@@ -29,6 +29,6 @@ func (u *UbuntuUpdater) update() error {
 type UbuntuRebooter struct{}
 
 // Reboot method for Ubuntu
-func (u *UbuntuRebooter) reboot() error {
+func (u *UbuntuRebooter) Reboot() error {
 	panic("unimplemented")
 }

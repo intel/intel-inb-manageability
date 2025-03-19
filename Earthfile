@@ -57,6 +57,7 @@ lint:
     
 test:
     BUILD +run-golang-unit-tests
+    BUILD +lint
 
 run-golang-unit-tests:
     FROM +golang-base
