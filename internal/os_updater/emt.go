@@ -213,14 +213,14 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 // downloadFile downloads the file from the url.
 func (t *EMTDownloader) downloadFile() error {
 	// Create a new HTTP request
-	req, err := http.NewRequest("GET", t.request.Url, nil)
+	req, err := t.requestCreator("GET", t.request.Url, nil)
 	if err != nil {
 		fmt.Printf("Error creating request: %v\n", err)
 		return err
 	}
 
 	// Add the JWT token to the request header
-	token, err := t.readJWTToken()
+	token, err := t.readJWTTokenFunc()
 	if err != nil {
 		fmt.Println("Error reading JWT token:", err)
 		return err
@@ -228,8 +228,7 @@ func (t *EMTDownloader) downloadFile() error {
 	req.Header.Add("Authorization", "Bearer "+token)
 
 	// Perform the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
+	resp, err := t.httpClient.Do(req)
 	if err != nil {
 		fmt.Printf("Error performing request: %v\n", err)
 		return err
@@ -241,7 +240,7 @@ func (t *EMTDownloader) downloadFile() error {
 	fileName := urlParts[len(urlParts)-1]
 
 	// Create the file
-	file, err := os.Create(downloadDir + "/" + fileName)
+	file, err := t.fs.Create(downloadDir + "/" + fileName)
 	if err != nil {
 		fmt.Printf("Error creating file: %v\n", err)
 		return err
@@ -256,11 +255,10 @@ func (t *EMTDownloader) downloadFile() error {
 	}
 
 	return nil
-
 }
 
 // EMTUpdater is the concrete implementation of the IUpdater interface
-// for the Emt OS.
+// for the EMT OS.
 type EMTUpdater struct {
 	commandExecutor utils.Executor
 	request         *pb.UpdateSystemSoftwareRequest
@@ -272,6 +270,13 @@ func NewEMTUpdater(commandExecutor utils.Executor, request *pb.UpdateSystemSoftw
 		commandExecutor: commandExecutor,
 		request:         request,
 	}
+}
+
+// errReader is a helper type to simulate an error during reading
+type errReader struct{}
+
+func (errReader) Read(p []byte) (n int, err error) {
+    return 0, errors.New("error copying response body")
 }
 
 // Update method for Emt
