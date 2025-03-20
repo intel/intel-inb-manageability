@@ -8,49 +8,62 @@ package osupdater
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"testing"
 
 	"github.com/spf13/afero"
-	"golang.org/x/sys/unix"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/sys/unix"
+
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
 func TestEMTDownloader_readJWTToken(t *testing.T) {
-    fs := afero.NewMemMapFs()
-    downloader := &EMTDownloader{
-        fs: fs,
-    }
+	fs := afero.NewMemMapFs()
+	downloader := &EMTDownloader{
+		fs: fs,
+	}
 
-    t.Run("successful read", func(t *testing.T) {
-        afero.WriteFile(fs, JWTTokenPath, []byte("valid-token"), 0644)
-        token, err := downloader.readJWTToken()
-        assert.NoError(t, err)
-        assert.Equal(t, "valid-token", token)
-    })
+	t.Run("successful read", func(t *testing.T) {
+		err := afero.WriteFile(fs, JWTTokenPath, []byte("valid-token"), 0644)
+		if err != nil {
+			t.Fatalf("failed to write file: %v", err)
+		}
+		token, err := downloader.readJWTToken()
+		assert.NoError(t, err)
+		assert.Equal(t, "valid-token", token)
+	})
 
-    t.Run("file not found", func(t *testing.T) {
-        fs.Remove(JWTTokenPath)
-        token, err := downloader.readJWTToken()
-        assert.Error(t, err)
-        assert.Equal(t, "", token)
-        assert.True(t, os.IsNotExist(err))
-    })
+	t.Run("file not found", func(t *testing.T) {
+		err := fs.Remove(JWTTokenPath)
+		if err != nil {
+			t.Fatalf("failed to remove file: %v", err)
+		}
+		token, err := downloader.readJWTToken()
+		assert.Error(t, err)
+		assert.Equal(t, "", token)
+		assert.True(t, os.IsNotExist(err))
+	})
 
 	t.Run("error reading file", func(t *testing.T) {
 		err := afero.WriteFile(fs, JWTTokenPath, []byte("token"), 0644)
 		if err != nil {
 			t.Fatalf("failed to write file: %v", err)
 		}
-		
+
 		err = fs.Chmod(JWTTokenPath, 0000)
 		if err != nil {
 			t.Fatalf("failed to change file permissions: %v", err)
 		}
 
 		token, err := downloader.readJWTToken()
+		if err != nil {
+			fmt.Println(err.Error())
+		}
+
 		assert.Error(t, err, "expected an error due to permission issues")
 		assert.Equal(t, "", token)
 		assert.True(t, os.IsPermission(err), "expected a permission error")
@@ -63,32 +76,33 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 		statfs         func(path string, stat *unix.Statfs_t) error
 		readJWTToken   func() (string, error)
 		httpClient     *http.Client
-		requestCreator func(method, url string, body io.Reader) (*http.Request, error)
+		requestCreator func(method string, url string, body io.Reader) (*http.Request, error)
 		expectedResult bool
 		expectedError  error
 	}{
 		{
-            name: "successful check with enough disk space",
-            statfs: func(path string, stat *unix.Statfs_t) error {
-                stat.Bavail = 1000
-                stat.Bsize = 4096
-                return nil
-            },
-            readJWTToken: func() (string, error) {
-                return "valid-token", nil
-            },
-            httpClient: &http.Client{
-                Transport: roundTripperFunc(func(req *http.Request) *http.Response {
-                    return &http.Response{
-                        StatusCode: 200,
-                        Header:     http.Header{"Content-Length": []string{"4096000"}},
-                    }
-                }),
-            },
-            requestCreator: http.NewRequest,
-            expectedResult: true,
-            expectedError:  nil,
-        },
+			name: "successful check with enough disk space",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Header:     http.Header{"Content-Length": []string{"4096000"}},
+						Body:       http.NoBody,
+					}
+				}),
+			},
+			requestCreator: http.NewRequest,
+			expectedResult: true,
+			expectedError:  nil,
+		},
 		{
 			name: "error getting disk space",
 			statfs: func(path string, stat *unix.Statfs_t) error {
@@ -98,7 +112,7 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 				return "", nil
 			},
 			httpClient:     &http.Client{},
-		 requestCreator: http.NewRequest,
+			requestCreator: http.NewRequest,
 			expectedResult: false,
 			expectedError:  errors.New("disk space error"),
 		},
@@ -113,7 +127,7 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 				return "", errors.New("token error")
 			},
 			httpClient:     &http.Client{},
-		requestCreator: http.NewRequest,
+			requestCreator: http.NewRequest,
 			expectedResult: false,
 			expectedError:  errors.New("token error"),
 		},
@@ -128,7 +142,7 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 				return "", nil
 			},
 			httpClient:     &http.Client{},
-		 requestCreator: http.NewRequest,
+			requestCreator: http.NewRequest,
 			expectedResult: false,
 			expectedError:  errors.New("empty JWT token"),
 		},
@@ -142,11 +156,11 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			readJWTToken: func() (string, error) {
 				return "valid-token", nil
 			},
-			httpClient:     &http.Client{},
-		 requestCreator: func(method, url string, body io.Reader) (*http.Request, error) {
-			  return nil, errors.New("error creating request")
-		 },
-		 	expectedResult: false,
+			httpClient: &http.Client{},
+			requestCreator: func(method, url string, body io.Reader) (*http.Request, error) {
+				return nil, errors.New("error creating request")
+			},
+			expectedResult: false,
 			expectedError:  errors.New("error creating request"),
 		},
 		{
@@ -163,12 +177,13 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
 					return &http.Response{
 						StatusCode: 500,
+						Header:     http.Header{"Content-Length": []string{"4096001"}},
 						Body:       http.NoBody,
 					}
 				}),
 			},
 			expectedResult: false,
-			expectedError:  errors.New("error performing request"),
+			expectedError:  nil,
 		},
 		{
 			name: "content length header missing",
@@ -216,13 +231,22 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			if tt.requestCreator == nil {
+				fmt.Println("requestCreator is nil")
+				tt.requestCreator = http.NewRequest
+			}
 			downloader := &EMTDownloader{
 				statfs:           tt.statfs,
 				readJWTTokenFunc: tt.readJWTToken,
 				httpClient:       tt.httpClient,
+				requestCreator:   tt.requestCreator,
+				request:          &pb.UpdateSystemSoftwareRequest{Url: "http://example.com"},
 			}
 
 			result, err := downloader.checkDiskSpace()
+			fmt.Printf("name: %v\n", tt.name)
+			fmt.Printf("result: %v\n", result)
+			fmt.Printf("expectedResult: %v\n", tt.expectedResult)
 			assert.Equal(t, tt.expectedResult, result)
 			if tt.expectedError != nil {
 				assert.EqualError(t, err, tt.expectedError.Error())

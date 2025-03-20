@@ -36,7 +36,7 @@ type EMTDownloader struct {
 	readJWTTokenFunc func() (string, error)
 	statfs           func(path string, stat *unix.Statfs_t) error
 	httpClient       *http.Client
-	requestCreator   func(method, url string, body io.Reader) (*http.Request, error)
+	requestCreator   func(method string, url string, body io.Reader) (*http.Request, error)
 	fs               afero.Fs
 }
 
@@ -53,8 +53,17 @@ func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *EMTDownloader {
 }
 
 func defaultReadJWTToken() (string, error) {
-	// Implement the actual JWT token reading logic here
-	return "", nil
+	file, err := os.Open(JWTTokenPath)
+	if err != nil {
+		return "", err
+	}
+	defer file.Close()
+
+	token, err := os.ReadFile(JWTTokenPath)
+	if err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(token)), nil
 }
 
 // Download implements IDownloader.
@@ -108,7 +117,7 @@ func (t *EMTDownloader) readJWTToken() (string, error) {
 		return "", err
 	}
 	defer file.Close()
-	
+
 	token, err := afero.ReadFile(t.fs, JWTTokenPath)
 	if err != nil {
 		return "", err
@@ -141,6 +150,12 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		return false, errors.New(errMsg)
 	}
 
+	if t.requestCreator == nil {
+		fmt.Println("requestCreator is nil")
+	}
+	if t.httpClient == nil {
+		fmt.Println("httpClient is nil")
+	}
 	// Create a new HTTP request
 	req, err := t.requestCreator("HEAD", t.request.Url, nil)
 	if err != nil {
