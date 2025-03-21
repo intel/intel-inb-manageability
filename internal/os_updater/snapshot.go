@@ -134,9 +134,16 @@ func writeToDispatcherStateFile(content string) error {
 
 // readDispatcherStateFile reads the content from the dispatcher state file.
 // It returns the image version.
-func readDispatcherStateFile(os string) (string, error) {
+func readDispatcherStateFile(osType string) (string, error) {
 
-	if os == "EMT" {
+	if osType == "EMT" {
+		file, err := os.Open(dispatcherStatePath)
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+			return "", err
+		}
+		defer file.Close()
+
 		// Read the file content
 		fileContent, err := os.ReadFile(dispatcherStatePath)
 		if err != nil {
