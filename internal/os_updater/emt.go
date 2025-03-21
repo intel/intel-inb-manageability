@@ -330,6 +330,11 @@ func (tu *EMTUpdater) Update() error {
 	}
 
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
+		fmt.Println("Save snapshot before applying the update.")
+		if err := Snapshot(); err != nil {
+			return fmt.Errorf("failed to take snapshot before applying the update: %v", err)
+		}
+
 		fmt.Println("Execute update tool apply command.")
 		updateToolApplyCommand := []string{
 			"sudo", osUpdateToolPath, "-a",
