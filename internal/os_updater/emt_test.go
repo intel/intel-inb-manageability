@@ -111,7 +111,7 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 		}
 
 		err := downloader.downloadFile()
-		assert.EqualError(t, err, "error performing request")
+		assert.EqualError(t, err, "Status code: 500. Expected 200/Success.")
 	})
 
 	t.Run("error creating file", func(t *testing.T) {
@@ -128,6 +128,7 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
 					return &http.Response{
 						StatusCode: 200,
+						Header:     http.Header{"Content-Length": []string{"4096"}},
 						Body:       io.NopCloser(strings.NewReader("file content")),
 					}
 				}),
@@ -135,8 +136,14 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 			requestCreator: http.NewRequest,
 		}
 
+		// Remove the directory if it exists
+		err := fs.RemoveAll(downloadDir)
+		if err != nil {
+			t.Logf("Warning: failed to remove directory %s: %v", downloadDir, err)
+		}
+
 		// Simulate error creating file by setting the directory to read-only
-		err := fs.MkdirAll(downloadDir, 0444)
+		err = fs.MkdirAll(downloadDir, 0444)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -144,6 +151,9 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 		err = downloader.downloadFile()
 		if err != nil {
 			fmt.Println(err)
+		}
+		if err == nil {
+			fmt.Println("err is nil in error creating file. This will cause panic in unit test.")
 		}
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "permission denied")
