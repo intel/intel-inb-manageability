@@ -193,7 +193,19 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		contentLength = resp.Header.Get("Content-Length")
 		if contentLength == "" {
 			fmt.Println("Content-Length header is still missing after GET request.")
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				fmt.Printf("Error reading response body: %v\n", err)
+				return false, err
+			}
+			fmt.Printf("Response Body: %s\n", string(body))
 			return false, fmt.Errorf("Content-Length header is missing")
+		}
+		// Check if the status code is 200/Success. If not, return the error.
+		if resp.StatusCode != http.StatusOK {
+			errMsg := fmt.Sprintf("Status code: %d. Expected 200/Success.", resp.StatusCode)
+			fmt.Println(errMsg)
+			return false, errors.New(errMsg)
 		}
 	}
 
@@ -236,6 +248,13 @@ func (t *EMTDownloader) downloadFile() error {
 		return err
 	}
 	defer resp.Body.Close()
+
+	// Check if the status code is 200/Success. If not, return the error.
+	if resp.StatusCode != http.StatusOK {
+		errMsg := fmt.Sprintf("Status code: %d. Expected 200/Success.", resp.StatusCode)
+		fmt.Println(errMsg)
+		return errors.New(errMsg)
+	}
 
 	// Extract the file name from the URL
 	urlParts := strings.Split(t.request.Url, "/")
