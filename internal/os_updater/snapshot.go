@@ -114,7 +114,7 @@ func getImageBuildDate() (string, error) {
 
 func writeToDispatcherStateFile(content string) error {
 	// Open the file
-	file, err := os.Open(dispatcherStatePath)
+	file, err := os.OpenFile(dispatcherStatePath, os.O_WRONLY|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Println("Error opening file:", err)
 		return err
