@@ -36,7 +36,10 @@ func (u *UbuntuUpdater) Update() error {
 
 // UbuntuRebooter is the concrete implementation of the IUpdater interface
 // for the Ubuntu OS.
-type UbuntuRebooter struct{}
+type UbuntuRebooter struct {
+	commandExecutor utils.Executor
+	request         *pb.UpdateSystemSoftwareRequest
+}
 
 // Reboot method for Ubuntu
 func (u *UbuntuRebooter) Reboot() error {

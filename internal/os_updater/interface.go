@@ -17,7 +17,7 @@ import (
 type UpdaterFactory interface {
 	CreateDownloader(req *pb.UpdateSystemSoftwareRequest) Downloader
 	CreateUpdater(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater
-	CreateRebooter() Rebooter
+	CreateRebooter(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Rebooter
 }
 
 // GetOSUpdaterFactory returns the correct concrete classes for the OS updater based on the OS type.
@@ -46,8 +46,8 @@ func (f *EMTFactory) CreateUpdater(commandExecutor utils.Executor, req *pb.Updat
 }
 
 // CreateRebooter creates a rebooter concrete class for EMT OS.
-func (f *EMTFactory) CreateRebooter() Rebooter {
-	return &EMTRebooter{}
+func (f *EMTFactory) CreateRebooter(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Rebooter {
+	return NewEMTRebooter(commandExecutor, req)
 }
 
 // UbuntuFactory represents an EMT factory.
@@ -67,6 +67,9 @@ func (f *UbuntuFactory) CreateUpdater(commandExecutor utils.Executor, req *pb.Up
 }
 
 // CreateRebooter creates a rebooter concrete class for Ubuntu OS.
-func (f *UbuntuFactory) CreateRebooter() Rebooter {
-	return &UbuntuRebooter{}
+func (f *UbuntuFactory) CreateRebooter(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Rebooter {
+	return &UbuntuRebooter{
+		commandExecutor: commandExecutor,
+		request:         req,
+	}
 }

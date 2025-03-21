@@ -383,9 +383,26 @@ func (tu *EMTUpdater) VerifyHash() error {
 
 // EMTRebooter is the concrete implementation of the IUpdater interface
 // for the EMT OS.
-type EMTRebooter struct{}
+type EMTRebooter struct {
+	commandExecutor utils.Executor
+	request         *pb.UpdateSystemSoftwareRequest
+}
+
+// NewEMTRebooter creates a new EMTRebooter.
+func NewEMTRebooter(commandExecutor utils.Executor, request *pb.UpdateSystemSoftwareRequest) *EMTRebooter {
+	return &EMTRebooter{
+		commandExecutor: commandExecutor,
+		request:         request,
+	}
+}
 
 // Reboot method for EMT
 func (tu *EMTRebooter) Reboot() error {
-	panic("unimplemented")
+	rebootCommand := []string{
+		"sudo", "/usr/sbin/reboot",
+	}
+	if _, err := tu.commandExecutor.Execute(rebootCommand); err != nil {
+		return fmt.Errorf("failed to execute shell command(%v)- %v", rebootCommand, err)
+	}
+	return nil
 }

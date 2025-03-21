@@ -23,81 +23,81 @@ import (
 )
 
 func TestEMTDownloader_downloadFile(t *testing.T) {
-    t.Run("successful download", func(t *testing.T) {
-        fs := afero.NewMemMapFs()
-        downloader := &EMTDownloader{
-            fs: fs,
-            request: &pb.UpdateSystemSoftwareRequest{
-                Url: "http://example.com/file.txt",
-            },
-            readJWTTokenFunc: func() (string, error) {
-                return "valid-token", nil
-            },
-            httpClient: &http.Client{
-                Transport: roundTripperFunc(func(req *http.Request) *http.Response {
-                    return &http.Response{
-                        StatusCode: 200,
-                        Body:       io.NopCloser(strings.NewReader("file content")),
-                    }
-                }),
-            },
-            requestCreator: http.NewRequest,
-        }
+	t.Run("successful download", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		downloader := &EMTDownloader{
+			fs: fs,
+			request: &pb.UpdateSystemSoftwareRequest{
+				Url: "http://example.com/file.txt",
+			},
+			readJWTTokenFunc: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Body:       io.NopCloser(strings.NewReader("file content")),
+					}
+				}),
+			},
+			requestCreator: http.NewRequest,
+		}
 
-        err := downloader.downloadFile()
-        assert.NoError(t, err)
+		err := downloader.downloadFile()
+		assert.NoError(t, err)
 
-        exists, err := afero.Exists(fs, downloadDir+"/file.txt")
-        assert.NoError(t, err)
-        assert.True(t, exists)
+		exists, err := afero.Exists(fs, downloadDir+"/file.txt")
+		assert.NoError(t, err)
+		assert.True(t, exists)
 
-        content, err := afero.ReadFile(fs, downloadDir+"/file.txt")
-        assert.NoError(t, err)
-        assert.Equal(t, "file content", string(content))
-    })
+		content, err := afero.ReadFile(fs, downloadDir+"/file.txt")
+		assert.NoError(t, err)
+		assert.Equal(t, "file content", string(content))
+	})
 
-    t.Run("error creating request", func(t *testing.T) {
-        downloader := &EMTDownloader{
-            request: &pb.UpdateSystemSoftwareRequest{
-                Url: "http://example.com/file.txt",
-            },
-            readJWTTokenFunc: func() (string, error) {
-                return "valid-token", nil
-            },
-            httpClient: &http.Client{},
-            requestCreator: func(method, url string, body io.Reader) (*http.Request, error) {
-                return nil, errors.New("error creating request")
-            },
-        }
+	t.Run("error creating request", func(t *testing.T) {
+		downloader := &EMTDownloader{
+			request: &pb.UpdateSystemSoftwareRequest{
+				Url: "http://example.com/file.txt",
+			},
+			readJWTTokenFunc: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{},
+			requestCreator: func(method, url string, body io.Reader) (*http.Request, error) {
+				return nil, errors.New("error creating request")
+			},
+		}
 
-        err := downloader.downloadFile()
-        assert.EqualError(t, err, "error creating request")
-    })
+		err := downloader.downloadFile()
+		assert.EqualError(t, err, "error creating request")
+	})
 
-    t.Run("error reading JWT token", func(t *testing.T) {
-        downloader := &EMTDownloader{
-            request: &pb.UpdateSystemSoftwareRequest{
-                Url: "http://example.com/file.txt",
-            },
-            readJWTTokenFunc: func() (string, error) {
-                return "", errors.New("error reading JWT token")
-            },
-            httpClient:     &http.Client{},
-            requestCreator: http.NewRequest,
-        }
+	t.Run("error reading JWT token", func(t *testing.T) {
+		downloader := &EMTDownloader{
+			request: &pb.UpdateSystemSoftwareRequest{
+				Url: "http://example.com/file.txt",
+			},
+			readJWTTokenFunc: func() (string, error) {
+				return "", errors.New("error reading JWT token")
+			},
+			httpClient:     &http.Client{},
+			requestCreator: http.NewRequest,
+		}
 
-        err := downloader.downloadFile()
-        assert.EqualError(t, err, "error reading JWT token")
-    })
+		err := downloader.downloadFile()
+		assert.EqualError(t, err, "error reading JWT token")
+	})
 
-    t.Run("error performing request", func(t *testing.T) {
-        downloader := &EMTDownloader{
-            request: &pb.UpdateSystemSoftwareRequest{
-                Url: "http://example.com/file.txt",
-            },
-            readJWTTokenFunc: func() (string, error) {
-                return "valid-token", nil
-            },
+	t.Run("error performing request", func(t *testing.T) {
+		downloader := &EMTDownloader{
+			request: &pb.UpdateSystemSoftwareRequest{
+				Url: "http://example.com/file.txt",
+			},
+			readJWTTokenFunc: func() (string, error) {
+				return "valid-token", nil
+			},
 			httpClient: &http.Client{
 				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
 					return &http.Response{
@@ -107,67 +107,73 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 					}
 				}),
 			},
-            requestCreator: http.NewRequest,
-        }
+			requestCreator: http.NewRequest,
+		}
 
-        err := downloader.downloadFile()
-        assert.EqualError(t, err, "error performing request")
-    })
+		err := downloader.downloadFile()
+		assert.EqualError(t, err, "error performing request")
+	})
 
-    t.Run("error creating file", func(t *testing.T) {
-        fs := afero.NewMemMapFs()
-        downloader := &EMTDownloader{
-            fs: fs,
-            request: &pb.UpdateSystemSoftwareRequest{
-                Url: "http://example.com/file.txt",
-            },
-            readJWTTokenFunc: func() (string, error) {
-                return "valid-token", nil
-            },
-            httpClient: &http.Client{
-                Transport: roundTripperFunc(func(req *http.Request) *http.Response {
-                    return &http.Response{
-                        StatusCode: 200,
-                        Body:       io.NopCloser(strings.NewReader("file content")),
-                    }
-                }),
-            },
-            requestCreator: http.NewRequest,
-        }
+	t.Run("error creating file", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		downloader := &EMTDownloader{
+			fs: fs,
+			request: &pb.UpdateSystemSoftwareRequest{
+				Url: "http://example.com/file.txt",
+			},
+			readJWTTokenFunc: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Body:       io.NopCloser(strings.NewReader("file content")),
+					}
+				}),
+			},
+			requestCreator: http.NewRequest,
+		}
 
-        // Simulate error creating file by setting the directory to read-only
-        fs.MkdirAll(downloadDir, 0444)
+		// Simulate error creating file by setting the directory to read-only
+		err := fs.MkdirAll(downloadDir, 0444)
+		if err != nil {
+			fmt.Println(err)
+		}
 
-        err := downloader.downloadFile()
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "permission denied")
-    })
+		err = downloader.downloadFile()
+		if err != nil {
+			fmt.Println(err)
+		}
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "permission denied")
+	})
 
-    t.Run("error copying response body", func(t *testing.T) {
-        fs := afero.NewMemMapFs()
-        downloader := &EMTDownloader{
-            fs: fs,
-            request: &pb.UpdateSystemSoftwareRequest{
-                Url: "http://example.com/file.txt",
-            },
-            readJWTTokenFunc: func() (string, error) {
-                return "valid-token", nil
-            },
-            httpClient: &http.Client{
-                Transport: roundTripperFunc(func(req *http.Request) *http.Response {
-                    return &http.Response{
-                        StatusCode: 200,
-                        Body:       io.NopCloser(errReader{}),
-                    }
-                }),
-            },
-            requestCreator: http.NewRequest,
-        }
+	t.Run("error copying response body", func(t *testing.T) {
+		fs := afero.NewMemMapFs()
+		downloader := &EMTDownloader{
+			fs: fs,
+			request: &pb.UpdateSystemSoftwareRequest{
+				Url: "http://example.com/file.txt",
+			},
+			readJWTTokenFunc: func() (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Body:       io.NopCloser(errReader{}),
+					}
+				}),
+			},
+			requestCreator: http.NewRequest,
+		}
 
-        err := downloader.downloadFile()
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "error copying response body")
-    })
+		err := downloader.downloadFile()
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "error copying response body")
+	})
 }
 
 func TestEMTDownloader_readJWTToken(t *testing.T) {
@@ -198,7 +204,12 @@ func TestEMTDownloader_readJWTToken(t *testing.T) {
 	})
 
 	t.Run("error reading file", func(t *testing.T) {
-		err := afero.WriteFile(fs, JWTTokenPath, []byte("token"), 0644)
+		err := fs.Remove(JWTTokenPath)
+		if err != nil {
+			t.Logf("Warning: failed to remove file: %v", err)
+		}
+
+		err = afero.WriteFile(fs, JWTTokenPath, []byte("token"), 0644)
 		if err != nil {
 			t.Fatalf("failed to write file: %v", err)
 		}
@@ -380,6 +391,8 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			fmt.Println("-----------------------------")
+			fmt.Printf("name: %v\n", tt.name)
 			if tt.requestCreator == nil {
 				fmt.Println("requestCreator is nil")
 				tt.requestCreator = http.NewRequest
@@ -391,9 +404,7 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 				requestCreator:   tt.requestCreator,
 				request:          &pb.UpdateSystemSoftwareRequest{Url: "http://example.com"},
 			}
-
 			result, err := downloader.checkDiskSpace()
-			fmt.Printf("name: %v\n", tt.name)
 			fmt.Printf("result: %v\n", result)
 			fmt.Printf("expectedResult: %v\n", tt.expectedResult)
 			assert.Equal(t, tt.expectedResult, result)
@@ -402,6 +413,7 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
+			fmt.Println("PASS")
 		})
 	}
 }
