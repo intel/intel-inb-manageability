@@ -7,6 +7,8 @@
 package osupdater
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -276,7 +278,7 @@ func NewEMTUpdater(commandExecutor utils.Executor, request *pb.UpdateSystemSoftw
 type errReader struct{}
 
 func (errReader) Read(p []byte) (n int, err error) {
-    return 0, errors.New("error copying response body")
+	return 0, errors.New("error copying response body")
 }
 
 // Update method for Emt
@@ -284,6 +286,13 @@ func (tu *EMTUpdater) Update() error {
 	// Print the value of tu.request.Mode
 	fmt.Printf("Mode: %v\n", tu.request.Mode)
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
+
+		err := tu.VerifyHash()
+		if err != nil {
+			fmt.Printf("Hash verification failed: %v\n", err)
+			return err
+		}
+
 		fmt.Println("Execute update tool write command.")
 
 		// Extract the file name from the URL
@@ -310,6 +319,45 @@ func (tu *EMTUpdater) Update() error {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
 		}
 	}
+
+	return nil
+}
+
+func (tu *EMTUpdater) VerifyHash() error {
+	fmt.Println("Verify file SHA.")
+
+	// Extract the file name from the URL
+	urlParts := strings.Split(tu.request.Url, "/")
+	fileName := urlParts[len(urlParts)-1]
+	filePath := downloadDir + "/" + fileName
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		fmt.Printf("Error opening file: %v\n", err)
+		return err
+	}
+	defer file.Close()
+
+	// Create a new SHA256 hash
+	hash := sha256.New()
+	// Copy the file content into the hash
+	if _, err := io.Copy(hash, file); err != nil {
+		fmt.Printf("Error reading file: %v\n", err)
+		return err
+	}
+
+	// Compute the hash
+	computedHash := hash.Sum(nil)
+
+	// Convert the computed hash to a hex string
+	computedChecksum := hex.EncodeToString(computedHash)
+
+	if computedChecksum != tu.request.Signature {
+		errMsg := fmt.Sprintf("Checksum mismatch. Expected: %s, got: %s", tu.request.Signature, computedChecksum)
+		fmt.Println(errMsg)
+		return errors.New(errMsg)
+	}
+	fmt.Println("SHA verification complete.")
 
 	return nil
 }
