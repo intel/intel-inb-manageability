@@ -112,6 +112,7 @@ func getImageBuildDate() (string, error) {
 	return "", nil
 }
 
+// writeToDispatcherStateFile writes the content to the dispatcher state file.
 func writeToDispatcherStateFile(content string) error {
 	// Open the file
 	file, err := os.OpenFile(dispatcherStatePath, os.O_WRONLY|os.O_CREATE, 0644)
@@ -129,4 +130,29 @@ func writeToDispatcherStateFile(content string) error {
 	}
 
 	return nil
+}
+
+// readDispatcherStateFile reads the content from the dispatcher state file.
+// It returns the image version.
+func readDispatcherStateFile(os string) (string, error) {
+
+	if os == "EMT" {
+		// Read the file content
+		fileContent, err := os.ReadFile(dispatcherStatePath)
+		if err != nil {
+			fmt.Println("Error reading file:", err)
+			return "", err
+		}
+
+		// Parse the JSON content
+		var state EmtState
+		err = json.Unmarshal(fileContent, &state)
+		if err != nil {
+			fmt.Println("Error parsing JSON:", err)
+			return "", err
+		}
+		return state.TiberVersion, nil
+	}
+
+	return "", fmt.Errorf("OS not supported")
 }
