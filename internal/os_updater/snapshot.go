@@ -47,8 +47,7 @@ func Snapshot() error {
 
 	os, err := DetectOS()
 	if err != nil {
-		errMsg := fmt.Sprintf("Failed to detect OS: %v", err)
-		return fmt.Errorf(errMsg)
+		return fmt.Errorf("Failed to detect OS: %v", err)
 	}
 
 	if os == "EMT" {
@@ -134,32 +133,32 @@ func writeToDispatcherStateFile(content string) error {
 
 // readDispatcherStateFile reads the content from the dispatcher state file.
 // It returns the image version.
-func readDispatcherStateFile(osType string) (string, error) {
+// func readDispatcherStateFile(osType string) (string, error) {
 
-	if osType == "EMT" {
-		file, err := os.Open(dispatcherStatePath)
-		if err != nil {
-			fmt.Println("Error opening file:", err)
-			return "", err
-		}
-		defer file.Close()
+// 	if osType == "EMT" {
+// 		file, err := os.Open(dispatcherStatePath)
+// 		if err != nil {
+// 			fmt.Println("Error opening file:", err)
+// 			return "", err
+// 		}
+// 		defer file.Close()
 
-		// Read the file content
-		fileContent, err := os.ReadFile(dispatcherStatePath)
-		if err != nil {
-			fmt.Println("Error reading file:", err)
-			return "", err
-		}
+// 		// Read the file content
+// 		fileContent, err := os.ReadFile(dispatcherStatePath)
+// 		if err != nil {
+// 			fmt.Println("Error reading file:", err)
+// 			return "", err
+// 		}
 
-		// Parse the JSON content
-		var state EmtState
-		err = json.Unmarshal(fileContent, &state)
-		if err != nil {
-			fmt.Println("Error parsing JSON:", err)
-			return "", err
-		}
-		return state.TiberVersion, nil
-	}
+// 		// Parse the JSON content
+// 		var state EmtState
+// 		err = json.Unmarshal(fileContent, &state)
+// 		if err != nil {
+// 			fmt.Println("Error parsing JSON:", err)
+// 			return "", err
+// 		}
+// 		return state.TiberVersion, nil
+// 	}
 
-	return "", fmt.Errorf("OS not supported")
-}
+// 	return "", fmt.Errorf("OS not supported")
+// }

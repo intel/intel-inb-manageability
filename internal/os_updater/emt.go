@@ -35,10 +35,10 @@ var (
 // for the Emt OS.
 type EMTDownloader struct {
 	request          *pb.UpdateSystemSoftwareRequest
-	readJWTTokenFunc func() (string, error)
-	statfs           func(path string, stat *unix.Statfs_t) error
+	readJWTTokenFunc func(afero.Afero, string) (string, error)
+	statfs           func(string, *unix.Statfs_t) error
 	httpClient       *http.Client
-	requestCreator   func(method string, url string, body io.Reader) (*http.Request, error)
+	requestCreator   func(string, string, io.Reader) (*http.Request, error)
 	fs               afero.Fs
 }
 
@@ -46,26 +46,12 @@ type EMTDownloader struct {
 func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *EMTDownloader {
 	return &EMTDownloader{
 		request:          request,
-		readJWTTokenFunc: defaultReadJWTToken,
+		readJWTTokenFunc: readJWTToken,
 		statfs:           unix.Statfs,
 		httpClient:       &http.Client{},
 		requestCreator:   http.NewRequest,
 		fs:               afero.NewOsFs(),
 	}
-}
-
-func defaultReadJWTToken() (string, error) {
-	file, err := os.Open(JWTTokenPath)
-	if err != nil {
-		return "", err
-	}
-	defer file.Close()
-
-	token, err := os.ReadFile(JWTTokenPath)
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(string(token)), nil
 }
 
 // Download implements IDownloader.
@@ -113,14 +99,14 @@ func (t *EMTDownloader) Download() error {
 }
 
 // readJWTToken reads the JWT token that is used for accessing RS server.
-func (t *EMTDownloader) readJWTToken() (string, error) {
-	file, err := t.fs.Open(JWTTokenPath)
+func readJWTToken(fs afero.Afero, path string) (string, error) {
+	file, err := fs.Open(path)
 	if err != nil {
 		return "", err
 	}
 	defer file.Close()
 
-	token, err := afero.ReadFile(t.fs, JWTTokenPath)
+	token, err := afero.ReadFile(fs, path)
 	if err != nil {
 		return "", err
 	}
@@ -139,7 +125,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	availableSpace := stat.Bavail * uint64(stat.Bsize)
 
 	//Read JWT token
-	token, err := t.readJWTTokenFunc()
+	token, err := t.readJWTTokenFunc(afero.Afero{Fs: t.fs}, JWTTokenPath)
 	if err != nil {
 		fmt.Println("Error reading JWT token:", err)
 		return false, err
@@ -234,7 +220,7 @@ func (t *EMTDownloader) downloadFile() error {
 	}
 
 	// Add the JWT token to the request header
-	token, err := t.readJWTTokenFunc()
+	token, err := t.readJWTTokenFunc(afero.Afero{Fs: t.fs}, JWTTokenPath)
 	if err != nil {
 		fmt.Println("Error reading JWT token:", err)
 		return err
@@ -244,8 +230,7 @@ func (t *EMTDownloader) downloadFile() error {
 	// Perform the request
 	resp, err := t.httpClient.Do(req)
 	if err != nil {
-		fmt.Printf("Error performing request: %v\n", err)
-		return err
+		return fmt.Errorf("error performing request: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -263,16 +248,14 @@ func (t *EMTDownloader) downloadFile() error {
 	// Create the file
 	file, err := t.fs.Create(downloadDir + "/" + fileName)
 	if err != nil {
-		fmt.Printf("Error creating file: %v\n", err)
-		return err
+		return fmt.Errorf("error creating file: %v", err)
 	}
 	defer file.Close()
 
 	// Copy the response body to the file
 	_, err = io.Copy(file, resp.Body)
 	if err != nil {
-		fmt.Printf("Error downloading file: %v\n", err)
-		return err
+		return fmt.Errorf("error downloading file: %w", err)
 	}
 
 	return nil
@@ -308,8 +291,7 @@ func (tu *EMTUpdater) Update() error {
 
 		err := tu.VerifyHash()
 		if err != nil {
-			fmt.Printf("Hash verification failed: %v\n", err)
-			return err
+			return fmt.Errorf("hash verification failed: %w", err)
 		}
 
 		fmt.Println("Execute update tool write command.")
@@ -347,6 +329,7 @@ func (tu *EMTUpdater) Update() error {
 	return nil
 }
 
+// VerifyHash verifies the hash of the downloaded file.
 func (tu *EMTUpdater) VerifyHash() error {
 	fmt.Println("Verify file SHA.")
 
@@ -357,8 +340,7 @@ func (tu *EMTUpdater) VerifyHash() error {
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		fmt.Printf("Error opening file: %v\n", err)
-		return err
+		return fmt.Errorf("error opening file: %w", err)
 	}
 	defer file.Close()
 
@@ -366,8 +348,7 @@ func (tu *EMTUpdater) VerifyHash() error {
 	hash := sha256.New()
 	// Copy the file content into the hash
 	if _, err := io.Copy(hash, file); err != nil {
-		fmt.Printf("Error reading file: %v\n", err)
-		return err
+		return fmt.Errorf("error reading file: %w", err)
 	}
 
 	// Compute the hash
