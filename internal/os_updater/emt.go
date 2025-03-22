@@ -58,8 +58,7 @@ func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *EMTDownloader {
 func (t *EMTDownloader) Download() error {
 	config, err := LoadConfig(configFilePath)
 	if err != nil {
-		fmt.Println("Error loading intel_manageability.conf:", err)
-		return err
+		return fmt.Errorf("error loading config: %w", err)
 	}
 
 	// Perform source verification
@@ -89,8 +88,7 @@ func (t *EMTDownloader) Download() error {
 	// Download file
 	err = t.downloadFile()
 	if err != nil {
-		fmt.Println("Error downloading the file:", err)
-		return err
+		return fmt.Errorf("error downloading the file: %w", err)
 	}
 
 	fmt.Println("Download completed.")
@@ -138,17 +136,10 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		return false, errors.New(errMsg)
 	}
 
-	if t.requestCreator == nil {
-		fmt.Println("requestCreator is nil")
-	}
-	if t.httpClient == nil {
-		fmt.Println("httpClient is nil")
-	}
 	// Create a new HTTP request
 	req, err := t.requestCreator("HEAD", t.request.Url, nil)
 	if err != nil {
-		fmt.Printf("Error creating request: %v\n", err)
-		return false, err
+		return false, fmt.Errorf("error creating request: %w", err)
 	}
 
 	// Add the JWT token to the request header
@@ -157,8 +148,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	// Perform the request
 	resp, err := t.httpClient.Do(req)
 	if err != nil {
-		fmt.Printf("Error performing request: %v\n", err)
-		return false, err
+		return false, fmt.Errorf("error performing request: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -170,8 +160,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		req.Method = "GET"
 		resp, err = t.httpClient.Do(req)
 		if err != nil {
-			fmt.Printf("Error performing GET request: %v\n", err)
-			return false, err
+			return false, fmt.Errorf("error performing GET request: %w", err)
 		}
 		defer resp.Body.Close()
 
@@ -181,11 +170,10 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 			fmt.Println("Content-Length header is still missing after GET request.")
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
-				fmt.Printf("Error reading response body: %v\n", err)
-				return false, err
+				return false, fmt.Errorf("error reading response body: %w", err)
 			}
 			fmt.Printf("Response Body: %s\n", string(body))
-			return false, fmt.Errorf("Content-Length header is missing")
+			return false, fmt.Errorf("content-Length header is missing")
 		}
 		// Check if the status code is 200/Success. If not, return the error.
 		if resp.StatusCode != http.StatusOK {
@@ -199,8 +187,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	var requiredSpace uint64
 	_, err = fmt.Sscanf(contentLength, "%d", &requiredSpace)
 	if err != nil {
-		fmt.Printf("Error parsing Content-Length: %v\n", err)
-		return false, err
+		return false, fmt.Errorf("error parsing Content-Length: %w", err)
 	}
 
 	// Check if there is enough space
@@ -222,8 +209,7 @@ func (t *EMTDownloader) downloadFile() error {
 	// Add the JWT token to the request header
 	token, err := t.readJWTTokenFunc(afero.Afero{Fs: t.fs}, JWTTokenPath)
 	if err != nil {
-		fmt.Println("Error reading JWT token:", err)
-		return err
+		return fmt.Errorf("error reading JWT token: %w", err)
 	}
 	req.Header.Add("Authorization", "Bearer "+token)
 
