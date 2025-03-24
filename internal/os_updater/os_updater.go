@@ -33,11 +33,13 @@ func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
 	}
 
-	// Reboot the system
-	rebooter := factory.CreateRebooter(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), req)
-	err = rebooter.Reboot()
-	if err != nil {
-		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
+	if req.Mode != pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
+		// Reboot the system
+		rebooter := factory.CreateRebooter(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), req)
+		err = rebooter.Reboot()
+		if err != nil {
+			return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
+		}
 	}
 
 	return &pb.UpdateResponse{StatusCode: 200, Error: ""}, nil
