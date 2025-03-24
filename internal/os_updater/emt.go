@@ -305,7 +305,7 @@ func (tu *EMTUpdater) Update() error {
 		// Write the update status to the status log file
 		err = writeUpdateStatus(SUCCESS, string(requestJSON), "")
 		if err != nil {
-			fmt.Printf("[Warning] Error writing update status: %w", err)
+			fmt.Printf("[Warning] Error writing update status: %v", err)
 		}
 
 	}
@@ -332,7 +332,7 @@ func (tu *EMTUpdater) Update() error {
 		// Write the update status to the status log file
 		err = writeUpdateStatus(SUCCESS, string(requestJSON), "")
 		if err != nil {
-			fmt.Printf("[Warning] Error writing update status: %w", err)
+			fmt.Printf("[Warning] Error writing update status: %v", err)
 		}
 	}
 

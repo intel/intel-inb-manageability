@@ -193,7 +193,7 @@ func VerifyUpdateAfterReboot(osType string) error {
 				// Write the status to the log file.
 				err := writeUpdateStatus(FAIL, "", "Update failed. Version are same.")
 				if err != nil {
-					fmt.Printf("[Warning] Error writing update status: %w", err)
+					fmt.Printf("[Warning] Error writing update status: %v", err)
 				}
 				fmt.Println("Rebooting...")
 				// Reboot the system without commit.
@@ -214,7 +214,7 @@ func VerifyUpdateAfterReboot(osType string) error {
 			// Write status to the log file.
 			err = writeUpdateStatus(SUCCESS, "", "SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
 			if err != nil {
-				fmt.Printf("[Warning] Error writing update status: %w", err)
+				fmt.Printf("[Warning] Error writing update status: %v", err)
 			}
 
 			// TODO: Write the granular log for success and fail cases.

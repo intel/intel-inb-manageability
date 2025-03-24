@@ -13,10 +13,6 @@ import (
 	"google.golang.org/grpc"
 )
 
-const (
-	dispatcherStatePath = "/var/intel-manageability/dispatcher_state"
-)
-
 // ServerDeps groups the dependencies needed for running the server.
 type ServerDeps struct {
 	Socket          string
