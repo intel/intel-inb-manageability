@@ -57,7 +57,7 @@ func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *EMTDownloader {
 
 // Download implements IDownloader.
 func (t *EMTDownloader) Download() error {
-	config, err := LoadConfig(configFilePath)
+	config, err := LoadConfig(t.fs, configFilePath)
 	if err != nil {
 		return fmt.Errorf("error loading config: %w", err)
 	}

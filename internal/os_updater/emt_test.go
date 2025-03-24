@@ -57,6 +57,21 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 		assert.Equal(t, "file content", string(content))
 	})
 
+	// t.Run("error loading config", func(t *testing.T) {
+	// 	downloader := &EMTDownloader{
+	// 		request: &pb.UpdateSystemSoftwareRequest{
+	// 			Url: "http://example.com/file.txt",
+	// 		},
+	// 	}
+
+	// 	LoadConfig = func(path string) (Config, error) {
+	// 		return Config{}, errors.New("config error")
+	// 	}
+
+	// 	err := downloader.Download()
+	// 	assert.EqualError(t, err, "error loading config: config error")
+	// })
+
 	t.Run("error creating request", func(t *testing.T) {
 		downloader := &EMTDownloader{
 			request: &pb.UpdateSystemSoftwareRequest{
@@ -205,7 +220,7 @@ func TestEMTDownloader_readJWTToken(t *testing.T) {
 	// 		t.Fatalf("failed to create directory: %v", err)
 	// 	}
 
-	// 	err = fs.Remove(jwtTokenPath)
+	// 	err = fsa.Remove(jwtTokenPath)
 	// 	if err != nil {
 	// 		t.Logf("Warning: failed to remove file: %v", err)
 	// 	}
@@ -220,7 +235,7 @@ func TestEMTDownloader_readJWTToken(t *testing.T) {
 	// 		t.Fatalf("failed to change file permissions: %v", err)
 	// 	}
 
-	// 	token, err := readJWTToken(afero.Afero{Fs: fsa}, jwtTokenPath)
+	// 	token, err := readJWTToken(afero.Afero{Fs: fs}, jwtTokenPath)
 	// 	if err != nil {
 	// 		fmt.Println(err.Error())
 	// 	}

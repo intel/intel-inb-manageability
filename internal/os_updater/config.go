@@ -1,9 +1,10 @@
 package osupdater
 
 import (
-	"os"
+	"io"
 	"strings"
 
+	"github.com/spf13/afero"
 	"gopkg.in/yaml.v3"
 )
 
@@ -13,14 +14,14 @@ type Configurations struct {
 }
 
 // LoadConfig loads the XML configuration file
-func LoadConfig(filename string) (*Configurations, error) {
-	file, err := os.Open(filename)
+func LoadConfig(fs afero.Fs, filename string) (*Configurations, error) {
+	file, err := fs.Open(filename)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	content, err := os.ReadFile(filename)
+	content, err := io.ReadAll(file)
 	if err != nil {
 		return nil, err
 	}
