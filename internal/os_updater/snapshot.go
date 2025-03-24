@@ -20,6 +20,11 @@ import (
 )
 
 const (
+	SUCCESS = "SUCCESS"
+	FAIL    = "FAIL"
+)
+
+var (
 	emtImageIDPath      = "/etc/image-id"
 	dispatcherStatePath = "/var/intel-manageability/dispatcher_state"
 )
@@ -185,7 +190,14 @@ func VerifyUpdateAfterReboot(osType string) error {
 				fmt.Printf("Update Success. Previous image: %v, Current image: %v", previousVersion, currentVersion)
 			} else {
 				fmt.Println("Update failed. Reverting to previous image.")
+				// Write the status to the log file.
+				err := writeUpdateStatus(FAIL, "", "Update failed. Version are same.")
+				if err != nil {
+					fmt.Printf("[Warning] Error writing update status: %w", err)
+				}
+				fmt.Println("Rebooting...")
 				// Reboot the system without commit.
+				// //TODO: Only reboot here? Or should we also reboot without commit in other failure?
 				emtRebooter := NewEMTRebooter(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &pb.UpdateSystemSoftwareRequest{})
 				err = emtRebooter.Reboot()
 				if err != nil {
@@ -199,7 +211,13 @@ func VerifyUpdateAfterReboot(osType string) error {
 				return fmt.Errorf("error committing update: %w", err)
 			}
 
-			// TODO: Write the status file with the result of the verification, and also granular log.
+			// Write status to the log file.
+			err = writeUpdateStatus(SUCCESS, "", "SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
+			if err != nil {
+				fmt.Printf("[Warning] Error writing update status: %w", err)
+			}
+
+			// TODO: Write the granular log for success and fail cases.
 
 		}
 

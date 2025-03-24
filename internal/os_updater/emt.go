@@ -9,6 +9,7 @@ package osupdater
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -295,6 +296,18 @@ func (tu *EMTUpdater) Update() error {
 		if _, err := tu.commandExecutor.Execute(updateToolWriteCommand); err != nil {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolWriteCommand, err)
 		}
+
+		requestJSON, err := json.Marshal(tu.request)
+		if err != nil {
+			fmt.Printf("[Warning] Error marshaling request to JSON: %v\n", err)
+			requestJSON = []byte("{}") // Fallback to an empty JSON object
+		}
+		// Write the update status to the status log file
+		err = writeUpdateStatus(SUCCESS, string(requestJSON), "")
+		if err != nil {
+			fmt.Printf("[Warning] Error writing update status: %w", err)
+		}
+
 	}
 
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
@@ -309,6 +322,17 @@ func (tu *EMTUpdater) Update() error {
 		}
 		if _, err := tu.commandExecutor.Execute(updateToolApplyCommand); err != nil {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
+		}
+
+		requestJSON, err := json.Marshal(tu.request)
+		if err != nil {
+			fmt.Printf("[Warning] Error marshaling request to JSON: %v\n", err)
+			requestJSON = []byte("{}") // Fallback to an empty JSON object
+		}
+		// Write the update status to the status log file
+		err = writeUpdateStatus(SUCCESS, string(requestJSON), "")
+		if err != nil {
+			fmt.Printf("[Warning] Error writing update status: %w", err)
 		}
 	}
 
