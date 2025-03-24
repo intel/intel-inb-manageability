@@ -172,9 +172,6 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 
 func TestEMTDownloader_readJWTToken(t *testing.T) {
 	fs := afero.NewMemMapFs()
-	// downloader := &EMTDownloader{
-	// 	fs: fs,
-	// }
 
 	t.Run("successful read", func(t *testing.T) {
 		err := afero.WriteFile(fs, JWTTokenPath, []byte("valid-token"), 0644)
@@ -327,30 +324,135 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			expectedResult: false,
 			expectedError:  errors.New("error creating request: error"),
 		},
-		// TODO: Fix this test
-		// {
-		//     name: "error performing request",
-		//     statfs: func(path string, stat *unix.Statfs_t) error {
-		//         stat.Bavail = 1000
-		//         stat.Bsize = 4096
-		//         return nil
-		//     },
-		//     readJWTToken: func(afero.Afero, string) (string, error) {
-		//         return "valid-token", nil
-		//     },
-		//     httpClient: &http.Client{
-		//         Transport: roundTripperFunc(func(req *http.Request) *http.Response {
-		//             return &http.Response{
-		//                 StatusCode: 500,
-		//                 Header:     http.Header{"Content-Length": []string{"4096001"}},
-		//                 Body:       http.NoBody,
-		//             }
-		//         }),
-		//     },
-		// 	requestCreator: http.NewRequest,
-		//     expectedResult: false,
-		//     expectedError:  nil,
-		// },
+		{
+		    name: "error performing request",
+		    statfs: func(path string, stat *unix.Statfs_t) error {
+		        stat.Bavail = 1000
+		        stat.Bsize = 4096
+		        return nil
+		    },
+		    readJWTToken: func(afero.Afero, string) (string, error) {
+		        return "valid-token", nil
+		    },
+		    httpClient: &http.Client{
+		        Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+		            return &http.Response{
+		                StatusCode: 500,
+		                Header:     http.Header{"Content-Length": []string{"4096001"}},
+		                Body:       http.NoBody,
+		            }
+		        }),
+		    },
+			requestCreator: http.NewRequest,
+		    expectedResult: false,
+		    expectedError:  nil,
+		},
+		{
+			name: "error performing GET request",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					if req.Method == "HEAD" {
+						return &http.Response{
+							StatusCode: 200,
+							Header:     http.Header{},
+						}
+					}
+					return nil // Simulate error in GET request
+				}),
+			},
+			requestCreator: http.NewRequest,
+			expectedResult: false,
+			expectedError:  errors.New("error performing GET request: Get \"http://example.com\": http: RoundTripper implementation (osupdater.roundTripperFunc) returned a nil *Response with a nil error"),
+		},
+		{
+			name: "error reading response body",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Header:     http.Header{},
+						Body:       io.NopCloser(errReader{}), // Simulate error reading body
+					}
+				}),
+			},
+			requestCreator: http.NewRequest,
+			expectedResult: false,
+			expectedError:  errors.New("error reading response body: error copying response body"),
+		},
+		{
+			name: "successful GET request with Content-Length",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					if req.Method == "HEAD" {
+						return &http.Response{
+							StatusCode: 200,
+							Header:     http.Header{},
+						}
+					}
+					return &http.Response{
+						StatusCode: 200,
+						Header:     http.Header{"Content-Length": []string{"4096000"}},
+						Body:       http.NoBody,
+					}
+				}),
+			},
+			requestCreator: http.NewRequest,
+			expectedResult: true,
+			expectedError:  nil,
+		},
+		{
+			name: "status code not OK after GET request",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					if req.Method == "HEAD" {
+						return &http.Response{
+							StatusCode: 200,
+							Header:     http.Header{},
+						}
+					}
+					return &http.Response{
+						StatusCode: 404,
+						Header:     http.Header{"Content-Length": []string{"4096000"}},
+						Body:       http.NoBody,
+					}
+				}),
+			},
+			requestCreator: http.NewRequest,
+			expectedResult: false,
+			expectedError:  errors.New("Status code: 404. Expected 200/Success."),
+		},		
 		{
 		    name: "content length header missing",
 		    statfs: func(path string, stat *unix.Statfs_t) error {
