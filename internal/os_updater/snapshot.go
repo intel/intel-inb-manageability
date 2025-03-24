@@ -16,6 +16,7 @@ import (
 	"strings"
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
 const (
@@ -51,7 +52,7 @@ func Snapshot() error {
 	}
 
 	if os == "EMT" {
-		buildDate, err := getImageBuildDate()
+		buildDate, err := GetImageBuildDate()
 		if err != nil || buildDate == "" {
 			return fmt.Errorf("failed to get image build date: %v", err)
 		}
@@ -82,7 +83,7 @@ func Snapshot() error {
 }
 
 // Get the image build date.
-func getImageBuildDate() (string, error) {
+func GetImageBuildDate() (string, error) {
 	// Open the file
 	file, err := os.Open(emtImageIDPath)
 	if err != nil {
@@ -131,34 +132,72 @@ func writeToDispatcherStateFile(content string) error {
 	return nil
 }
 
-// readDispatcherStateFile reads the content from the dispatcher state file.
+// ReadDispatcherStateFile reads the content from the dispatcher state file.
 // It returns the image version.
-// func readDispatcherStateFile(osType string) (string, error) {
+func ReadDispatcherStateFile(osType string) (string, error) {
 
-// 	if osType == "EMT" {
-// 		file, err := os.Open(dispatcherStatePath)
-// 		if err != nil {
-// 			fmt.Println("Error opening file:", err)
-// 			return "", err
-// 		}
-// 		defer file.Close()
+	if osType == "EMT" {
+		file, err := os.Open(dispatcherStatePath)
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+			return "", err
+		}
+		defer file.Close()
 
-// 		// Read the file content
-// 		fileContent, err := os.ReadFile(dispatcherStatePath)
-// 		if err != nil {
-// 			fmt.Println("Error reading file:", err)
-// 			return "", err
-// 		}
+		// Read the file content
+		fileContent, err := os.ReadFile(dispatcherStatePath)
+		if err != nil {
+			fmt.Println("Error reading file:", err)
+			return "", err
+		}
 
-// 		// Parse the JSON content
-// 		var state EmtState
-// 		err = json.Unmarshal(fileContent, &state)
-// 		if err != nil {
-// 			fmt.Println("Error parsing JSON:", err)
-// 			return "", err
-// 		}
-// 		return state.TiberVersion, nil
-// 	}
+		// Parse the JSON content
+		var state EmtState
+		err = json.Unmarshal(fileContent, &state)
+		if err != nil {
+			fmt.Println("Error parsing JSON:", err)
+			return "", err
+		}
+		return state.TiberVersion, nil
+	}
 
-// 	return "", fmt.Errorf("OS not supported")
-// }
+	return "", fmt.Errorf("OS not supported")
+}
+
+func VerifyUpdateAfterReboot(osType string) error {
+
+	// Check if dispatcher state file exist.
+	if _, err := os.Stat(dispatcherStatePath); err == nil {
+		fmt.Println("Perform post update verification.")
+		if osType == "EMT" {
+			previousVersion, err := ReadDispatcherStateFile(osType)
+			if err != nil {
+				return fmt.Errorf("error reading dispatcher state file: %w", err)
+			}
+
+			currentVersion, err := GetImageBuildDate()
+			if err != nil {
+				return fmt.Errorf("[Post verification failed] error getting image build date: %w", err)
+			}
+
+			// Compare the versions
+			if currentVersion != previousVersion {
+				fmt.Printf("Update Success. Previous image: %v, Current image: %v", previousVersion, currentVersion)
+			}
+
+			emtUpdater := NewEMTUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &pb.UpdateSystemSoftwareRequest{})
+			err = emtUpdater.commitUpdate()
+			if err != nil {
+				return fmt.Errorf("[Post verification failed] error committing update: %w", err)
+			}
+
+			// TODO: Write the status file with the result of the verification, and also granular log.
+
+		}
+
+	} else {
+		fmt.Println("No dispatcher state file. Skip post update verification.")
+	}
+
+	return nil
+}

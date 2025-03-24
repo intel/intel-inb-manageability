@@ -353,6 +353,17 @@ func (tu *EMTUpdater) VerifyHash() error {
 	return nil
 }
 
+func (tu *EMTUpdater) commitUpdate() error {
+	fmt.Println("Committing the update.")
+	updateToolCommitCommand := []string{
+		"sudo", osUpdateToolPath, "-c",
+	}
+	if _, err := tu.commandExecutor.Execute(updateToolCommitCommand); err != nil {
+		return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolCommitCommand, err)
+	}
+	return nil
+}
+
 // EMTRebooter is the concrete implementation of the IUpdater interface
 // for the EMT OS.
 type EMTRebooter struct {
