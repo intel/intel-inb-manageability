@@ -3,8 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Package snapshot creates a snapshot prior to system update.
-
+// Package osupdater updates the OS.
 package osupdater
 
 import (
@@ -29,8 +28,9 @@ var (
 	dispatcherStatePath = "/var/intel-manageability/dispatcher_state"
 )
 
-// State represents the JSON structure
-type EmtState struct {
+
+// EMTState represents the JSON structure
+type EMTState struct {
 	RestartReason string `json:"restart_reason"`
 	TiberVersion  string `json:"tiber-version"`
 }
@@ -48,34 +48,33 @@ func Snapshot() error {
 	}
 
 	if _, err := cmdExecutor.Execute(dispatcherStateTruncateCommand); err != nil {
-		return fmt.Errorf("failed to trancate dispatcher state file with command(%v)- %v", dispatcherStateTruncateCommand, err)
+		return fmt.Errorf("failed to truncate dispatcher state file with command(%v)- %w", dispatcherStateTruncateCommand, err)
 	}
 
 	os, err := DetectOS()
 	if err != nil {
-		return fmt.Errorf("Failed to detect OS: %v", err)
+		return fmt.Errorf("failed to detect OS: %w", err)
 	}
 
 	if os == "EMT" {
 		buildDate, err := GetImageBuildDate()
 		if err != nil || buildDate == "" {
-			return fmt.Errorf("failed to get image build date: %v", err)
+			return fmt.Errorf("failed to get image build date: %w", err)
 		}
 		// Create an instance of EmtState with the desired values
-		state := EmtState{
+		state := EMTState{
 			RestartReason: "sota",
 			TiberVersion:  buildDate,
 		}
 		// Convert the state to JSON
 		jsonData, err := json.Marshal(state)
 		if err != nil {
-			fmt.Println("Error marshalling JSON:", err)
-			return fmt.Errorf("error marshalling JSON: %v", err)
+			return fmt.Errorf("error marshalling JSON: %w", err)
 		}
 
 		// Write the JSON to the dispatcher state file
 		if err := writeToDispatcherStateFile(string(jsonData)); err != nil {
-			return fmt.Errorf("failed to write to dispatcher state file: %v", err)
+			return fmt.Errorf("failed to write to dispatcher state file: %w", err)
 		}
 
 	}
@@ -87,7 +86,7 @@ func Snapshot() error {
 	return nil
 }
 
-// Get the image build date.
+// GetImageBuildDate get the image build date.
 func GetImageBuildDate() (string, error) {
 	// Open the file
 	file, err := os.Open(emtImageIDPath)
@@ -157,7 +156,7 @@ func ReadDispatcherStateFile(osType string) (string, error) {
 		}
 
 		// Parse the JSON content
-		var state EmtState
+		var state EMTState
 		err = json.Unmarshal(fileContent, &state)
 		if err != nil {
 			fmt.Println("Error parsing JSON:", err)
