@@ -46,10 +46,10 @@ check_no_insecure_user() {
       true
     else
       echo "User $user_to_check already exists and has insecure shell $user_shell. Changing shell to /usr/sbin/nologin."
-      if [ "$ID" != "tiber" ]; then
+      if [ "$ID" != "Edge Microvisor Toolkit" ]; then
           chsh -s /usr/sbin/nologin "$user_to_check"
       else
-          echo "Skipping shell change for user $user_to_check on 'tiber'."
+          echo "Skipping shell change for user $user_to_check on 'Edge Microvisor Toolkit'."
       fi
     fi
   fi
@@ -63,8 +63,8 @@ fix_permissions() {
         if [ "$GROUP" != "lost+found" ] ; then
             check_no_insecure_user "$USER"
             
-            if [ "$ID" != "tiber" ]; then
-                # Only add groups and users if not on 'tiber'
+            if [ "$ID" != "Edge Microvisor Toolkit" ]; then
+                # Only add groups and users if not on 'Edge Microvisor Toolkit'
                 getent group "$GROUP" || groupadd "$GROUP"
                 if id "$USER" >&/dev/null; then
                     : # user already exists
@@ -106,10 +106,10 @@ fix_permissions() {
     chmod -R ug+rw /var/cache/manageability/repository-tool
 
     # Make sure 'docker' group exists for diagnostic agent's .service file
-    if [ "$ID" != "tiber" ]; then
+    if [ "$ID" != "Edge Microvisor Toolkit" ]; then
         getent group docker || groupadd docker
     else
-        echo "Skipping 'docker' group creation on 'tiber'."
+        echo "Skipping 'docker' group creation on 'Edge Microvisor Toolkit'."
     fi
 }
 

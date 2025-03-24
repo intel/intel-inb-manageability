@@ -30,9 +30,8 @@ class GranularLogHandler:
         """
         log = {}
         current_os = detect_os()
-        # TODO: Remove Mariner when confirmed that Tiber is in use
         with self._granular_lock:
-            if current_os == LinuxDistType.tiber.name or current_os == LinuxDistType.Mariner.name:
+            if LinuxDistType.microvisor.name in current_os.lower():
                 # Delete the previous log if exist.
                 if os.path.exists(GRANULAR_LOG_FILE):
                     with open(GRANULAR_LOG_FILE, "r+") as file:
@@ -49,14 +48,14 @@ class GranularLogHandler:
                         "StatusDetail.Status": update_logger.detail_status,
                         "Version": get_image_build_date()
                     }
-                # In Tiber, no package level information needed.
+                # In EMT, no package level information needed.
                 update_logger.save_granular_log_file(log=log, check_package=False)
             else:
                 update_logger.save_granular_log_file(check_package=check_package)
 
     def map_failure_reason(self, error_log: str) -> str:
         """ This method parses the error log to map the enum of failure reasons as required by MM.
-        It is only used for Tiber.
+        It is only used for Edge Microvisor Toolkit.
 
         @param error_log: Error message to be checked
         @return: Corresponding mapping of the failure reason
