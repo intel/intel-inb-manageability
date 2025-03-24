@@ -177,18 +177,26 @@ func VerifyUpdateAfterReboot(osType string) error {
 
 			currentVersion, err := GetImageBuildDate()
 			if err != nil {
-				return fmt.Errorf("[Post verification failed] error getting image build date: %w", err)
+				return fmt.Errorf("error getting image build date: %w", err)
 			}
 
 			// Compare the versions
 			if currentVersion != previousVersion {
 				fmt.Printf("Update Success. Previous image: %v, Current image: %v", previousVersion, currentVersion)
+			} else {
+				fmt.Println("Update failed. Reverting to previous image.")
+				// Reboot the system without commit.
+				emtRebooter := NewEMTRebooter(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &pb.UpdateSystemSoftwareRequest{})
+				err = emtRebooter.Reboot()
+				if err != nil {
+					return fmt.Errorf("error rebooting system: %w", err)
+				}
 			}
 
 			emtUpdater := NewEMTUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &pb.UpdateSystemSoftwareRequest{})
 			err = emtUpdater.commitUpdate()
 			if err != nil {
-				return fmt.Errorf("[Post verification failed] error committing update: %w", err)
+				return fmt.Errorf("error committing update: %w", err)
 			}
 
 			// TODO: Write the status file with the result of the verification, and also granular log.
