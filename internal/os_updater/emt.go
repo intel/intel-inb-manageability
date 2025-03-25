@@ -13,6 +13,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -65,26 +66,26 @@ func (t *EMTDownloader) Download() error {
 	// Perform source verification
 	if !IsTrustedRepository(t.request.Url, config) {
 		errMsg := fmt.Sprintf("URL '%s' is not in the list of trusted repositories.", t.request.Url)
-		fmt.Println(errMsg)
+		log.Println(errMsg)
 		return errors.New(errMsg)
 	}
 
-	fmt.Println("Downloading update from", t.request.Url)
+	log.Println("Downloading update from", t.request.Url)
 
 	// Check available space on disk
 	isDiskEnough, err := t.checkDiskSpace()
 	if err != nil {
-		fmt.Println("Error checking disk space:", err)
+		log.Println("Error checking disk space:", err)
 		return errors.New(err.Error())
 	}
 
 	if !isDiskEnough {
 		errMsg := "Insufficient disk space."
-		fmt.Println(errMsg)
+		log.Println(errMsg)
 		return errors.New(errMsg)
 	}
 
-	fmt.Println("Disk space enough. Proceeding to download the artifact.")
+	log.Println("Disk space enough. Proceeding to download the artifact.")
 
 	// Download file
 	err = t.downloadFile()
@@ -92,7 +93,7 @@ func (t *EMTDownloader) Download() error {
 		return fmt.Errorf("error downloading the file: %w", err)
 	}
 
-	fmt.Println("Download completed.")
+	log.Println("Download completed.")
 
 	return nil
 }
@@ -118,7 +119,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	var stat unix.Statfs_t
 	err := t.statfs("/var/cache/manageability/", &stat)
 	if err != nil {
-		fmt.Printf("Error getting disk space: %v\n", err)
+		log.Printf("Error getting disk space: %v\n", err)
 		return false, err
 	}
 	availableSpace := stat.Bavail * uint64(stat.Bsize)
@@ -126,14 +127,14 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	//Read JWT token
 	token, err := t.readJWTTokenFunc(afero.Afero{Fs: t.fs}, JWTTokenPath)
 	if err != nil {
-		fmt.Println("Error reading JWT token:", err)
+		log.Println("Error reading JWT token:", err)
 		return false, err
 	}
 
 	// Check if the token exists
 	if token == "" {
 		errMsg := "empty JWT token"
-		fmt.Println(errMsg)
+		log.Println(errMsg)
 		return false, errors.New(errMsg)
 	}
 
@@ -156,7 +157,7 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	// Get the Content-Length header
 	contentLength := resp.Header.Get("Content-Length")
 	if contentLength == "" {
-		fmt.Println("Content-Length header is missing. Falling back to GET request.")
+		log.Println("Content-Length header is missing. Falling back to GET request.")
 		// Perform a GET request to determine the file size
 		req.Method = "GET"
 		resp, err = t.httpClient.Do(req)
@@ -168,18 +169,18 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		// Get the Content-Length header from the GET response
 		contentLength = resp.Header.Get("Content-Length")
 		if contentLength == "" {
-			fmt.Println("Content-Length header is still missing after GET request.")
+			log.Println("Content-Length header is still missing after GET request.")
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
 				return false, fmt.Errorf("error reading response body: %w", err)
 			}
-			fmt.Printf("Response Body: %s\n", string(body))
+			log.Printf("Response Body: %s\n", string(body))
 			return false, fmt.Errorf("content-Length header is missing")
 		}
 		// Check if the status code is 200/Success. If not, return the error.
 		if resp.StatusCode != http.StatusOK {
 			errMsg := fmt.Sprintf("Status code: %d. Expected 200/Success.", resp.StatusCode)
-			fmt.Println(errMsg)
+			log.Println(errMsg)
 			return false, errors.New(errMsg)
 		}
 	}
@@ -203,7 +204,7 @@ func (t *EMTDownloader) downloadFile() error {
 	// Create a new HTTP request
 	req, err := t.requestCreator("GET", t.request.Url, nil)
 	if err != nil {
-		fmt.Printf("Error creating request: %v\n", err)
+		log.Printf("Error creating request: %v\n", err)
 		return err
 	}
 
@@ -224,7 +225,7 @@ func (t *EMTDownloader) downloadFile() error {
 	// Check if the status code is 200/Success. If not, return the error.
 	if resp.StatusCode != http.StatusOK {
 		errMsg := fmt.Sprintf("Status code: %d. Expected 200/Success.", resp.StatusCode)
-		fmt.Println(errMsg)
+		log.Println(errMsg)
 		return errors.New(errMsg)
 	}
 
@@ -273,7 +274,7 @@ func (errReader) Read(p []byte) (n int, err error) {
 // Update method for Emt
 func (tu *EMTUpdater) Update() error {
 	// Print the value of tu.request.Mode
-	fmt.Printf("Mode: %v\n", tu.request.Mode)
+	log.Printf("Mode: %v\n", tu.request.Mode)
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
 
 		err := tu.VerifyHash()
@@ -281,7 +282,7 @@ func (tu *EMTUpdater) Update() error {
 			return fmt.Errorf("hash verification failed: %w", err)
 		}
 
-		fmt.Println("Execute update tool write command.")
+		log.Println("Execute update tool write command.")
 
 		// Extract the file name from the URL
 		urlParts := strings.Split(tu.request.Url, "/")
@@ -299,24 +300,24 @@ func (tu *EMTUpdater) Update() error {
 
 		requestJSON, err := json.Marshal(tu.request)
 		if err != nil {
-			fmt.Printf("[Warning] Error marshaling request to JSON: %v\n", err)
+			log.Printf("[Warning] Error marshaling request to JSON: %v\n", err)
 			requestJSON = []byte("{}") // Fallback to an empty JSON object
 		}
 		// Write the update status to the status log file
 		err = writeUpdateStatus(SUCCESS, string(requestJSON), "")
 		if err != nil {
-			fmt.Printf("[Warning] Error writing update status: %v", err)
+			log.Printf("[Warning] Error writing update status: %v", err)
 		}
 
 	}
 
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
-		fmt.Println("Save snapshot before applying the update.")
+		log.Println("Save snapshot before applying the update.")
 		if err := Snapshot(); err != nil {
 			return fmt.Errorf("failed to take snapshot before applying the update: %v", err)
 		}
 
-		fmt.Println("Execute update tool apply command.")
+		log.Println("Execute update tool apply command.")
 		updateToolApplyCommand := []string{
 			"sudo", osUpdateToolPath, "-a",
 		}
@@ -326,13 +327,13 @@ func (tu *EMTUpdater) Update() error {
 
 		requestJSON, err := json.Marshal(tu.request)
 		if err != nil {
-			fmt.Printf("[Warning] Error marshaling request to JSON: %v\n", err)
+			log.Printf("[Warning] Error marshaling request to JSON: %v\n", err)
 			requestJSON = []byte("{}") // Fallback to an empty JSON object
 		}
 		// Write the update status to the status log file
 		err = writeUpdateStatus(SUCCESS, string(requestJSON), "")
 		if err != nil {
-			fmt.Printf("[Warning] Error writing update status: %v", err)
+			log.Printf("[Warning] Error writing update status: %v", err)
 		}
 	}
 
@@ -341,7 +342,7 @@ func (tu *EMTUpdater) Update() error {
 
 // VerifyHash verifies the hash of the downloaded file.
 func (tu *EMTUpdater) VerifyHash() error {
-	fmt.Println("Verify file SHA.")
+	log.Println("Verify file SHA.")
 
 	// Extract the file name from the URL
 	urlParts := strings.Split(tu.request.Url, "/")
@@ -369,16 +370,16 @@ func (tu *EMTUpdater) VerifyHash() error {
 
 	if computedChecksum != tu.request.Signature {
 		errMsg := fmt.Sprintf("Checksum mismatch. Expected: %s, got: %s", tu.request.Signature, computedChecksum)
-		fmt.Println(errMsg)
+		log.Println(errMsg)
 		return errors.New(errMsg)
 	}
-	fmt.Println("SHA verification complete.")
+	log.Println("SHA verification complete.")
 
 	return nil
 }
 
 func (tu *EMTUpdater) commitUpdate() error {
-	fmt.Println("Committing the update.")
+	log.Println("Committing the update.")
 	updateToolCommitCommand := []string{
 		"sudo", osUpdateToolPath, "-c",
 	}

@@ -7,7 +7,7 @@
 package osupdater
 
 import (
-	"fmt"
+	"log"
 	"os/exec"
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
@@ -16,7 +16,7 @@ import (
 
 // UpdateOS updates the OS depending on the OS type.
 func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.UpdateResponse, error) {
-	fmt.Printf("Request Mode: %v\n", req.Mode)
+	log.Printf("Request Mode: %v\n", req.Mode)
 	if req.Mode != pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
 		// Download the update
 		downloader := factory.CreateDownloader(req)
@@ -32,6 +32,8 @@ func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.
 	if err != nil {
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
 	}
+
+	log.Println("Update completed successfully.")
 
 	if req.Mode != pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
 		// Reboot the system
