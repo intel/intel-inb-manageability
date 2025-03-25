@@ -38,7 +38,7 @@ type UbuntuUpdater struct {
 // Update method for Ubuntu
 func (u *UbuntuUpdater) Update() error {
 
-	cmds := []string{}
+	var cmds []string
 	switch u.request.Mode {
 	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY:
 		cmds = downloadOnly(u.request.PackageList)
@@ -68,17 +68,17 @@ func noDownload(packages []string) []string {
 
 	var installCmd []string
 	if len(packages) == 0 {
-		installCmd = append([]string{"apt-get", "-o", 
+		installCmd = append(installCmd, "apt-get", "-o", 
 			"Dpkg::Options::='--force-confdef'", "-o", 
 			"Dpkg::Options::='--force-confold'", 
 			"--with-new-pkgs", "--no-download", 
-			"--fix-missing", "-yq", "upgrade"})
+			"--fix-missing", "-yq", "upgrade")
 	} else {
-		installCmd = append([]string{"apt-get", "-o", 
+		installCmd = append(installCmd, append([]string{"apt-get", "-o", 
 		"Dpkg::Options::='--force-confdef'", "-o", 
 		"Dpkg::Options::='--force-confold'", 
 		"--no-download", "--fix-missing", "-yq", 
-		"install"}, packages...)
+		"install"}, packages...)...)
 	}
 
 	cmds = append(cmds, installCmd...)
@@ -92,16 +92,16 @@ func downloadOnly(packages []string) []string {
 	
 	var installCmd []string
 	if len(packages) == 0 {
-		installCmd =append([]string{"apt-get", "-o", 
+		installCmd = append(installCmd, "apt-get", "-o", 
 			"Dpkg::Options::='--force-confdef'", "-o", 
 			"Dpkg::Options::='--force-confold'", 
 			"--with-new-pkgs", "--download-only", 
-			"--fix-missing", "-yq", "upgrade"})
+			"--fix-missing", "-yq", "upgrade")
 	} else {
-		installCmd = append([]string{"apt-get", "-o", 
+		installCmd = append(installCmd, append([]string{"apt-get", "-o", 
 		"Dpkg::Options::='--force-confdef'", "-o", 
 		"Dpkg::Options::='--force-confold'", "--download-only", 
-		"--fix-missing", "-yq", "install"}, packages...)
+		"--fix-missing", "-yq", "install"}, packages...)...)
 	}
 	cmds = append(cmds, installCmd...)
 	return cmds
