@@ -406,6 +406,7 @@ func NewEMTRebooter(commandExecutor utils.Executor, request *pb.UpdateSystemSoft
 
 // Reboot method for EMT
 func (tu *EMTRebooter) Reboot() error {
+	log.Println("Rebooting the system...")
 	rebootCommand := []string{
 		"sudo", "/usr/sbin/reboot",
 	}
