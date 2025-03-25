@@ -1,6 +1,6 @@
 ```mermaid
 gantt
-    title TC2Go Project Timeline and Resources: Tiber A/B update focus
+    title TC2Go Project Timeline and Resources: EMT A/B update focus
     dateFormat  YYYY-MM-DD
     tickInterval 1week
     excludes weekends
@@ -10,8 +10,8 @@ gantt
         E1 Foundation (Gavin/Nat/YL)    :foundation, 2025-03-10, 5d
         E2 INBC (Nat)                     :inbc, 2025-03-10, 5d
         E3 SOTA & Demo Prep (Gavin/YL)    :sotademo, after inbc, 10d
-        TiberOS integrate (Gavin/YL) :spec, after sotademo, 10d
-        TiberOS Demo                              :milestone, :demo, 2025-03-31, 0d
+        EMT OS integrate (Gavin/YL) :spec, after sotademo, 10d
+        EMT OS Demo                              :milestone, :demo, 2025-03-31, 0d
 
     section CICD
         Meet with CI/CD team (Gavin/Nat)          :milestone, :meetcicd, 2025-03-17, 0d

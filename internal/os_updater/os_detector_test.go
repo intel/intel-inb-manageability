@@ -38,7 +38,7 @@ func TestDetectOS(t *testing.T) {
     })
 
     t.Run("unsupported OS type", func(t *testing.T) {
-        getOS = func() string { return "unsupported" }
+        getOS = func() string { return "Windows" }
 
         os, err := DetectOS()
         assert.Error(t, err)

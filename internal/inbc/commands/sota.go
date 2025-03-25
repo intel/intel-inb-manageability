@@ -25,12 +25,13 @@ func SOTACmd() *cobra.Command {
 	var mode string
 	var reboot bool
 	var packageList []string
+	var signature string
 
 	cmd := &cobra.Command{
 		Use:   "sota",
 		Short: "Performs System Software Update",
 		Long:  `Updates the system software on the device.`,
-		RunE:  handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, Dial),
+		RunE:  handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, &signature, Dial),
 	}
 
 	cmd.Flags().StringVar(&socket, "socket", "/var/run/inbd.sock", "UNIX domain socket path")
@@ -40,6 +41,7 @@ func SOTACmd() *cobra.Command {
 	must(cmd.MarkFlagRequired("mode"))
 	cmd.Flags().BoolVar(&reboot, "reboot", true, "Whether to reboot the node after the software update attempt")
 	cmd.Flags().StringSliceVar(&packageList, "package-list", []string{}, "List of packages to install if whole package update isn't desired")
+	cmd.Flags().StringVar(&signature, "signature", "", "Signature of the package")
 
 	return cmd
 }
@@ -52,6 +54,7 @@ func handleSOTA(
 	mode *string,
 	reboot *bool,
 	packageList *[]string,
+	signature *string,
 	dialer func(context.Context, string) (pb.InbServiceClient, grpc.ClientConnInterface, error),
 ) func(*cobra.Command, []string) error {
 	return func(cmd *cobra.Command, args []string) error {
@@ -80,11 +83,11 @@ func handleSOTA(
 		var downloadMode int32
 		switch *mode {
 		case "full":
-			downloadMode = 0
-		case "no-download":
 			downloadMode = 1
-		case "download-only":
+		case "no-download":
 			downloadMode = 2
+		case "download-only":
+			downloadMode = 3
 		default:
 			return fmt.Errorf("invalid mode. Use one of full, no-download, download-only")
 		}
@@ -95,6 +98,7 @@ func handleSOTA(
 			Mode:        pb.UpdateSystemSoftwareRequest_DownloadMode(downloadMode),
 			DoNotReboot: !*reboot,
 			PackageList: *packageList,
+			Signature:   *signature,
 		}
 
 		client, conn, err := dialer(context.Background(), *socket)

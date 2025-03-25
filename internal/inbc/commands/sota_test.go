@@ -59,6 +59,7 @@ func TestHandleSOTA(t *testing.T) {
     mode := "full"
     reboot := true
     packageList := []string{"package1", "package2"}
+    signature := "signature"
     cmd := &cobra.Command{}
     args := []string{}
 
@@ -73,7 +74,7 @@ func TestHandleSOTA(t *testing.T) {
             return MockDialer(ctx, socket, mockClient, false)
         }
 
-        err := handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, dialer)(cmd, args)
+        err := handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, &signature, dialer)(cmd, args)
         assert.NoError(t, err, "handleSOTA should not return an error")
 
         mockClient.AssertExpectations(t)
@@ -86,7 +87,7 @@ func TestHandleSOTA(t *testing.T) {
             return MockDialer(ctx, socket, mockClient, false)
         }
 
-        err := handleSOTA(&socket, &url, &invalidReleaseDate, &mode, &reboot, &packageList, dialer)(cmd, args)
+        err := handleSOTA(&socket, &url, &invalidReleaseDate, &mode, &reboot, &packageList, &signature, dialer)(cmd, args)
         assert.Error(t, err, "error parsing release date: parsing time")
     })
 
@@ -97,7 +98,7 @@ func TestHandleSOTA(t *testing.T) {
             return MockDialer(ctx, socket, mockClient, false)
         }
 
-        err := handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &duplicatePackageList, dialer)(cmd, args)
+        err := handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &duplicatePackageList, &signature, dialer)(cmd, args)
         assert.Error(t, err, "duplicate package in the package list: package1")
     })
 
@@ -108,7 +109,7 @@ func TestHandleSOTA(t *testing.T) {
             return MockDialer(ctx, socket, mockClient, false)
         }
 
-        err := handleSOTA(&socket, &url, &releaseDate, &invalidMode, &reboot, &packageList, dialer)(cmd, args)
+        err := handleSOTA(&socket, &url, &releaseDate, &invalidMode, &reboot, &packageList, &signature, dialer)(cmd, args)
         assert.Error(t, err, "invalid mode. Use one of full, no-download, download-only")
     })
 
@@ -118,7 +119,7 @@ func TestHandleSOTA(t *testing.T) {
             return MockDialer(ctx, socket, mockClient, true)
         }
 
-        err := handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, dialer)(cmd, args)
+        err := handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, &signature, dialer)(cmd, args)
         assert.Error(t, err, "error setting up new gRPC client")
     })
 
@@ -130,7 +131,7 @@ func TestHandleSOTA(t *testing.T) {
             return MockDialer(ctx, socket, mockClient, false)
         }
 
-        err := handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, dialer)(cmd, args)
+        err := handleSOTA(&socket, &url, &releaseDate, &mode, &reboot, &packageList, &signature, dialer)(cmd, args)
         assert.Error(t, err, "error updating system software")
     })
 }

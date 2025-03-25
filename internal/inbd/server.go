@@ -9,6 +9,7 @@ import (
 	"net"
 	"os"
 
+	osupdater "github.com/intel/intel-inb-manageability/internal/os_updater"
 	"google.golang.org/grpc"
 )
 
@@ -50,6 +51,15 @@ func RunServer(deps ServerDeps) error {
 
 	grpcServer := deps.NewGRPCServer()
 	deps.RegisterService(grpcServer)
+
+	// VerifyUpdateAfterReboot verufies the update after reboot.
+	// It compares the version in dispatcher_state file with the current system version.
+	// If the versions are different, the system successfully boots into the new image.
+	// TODO: Remove the hardcoded "EMT", and use DetectOS to get the OS type.
+	err = osupdater.VerifyUpdateAfterReboot("EMT")
+	if err != nil {
+		return fmt.Errorf("[Post verification failed] error verifying update after reboot: %w", err)
+	}
 
 	return deps.ServeFunc(grpcServer, lis)
 }

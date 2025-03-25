@@ -53,11 +53,11 @@ func detectLinuxDistribution() (string, error) {
 		return "", err
 	}
 	output = bytes.ReplaceAll(output, []byte("\n"), []byte(""))
-
+	fmt.Printf("Detect Linux Distribution: %v\n", string(output))
 	switch {
 	case bytes.Contains(output, []byte("Ubuntu")):
 		return "Ubuntu", nil
-	case bytes.Contains(output, []byte("microvisor")):
+	case bytes.Contains(bytes.ToLower(output), []byte("microvisor")):
 		return "EMT", nil
 	}
 
@@ -66,6 +66,7 @@ func detectLinuxDistribution() (string, error) {
 
 func getOSType() OSType {
 	os := getOS()
+	fmt.Printf("os: %v\n", os)
 
 	switch os {
 	case "linux":

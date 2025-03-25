@@ -42,6 +42,7 @@ message UpdateSystemSoftwareRequest {
           }
       }
   }]; // List of packages to install if whole package update isn't desired.
+  string signature = 6 [(buf.validate.field).required = false]; // Signature of the package
 }
 
 message UpdateOSSourceRequest {

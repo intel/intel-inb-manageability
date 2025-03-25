@@ -31,7 +31,7 @@ System update flow can be broken into two parts:
 1. Pre-reboot: The pre-boot part is when a system update is triggered.
 2. Post-reboot: The post-boot checks the health of critical manageability services and takes corrective action.
 
-SOTA on Ubuntu and Tiber OS is supported in 3 modes:
+SOTA on Ubuntu and EMT OS is supported in 3 modes:
 
 1. Update/Full - Performs the software update.
 2. No download - Retrieves and installs packages.

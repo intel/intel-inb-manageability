@@ -7,14 +7,15 @@
 package osupdater
 
 import (
-	"fmt"
-	"os"
-	"time"
+	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
 // UbuntuDownloader is the concrete implementation of the IDownloader interface
 // for the Ubuntu OS.
-type UbuntuDownloader struct{}
+type UbuntuDownloader struct {
+	request *pb.UpdateSystemSoftwareRequest
+}
 
 // Download method for Ubuntu
 func (u *UbuntuDownloader) Download() error {
@@ -24,7 +25,10 @@ func (u *UbuntuDownloader) Download() error {
 
 // UbuntuUpdater is the concrete implementation of the IUpdater interface
 // for the Ubuntu OS.
-type UbuntuUpdater struct{}
+type UbuntuUpdater struct {
+	commandExecutor utils.Executor
+	request         *pb.UpdateSystemSoftwareRequest
+}
 
 // Update method for Ubuntu
 func (u *UbuntuUpdater) Update() error {
@@ -33,7 +37,10 @@ func (u *UbuntuUpdater) Update() error {
 
 // UbuntuRebooter is the concrete implementation of the IUpdater interface
 // for the Ubuntu OS.
-type UbuntuRebooter struct{}
+type UbuntuRebooter struct {
+	commandExecutor utils.Executor
+	request         *pb.UpdateSystemSoftwareRequest
+}
 
 // Reboot method for Ubuntu
 func (u *UbuntuRebooter) Reboot() error {
