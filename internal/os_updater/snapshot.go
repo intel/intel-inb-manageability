@@ -194,6 +194,12 @@ func VerifyUpdateAfterReboot(osType string) error {
 				if err != nil {
 					log.Printf("[Warning] Error writing update status: %v", err)
 				}
+				// Remove dispatcher state file before rebooting.
+				err = os.Remove(dispatcherStatePath)
+				if err != nil {
+					log.Printf("[Warning] Error removing dispatcher state file: %v", err)
+				}
+
 				log.Println("Rebooting...")
 				// Reboot the system without commit.
 				// //TODO: Only reboot here? Or should we also reboot without commit in other failure?
