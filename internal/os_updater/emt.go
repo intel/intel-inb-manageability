@@ -9,7 +9,6 @@ package osupdater
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -17,6 +16,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
@@ -298,13 +299,13 @@ func (tu *EMTUpdater) Update() error {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolWriteCommand, err)
 		}
 
-		requestJSON, err := json.Marshal(tu.request)
+		jsonString, err := protojson.Marshal(tu.request)
 		if err != nil {
-			log.Printf("[Warning] Error marshaling request to JSON: %v\n", err)
-			requestJSON = []byte("{}") // Fallback to an empty JSON object
+			log.Printf("Error converting request to string: %v\n", err)
+			jsonString = []byte("{}")
 		}
 		// Write the update status to the status log file
-		err = writeUpdateStatus(SUCCESS, string(requestJSON), "")
+		err = writeUpdateStatus(SUCCESS, string(jsonString), "")
 		if err != nil {
 			log.Printf("[Warning] Error writing update status: %v", err)
 		}
@@ -325,13 +326,14 @@ func (tu *EMTUpdater) Update() error {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
 		}
 
-		requestJSON, err := json.Marshal(tu.request)
+		jsonString, err := protojson.Marshal(tu.request)
 		if err != nil {
-			log.Printf("[Warning] Error marshaling request to JSON: %v\n", err)
-			requestJSON = []byte("{}") // Fallback to an empty JSON object
+			log.Printf("Error converting request to string: %v\n", err)
+			jsonString = []byte("{}")
 		}
+
 		// Write the update status to the status log file
-		err = writeUpdateStatus(SUCCESS, string(requestJSON), "")
+		err = writeUpdateStatus(SUCCESS, string(jsonString), "")
 		if err != nil {
 			log.Printf("[Warning] Error writing update status: %v", err)
 		}

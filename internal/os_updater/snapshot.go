@@ -184,6 +184,12 @@ func VerifyUpdateAfterReboot(osType string) error {
 				return fmt.Errorf("error getting image build date: %w", err)
 			}
 
+			// Remove dispatcher state file before rebooting.
+			err = os.Remove(dispatcherStatePath)
+			if err != nil {
+				log.Printf("[Warning] Error removing dispatcher state file: %v", err)
+			}
+
 			// Compare the versions
 			if currentVersion != previousVersion {
 				log.Printf("Update Success. Previous image: %v, Current image: %v", previousVersion, currentVersion)
@@ -193,11 +199,6 @@ func VerifyUpdateAfterReboot(osType string) error {
 				err := writeUpdateStatus(FAIL, "", "Update failed. Version are same.")
 				if err != nil {
 					log.Printf("[Warning] Error writing update status: %v", err)
-				}
-				// Remove dispatcher state file before rebooting.
-				err = os.Remove(dispatcherStatePath)
-				if err != nil {
-					log.Printf("[Warning] Error removing dispatcher state file: %v", err)
 				}
 
 				log.Println("Rebooting...")
@@ -217,10 +218,12 @@ func VerifyUpdateAfterReboot(osType string) error {
 			}
 
 			// Write status to the log file.
-			err = writeUpdateStatus(SUCCESS, "", "SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
+			err = writeUpdateStatus(SUCCESS, "", "")
 			if err != nil {
 				log.Printf("[Warning] Error writing update status: %v", err)
 			}
+
+			log.Println("SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
 
 			// TODO: Write the granular log for success and fail cases.
 
