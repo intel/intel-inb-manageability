@@ -21,6 +21,8 @@ func main() {
 	socket := flag.String("s", "/var/run/inbd.sock", "UNIX domain socket path")
 	flag.Parse()
 
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
+
 	// Build our dependency struct using real functions.
 	deps := inbd.ServerDeps{
 		Socket:        *socket,

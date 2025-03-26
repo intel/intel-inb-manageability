@@ -200,7 +200,10 @@ func VerifyUpdateAfterReboot(osType string) error {
 				if err != nil {
 					log.Printf("[Warning] Error writing update status: %v", err)
 				}
-
+				err = writeGranularLog(FAIL, FAILURE_REASON_BOOTLOADER)
+				if err != nil {
+					log.Printf("[Warning] Error writing granular log: %v", err)
+				}
 				log.Println("Rebooting...")
 				// Reboot the system without commit.
 				// //TODO: Only reboot here? Or should we also reboot without commit in other failure?
@@ -225,8 +228,10 @@ func VerifyUpdateAfterReboot(osType string) error {
 
 			log.Println("SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
 
-			// TODO: Write the granular log for success and fail cases.
-
+			err = writeGranularLog(SUCCESS, "")
+			if err != nil {
+				log.Printf("[Warning] Error writing granular log: %v", err)
+			}
 		}
 
 	} else {

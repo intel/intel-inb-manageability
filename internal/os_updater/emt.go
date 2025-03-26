@@ -64,10 +64,19 @@ func (t *EMTDownloader) Download() error {
 		return fmt.Errorf("error loading config: %w", err)
 	}
 
+	// Get the request details
+	jsonString, err := protojson.Marshal(t.request)
+	if err != nil {
+		log.Printf("Error converting request to string: %v\n", err)
+		jsonString = []byte("{}")
+	}
+
 	// Perform source verification
 	if !IsTrustedRepository(t.request.Url, config) {
 		errMsg := fmt.Sprintf("URL '%s' is not in the list of trusted repositories.", t.request.Url)
 		log.Println(errMsg)
+		writeUpdateStatus(FAIL, string(jsonString), errMsg)
+		writeGranularLog(FAIL, FAILURE_REASON_RS_AUTHENTICATION)
 		return errors.New(errMsg)
 	}
 
@@ -83,6 +92,8 @@ func (t *EMTDownloader) Download() error {
 	if !isDiskEnough {
 		errMsg := "Insufficient disk space."
 		log.Println(errMsg)
+		writeUpdateStatus(FAIL, string(jsonString), errMsg)
+		writeGranularLog(FAIL, FAILURE_REASON_INSUFFICIENT_STORAGE)
 		return errors.New(errMsg)
 	}
 
@@ -91,6 +102,8 @@ func (t *EMTDownloader) Download() error {
 	// Download file
 	err = t.downloadFile()
 	if err != nil {
+		writeUpdateStatus(FAIL, string(jsonString), err.Error())
+		writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 		return fmt.Errorf("error downloading the file: %w", err)
 	}
 
@@ -125,10 +138,19 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	}
 	availableSpace := stat.Bavail * uint64(stat.Bsize)
 
+	// Get the request details
+	jsonString, err := protojson.Marshal(t.request)
+	if err != nil {
+		log.Printf("Error converting request to string: %v\n", err)
+		jsonString = []byte("{}")
+	}
+
 	//Read JWT token
 	token, err := t.readJWTTokenFunc(afero.Afero{Fs: t.fs}, JWTTokenPath)
 	if err != nil {
 		log.Println("Error reading JWT token:", err)
+		writeUpdateStatus(FAIL, string(jsonString), err.Error())
+		writeGranularLog(FAIL, FAILURE_REASON_INBM)
 		return false, err
 	}
 
@@ -136,12 +158,16 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	if token == "" {
 		errMsg := "empty JWT token"
 		log.Println(errMsg)
+		writeUpdateStatus(FAIL, string(jsonString), errMsg)
+		writeGranularLog(FAIL, FAILURE_REASON_RS_AUTHENTICATION)
 		return false, errors.New(errMsg)
 	}
 
 	// Create a new HTTP request
 	req, err := t.requestCreator("HEAD", t.request.Url, nil)
 	if err != nil {
+		writeUpdateStatus(FAIL, string(jsonString), err.Error())
+		writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 		return false, fmt.Errorf("error creating request: %w", err)
 	}
 
@@ -151,6 +177,8 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	// Perform the request
 	resp, err := t.httpClient.Do(req)
 	if err != nil {
+		writeUpdateStatus(FAIL, string(jsonString), err.Error())
+		writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 		return false, fmt.Errorf("error performing request: %w", err)
 	}
 	defer resp.Body.Close()
@@ -163,6 +191,8 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		req.Method = "GET"
 		resp, err = t.httpClient.Do(req)
 		if err != nil {
+			writeUpdateStatus(FAIL, string(jsonString), err.Error())
+			writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 			return false, fmt.Errorf("error performing GET request: %w", err)
 		}
 		defer resp.Body.Close()
@@ -173,6 +203,8 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 			log.Println("Content-Length header is still missing after GET request.")
 			body, err := io.ReadAll(resp.Body)
 			if err != nil {
+				writeUpdateStatus(FAIL, string(jsonString), err.Error())
+				writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 				return false, fmt.Errorf("error reading response body: %w", err)
 			}
 			log.Printf("Response Body: %s\n", string(body))
@@ -182,6 +214,8 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		if resp.StatusCode != http.StatusOK {
 			errMsg := fmt.Sprintf("Status code: %d. Expected 200/Success.", resp.StatusCode)
 			log.Println(errMsg)
+			writeUpdateStatus(FAIL, string(jsonString), errMsg)
+			writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 			return false, errors.New(errMsg)
 		}
 	}
@@ -190,6 +224,8 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	var requiredSpace uint64
 	_, err = fmt.Sscanf(contentLength, "%d", &requiredSpace)
 	if err != nil {
+		writeUpdateStatus(FAIL, string(jsonString), err.Error())
+		writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 		return false, fmt.Errorf("error parsing Content-Length: %w", err)
 	}
 
@@ -276,10 +312,20 @@ func (errReader) Read(p []byte) (n int, err error) {
 func (tu *EMTUpdater) Update() error {
 	// Print the value of tu.request.Mode
 	log.Printf("Mode: %v\n", tu.request.Mode)
+
+	// Get the request details
+	jsonString, err := protojson.Marshal(tu.request)
+	if err != nil {
+		log.Printf("Error converting request to string: %v\n", err)
+		jsonString = []byte("{}")
+	}
+
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
 
 		err := tu.VerifyHash()
 		if err != nil {
+			writeUpdateStatus(FAIL, string(jsonString), err.Error())
+			writeGranularLog(FAIL, FAILURE_REASON_SIGNATURE_CHECK)
 			return fmt.Errorf("hash verification failed: %w", err)
 		}
 
@@ -296,6 +342,9 @@ func (tu *EMTUpdater) Update() error {
 			"sudo", osUpdateToolPath, "-w", "-u", filePath, "-s", tu.request.Signature,
 		}
 		if _, err := tu.commandExecutor.Execute(updateToolWriteCommand); err != nil {
+			log.Printf("Error executing shell command(%v): %v\n", updateToolWriteCommand, err)
+			writeUpdateStatus(FAIL, string(jsonString), err.Error())
+			writeGranularLog(FAIL, FAILURE_REASON_UT_WRITE)
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolWriteCommand, err)
 		}
 
@@ -315,6 +364,9 @@ func (tu *EMTUpdater) Update() error {
 	if tu.request.Mode == pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
 		log.Println("Save snapshot before applying the update.")
 		if err := Snapshot(); err != nil {
+			errMsg := fmt.Sprintf("Error taking snapshot: %v", err)
+			writeUpdateStatus(FAIL, string(jsonString), errMsg)
+			writeGranularLog(FAIL, FAILURE_REASON_INBM)
 			return fmt.Errorf("failed to take snapshot before applying the update: %v", err)
 		}
 
@@ -323,19 +375,20 @@ func (tu *EMTUpdater) Update() error {
 			"sudo", osUpdateToolPath, "-a",
 		}
 		if _, err := tu.commandExecutor.Execute(updateToolApplyCommand); err != nil {
+			log.Printf("Error executing shell command(%v): %v\n", updateToolApplyCommand, err)
+			writeUpdateStatus(FAIL, string(jsonString), err.Error())
+			writeGranularLog(FAIL, FAILURE_REASON_BOOT_CONFIGURATION)
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
-		}
-
-		jsonString, err := protojson.Marshal(tu.request)
-		if err != nil {
-			log.Printf("Error converting request to string: %v\n", err)
-			jsonString = []byte("{}")
 		}
 
 		// Write the update status to the status log file
 		err = writeUpdateStatus(SUCCESS, string(jsonString), "")
 		if err != nil {
 			log.Printf("[Warning] Error writing update status: %v", err)
+		}
+		err = writeGranularLog(SUCCESS, "")
+		if err != nil {
+			log.Printf("[Warning] Error writing granular log: %v", err)
 		}
 	}
 
@@ -382,10 +435,20 @@ func (tu *EMTUpdater) VerifyHash() error {
 
 func (tu *EMTUpdater) commitUpdate() error {
 	log.Println("Committing the update.")
+	// Get the request details
+	jsonString, err := protojson.Marshal(tu.request)
+	if err != nil {
+		log.Printf("Error converting request to string: %v\n", err)
+		jsonString = []byte("{}")
+	}
+
 	updateToolCommitCommand := []string{
 		"sudo", osUpdateToolPath, "-c",
 	}
 	if _, err := tu.commandExecutor.Execute(updateToolCommitCommand); err != nil {
+		log.Printf("Error executing shell command(%v): %v\n", updateToolCommitCommand, err)
+		writeUpdateStatus(FAIL, string(jsonString), err.Error())
+		writeGranularLog(FAIL, FAILURE_REASON_OS_COMMIT)
 		return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolCommitCommand, err)
 	}
 	return nil
@@ -409,10 +472,19 @@ func NewEMTRebooter(commandExecutor utils.Executor, request *pb.UpdateSystemSoft
 // Reboot method for EMT
 func (tu *EMTRebooter) Reboot() error {
 	log.Println("Rebooting the system...")
+	// Get the request details
+	jsonString, err := protojson.Marshal(tu.request)
+	if err != nil {
+		log.Printf("Error converting request to string: %v\n", err)
+		jsonString = []byte("{}")
+	}
+
 	rebootCommand := []string{
 		"sudo", "/usr/sbin/reboot",
 	}
 	if _, err := tu.commandExecutor.Execute(rebootCommand); err != nil {
+		writeUpdateStatus(FAIL, string(jsonString), err.Error())
+		writeGranularLog(FAIL, FAILURE_REASON_UNSPECIFIED)
 		return fmt.Errorf("failed to execute shell command(%v)- %v", rebootCommand, err)
 	}
 	return nil
