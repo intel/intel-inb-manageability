@@ -10,6 +10,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"regexp"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
@@ -37,6 +40,13 @@ type UbuntuUpdater struct {
 
 // Update method for Ubuntu
 func (u *UbuntuUpdater) Update() error {
+	updateSize, err := getEstimatedSize(u.commandExecutor)
+	if err != nil {
+		return fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
+	}
+	log.Printf("Estimated update size: %d bytes", updateSize)
+
+	// TODO:  Check to make sure there is enough space.
 
 	var cmds []string
 	switch u.request.Mode {
@@ -48,11 +58,74 @@ func (u *UbuntuUpdater) Update() error {
 		return fmt.Errorf("SOTA Aborted: Invalid mode")
 	}
 
-	_, err := u.commandExecutor.Execute(cmds)
+	_, err = u.commandExecutor.Execute(cmds)
 	if err != nil {
 		return fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
 	}
 	return nil
+}
+
+func getEstimatedSize(cmdExec utils.Executor) (int64, error) {
+	isDockerApp := os.Getenv("container") != ""
+	cmd := []string{}
+	if isDockerApp {
+		cmd = append(cmd, DockerChrootPrefix)
+	}
+	cmd = append(cmd, "/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
+	"Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no")
+
+	output, err := cmdExec.Execute(cmd)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get size of the update: %s", err)
+	}
+
+	return getEstimatedSizeInBytesFromAptGetUpgrade(string(output))
+}
+
+func sizeToBytes(size string, unit string) int64 {
+	parsedSize, err := strconv.ParseFloat(size, 64)
+	if err != nil {
+		log.Printf("Error parsing size: %v", err)
+		return 0
+	}
+
+	switch unit {
+	case "kB":
+		return int64(parsedSize * 1024)
+	case "MB":
+		return int64(parsedSize * 1024 * 1024)
+	case "GB":
+		return int64(parsedSize * 1024 * 1024 * 1024)
+	default:
+		return int64(parsedSize)
+	}
+}
+
+func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (int64, error) {
+	var outputLines []string
+	for _, line :=range strings.Split(upgradeOutput, "\n") {
+		if strings.Contains(line, "After this operation,") {
+			outputLines = append(outputLines, line)
+		}
+	}
+	output := strings.Join(outputLines, "\n")
+
+	updateRegex := regexp.MustCompile(`(\d+(?:,\d+)*(\.\d+)?)(\s*(kB|B|MB|GB)).*(freed|used)`)
+	matches := updateRegex.FindStringSubmatch(output)
+
+	if matches == nil {
+		return 0, fmt.Errorf("failed to get size of the update")
+	}
+	
+	freedOrUsed := matches[5]
+
+	if freedOrUsed == "used" {
+		sizeString := strings.Replace(matches[1], ",", "", -1)
+		return sizeToBytes(sizeString, matches[4]), nil
+	}
+
+	log.Println("Update will free some size on disk")
+	return 0, nil
 }
 
 func noDownload(packages []string) []string {
