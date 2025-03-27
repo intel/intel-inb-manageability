@@ -7,6 +7,7 @@
 package utils
 
 import (
+	//"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -23,7 +24,7 @@ func NewExecutor[C any](createCmdFn func(name string, args ...string) *C, execCm
 
 // Executor is an interface that contains the method to execute a command.
 type Executor interface {
-	Execute(args []string) ([]byte, error)
+	Execute(args []string) ([]byte, error)	
 }
 
 type executor[C any] struct {
@@ -48,17 +49,22 @@ func (i *executor[C]) Execute(args []string) ([]byte, error) {
 // Returns:
 //   - stdout: A byte slice containing the standard output of the command.
 //   - err: An error object if the command fails, or nil if it succeeds.
-func ExecuteAndReadOutput(executableCommand *exec.Cmd) (stdout []byte, err error) {
-	var errbuf strings.Builder
+func ExecuteAndReadOutput(executableCommand *exec.Cmd) ([]byte, error) {
+	var stdout, stderr strings.Builder
 
-	executableCommand.Stderr = &errbuf
-	out, err := executableCommand.Output()
-	fmt.Printf("'%v' output - %v", executableCommand.String(), string(out))
+	executableCommand.Stdout = &stdout
+	executableCommand.Stderr = &stderr
+
+	err := executableCommand.Run()
+
+	combinedOutput := stdout.String() + stderr.String()
+
+	fmt.Printf("'%v' output - %v", executableCommand.String(), combinedOutput)
 	if err != nil {
-		return nil, fmt.Errorf("failed to run '%v' command - %v; %v", executableCommand.String(), errbuf.String(), err)
+		return []byte(combinedOutput), fmt.Errorf("failed to run '%v' command - %v", executableCommand.String(), err)
 	}
 
-	return out, nil
+	return []byte(combinedOutput), nil
 }
 
 // IsSymlink checks if a file is a symlink.

@@ -62,27 +62,29 @@ func (u *UbuntuUpdater) Update() error {
 	if err != nil {
 		return fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
 	}
+
+	// Write the update status to the status log file
+	err = writeUpdateStatus(SUCCESS, string("SOTA command status: SUCCESSFUL"), "")
+	if err != nil {
+		fmt.Printf("[Warning] Error writing update status: %v", err)
+	}
+
 	return nil
 }
 
 func getEstimatedSize(cmdExec utils.Executor) (int64, error) {
-	isDockerApp := os.Getenv("container") != ""
-	cmd := []string{}
-	if isDockerApp {
-		cmd = append(cmd, DockerChrootPrefix)
-	}
-	cmd = append(cmd, "/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
-	"Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no")
+	cmd := []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
+	"Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}
 
-	output, err := cmdExec.Execute(cmd)
-	if err != nil {
-		return 0, fmt.Errorf("failed to get size of the update: %s", err)
-	}
+	// Ignore the error as the command will return a non-zero exit code
+	output, _ := cmdExec.Execute(cmd)
+	
 
 	return getEstimatedSizeInBytesFromAptGetUpgrade(string(output))
 }
 
 func sizeToBytes(size string, unit string) int64 {
+	log.Printf("Size: %s, Unit: %s", size, unit)
 	parsedSize, err := strconv.ParseFloat(size, 64)
 	if err != nil {
 		log.Printf("Error parsing size: %v", err)
@@ -102,6 +104,7 @@ func sizeToBytes(size string, unit string) int64 {
 }
 
 func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (int64, error) {
+	log.Printf("Apt-get upgrade output: %s", upgradeOutput)
 	var outputLines []string
 	for _, line :=range strings.Split(upgradeOutput, "\n") {
 		if strings.Contains(line, "After this operation,") {
