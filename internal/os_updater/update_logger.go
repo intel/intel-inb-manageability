@@ -27,10 +27,49 @@ type UpdateStatus struct {
 	Version  string `json:"Version"`
 }
 
-func writeUpdateStatus(status, metadata, errorDetails string) error {
+type FileHandler interface {
+	Stat(name string) (os.FileInfo, error)
+	Create(name string) (FileWriter, error)
+	OpenFile(name string, flag int, perm os.FileMode) (FileWriter, error)
+}
+
+type DefaultFileHandler struct{}
+
+func (o DefaultFileHandler) Stat(name string) (os.FileInfo, error) {
+	return os.Stat(name)
+}
+
+func (o DefaultFileHandler) Create(name string) (FileWriter, error) {
+	file, err := os.Create(name)
+	var writer FileWriter = file
+	return writer, err
+}
+
+func (o DefaultFileHandler) OpenFile(name string, flag int, perm os.FileMode) (FileWriter, error) {
+	file, err := os.OpenFile(name, flag, perm)
+	var writer FileWriter = file
+	return writer, err
+}
+
+type JSONHandler interface {
+	MarshalIndent(v interface{}, prefix, indent string) ([]byte, error)
+}
+
+type DefaultJSONHandler struct{}
+
+func (d DefaultJSONHandler) MarshalIndent(v interface{}, prefix, indent string) ([]byte, error) {
+	return json.MarshalIndent(v, prefix, indent)
+}
+
+type FileWriter interface {
+	Write(p []byte) (int, error)
+	Close() error
+}
+
+func writeUpdateStatusWithHandler(handler FileHandler, jsonHandler JSONHandler, status, metadata, errorDetails string) error {
 	// Create the update status log file if it does not exist.
-	if _, err := os.Stat(updateStatusLog); os.IsNotExist(err) {
-		file, err := os.Create(updateStatusLog)
+	if _, err := handler.Stat(updateStatusLog); os.IsNotExist(err) {
+		file, err := handler.Create(updateStatusLog)
 		if err != nil {
 			log.Printf("Error creating update status log file: %v\n", err)
 			return err
@@ -39,7 +78,7 @@ func writeUpdateStatus(status, metadata, errorDetails string) error {
 	}
 
 	// Open the update status log file for writing and truncate it.
-	file, err := os.OpenFile(updateStatusLog, os.O_WRONLY|os.O_TRUNC, 0644)
+	file, err := handler.OpenFile(updateStatusLog, os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Printf("Error opening update status log file: %v\n", err)
 		return err
@@ -56,8 +95,8 @@ func writeUpdateStatus(status, metadata, errorDetails string) error {
 		Version:  "v1",
 	}
 
-	// Marshal the JSON structure to a string.
-	jsonData, err := json.MarshalIndent(updateStatus, "", "  ")
+	// Marshal the JSON structure to a string using the injected JSON handler.
+	jsonData, err := jsonHandler.MarshalIndent(updateStatus, "", "  ")
 	if err != nil {
 		log.Printf("Error marshaling JSON: %v\n", err)
 		return err
@@ -70,4 +109,9 @@ func writeUpdateStatus(status, metadata, errorDetails string) error {
 		return err
 	}
 	return nil
+}
+
+// Wrapper function for backward compatibility
+func writeUpdateStatus(status, metadata, errorDetails string) error {
+	return writeUpdateStatusWithHandler(DefaultFileHandler{}, DefaultJSONHandler{}, status, metadata, errorDetails)
 }
