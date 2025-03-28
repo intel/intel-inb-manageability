@@ -17,6 +17,7 @@ import (
 // UpdateOS updates the OS depending on the OS type.
 func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.UpdateResponse, error) {
 	fmt.Printf("Request Mode: %v\n", req.Mode)
+	fmt.Printf("Request DoNotReboot: %v\n", req.DoNotReboot)
 	if req.Mode != pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
 		// Download the update
 		downloader := factory.CreateDownloader(req)

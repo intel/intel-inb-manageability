@@ -115,6 +115,7 @@ func readJWTToken(fs afero.Afero, path string) (string, error) {
 // checkDiskSpace checks if there is enough disk space to download the artifacts.
 func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 	// Get available disk space
+	// TODO: We should be able to call the method in utils package
 	var stat unix.Statfs_t
 	err := t.statfs("/var/cache/manageability/", &stat)
 	if err != nil {

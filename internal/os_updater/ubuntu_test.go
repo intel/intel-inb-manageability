@@ -1,11 +1,10 @@
 package osupdater
 
 import (
-    "errors"
-    "os"
-    "testing"
+	"errors"
+	"testing"
 
-    "github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/assert"
 )
 
 type mockExecutor struct {
@@ -94,63 +93,58 @@ func TestDownloadOnly(t *testing.T) {
 }
 
 func TestGetEstimatedSize(t *testing.T) {
-    t.Run("successful size estimation outside Docker", func(t *testing.T) {
-        os.Unsetenv("container")
+    t.Run("no update available", func(t *testing.T) {
+        mockExec := &mockExecutor{
+            outputs: []string{"0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded."},
+            errors:  []error{nil},
+        }
 
+        isUpdateAvail, size, err := getEstimatedSize(mockExec)
+        assert.False(t, isUpdateAvail)
+        assert.NoError(t, err)
+        assert.Equal(t, int64(0), size)
+        assert.Equal(t, 1, len(mockExec.commands))
+        assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
+    })
+
+    t.Run("successful size estimation outside Docker", func(t *testing.T) {
         mockExec := &mockExecutor{
             outputs: []string{"After this operation, 500 MB of additional disk space will be used."},
             errors:  []error{nil},
         }
 
-        size, err := getEstimatedSize(mockExec)
+        isUpdateAvail, size, err := getEstimatedSize(mockExec)
         assert.NoError(t, err)
+        assert.True(t, isUpdateAvail)
         assert.Equal(t, int64(524288000), size)
         assert.Equal(t, 1, len(mockExec.commands))
         assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
     })
 
-    t.Run("successful size estimation inside Docker", func(t *testing.T) {
-        os.Setenv("container", "docker")
-        defer os.Unsetenv("container")
-
-        mockExec := &mockExecutor{
-            outputs: []string{"After this operation, 500 MB of additional disk space will be used."},
-            errors:  []error{nil},
-        }
-
-        size, err := getEstimatedSize(mockExec)
-        assert.NoError(t, err)
-        assert.Equal(t, int64(524288000), size)
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string{DockerChrootPrefix, "/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
-    })
-
     t.Run("failed to get size estimation", func(t *testing.T) {
-        os.Unsetenv("container")
-
-        mockExec := &mockExecutor{
+         mockExec := &mockExecutor{
             outputs: []string{""},
             errors:  []error{errors.New("execution error")},
         }
 
-        size, err := getEstimatedSize(mockExec)
+        isUpdateAvail, size, err := getEstimatedSize(mockExec)
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "failed to get size of the update")
+        assert.True(t, isUpdateAvail)
         assert.Equal(t, int64(0), size)
         assert.Equal(t, 1, len(mockExec.commands))
         assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
     })
 
     t.Run("no size information in output", func(t *testing.T) {
-        os.Unsetenv("container")
-
         mockExec := &mockExecutor{
             outputs: []string{"No size information available."},
             errors:  []error{nil},
         }
 
-        size, err := getEstimatedSize(mockExec)
+        isUpdateAvail, size, err := getEstimatedSize(mockExec)
         assert.Contains(t, err.Error(), "failed to get size of the update")
+        assert.False(t, isUpdateAvail)
         assert.Equal(t, int64(0), size)
         assert.Equal(t, 1, len(mockExec.commands))
         assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
@@ -227,8 +221,9 @@ func TestGetEstimatedSizeFromAptGetUpgrade(t *testing.T) {
         upgradeOutput := "After this operation, 500 MB of additional disk space will be used."
         expectedSize := int64(524288000)
 
-        size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
         assert.NoError(t, err)
+        assert.True(t, isUpdateAvail)
         assert.Equal(t, expectedSize, size)
     })
 
@@ -236,8 +231,9 @@ func TestGetEstimatedSizeFromAptGetUpgrade(t *testing.T) {
         upgradeOutput := "After this operation, 1,000 MB of additional disk space will be used."
         expectedSize := int64(1048576000)
 
-        size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
         assert.NoError(t, err)
+        assert.True(t, isUpdateAvail)
         assert.Equal(t, expectedSize, size)
     })
 
@@ -245,8 +241,9 @@ func TestGetEstimatedSizeFromAptGetUpgrade(t *testing.T) {
         upgradeOutput := "After this operation, 1.5 GB of additional disk space will be used."
         expectedSize := int64(1610612736)
 
-        size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
         assert.NoError(t, err)
+        assert.True(t, isUpdateAvail)
         assert.Equal(t, expectedSize, size)
     })
 
@@ -254,9 +251,10 @@ func TestGetEstimatedSizeFromAptGetUpgrade(t *testing.T) {
         upgradeOutput := "No size information available."
         expectedSize := int64(0)
 
-        size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "failed to get size of the update")
+        assert.False(t, isUpdateAvail)
         assert.Equal(t, expectedSize, size)
     })
 
@@ -264,35 +262,16 @@ func TestGetEstimatedSizeFromAptGetUpgrade(t *testing.T) {
         upgradeOutput := "After this operation, 500 MB of disk space will be freed."
         expectedSize := int64(0)
 
-        size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
         assert.NoError(t, err)
+        assert.True(t, isUpdateAvail)
         assert.Equal(t, expectedSize, size)
     })
 }
 
 func TestUbuntuRebooter_Reboot(t *testing.T) {
-    t.Run("successful reboot in Docker", func(t *testing.T) {
-        os.Setenv("container", "docker")
-        defer os.Unsetenv("container")
 
-        mockExec := &mockExecutor{
-            outputs: []string{""},
-            errors:  []error{nil},
-        }
-
-        rebooter := &UbuntuRebooter{
-            commandExecutor: mockExec,
-        }
-
-        err := rebooter.Reboot()
-        assert.NoError(t, err)
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string([]string{DockerChrootPrefix, "/sbin/reboot"}), mockExec.commands[0])
-    })
-
-    t.Run("successful reboot outside Docker", func(t *testing.T) {
-        os.Unsetenv("container")
-
+    t.Run("successful reboot", func(t *testing.T) {
         mockExec := &mockExecutor{
             outputs: []string{""},
             errors:  []error{nil},
@@ -308,29 +287,7 @@ func TestUbuntuRebooter_Reboot(t *testing.T) {
         assert.Equal(t, []string{"/sbin/reboot"}, mockExec.commands[0])
     })
 
-    t.Run("failed reboot in Docker", func(t *testing.T) {
-        os.Setenv("container", "docker")
-        defer os.Unsetenv("container")
-
-        mockExec := &mockExecutor{
-            outputs: []string{""},
-            errors:  []error{errors.New("reboot error")},
-        }
-
-        rebooter := &UbuntuRebooter{
-            commandExecutor: mockExec,
-        }
-
-        err := rebooter.Reboot()
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "SOTA Aborted: Reboot Failed")
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string([]string{DockerChrootPrefix, "/sbin/reboot"}), mockExec.commands[0])
-    })
-
-    t.Run("failed reboot outside Docker", func(t *testing.T) {
-        os.Unsetenv("container")
-
+      t.Run("failed reboot", func(t *testing.T) {
         mockExec := &mockExecutor{
             outputs: []string{""},
             errors:  []error{errors.New("reboot error")},

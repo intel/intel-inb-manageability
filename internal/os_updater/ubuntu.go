@@ -40,27 +40,53 @@ type UbuntuUpdater struct {
 
 // Update method for Ubuntu
 func (u *UbuntuUpdater) Update() error {
-	updateSize, err := getEstimatedSize(u.commandExecutor)
+	// Set the environment variable DEBIAN_FRONTEND to noninteractive
+	err := os.Setenv("DEBIAN_FRONTEND", "noninteractive")
+	if err != nil {
+		return fmt.Errorf("SOTA Aborted: Failed to set environment variable: %v", err)
+	}
+
+	err = os.Setenv("PATH", os.Getenv("PATH")+":/usr/bin:/bin")
+	if err != nil {
+		return fmt.Errorf("SOTA Aborted: Failed to set environment variable: %v", err)
+	}
+
+	isUpdateAvail, updateSize, err := getEstimatedSize(u.commandExecutor)
 	if err != nil {
 		return fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
 	}
+	if !isUpdateAvail {
+		log.Println("No update available.  System is up to date.")
+		return nil
+	}
+
 	log.Printf("Estimated update size: %d bytes", updateSize)
 
-	// TODO:  Check to make sure there is enough space.
+	freeSpace, err :=utils.GetFreeDiskSpaceInBytes("/")
+	if err != nil {
+		return fmt.Errorf("SOTA Aborted: Failed to get free disk space: %v", err)
+	}
+	log.Printf("Free disk space: %d bytes", freeSpace)
+	if freeSpace < updateSize {
+		return fmt.Errorf("SOTA Aborted: Not enough free disk space.  Free: %d bytes, Required: %d bytes", freeSpace, updateSize)
+	}
 
-	var cmds []string
+	var cmds [][]string
 	switch u.request.Mode {
-	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY:
-		cmds = downloadOnly(u.request.PackageList)
+	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_FULL:
+		cmds = fullInstall(u.request.PackageList)
 	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD:
 		cmds = noDownload(u.request.PackageList)
+	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY:
+		cmds= downloadOnly(u.request.PackageList)
 	default:
 		return fmt.Errorf("SOTA Aborted: Invalid mode")
 	}
 
-	_, err = u.commandExecutor.Execute(cmds)
-	if err != nil {
-		return fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
+	for _, cmd := range cmds {
+		log.Printf("Executing command: %s", cmd)
+		output, _ := u.commandExecutor.Execute(cmd)
+		log.Printf("Command output: %s", string(output))
 	}
 
 	// Write the update status to the status log file
@@ -72,19 +98,17 @@ func (u *UbuntuUpdater) Update() error {
 	return nil
 }
 
-func getEstimatedSize(cmdExec utils.Executor) (int64, error) {
+func getEstimatedSize(cmdExec utils.Executor) (bool, uint64, error) {
 	cmd := []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
-	"Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}
+		"Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}
 
 	// Ignore the error as the command will return a non-zero exit code
 	output, _ := cmdExec.Execute(cmd)
-	
 
 	return getEstimatedSizeInBytesFromAptGetUpgrade(string(output))
 }
 
-func sizeToBytes(size string, unit string) int64 {
-	log.Printf("Size: %s, Unit: %s", size, unit)
+func sizeToBytes(size string, unit string) uint64 {
 	parsedSize, err := strconv.ParseFloat(size, 64)
 	if err != nil {
 		log.Printf("Error parsing size: %v", err)
@@ -93,23 +117,29 @@ func sizeToBytes(size string, unit string) int64 {
 
 	switch unit {
 	case "kB":
-		return int64(parsedSize * 1024)
+		return uint64(parsedSize * 1024)
 	case "MB":
-		return int64(parsedSize * 1024 * 1024)
+		return uint64(parsedSize * 1024 * 1024)
 	case "GB":
-		return int64(parsedSize * 1024 * 1024 * 1024)
+		return uint64(parsedSize * 1024 * 1024 * 1024)
 	default:
-		return int64(parsedSize)
+		return uint64(parsedSize)
 	}
 }
 
-func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (int64, error) {
+const noUpdateAvailable = "0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded."
+
+func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (bool, uint64, error) {
 	log.Printf("Apt-get upgrade output: %s", upgradeOutput)
 	var outputLines []string
-	for _, line :=range strings.Split(upgradeOutput, "\n") {
+	for _, line := range strings.Split(upgradeOutput, "\n") {
 		if strings.Contains(line, "After this operation,") {
 			outputLines = append(outputLines, line)
+		} else if strings.Contains(line, noUpdateAvailable) {
+			// No update available.  System is up to date
+			return false, 0, nil
 		}
+
 	}
 	output := strings.Join(outputLines, "\n")
 
@@ -117,69 +147,86 @@ func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (int64, erro
 	matches := updateRegex.FindStringSubmatch(output)
 
 	if matches == nil {
-		return 0, fmt.Errorf("failed to get size of the update")
+		return false, 0, fmt.Errorf("failed to get size of the update")
 	}
-	
+
 	freedOrUsed := matches[5]
 
 	if freedOrUsed == "used" {
 		sizeString := strings.Replace(matches[1], ",", "", -1)
-		return sizeToBytes(sizeString, matches[4]), nil
+		return true, sizeToBytes(sizeString, matches[4]), nil
 	}
 
 	log.Println("Update will free some size on disk")
-	return 0, nil
+	return true, 0, nil
 }
 
-func noDownload(packages []string) []string {
+func noDownload(packages []string) [][]string {
 	log.Println("No download mode")
-	var cmds []string
-	cmds = append(cmds, "dpkg", "--configure", "-a", 
-				"--force-confdef", 
-				"--force-confold", 
-				"apt-get", "-o", 
-				"Dpkg::Options::='--force-confdef'", "-o", 
-				"Dpkg::Options::='--force-confold'", "-yq",
-				"-f", "install")
-
-	var installCmd []string
-	if len(packages) == 0 {
-		installCmd = append(installCmd, "apt-get", "-o", 
-			"Dpkg::Options::='--force-confdef'", "-o", 
-			"Dpkg::Options::='--force-confold'", 
-			"--with-new-pkgs", "--no-download", 
-			"--fix-missing", "-yq", "upgrade")
-	} else {
-		installCmd = append(installCmd, append([]string{"apt-get", "-o", 
-		"Dpkg::Options::='--force-confdef'", "-o", 
-		"Dpkg::Options::='--force-confold'", 
-		"--no-download", "--fix-missing", "-yq", 
-		"install"}, packages...)...)
+	cmds := [][]string{
+		{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold",},
+		{"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", 
+			"Dpkg::Options::='--force-confold'", "-yq", "-f", "install"},
 	}
 
-	cmds = append(cmds, installCmd...)
+	if len(packages) == 0 {
+		cmds = append(cmds, []string{"apt-get", "-o",
+			"Dpkg::Options::='--force-confdef'", "-o",
+			"Dpkg::Options::='--force-confold'",
+			"--with-new-pkgs", "--no-download",
+			"--fix-missing", "-yq", "upgrade"})
+	} else {
+		cmds = append(cmds, [][]string{append([]string{"apt-get", "-o",
+			"Dpkg::Options::='--force-confdef'", "-o",
+			"Dpkg::Options::='--force-confold'",
+			"--no-download", "--fix-missing", "-yq",
+			"install"}, packages...)}...)
+	}
+
 	return cmds
 }
 
-func downloadOnly(packages []string) []string {
+func downloadOnly(packages []string) [][]string {
 	log.Println("Download only mode")
-	var cmds []string
-	cmds = append(cmds, "apt-get", "update", "dpkg-query", "-f", "-a", "'${binary:Package}\\n'", "-W")
-	
-	var installCmd []string
-	if len(packages) == 0 {
-		installCmd = append(installCmd, "apt-get", "-o", 
-			"Dpkg::Options::='--force-confdef'", "-o", 
-			"Dpkg::Options::='--force-confold'", 
-			"--with-new-pkgs", "--download-only", 
-			"--fix-missing", "-yq", "upgrade")
-	} else {
-		installCmd = append(installCmd, append([]string{"apt-get", "-o", 
-		"Dpkg::Options::='--force-confdef'", "-o", 
-		"Dpkg::Options::='--force-confold'", "--download-only", 
-		"--fix-missing", "-yq", "install"}, packages...)...)
+
+	cmds := [][]string{
+		{"apt-get", "update"}, 
+		{"dpkg-query", "-f", "-a", 	"'${binary:Package}\\n'", "-W"},
 	}
-	cmds = append(cmds, installCmd...)
+
+	if len(packages) == 0 {
+		cmds = append(cmds, []string{"apt-get", "-o",
+			"Dpkg::Options::='--force-confdef'", "-o",
+			"Dpkg::Options::='--force-confold'",
+			"--with-new-pkgs", "--download-only",
+			"--fix-missing", "-yq", "upgrade"})
+	} else {
+		cmds = append(cmds, [][]string{append([]string{"apt-get", "-o",
+			"Dpkg::Options::='--force-confdef'", "-o",
+			"Dpkg::Options::='--force-confold'", "--download-only",
+			"--fix-missing", "-yq", "install"}, packages...)}...)
+	}
+
+	return cmds
+}
+
+func fullInstall(packages []string) [][]string {
+	log.Println("Download and install mode")
+
+	cmds := [][]string{
+		{"/usr/bin/apt-get", "update"},
+	 	{"dpkg-query -W -f='${binary:Package}\\n'"},
+		{"dpkg --configure -a --force-confdef --force-confold"},
+		{"apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install"},
+		{"apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'"}}
+
+	if len(packages) == 0 {
+		cmds = append(cmds, []string{"apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"})
+	} else {
+		cmds = append(cmds, []string{"apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install"})
+		cmds = append(cmds, packages)
+	}
+
 	return cmds
 }
 
@@ -192,22 +239,20 @@ type UbuntuRebooter struct {
 
 // Reboot method for Ubuntu
 func (u *UbuntuRebooter) Reboot() error {
+	if u.request.DoNotReboot {
+		log.Println("Reboot is disabled.  Skipping reboot.")
+		return nil
+	}
+	
 	fmt.Print("Rebooting ")
 	time.Sleep(2 * time.Second)
-	
-	isDockerApp := os.Getenv("container") != ""
+
 	cmd := "/sbin/reboot"
 
-	if isDockerApp {
-		_, err := u.commandExecutor.Execute([]string{DockerChrootPrefix, cmd})
-		if err != nil {
-			return fmt.Errorf("SOTA Aborted: Reboot Failed: %s", err)
-		}
-	} else {
-		_, err := u.commandExecutor.Execute([]string{cmd})
-		if err != nil {
-			return fmt.Errorf("SOTA Aborted: Reboot Failed: %s", err)
-		}
+	_, err := u.commandExecutor.Execute([]string{cmd})
+	if err != nil {
+		return fmt.Errorf("SOTA Aborted: Reboot Failed: %s", err)
 	}
+
 	return nil
 }
