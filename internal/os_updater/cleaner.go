@@ -22,7 +22,7 @@ type CleanerInterface interface {
 	DeleteAll(path string) error
 }
 
-func NewCleaner(commandExecutor utils.Executor, osType string) *Cleaner {
+func NewCleaner(commandExecutor utils.Executor) *Cleaner {
 	return &Cleaner{
 		commandExecutor: commandExecutor}
 }
