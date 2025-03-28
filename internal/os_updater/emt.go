@@ -294,7 +294,7 @@ func (tu *EMTUpdater) Update() error {
 		updateToolWriteCommand := []string{
 			"sudo", osUpdateToolPath, "-w", "-u", filePath, "-s", tu.request.Signature,
 		}
-		if _, err := tu.commandExecutor.Execute(updateToolWriteCommand); err != nil {
+		if _, _, err := tu.commandExecutor.Execute(updateToolWriteCommand); err != nil {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolWriteCommand, err)
 		}
 
@@ -321,7 +321,7 @@ func (tu *EMTUpdater) Update() error {
 		updateToolApplyCommand := []string{
 			"sudo", osUpdateToolPath, "-a",
 		}
-		if _, err := tu.commandExecutor.Execute(updateToolApplyCommand); err != nil {
+		if _, _, err := tu.commandExecutor.Execute(updateToolApplyCommand); err != nil {
 			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
 		}
 
@@ -383,7 +383,7 @@ func (tu *EMTUpdater) commitUpdate() error {
 	updateToolCommitCommand := []string{
 		"sudo", osUpdateToolPath, "-c",
 	}
-	if _, err := tu.commandExecutor.Execute(updateToolCommitCommand); err != nil {
+	if _, _, err := tu.commandExecutor.Execute(updateToolCommitCommand); err != nil {
 		return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolCommitCommand, err)
 	}
 	return nil
@@ -409,7 +409,7 @@ func (tu *EMTRebooter) Reboot() error {
 	rebootCommand := []string{
 		"sudo", "/usr/sbin/reboot",
 	}
-	if _, err := tu.commandExecutor.Execute(rebootCommand); err != nil {
+	if _, _, err := tu.commandExecutor.Execute(rebootCommand); err != nil {
 		return fmt.Errorf("failed to execute shell command(%v)- %v", rebootCommand, err)
 	}
 	return nil

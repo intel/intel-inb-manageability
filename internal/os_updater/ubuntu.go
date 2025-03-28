@@ -85,8 +85,10 @@ func (u *UbuntuUpdater) Update() error {
 
 	for _, cmd := range cmds {
 		log.Printf("Executing command: %s", cmd)
-		output, _ := u.commandExecutor.Execute(cmd)
-		log.Printf("Command output: %s", string(output))
+		stderr, _, _ := u.commandExecutor.Execute(cmd)
+		if len(stderr) > 0 {
+			return fmt.Errorf("SOTA Aborted: Command failed: %s", string(stderr))
+		}
 	}
 
 	// Write the update status to the status log file
@@ -103,9 +105,11 @@ func getEstimatedSize(cmdExec utils.Executor) (bool, uint64, error) {
 		"Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}
 
 	// Ignore the error as the command will return a non-zero exit code
-	output, _ := cmdExec.Execute(cmd)
-
-	return getEstimatedSizeInBytesFromAptGetUpgrade(string(output))
+	stderr, stdout, _ := cmdExec.Execute(cmd)
+	if len(stderr) > 0 {
+		log.Printf("Error executing command: %s", string(stderr))
+	}
+	return getEstimatedSizeInBytesFromAptGetUpgrade(string(stdout))
 }
 
 func sizeToBytes(size string, unit string) uint64 {
@@ -191,7 +195,7 @@ func downloadOnly(packages []string) [][]string {
 
 	cmds := [][]string{
 		{"apt-get", "update"}, 
-		{"dpkg-query", "-f", "-a", 	"'${binary:Package}\\n'", "-W"},
+		{"dpkg-query", "-f", "'${binary:Package}\\n'", "-W"},
 	}
 
 	if len(packages) == 0 {
@@ -249,7 +253,7 @@ func (u *UbuntuRebooter) Reboot() error {
 
 	cmd := "/sbin/reboot"
 
-	_, err := u.commandExecutor.Execute([]string{cmd})
+	_, _, err := u.commandExecutor.Execute([]string{cmd})
 	if err != nil {
 		return fmt.Errorf("SOTA Aborted: Reboot Failed: %s", err)
 	}

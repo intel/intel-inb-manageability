@@ -8,147 +8,152 @@ import (
 )
 
 type mockExecutor struct {
-    commands [][]string
-    outputs  []string
-    errors   []error
+	commands [][]string
+	stdout   []string
+	stderr   []string
+	errors   []error
 }
 
-func (m *mockExecutor) Execute(command []string) ([]byte, error) {
-    m.commands = append(m.commands, command)
-    if len(m.outputs) > 0 {
-        output := m.outputs[0]
-        m.outputs = m.outputs[1:]
-        return []byte(output), m.errors[0]
+func (m *mockExecutor) Execute(command []string) ([]byte, []byte, error) {
+	m.commands = append(m.commands, command)
+	var stdout, stderr string
+    if len(m.stderr) > 0 {
+		stderr = m.stderr[0]
+		m.stderr = m.stderr[1:]
+	}
+    if len(m.stdout) > 0 {
+        stdout = m.stdout[0]
+        m.stdout = m.stdout[1:]
     }
-    return nil, m.errors[0]
+	return []byte(stderr), []byte(stdout), m.errors[0]
 }
 
 func TestUbuntuDownloader_Download(t *testing.T) {
-    t.Run("successful download", func(t *testing.T) {
-        downloader := &UbuntuDownloader{}
-        err := downloader.Download()
-        assert.NoError(t, err)
-    })
+	t.Run("successful download", func(t *testing.T) {
+		downloader := &UbuntuDownloader{}
+		err := downloader.Download()
+		assert.NoError(t, err)
+	})
 }
 
 func TestNoDownload(t *testing.T) {
-    t.Run("no packages", func(t *testing.T) {
-        expectedCmds := []string{
-            "dpkg", "--configure", "-a",
-            "--force-confdef",
-            "--force-confold",
-            "apt-get", "-o",
-            "Dpkg::Options::='--force-confdef'", "-o",
-            "Dpkg::Options::='--force-confold'", "-yq",
-            "-f", "install",
-            "apt-get", "-o", "Dpkg::Options::='--force-confdef'", 
-			"-o", "Dpkg::Options::='--force-confold'", 
-			"--with-new-pkgs", "--no-download", 
+	t.Run("no packages", func(t *testing.T) {
+		expectedCmds := []string{
+			"dpkg", "--configure", "-a",
+			"--force-confdef",
+			"--force-confold",
+			"apt-get", "-o",
+			"Dpkg::Options::='--force-confdef'", "-o",
+			"Dpkg::Options::='--force-confold'", "-yq",
+			"-f", "install",
+			"apt-get", "-o", "Dpkg::Options::='--force-confdef'",
+			"-o", "Dpkg::Options::='--force-confold'",
+			"--with-new-pkgs", "--no-download",
 			"--fix-missing", "-yq", "upgrade",
-        }
+		}
 
-        cmds := noDownload([]string{})
-        assert.Equal(t, expectedCmds, cmds)
-    })
+		cmds := noDownload([]string{})
+		assert.Equal(t, expectedCmds, cmds)
+	})
 
-    t.Run("with packages", func(t *testing.T) {
-        packages := []string{"package1", "package2"}
-        expectedCmds := []string{
-            "dpkg", "--configure", "-a",
-            "--force-confdef",
-            "--force-confold",
-            "apt-get", "-o",
-            "Dpkg::Options::='--force-confdef'", "-o",
-            "Dpkg::Options::='--force-confold'", "-yq",
-            "-f", "install",
-            "apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--no-download", "--fix-missing", "-yq", "install", "package1", "package2",
-        }
+	t.Run("with packages", func(t *testing.T) {
+		packages := []string{"package1", "package2"}
+		expectedCmds := []string{
+			"dpkg", "--configure", "-a",
+			"--force-confdef",
+			"--force-confold",
+			"apt-get", "-o",
+			"Dpkg::Options::='--force-confdef'", "-o",
+			"Dpkg::Options::='--force-confold'", "-yq",
+			"-f", "install",
+			"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--no-download", "--fix-missing", "-yq", "install", "package1", "package2",
+		}
 
-        cmds := noDownload(packages)
-        assert.Equal(t, expectedCmds, cmds)
-    })
+		cmds := noDownload(packages)
+		assert.Equal(t, expectedCmds, cmds)
+	})
 }
 
 func TestDownloadOnly(t *testing.T) {
-    t.Run("no packages", func(t *testing.T) {
-        expectedCmds := []string{
-            "apt-get", "update", "dpkg-query", "-f", "-a", "'${binary:Package}\\n'", "-W",
-            "apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "--download-only", "--fix-missing", "-yq", "upgrade",
-        }
+	t.Run("no packages", func(t *testing.T) {
+		expectedCmds := []string{
+			"apt-get", "update", "dpkg-query", "-f", "-a", "'${binary:Package}\\n'", "-W",
+			"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "--download-only", "--fix-missing", "-yq", "upgrade",
+		}
 
-        cmds := downloadOnly([]string{})
-        assert.Equal(t, expectedCmds, cmds)
-    })
+		cmds := downloadOnly([]string{})
+		assert.Equal(t, expectedCmds, cmds)
+	})
 
-    t.Run("with packages", func(t *testing.T) {
-        packages := []string{"package1", "package2"}
-        expectedCmds := []string{
-            "apt-get", "update", "dpkg-query", "-f", "-a", "'${binary:Package}\\n'", "-W",
-            "apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--download-only", "--fix-missing", "-yq", "install", "package1", "package2",
-        }
+	t.Run("with packages", func(t *testing.T) {
+		packages := []string{"package1", "package2"}
+		expectedCmds := []string{
+			"apt-get", "update", "dpkg-query", "-f", "-a", "'${binary:Package}\\n'", "-W",
+			"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--download-only", "--fix-missing", "-yq", "install", "package1", "package2",
+		}
 
-        cmds := downloadOnly(packages)
-        assert.Equal(t, expectedCmds, cmds)
-    })
+		cmds := downloadOnly(packages)
+		assert.Equal(t, expectedCmds, cmds)
+	})
 }
 
 func TestGetEstimatedSize(t *testing.T) {
-    t.Run("no update available", func(t *testing.T) {
-        mockExec := &mockExecutor{
-            outputs: []string{"0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded."},
-            errors:  []error{nil},
-        }
+	t.Run("no update available", func(t *testing.T) {
+		mockExec := &mockExecutor{
+			stdout: []string{"0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded."},
+			errors: []error{nil},
+		}
 
-        isUpdateAvail, size, err := getEstimatedSize(mockExec)
-        assert.False(t, isUpdateAvail)
-        assert.NoError(t, err)
-        assert.Equal(t, int64(0), size)
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
-    })
+		isUpdateAvail, size, err := getEstimatedSize(mockExec)
+		assert.False(t, isUpdateAvail)
+		assert.NoError(t, err)
+		assert.Equal(t, int64(0), size)
+		assert.Equal(t, 1, len(mockExec.commands))
+		assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
+	})
 
-    t.Run("successful size estimation outside Docker", func(t *testing.T) {
-        mockExec := &mockExecutor{
-            outputs: []string{"After this operation, 500 MB of additional disk space will be used."},
-            errors:  []error{nil},
-        }
+	t.Run("successful size estimation outside Docker", func(t *testing.T) {
+		mockExec := &mockExecutor{
+			stdout: []string{"After this operation, 500 MB of additional disk space will be used."},
+			errors:  []error{nil},
+		}
 
-        isUpdateAvail, size, err := getEstimatedSize(mockExec)
-        assert.NoError(t, err)
-        assert.True(t, isUpdateAvail)
-        assert.Equal(t, int64(524288000), size)
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
-    })
+		isUpdateAvail, size, err := getEstimatedSize(mockExec)
+		assert.NoError(t, err)
+		assert.True(t, isUpdateAvail)
+		assert.Equal(t, int64(524288000), size)
+		assert.Equal(t, 1, len(mockExec.commands))
+		assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
+	})
 
-    t.Run("failed to get size estimation", func(t *testing.T) {
-         mockExec := &mockExecutor{
-            outputs: []string{""},
-            errors:  []error{errors.New("execution error")},
-        }
+	t.Run("failed to get size estimation", func(t *testing.T) {
+		mockExec := &mockExecutor{
+			stdout: []string{""},
+			errors:  []error{errors.New("execution error")},
+		}
 
-        isUpdateAvail, size, err := getEstimatedSize(mockExec)
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "failed to get size of the update")
-        assert.True(t, isUpdateAvail)
-        assert.Equal(t, int64(0), size)
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
-    })
+		isUpdateAvail, size, err := getEstimatedSize(mockExec)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to get size of the update")
+		assert.True(t, isUpdateAvail)
+		assert.Equal(t, int64(0), size)
+		assert.Equal(t, 1, len(mockExec.commands))
+		assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
+	})
 
-    t.Run("no size information in output", func(t *testing.T) {
-        mockExec := &mockExecutor{
-            outputs: []string{"No size information available."},
-            errors:  []error{nil},
-        }
+	t.Run("no size information in output", func(t *testing.T) {
+		mockExec := &mockExecutor{
+			stdout: []string{"No size information available."},
+			errors:  []error{nil},
+		}
 
-        isUpdateAvail, size, err := getEstimatedSize(mockExec)
-        assert.Contains(t, err.Error(), "failed to get size of the update")
-        assert.False(t, isUpdateAvail)
-        assert.Equal(t, int64(0), size)
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
-    })
+		isUpdateAvail, size, err := getEstimatedSize(mockExec)
+		assert.Contains(t, err.Error(), "failed to get size of the update")
+		assert.False(t, isUpdateAvail)
+		assert.Equal(t, int64(0), size)
+		assert.Equal(t, 1, len(mockExec.commands))
+		assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
+	})
 }
 
 func TestSizeToBytes(t *testing.T) {
@@ -217,90 +222,90 @@ func TestSizeToBytes(t *testing.T) {
 }
 
 func TestGetEstimatedSizeFromAptGetUpgrade(t *testing.T) {
-    t.Run("successful size estimation", func(t *testing.T) {
-        upgradeOutput := "After this operation, 500 MB of additional disk space will be used."
-        expectedSize := int64(524288000)
+	t.Run("successful size estimation", func(t *testing.T) {
+		upgradeOutput := "After this operation, 500 MB of additional disk space will be used."
+		expectedSize := int64(524288000)
 
-        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
-        assert.NoError(t, err)
-        assert.True(t, isUpdateAvail)
-        assert.Equal(t, expectedSize, size)
-    })
+		isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+		assert.NoError(t, err)
+		assert.True(t, isUpdateAvail)
+		assert.Equal(t, expectedSize, size)
+	})
 
-    t.Run("size estimation with commas", func(t *testing.T) {
-        upgradeOutput := "After this operation, 1,000 MB of additional disk space will be used."
-        expectedSize := int64(1048576000)
+	t.Run("size estimation with commas", func(t *testing.T) {
+		upgradeOutput := "After this operation, 1,000 MB of additional disk space will be used."
+		expectedSize := int64(1048576000)
 
-        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
-        assert.NoError(t, err)
-        assert.True(t, isUpdateAvail)
-        assert.Equal(t, expectedSize, size)
-    })
+		isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+		assert.NoError(t, err)
+		assert.True(t, isUpdateAvail)
+		assert.Equal(t, expectedSize, size)
+	})
 
-    t.Run("size estimation with different units", func(t *testing.T) {
-        upgradeOutput := "After this operation, 1.5 GB of additional disk space will be used."
-        expectedSize := int64(1610612736)
+	t.Run("size estimation with different units", func(t *testing.T) {
+		upgradeOutput := "After this operation, 1.5 GB of additional disk space will be used."
+		expectedSize := int64(1610612736)
 
-        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
-        assert.NoError(t, err)
-        assert.True(t, isUpdateAvail)
-        assert.Equal(t, expectedSize, size)
-    })
+		isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+		assert.NoError(t, err)
+		assert.True(t, isUpdateAvail)
+		assert.Equal(t, expectedSize, size)
+	})
 
-    t.Run("no size information", func(t *testing.T) {
-        upgradeOutput := "No size information available."
-        expectedSize := int64(0)
+	t.Run("no size information", func(t *testing.T) {
+		upgradeOutput := "No size information available."
+		expectedSize := int64(0)
 
-        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "failed to get size of the update")
-        assert.False(t, isUpdateAvail)
-        assert.Equal(t, expectedSize, size)
-    })
+		isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "failed to get size of the update")
+		assert.False(t, isUpdateAvail)
+		assert.Equal(t, expectedSize, size)
+	})
 
-    t.Run("size estimation with freed space", func(t *testing.T) {
-        upgradeOutput := "After this operation, 500 MB of disk space will be freed."
-        expectedSize := int64(0)
+	t.Run("size estimation with freed space", func(t *testing.T) {
+		upgradeOutput := "After this operation, 500 MB of disk space will be freed."
+		expectedSize := int64(0)
 
-        isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
-        assert.NoError(t, err)
-        assert.True(t, isUpdateAvail)
-        assert.Equal(t, expectedSize, size)
-    })
+		isUpdateAvail, size, err := getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput)
+		assert.NoError(t, err)
+		assert.True(t, isUpdateAvail)
+		assert.Equal(t, expectedSize, size)
+	})
 }
 
 func TestUbuntuRebooter_Reboot(t *testing.T) {
 
-    t.Run("successful reboot", func(t *testing.T) {
-        mockExec := &mockExecutor{
-            outputs: []string{""},
-            errors:  []error{nil},
-        }
+	t.Run("successful reboot", func(t *testing.T) {
+		mockExec := &mockExecutor{
+			stdout: []string{""},
+			errors:  []error{nil},
+		}
 
-        rebooter := &UbuntuRebooter{
-            commandExecutor: mockExec,
-        }
+		rebooter := &UbuntuRebooter{
+			commandExecutor: mockExec,
+		}
 
-        err := rebooter.Reboot()
-        assert.NoError(t, err)
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string{"/sbin/reboot"}, mockExec.commands[0])
-    })
+		err := rebooter.Reboot()
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(mockExec.commands))
+		assert.Equal(t, []string{"/sbin/reboot"}, mockExec.commands[0])
+	})
 
-      t.Run("failed reboot", func(t *testing.T) {
-        mockExec := &mockExecutor{
-            outputs: []string{""},
-            errors:  []error{errors.New("reboot error")},
-        }
+	t.Run("failed reboot", func(t *testing.T) {
+		mockExec := &mockExecutor{
+			stdout: []string{""},
+			errors:  []error{errors.New("reboot error")},
+		}
 
-        rebooter := &UbuntuRebooter{
-            commandExecutor: mockExec,
-        }
+		rebooter := &UbuntuRebooter{
+			commandExecutor: mockExec,
+		}
 
-        err := rebooter.Reboot()
-        assert.Error(t, err)
-        assert.Contains(t, err.Error(), "SOTA Aborted: Reboot Failed")
-        assert.Equal(t, 1, len(mockExec.commands))
-        assert.Equal(t, []string{"/sbin/reboot"}, mockExec.commands[0])
-    })
+		err := rebooter.Reboot()
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "SOTA Aborted: Reboot Failed")
+		assert.Equal(t, 1, len(mockExec.commands))
+		assert.Equal(t, []string{"/sbin/reboot"}, mockExec.commands[0])
+	})
 }

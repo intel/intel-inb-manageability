@@ -14,7 +14,7 @@ import (
 )
 
 // NewExecutor creates a new executor.
-func NewExecutor[C any](createCmdFn func(name string, args ...string) *C, execCmdFn func(*C) (out []byte, e error)) Executor {
+func NewExecutor[C any](createCmdFn func(name string, args ...string) *C, execCmdFn func(*C) ([]byte, []byte, error)) Executor {
 	return &executor[C]{
 		createExecutableCommand: createCmdFn,
 		commandExecutor:         execCmdFn,
@@ -23,15 +23,15 @@ func NewExecutor[C any](createCmdFn func(name string, args ...string) *C, execCm
 
 // Executor is an interface that contains the method to execute a command.
 type Executor interface {
-	Execute(args []string) ([]byte, error)
+	Execute([]string) ([]byte, []byte, error)
 }
 
 type executor[C any] struct {
 	createExecutableCommand func(name string, args ...string) *C
-	commandExecutor         func(*C) (stdout []byte, err error)
+	commandExecutor         func(*C) ([]byte, []byte, error)
 }
 
-func (i *executor[C]) Execute(args []string) ([]byte, error) {
+func (i *executor[C]) Execute(args []string) ([]byte, []byte, error) {
 	executableCommand := i.createExecutableCommand(args[0], args[1:]...)
 	return i.commandExecutor(executableCommand)
 }
@@ -46,9 +46,10 @@ func (i *executor[C]) Execute(args []string) ([]byte, error) {
 //   - executableCommand: A pointer to an exec.Cmd object representing the command to execute.
 //
 // Returns:
-//   - stdout: A byte slice containing the standard output of the command.
+//   - stderr: A byte slice containing the standard output of the command.
+//   - stdout: A byte slice containing the standard error output of the command.
 //   - err: An error object if the command fails, or nil if it succeeds.
-func ExecuteAndReadOutput(executableCommand *exec.Cmd) ([]byte, error) {
+func ExecuteAndReadOutput(executableCommand *exec.Cmd) ([]byte, []byte, error) {
 	var stdout, stderr strings.Builder
 
 	executableCommand.Stdout = &stdout
@@ -56,14 +57,12 @@ func ExecuteAndReadOutput(executableCommand *exec.Cmd) ([]byte, error) {
 
 	err := executableCommand.Run()
 
-	combinedOutput := stdout.String() + stderr.String()
-
-	fmt.Printf("'%v' output - %v", executableCommand.String(), combinedOutput)
+	fmt.Printf("'%v' stderr: %v, stdout: %v", executableCommand.String(), stderr.String(), stdout.String())
 	if err != nil {
-		return []byte(combinedOutput), fmt.Errorf("failed to run '%v' command - %v", executableCommand.String(), err)
+		return []byte(stderr.String()), []byte(stdout.String()), fmt.Errorf("failed to run '%v' command - %v", executableCommand.String(), err)
 	}
 
-	return []byte(combinedOutput), nil
+	return []byte(stderr.String()), []byte(stdout.String()), nil
 }
 
 // IsSymlink checks if a file is a symlink.

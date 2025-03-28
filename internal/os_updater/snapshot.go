@@ -47,7 +47,7 @@ func Snapshot() error {
 		"sudo", "truncate", "-s", "0", dispatcherStatePath,
 	}
 
-	if _, err := cmdExecutor.Execute(dispatcherStateTruncateCommand); err != nil {
+	if _, _, err := cmdExecutor.Execute(dispatcherStateTruncateCommand); err != nil {
 		return fmt.Errorf("failed to truncate dispatcher state file with command(%v)- %w", dispatcherStateTruncateCommand, err)
 	}
 
