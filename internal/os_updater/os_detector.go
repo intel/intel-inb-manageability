@@ -9,6 +9,7 @@ package osupdater
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"os/exec"
 	"runtime"
 )
@@ -53,7 +54,7 @@ func detectLinuxDistribution() (string, error) {
 		return "", err
 	}
 	output = bytes.ReplaceAll(output, []byte("\n"), []byte(""))
-	fmt.Printf("Detect Linux Distribution: %v\n", string(output))
+	log.Printf("Detect Linux Distribution: %v\n", string(output))
 	switch {
 	case bytes.Contains(output, []byte("Ubuntu")):
 		return "Ubuntu", nil
@@ -66,7 +67,7 @@ func detectLinuxDistribution() (string, error) {
 
 func getOSType() OSType {
 	os := getOS()
-	fmt.Printf("os: %v\n", os)
+	log.Printf("os: %v\n", os)
 
 	switch os {
 	case "linux":
