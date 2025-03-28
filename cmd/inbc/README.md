@@ -60,7 +60,7 @@ inbc sota --reboot=false
 #### Edge Device on Ubuntu in Update/Full mode with package list
 
 ```commandline
-inbc sota --package-list less,git reboot=false
+inbc sota --package-list less,git --reboot=false
 ```
 
 This will install (or upgrade) the less and git packages and any necessary

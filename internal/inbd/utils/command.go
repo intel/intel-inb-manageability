@@ -7,7 +7,6 @@
 package utils
 
 import (
-	//"bytes"
 	"fmt"
 	"os"
 	"os/exec"
@@ -24,7 +23,7 @@ func NewExecutor[C any](createCmdFn func(name string, args ...string) *C, execCm
 
 // Executor is an interface that contains the method to execute a command.
 type Executor interface {
-	Execute(args []string) ([]byte, error)	
+	Execute(args []string) ([]byte, error)
 }
 
 type executor[C any] struct {
