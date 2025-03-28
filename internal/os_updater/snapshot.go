@@ -193,6 +193,24 @@ func VerifyUpdateAfterReboot(osType string) error {
 			// Compare the versions
 			if currentVersion != previousVersion {
 				log.Printf("Update Success. Previous image: %v, Current image: %v", previousVersion, currentVersion)
+				emtUpdater := NewEMTUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &pb.UpdateSystemSoftwareRequest{})
+				err = emtUpdater.commitUpdate()
+				if err != nil {
+					return fmt.Errorf("error committing update: %w", err)
+				}
+
+				// Write status to the log file.
+				err = writeUpdateStatus(SUCCESS, "", "")
+				if err != nil {
+					log.Printf("[Warning] Error writing update status: %v", err)
+				}
+
+				log.Println("SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
+
+				err = writeGranularLog(SUCCESS, "")
+				if err != nil {
+					log.Printf("[Warning] Error writing granular log: %v", err)
+				}
 			} else {
 				log.Println("Update failed. Reverting to previous image.")
 				// Write the status to the log file.
@@ -206,31 +224,11 @@ func VerifyUpdateAfterReboot(osType string) error {
 				}
 				log.Println("Rebooting...")
 				// Reboot the system without commit.
-				// //TODO: Only reboot here? Or should we also reboot without commit in other failure?
 				emtRebooter := NewEMTRebooter(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &pb.UpdateSystemSoftwareRequest{})
 				err = emtRebooter.Reboot()
 				if err != nil {
 					return fmt.Errorf("error rebooting system: %w", err)
 				}
-			}
-
-			emtUpdater := NewEMTUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &pb.UpdateSystemSoftwareRequest{})
-			err = emtUpdater.commitUpdate()
-			if err != nil {
-				return fmt.Errorf("error committing update: %w", err)
-			}
-
-			// Write status to the log file.
-			err = writeUpdateStatus(SUCCESS, "", "")
-			if err != nil {
-				log.Printf("[Warning] Error writing update status: %v", err)
-			}
-
-			log.Println("SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
-
-			err = writeGranularLog(SUCCESS, "")
-			if err != nil {
-				log.Printf("[Warning] Error writing granular log: %v", err)
 			}
 		}
 
