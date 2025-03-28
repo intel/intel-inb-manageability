@@ -37,9 +37,9 @@ func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.
 
 	// Remove the artifacts after update success.
 	cleaner := NewCleaner(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput))
-	err = cleaner.DeleteAll(downloadDir)
+	err = cleaner.DeleteAll(downloadDir + "/")
 	if err != nil {
-		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
+		log.Printf("[Warning] %v", err.Error())
 	}
 
 	if req.Mode != pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {

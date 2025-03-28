@@ -29,21 +29,27 @@ func NewCleaner(commandExecutor utils.Executor) *Cleaner {
 
 func (c *Cleaner) DeleteAll(path string) error {
 	log.Println("Removes file after update")
-	// Walk through the directory and remove all files and subdirectories
+	// Walk through the directory and remove all files
 	err := filepath.Walk(path, func(p string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		// Remove the file or directory
+		// Skip directories
 		if info.IsDir() {
-			return os.RemoveAll(p)
+			return nil
 		}
-		return os.Remove(p)
+		// Remove the file
+		err = os.Remove(p)
+		if err != nil {
+			log.Printf("Failed to delete file: %s, error: %v\n", p, err)
+		} else {
+			log.Printf("Deleted file: %s\n", p)
+		}
+		return err
 	})
 	if err != nil {
 		log.Printf("Failed to delete files in path %s: %v\n", path, err)
 		return err
 	}
-	log.Printf("Successfully deleted all files in path %s\n", path)
 	return nil
 }
