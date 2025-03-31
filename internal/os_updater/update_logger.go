@@ -3,13 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Package update_logger creates and updates the update status log and granular log.
-
+// Package osupdater updates the OS.
 package osupdater
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"os"
 	"time"
@@ -43,13 +41,12 @@ type UpdateStatus struct {
 	Version  string `json:"Version"`
 }
 
-func writeUpdateStatus(status, metadata, errorDetails string) error {
+func writeUpdateStatus(status, metadata, errorDetails string) {
 	// Create the update status log file if it does not exist.
 	if _, err := os.Stat(updateStatusLogPath); os.IsNotExist(err) {
 		file, err := os.Create(updateStatusLogPath)
 		if err != nil {
-			log.Printf("Error creating update status log file: %v\n", err)
-			return err
+			log.Printf("[Warning] Error writing update status: failed to create update status log file: %v", err)
 		}
 		defer file.Close()
 	}
@@ -57,8 +54,7 @@ func writeUpdateStatus(status, metadata, errorDetails string) error {
 	// Open the update status log file for writing and truncate it.
 	file, err := os.OpenFile(updateStatusLogPath, os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
-		log.Printf("Error opening update status log file: %v\n", err)
-		return err
+		log.Printf("[Warning] Error writing update status: failed to open update status log file: %v", err)
 	}
 	defer file.Close()
 
@@ -75,26 +71,22 @@ func writeUpdateStatus(status, metadata, errorDetails string) error {
 	// Marshal the JSON structure to a string.
 	jsonData, err := json.MarshalIndent(updateStatus, "", "  ")
 	if err != nil {
-		log.Printf("Error marshaling JSON: %v\n", err)
-		return err
+		log.Printf("[Warning] Error writing update status: failed to marshal JSON: %v", err)
 	}
 
 	// Write the JSON data to the file.
 	_, err = file.Write(jsonData)
 	if err != nil {
-		log.Printf("Error writing to update status log file: %v\n", err)
-		return err
+		log.Printf("[Warning] Error writing update status log file: %v", err)
 	}
-	return nil
 }
 
-func writeGranularLog(statusDetail string, failureReason string) error {
+func writeGranularLog(statusDetail string, failureReason string) {
 	// Create the granular log file if it does not exist.
 	if _, err := os.Stat(granularLogPath); os.IsNotExist(err) {
 		file, err := os.Create(granularLogPath)
 		if err != nil {
-			log.Printf("Error creating granular log file: %v\n", err)
-			return err
+			log.Printf("[Warning] Error writing granular log: failed to create granular log file: %v", err)
 		}
 		defer file.Close()
 	}
@@ -102,19 +94,17 @@ func writeGranularLog(statusDetail string, failureReason string) error {
 	// Open the granular log file for writing and truncate it.
 	file, err := os.OpenFile(granularLogPath, os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
-		log.Printf("Error opening granular log file: %v\n", err)
-		return err
+		log.Printf("[Warning] Error writing granular log: failed to open granular log file: %v", err)
 	}
 	defer file.Close()
 
 	// If update is successful, get the image build date and write it to the granular log.
 	// If update is not successful, write the failure reason to the granular log.
-	granularLogData := map[string][]map[string]string{}
+	var granularLogData map[string][]map[string]string
 	if statusDetail == SUCCESS {
 		buildDate, err := GetImageBuildDate()
 		if err != nil || buildDate == "" {
-			log.Printf("Failed to get image build date: %v\n", err)
-			return fmt.Errorf("failed to get image build date: %w", err)
+			log.Printf("[Warning] Error writing granular log: failed to get image build date: %v", err)
 		}
 		granularLogData = map[string][]map[string]string{
 			"UpdateLog": {
@@ -139,15 +129,12 @@ func writeGranularLog(statusDetail string, failureReason string) error {
 	// Marshal the JSON structure to a string.
 	jsonData, err := json.MarshalIndent(granularLogData, "", "  ")
 	if err != nil {
-		log.Printf("Error marshaling JSON for granular log: %v\n", err)
-		return err
+		log.Printf("[Warning] Error writing granular log: failed to marshal JSON for granular log: %v", err)
 	}
 
 	// Write the JSON data to the file.
 	_, err = file.Write(jsonData)
 	if err != nil {
-		log.Printf("Error writing to granular log file: %v\n", err)
-		return err
+		log.Printf("[Warning] Error writing granular log: failed to write to granular log file: %v", err)
 	}
-	return nil
 }

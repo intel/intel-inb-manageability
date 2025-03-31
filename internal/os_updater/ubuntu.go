@@ -34,8 +34,11 @@ func (u *UbuntuDownloader) Download() error {
 // UbuntuUpdater is the concrete implementation of the Updater interface
 // for the Ubuntu OS.
 type UbuntuUpdater struct {
-	commandExecutor utils.Executor
-	request         *pb.UpdateSystemSoftwareRequest
+	commandExecutor         utils.Executor
+	request                 *pb.UpdateSystemSoftwareRequest
+	getEstimatedSize        func(cmdExec utils.Executor) (bool, uint64, error)
+	getFreeDiskSpaceInBytes func(path string) (uint64, error)
+	//utils.GetFreeDiskSpaceInBytes
 }
 
 // Update method for Ubuntu
@@ -51,7 +54,7 @@ func (u *UbuntuUpdater) Update() error {
 		return fmt.Errorf("SOTA Aborted: Failed to set environment variable: %v", err)
 	}
 
-	isUpdateAvail, updateSize, err := getEstimatedSize(u.commandExecutor)
+	isUpdateAvail, updateSize, err := u.getEstimatedSize(u.commandExecutor)
 	if err != nil {
 		return fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
 	}
@@ -62,7 +65,7 @@ func (u *UbuntuUpdater) Update() error {
 
 	log.Printf("Estimated update size: %d bytes", updateSize)
 
-	freeSpace, err :=utils.GetFreeDiskSpaceInBytes("/")
+	freeSpace, err := u.getFreeDiskSpaceInBytes("/")
 	if err != nil {
 		return fmt.Errorf("SOTA Aborted: Failed to get free disk space: %v", err)
 	}
@@ -78,7 +81,7 @@ func (u *UbuntuUpdater) Update() error {
 	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD:
 		cmds = noDownload(u.request.PackageList)
 	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY:
-		cmds= downloadOnly(u.request.PackageList)
+		cmds = downloadOnly(u.request.PackageList)
 	default:
 		return fmt.Errorf("SOTA Aborted: Invalid mode")
 	}
@@ -89,12 +92,6 @@ func (u *UbuntuUpdater) Update() error {
 		if len(stderr) > 0 {
 			return fmt.Errorf("SOTA Aborted: Command failed: %s", string(stderr))
 		}
-	}
-
-	// Write the update status to the status log file
-	err = writeUpdateStatus(SUCCESS, string("SOTA command status: SUCCESSFUL"), "")
-	if err != nil {
-		fmt.Printf("[Warning] Error writing update status: %v", err)
 	}
 
 	return nil
@@ -168,8 +165,8 @@ func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (bool, uint6
 func noDownload(packages []string) [][]string {
 	log.Println("No download mode")
 	cmds := [][]string{
-		{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold",},
-		{"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", 
+		{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold"},
+		{"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
 			"Dpkg::Options::='--force-confold'", "-yq", "-f", "install"},
 	}
 
@@ -194,7 +191,7 @@ func downloadOnly(packages []string) [][]string {
 	log.Println("Download only mode")
 
 	cmds := [][]string{
-		{"apt-get", "update"}, 
+		{"apt-get", "update"},
 		{"dpkg-query", "-f", "'${binary:Package}\\n'", "-W"},
 	}
 
@@ -219,7 +216,7 @@ func fullInstall(packages []string) [][]string {
 
 	cmds := [][]string{
 		{"/usr/bin/apt-get", "update"},
-	 	{"dpkg-query -W -f='${binary:Package}\\n'"},
+		{"dpkg-query -W -f='${binary:Package}\\n'"},
 		{"dpkg --configure -a --force-confdef --force-confold"},
 		{"apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install"},
 		{"apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'"}}
@@ -247,7 +244,7 @@ func (u *UbuntuRebooter) Reboot() error {
 		log.Println("Reboot is disabled.  Skipping reboot.")
 		return nil
 	}
-	
+
 	fmt.Print("Rebooting ")
 	time.Sleep(2 * time.Second)
 
