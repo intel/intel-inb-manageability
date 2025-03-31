@@ -23,12 +23,13 @@ func (m *MockDownloader) Download() error {
 
 // MockUpdater is a mock implementation of the Updater interface.
 type MockUpdater struct {
-	UpdateFunc func() error
+	UpdateFunc func() (bool, error)
 }
 
 // Update calls the UpdateFunc.
-func (m *MockUpdater) Update() error {
-	return m.UpdateFunc()
+func (m *MockUpdater) Update() (bool, error) {
+	proceedWithReboot, err := m.UpdateFunc()
+	return proceedWithReboot, err
 }
 
 // MockRebooter is a mock implementation of the Rebooter interface.

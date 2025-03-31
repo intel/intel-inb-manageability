@@ -83,12 +83,12 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 			},
 			httpClient: &http.Client{},
 			requestCreator: func(method, url string, body io.Reader) (*http.Request, error) {
-				return nil, errors.New("error creating request")
+				return nil, errors.New("some error")
 			},
 		}
 
 		err := downloader.downloadFile()
-		assert.EqualError(t, err, "error creating request")
+		assert.EqualError(t, err, "error creating request: some error")
 	})
 
 	t.Run("error reading JWT token", func(t *testing.T) {

@@ -19,7 +19,7 @@ This will wait for a client connection on `/tmp/inbd.sock`.
 
 To run client:
 
-* Run: `sudo ./build/inbc --socket /tmp/inbd.sock sota --mode full`
+* Run: `sudo ./build/inbc --socket /tmp/inbd.sock sota --mode full --reboot=false`
 
 (Should respond with 501-Not Implemented)
 

@@ -19,7 +19,7 @@ func TestUpdateOS_Success(t *testing.T) {
 		},
 		CreateUpdaterFunc: func(executor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater {
 			return &MockUpdater{
-				UpdateFunc: func() error { return nil },
+				UpdateFunc: func() (bool, error) { return true, nil },
 			}
 		},
 		CreateRebooterFunc: func(executor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Rebooter {
@@ -63,7 +63,7 @@ func TestUpdateOS_UpdateError(t *testing.T) {
 		},
 		CreateUpdaterFunc: func(utils.Executor, *pb.UpdateSystemSoftwareRequest) Updater {
 			return &MockUpdater{
-				UpdateFunc: func() error { return fmt.Errorf("update error") },
+				UpdateFunc: func() (bool, error) { return false, fmt.Errorf("update error") },
 			}
 		},
 	}
@@ -85,7 +85,7 @@ func TestUpdateOS_RebootError(t *testing.T) {
 		},
 		CreateUpdaterFunc: func(utils.Executor, *pb.UpdateSystemSoftwareRequest) Updater {
 			return &MockUpdater{
-				UpdateFunc: func() error { return nil },
+				UpdateFunc: func() (bool, error) { return true, nil },
 			}
 		},
 		CreateRebooterFunc: func(executor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Rebooter {

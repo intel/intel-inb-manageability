@@ -78,7 +78,6 @@ func (t *EMTDownloader) Download() error {
 	// Perform source verification
 	if !IsTrustedRepository(t.request.Url, config) {
 		errMsg := fmt.Sprintf("URL '%s' is not in the list of trusted repositories.", t.request.Url)
-		log.Println(errMsg)
 		t.writeUpdateStatus(FAIL, string(jsonString), errMsg)
 		t.writeGranularLog(FAIL, FAILURE_REASON_RS_AUTHENTICATION)
 		return errors.New(errMsg)
@@ -89,13 +88,11 @@ func (t *EMTDownloader) Download() error {
 	// Check available space on disk
 	isDiskEnough, err := t.checkDiskSpace()
 	if err != nil {
-		log.Println("Error checking disk space:", err)
-		return errors.New(err.Error())
+		return fmt.Errorf("error checking disk space: %w", err)
 	}
 
 	if !isDiskEnough {
 		errMsg := "Insufficient disk space."
-		log.Println(errMsg)
 		t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
 		t.writeGranularLog(FAIL, FAILURE_REASON_INSUFFICIENT_STORAGE)
 		return errors.New(errMsg)
@@ -242,8 +239,7 @@ func (t *EMTDownloader) downloadFile() error {
 	// Create a new HTTP request
 	req, err := t.requestCreator("GET", t.request.Url, nil)
 	if err != nil {
-		log.Printf("Error creating request: %v\n", err)
-		return err
+		return fmt.Errorf("error creating request: %w", err)
 	}
 
 	// Add the JWT token to the request header
@@ -263,7 +259,6 @@ func (t *EMTDownloader) downloadFile() error {
 	// Check if the status code is 200/Success. If not, return the error.
 	if resp.StatusCode != http.StatusOK {
 		errMsg := fmt.Sprintf("Status code: %d. Expected 200/Success.", resp.StatusCode)
-		log.Println(errMsg)
 		return errors.New(errMsg)
 	}
 
@@ -309,12 +304,12 @@ func NewEMTUpdater(commandExecutor utils.Executor, request *pb.UpdateSystemSoftw
 // errReader is a helper type to simulate an error during reading
 type errReader struct{}
 
-func (errReader) Read(p []byte) (n int, err error) {
+func (errReader) Read(_ []byte) (n int, err error) {
 	return 0, errors.New("error copying response body")
 }
 
 // Update method for Emt
-func (t *EMTUpdater) Update() error {
+func (t *EMTUpdater) Update() (bool, error) {
 	// Print the value of tu.request.Mode
 	log.Printf("Mode: %v\n", t.request.Mode)
 
@@ -331,7 +326,7 @@ func (t *EMTUpdater) Update() error {
 		if err != nil {
 			t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
 			t.writeGranularLog(FAIL, FAILURE_REASON_SIGNATURE_CHECK)
-			return fmt.Errorf("hash verification failed: %w", err)
+			return false, fmt.Errorf("hash verification failed: %w", err)
 		}
 
 		log.Println("Execute update tool write command.")
@@ -348,10 +343,9 @@ func (t *EMTUpdater) Update() error {
 		}
 
 		if _, _, err := t.commandExecutor.Execute(updateToolWriteCommand); err != nil {
-			log.Printf("Error executing shell command(%v): %v\n", updateToolWriteCommand, err)
 			t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
 			t.writeGranularLog(FAIL, FAILURE_REASON_UT_WRITE)
-			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolWriteCommand, err)
+			return false, fmt.Errorf("failed to execute shell command(%v)- %v", updateToolWriteCommand, err)
 		}
 
 		jsonString, err := protojson.Marshal(t.request)
@@ -369,7 +363,7 @@ func (t *EMTUpdater) Update() error {
 			errMsg := fmt.Sprintf("Error taking snapshot: %v", err)
 			t.writeUpdateStatus(FAIL, string(jsonString), errMsg)
 			t.writeGranularLog(FAIL, FAILURE_REASON_INBM)
-			return fmt.Errorf("failed to take snapshot before applying the update: %v", err)
+			return false, fmt.Errorf("failed to take snapshot before applying the update: %v", err)
 		}
 
 		log.Println("Execute update tool apply command.")
@@ -380,7 +374,7 @@ func (t *EMTUpdater) Update() error {
 		if _, _, err := t.commandExecutor.Execute(updateToolApplyCommand); err != nil {
 			t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
 			t.writeGranularLog(FAIL, FAILURE_REASON_BOOT_CONFIGURATION)
-			return fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
+			return false, fmt.Errorf("failed to execute shell command(%v)- %v", updateToolApplyCommand, err)
 		}
 
 		// Write the update status to the status log file
@@ -388,7 +382,7 @@ func (t *EMTUpdater) Update() error {
 		writeGranularLog(SUCCESS, "")
 	}
 
-	return nil
+	return true, nil
 }
 
 // VerifyHash verifies the hash of the downloaded file.
@@ -420,9 +414,7 @@ func (t *EMTUpdater) VerifyHash() error {
 	computedChecksum := hex.EncodeToString(computedHash)
 
 	if computedChecksum != t.request.Signature {
-		errMsg := fmt.Sprintf("Checksum mismatch. Expected: %s, got: %s", t.request.Signature, computedChecksum)
-		log.Println(errMsg)
-		return errors.New(errMsg)
+		return fmt.Errorf("checksum mismatch: Expected: %s, got: %s", t.request.Signature, computedChecksum)
 	}
 	log.Println("SHA verification complete.")
 

@@ -184,8 +184,9 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			},
 		}
 
-        err := updater.Update()
+        proceedWithReboot, err := updater.Update()
         assert.NoError(t, err)
+		assert.True(t, proceedWithReboot)
     })
 
     // t.Run("fail to set environment variables", func(t *testing.T) {
@@ -221,8 +222,9 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			},
 		}
 
-        err := updater.Update()
+        proceedWithReboot, err := updater.Update()
         assert.NoError(t, err)
+		assert.False(t, proceedWithReboot)
         assert.Equal(t, 0, len(mockExec.commands))       
     })
 
@@ -243,10 +245,11 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			},
 		}
 
-        err := updater.Update()
+        proceedWithReboot, err := updater.Update()
         assert.Error(t, err)
         assert.Contains(t, err.Error(), "Not enough free disk space")
-    })
+		assert.False(t, proceedWithReboot)
+	})
 
     t.Run("execute fullInstall mode", func(t *testing.T) {
         mockExec := &mockExecutor{
@@ -266,8 +269,9 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			},
         }
 
-        err := updater.Update()
+        proceedWithReboot, err := updater.Update()
         assert.NoError(t, err)
+		assert.True(t, proceedWithReboot)
         assert.Greater(t, len(mockExec.commands), 0)
     })
 
@@ -290,8 +294,9 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			},
         }
 
-        err := updater.Update()
+        proceedWithReboot, err := updater.Update()
         assert.NoError(t, err)
+		assert.True(t, proceedWithReboot)
         assert.Greater(t, len(mockExec.commands), 0)
     })
 
@@ -314,8 +319,9 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			},
         }
 
-        err := updater.Update()
+        proceedWithReboot, err := updater.Update()
         assert.NoError(t, err)
+		assert.True(t, proceedWithReboot)
         assert.Greater(t, len(mockExec.commands), 0)
     })
 
@@ -334,8 +340,9 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			},
         }
 
-        err := updater.Update()
+        proceedWithReboot, err := updater.Update()
         assert.Error(t, err)
+		assert.False(t, proceedWithReboot)
         assert.Contains(t, err.Error(), "Invalid mode")
     })
 }

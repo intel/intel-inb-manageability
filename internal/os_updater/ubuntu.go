@@ -42,36 +42,36 @@ type UbuntuUpdater struct {
 }
 
 // Update method for Ubuntu
-func (u *UbuntuUpdater) Update() error {
+func (u *UbuntuUpdater) Update() (bool, error) {
 	// Set the environment variable DEBIAN_FRONTEND to noninteractive
 	err := os.Setenv("DEBIAN_FRONTEND", "noninteractive")
 	if err != nil {
-		return fmt.Errorf("SOTA Aborted: Failed to set environment variable: %v", err)
+		return false, fmt.Errorf("SOTA Aborted: Failed to set environment variable: %v", err)
 	}
 
 	err = os.Setenv("PATH", os.Getenv("PATH")+":/usr/bin:/bin")
 	if err != nil {
-		return fmt.Errorf("SOTA Aborted: Failed to set environment variable: %v", err)
+		return false, fmt.Errorf("SOTA Aborted: Failed to set environment variable: %v", err)
 	}
 
 	isUpdateAvail, updateSize, err := u.getEstimatedSize(u.commandExecutor)
 	if err != nil {
-		return fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
+		return false, fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
 	}
 	if !isUpdateAvail {
 		log.Println("No update available.  System is up to date.")
-		return nil
+		return false, nil
 	}
 
 	log.Printf("Estimated update size: %d bytes", updateSize)
 
 	freeSpace, err := u.getFreeDiskSpaceInBytes("/")
 	if err != nil {
-		return fmt.Errorf("SOTA Aborted: Failed to get free disk space: %v", err)
+		return false, fmt.Errorf("SOTA Aborted: Failed to get free disk space: %v", err)
 	}
 	log.Printf("Free disk space: %d bytes", freeSpace)
 	if freeSpace < updateSize {
-		return fmt.Errorf("SOTA Aborted: Not enough free disk space.  Free: %d bytes, Required: %d bytes", freeSpace, updateSize)
+		return false, fmt.Errorf("SOTA Aborted: Not enough free disk space.  Free: %d bytes, Required: %d bytes", freeSpace, updateSize)
 	}
 
 	var cmds [][]string
@@ -83,18 +83,18 @@ func (u *UbuntuUpdater) Update() error {
 	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY:
 		cmds = downloadOnly(u.request.PackageList)
 	default:
-		return fmt.Errorf("SOTA Aborted: Invalid mode")
+		return false, fmt.Errorf("SOTA Aborted: Invalid mode")
 	}
 
 	for _, cmd := range cmds {
 		log.Printf("Executing command: %s", cmd)
 		stderr, _, _ := u.commandExecutor.Execute(cmd)
 		if len(stderr) > 0 {
-			return fmt.Errorf("SOTA Aborted: Command failed: %s", string(stderr))
+			return false, fmt.Errorf("SOTA Aborted: Command failed: %s", string(stderr))
 		}
 	}
 
-	return nil
+	return true, nil
 }
 
 func getEstimatedSize(cmdExec utils.Executor) (bool, uint64, error) {
