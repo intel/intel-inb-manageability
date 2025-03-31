@@ -196,7 +196,7 @@ func VerifyUpdateAfterReboot(osType string) error {
 			} else {
 				log.Println("Update failed. Reverting to previous image.")
 				// Write the status to the log file.
-				writeUpdateStatus(FAIL, "", "Update failed. Version are same.")
+				writeUpdateStatus(FAIL, "", "Update failed. Versions are the same.")
 				writeGranularLog(FAIL, FAILURE_REASON_BOOTLOADER)
 				
 				log.Println("Rebooting...")
