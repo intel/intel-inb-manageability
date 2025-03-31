@@ -23,7 +23,7 @@ func NewExecutor[C any](createCmdFn func(name string, args ...string) *C, execCm
 
 // Executor is an interface that contains the method to execute a command.
 type Executor interface {
-	Execute([]string) ([]byte, []byte, error)
+	Execute([]string) ( stdout []byte, stderr []byte, err error)
 }
 
 type executor[C any] struct {
@@ -59,10 +59,10 @@ func ExecuteAndReadOutput(executableCommand *exec.Cmd) ([]byte, []byte, error) {
 
 	fmt.Printf("'%v' stderr: %v, stdout: %v", executableCommand.String(), stderr.String(), stdout.String())
 	if err != nil {
-		return []byte(stderr.String()), []byte(stdout.String()), fmt.Errorf("failed to run '%v' command - %v", executableCommand.String(), err)
+		return []byte(stdout.String()), []byte(stderr.String()), fmt.Errorf("failed to run '%v' command - %v", executableCommand.String(), err)
 	}
 
-	return []byte(stderr.String()), []byte(stdout.String()), nil
+	return []byte(stdout.String()), []byte(stderr.String()), nil
 }
 
 // IsSymlink checks if a file is a symlink.

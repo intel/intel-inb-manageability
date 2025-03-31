@@ -27,7 +27,7 @@ func (m *mockExecutor) Execute(command []string) ([]byte, []byte, error) {
 		stdout = m.stdout[0]
 		m.stdout = m.stdout[1:]
 	}
-	return []byte(stderr), []byte(stdout), m.errors[0]
+	return []byte(stdout), []byte(stderr), m.errors[0]
 }
 
 func TestUbuntuDownloader_Download(t *testing.T) {
@@ -120,9 +120,10 @@ func TestGetEstimatedSize(t *testing.T) {
 		assert.Equal(t, []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o", "Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}, mockExec.commands[0])
 	})
 
-	t.Run("successful size estimation outside Docker", func(t *testing.T) {
+	t.Run("successful size estimation", func(t *testing.T) {
 		mockExec := &mockExecutor{
 			stdout: []string{"After this operation, 500 MB of additional disk space will be used."},
+			stderr: []string{""},
 			errors: []error{nil},
 		}
 
@@ -254,7 +255,8 @@ func TestUbuntuUpdater_Update(t *testing.T) {
     t.Run("execute fullInstall mode", func(t *testing.T) {
         mockExec := &mockExecutor{
 			stdout: []string{"0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded."},
-            errors: []error{nil},
+            stderr: []string{""},
+			errors: []error{nil},
 		}
         updater := &UbuntuUpdater{
             commandExecutor: mockExec,

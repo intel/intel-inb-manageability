@@ -38,7 +38,6 @@ type UbuntuUpdater struct {
 	request                 *pb.UpdateSystemSoftwareRequest
 	getEstimatedSize        func(cmdExec utils.Executor) (bool, uint64, error)
 	getFreeDiskSpaceInBytes func(path string) (uint64, error)
-	//utils.GetFreeDiskSpaceInBytes
 }
 
 // Update method for Ubuntu
@@ -88,7 +87,7 @@ func (u *UbuntuUpdater) Update() (bool, error) {
 
 	for _, cmd := range cmds {
 		log.Printf("Executing command: %s", cmd)
-		stderr, _, _ := u.commandExecutor.Execute(cmd)
+		_, stderr, _ := u.commandExecutor.Execute(cmd)
 		if len(stderr) > 0 {
 			return false, fmt.Errorf("SOTA Aborted: Command failed: %s", string(stderr))
 		}
@@ -102,7 +101,7 @@ func getEstimatedSize(cmdExec utils.Executor) (bool, uint64, error) {
 		"Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}
 
 	// Ignore the error as the command will return a non-zero exit code
-	stderr, stdout, _ := cmdExec.Execute(cmd)
+	stdout, stderr, _ := cmdExec.Execute(cmd)
 	if len(stderr) > 0 {
 		log.Printf("Error executing command: %s", string(stderr))
 	}
