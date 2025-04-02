@@ -47,7 +47,7 @@ func Snapshot() error {
 		"sudo", "truncate", "-s", "0", dispatcherStatePath,
 	}
 
-	if _, err := cmdExecutor.Execute(dispatcherStateTruncateCommand); err != nil {
+	if _, _, err := cmdExecutor.Execute(dispatcherStateTruncateCommand); err != nil {
 		return fmt.Errorf("failed to truncate dispatcher state file with command(%v)- %w", dispatcherStateTruncateCommand, err)
 	}
 
@@ -196,11 +196,9 @@ func VerifyUpdateAfterReboot(osType string) error {
 			} else {
 				log.Println("Update failed. Reverting to previous image.")
 				// Write the status to the log file.
-				err := writeUpdateStatus(FAIL, "", "Update failed. Version are same.")
-				if err != nil {
-					log.Printf("[Warning] Error writing update status: %v", err)
-				}
-
+				writeUpdateStatus(FAIL, "", "Update failed. Versions are the same.")
+				writeGranularLog(FAIL, FAILURE_REASON_BOOTLOADER)
+				
 				log.Println("Rebooting...")
 				// Reboot the system without commit.
 				// //TODO: Only reboot here? Or should we also reboot without commit in other failure?
@@ -218,15 +216,11 @@ func VerifyUpdateAfterReboot(osType string) error {
 			}
 
 			// Write status to the log file.
-			err = writeUpdateStatus(SUCCESS, "", "")
-			if err != nil {
-				log.Printf("[Warning] Error writing update status: %v", err)
-			}
+			writeUpdateStatus(SUCCESS, "", "")
 
 			log.Println("SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
 
-			// TODO: Write the granular log for success and fail cases.
-
+			writeGranularLog(SUCCESS, "")
 		}
 
 	} else {

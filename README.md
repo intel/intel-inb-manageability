@@ -8,18 +8,18 @@ To run lint checks:
 To build:
 * Run: `earthly +build`
 
-To run tests:
+To run tests: (Includes +lint)
 * Run: `earthly +test`
 
 To run server:
 
-* Run: `./build/inbd -s /tmp/inbd.sock`
+* Run: `sudo ./build/inbd -s /tmp/inbd.sock`
 
 This will wait for a client connection on `/tmp/inbd.sock`.
 
 To run client:
 
-* Run: `./build/inbc --socket /tmp/inbd.sock sota --mode full`
+* Run: `sudo ./build/inbc --socket /tmp/inbd.sock sota --mode full --reboot=false`
 
 (Should respond with 501-Not Implemented)
 
