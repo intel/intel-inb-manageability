@@ -16,6 +16,9 @@ import (
 
 // UpdateOS updates the OS depending on the OS type.
 func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.UpdateResponse, error) {
+	// Create a cleaner to remove the artifacts later.
+	cleaner := NewCleaner(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput))
+
 	log.Printf("Request Mode: %v\n", req.Mode)
 
 	if req.Mode != pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD {
@@ -31,11 +34,22 @@ func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.
 	updater := factory.CreateUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), req)
 	proceedWithReboot, err := updater.Update()
 	if err != nil {
+		// Remove the artifacts if failure happens.
+		errDel := cleaner.DeleteAll(downloadDir + "/")
+		if errDel != nil {
+			log.Printf("[Warning] %v", errDel.Error())
+		}
 		return &pb.UpdateResponse{StatusCode: 500, Error: err.Error()}, nil
 	}
 
 	log.Println("Update completed successfully.")
-
+      
+  // Remove the artifacts after update success.
+	err = cleaner.DeleteAll(downloadDir + "/")
+	if err != nil {
+		log.Printf("[Warning] %v", err.Error())
+	}
+      
 	if proceedWithReboot {
 		if req.Mode != pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY {
 			// Reboot the system
