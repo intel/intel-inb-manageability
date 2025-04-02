@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: (C) 2024-2025 Intel Corporation
+# SPDX-FileCopyrightText: (C) 2025 Intel Corporation
 # SPDX-License-Identifier: LicenseRef-Intel
 VERSION 0.8
 
@@ -33,6 +33,11 @@ build:
     BUILD +generate-proto
     BUILD +build-inbc
     BUILD +build-inbd
+
+build-deb:
+    BUILD +build
+    BUILD +build-inbc-deb
+    BUILD +build-inbd-deb
 
 golang-base:
     RUN apk add --no-cache protoc protobuf-dev libprotobuf curl gcc musl-dev && \
@@ -98,3 +103,25 @@ build-inbd:
             -ldflags "-s -w -extldflags '-static' -X main.Version=$version" \
             ./cmd/inbd
     SAVE ARTIFACT build/inbd AS LOCAL ./build/inbd
+
+build-inbc-deb:
+    BUILD +build-inbc
+    FROM +build-inbc
+    FROM debian:bullseye
+    WORKDIR /package
+    RUN mkdir -p DEBIAN usr/bin
+    COPY build/inbc usr/bin/inbc
+    RUN echo "Package: INBC\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: INBM CLI Tool" > DEBIAN/control
+    RUN dpkg-deb --build . /package/inbc-program.deb
+    SAVE ARTIFACT /package/inbc-program.deb AS LOCAL ./build/inbc-program.deb
+  
+build-inbd-deb:
+    BUILD +build-inbd
+    FROM +build-inbd
+    FROM debian:bullseye
+    WORKDIR /package
+    RUN mkdir -p DEBIAN usr/bin
+    COPY build/inbd usr/bin/inbd
+    RUN echo "Package: INBD\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: INBM CLI Tool" > DEBIAN/control
+    RUN dpkg-deb --build . /package/inbd.deb
+    SAVE ARTIFACT /package/inbd.deb AS LOCAL ./build/inbd.deb
