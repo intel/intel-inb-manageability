@@ -179,6 +179,6 @@ func writeGranularLog(statusDetail string, failureReason string) {
 }
 
 // Wrapper function for backward compatibility
-func writeUpdateStatus(status, metadata, errorDetails string) error {
-	return writeUpdateStatusWithHandler(DefaultFileHandler{}, DefaultJSONHandler{}, status, metadata, errorDetails)
+func writeUpdateStatus(status, metadata, errorDetails string) {
+	writeUpdateStatusWithHandler(DefaultFileHandler{}, DefaultJSONHandler{}, status, metadata, errorDetails)
 }
