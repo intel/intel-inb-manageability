@@ -200,14 +200,14 @@ func VerifyUpdateAfterReboot(osType string) error {
 				}
 
 				// Write status to the log file.
-				err = writeUpdateStatus(SUCCESS, "", "")
+				writeUpdateStatus(SUCCESS, "", "")
 				if err != nil {
 					log.Printf("[Warning] Error writing update status: %v", err)
 				}
 
 				log.Println("SUCCESSFUL INSTALL: Overall SOTA update successful.  System has been properly updated.")
 
-				err = writeGranularLog(SUCCESS, "")
+				writeGranularLog(SUCCESS, "")
 				if err != nil {
 					log.Printf("[Warning] Error writing granular log: %v", err)
 				}
@@ -216,7 +216,7 @@ func VerifyUpdateAfterReboot(osType string) error {
 				// Write the status to the log file.
 				writeUpdateStatus(FAIL, "", "Update failed. Versions are the same.")
 				writeGranularLog(FAIL, FAILURE_REASON_BOOTLOADER)
-				
+
 				log.Println("Rebooting...")
 				// Reboot the system without commit.
 				emtRebooter := NewEMTRebooter(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &pb.UpdateSystemSoftwareRequest{})
