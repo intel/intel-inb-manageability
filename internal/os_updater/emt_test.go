@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+
 	//"path/filepath"
 	"strings"
 	"testing"
@@ -82,12 +83,12 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 			},
 			httpClient: &http.Client{},
 			requestCreator: func(method, url string, body io.Reader) (*http.Request, error) {
-				return nil, errors.New("error creating request")
+				return nil, errors.New("some error")
 			},
 		}
 
 		err := downloader.downloadFile()
-		assert.EqualError(t, err, "error creating request")
+		assert.EqualError(t, err, "error creating request: some error")
 	})
 
 	t.Run("error reading JWT token", func(t *testing.T) {
@@ -248,14 +249,52 @@ func TestEMTDownloader_readJWTToken(t *testing.T) {
 
 func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 	tests := []struct {
-		name           string
-		statfs         func(path string, stat *unix.Statfs_t) error
-		readJWTToken   func(fs afero.Afero, path string) (string, error)
-		httpClient     *http.Client
-		requestCreator func(method string, url string, body io.Reader) (*http.Request, error)
-		expectedResult bool
-		expectedError  error
+		name              string
+		statfs            func(path string, stat *unix.Statfs_t) error
+		readJWTToken      func(fs afero.Afero, path string) (string, error)
+		writeUpdateStatus func(string, string, string)
+		writeGranularLog  func(string, string)
+		httpClient        *http.Client
+		requestCreator    func(method string, url string, body io.Reader) (*http.Request, error)
+		expectedResult    bool
+		expectedError     error
 	}{
+		{
+			name: "successful check with enough disk space",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Header:     http.Header{"Content-Length": []string{"4096000"}},
+						Body:       http.NoBody,
+					}
+				}),
+			},
+			requestCreator: http.NewRequest,
+			expectedResult: true,
+			expectedError:  nil,
+		},
+		{
+			name: "error getting disk space",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				return errors.New("disk space error")
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "", nil
+			},
+			httpClient:     &http.Client{},
+			requestCreator: http.NewRequest,
+			expectedResult: false,
+			expectedError:  errors.New("disk space error"),
+		},
 		{
 			name: "successful check with enough disk space",
 			statfs: func(path string, stat *unix.Statfs_t) error {
@@ -302,10 +341,16 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			readJWTToken: func(afero.Afero, string) (string, error) {
 				return "", errors.New("token error")
 			},
+			writeUpdateStatus: func(status, message, details string) {
+				// No-op implementation for testing
+			},
+			writeGranularLog: func(level, message string) {
+				// No-op implementation for testing
+			},
 			httpClient:     &http.Client{},
 			requestCreator: http.NewRequest,
 			expectedResult: false,
-			expectedError:  errors.New("token error"),
+			expectedError:  errors.New("error reading JWT token: token error"),
 		},
 		{
 			name: "JWT token is empty",
@@ -317,10 +362,16 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			readJWTToken: func(afero.Afero, string) (string, error) {
 				return "", nil
 			},
-			httpClient:     &http.Client{},
-			requestCreator: http.NewRequest,
-			expectedResult: false,
-			expectedError:  errors.New("empty JWT token"),
+			writeUpdateStatus: func(status, message, details string) {
+				// No-op implementation for testing
+			},
+			writeGranularLog: func(level, message string) {
+				// No-op implementation for testing
+			},
+			httpClient:        &http.Client{},
+			requestCreator:    http.NewRequest,
+			expectedResult:    false,
+			expectedError:     errors.New("empty JWT Token"),
 		},
 		{
 			name: "error creating request",
@@ -331,6 +382,12 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			},
 			readJWTToken: func(afero.Afero, string) (string, error) {
 				return "valid-token", nil
+			},
+			writeUpdateStatus: func(status, message, details string) {
+				// No-op implementation for testing
+			},
+			writeGranularLog: func(level, message string) {
+				// No-op implementation for testing
 			},
 			httpClient: &http.Client{},
 			requestCreator: func(method, url string, body io.Reader) (*http.Request, error) {
@@ -372,6 +429,12 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			readJWTToken: func(afero.Afero, string) (string, error) {
 				return "valid-token", nil
 			},
+			writeUpdateStatus: func(status, message, details string) {
+				// No-op implementation for testing
+			},
+			writeGranularLog: func(level, message string) {
+				// No-op implementation for testing
+			},
 			httpClient: &http.Client{
 				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
 					if req.Method == "HEAD" {
@@ -397,6 +460,12 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			readJWTToken: func(afero.Afero, string) (string, error) {
 				return "valid-token", nil
 			},
+			writeUpdateStatus: func(status, message, details string) {
+				// No-op implementation for testing
+			},
+			writeGranularLog: func(level, message string) {
+				// No-op implementation for testing
+			},
 			httpClient: &http.Client{
 				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
 					return &http.Response{
@@ -419,6 +488,12 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			},
 			readJWTToken: func(afero.Afero, string) (string, error) {
 				return "valid-token", nil
+			},
+			writeUpdateStatus: func(status, message, details string) {
+				// No-op implementation for testing
+			},
+			writeGranularLog: func(level, message string) {
+				// No-op implementation for testing
 			},
 			httpClient: &http.Client{
 				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
@@ -449,6 +524,12 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			readJWTToken: func(afero.Afero, string) (string, error) {
 				return "valid-token", nil
 			},
+			writeUpdateStatus: func(status, message, details string) {
+				// No-op implementation for testing
+			},
+			writeGranularLog: func(level, message string) {
+				// No-op implementation for testing
+			},
 			httpClient: &http.Client{
 				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
 					if req.Method == "HEAD" {
@@ -461,13 +542,14 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 						StatusCode: 404,
 						Header:     http.Header{"Content-Length": []string{"4096000"}},
 						Body:       http.NoBody,
+						Status:     "some error message",
 					}
 				}),
 			},
 			requestCreator: http.NewRequest,
 			expectedResult: false,
 			expectedError:  errors.New("Status code: 404. Expected 200/Success."),
-		},		
+		},
 		{
 		    name: "content length header missing",
 		    statfs: func(path string, stat *unix.Statfs_t) error {
@@ -517,11 +599,13 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			downloader := &EMTDownloader{
-				statfs:           tt.statfs,
-				readJWTTokenFunc: tt.readJWTToken,
-				httpClient:       tt.httpClient,
-				requestCreator:   tt.requestCreator,
-				request:          &pb.UpdateSystemSoftwareRequest{Url: "http://example.com"},
+				statfs:            tt.statfs,
+				readJWTTokenFunc:  tt.readJWTToken,
+				writeUpdateStatus: tt.writeUpdateStatus,
+				writeGranularLog:  tt.writeGranularLog,
+				httpClient:        tt.httpClient,
+				requestCreator:    tt.requestCreator,
+				request:           &pb.UpdateSystemSoftwareRequest{Url: "http://example.com"},
 			}
 			result, err := downloader.checkDiskSpace()
 			assert.Equal(t, tt.expectedResult, result)

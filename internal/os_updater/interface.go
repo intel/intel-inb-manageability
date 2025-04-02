@@ -63,6 +63,7 @@ func (f *UbuntuFactory) CreateUpdater(commandExecutor utils.Executor, req *pb.Up
 	return &UbuntuUpdater{
 		commandExecutor: commandExecutor,
 		request:         req,
+		getEstimatedSize: getEstimatedSize,
 	}
 }
 

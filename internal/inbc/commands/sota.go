@@ -39,7 +39,7 @@ func SOTACmd() *cobra.Command {
 	cmd.Flags().StringVar(&releaseDate, "releasedate", "", "Release date of the new SW update (RFC3339 format)")
 	cmd.Flags().StringVar(&mode, "mode", "full", "Mode for installing the software update (full, no-download, download-only)")
 	must(cmd.MarkFlagRequired("mode"))
-	cmd.Flags().BoolVar(&reboot, "reboot", true, "Whether to reboot the node after the software update attempt")
+	cmd.Flags().BoolVar(&reboot, "reboot", true, "Whether to reboot after the software update attempt")
 	cmd.Flags().StringSliceVar(&packageList, "package-list", []string{}, "List of packages to install if whole package update isn't desired")
 	cmd.Flags().StringVar(&signature, "signature", "", "Signature of the package")
 

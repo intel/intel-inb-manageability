@@ -45,7 +45,7 @@ By default, when SOTA is performing an installation, it will upgrade all eligibl
 inbc sota {--uri URI} 
    [--releasedate RELEASE_DATE; default="2026-12-31"] 
    [--mode MODE; default="full", choices=["full","no-download", "download-only"] ]
-   [--reboot; default=yes]
+   [--reboot; default=true]
    [--package-list PACKAGES]
 ```
 
@@ -54,13 +54,13 @@ inbc sota {--uri URI}
 #### Edge Device on Ubuntu in Update/Full mode
 
 ```commandline
-inbc sota
+inbc sota --reboot=false
 ```
 
 #### Edge Device on Ubuntu in Update/Full mode with package list
 
 ```commandline
-inbc sota --package-list less,git
+inbc sota --package-list less,git --reboot=false
 ```
 
 This will install (or upgrade) the less and git packages and any necessary
@@ -69,13 +69,13 @@ dependencies.
 #### Edge Device on Ubuntu in download-only mode
 
 ```commandline
-inbc sota --mode download-only
+inbc sota --mode download-only --reboot=false
 ```
 
 #### Edge Device on Ubuntu in download-only mode with package list
 
 ```commandline
-inbc sota --mode download-only --package-list less,git
+inbc sota --mode download-only --package-list=less,git --reboot=false
 ```
 
 This will download the latest versions of less and git and any necessary
@@ -84,7 +84,7 @@ dependencies.
 #### Edge Device on Ubuntu in no-download mode
 
 ```commandline
-inbc sota --mode no-download
+inbc sota --mode no-download --reboot=false
 ```
 
 #### Edge Device on Ubuntu in no-download mode with package list

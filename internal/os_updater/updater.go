@@ -8,5 +8,5 @@ package osupdater
 
 // Updater is an interface that contains the method to update the OS.
 type Updater interface {
-	Update() error
+	Update() (bool, error)
 }
