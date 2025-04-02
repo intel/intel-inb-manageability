@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
+### Fixed
+- (ITEP-23994) Support non-auth RS
+
+## 4.2.8.5 - 2025-03-17
 ### Changed
 - (NEXMANAGE-1272) Fix /var/intel-manageability directory not being created when using LUKS which is needed for sqlite3
 - (NEXMANAGE-956) Improve failure reason from TC that is logged in Mjunct DB for FOTA
