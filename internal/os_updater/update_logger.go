@@ -80,12 +80,13 @@ type FileWriter interface {
 	Close() error
 }
 
-func writeUpdateStatusWithHandler(handler FileHandler, jsonHandler JSONHandler, status, metadata, errorDetails string) {
+func writeUpdateStatusWithHandler(handler FileHandler, jsonHandler JSONHandler, status, metadata, errorDetails string) error {
 	// Create the update status log file if it does not exist.
 	if _, err := handler.Stat(updateStatusLogPath); os.IsNotExist(err) {
 		file, err := handler.Create(updateStatusLogPath)
 		if err != nil {
 			log.Printf("[Warning] Error writing update status: failed to create update status log file: %v", err)
+			return err
 		}
 		defer file.Close()
 	}
@@ -94,6 +95,7 @@ func writeUpdateStatusWithHandler(handler FileHandler, jsonHandler JSONHandler, 
 	file, err := handler.OpenFile(updateStatusLogPath, os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Printf("[Warning] Error writing update status: failed to open update status log file: %v", err)
+		return err
 	}
 	defer file.Close()
 
@@ -111,13 +113,16 @@ func writeUpdateStatusWithHandler(handler FileHandler, jsonHandler JSONHandler, 
 	jsonData, err := jsonHandler.MarshalIndent(updateStatus, "", "  ")
 	if err != nil {
 		log.Printf("[Warning] Error writing update status: failed to marshal JSON: %v", err)
+		return err
 	}
 
 	// Write the JSON data to the file.
 	_, err = file.Write(jsonData)
 	if err != nil {
 		log.Printf("[Warning] Error writing update status log file: %v", err)
+		return err
 	}
+	return nil
 }
 
 func writeGranularLog(statusDetail string, failureReason string) {
@@ -179,6 +184,6 @@ func writeGranularLog(statusDetail string, failureReason string) {
 }
 
 // Wrapper function for backward compatibility
-func writeUpdateStatus(status, metadata, errorDetails string) {
-	writeUpdateStatusWithHandler(DefaultFileHandler{}, DefaultJSONHandler{}, status, metadata, errorDetails)
+func writeUpdateStatus(status, metadata, errorDetails string) error {
+	return writeUpdateStatusWithHandler(DefaultFileHandler{}, DefaultJSONHandler{}, status, metadata, errorDetails)
 }
