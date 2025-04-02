@@ -214,5 +214,5 @@ func TestWriteUpdateStatus_FileWriteError(t *testing.T) {
 
 	err := writeUpdateStatusWithHandler(mockHandler, mockJSONHandler, "Failure", "Metadata", "Error")
 	assert.Error(t, err)
-	assert.Equal(t, "write error", err.Error())
+	assert.Equal(t, "failed to write file", err.Error())
 }
