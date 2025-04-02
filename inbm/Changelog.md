@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## X.X.X - YYYY-MM-DD
 ### Fixed
 - (ITEP-23994) Support non-auth RS
+- (NEXMANAGE-1263) Re-enable enforcement of TLS mode when sending token to INBS cloud
 
 ## 4.2.8.5 - 2025-03-17
 ### Changed

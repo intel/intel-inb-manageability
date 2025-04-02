@@ -65,14 +65,12 @@ class InbsCloudClient(CloudClient):
 
         self._metadata: list[tuple[str, str]] = [("node-id", node_id)]
 
-        # this code will be used when TLS is available in INBS
-        # if tls_enabled:
-        #     if token is None:
-        #         raise AuthenticationError("Token is required when TLS is enabled.")
-        #     else:
-        #         self._metadata.append(("authorization", "Bearer " + token))
-        #     # if tls_cert is None, this is OK; implied that we have it installed system wide
-        # instead, we will simply use the token if it exists
+        if tls_enabled:
+            if token is None:
+                raise AuthenticationError("Token is required when TLS is enabled.")
+            else:
+                self._metadata.append(("authorization", "Bearer " + token))
+            # if tls_cert is None, this is OK; implied that we have it installed system wide
 
         if token is not None:
             self._metadata.append(("authorization", "Bearer " + token))
