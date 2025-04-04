@@ -64,6 +64,7 @@ func (f *UbuntuFactory) CreateUpdater(commandExecutor utils.Executor, req *pb.Up
 		commandExecutor: commandExecutor,
 		request:         req,
 		getEstimatedSize: getEstimatedSize,
+		getFreeDiskSpaceInBytes: utils.GetFreeDiskSpaceInBytes,
 	}
 }
 

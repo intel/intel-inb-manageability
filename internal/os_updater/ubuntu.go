@@ -103,7 +103,7 @@ func getEstimatedSize(cmdExec utils.Executor) (bool, uint64, error) {
 	// Ignore the error as the command will return a non-zero exit code
 	stdout, stderr, _ := cmdExec.Execute(cmd)
 	if len(stderr) > 0 {
-		log.Printf("Error executing command: %s", string(stderr))
+		log.Printf("Error executing command: %s\n", string(stderr))
 	}
 	return getEstimatedSizeInBytesFromAptGetUpgrade(string(stdout))
 }
@@ -165,21 +165,20 @@ func noDownload(packages []string) [][]string {
 	log.Println("No download mode")
 	cmds := [][]string{
 		{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold"},
-		{"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
-			"Dpkg::Options::='--force-confold'", "-yq", "-f", "install"},
+		{"apt-get", "-o", "Dpkg::Options::=--force-confdef", "-o",
+			"Dpkg::Options::=--force-confold", "-yq", "-f", "install"},
 	}
 
 	if len(packages) == 0 {
 		cmds = append(cmds, []string{"apt-get", "-o",
-			"Dpkg::Options::='--force-confdef'", "-o",
-			"Dpkg::Options::='--force-confold'",
-			"--with-new-pkgs", "--no-download",
-			"--fix-missing", "-yq", "upgrade"})
+			"Dpkg::Options::=--force-confdef", "-o",
+			"Dpkg::Options::=--force-confold",
+			"--with-new-pkgs", "--fix-missing", "-yq", "upgrade"})
 	} else {
 		cmds = append(cmds, [][]string{append([]string{"apt-get", "-o",
-			"Dpkg::Options::='--force-confdef'", "-o",
-			"Dpkg::Options::='--force-confold'",
-			"--no-download", "--fix-missing", "-yq",
+			"Dpkg::Options::=--force-confdef", "-o",
+			"Dpkg::Options::=--force-confold",
+			"--fix-missing", "-yq",
 			"install"}, packages...)}...)
 	}
 
@@ -190,8 +189,8 @@ func downloadOnly(packages []string) [][]string {
 	log.Println("Download only mode")
 
 	cmds := [][]string{
+		{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold"},
 		{"apt-get", "update"},
-		{"dpkg-query", "-f", "'${binary:Package}\\n'", "-W"},
 	}
 
 	if len(packages) == 0 {
@@ -215,15 +214,14 @@ func fullInstall(packages []string) [][]string {
 
 	cmds := [][]string{
 		{"/usr/bin/apt-get", "update"},
-		{"dpkg-query -W -f='${binary:Package}\\n'"},
-		{"dpkg --configure -a --force-confdef --force-confold"},
-		{"apt-get -yq -f -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install"},
-		{"apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold'"}}
+		{"apt-get", "-yq", "-f", "install"}, // Fix broken dependencies
+		{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold"},
+	}
 
 	if len(packages) == 0 {
-		cmds = append(cmds, []string{"apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' --with-new-pkgs upgrade"})
+		cmds = append(cmds, []string{"apt-get", "-yq", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "--with-new-pkgs", "upgrade"})
 	} else {
-		cmds = append(cmds, []string{"apt-get -yq -o Dpkg::Options::='--force-confdef' -o Dpkg::Options::='--force-confold' install"})
+		cmds = append(cmds, []string{"apt-get", "-yq", "-o", "Dpkg::Options::=--force-confdef", "-o", "Dpkg::Options::=--force-confold", "install"})
 		cmds = append(cmds, packages)
 	}
 
