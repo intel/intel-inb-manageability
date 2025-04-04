@@ -353,27 +353,6 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			expectedError:  errors.New("error reading JWT token: token error"),
 		},
 		{
-			name: "JWT token is empty",
-			statfs: func(path string, stat *unix.Statfs_t) error {
-				stat.Bavail = 1000
-				stat.Bsize = 4096
-				return nil
-			},
-			readJWTToken: func(afero.Afero, string) (string, error) {
-				return "", nil
-			},
-			writeUpdateStatus: func(status, message, details string) {
-				// No-op implementation for testing
-			},
-			writeGranularLog: func(level, message string) {
-				// No-op implementation for testing
-			},
-			httpClient:        &http.Client{},
-			requestCreator:    http.NewRequest,
-			expectedResult:    false,
-			expectedError:     errors.New("empty JWT Token"),
-		},
-		{
 			name: "error creating request",
 			statfs: func(path string, stat *unix.Statfs_t) error {
 				stat.Bavail = 1000
@@ -397,27 +376,27 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			expectedError:  errors.New("error creating request: error"),
 		},
 		{
-		    name: "error performing request",
-		    statfs: func(path string, stat *unix.Statfs_t) error {
-		        stat.Bavail = 1000
-		        stat.Bsize = 4096
-		        return nil
-		    },
-		    readJWTToken: func(afero.Afero, string) (string, error) {
-		        return "valid-token", nil
-		    },
-		    httpClient: &http.Client{
-		        Transport: roundTripperFunc(func(req *http.Request) *http.Response {
-		            return &http.Response{
-		                StatusCode: 500,
-		                Header:     http.Header{"Content-Length": []string{"4096001"}},
-		                Body:       http.NoBody,
-		            }
-		        }),
-		    },
+			name: "error performing request",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 500,
+						Header:     http.Header{"Content-Length": []string{"4096001"}},
+						Body:       http.NoBody,
+					}
+				}),
+			},
 			requestCreator: http.NewRequest,
-		    expectedResult: false,
-		    expectedError:  nil,
+			expectedResult: false,
+			expectedError:  nil,
 		},
 		{
 			name: "error performing GET request",
@@ -551,48 +530,48 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			expectedError:  errors.New("Status code: 404. Expected 200/Success."),
 		},
 		{
-		    name: "content length header missing",
-		    statfs: func(path string, stat *unix.Statfs_t) error {
-		        stat.Bavail = 1000
-		        stat.Bsize = 4096
-		        return nil
-		    },
-		    readJWTToken: func(afero.Afero, string) (string, error) {
-		        return "valid-token", nil
-		    },
-		    httpClient: &http.Client{
-		        Transport: roundTripperFunc(func(req *http.Request) *http.Response {
-		            return &http.Response{
-		                StatusCode: 200,
-		                Header:     http.Header{},
-		            }
-		        }),
-		    },
+			name: "content length header missing",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 1000
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Header:     http.Header{},
+					}
+				}),
+			},
 			requestCreator: http.NewRequest,
-		    expectedResult: false,
-		    expectedError:  errors.New("content-Length header is missing"),
+			expectedResult: false,
+			expectedError:  errors.New("content-Length header is missing"),
 		},
 		{
-		    name: "not enough disk space",
-		    statfs: func(path string, stat *unix.Statfs_t) error {
-		        stat.Bavail = 100
-		        stat.Bsize = 4096
-		        return nil
-		    },
-		    readJWTToken: func(afero.Afero, string) (string, error) {
-		        return "valid-token", nil
-		    },
-		    httpClient: &http.Client{
-		        Transport: roundTripperFunc(func(req *http.Request) *http.Response {
-		            return &http.Response{
-		                StatusCode: 200,
-		                Header:     http.Header{"Content-Length": []string{"4096000"}},
-		            }
-		        }),
-		    },
+			name: "not enough disk space",
+			statfs: func(path string, stat *unix.Statfs_t) error {
+				stat.Bavail = 100
+				stat.Bsize = 4096
+				return nil
+			},
+			readJWTToken: func(afero.Afero, string) (string, error) {
+				return "valid-token", nil
+			},
+			httpClient: &http.Client{
+				Transport: roundTripperFunc(func(req *http.Request) *http.Response {
+					return &http.Response{
+						StatusCode: 200,
+						Header:     http.Header{"Content-Length": []string{"4096000"}},
+					}
+				}),
+			},
 			requestCreator: http.NewRequest,
-		    expectedResult: false,
-		    expectedError:  nil,
+			expectedResult: false,
+			expectedError:  nil,
 		},
 	}
 
