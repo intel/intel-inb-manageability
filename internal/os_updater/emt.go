@@ -155,19 +155,20 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		return false, fmt.Errorf("error reading JWT token: %w", err)
 	}
 
-	// Check if the token exists
-	if token == "" {
-		t.writeUpdateStatus(FAIL, string(jsonString), "empty JWT Token")
-		t.writeGranularLog(FAIL, FAILURE_REASON_RS_AUTHENTICATION)
-		return false, errors.New("empty JWT Token")
-	}
-
 	// Create a new HTTP request
 	req, err := t.requestCreator("HEAD", t.request.Url, nil)
 	if err != nil {
 		t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
 		t.writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 		return false, fmt.Errorf("error creating request: %w", err)
+	}
+
+	// Check if the token exists
+	if token == "" {
+		log.Println("JWT token is empty. Proceeding without Authorization.")
+	} else {
+		// Add the JWT token to the request header
+		req.Header.Add("Authorization", "Bearer "+token)
 	}
 
 	// Add the JWT token to the request header
@@ -247,7 +248,14 @@ func (t *EMTDownloader) downloadFile() error {
 	if err != nil {
 		return fmt.Errorf("error reading JWT token: %w", err)
 	}
-	req.Header.Add("Authorization", "Bearer "+token)
+
+	// Check if the token exists
+	if token == "" {
+		log.Println("JWT token is empty. Proceeding without Authorization.")
+	} else {
+		// Add the JWT token to the request header
+		req.Header.Add("Authorization", "Bearer "+token)
+	}
 
 	// Perform the request
 	resp, err := t.httpClient.Do(req)
@@ -446,8 +454,8 @@ func (t *EMTUpdater) commitUpdate() error {
 // EMTRebooter is the concrete implementation of the IUpdater interface
 // for the EMT OS.
 type EMTRebooter struct {
-	commandExecutor utils.Executor
-	request         *pb.UpdateSystemSoftwareRequest
+	commandExecutor   utils.Executor
+	request           *pb.UpdateSystemSoftwareRequest
 	writeUpdateStatus func(string, string, string)
 	writeGranularLog  func(string, string)
 }
@@ -455,8 +463,8 @@ type EMTRebooter struct {
 // NewEMTRebooter creates a new EMTRebooter.
 func NewEMTRebooter(commandExecutor utils.Executor, request *pb.UpdateSystemSoftwareRequest) *EMTRebooter {
 	return &EMTRebooter{
-		commandExecutor: commandExecutor,
-		request:         request,
+		commandExecutor:   commandExecutor,
+		request:           request,
 		writeUpdateStatus: writeUpdateStatus,
 		writeGranularLog:  writeGranularLog,
 	}
