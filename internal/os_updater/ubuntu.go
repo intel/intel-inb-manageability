@@ -195,14 +195,14 @@ func downloadOnly(packages []string) [][]string {
 
 	if len(packages) == 0 {
 		cmds = append(cmds, []string{"apt-get", "-o",
-			"Dpkg::Options::='--force-confdef'", "-o",
-			"Dpkg::Options::='--force-confold'",
+			"Dpkg::Options::=--force-confdef", "-o",
+			"Dpkg::Options::=--force-confold",
 			"--with-new-pkgs", "--download-only",
 			"--fix-missing", "-yq", "upgrade"})
 	} else {
 		cmds = append(cmds, [][]string{append([]string{"apt-get", "-o",
-			"Dpkg::Options::='--force-confdef'", "-o",
-			"Dpkg::Options::='--force-confold'", "--download-only",
+			"Dpkg::Options::=--force-confdef", "-o",
+			"Dpkg::Options::=--force-confold", "--download-only",
 			"--fix-missing", "-yq", "install"}, packages...)}...)
 	}
 

@@ -42,11 +42,11 @@ func TestNoDownload(t *testing.T) {
 	t.Run("no packages", func(t *testing.T) {
 		expectedCmds := [][]string{
 			{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold"},
-			{"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
-				"Dpkg::Options::='--force-confold'", "-yq", "-f", "install"},
-			{"apt-get", "-o", "Dpkg::Options::='--force-confdef'",
-				"-o", "Dpkg::Options::='--force-confold'",
-				"--with-new-pkgs", "--no-download",
+			{"apt-get", "-o", "Dpkg::Options::=--force-confdef", "-o",
+				"Dpkg::Options::=--force-confold", "-yq", "-f", "install"},
+			{"apt-get", "-o", "Dpkg::Options::=--force-confdef",
+				"-o", "Dpkg::Options::=--force-confold",
+				"--with-new-pkgs",
 				"--fix-missing", "-yq", "upgrade"},
 		}
 
@@ -59,11 +59,11 @@ func TestNoDownload(t *testing.T) {
 		packages := []string{"package1", "package2"}
 		expectedCmds := [][]string{
 			{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold"},
-			{"apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
-				"Dpkg::Options::='--force-confold'", "-yq", "-f", "install"},
-			{"apt-get", "-o", "Dpkg::Options::='--force-confdef'",
-				"-o", "Dpkg::Options::='--force-confold'",
-				"--no-download", "--fix-missing", "-yq",
+			{"apt-get", "-o", "Dpkg::Options::=--force-confdef", "-o",
+				"Dpkg::Options::=--force-confold", "-yq", "-f", "install"},
+			{"apt-get", "-o", "Dpkg::Options::=--force-confdef",
+				"-o", "Dpkg::Options::=--force-confold",
+				"--fix-missing", "-yq",
 				"install", "package1", "package2"},
 		}
 
@@ -76,10 +76,10 @@ func TestNoDownload(t *testing.T) {
 func TestDownloadOnly(t *testing.T) {
 	t.Run("no packages", func(t *testing.T) {
 		expectedCmds := [][]string{
-			{"apt-get", "update"},
-			{"dpkg-query", "-f", "'${binary:Package}\\n'", "-W"},
-			{"apt-get", "-o", "Dpkg::Options::='--force-confdef'",
-				"-o", "Dpkg::Options::='--force-confold'",
+			{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold"},
+			{"apt-get", "update"},			
+			{"apt-get", "-o", "Dpkg::Options::=--force-confdef",
+				"-o", "Dpkg::Options::=--force-confold",
 				"--with-new-pkgs", "--download-only", "--fix-missing",
 				"-yq", "upgrade"},
 		}
@@ -92,10 +92,10 @@ func TestDownloadOnly(t *testing.T) {
 	t.Run("with packages", func(t *testing.T) {
 		packages := []string{"package1", "package2"}
 		expectedCmds := [][]string{
+			{"dpkg", "--configure", "-a", "--force-confdef", "--force-confold"},
 			{"apt-get", "update"},
-			{"dpkg-query", "-f", "'${binary:Package}\\n'", "-W"},
-			{"apt-get", "-o", "Dpkg::Options::='--force-confdef'",
-				"-o", "Dpkg::Options::='--force-confold'",
+			{"apt-get", "-o", "Dpkg::Options::=--force-confdef",
+				"-o", "Dpkg::Options::=--force-confold",
 				"--download-only", "--fix-missing",
 				"-yq", "install", "package1", "package2"},
 		}
