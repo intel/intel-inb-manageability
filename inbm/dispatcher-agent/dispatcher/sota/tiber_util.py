@@ -55,13 +55,14 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
     if token:
         logger.debug("RS token provided.")
     else:
-        err_msg = " No JWT token. Abort the update. "
-        raise SotaError(err_msg)
+        logger.debug("No JWT token. Proceed without authorization.")
 
-    # Specify the token in header.
-    headers = {
-        "Authorization": f"Bearer {token}"
-    }
+    headers = {}
+    if token:
+        # Specify the token in header.
+        headers = {
+            "Authorization": f"Bearer {token}"
+        }
 
     enough_space = is_enough_space_to_download(uri.value, repo, headers, cancel_event)
 
