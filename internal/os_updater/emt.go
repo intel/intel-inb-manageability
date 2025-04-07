@@ -171,9 +171,6 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		req.Header.Add("Authorization", "Bearer "+token)
 	}
 
-	// Add the JWT token to the request header
-	req.Header.Add("Authorization", "Bearer "+token)
-
 	// Perform the request
 	resp, err := t.httpClient.Do(req)
 	if err != nil {
