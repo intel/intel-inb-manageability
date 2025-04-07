@@ -117,11 +117,11 @@ INST="$DIR"
 
 # Confirm expected packages exist.
 FOUND_INSTALL_PACKAGE="false"
+INST_DIR=$(mktemp -d)
 for file in "$INST"/*.deb; do
   if [ -e "$file" ]; then
     echo "Confirmed Installation Package: $file"
-    FOUND_INSTALL_PACKAGE="true"
-    INST_DIR=$(mktemp -d)
+    FOUND_INSTALL_PACKAGE="true"    
     cp -rv "$file" "$INST_DIR"
   fi
 done
@@ -156,21 +156,18 @@ else
   echo "Provisioner Installation Complete"
 fi
 
-# install INB
+# install INBC
 echo "Will install INBC executable"
 
-if ! dpkg -i inbc*.deb ; then
-  echo "Issue with installation. Will force."
+if ! dpkg -i intel-inbm*.deb ; then
+  echo "Issue with INBM installation. Will force."
   apt-get install -f
+  if ! dpkg -i intel-inbm*.deb ; then
+    echo "Failed to install INBM after resolving dependencies."
+    exit 1
+  fi
 else
-  echo "INBC Installation Complete"
-fi
-
-if ! dpkg -i inbd*.deb ; then
-  echo "Issue with installation. Will force."
-  apt-get install -f
-else
-  echo "INBD Installation Complete"
+  echo "INBM Installation Complete"
 fi
 
 popd > /dev/null

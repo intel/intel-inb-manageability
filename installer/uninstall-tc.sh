@@ -28,26 +28,13 @@ if ! [[ "$ACCEPT_INTEL_LICENSE" == "true" ]]; then
 fi
 
 echo Disabling and stopping 'Intel(R)' In-Band Manageability services...
-systemctl disable --now inbd >&/dev/null || true
+systemctl disable --now intel-inbm >&/dev/null || true
+
 
 echo Uninstalling 'Intel(R)' In-Band Manageability packages...
-dpkg --purge inbc-program
-dpkg --purge inbd
-
-declare -a arr=("inbc-program")
-# Loop through the user array and remove user
-for user in "${arr[@]}"
-do
-   if getent group $user ; then
-      groupdel -f $user
-   fi
-   if getent passwd $user ; then
-      deluser $user
-      echo "$user user removed"
-   else
-      echo "$user user not found"
-   fi
-done
+if ! dpkg --purge intel-inbm; then
+  echo "Failed to purge intel-inbm. It might not be installed."
+fi
 
 echo Done.
 

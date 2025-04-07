@@ -34,11 +34,6 @@ build:
     BUILD +build-inbc
     BUILD +build-inbd
 
-build-deb:
-    BUILD +build
-    BUILD +build-inbc-deb
-    BUILD +build-inbd-deb
-
 golang-base:
     RUN apk add --no-cache protoc protobuf-dev libprotobuf curl gcc musl-dev && \
         go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28 && \
@@ -75,7 +70,6 @@ run-golang-unit-tests:
     # Enforce minimum coverage threshold for internal/ directory
     RUN COVERAGE=$(go tool cover -func=cover.out | awk '/total:/ {print $3}' | tr -d '%') && MIN_COVERAGE=56.5 && echo "Total Coverage for internal/: $COVERAGE%" && echo "Minimum Required Coverage: $MIN_COVERAGE%" && awk -v coverage="$COVERAGE" -v min="$MIN_COVERAGE" 'BEGIN {if (coverage < min) {print "Coverage " coverage "% is below " min "%"; exit 1} else {print "Coverage " coverage "% meets the requirement."; exit 0}}'
     SAVE ARTIFACT cover.out AS LOCAL build/cover.out
-
     
 generate-proto:
     FROM +golang-base
@@ -104,33 +98,21 @@ build-inbd:
             ./cmd/inbd
     SAVE ARTIFACT build/inbd AS LOCAL ./build/inbd
 
-build-inbc-deb:
-    BUILD +build-inbc
-    FROM +build-inbc
+build-deb:
+    BUILD +build
     FROM debian:bullseye
     WORKDIR /package
     RUN mkdir -p DEBIAN usr/bin
     COPY build/inbc usr/bin/inbc
-    RUN echo "Package: INBC\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: INBM CLI Tool" > DEBIAN/control
-    RUN dpkg-deb --build . /package/inbc-program.deb
-    SAVE ARTIFACT /package/inbc-program.deb AS LOCAL ./build/inbc-program.deb
-  
-build-inbd-deb:
-    BUILD +build-inbd
-    FROM +build-inbd
-    FROM debian:bullseye
-    WORKDIR /package
-    RUN mkdir -p DEBIAN usr/bin
     COPY build/inbd usr/bin/inbd
-    RUN echo "Package: INBD\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: INBM Daemon" > DEBIAN/control
-    RUN dpkg-deb --build . /package/inbd.deb
-    SAVE ARTIFACT /package/inbd.deb AS LOCAL ./build/inbd.deb
+    RUN echo "Package: intel-inbm\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: Intel In-Band Manageability Tools\n This package contains the inbc CLI and inbd daemon for Intel In-Band Manageability." > DEBIAN/control
+    RUN dpkg-deb --build . /package/intel-inbm.deb
+    SAVE ARTIFACT /package/intel-inbm.deb AS LOCAL ./build/intel-inbm.deb
 
 package:
     RUN mkdir -p dist/inbm
     COPY LICENSE dist/inbm/LICENSE
     COPY installer/install-tc.sh dist/inbm/install-tc.sh
     COPY installer/uninstall-tc.sh dist/inbm/uninstall-tc.sh
-    COPY build/inbc-program.deb dist/inbm/inbc-program.deb
-    COPY build/inbd.deb dist/inbm/inbd.deb
+    COPY build/intel-inbm.deb dist/inbm/intel-inbm.deb
     SAVE ARTIFACT dist/inbm AS LOCAL ./dist/inbm

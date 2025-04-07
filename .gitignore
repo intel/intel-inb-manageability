@@ -8,3 +8,5 @@ build/
 
 # VS Code go debugger file
 **/__debug_bin*
+
+dist
