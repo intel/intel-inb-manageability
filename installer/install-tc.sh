@@ -105,9 +105,19 @@ fi
 # Use script directory as installation directory
 INST="$DIR"
 
+# Update shell to force dpkg to use bash during installation.
+echo "dash dash/sh boolean false" | debconf-set-selections
+if ! dpkg-reconfigure dash -f noninteractive; then
+  echo "Unable to configure environment (dash->bash)"
+  exit 1
+fi
+
+# Use script directory as installation directory
+INST="$DIR"
+
 # Confirm expected packages exist.
 FOUND_INSTALL_PACKAGE="false"
-for file in "$INST"/*.preview.tar.gz; do
+for file in "$INST"/*.deb; do
   if [ -e "$file" ]; then
     echo "Confirmed Installation Package: $file"
     FOUND_INSTALL_PACKAGE="true"
@@ -131,15 +141,6 @@ fi
 # From this point, failed checks will be remediated.
 # If all pre-requisites are met, install Intel Manageability framework
 
-
-# Extract installation packages
-# Convert to cpio function to preserve user permissions?
-for i in $(ls "$INST_DIR" | grep tar.gz); do
-    if ! tar -xzf "$INST_DIR/$i" -C "$INST_DIR/"; then
-        echo "Issue with extracting packages. Exiting."
-        exit 1
-    fi
-done
 # Ensure installation packages are present
 if [[ $(ls "$INST_DIR" | grep ".deb" | wc -l) -eq 0 ]]; then
     echo "Installation packages not found. Exiting."

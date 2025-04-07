@@ -122,7 +122,7 @@ build-inbd-deb:
     WORKDIR /package
     RUN mkdir -p DEBIAN usr/bin
     COPY build/inbd usr/bin/inbd
-    RUN echo "Package: INBD\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: INBM CLI Tool" > DEBIAN/control
+    RUN echo "Package: INBD\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: INBM Daemon" > DEBIAN/control
     RUN dpkg-deb --build . /package/inbd.deb
     SAVE ARTIFACT /package/inbd.deb AS LOCAL ./build/inbd.deb
 
@@ -130,6 +130,7 @@ package:
     RUN mkdir -p dist/inbm
     COPY LICENSE dist/inbm/LICENSE
     COPY installer/install-tc.sh dist/inbm/install-tc.sh
+    COPY installer/uninstall-tc.sh dist/inbm/uninstall-tc.sh
     COPY build/inbc-program.deb dist/inbm/inbc-program.deb
     COPY build/inbd.deb dist/inbm/inbd.deb
     SAVE ARTIFACT dist/inbm AS LOCAL ./dist/inbm
