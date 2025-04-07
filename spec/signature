@@ -1,0 +1,9 @@
+{
+  "Signatures": {
+    "inbm-5.0.tar.gz": "365417ca5f3c4943a7fb01c7e51c8b785f05767798fd4d912a8a16ccaac950cf",
+    "intel_manageability.conf": "5e43e84974c157f021c74e8948c3c24616270eac5e0e338d77fe59d880f7ae53",
+    "inbm-configuration-replace-FQDN.sh": "e91bb05cf42b8311cff3d6b554c9f1c0f49ffb66b8df92bc2f185ae449ef4295",
+    "inbm.te": "e528ab9808f2c1961cad97e4e616f8a9a8731ea3c1bc5c493c8d0db1243f3044",
+    "inbm.fc": "5a691e8d1035c10d8f76d39c3b3dc000bc2d55295a415eb7c0d47126f3f8dfff"
+  }
+}

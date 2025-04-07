@@ -14,6 +14,7 @@ Source1:        intel_manageability.conf
 Source2:        inbm-configuration-replace-FQDN.sh
 Source3:        inbm.te
 Source4:        inbm.fc
+%global debug_package %{nil}
 BuildRequires:  golang
 BuildRequires:  systemd-rpm-macros
 BuildRequires:  selinux-policy-devel
@@ -45,15 +46,18 @@ make -f %{_datadir}/selinux/devel/Makefile %{name}.pp
 
 # Build inbd 
 cd %{_builddir}/%{name}-%{version}
-GOSUMDB=off GO_MOD_MODE=vendor CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -trimpath -mod=$(GO_MOD_MODE) -gcflags="all=-spectre=all -l" -asmflags="all=-spectre=all" -ldflags "-s -w -extldflags '-static' -X main.Version=$version" -o build/inbd
+GOSUMDB=off CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -trimpath -o build/inbd -mod=vendor -gcflags="all=-spectre=all -l" -asmflags="all=-spectre=all" -ldflags "-s -w -extldflags '-static' -X main.Version=$version" ./cmd/inbd
 
 # Build inbc 
-GOSUMDB=off GO_MOD_MODE=vendor CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -trimpath -mod=$(GO_MOD_MODE) -gcflags="all=-spectre=all -l" -asmflags="all=-spectre=all" -ldflags "-s -w -extldflags '-static' -X main.Version=$version" -o build/inbc
+GOSUMDB=off CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -trimpath -o build/inbc -mod=vendor -gcflags="all=-spectre=all -l" -asmflags="all=-spectre=all" -ldflags "-s -w -extldflags '-static' -X main.Version=$version" ./cmd/inbc
 
 
 %install
 # Set up bindir
 install -d %{buildroot}%{_bindir}
+
+# Set up unitdir
+install -d %{buildroot}%{_unitdir}
 
 # Install inbd
 install -m 755 %{_builddir}/%{name}-%{version}/build/inbd %{buildroot}%{_bindir}/inbd
@@ -86,8 +90,9 @@ sed -i '/^ExecStart/i EnvironmentFile=/etc/edge-node/node/agent_variables' %{bui
 
 # make new files/directories so they can be persisted
 
-mkdir %{buildroot}%{_var}/intel-manageability
-mkdir %{buildroot}%{_var}/log
+mkdir -p %{buildroot}%{_var}/intel-manageability
+mkdir -p %{buildroot}%{_var}/cache/manageability/repository-tool/sota
+mkdir -p %{buildroot}%{_var}/log
 touch %{buildroot}%{_var}/log/inbm-update-status.log
 echo '"UpdateLog": []' > %{buildroot}%{_var}/log/inbm-update-log.log
 touch %{buildroot}%{_sysconfdir}/intel_manageability.conf_bak
@@ -114,7 +119,7 @@ install -m 644 %{name}.pp %{buildroot}%{_datadir}/selinux/packages/%{name}.pp
 %config(noreplace) %{_sysconfdir}/*
 %{_bindir}/*
 %{_unitdir}/*
-%license LICENSE
+#%license LICENSE
 %{_var}/cache/manageability/*
 %{_var}/intel-manageability
 %{_var}/log/*
