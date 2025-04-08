@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Package cleaner helps to remove the file or directory.
-package osupdater
+// Package emt provides the implementation for updating the EMT OS.
+package emt
 
 import (
 	"log"

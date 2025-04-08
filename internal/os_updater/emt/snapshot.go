@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Package osupdater updates the OS.
-package osupdater
+// Package emt provides the implementation for updating the EMT OS.
+package emt
 
 import (
 	"bufio"
@@ -17,11 +17,6 @@ import (
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
-)
-
-const (
-	SUCCESS = "SUCCESS"
-	FAIL    = "FAIL"
 )
 
 var (
@@ -51,38 +46,27 @@ func Snapshot() error {
 		return fmt.Errorf("failed to truncate dispatcher state file with command(%v)- %w", dispatcherStateTruncateCommand, err)
 	}
 
-	os, err := DetectOS()
+	buildDate, err := GetImageBuildDate()
+	if err != nil || buildDate == "" {
+		return fmt.Errorf("failed to get image build date: %w", err)
+	}
+	// Create an instance of EmtState with the desired values
+	state := EMTState{
+		RestartReason: "sota",
+		TiberVersion:  buildDate,
+	}
+	// Convert the state to JSON
+	jsonData, err := json.Marshal(state)
 	if err != nil {
-		return fmt.Errorf("failed to detect OS: %w", err)
+		return fmt.Errorf("error marshalling JSON: %w", err)
 	}
 
-	if os == "EMT" {
-		buildDate, err := GetImageBuildDate()
-		if err != nil || buildDate == "" {
-			return fmt.Errorf("failed to get image build date: %w", err)
-		}
-		// Create an instance of EmtState with the desired values
-		state := EMTState{
-			RestartReason: "sota",
-			TiberVersion:  buildDate,
-		}
-		// Convert the state to JSON
-		jsonData, err := json.Marshal(state)
-		if err != nil {
-			return fmt.Errorf("error marshalling JSON: %w", err)
-		}
-
-		// Write the JSON to the dispatcher state file
-		if err := writeToDispatcherStateFile(string(jsonData)); err != nil {
-			return fmt.Errorf("failed to write to dispatcher state file: %w", err)
-		}
-
+	// Write the JSON to the dispatcher state file
+	if err := writeToDispatcherStateFile(string(jsonData)); err != nil {
+		return fmt.Errorf("failed to write to dispatcher state file: %w", err)
 	}
-
-	if os == "Ubuntu" {
-		panic("Not implemented")
-	}
-
+	
+	log.Println("Snapshot created successfully.")
 	return nil
 }
 

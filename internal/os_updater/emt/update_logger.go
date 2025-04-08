@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Package osupdater updates the OS.
-package osupdater
+// Package emt provides the implementation for updating the EMT OS.
+package emt
 
 import (
 	"encoding/json"
@@ -13,19 +13,7 @@ import (
 	"time"
 )
 
-const (
-	FAILURE_REASON_UNSPECIFIED          = "unspecified"
-	FAILURE_REASON_DOWNLOAD             = "download"
-	FAILURE_REASON_INSUFFICIENT_STORAGE = "insufficientstorage"
-	FAILURE_REASON_RS_AUTHENTICATION    = "rsauthentication"
-	FAILURE_REASON_SIGNATURE_CHECK      = "signaturecheck"
-	FAILURE_REASON_UT_WRITE             = "utwrite"
-	FAILURE_REASON_BOOT_CONFIGURATION   = "utbootconfiguration"
-	FAILURE_REASON_BOOTLOADER           = "bootloader"
-	FAILURE_REASON_CRITICAL_SERVICES    = "criticalservices"
-	FAILURE_REASON_INBM                 = "inbm"
-	FAILURE_REASON_OS_COMMIT            = "oscommit"
-)
+
 
 var (
 	updateStatusLogPath = "/var/log/inbm-update-status.log"

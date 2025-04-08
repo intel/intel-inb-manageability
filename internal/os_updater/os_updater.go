@@ -12,12 +12,13 @@ import (
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	emt "github.com/intel/intel-inb-manageability/internal/os_updater/emt"
 )
 
 // UpdateOS updates the OS depending on the OS type.
 func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.UpdateResponse, error) {
 	// Create a cleaner to remove the artifacts later.
-	cleaner := NewCleaner(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput))
+	cleaner := emt.NewCleaner(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput))
 
 	log.Printf("Request Mode: %v\n", req.Mode)
 
@@ -35,7 +36,7 @@ func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.
 	proceedWithReboot, err := updater.Update()
 	if err != nil {
 		// Remove the artifacts if failure happens.
-		errDel := cleaner.DeleteAll(downloadDir + "/")
+		errDel := cleaner.DeleteAll(emt.DownloadDir + "/")
 		if errDel != nil {
 			log.Printf("[Warning] %v", errDel.Error())
 		}
@@ -45,7 +46,7 @@ func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.
 	log.Println("Update completed successfully.")
       
   // Remove the artifacts after update success.
-	err = cleaner.DeleteAll(downloadDir + "/")
+	err = cleaner.DeleteAll(emt.DownloadDir + "/")
 	if err != nil {
 		log.Printf("[Warning] %v", err.Error())
 	}

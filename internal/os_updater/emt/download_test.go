@@ -3,17 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Package osupdater updates the OS.
-package osupdater
+// Package emt provides the implementation for updating the EMT OS.
+package emt
 
 import (
 	"errors"
-	//"fmt"
 	"io"
 	"net/http"
 	"os"
 
-	//"path/filepath"
 	"strings"
 	"testing"
 
@@ -49,11 +47,11 @@ func TestEMTDownloader_downloadFile(t *testing.T) {
 		err := downloader.downloadFile()
 		assert.NoError(t, err)
 
-		exists, err := afero.Exists(fs, downloadDir+"/file.txt")
+		exists, err := afero.Exists(fs, DownloadDir+"/file.txt")
 		assert.NoError(t, err)
 		assert.True(t, exists)
 
-		content, err := afero.ReadFile(fs, downloadDir+"/file.txt")
+		content, err := afero.ReadFile(fs, DownloadDir+"/file.txt")
 		assert.NoError(t, err)
 		assert.Equal(t, "file content", string(content))
 	})
@@ -427,7 +425,7 @@ func TestEMTDownloader_checkDiskSpace(t *testing.T) {
 			},
 			requestCreator: http.NewRequest,
 			expectedResult: false,
-			expectedError:  errors.New("error performing GET request: Get \"http://example.com\": http: RoundTripper implementation (osupdater.roundTripperFunc) returned a nil *Response with a nil error"),
+			expectedError:  errors.New("error performing GET request: Get \"http://example.com\": http: RoundTripper implementation (emt.roundTripperFunc) returned a nil *Response with a nil error"),
 		},
 		{
 			name: "error reading response body",

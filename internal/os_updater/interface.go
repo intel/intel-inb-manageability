@@ -11,6 +11,7 @@ import (
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	emt "github.com/intel/intel-inb-manageability/internal/os_updater/emt"
 )
 
 // UpdaterFactory is an interface that contains the methods to create the concrete classes for the OS updater.
@@ -37,17 +38,17 @@ type EMTFactory struct{}
 
 // CreateDownloader creates a downloader concrete class for EMT OS.
 func (f *EMTFactory) CreateDownloader(req *pb.UpdateSystemSoftwareRequest) Downloader {
-	return NewEMTDownloader(req)
+	return emt.NewEMTDownloader(req)
 }
 
 // CreateUpdater creates an OS updater concrete class for EMT OS.
 func (f *EMTFactory) CreateUpdater(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater {
-	return NewEMTUpdater(commandExecutor, req)
+	return emt.NewEMTUpdater(commandExecutor, req)
 }
 
 // CreateRebooter creates a rebooter concrete class for EMT OS.
 func (f *EMTFactory) CreateRebooter(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Rebooter {
-	return NewEMTRebooter(commandExecutor, req)
+	return emt.NewEMTRebooter(commandExecutor, req)
 }
 
 // UbuntuFactory represents an EMT factory.

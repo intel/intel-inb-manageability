@@ -10,6 +10,7 @@ import (
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	emt "github.com/intel/intel-inb-manageability/internal/os_updater/emt"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,17 +44,17 @@ func TestEMTUpdater(t *testing.T) {
 
 	t.Run("createDownloader returns EMTDownloader", func(t *testing.T) {
 		downloader := emtUpdater.CreateDownloader(req)
-		assert.IsType(t, &EMTDownloader{}, downloader)
+		assert.IsType(t, &emt.EMTDownloader{}, downloader)
 	})
 
 	t.Run("createUpdater returns EMTUpdater", func(t *testing.T) {
 		updater := emtUpdater.CreateUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), req)
-		assert.IsType(t, &EMTUpdater{}, updater)
+		assert.IsType(t, &emt.EMTUpdater{}, updater)
 	})
 
 	t.Run("createRebooter returns EMTRebooter", func(t *testing.T) {
 		rebooter := emtUpdater.CreateRebooter(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), req)
-		assert.IsType(t, &EMTRebooter{}, rebooter)
+		assert.IsType(t, &emt.EMTRebooter{}, rebooter)
 	})
 }
 

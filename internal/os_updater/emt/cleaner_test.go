@@ -1,4 +1,10 @@
-package osupdater
+/*
+ * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Package emt provides the implementation for updating the EMT OS.
+package emt
 
 import (
 	"io/fs"
