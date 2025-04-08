@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-// Package osupdater updates the OS.
-package osupdater
+// Package ubuntu updates the Ubuntu OS.
+package ubuntu
 
 import (
 	"fmt"
@@ -13,35 +13,24 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
-// UbuntuDownloader is the concrete implementation of the IDownloader interface
-// for the Ubuntu OS.
-type UbuntuDownloader struct {
-	request *pb.UpdateSystemSoftwareRequest
-}
 
-// Download method for Ubuntu
-func (u *UbuntuDownloader) Download() error {
-	fmt.Printf("Debian-based OS does not require a file download to perform a software update")
-	return nil
-}
 
-// UbuntuUpdater is the concrete implementation of the Updater interface
+// Updater is the concrete implementation of the Updater interface
 // for the Ubuntu OS.
-type UbuntuUpdater struct {
-	commandExecutor         utils.Executor
-	request                 *pb.UpdateSystemSoftwareRequest
-	getEstimatedSize        func(cmdExec utils.Executor) (bool, uint64, error)
-	getFreeDiskSpaceInBytes func(path string) (uint64, error)
+type Updater struct {
+	CommandExecutor         utils.Executor
+	Request                 *pb.UpdateSystemSoftwareRequest
+	GetEstimatedSize        func(cmdExec utils.Executor) (bool, uint64, error)
+	GetFreeDiskSpaceInBytes func(path string) (uint64, error)
 }
 
 // Update method for Ubuntu
-func (u *UbuntuUpdater) Update() (bool, error) {
+func (u *Updater) Update() (bool, error) {
 	// Set the environment variable DEBIAN_FRONTEND to noninteractive
 	err := os.Setenv("DEBIAN_FRONTEND", "noninteractive")
 	if err != nil {
@@ -53,7 +42,7 @@ func (u *UbuntuUpdater) Update() (bool, error) {
 		return false, fmt.Errorf("SOTA Aborted: Failed to set environment variable: %v", err)
 	}
 
-	isUpdateAvail, updateSize, err := u.getEstimatedSize(u.commandExecutor)
+	isUpdateAvail, updateSize, err := u.GetEstimatedSize(u.CommandExecutor)
 	if err != nil {
 		return false, fmt.Errorf("SOTA Aborted: Update Failed: %s", err)
 	}
@@ -64,7 +53,7 @@ func (u *UbuntuUpdater) Update() (bool, error) {
 
 	log.Printf("Estimated update size: %d bytes", updateSize)
 
-	freeSpace, err := u.getFreeDiskSpaceInBytes("/")
+	freeSpace, err := u.GetFreeDiskSpaceInBytes("/")
 	if err != nil {
 		return false, fmt.Errorf("SOTA Aborted: Failed to get free disk space: %v", err)
 	}
@@ -74,20 +63,20 @@ func (u *UbuntuUpdater) Update() (bool, error) {
 	}
 
 	var cmds [][]string
-	switch u.request.Mode {
+	switch u.Request.Mode {
 	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_FULL:
-		cmds = fullInstall(u.request.PackageList)
+		cmds = fullInstall(u.Request.PackageList)
 	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD:
-		cmds = noDownload(u.request.PackageList)
+		cmds = noDownload(u.Request.PackageList)
 	case pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY:
-		cmds = downloadOnly(u.request.PackageList)
+		cmds = downloadOnly(u.Request.PackageList)
 	default:
 		return false, fmt.Errorf("SOTA Aborted: Invalid mode")
 	}
 
 	for _, cmd := range cmds {
 		log.Printf("Executing command: %s", cmd)
-		_, stderr, _ := u.commandExecutor.Execute(cmd)
+		_, stderr, _ := u.CommandExecutor.Execute(cmd)
 		if len(stderr) > 0 {
 			return false, fmt.Errorf("SOTA Aborted: Command failed: %s", string(stderr))
 		}
@@ -96,7 +85,9 @@ func (u *UbuntuUpdater) Update() (bool, error) {
 	return true, nil
 }
 
-func getEstimatedSize(cmdExec utils.Executor) (bool, uint64, error) {
+// GetEstimatedSize returns the estimated size of the update
+// and whether an update is available.
+func GetEstimatedSize(cmdExec utils.Executor) (bool, uint64, error) {
 	cmd := []string{"/usr/bin/apt-get", "-o", "Dpkg::Options::='--force-confdef'", "-o",
 		"Dpkg::Options::='--force-confold'", "--with-new-pkgs", "-u", "upgrade", "--assume-no"}
 
@@ -226,31 +217,4 @@ func fullInstall(packages []string) [][]string {
 	}
 
 	return cmds
-}
-
-// UbuntuRebooter is the concrete implementation of the Updater interface
-// for the Ubuntu OS.
-type UbuntuRebooter struct {
-	commandExecutor utils.Executor
-	request         *pb.UpdateSystemSoftwareRequest
-}
-
-// Reboot method for Ubuntu
-func (u *UbuntuRebooter) Reboot() error {
-	if u.request.DoNotReboot {
-		log.Println("Reboot is disabled.  Skipping reboot.")
-		return nil
-	}
-
-	fmt.Print("Rebooting ")
-	time.Sleep(2 * time.Second)
-
-	cmd := "/sbin/reboot"
-
-	_, _, err := u.commandExecutor.Execute([]string{cmd})
-	if err != nil {
-		return fmt.Errorf("SOTA Aborted: Reboot Failed: %s", err)
-	}
-
-	return nil
 }

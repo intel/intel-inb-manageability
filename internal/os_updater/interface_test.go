@@ -11,6 +11,7 @@ import (
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	emt "github.com/intel/intel-inb-manageability/internal/os_updater/emt"
+	ubuntu "github.com/intel/intel-inb-manageability/internal/os_updater/ubuntu"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -68,16 +69,16 @@ func TestUbuntuUpdater(t *testing.T) {
 
 	t.Run("createDownloader returns UbuntuDownloader", func(t *testing.T) {
 		downloader := ubuntuUpdater.CreateDownloader(&req)
-		assert.IsType(t, &UbuntuDownloader{}, downloader)
+		assert.IsType(t, &ubuntu.Downloader{}, downloader)
 	})
 
 	t.Run("createUpdater returns UbuntuUpdater", func(t *testing.T) {
 		updater := ubuntuUpdater.CreateUpdater(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &req)
-		assert.IsType(t, &UbuntuUpdater{}, updater)
+		assert.IsType(t, &ubuntu.Updater{}, updater)
 	})
 
 	t.Run("createRebooter returns UbuntuRebooter", func(t *testing.T) {
 		rebooter := ubuntuUpdater.CreateRebooter(utils.NewExecutor(exec.Command, utils.ExecuteAndReadOutput), &req)
-		assert.IsType(t, &UbuntuRebooter{}, rebooter)
+		assert.IsType(t, &ubuntu.Rebooter{}, rebooter)
 	})
 }

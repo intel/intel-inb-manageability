@@ -10,8 +10,9 @@ import (
 	"fmt"
 
 	"github.com/intel/intel-inb-manageability/internal/inbd/utils"
-	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	emt "github.com/intel/intel-inb-manageability/internal/os_updater/emt"
+	ubuntu "github.com/intel/intel-inb-manageability/internal/os_updater/ubuntu"
+	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 )
 
 // UpdaterFactory is an interface that contains the methods to create the concrete classes for the OS updater.
@@ -54,25 +55,25 @@ func (f *EMTFactory) CreateRebooter(commandExecutor utils.Executor, req *pb.Upda
 // UbuntuFactory represents an EMT factory.
 type UbuntuFactory struct{}
 
-// CreateDownloader creates a downloader concrete class for EMT OS.
+// CreateDownloader creates a downloader concrete class for Ubuntu OS.
 func (f *UbuntuFactory) CreateDownloader(req *pb.UpdateSystemSoftwareRequest) Downloader {
-	return &UbuntuDownloader{request: req}
+	return &ubuntu.Downloader{Request: req}
 }
 
 // CreateUpdater creates an OS updater concrete class for Ubuntu OS.
 func (f *UbuntuFactory) CreateUpdater(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Updater {
-	return &UbuntuUpdater{
-		commandExecutor: commandExecutor,
-		request:         req,
-		getEstimatedSize: getEstimatedSize,
-		getFreeDiskSpaceInBytes: utils.GetFreeDiskSpaceInBytes,
+	return &ubuntu.Updater{
+		CommandExecutor:         commandExecutor,
+		Request:                 req,
+		GetEstimatedSize:        ubuntu.GetEstimatedSize,
+		GetFreeDiskSpaceInBytes: utils.GetFreeDiskSpaceInBytes,
 	}
 }
 
 // CreateRebooter creates a rebooter concrete class for Ubuntu OS.
 func (f *UbuntuFactory) CreateRebooter(commandExecutor utils.Executor, req *pb.UpdateSystemSoftwareRequest) Rebooter {
-	return &UbuntuRebooter{
-		commandExecutor: commandExecutor,
-		request:         req,
+	return &ubuntu.Rebooter{
+		CommandExecutor: commandExecutor,
+		Request:         req,
 	}
 }

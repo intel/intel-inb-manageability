@@ -1,4 +1,10 @@
-package osupdater
+/*
+ * SPDX-FileCopyrightText: (C) 2025 Intel Corporation
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+// Package ubuntu updates the Ubuntu OS.
+package ubuntu
 
 import (
 	"errors"
@@ -32,7 +38,7 @@ func (m *mockExecutor) Execute(command []string) ([]byte, []byte, error) {
 
 func TestUbuntuDownloader_Download(t *testing.T) {
 	t.Run("successful download", func(t *testing.T) {
-		downloader := &UbuntuDownloader{}
+		downloader := &Downloader{}
 		err := downloader.Download()
 		assert.NoError(t, err)
 	})
@@ -112,7 +118,7 @@ func TestGetEstimatedSize(t *testing.T) {
 			errors: []error{nil},
 		}
 
-		isUpdateAvail, size, err := getEstimatedSize(mockExec)
+		isUpdateAvail, size, err := GetEstimatedSize(mockExec)
 		assert.False(t, isUpdateAvail)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(0), size)
@@ -127,7 +133,7 @@ func TestGetEstimatedSize(t *testing.T) {
 			errors: []error{nil},
 		}
 
-		isUpdateAvail, size, err := getEstimatedSize(mockExec)
+		isUpdateAvail, size, err := GetEstimatedSize(mockExec)
 		assert.NoError(t, err)
 		assert.True(t, isUpdateAvail)
 		assert.Equal(t, uint64(524288000), size)
@@ -141,7 +147,7 @@ func TestGetEstimatedSize(t *testing.T) {
 			errors: []error{errors.New("execution error")},
 		}
 
-		isUpdateAvail, size, err := getEstimatedSize(mockExec)
+		isUpdateAvail, size, err := GetEstimatedSize(mockExec)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "failed to get size of the update")
 		assert.False(t, isUpdateAvail)
@@ -156,7 +162,7 @@ func TestGetEstimatedSize(t *testing.T) {
 			errors: []error{nil},
 		}
 
-		isUpdateAvail, size, err := getEstimatedSize(mockExec)
+		isUpdateAvail, size, err := GetEstimatedSize(mockExec)
 		assert.Contains(t, err.Error(), "failed to get size of the update")
 		assert.False(t, isUpdateAvail)
 		assert.Equal(t, uint64(0), size)
@@ -172,15 +178,15 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			stderr: []string{""},
 			errors: []error{nil},
 		}
-        updater := &UbuntuUpdater{
-            commandExecutor: mockExec,
-            request:         &pb.UpdateSystemSoftwareRequest{
+        updater := &Updater{
+            CommandExecutor: mockExec,
+            Request:         &pb.UpdateSystemSoftwareRequest{
 				Mode: pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD,
 			},
-			getEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
+			GetEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
 				return true, 500 * 1024, nil
 			},
-			getFreeDiskSpaceInBytes: func(path string) (uint64, error) {
+			GetFreeDiskSpaceInBytes: func(path string) (uint64, error) {
 				return 100000000, nil
 			},
 		}
@@ -215,10 +221,10 @@ func TestUbuntuUpdater_Update(t *testing.T) {
             errors: []error{nil},
         }
 
-        updater := &UbuntuUpdater{
-            commandExecutor: mockExec,
-            request:         &pb.UpdateSystemSoftwareRequest{},
-			getEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
+        updater := &Updater{
+            CommandExecutor: mockExec,
+            Request:         &pb.UpdateSystemSoftwareRequest{},
+			GetEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
 				return false, 0, nil
 			},
 		}
@@ -235,13 +241,13 @@ func TestUbuntuUpdater_Update(t *testing.T) {
             errors: []error{nil},
         }
 
-        updater := &UbuntuUpdater{
-            commandExecutor: mockExec,
-            request:         &pb.UpdateSystemSoftwareRequest{},
-			getEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
+        updater := &Updater{
+            CommandExecutor: mockExec,
+            Request:         &pb.UpdateSystemSoftwareRequest{},
+			GetEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
 				return true, 500 * 1024 * 1024, nil
 			},
-			getFreeDiskSpaceInBytes: func(path string) (uint64, error) {
+			GetFreeDiskSpaceInBytes: func(path string) (uint64, error) {
 				return 100 * 1024, nil // Simulate insufficient disk space
 			},
 		}
@@ -258,15 +264,15 @@ func TestUbuntuUpdater_Update(t *testing.T) {
             stderr: []string{""},
 			errors: []error{nil},
 		}
-        updater := &UbuntuUpdater{
-            commandExecutor: mockExec,
-            request: &pb.UpdateSystemSoftwareRequest{
+        updater := &Updater{
+            CommandExecutor: mockExec,
+            Request: &pb.UpdateSystemSoftwareRequest{
                 Mode: pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_FULL,
             },
-			getEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
+			GetEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
 				return true, 500 * 1024, nil
 			},
-			getFreeDiskSpaceInBytes: func(path string) (uint64, error) {
+			GetFreeDiskSpaceInBytes: func(path string) (uint64, error) {
 				return 100000000, nil
 			},
         }
@@ -283,15 +289,15 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			stdout: []string{""},
 			errors: []error{nil},
 		}
-        updater := &UbuntuUpdater{
-            commandExecutor: mockExec,
-            request: &pb.UpdateSystemSoftwareRequest{
+        updater := &Updater{
+            CommandExecutor: mockExec,
+            Request: &pb.UpdateSystemSoftwareRequest{
                 Mode: pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_NO_DOWNLOAD,
             },
-			getEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
+			GetEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
 				return true, 500 * 1024, nil
 			},
-			getFreeDiskSpaceInBytes: func(path string) (uint64, error) {
+			GetFreeDiskSpaceInBytes: func(path string) (uint64, error) {
 				return 100000000, nil
 			},
         }
@@ -308,15 +314,15 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 			stdout: []string{""},
 			errors: []error{nil},
 		}
-        updater := &UbuntuUpdater{
-            commandExecutor: mockExec,
-            request: &pb.UpdateSystemSoftwareRequest{
+        updater := &Updater{
+            CommandExecutor: mockExec,
+            Request: &pb.UpdateSystemSoftwareRequest{
                 Mode: pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_DOWNLOAD_ONLY,
             },
-			getEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
+			GetEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
 				return true, 500 * 1024, nil
 			},
-			getFreeDiskSpaceInBytes: func(path string) (uint64, error) {
+			GetFreeDiskSpaceInBytes: func(path string) (uint64, error) {
 				return 100000000, nil
 			},
         }
@@ -329,15 +335,15 @@ func TestUbuntuUpdater_Update(t *testing.T) {
 
     t.Run("invalid mode", func(t *testing.T) {
         mockExec := &mockExecutor{}
-        updater := &UbuntuUpdater{
-            commandExecutor: mockExec,
-            request: &pb.UpdateSystemSoftwareRequest{
+        updater := &Updater{
+            CommandExecutor: mockExec,
+            Request: &pb.UpdateSystemSoftwareRequest{
                 Mode: pb.UpdateSystemSoftwareRequest_DOWNLOAD_MODE_UNSPECIFIED, // Invalid mode
             },
-			getEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
+			GetEstimatedSize: func(cmdExec utils.Executor) (bool, uint64, error){
 				return true, 500 * 1024, nil
 			},
-			getFreeDiskSpaceInBytes: func(path string) (uint64, error) {
+			GetFreeDiskSpaceInBytes: func(path string) (uint64, error) {
 				return 100000000, nil
 			},
         }
@@ -461,61 +467,3 @@ func TestGetEstimatedSizeFromAptGetUpgrade(t *testing.T) {
 	})
 }
 
-func TestUbuntuRebooter_Reboot(t *testing.T) {
-
-    t.Run("do not reboot", func(t *testing.T) {
-		mockExec := &mockExecutor{
-			stdout: []string{""},
-			errors: []error{nil},
-		}
-
-		rebooter := &UbuntuRebooter{
-			commandExecutor: mockExec,
-            request: &pb.UpdateSystemSoftwareRequest{
-                DoNotReboot: true,
-            },
-		}
-
-		err := rebooter.Reboot()
-		assert.NoError(t, err)
-	})
-
-	t.Run("successful reboot", func(t *testing.T) {
-		mockExec := &mockExecutor{
-			stdout: []string{""},
-			errors: []error{nil},
-		}
-
-		rebooter := &UbuntuRebooter{
-			commandExecutor: mockExec,
-            request: &pb.UpdateSystemSoftwareRequest{
-                DoNotReboot: false,
-            },
-		}
-
-		err := rebooter.Reboot()
-		assert.NoError(t, err)
-		assert.Equal(t, 1, len(mockExec.commands))
-		assert.Equal(t, []string{"/sbin/reboot"}, mockExec.commands[0])
-	})
-
-	t.Run("failed reboot", func(t *testing.T) {
-		mockExec := &mockExecutor{
-			stdout: []string{""},
-			errors: []error{errors.New("reboot error")},
-		}
-
-		rebooter := &UbuntuRebooter{
-			commandExecutor: mockExec,
-            request: &pb.UpdateSystemSoftwareRequest{
-                DoNotReboot: false,
-            },
-		}
-
-		err := rebooter.Reboot()
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "SOTA Aborted: Reboot Failed")
-		assert.Equal(t, 1, len(mockExec.commands))
-		assert.Equal(t, []string{"/sbin/reboot"}, mockExec.commands[0])
-	})
-}
