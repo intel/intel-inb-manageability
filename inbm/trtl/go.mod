@@ -1,6 +1,6 @@
 module iotg-inb/trtl
 
-go 1.22
+go 1.24
 
 require (
 	github.com/docker/docker v25.0.6+incompatible
@@ -8,7 +8,7 @@ require (
 	github.com/opencontainers/image-spec v1.1.0-rc4
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/afero v1.9.5
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	golang.org/x/net v0.33.0
 	k8s.io/apimachinery v0.27.4
 )

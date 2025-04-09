@@ -4,7 +4,7 @@ This serves as a mock INBS that can be used to send ping requests to cloudadapte
 
 ## Prerequisites
 
-- Go 1.22 or higher
+- Go 1.24 or higher
 - Protobuf tools installed for regenerating protobuf golang code
 
 ## Getting Started

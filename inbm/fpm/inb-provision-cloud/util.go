@@ -131,7 +131,7 @@ func promptFile(query string) []byte {
 		if fileExists(fileName) {
 			content, err := ioutil.ReadFile(fileName)
 			if err != nil {
-				log.Fatalf("Error while reading file " + fileName)
+				log.Fatalf("Error while reading file %s", fileName)
 			}
 			return content
 		} else {

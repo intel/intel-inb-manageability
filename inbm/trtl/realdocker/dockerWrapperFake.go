@@ -8,6 +8,7 @@ package realdocker
 import (
 	"io"
 
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 	specs "github.com/opencontainers/image-spec/specs-go/v1"
 
@@ -39,7 +40,7 @@ func (f FakeFinder) FindContainer(DockerWrapper, string) (bool, types.Container,
 type FakeDockerWrapper struct {
 	AuthenticateOKBody registry.AuthenticateOKBody
 	Err                error
-	Images             []types.ImageSummary
+	Images             []image.Summary
 	ContainerJSON      types.ContainerJSON
 	Containers         []types.Container
 	HijackedResp       types.HijackedResponse
@@ -93,17 +94,17 @@ func (d FakeDockerWrapper) ContainerCreate(config *container.Config, hostConfig 
 }
 
 // ContainerList is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerList(types.ContainerListOptions) ([]types.Container, error) {
+func (d FakeDockerWrapper) ContainerList(container.ListOptions) ([]types.Container, error) {
 	return d.Containers, d.Err
 }
 
 // ContainerLogs is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerLogs(types.ContainerLogsOptions, string) error {
+func (d FakeDockerWrapper) ContainerLogs(container.LogsOptions, string) error {
 	return d.Err
 }
 
 // ContainerRemove is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerRemove(string, types.ContainerRemoveOptions) error {
+func (d FakeDockerWrapper) ContainerRemove(string, container.RemoveOptions) error {
 	return d.Err
 }
 

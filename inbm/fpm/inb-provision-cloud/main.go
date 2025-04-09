@@ -156,7 +156,7 @@ func setUpCloudCredentialDirectory(config CloudConfig) {
 
 	err := ioutil.WriteFile(cloudFilePath, []byte(cloudConfig), 0640)
 	if err != nil {
-		log.Fatalf("Error writing new config to " + cloudFilePath)
+		log.Fatalf("Error writing new config to %s", cloudFilePath)
 	}
 	println("Successfully configured cloud service!")
 }
@@ -222,7 +222,7 @@ func configureAzure(config CloudConfig) string {
 			}
 			certErr := ioutil.WriteFile(deviceCertPath, certData, 0644)
 			if certErr != nil {
-				log.Fatalf("Error writing to " + deviceCertPath)
+				log.Fatalf("Error writing to %s", deviceCertPath)
 			}
 
 			keyData := []byte{}
@@ -234,7 +234,7 @@ func configureAzure(config CloudConfig) string {
 			}
 			keyErr := ioutil.WriteFile(deviceKeyPath, keyData, 0640)
 			if keyErr != nil {
-				log.Fatalf("Error writing to " + deviceKeyPath)
+				log.Fatalf("Error writing to %s", deviceKeyPath)
 			}
 		} else {
 			log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to Azure using X509 auth.")
@@ -314,7 +314,7 @@ func getIdFromFile(filepath string) string {
 	if content, err := ioutil.ReadFile(filepath); err == nil {
 		return strings.TrimSpace(string(content))
 	}
-	log.Fatalf("Unable to read id from " + filepath + ".  Unable to provision for UCC.")
+	log.Fatalf("Unable to read id from '%s'. Unable to provision for UCC.", filepath)
 	return ""
 }
 
@@ -345,7 +345,7 @@ func createUnencryptedTemplate(templateDir string) string {
 	jsonFile := filepath.Join(templateDir, "config.json.template")
 	jsonBytes, err := ioutil.ReadFile(filepath.Clean(jsonFile))
 	if err != nil {
-		log.Fatalf("Error reading from " + jsonFile)
+		log.Fatalf("Error reading from %s", jsonFile)
 	}
 	return string(jsonBytes)
 }
@@ -438,7 +438,7 @@ func configureUccX509(cloudCredentialDir string) (string, string) {
 		}
 		certErr := ioutil.WriteFile(deviceCertPath, certData, 0644)
 		if certErr != nil {
-			log.Fatalf("Error writing to " + deviceCertPath)
+			log.Fatalf("Error writing to %s", deviceCertPath)
 		}
 
 		// Device Key
@@ -452,7 +452,7 @@ func configureUccX509(cloudCredentialDir string) (string, string) {
 		}
 		err := ioutil.WriteFile(deviceKeyPath, keyData, 0640)
 		if err != nil {
-			log.Fatalf("Error writing to " + deviceKeyPath)
+			log.Fatalf("Error writing to %s", deviceKeyPath)
 		}
 	} else {
 		log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to the cloud provider using X509 auth.")
@@ -474,7 +474,7 @@ func configureThingsboardX509(cloudCredentialDir string) string {
 		}
 		certErr := ioutil.WriteFile(deviceCertPath, certData, 0644)
 		if certErr != nil {
-			log.Fatalf("Error writing to " + deviceCertPath)
+			log.Fatalf("Error writing to %s", deviceCertPath)
 		}
 	} else {
 		log.Fatalf("\nPlease generate the device certs and keys prior to provisioning the device to the cloud provider using X509 auth.")
@@ -501,13 +501,13 @@ func configureTls(templateDir string, caFileName string, cloudProviderName strin
 	}
 	err := ioutil.WriteFile(caPath, data, 0640)
 	if err != nil {
-		log.Fatalf("Error writing to " + caPath)
+		log.Fatalf("Error writing to %s", caPath)
 	}
 
 	jsonFile := filepath.Join(filepath.Clean(templateDir), "config_tls.json.template")
 	jsonBytes, err := ioutil.ReadFile(filepath.Clean(jsonFile))
 	if err != nil {
-		log.Fatalf("Error reading from " + jsonFile)
+		log.Fatalf("Error reading from %s", jsonFile)
 	}
 	return string(jsonBytes), caPath
 }
@@ -551,7 +551,7 @@ func makeCloudJson(cloudProviderName string, template string, caPath string, dev
 func confirmReplaceConfiguration(cloudFilePath string) bool {
 	cloudFileContents, err := ioutil.ReadFile(filepath.Clean(cloudFilePath))
 	if err != nil {
-		log.Fatalf("Cloud configuration already exists at " + cloudFilePath + ", but cannot be read.")
+		log.Fatalf("Cloud configuration already exists at %s", cloudFilePath + ", but cannot be read.")
 	}
 	configurationMatches := regexp.MustCompile(`"cloud":\s*("[_\-\w:\s]+")`).FindAllSubmatch(cloudFileContents, -1)
 

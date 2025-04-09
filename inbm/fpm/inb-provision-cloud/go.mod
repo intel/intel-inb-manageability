@@ -1,10 +1,10 @@
 module inb-provision-cloud
 
-go 1.22
+go 1.24
 
 require (
 	github.com/lestrrat-go/jsschema v0.0.0-20181205002244-5c81c58ffcc3
-	github.com/stretchr/testify v1.8.2
+	github.com/stretchr/testify v1.10.0
 )
 
 require (

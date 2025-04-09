@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 
 	"os"
@@ -31,18 +32,18 @@ type DockerWrapper interface {
 	ImageImport(string, string, []string) error
 	ImagePull(referenceName string, options types.ImagePullOptions) error
 	ImageRemove(string, types.ImageRemoveOptions) error
-	ImageList(types.ImageListOptions) ([]types.ImageSummary, error)
+	ImageList(types.ImageListOptions) ([]image.Summary, error)
 	ImageLoad(io.Reader, bool) error
-	ContainerCommit(string, types.ContainerCommitOptions) (types.IDResponse, error)
+	ContainerCommit(string, container.CommitOptions) (types.IDResponse, error)
 	ContainerCreate(*container.Config, *container.HostConfig, *network.NetworkingConfig, *specs.Platform, string) (container.CreateResponse, error)
 	ContainerExecAttach(string, types.ExecStartCheck) error
 	ContainerExecCreate(string, types.ExecConfig) (types.IDResponse, error)
 	ContainerInspect(string) (types.ContainerJSON, error)
-	ContainerList(types.ContainerListOptions) ([]types.Container, error)
-	ContainerLogs(types.ContainerLogsOptions, string) error
-	ContainerRemove(string, types.ContainerRemoveOptions) error
+	ContainerList(container.ListOptions) ([]types.Container, error)
+	ContainerLogs(container.LogsOptions, string) error
+	ContainerRemove(string, container.RemoveOptions) error
 	ContainerStats(string, bool) (types.ContainerStats, error)
-	ContainerStart(string, types.ContainerStartOptions) error
+	ContainerStart(string, container.StartOptions) error
 	ContainerStop(string, *int) error
 	CopyToContainer(string, string, io.Reader, types.CopyToContainerOptions) error
 	Login(registry.AuthConfig) (registry.AuthenticateOKBody, error)
