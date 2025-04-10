@@ -9,6 +9,7 @@ import (
 	"io"
 	"log"
 
+	"github.com/docker/docker/api/types/common"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 
@@ -34,18 +35,18 @@ type DockerWrapper interface {
 	ImageRemove(string, image.RemoveOptions) error
 	ImageList(image.ListOptions) ([]image.Summary, error)
 	ImageLoad(io.Reader, bool) error
-	ContainerCommit(string, container.CommitOptions) (types.IDResponse, error)
+	ContainerCommit(string, container.CommitOptions) (common.IDResponse, error)
 	ContainerCreate(*container.Config, *container.HostConfig, *network.NetworkingConfig, *specs.Platform, string) (container.CreateResponse, error)
-	ContainerExecAttach(string, types.ExecStartCheck) error
-	ContainerExecCreate(string, types.ExecConfig) (types.IDResponse, error)
-	ContainerInspect(string) (types.ContainerJSON, error)
+	ContainerExecAttach(string, container.ExecStartOptions) error
+	ContainerExecCreate(string, container.ExecOptions) (common.IDResponse, error)
+	ContainerInspect(string) (container.InspectResponse, error)
 	ContainerList(container.ListOptions) ([]types.Container, error)
 	ContainerLogs(container.LogsOptions, string) error
 	ContainerRemove(string, container.RemoveOptions) error
 	ContainerStats(string, bool) (types.ContainerStats, error)
 	ContainerStart(string, container.StartOptions) error
 	ContainerStop(string, *int) error
-	CopyToContainer(string, string, io.Reader, types.CopyToContainerOptions) error
+	CopyToContainer(string, string, io.Reader, container.CopyToContainerOptions) error
 	Login(registry.AuthConfig) (registry.AuthenticateOKBody, error)
 }
 
@@ -119,7 +120,7 @@ func (dw DockerWrap) ImageRemove(imageID string, options image.RemoveOptions) er
 }
 
 // ImageList makes actual call to docker to get the image list.
-func (dw DockerWrap) ImageList(options image.ListOptions) ([]types.ImageSummary, error) {
+func (dw DockerWrap) ImageList(options image.ListOptions) ([]image.Summary, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
@@ -150,19 +151,19 @@ func (dw DockerWrap) ImageLoad(input io.Reader, quiet bool) error {
 }
 
 // ContainerCommit makes the actual call to docker to commit the container.
-func (dw DockerWrap) ContainerCommit(containerID string, options container.CommitOptions) (types.IDResponse, error) {
+func (dw DockerWrap) ContainerCommit(containerID string, options container.CommitOptions) (common.IDResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
-		return types.IDResponse{}, err
+		return common.IDResponse{}, err
 	}
 
 	return cli.ContainerCommit(context.Background(), containerID, options)
 }
 
-func (dw DockerWrap) ContainerExecCreate(container string, config types.ExecConfig) (types.IDResponse, error) {
+func (dw DockerWrap) ContainerExecCreate(container string, config container.ExecOptions) (common.IDResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
-		return types.IDResponse{}, err
+		return common.IDResponse{}, err
 	}
 	return cli.ContainerExecCreate(context.Background(), container, config)
 }
@@ -178,7 +179,7 @@ func (dw DockerWrap) ContainerCreate(config *container.Config, hostConfig *conta
 	return cli.ContainerCreate(context.Background(), config, hostConfig, netConfig, platform, containerName)
 }
 
-func (dw DockerWrap) ContainerExecAttach(execID string, startCheck types.ExecStartCheck) error {
+func (dw DockerWrap) ContainerExecAttach(execID string, startCheck container.ExecStartOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -232,7 +233,7 @@ func (dw DockerWrap) ContainerLogs(options types.ContainerLogsOptions, container
 }
 
 // ContainerRemove makes the actual call to docker to remove a container.
-func (dw DockerWrap) ContainerRemove(containerID string, options types.ContainerRemoveOptions) error {
+func (dw DockerWrap) ContainerRemove(containerID string, options container.RemoveOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -242,7 +243,7 @@ func (dw DockerWrap) ContainerRemove(containerID string, options types.Container
 }
 
 // ContainerStart makes the actual call to docker to inspect a container.
-func (dw DockerWrap) ContainerStart(containerID string, options types.ContainerStartOptions) error {
+func (dw DockerWrap) ContainerStart(containerID string, options container.StartOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -285,7 +286,7 @@ func (dw DockerWrap) ContainerInspect(containerID string) (types.ContainerJSON, 
 }
 
 // CopyToContainer makes the actual call to docker to copy to the container.
-func (dw DockerWrap) CopyToContainer(containerID string, path string, content io.Reader, options types.CopyToContainerOptions) error {
+func (dw DockerWrap) CopyToContainer(containerID string, path string, content io.Reader, options container.CopyToContainerOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err

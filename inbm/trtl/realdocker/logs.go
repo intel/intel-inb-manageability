@@ -10,7 +10,7 @@ import (
 	"github.com/docker/docker/api/types"
 )
 
-// logs retrieves logs from target.  Currently can be used by docker or compose.
+// Logs retrieves logs from target.  Currently can be used by docker or compose.
 func Logs(f Finder, dw DockerWrapper, options ContainerLogOptions, target string) error {
 	containerFound, container, err := f.FindContainer(dw, target)
 	if err != nil {

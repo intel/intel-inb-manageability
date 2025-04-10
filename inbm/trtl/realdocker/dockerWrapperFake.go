@@ -8,6 +8,7 @@ package realdocker
 import (
 	"io"
 
+	"github.com/docker/docker/api/types/common"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 	specs "github.com/opencontainers/image-spec/specs-go/v1"
@@ -45,7 +46,7 @@ type FakeDockerWrapper struct {
 	Containers         []types.Container
 	HijackedResp       types.HijackedResponse
 	Stats              types.ContainerStats
-	IDResponse         types.IDResponse
+	IDResponse         common.IDResponse
 	CreatedBody        container.CreateResponse
 	ErrorChan          <-chan error
 	MessageChan        <-chan events.Message
@@ -82,7 +83,7 @@ func (d FakeDockerWrapper) ImageList(image.ListOptions) ([]types.ImageSummary, e
 }
 
 // ContainerCommit is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerCommit(containerID string, options types.ContainerCommitOptions) (types.IDResponse, error) {
+func (d FakeDockerWrapper) ContainerCommit(containerID string, options container.CommitOptions) (common.IDResponse, error) {
 	return d.IDResponse, d.Err
 }
 
@@ -109,7 +110,7 @@ func (d FakeDockerWrapper) ContainerRemove(string, container.RemoveOptions) erro
 }
 
 // ContainerStart is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerStart(containerID string, options types.ContainerStartOptions) error {
+func (d FakeDockerWrapper) ContainerStart(containerID string, options container.StartOptions) error {
 	return d.Err
 }
 
@@ -129,15 +130,15 @@ func (d FakeDockerWrapper) ContainerInspect(string) (types.ContainerJSON, error)
 }
 
 // CopyToContainer is a fake method for unit testing
-func (d FakeDockerWrapper) CopyToContainer(string, string, io.Reader, types.CopyToContainerOptions) error {
+func (d FakeDockerWrapper) CopyToContainer(string, string, io.Reader, container.CopyToContainerOptions) error {
 	return d.Err
 }
 
-func (d FakeDockerWrapper) ContainerExecAttach(execID string, startCheck types.ExecStartCheck) error {
+func (d FakeDockerWrapper) ContainerExecAttach(execID string, startCheck container.ExecStartOptions) error {
 	return d.Err
 }
 
-func (d FakeDockerWrapper) ContainerExecCreate(container string, config types.ExecConfig) (types.IDResponse, error) {
+func (d FakeDockerWrapper) ContainerExecCreate(container string, config container.ExecOptions) (common.IDResponse, error) {
 	return d.IDResponse, d.Err
 }
 

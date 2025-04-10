@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2024 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 // Package realdocker provides calls to docker
@@ -12,7 +12,9 @@ import (
 	"strings"
 
 	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/image"
 )
 
 // IsRunning finds out whether a given container (by ID) is running.
@@ -45,7 +47,7 @@ func GetLatestImageVersionNumber(dw DockerWrapper, image string) (bool, int, err
 	return true, latest, nil
 }
 
-func findLatestImage(images []types.ImageSummary) int {
+func findLatestImage(images []image.Summary) int {
 	l := 0
 	for _, image := range images {
 		s := strings.Split(image.RepoTags[0], ":")
@@ -76,5 +78,5 @@ func (s byDate) Less(i, j int) bool {
 // StartContainer starts a container of the given ID.
 // It returns any error encountered.
 func StartContainer(dw DockerWrapper, containerID string) error {
-	return dw.ContainerStart(containerID, types.ContainerStartOptions{})
+	return dw.ContainerStart(containerID, container.StartOptions{})
 }
