@@ -9,7 +9,7 @@ import (
 	"bufio"
 	"encoding/base64"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 
 	"encoding/json"
@@ -46,7 +46,7 @@ func ImagePull(f Finder, dw DockerWrapper, referenceName string, userName string
 		authStr = base64.URLEncoding.EncodeToString(encodedJSON)
 	}
 
-	if err := dw.ImagePull(referenceName, types.ImagePullOptions{RegistryAuth: authStr}); err != nil {
+	if err := dw.ImagePull(referenceName, image.PullOptions{RegistryAuth: authStr}); err != nil {
 		return err
 	}
 

@@ -41,7 +41,7 @@ type FakeDockerWrapper struct {
 	AuthenticateOKBody registry.AuthenticateOKBody
 	Err                error
 	Images             []image.Summary
-	ContainerJSON      types.ContainerJSON
+	ContainerJSON      container.InspectResponse
 	Containers         []types.Container
 	HijackedResp       types.HijackedResponse
 	Stats              types.ContainerStats
@@ -52,7 +52,7 @@ type FakeDockerWrapper struct {
 }
 
 // Events is a fake method for unit testing.
-func (d FakeDockerWrapper) Events(types.EventsOptions) (<-chan events.Message, <-chan error) {
+func (d FakeDockerWrapper) Events(events.ListOptions) (<-chan events.Message, <-chan error) {
 	return d.MessageChan, d.ErrorChan
 }
 
@@ -67,17 +67,17 @@ func (d FakeDockerWrapper) ImageLoad(io.Reader, bool) error {
 }
 
 // ImagePull is a fake method for unit testing.
-func (d FakeDockerWrapper) ImagePull(string, types.ImagePullOptions) error {
+func (d FakeDockerWrapper) ImagePull(string, image.PullOptions) error {
 	return d.Err
 }
 
 // ImageRemove is a fake method for unit testing
-func (d FakeDockerWrapper) ImageRemove(string, types.ImageRemoveOptions) error {
+func (d FakeDockerWrapper) ImageRemove(string, image.RemoveOptions) error {
 	return d.Err
 }
 
 // ImageList is a fake method for unit testing
-func (d FakeDockerWrapper) ImageList(types.ImageListOptions) ([]types.ImageSummary, error) {
+func (d FakeDockerWrapper) ImageList(image.ListOptions) ([]types.ImageSummary, error) {
 	return d.Images, d.Err
 }
 

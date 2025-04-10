@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2024 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
@@ -10,9 +10,11 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/filters"
 	"iotg-inb/trtl/logging"
+
+	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
 )
 
 // GetImageTag returns the Docker image tag associated with the Instance
@@ -53,7 +55,7 @@ func (df DockerFinder) FindContainer(dw DockerWrapper, image string) (bool, type
 	args := filters.NewArgs()
 	args.Add("ancestor", image)
 
-	containers, err := dw.ContainerList(types.ContainerListOptions{Filters: args, All: true})
+	containers, err := dw.ContainerList(container.ListOptions{Filters: args, All: true})
 	if err != nil {
 		return false, types.Container{}, err
 	}

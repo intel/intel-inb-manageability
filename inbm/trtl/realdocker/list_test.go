@@ -3,14 +3,14 @@ package realdocker
 import (
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/image"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestListContainersSuccessfully(t *testing.T) {
 	d := FakeDockerWrapper{
 		Err: nil,
-		Images: []types.ImageSummary{
+		Images: []image.Summary{
 			{ID: "abcd", RepoTags: []string{"abcd"}},
 		},
 	}
@@ -21,7 +21,7 @@ func TestListContainersSuccessfully(t *testing.T) {
 func TestListContainersNoneImageSuccessfully(t *testing.T) {
 	d := FakeDockerWrapper{
 		Err: nil,
-		Images: []types.ImageSummary{
+		Images: []image.Summary{
 			{ID: "abcd", RepoTags: []string{"<none>"}},
 		},
 	}

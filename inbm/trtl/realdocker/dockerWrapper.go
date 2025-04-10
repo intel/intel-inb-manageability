@@ -28,11 +28,11 @@ type DockerWrap struct{}
 
 // DockerWrapper is an interface used for all docker commands
 type DockerWrapper interface {
-	Events(types.EventsOptions) (<-chan events.Message, <-chan error)
+	Events(events.ListOptions) (<-chan events.Message, <-chan error)
 	ImageImport(string, string, []string) error
-	ImagePull(referenceName string, options types.ImagePullOptions) error
-	ImageRemove(string, types.ImageRemoveOptions) error
-	ImageList(types.ImageListOptions) ([]image.Summary, error)
+	ImagePull(referenceName string, options image.PullOptions) error
+	ImageRemove(string, image.RemoveOptions) error
+	ImageList(image.ListOptions) ([]image.Summary, error)
 	ImageLoad(io.Reader, bool) error
 	ContainerCommit(string, container.CommitOptions) (types.IDResponse, error)
 	ContainerCreate(*container.Config, *container.HostConfig, *network.NetworkingConfig, *specs.Platform, string) (container.CreateResponse, error)
@@ -50,7 +50,7 @@ type DockerWrapper interface {
 }
 
 // Events makes actual call to docker to get the events and constantly polls.
-func (dw DockerWrap) Events(options types.EventsOptions) (<-chan events.Message, <-chan error) {
+func (dw DockerWrap) Events(options events.ListOptions) (<-chan events.Message, <-chan error) {
 	errsChan := make(chan error, 1)
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -67,8 +67,8 @@ func (dw DockerWrap) ImageImport(src string, ref string, changes []string) error
 		return err
 	}
 
-	read, err := cli.ImageImport(context.Background(), types.ImageImportSource{Source: nil, SourceName: src}, ref,
-		types.ImageImportOptions{Tag: "", Message: "Imported image", Changes: changes})
+	read, err := cli.ImageImport(context.Background(), image.ImportSource{Source: nil, SourceName: src}, ref,
+		image.ImportOptions{Tag: "", Message: "Imported image", Changes: changes})
 
 	defer func() {
 		if read != nil {
@@ -82,7 +82,7 @@ func (dw DockerWrap) ImageImport(src string, ref string, changes []string) error
 }
 
 // ImagePull requests the docker host to pull an image from a remote registry.
-func (dw DockerWrap) ImagePull(reference string, options types.ImagePullOptions) error {
+func (dw DockerWrap) ImagePull(reference string, options image.PullOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -108,18 +108,18 @@ func (dw DockerWrap) ImagePull(reference string, options types.ImagePullOptions)
 }
 
 // ImageRemove makes actual call to docker to remove an image.
-func (dw DockerWrap) ImageRemove(imageID string, options types.ImageRemoveOptions) error {
+func (dw DockerWrap) ImageRemove(imageID string, options image.RemoveOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
 
-	_, err = cli.ImageRemove(context.Background(), imageID, types.ImageRemoveOptions{PruneChildren: options.PruneChildren, Force: options.Force})
+	_, err = cli.ImageRemove(context.Background(), imageID, image.RemoveOptions{PruneChildren: options.PruneChildren, Force: options.Force})
 	return err
 }
 
 // ImageList makes actual call to docker to get the image list.
-func (dw DockerWrap) ImageList(options types.ImageListOptions) ([]types.ImageSummary, error) {
+func (dw DockerWrap) ImageList(options image.ListOptions) ([]types.ImageSummary, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
@@ -150,7 +150,7 @@ func (dw DockerWrap) ImageLoad(input io.Reader, quiet bool) error {
 }
 
 // ContainerCommit makes the actual call to docker to commit the container.
-func (dw DockerWrap) ContainerCommit(containerID string, options types.ContainerCommitOptions) (types.IDResponse, error) {
+func (dw DockerWrap) ContainerCommit(containerID string, options container.CommitOptions) (types.IDResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return types.IDResponse{}, err
