@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2025 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
@@ -8,54 +8,36 @@ package realdocker
 import (
 	"encoding/json"
 	"fmt"
-	"log"
-   	"math"
+	"math"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 )
 
-func getSingleContainerStats(dw DockerWrapper, container ContainerInfo) (ContainerUsage, error) {
+func getSingleContainerStats(dw DockerWrapper, 
+		container ContainerInfo) (ContainerUsage, error) {
 	var containerUsage ContainerUsage
 
-	response, err := dw.ContainerStats(container.ID, false)
+	stats, err := dw.ContainerStats(container.ID, false)
 	if err != nil {
 		return containerUsage, err
 	}
 
-	defer func() {
-		if err = response.Body.Close(); err != nil {
-			log.Fatalf("Error closing response body from docker stats command: %s", err)
-		}
-	}()
+	previousCPU := stats.PreCPUStats.CPUUsage.TotalUsage
+	previousSystem := stats.PreCPUStats.SystemUsage
+	cpuPercent := calculateCPUPercent(previousCPU, previousSystem, stats)
 
-	dec := json.NewDecoder(response.Body)
+	memoryUsage := stats.MemoryStats.Usage
+	memoryLimit := stats.MemoryStats.Limit
+	memoryPercent := (float64(memoryUsage) / float64(memoryLimit)) * 100.0
 
-	var (
-		previousCPU    uint64
-		previousSystem uint64
-		v              *types.StatsJSON
-	)
-
-	if err = dec.Decode(&v); err != nil {
-		return containerUsage, err
-	}
-
-	previousCPU = v.PreCPUStats.CPUUsage.TotalUsage
-	previousSystem = v.PreCPUStats.SystemUsage
-	cpuPercent := calculateCPUPercent(previousCPU, previousSystem, v)
-
-    memoryUsage := v.MemoryStats.Usage
-    memoryLimit := v.MemoryStats.Limit
-    memoryPercent := (float64(memoryUsage) / float64(memoryLimit)) * 100.0
-
-	return  ContainerUsage{
-			ImageName:  container.ImageName,
-			ContainerID: container.ID,
-			CPUPercent: math.Round(cpuPercent*100)/100,
-			MemoryUsage: memoryUsage,
-			MemoryLimit: memoryLimit,
-			MemoryPercent: math.Round(memoryPercent*100)/100,
-			Pids: v.PidsStats.Current}, nil
+	return ContainerUsage{
+		ImageName:     container.ImageName,
+		ContainerID:   container.ID,
+		CPUPercent:    math.Round(cpuPercent*100) / 100,
+		MemoryUsage:   memoryUsage,
+		MemoryLimit:   memoryLimit,
+		MemoryPercent: math.Round(memoryPercent*100) / 100,
+		Pids:          stats.PidsStats.Current}, nil
 }
 
 func createContainerUsages(dw DockerWrapper, containers []ContainerInfo) (string, error) {
@@ -80,7 +62,7 @@ func createContainerUsages(dw DockerWrapper, containers []ContainerInfo) (string
 // one specified container.
 // It returns any error encountered.
 func Stats(dw DockerWrapper) error {
-    containers, err := GetAllRunningContainers(dw)
+	containers, err := GetAllRunningContainers(dw)
 	if err != nil {
 		return err
 	}
@@ -90,8 +72,8 @@ func Stats(dw DockerWrapper) error {
 		return err
 	}
 
-  fmt.Println("ContainerStats=", output)
-  return nil
+	fmt.Println("ContainerStats=", output)
+	return nil
 }
 
 // AllContainerUsage is a structure to marshal the container usage information in JSON format
@@ -102,19 +84,19 @@ type allContainerUsage struct {
 
 // ContainerUsage is a structure to hold container usage.
 type ContainerUsage struct {
-    ImageName string `json:"imageName"`
-    // Name is the name of the container
-    ContainerID string `json:"containerID"`
-    // CpuPercent is the CPU percentage used by the container.
-    CPUPercent float64 `json:"cpuPercent"`
-    // MemoryUsage is the amount of memory used by the container
-    MemoryUsage uint64 `json:"memoryUsage"`
-    // MemoryLimit is the total memory on the system
-    MemoryLimit uint64 `json:"memoryLimit"`
-    // MemoryPercent is the Memory percentage used by the container
-    MemoryPercent float64 `json:"memoryPercent`
-    // Pids is the number of Pids used by the container
-    Pids uint64 `json:"pids"`
+	ImageName string `json:"imageName"`
+	// Name is the name of the container
+	ContainerID string `json:"containerID"`
+	// CpuPercent is the CPU percentage used by the container.
+	CPUPercent float64 `json:"cpuPercent"`
+	// MemoryUsage is the amount of memory used by the container
+	MemoryUsage uint64 `json:"memoryUsage"`
+	// MemoryLimit is the total memory on the system
+	MemoryLimit uint64 `json:"memoryLimit"`
+	// MemoryPercent is the Memory percentage used by the container
+	MemoryPercent float64 `json:"memoryPercent`
+	// Pids is the number of Pids used by the container
+	Pids uint64 `json:"pids"`
 }
 
 func createAllContainerUsageJSON(containers []ContainerUsage) (string, error) {
@@ -127,7 +109,7 @@ func createAllContainerUsageJSON(containers []ContainerUsage) (string, error) {
 	return string(j), nil
 }
 
-func calculateCPUPercent(previousCPU, previousSystem uint64, v *types.StatsJSON) float64 {
+func calculateCPUPercent(previousCPU, previousSystem uint64, v container.StatsResponse) float64 {
 	var (
 		cpuPercent  = 0.0
 		cpuDelta    = float64(v.CPUStats.CPUUsage.TotalUsage) - float64(previousCPU)

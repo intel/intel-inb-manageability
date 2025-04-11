@@ -110,12 +110,12 @@ func (d FakeDockerWrapper) ContainerRemove(string, container.RemoveOptions) erro
 }
 
 // ContainerStart is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerStart(containerID string, options container.StartOptions) error {
+func (d FakeDockerWrapper) ContainerStart(string, container.StartOptions) error {
 	return d.Err
 }
 
 // ContainerStats is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerStats(containerID string, stream bool) (types.ContainerStats, error) {
+func (d FakeDockerWrapper) ContainerStats(string, bool) (container.StatsResponse, error) {
 	return d.Stats, d.Err
 }
 

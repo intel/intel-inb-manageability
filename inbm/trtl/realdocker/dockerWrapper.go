@@ -6,6 +6,8 @@
 package realdocker
 
 import (
+	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 
@@ -43,7 +45,7 @@ type DockerWrapper interface {
 	ContainerList(container.ListOptions) ([]types.Container, error)
 	ContainerLogs(container.LogsOptions, string) error
 	ContainerRemove(string, container.RemoveOptions) error
-	ContainerStats(string, bool) (types.ContainerStats, error)
+	ContainerStats(string, bool) (container.StatsResponse, error)
 	ContainerStart(string, container.StartOptions) error
 	ContainerStop(string, *int) error
 	CopyToContainer(string, string, io.Reader, container.CopyToContainerOptions) error
@@ -253,15 +255,23 @@ func (dw DockerWrap) ContainerStart(containerID string, options container.StartO
 }
 
 // ContainerStats makes tha actual call to docker to get container statistics.
-func (dw DockerWrap) ContainerStats(containerID string, stream bool) (types.ContainerStats, error) {
+func (dw DockerWrap) ContainerStats(containerID string, isStream bool) (container.StatsResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
-		return types.ContainerStats{}, err
+		return container.StatsResponse{}, err
 	}
 
-	response, err := cli.ContainerStats(context.Background(), containerID, stream)
+	stats, err := cli.ContainerStats(context.Background(), containerID, isStream)
+	if err != nil {
+		return container.StatsResponse{}, fmt.Errorf("error retrieving container stats: %w", err)
+	}	
+	defer stats.Body.Close()
 
-	return response, err
+	var containerStats container.StatsResponse
+	if err := json.NewDecoder(stats.Body).Decode(&containerStats); err != nil {
+		return container.StatsResponse{}, fmt.Errorf("error decoding container stats: %w", err)
+	}
+	return containerStats, nil
 }
 
 // ContainerStop makes the actual call to docker to stop a container.
