@@ -10,6 +10,7 @@ ExecStart=/usr/bin/inbd -s /var/run/inbd.sock
 RestartSec=5s
 Restart=on-failure
 WorkingDirectory=/etc/systemd/system/
+Group=inbd
 
 [Install]
 WantedBy=multi-user.target

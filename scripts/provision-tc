@@ -9,6 +9,7 @@ set -eo pipefail
 ### The main provisioning function
 function provision {
 
+  create_group
   enable_inbd
   echo "Intel(R) In-Band Manageability Provisioning Complete"
   exit 0
@@ -19,6 +20,11 @@ function enable_inbd {
   systemctl enable inbd
   systemctl start inbd
   sleep 1
+}
+
+function create_group {
+  echo "Creating group"
+  groupadd -r inbd || true
 }
 
 provision
