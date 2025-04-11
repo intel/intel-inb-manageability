@@ -42,7 +42,7 @@ type DockerWrapper interface {
 	ContainerExecAttach(string, container.ExecStartOptions) error
 	ContainerExecCreate(string, container.ExecOptions) (common.IDResponse, error)
 	ContainerInspect(string) (container.InspectResponse, error)
-	ContainerList(container.ListOptions) ([]types.Container, error)
+	ContainerList(container.ListOptions) ([]container.Summary, error)
 	ContainerLogs(container.LogsOptions, string) error
 	ContainerRemove(string, container.RemoveOptions) error
 	ContainerStats(string, bool) (container.StatsResponse, error)
@@ -133,13 +133,13 @@ func (dw DockerWrap) ImageList(options image.ListOptions) ([]image.Summary, erro
 
 // ImageLoad makes actual call to docker to load the image.
 // ImageLoadResponse returned by this function.
-func (dw DockerWrap) ImageLoad(input io.Reader, quiet bool) error {
+func (dw DockerWrap) ImageLoad(input io.Reader, isQuiet bool) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
 	}
 
-	response, err := cli.ImageLoad(context.Background(), input, quiet)
+	response, err := cli.ImageLoad(context.Background(), input, client.ImageLoadWithQuiet(isQuiet))
 
 	defer func() {
 		if response.Body != nil {
@@ -198,7 +198,7 @@ func (dw DockerWrap) ContainerExecAttach(execID string, startCheck container.Exe
 }
 
 // ContainerList makes the actual call to docker to list the containers.
-func (dw DockerWrap) ContainerList(options types.ContainerListOptions) ([]types.Container, error) {
+func (dw DockerWrap) ContainerList(options container.ListOptions) ([]types.Container, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
@@ -208,7 +208,7 @@ func (dw DockerWrap) ContainerList(options types.ContainerListOptions) ([]types.
 }
 
 // ContainerLogs makes the actual call to docker to get logs for the container.
-func (dw DockerWrap) ContainerLogs(options types.ContainerLogsOptions, container string) error {
+func (dw DockerWrap) ContainerLogs(options container.LogsOptions, container string) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return err
@@ -286,10 +286,10 @@ func (dw DockerWrap) ContainerStop(containerID string, timeout *int) error {
 }
 
 // ContainerInspect makes the actual call to docker to inspect a container.
-func (dw DockerWrap) ContainerInspect(containerID string) (types.ContainerJSON, error) {
+func (dw DockerWrap) ContainerInspect(containerID string) (container.InspectResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
-		return types.ContainerJSON{}, err
+		return container.InspectResponse{}, err
 	}
 
 	return cli.ContainerInspect(context.Background(), containerID)

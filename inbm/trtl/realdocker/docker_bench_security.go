@@ -1,8 +1,9 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
+    Copyright (C) 2017-2025 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides calls to the real docker API
 package realdocker
 
 import (

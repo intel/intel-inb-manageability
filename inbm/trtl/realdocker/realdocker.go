@@ -1,9 +1,9 @@
 /*
-   Copyright (C) 2017-2024 Intel Corporation
+   Copyright (C) 2017-2025 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 */
 
-// Package realdocker provides calls to docker
+// Package realdocker provides calls to the real docker API
 package realdocker
 
 import (
@@ -11,7 +11,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/image"
@@ -30,11 +29,11 @@ func IsRunning(dw DockerWrapper, containerID string) (bool, error) {
 
 // GetLatestImageVersionNumber retrieves the latest version number of the given image name.
 // It returns whether it found the image, the latest image version number, and any error encountered.
-func GetLatestImageVersionNumber(dw DockerWrapper, image string) (bool, int, error) {
+func GetLatestImageVersionNumber(dw DockerWrapper, imageVersion string) (bool, int, error) {
 	args := filters.NewArgs()
-	args.Add("reference", image)
+	args.Add("reference", imageVersion)
 
-	images, err := dw.ImageList(types.ImageListOptions{All: false, Filters: args})
+	images, err := dw.ImageList(image.ListOptions{All: false, Filters: args})
 	if err != nil {
 		return false, 0, err
 	}
@@ -61,7 +60,7 @@ func findLatestImage(images []image.Summary) int {
 	return l
 }
 
-type byDate []types.Container
+type byDate []container.Summary
 
 func (s byDate) Len() int {
 	return len(s)

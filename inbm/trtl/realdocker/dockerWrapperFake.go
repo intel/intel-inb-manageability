@@ -43,9 +43,9 @@ type FakeDockerWrapper struct {
 	Err                error
 	Images             []image.Summary
 	ContainerJSON      container.InspectResponse
-	Containers         []types.Container
+	Containers         []container.Summary
 	HijackedResp       types.HijackedResponse
-	Stats              types.ContainerStats
+	Stats              container.StatsResponse
 	IDResponse         common.IDResponse
 	CreatedBody        container.CreateResponse
 	ErrorChan          <-chan error
@@ -78,18 +78,18 @@ func (d FakeDockerWrapper) ImageRemove(string, image.RemoveOptions) error {
 }
 
 // ImageList is a fake method for unit testing
-func (d FakeDockerWrapper) ImageList(image.ListOptions) ([]types.ImageSummary, error) {
+func (d FakeDockerWrapper) ImageList(image.ListOptions) ([]image.Summary, error) {
 	return d.Images, d.Err
 }
 
 // ContainerCommit is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerCommit(containerID string, options container.CommitOptions) (common.IDResponse, error) {
+func (d FakeDockerWrapper) ContainerCommit(string, container.CommitOptions) (common.IDResponse, error) {
 	return d.IDResponse, d.Err
 }
 
 // ContainerCreate makes the actual call to docker to create the container.
-func (d FakeDockerWrapper) ContainerCreate(config *container.Config, hostConfig *container.HostConfig,
-	netConfig *network.NetworkingConfig, platform *specs.Platform, containerName string) (container.CreateResponse, error) {
+func (d FakeDockerWrapper) ContainerCreate(*container.Config, *container.HostConfig,
+	*network.NetworkingConfig, *specs.Platform, string) (container.CreateResponse, error) {
 
 	return d.CreatedBody, d.Err
 }
@@ -125,7 +125,7 @@ func (d FakeDockerWrapper) ContainerStop(string, *int) error {
 }
 
 // ContainerInspect is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerInspect(string) (types.ContainerJSON, error) {
+func (d FakeDockerWrapper) ContainerInspect(string) (container.InspectResponse, error) {
 	return d.ContainerJSON, d.Err
 }
 
@@ -134,15 +134,15 @@ func (d FakeDockerWrapper) CopyToContainer(string, string, io.Reader, container.
 	return d.Err
 }
 
-func (d FakeDockerWrapper) ContainerExecAttach(execID string, startCheck container.ExecStartOptions) error {
+func (d FakeDockerWrapper) ContainerExecAttach(string, container.ExecStartOptions) error {
 	return d.Err
 }
 
-func (d FakeDockerWrapper) ContainerExecCreate(container string, config container.ExecOptions) (common.IDResponse, error) {
+func (d FakeDockerWrapper) ContainerExecCreate(string, container.ExecOptions) (common.IDResponse, error) {
 	return d.IDResponse, d.Err
 }
 
 // Login is a fake method for unit testing
-func (d FakeDockerWrapper) Login(config registry.AuthConfig) (registry.AuthenticateOKBody, error) {
+func (d FakeDockerWrapper) Login(registry.AuthConfig) (registry.AuthenticateOKBody, error) {
 	return d.AuthenticateOKBody, d.Err
 }
