@@ -94,7 +94,7 @@ function docker_start {
 
   apparmor_parser -r docker-manageability-policy
 
-  docker build \
+  docker build --pull \
       --build-arg HTTP_PROXY=${HTTP_PROXY:-} \
       --build-arg http_proxy=${http_proxy:-} \
       --build-arg HTTPS_PROXY=${HTTPS_PROXY:-} \

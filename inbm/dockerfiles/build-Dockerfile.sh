@@ -33,7 +33,7 @@ set -u
 echo Version: $VERSION
 echo Commit: $COMMIT
 
-docker build \
+docker build --pull \
     --build-arg HTTP_PROXY=${HTTP_PROXY:-} \
     --build-arg http_proxy=${http_proxy:-} \
     --build-arg HTTPS_PROXY=${HTTPS_PROXY:-} \

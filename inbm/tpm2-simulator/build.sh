@@ -2,7 +2,7 @@
 set -e
 set -x
 
-DOCKER_BUILDKIT=1 docker build \
+DOCKER_BUILDKIT=1 docker build --pull \
     --build-arg HTTP_PROXY=${HTTP_PROXY:-} \
     --build-arg http_proxy=${http_proxy:-} \
     --build-arg HTTPS_PROXY=${HTTPS_PROXY:-} \
