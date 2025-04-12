@@ -7,7 +7,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 # tpm2 tools
 ( cd "$DIR"/tpm2-simulator
 ./build.sh
-cp -r debs-20.04/*simulator* "$DIR"/output-main/ )
+cp -r debs-22.04/*simulator* "$DIR"/output-main/ )
 
 
 ( cd "$DIR"/output-main ;

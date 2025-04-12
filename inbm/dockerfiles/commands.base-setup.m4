@@ -24,9 +24,13 @@ RUN gem install rchardet -v 1.8.0
 RUN gem install --no-document fpm -v 1.14.0
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
-    software-properties-common && \
+    software-properties-common gpg-agent && \
     add-apt-repository ppa:deadsnakes/ppa && \
-    apt-get clean
+    apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
+    python3.12 python3.12-dev python3.12-venv python3-pip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
     python3.12 \

@@ -5,7 +5,7 @@ FROM registry.hub.docker.com/curlimages/curl:7.74.0  AS ibmtpm1332
 RUN curl -L https://downloads.sourceforge.net/project/ibmswtpm2/ibmtpm1332.tar.gz >/tmp/ibmtpm1332.tar.gz && \
     sha256sum /tmp/ibmtpm1332.tar.gz | grep -q 8e8193af3d11d9ff6a951dda8cd1f4693cb01934a8ad7876b84e92c6148ab0fd
 
-FROM ubuntu:20.04 AS builder-20.04
+FROM ubuntu:22.04 AS builder-22.04
 
 # generic build tools
 RUN apt-get update &&\
@@ -33,14 +33,14 @@ RUN apt-get update && \
     autoconf-archive \
     libcmocka0 \
     libcmocka-dev \
-    libssl-dev \
+    libssl3 \
     pkg-config \
     gcc \
     g++ \
     m4 \
     libtool \
     automake \
-    python \
+    python-is-python3 \
     autoconf \
     libdbus-1-dev \
     libgcrypt20-dev \
@@ -59,8 +59,13 @@ COPY --from=ibmtpm1332 /tmp/ibmtpm1332.tar.gz /ibmtpm1332.tar.gz
 
 # compile IBM's Software TPM 2.0
 RUN mkdir ibmtpm1332 && \
-    (cd ibmtpm1332 && gzip -cd /ibmtpm1332.tar.gz | cpio -iv -R root:root) && \
-    make -C ibmtpm1332/src -j $(nproc)
+    (cd ibmtpm1332 && gzip -cd /ibmtpm1332.tar.gz | cpio -iv -R root:root)
+
+# Patch the makefile to remove -Werror
+RUN sed -i 's/-Werror//g' ibmtpm1332/src/makefile
+
+# Compile IBM's Software TPM 2.0
+RUN make -C ibmtpm1332/src -j $(nproc)
 
 RUN mkdir -p  /debs
 COPY ldconfig.sh /tpm2/
@@ -97,7 +102,7 @@ RUN mkdir -p tpm2-simulator/var/tpm2-simulator && \
     rm -rf tpm2-simulator && \
     mv -v *.deb /debs
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 RUN cat /etc/apt/sources.list
 
-COPY --from=builder-20.04 /debs/ /debs-20.04/
+COPY --from=builder-22.04 /debs/ /debs-22.04/

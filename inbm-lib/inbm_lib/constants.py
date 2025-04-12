@@ -15,7 +15,7 @@ DOCKER_STATS = 'containerStats'
 # Command prefix to run a command 'as the host' using docker, chroot, and namespace control
 # note this will not propagate proxy environment variables
 # change above comment if -e entries are added for proxies
-DOCKER_CHROOT_PREFIX = "/usr/bin/docker run -e DEBIAN_FRONTEND=noninteractive --privileged --rm --net=host --pid=host -v /:/host ubuntu:20.04 /usr/sbin/chroot /host "
+DOCKER_CHROOT_PREFIX = "/usr/bin/docker run -e DEBIAN_FRONTEND=noninteractive --privileged --rm --net=host --pid=host -v /:/host ubuntu:22.04 /usr/sbin/chroot /host "
 
 # Command prefix to run a command simply in a chroot in the container without docker
 # this will propagate all environment variables

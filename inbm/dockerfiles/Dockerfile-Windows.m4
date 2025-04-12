@@ -74,7 +74,7 @@ RUN cd /inb-provision-ota-cert && GOOS=windows GOARCH=386 CGO_ENABLED=0 go build
     rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert.exe /output/inb-provision-ota-cert.exe
 
 # output container
-FROM registry.hub.docker.com/library/ubuntu:20.04 AS output-windows
+FROM registry.hub.docker.com/library/ubuntu:22.04 AS output-windows
 RUN apt-get update && apt-get install -y -q wget
 COPY --from=windows-cloudadapter-py3 /output/ /windows-cloudadapter-py3
 COPY --from=inb-provision-certs-windows /output /windows-inb-provision-certs

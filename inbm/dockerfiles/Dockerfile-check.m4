@@ -1,8 +1,8 @@
-# Copyright (c) 2021-2024 Intel Corporation
+# Copyright (c) 2021-2025 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 # base image with all dependencies for running unit tests/lints
-FROM registry.hub.docker.com/library/ubuntu:20.04 AS base
+FROM registry.hub.docker.com/library/ubuntu:22.04 AS base
 include(`commands.base-setup.m4')
 
 
