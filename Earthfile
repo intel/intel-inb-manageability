@@ -102,9 +102,12 @@ build-deb:
     BUILD +build
     FROM debian:bullseye
     WORKDIR /package
-    RUN mkdir -p DEBIAN usr/bin
+    RUN mkdir -p DEBIAN usr/bin etc usr/lib/systemd/system
     COPY build/inbc usr/bin/inbc
     COPY build/inbd usr/bin/inbd
+    COPY fpm-templates/usr/bin/provision-tc usr/bin/provision-tc
+    COPY fpm-templates/etc/intel_manageability.conf etc/intel_manageability.conf
+    COPY fpm-templates/usr/lib/systemd/system/inbd.service usr/lib/systemd/system/inbd.service
     RUN echo "Package: intel-inbm\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: Intel In-Band Manageability Tools\n This package contains the inbc CLI and inbd daemon for Intel In-Band Manageability." > DEBIAN/control
     RUN dpkg-deb --build . /package/intel-inbm.deb
     SAVE ARTIFACT /package/intel-inbm.deb AS LOCAL ./build/intel-inbm.deb
@@ -115,4 +118,5 @@ package:
     COPY installer/install-tc.sh dist/inbm/install-tc.sh
     COPY installer/uninstall-tc.sh dist/inbm/uninstall-tc.sh
     COPY build/intel-inbm.deb dist/inbm/intel-inbm.deb
+
     SAVE ARTIFACT dist/inbm AS LOCAL ./dist/inbm
