@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
+
+### Security
+- (N/A) Update Golang Version from 1.22 to 1.24 to resolve CVE: CVE-2025-22870
+
+## 4.2.8.6 - 2025-04-03
 ### Fixed
 - (ITEP-23994) Support non-auth RS
 - (NEXMANAGE-1263) Re-enable enforcement of TLS mode when sending token to INBS cloud
