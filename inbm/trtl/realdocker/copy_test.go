@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -14,7 +14,7 @@ const namebad = "src/d"
 func TestCopyToContainerSuccessfully(t *testing.T) {
 	f := FakeFinder{
 		Err:       nil,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		IsFound:   true,
 	}
 
@@ -29,7 +29,7 @@ func TestCopyToContainerSuccessfully(t *testing.T) {
 func TestCopyToContainerErrorFailsToOpen(t *testing.T) {
 	f := FakeFinder{
 		Err:       nil,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		IsFound:   true,
 	}
 
@@ -72,7 +72,7 @@ func TestCopyToContainerErrorsNoContainerFound(t *testing.T) {
 func TestCopyToContainerReturnAnyDockerErrors(t *testing.T) {
 	f := FakeFinder{
 		Err:       nil,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		IsFound:   true,
 	}
 

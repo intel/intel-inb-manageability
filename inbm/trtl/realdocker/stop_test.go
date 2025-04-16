@@ -4,14 +4,14 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestStopSuccessfully(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
@@ -26,7 +26,7 @@ func TestStopSuccessfully(t *testing.T) {
 func TestStopReturnsErrorWhileFindingContainer(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{},
+		Container: container.Summary{},
 		Err:       errors.New("error finding container"),
 	}
 
@@ -41,7 +41,7 @@ func TestStopReturnsErrorWhileFindingContainer(t *testing.T) {
 func TestStopErrorsWhenContainerNotFound(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   false,
-		Container: types.Container{},
+		Container: container.Summary{},
 		Err:       nil,
 	}
 
@@ -56,7 +56,7 @@ func TestStopErrorsWhenContainerNotFound(t *testing.T) {
 func TestStopReturnsAnyDockerErrors(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 

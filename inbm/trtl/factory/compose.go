@@ -86,7 +86,7 @@ func (compose *ComposeInfo) Login(username string, serverName string) {
 	// of the Docker one.
 
 	if err := isRegistryCredentialsSafe(username, serverName); err != nil {
-            fmt.Fprintf(os.Stderr, err.Error())
+            fmt.Fprintf(os.Stderr, "%s", err.Error())
                 osExit(1)
         }
 

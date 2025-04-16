@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2025 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
 // Package realdocker provides calls to docker
@@ -11,8 +11,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/image"
 )
 
 // IsRunning finds out whether a given container (by ID) is running.
@@ -28,11 +29,11 @@ func IsRunning(dw DockerWrapper, containerID string) (bool, error) {
 
 // GetLatestImageVersionNumber retrieves the latest version number of the given image name.
 // It returns whether it found the image, the latest image version number, and any error encountered.
-func GetLatestImageVersionNumber(dw DockerWrapper, image string) (bool, int, error) {
+func GetLatestImageVersionNumber(dw DockerWrapper, imageVersion string) (bool, int, error) {
 	args := filters.NewArgs()
-	args.Add("reference", image)
+	args.Add("reference", imageVersion)
 
-	images, err := dw.ImageList(types.ImageListOptions{All: false, Filters: args})
+	images, err := dw.ImageList(image.ListOptions{All: false, Filters: args})
 	if err != nil {
 		return false, 0, err
 	}
@@ -45,7 +46,7 @@ func GetLatestImageVersionNumber(dw DockerWrapper, image string) (bool, int, err
 	return true, latest, nil
 }
 
-func findLatestImage(images []types.ImageSummary) int {
+func findLatestImage(images []image.Summary) int {
 	l := 0
 	for _, image := range images {
 		s := strings.Split(image.RepoTags[0], ":")
@@ -59,7 +60,7 @@ func findLatestImage(images []types.ImageSummary) int {
 	return l
 }
 
-type byDate []types.Container
+type byDate []container.Summary
 
 func (s byDate) Len() int {
 	return len(s)
@@ -76,5 +77,5 @@ func (s byDate) Less(i, j int) bool {
 // StartContainer starts a container of the given ID.
 // It returns any error encountered.
 func StartContainer(dw DockerWrapper, containerID string) error {
-	return dw.ContainerStart(containerID, types.ContainerStartOptions{})
+	return dw.ContainerStart(containerID, container.StartOptions{})
 }

@@ -1,8 +1,9 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2025 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides calls to docker
 package realdocker
 
 import (
@@ -10,9 +11,11 @@ import (
 	"sort"
 	"strconv"
 
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/filters"
 	"iotg-inb/trtl/logging"
+
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/image"
 )
 
 // GetImageTag returns the Docker image tag associated with the Instance
@@ -39,7 +42,7 @@ func (i Instance) GetImageTagSuccessor() string {
 
 // Finder is an interface for all find methods
 type Finder interface {
-	FindContainer(DockerWrapper, string) (bool, types.Container, error)
+	FindContainer(DockerWrapper, string) (bool, container.Summary, error)
 	FindImage(DockerWrapper, string) (string, error)
 }
 
@@ -49,16 +52,16 @@ type DockerFinder struct{}
 // FindContainer locates the most recently created Docker container associated with a given
 // image name.
 // It returns whether the container was found, the container, and any error encountered.
-func (df DockerFinder) FindContainer(dw DockerWrapper, image string) (bool, types.Container, error) {
+func (df DockerFinder) FindContainer(dw DockerWrapper, image string) (bool, container.Summary, error) {
 	args := filters.NewArgs()
 	args.Add("ancestor", image)
 
-	containers, err := dw.ContainerList(types.ContainerListOptions{Filters: args, All: true})
+	containers, err := dw.ContainerList(container.ListOptions{Filters: args, All: true})
 	if err != nil {
-		return false, types.Container{}, err
+		return false, container.Summary{}, err
 	}
 
-	containersMatchingImage := make([]types.Container, 0)
+	containersMatchingImage := make([]container.Summary, 0)
 	for _, v := range containers {
 		if v.Image == image {
 			containersMatchingImage = append(containersMatchingImage, v)
@@ -66,7 +69,7 @@ func (df DockerFinder) FindContainer(dw DockerWrapper, image string) (bool, type
 	}
 
 	if len(containersMatchingImage) == 0 {
-		return false, types.Container{}, nil
+		return false, container.Summary{}, nil
 	}
 
 	sort.Sort(byDate(containersMatchingImage))
@@ -77,17 +80,17 @@ func (df DockerFinder) FindContainer(dw DockerWrapper, image string) (bool, type
 
 // FindImage looks for an image with a given tag,.
 // It returns true if it finds the image and any error encountered.
-func (df DockerFinder) FindImage(dw DockerWrapper, image string) (string, error) {
+func (df DockerFinder) FindImage(dw DockerWrapper, imageTag string) (string, error) {
 	filters := filters.NewArgs()
-	filters.Add("reference", image)
+	filters.Add("reference", imageTag)
 
-	result, err := dw.ImageList(types.ImageListOptions{Filters: filters})
+	result, err := dw.ImageList(image.ListOptions{Filters: filters})
 	if err != nil {
 		return "", err
 	}
 
 	if len(result) > 0 {
-		logging.DebugLogLn("Found image %s with ID %s\n", image, result[0].ID)
+		logging.DebugLogLn("Found image %s with ID %s\n", imageTag, result[0].ID)
 		return result[0].ID, err
 	}
 

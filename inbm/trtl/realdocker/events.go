@@ -1,6 +1,6 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+Copyright (C) 2017-2025 Intel Corporation
+SPDX-License-Identifier: Apache-2.0
 */
 package realdocker
 
@@ -8,14 +8,14 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/events"
 )
 
 // Events calls the docker events api and waits to receive messages.
 // It returns any error encountered.
 func Events(dw DockerWrapper) error {
 
-	message, errs := dw.Events(types.EventsOptions{})
+	message, errs := dw.Events(events.ListOptions{})
 loop:
 	for {
 		select {

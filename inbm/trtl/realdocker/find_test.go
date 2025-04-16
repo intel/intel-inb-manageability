@@ -1,10 +1,12 @@
+// Package realdocker provides calls to docker
 package realdocker
 
 import (
 	"errors"
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -12,7 +14,7 @@ func TestFindContainerSuccessfully(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:        nil,
-		Containers: []types.Container{{ID: "cdef", Image: "cdef"}, {ID: "abcd", Image: "abcd"}},
+		Containers: []container.Summary{{ID: "cdef", Image: "cdef"}, {ID: "abcd", Image: "abcd"}},
 	}
 
 	found, containers, err := f.FindContainer(d, "abcd")
@@ -25,33 +27,33 @@ func TestFindContainerReturnsDockerError(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:        errors.New("error finding container"),
-		Containers: []types.Container{},
+		Containers: []container.Summary{},
 	}
 
 	found, containers, err := f.FindContainer(d, "abcd")
 	assert.Error(t, err)
 	assert.False(t, found)
-	assert.Equal(t, types.Container{}, containers)
+	assert.Equal(t, container.Summary{}, containers)
 }
 
 func TestFindContainerReturnsFalseWhenNoMatchingContainer(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:        nil,
-		Containers: []types.Container{},
+		Containers: []container.Summary{},
 	}
 
 	found, containers, err := f.FindContainer(d, "abcd")
 	assert.NoError(t, err)
 	assert.False(t, found)
-	assert.Equal(t, types.Container{}, containers)
+	assert.Equal(t, container.Summary{}, containers)
 }
 
 func TestFindImageSuccessfully(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{{ID: "abcd"}, {ID: "cdef"}},
+		Images: []image.Summary{{ID: "abcd"}, {ID: "cdef"}},
 	}
 
 	imageID, err := f.FindImage(d, "abcd")
@@ -63,7 +65,7 @@ func TestFindImageReturnsDockerError(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:    errors.New("error finding image"),
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	imageID, err := f.FindImage(d, "abcd")
@@ -75,7 +77,7 @@ func TestFindContainerReturnsFalseWhenNoMatchingImage(t *testing.T) {
 	f := DockerFinder{}
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	imageID, err := f.FindImage(d, "abcd")

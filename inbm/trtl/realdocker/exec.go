@@ -1,12 +1,11 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
+    Copyright (C) 2017-2025 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 */
 
 package realdocker
 
 import (
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"strings"
 )
@@ -15,7 +14,7 @@ import (
 // to os.Stdout.
 // It returns any error encountered.
 func Exec(dw DockerWrapper, containerID string, cmd []string) error {
-	execConfig := types.ExecConfig{
+	execConfig := container.ExecOptions{
 		Cmd:          cmd,
 		Detach:       false,
 		AttachStdout: true,
@@ -26,7 +25,7 @@ func Exec(dw DockerWrapper, containerID string, cmd []string) error {
 		return err
 	}
 
-	return dw.ContainerExecAttach(execObject.ID, types.ExecStartCheck{Detach: false})
+	return dw.ContainerExecAttach(execObject.ID, container.ExecStartOptions{Detach: false})
 }
 
 // Exec corresponds to the docker exec command.  It executes a given command in a given instance and version.
