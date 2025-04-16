@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
 
+### Security
+- (N/A) Update Golang Version from 22.04 to 24.04 to resolve CVEs: 
+
 ## 4.2.8.6 - 2025-04-03
 ### Fixed
 - (ITEP-23994) Support non-auth RS
