@@ -18,7 +18,7 @@ RUN if [ ! -z "$no_proxy" ]; then echo "no_proxy=$no_proxy" >> /etc/environment;
 # Install required packages
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && \
-    DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto cryptsetup openssl dmidecode dbus vim net-tools rsyslog libffi-dev pciutils lxc dkms libglib2.0 libssl3 udev docker.io docker-compose && \
+    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y mosquitto cryptsetup openssl dmidecode dbus vim net-tools rsyslog libffi-dev pciutils lxc dkms libglib2.0 libssl3 udev docker.io docker-compose && \
     apt-get clean && \ 
     rm -rf /var/lib/apt/lists/*
 
