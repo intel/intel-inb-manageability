@@ -105,6 +105,8 @@ build-deb:
     RUN mkdir -p DEBIAN usr/bin
     COPY build/inbc usr/bin/inbc
     COPY build/inbd usr/bin/inbd
+    RUN mkdir -p DEBIAN etc/apparmor.d
+    COPY configs/apparmor.d/usr.bin.inbd etc/apparmor.d/usr.bin.inbd
     RUN echo "Package: intel-inbm\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: Intel In-Band Manageability Tools\n This package contains the inbc CLI and inbd daemon for Intel In-Band Manageability." > DEBIAN/control
     RUN dpkg-deb --build . /package/intel-inbm.deb
     SAVE ARTIFACT /package/intel-inbm.deb AS LOCAL ./build/intel-inbm.deb
