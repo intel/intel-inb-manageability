@@ -6,6 +6,7 @@ Requires=network.target
 # ExecStart command is only run when everything else has loaded
 Type=idle
 User=root
+EnvironmentFile=-/etc/environment
 ExecStart=/usr/bin/inbd -s /var/run/inbd.sock
 RestartSec=5s
 Restart=on-failure
