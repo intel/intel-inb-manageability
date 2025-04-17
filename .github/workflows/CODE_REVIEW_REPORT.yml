@@ -25,15 +25,15 @@ jobs:
 
       - name: Login to Amazon ECR
         run: |
-          aws ecr get-login-password --region "${{ secrets.AWS_REGION }}" | docker login --username AWS --password-stdin <ecr-registry>
+          aws ecr get-login-password --region "${{ secrets.AWS_REGION }}" | docker login --username AWS --password-stdin 011528261982.dkr.ecr.us-west-2.amazonaws.com
 
       - name: Pull Docker Image
         run: |
-          docker pull <ecr-registry>/smartdevops:genai-stable
+          docker pull 011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable
 
       - name: Verify Docker Image Contents
         run: |
-          docker run --rm <ecr-registry>/smartdevops:genai-stable ls -la /genai_agent
+          docker run --rm 011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable ls -la /genai_agent
 
       - name: Run PR Agent Script
         run: |
@@ -54,7 +54,7 @@ jobs:
             -e CLIENT_SECRET="${CLIENT_SECRET}" \
             -e GITHUB_EVENT_PATH="/genai_agent/event.json" \
             -v "${GITHUB_EVENT_PATH}:/genai_agent/event.json" \
-            <ecr-registry>/smartdevops:genai-stable bash -c "
+            011528261982.dkr.ecr.us-west-2.amazonaws.com/smartdevops:genai-stable bash -c "
             . /genai_agent/genai_env/bin/activate && /genai_agent/get_pr_eval_report.sh
           "
         env:
