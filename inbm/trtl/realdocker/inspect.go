@@ -1,18 +1,21 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2025 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 )
 
 // GetContainerState gets the state of the specified container by ID.
 // It returns the container state and any error encountered.
-func GetContainerState(dw DockerWrapper, containerID string) (types.ContainerState, error) {
-	var containerState types.ContainerState
+func GetContainerState(dw DockerWrapper, containerID string) (container.State, error) {
+	var containerState container.State
 	containerJSON, err := dw.ContainerInspect(containerID)
 	if err != nil {
 		return containerState, err

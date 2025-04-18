@@ -1,21 +1,30 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2025 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
-	"github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
+	"errors"
+	"fmt"
 	"strings"
+
+	"github.com/docker/docker/api/types/container"
 )
 
 // Exec executes a given command on a given container ID, copying container stdout and stderr
 // to os.Stdout.
 // It returns any error encountered.
 func Exec(dw DockerWrapper, containerID string, cmd []string) error {
-	execConfig := types.ExecConfig{
+	if len(cmd) == 0 {
+		return errors.New("no command provided")
+	}
+	
+	execConfig := container.ExecOptions{
 		Cmd:          cmd,
 		Detach:       false,
 		AttachStdout: true,
@@ -26,7 +35,11 @@ func Exec(dw DockerWrapper, containerID string, cmd []string) error {
 		return err
 	}
 
-	return dw.ContainerExecAttach(execObject.ID, types.ExecStartCheck{Detach: false})
+	err = dw.ContainerExecAttach(execObject.ID, container.ExecStartOptions{Detach: false})
+	if err != nil {
+		return fmt.Errorf("failed to attach to exec instance: %w", err)
+	}
+	return nil
 }
 
 // Exec corresponds to the docker exec command.  It executes a given command in a given instance and version.

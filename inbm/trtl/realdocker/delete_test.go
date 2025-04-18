@@ -7,23 +7,24 @@ import (
 
 	"errors"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 )
 
 func TestImageDeleteOldSuccessfully(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
 	d := FakeDockerWrapper{
 		Err: nil,
-		Images: []types.ImageSummary{
+		Images: []image.Summary{
 			{ID: "abcd1", RepoTags: []string{"abcd:1"}},
 			{ID: "abcd2", RepoTags: []string{"abcd:2"}},
 		},
-		ContainerJSON: types.ContainerJSON{},
+		ContainerJSON: container.InspectResponse{},
 	}
 
 	warnIfRunningContainer = func(dw DockerWrapper, containerID string) error {
@@ -37,17 +38,17 @@ func TestImageDeleteOldSuccessfully(t *testing.T) {
 func TestImageDeleteOldNonSequentialSuccessfully(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
 	d := FakeDockerWrapper{
 		Err: nil,
-		Images: []types.ImageSummary{
+		Images: []image.Summary{
 			{ID: "abcd1", RepoTags: []string{"abcd:5"}},
 			{ID: "abcd2", RepoTags: []string{"abcd:8"}},
 		},
-		ContainerJSON: types.ContainerJSON{},
+		ContainerJSON: container.InspectResponse{},
 	}
 
 	warnIfRunningContainer = func(dw DockerWrapper, containerID string) error {
@@ -61,13 +62,13 @@ func TestImageDeleteOldNonSequentialSuccessfully(t *testing.T) {
 func TestImageDeleteOldErrorsWhenImageListIsEmpty(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	warnIfRunningContainer = func(dw DockerWrapper, containerID string) error {
@@ -81,13 +82,13 @@ func TestImageDeleteOldErrorsWhenImageListIsEmpty(t *testing.T) {
 func TestImageDeleteOldReturnsAnyDockerErrors(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
 	d := FakeDockerWrapper{
 		Err:    errors.New("docker error"),
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	warnIfRunningContainer = func(dw DockerWrapper, containerID string) error {

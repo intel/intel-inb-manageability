@@ -1,18 +1,22 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2025 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
 	"errors"
-	"github.com/docker/docker/api/types"
+
+	"github.com/docker/docker/api/types/container"
 )
 
-// logs retrieves logs from target.  Currently can be used by docker or compose.
+// Logs retrieves logs from target.  Currently can be used by docker or compose.
 func Logs(f Finder, dw DockerWrapper, options ContainerLogOptions, target string) error {
-	containerFound, container, err := f.FindContainer(dw, target)
+	containerFound, containerInfo, err := f.FindContainer(dw, target)
 	if err != nil {
 		return err
 	}
@@ -21,7 +25,7 @@ func Logs(f Finder, dw DockerWrapper, options ContainerLogOptions, target string
 		return errors.New("Docker Container Logs could not find container: " + target)
 	}
 
-	o := types.ContainerLogsOptions{ShowStderr: true, ShowStdout: true, Timestamps: true}
+	o := container.LogsOptions{ShowStderr: true, ShowStdout: true, Timestamps: true}
 
 	if len(options.Details) > 0 {
 		o.Details = true
@@ -35,5 +39,5 @@ func Logs(f Finder, dw DockerWrapper, options ContainerLogOptions, target string
 		o.Tail = options.Tail
 	}
 
-	return dw.ContainerLogs(o, container.ID)
+	return dw.ContainerLogs(o, containerInfo.ID)
 }

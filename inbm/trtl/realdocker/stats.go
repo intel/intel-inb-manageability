@@ -1,61 +1,45 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
+    Copyright (C) 2017-2025 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
 	"encoding/json"
 	"fmt"
-	"log"
    	"math"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 )
 
 func getSingleContainerStats(dw DockerWrapper, container ContainerInfo) (ContainerUsage, error) {
 	var containerUsage ContainerUsage
 
-	response, err := dw.ContainerStats(container.ID, false)
+	stats, err := dw.ContainerStats(container.ID, false)
 	if err != nil {
 		return containerUsage, err
 	}
 
-	defer func() {
-		if err = response.Body.Close(); err != nil {
-			log.Fatalf("Error closing response body from docker stats command: %s", err)
-		}
-	}()
+	previousCPU := stats.PreCPUStats.CPUUsage.TotalUsage
+	previousSystem := stats.PreCPUStats.SystemUsage
+	cpuPercent := calculateCPUPercent(previousCPU, previousSystem, stats)
 
-	dec := json.NewDecoder(response.Body)
+	memoryUsage := stats.MemoryStats.Usage
+	memoryLimit := stats.MemoryStats.Limit
+	memoryPercent := (float64(memoryUsage) / float64(memoryLimit)) * 100.0
 
-	var (
-		previousCPU    uint64
-		previousSystem uint64
-		v              *types.StatsJSON
-	)
-
-	if err = dec.Decode(&v); err != nil {
-		return containerUsage, err
-	}
-
-	previousCPU = v.PreCPUStats.CPUUsage.TotalUsage
-	previousSystem = v.PreCPUStats.SystemUsage
-	cpuPercent := calculateCPUPercent(previousCPU, previousSystem, v)
-
-    memoryUsage := v.MemoryStats.Usage
-    memoryLimit := v.MemoryStats.Limit
-    memoryPercent := (float64(memoryUsage) / float64(memoryLimit)) * 100.0
-
-	return  ContainerUsage{
-			ImageName:  container.ImageName,
-			ContainerID: container.ID,
-			CPUPercent: math.Round(cpuPercent*100)/100,
-			MemoryUsage: memoryUsage,
-			MemoryLimit: memoryLimit,
-			MemoryPercent: math.Round(memoryPercent*100)/100,
-			Pids: v.PidsStats.Current}, nil
+	return ContainerUsage{
+		ImageName:     container.ImageName,
+		ContainerID:   container.ID,
+		CPUPercent:    math.Round(cpuPercent*100) / 100,
+		MemoryUsage:   memoryUsage,
+		MemoryLimit:   memoryLimit,
+		MemoryPercent: math.Round(memoryPercent*100) / 100,
+		Pids:          stats.PidsStats.Current}, nil
 }
 
 func createContainerUsages(dw DockerWrapper, containers []ContainerInfo) (string, error) {
@@ -127,7 +111,7 @@ func createAllContainerUsageJSON(containers []ContainerUsage) (string, error) {
 	return string(j), nil
 }
 
-func calculateCPUPercent(previousCPU, previousSystem uint64, v *types.StatsJSON) float64 {
+func calculateCPUPercent(previousCPU, previousSystem uint64, v container.StatsResponse) float64 {
 	var (
 		cpuPercent  = 0.0
 		cpuDelta    = float64(v.CPUStats.CPUUsage.TotalUsage) - float64(previousCPU)

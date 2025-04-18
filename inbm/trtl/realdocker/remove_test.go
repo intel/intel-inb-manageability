@@ -1,10 +1,14 @@
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
 	"errors"
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
+	"github.com/docker/docker/api/types/image"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,7 +47,7 @@ func TestDockerIntegrationAll(t *testing.T) {
 func TestRemoveAllContainersSuccessfully(t *testing.T) {
 	d := FakeDockerWrapper{
 		Err: nil,
-		Images: []types.ImageSummary{
+		Images: []image.Summary{
 			{ID: "abcd", RepoTags: []string{"abcd"}},
 		},
 	}
@@ -73,7 +77,7 @@ func TestRemoveImageReturnAnyDockerErrors(t *testing.T) {
 func TestRemoveAllImagesSuccessfully(t *testing.T) {
 	d := FakeDockerWrapper{
 		Err: nil,
-		Images: []types.ImageSummary{
+		Images: []image.Summary{
 			{ID: "abcd", RepoTags: []string{"abcd"}},
 		},
 	}
@@ -85,7 +89,7 @@ func TestRemoveAllImagesSuccessfully(t *testing.T) {
 func TestRemoveAllImagesReturnsErrorWhenNoImages(t *testing.T) {
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	err := RemoveAllImages(d, "abcd", true)
@@ -95,7 +99,7 @@ func TestRemoveAllImagesReturnsErrorWhenNoImages(t *testing.T) {
 func TestRemoveAllImagesReturnsAnyDockerErrors(t *testing.T) {
 	d := FakeDockerWrapper{
 		Err:    errors.New("error removing all images"),
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	err := RemoveAllImages(d, "abcd", true)
@@ -105,13 +109,13 @@ func TestRemoveAllImagesReturnsAnyDockerErrors(t *testing.T) {
 func TestRemoveLatestContainerFromImageSuccessfully(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	err := RemoveLatestContainerFromImage(f, d, "abcd", true)
@@ -121,13 +125,13 @@ func TestRemoveLatestContainerFromImageSuccessfully(t *testing.T) {
 func TestRemoveLatestContainerErrorWhenFindingContainer(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       errors.New("error finding container"),
 	}
 
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	err := RemoveLatestContainerFromImage(f, d, "abcd", true)
@@ -137,13 +141,13 @@ func TestRemoveLatestContainerErrorWhenFindingContainer(t *testing.T) {
 func TestRemoveLatestContainerErrorWhenNoContainerFound(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   false,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
 	d := FakeDockerWrapper{
 		Err:    nil,
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	err := RemoveLatestContainerFromImage(f, d, "abcd", true)
@@ -153,13 +157,13 @@ func TestRemoveLatestContainerErrorWhenNoContainerFound(t *testing.T) {
 func TestRemoveLatestContainerReturnsAnyDockerErrors(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
 	d := FakeDockerWrapper{
 		Err:    errors.New("docker error"),
-		Images: []types.ImageSummary{},
+		Images: []image.Summary{},
 	}
 
 	err := RemoveLatestContainerFromImage(f, d, "abcd", true)

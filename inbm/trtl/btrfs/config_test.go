@@ -68,13 +68,17 @@ func TestPrepareConfigReturnsErrorWhenIsConfigErrors(t *testing.T) {
 	assert.Error(t, err)
 }
 
-func TestHelperProcessWithStd(t *testing.T) {
+func TestHelperProcessWithStd(_ *testing.T) {
 	if os.Getenv("GO_WANT_HELPER_PROCESS") != "1" {
 		return
 	}
 
-	fmt.Fprintf(os.Stdout, os.Getenv("STDOUT"))
-	i, _ := strconv.Atoi(os.Getenv("EXIT_STATUS"))
+	fmt.Fprintf(os.Stdout, "%s", os.Getenv("STDOUT"))
+	i, err := strconv.Atoi(os.Getenv("EXIT_STATUS"))
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Invalid EXIT_STATUS: %v\n", err)
+		os.Exit(1)
+	}
 	os.Exit(i)
 }
 

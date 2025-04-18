@@ -1,29 +1,33 @@
 /*
-    Copyright (C) 2017-2024 Intel Corporation
-    SPDX-License-Identifier: Apache-2.0
+   Copyright (C) 2017-2025 Intel Corporation
+   SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
-	"encoding/json"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
+	"github.com/docker/docker/api/types/image"
 )
 
 // GetAllImagesByName retrieves a list of matching images along with their properties.
 // It returns the list of images and any error encountered.
-func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummary, error) {
+func GetAllImagesByName(dw DockerWrapper, imageName string) ([]image.Summary, error) {
 	args := filters.NewArgs()
 	if len(imageName) > 0 {
 		args.Add("reference", imageName)
 	}
 
-	images, err := dw.ImageList(types.ImageListOptions{All: true, Filters: args})
+	images, err := dw.ImageList(image.ListOptions{All: true, Filters: args})
 	if err != nil {
 		return nil, err
 	}
@@ -33,13 +37,13 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]types.ImageSummar
 
 // GetAllContainers retrieves a list of all containers matching the image name.
 // It returns the list of containers and any error encountered.
-func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Container, error) {
+func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]container.Summary, error) {
 	args := filters.NewArgs()
 	if len(imageName) > 0 {
 		args.Add("ancestor", imageName)
 	}
 
-	containers, err := dw.ContainerList(types.ContainerListOptions{All: all, Filters: args})
+	containers, err := dw.ContainerList(container.ListOptions{All: all, Filters: args})
 	if err != nil {
 		return nil, err
 	}
@@ -47,17 +51,17 @@ func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Con
 	return containers, nil
 }
 
-// ContainerUsage is a structure to hold container usage.
+// ContainerInfo is a structure to hold container usage.
 type ContainerInfo struct {
     ImageName string `json:"imageName"`
 	ID string `json:"id"`
 	State string `json:"state"`
 }
 
-// GetAllContainers retrieves a list of all containers on the system in the running state.
+// GetAllRunningContainers retrieves a list of all containers on the system in the running state.
 // It returns the list of all running container IDs and any error encountered.
 func GetAllRunningContainers(dw DockerWrapper) ([]ContainerInfo, error) {
-	containers, err := dw.ContainerList(types.ContainerListOptions{All: true})
+	containers, err := dw.ContainerList(container.ListOptions{All: true})
 	if err != nil {
 		return nil, err
 	}
@@ -83,15 +87,15 @@ type allContainers struct {
 // and state if the image does not have an active container.
 // It will return any error encountered.
 func ListContainers(dw DockerWrapper, imageName string) error {
-    var images []types.ImageSummary
+    var images []image.Summary
     var err error
 
     if len(imageName) == 0 {
-        images, err = dw.ImageList(types.ImageListOptions{All: true})
+        images, err = dw.ImageList(image.ListOptions{All: true})
     } else {
         filters := filters.NewArgs()
         filters.Add("reference", imageName)
-        images, err = dw.ImageList(types.ImageListOptions{All: false, Filters: filters})
+        images, err = dw.ImageList(image.ListOptions{All: false, Filters: filters})
     }
 
     if err != nil {
@@ -124,7 +128,7 @@ func ListContainers(dw DockerWrapper, imageName string) error {
 	return nil
 }
 
-var appendImageInformation = func(dw DockerWrapper, image types.ImageSummary) ([]ContainerInfo, error) {
+var appendImageInformation = func(dw DockerWrapper, image image.Summary) ([]ContainerInfo, error) {
 	var imageContainers []ContainerInfo
 
 	allContainers, err := GetAllContainers(dw, true, image.ID)
