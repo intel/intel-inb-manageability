@@ -139,6 +139,9 @@ func (dw DockerWrap) ImageLoad(input io.Reader, isQuiet bool) error {
 	}
 
 	response, err := cli.ImageLoad(context.Background(), input, client.ImageLoadWithQuiet(isQuiet))
+	if err != nil {
+		return fmt.Errorf("error loading image: %w", err)
+	}
 
 	defer func() {
 		if response.Body != nil {
@@ -152,10 +155,10 @@ func (dw DockerWrap) ImageLoad(input io.Reader, isQuiet bool) error {
 }
 
 // ContainerCommit makes the actual call to docker to commit the container.
-func (dw DockerWrap) ContainerCommit(containerID string, options container.CommitOptions) (common.IDResponse, error) {
+func (dw DockerWrap) ContainerCommit(containerID string, options container.CommitOptions) (container.CommitResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
-		return common.IDResponse{}, err
+		return container.CommitResponse{}, fmt.Errorf("error creating docker client: %w", err)
 	}
 
 	return cli.ContainerCommit(context.Background(), containerID, options)

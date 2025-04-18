@@ -45,6 +45,13 @@ func commitContainer(dw DockerWrapper, containerID string, commitTag string, com
 // CommitContainer commits a container by ID to a given commit tag, with provided comment.
 // It returns the commit ID and any error encountered.
 func CommitContainer(dw DockerWrapper, containerID string, commitTag string, comment string) (string, error) {
+	if containerID == "" || commitTag == "" {
+		return "", errors.New("container ID and commit tag must not be empty")
+	}
+	if len(comment) > 255 {
+		return "", errors.New("comment must not exceed 255 characters")
+	}
+	
 	response, err := dw.ContainerCommit(containerID,
 		container.CommitOptions{
 			Comment:   comment,
