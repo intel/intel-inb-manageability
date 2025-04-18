@@ -26,7 +26,7 @@ func (i Instance) Commit(df Finder, dw DockerWrapper) error {
 		return fmt.Errorf("unable to find container: %w", err)
 	}
 	if !containerFound {
-		return fmt.Errorf("Unable to commit changes. Container not found matching " + i.GetImageTag())
+		return fmt.Errorf("unable to commit changes. container not found matching image tag: %s", i.GetImageTag())
 	}
 
 	return commitContainer(dw, container.ID, i.GetImageTag(), fmt.Sprintf("commit created by trtl (%s)",
