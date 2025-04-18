@@ -3,7 +3,9 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-// Package realdocker provides calls to docker
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
@@ -21,10 +23,10 @@ import (
 func (i Instance) Commit(df Finder, dw DockerWrapper) error {
 	containerFound, container, err := df.FindContainer(dw, i.GetImageTag())
 	if err != nil {
-		return err
+		return fmt.Errorf("unable to find container: %w", err)
 	}
 	if !containerFound {
-		return errors.New("Unable to commit changes. Container not found matching " + i.GetImageTag())
+		return fmt.Errorf("Unable to commit changes. Container not found matching " + i.GetImageTag())
 	}
 
 	return commitContainer(dw, container.ID, i.GetImageTag(), fmt.Sprintf("commit created by trtl (%s)",
@@ -34,7 +36,7 @@ func (i Instance) Commit(df Finder, dw DockerWrapper) error {
 func commitContainer(dw DockerWrapper, containerID string, commitTag string, comment string) error {
 	containerID, err := CommitContainer(dw, containerID, commitTag, comment)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to commit container %s: %w", containerID, err)
 	}
 
 	logging.DebugLogLn("Commit", containerID, "to", commitTag)
@@ -51,13 +53,14 @@ func CommitContainer(dw DockerWrapper, containerID string, commitTag string, com
 	if len(comment) > 255 {
 		return "", errors.New("comment must not exceed 255 characters")
 	}
-	
-	response, err := dw.ContainerCommit(containerID,
-		container.CommitOptions{
-			Comment:   comment,
-			Reference: commitTag})
+
+	opts := container.CommitOptions{
+		Comment:   comment,
+		Reference: commitTag,
+	}
+	response, err := dw.ContainerCommit(containerID, opts)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to commit container %s to %s: %w", containerID, commitTag, err)
 	}
 	return response.ID, err
 }
