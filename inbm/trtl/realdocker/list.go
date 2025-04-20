@@ -3,7 +3,9 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-// Package realdocker provides calls to the real docker API
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
@@ -12,7 +14,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/api/types/image"
@@ -36,7 +37,7 @@ func GetAllImagesByName(dw DockerWrapper, imageName string) ([]image.Summary, er
 
 // GetAllContainers retrieves a list of all containers matching the image name.
 // It returns the list of containers and any error encountered.
-func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Container, error) {
+func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]container.Summary, error) {
 	args := filters.NewArgs()
 	if len(imageName) > 0 {
 		args.Add("ancestor", imageName)
@@ -50,14 +51,14 @@ func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]types.Con
 	return containers, nil
 }
 
-// ContainerUsage is a structure to hold container usage.
+// ContainerInfo is a structure to hold container usage.
 type ContainerInfo struct {
     ImageName string `json:"imageName"`
 	ID string `json:"id"`
 	State string `json:"state"`
 }
 
-// GetAllContainers retrieves a list of all containers on the system in the running state.
+// GetAllRunningContainers retrieves a list of all containers on the system in the running state.
 // It returns the list of all running container IDs and any error encountered.
 func GetAllRunningContainers(dw DockerWrapper) ([]ContainerInfo, error) {
 	containers, err := dw.ContainerList(container.ListOptions{All: true})

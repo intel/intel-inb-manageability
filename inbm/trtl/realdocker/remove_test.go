@@ -1,10 +1,13 @@
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
 	"errors"
 	"testing"
 
-	"github.com/docker/docker/api/types"
+	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/image"
 	"github.com/stretchr/testify/assert"
 )
@@ -106,7 +109,7 @@ func TestRemoveAllImagesReturnsAnyDockerErrors(t *testing.T) {
 func TestRemoveLatestContainerFromImageSuccessfully(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
@@ -122,7 +125,7 @@ func TestRemoveLatestContainerFromImageSuccessfully(t *testing.T) {
 func TestRemoveLatestContainerErrorWhenFindingContainer(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       errors.New("error finding container"),
 	}
 
@@ -138,7 +141,7 @@ func TestRemoveLatestContainerErrorWhenFindingContainer(t *testing.T) {
 func TestRemoveLatestContainerErrorWhenNoContainerFound(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   false,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 
@@ -154,7 +157,7 @@ func TestRemoveLatestContainerErrorWhenNoContainerFound(t *testing.T) {
 func TestRemoveLatestContainerReturnsAnyDockerErrors(t *testing.T) {
 	f := FakeFinder{
 		IsFound:   true,
-		Container: types.Container{ID: "abcd"},
+		Container: container.Summary{ID: "abcd"},
 		Err:       nil,
 	}
 

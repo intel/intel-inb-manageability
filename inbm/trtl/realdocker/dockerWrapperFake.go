@@ -1,14 +1,16 @@
 /*
-   Copyright (C) 2017-2024 Intel Corporation
+   Copyright (C) 2017-2025 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
 	"io"
 
-	"github.com/docker/docker/api/types/common"
 	"github.com/docker/docker/api/types/image"
 	"github.com/docker/docker/api/types/registry"
 	specs "github.com/opencontainers/image-spec/specs-go/v1"
@@ -21,7 +23,7 @@ import (
 
 // FakeFinder is a structure used to set outgoing parameters of fake methods for the Finder interface.
 type FakeFinder struct {
-	Container types.Container
+	Container container.Summary
 	Err       error
 	IsFound   bool
 	ImageID   string
@@ -33,7 +35,7 @@ func (f FakeFinder) FindImage(DockerWrapper, string) (string, error) {
 }
 
 // FindContainer is a fake method for unit testing.
-func (f FakeFinder) FindContainer(DockerWrapper, string) (bool, types.Container, error) {
+func (f FakeFinder) FindContainer(DockerWrapper, string) (bool, container.Summary, error) {
 	return f.IsFound, f.Container, f.Err
 }
 
@@ -46,7 +48,8 @@ type FakeDockerWrapper struct {
 	Containers         []container.Summary
 	HijackedResp       types.HijackedResponse
 	Stats              container.StatsResponse
-	IDResponse         common.IDResponse
+	CommitResponse     container.CommitResponse
+	ExecCreateResponse container.ExecCreateResponse
 	CreatedBody        container.CreateResponse
 	ErrorChan          <-chan error
 	MessageChan        <-chan events.Message
@@ -83,8 +86,8 @@ func (d FakeDockerWrapper) ImageList(image.ListOptions) ([]image.Summary, error)
 }
 
 // ContainerCommit is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerCommit(string, container.CommitOptions) (common.IDResponse, error) {
-	return d.IDResponse, d.Err
+func (d FakeDockerWrapper) ContainerCommit(string, container.CommitOptions) (container.CommitResponse, error) {
+	return d.CommitResponse, d.Err
 }
 
 // ContainerCreate makes the actual call to docker to create the container.
@@ -95,7 +98,7 @@ func (d FakeDockerWrapper) ContainerCreate(*container.Config, *container.HostCon
 }
 
 // ContainerList is a fake method for unit testing
-func (d FakeDockerWrapper) ContainerList(container.ListOptions) ([]types.Container, error) {
+func (d FakeDockerWrapper) ContainerList(container.ListOptions) ([]container.Summary, error) {
 	return d.Containers, d.Err
 }
 
@@ -134,12 +137,14 @@ func (d FakeDockerWrapper) CopyToContainer(string, string, io.Reader, container.
 	return d.Err
 }
 
+// ContainerExecAttach is a fake method for unit testing
 func (d FakeDockerWrapper) ContainerExecAttach(string, container.ExecStartOptions) error {
 	return d.Err
 }
 
-func (d FakeDockerWrapper) ContainerExecCreate(string, container.ExecOptions) (common.IDResponse, error) {
-	return d.IDResponse, d.Err
+// ContainerExecCreate is a fake method for unit testing
+func (d FakeDockerWrapper) ContainerExecCreate(string, container.ExecOptions) (container.ExecCreateResponse, error) {
+	return d.ExecCreateResponse, d.Err
 }
 
 // Login is a fake method for unit testing

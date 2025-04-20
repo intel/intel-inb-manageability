@@ -3,7 +3,9 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-// Package realdocker provides calls to the real docker API
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
@@ -52,7 +54,7 @@ type DockerFinder struct{}
 // FindContainer locates the most recently created Docker container associated with a given
 // image name.
 // It returns whether the container was found, the container, and any error encountered.
-func (df DockerFinder) FindContainer(dw DockerWrapper, imageName string) (bool, container.Summary, error) {
+func (df DockerFinder) FindContainer(dw DockerWrapper, image string) (bool, container.Summary, error) {
 	args := filters.NewArgs()
 	args.Add("ancestor", imageName)
 
@@ -90,7 +92,7 @@ func (df DockerFinder) FindImage(dw DockerWrapper, imageTag string) (string, err
 	}
 
 	if len(result) > 0 {
-		logging.DebugLogLn("Found image tag `%s` with ID %s\n", imageTag, result[0].ID)
+		logging.DebugLogLn("Found image %s with ID %s\n", imageTag, result[0].ID)
 		return result[0].ID, err
 	}
 

@@ -1,8 +1,11 @@
 /*
-   Copyright (C) 2017-2024 Intel Corporation
+   Copyright (C) 2017-2025 Intel Corporation
    SPDX-License-Identifier: Apache-2.0
 */
 
+// Package realdocker provides interface abstractions 
+// to interact with Docker, facilitating operations like 
+// image and container manipulation.
 package realdocker
 
 import (
@@ -17,7 +20,6 @@ import (
 
 	"os"
 
-	"github.com/docker/docker/api/types"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/api/types/events"
 	"github.com/docker/docker/api/types/network"
@@ -33,14 +35,14 @@ type DockerWrap struct{}
 type DockerWrapper interface {
 	Events(events.ListOptions) (<-chan events.Message, <-chan error)
 	ImageImport(string, string, []string) error
-	ImagePull(referenceName string, options image.PullOptions) error
+	ImagePull(string, image.PullOptions) error
 	ImageRemove(string, image.RemoveOptions) error
 	ImageList(image.ListOptions) ([]image.Summary, error)
 	ImageLoad(io.Reader, bool) error
-	ContainerCommit(string, container.CommitOptions) (common.IDResponse, error)
+	ContainerCommit(string, container.CommitOptions) (container.CommitResponse, error)
 	ContainerCreate(*container.Config, *container.HostConfig, *network.NetworkingConfig, *specs.Platform, string) (container.CreateResponse, error)
 	ContainerExecAttach(string, container.ExecStartOptions) error
-	ContainerExecCreate(string, container.ExecOptions) (common.IDResponse, error)
+	ContainerExecCreate(string, container.ExecOptions) (container.ExecCreateResponse, error)
 	ContainerInspect(string) (container.InspectResponse, error)
 	ContainerList(container.ListOptions) ([]container.Summary, error)
 	ContainerLogs(container.LogsOptions, string) error
@@ -140,6 +142,9 @@ func (dw DockerWrap) ImageLoad(input io.Reader, isQuiet bool) error {
 	}
 
 	response, err := cli.ImageLoad(context.Background(), input, client.ImageLoadWithQuiet(isQuiet))
+	if err != nil {
+		return fmt.Errorf("error loading image: %w", err)
+	}
 
 	defer func() {
 		if response.Body != nil {
@@ -153,15 +158,16 @@ func (dw DockerWrap) ImageLoad(input io.Reader, isQuiet bool) error {
 }
 
 // ContainerCommit makes the actual call to docker to commit the container.
-func (dw DockerWrap) ContainerCommit(containerID string, options container.CommitOptions) (common.IDResponse, error) {
+func (dw DockerWrap) ContainerCommit(containerID string, options container.CommitOptions) (container.CommitResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
-		return common.IDResponse{}, err
+		return container.CommitResponse{}, fmt.Errorf("error creating docker client: %w", err)
 	}
 
 	return cli.ContainerCommit(context.Background(), containerID, options)
 }
 
+// ContainerExecCreate makes the actual call to docker to create an exec instance.
 func (dw DockerWrap) ContainerExecCreate(container string, config container.ExecOptions) (common.IDResponse, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -181,6 +187,7 @@ func (dw DockerWrap) ContainerCreate(config *container.Config, hostConfig *conta
 	return cli.ContainerCreate(context.Background(), config, hostConfig, netConfig, platform, containerName)
 }
 
+// ContainerExecAttach makes the actual call to docker to attach to an exec instance.
 func (dw DockerWrap) ContainerExecAttach(execID string, startCheck container.ExecStartOptions) error {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
@@ -198,7 +205,7 @@ func (dw DockerWrap) ContainerExecAttach(execID string, startCheck container.Exe
 }
 
 // ContainerList makes the actual call to docker to list the containers.
-func (dw DockerWrap) ContainerList(options container.ListOptions) ([]types.Container, error) {
+func (dw DockerWrap) ContainerList(options container.ListOptions) ([]container.Summary, error) {
 	cli, err := client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 	if err != nil {
 		return nil, err
@@ -264,14 +271,14 @@ func (dw DockerWrap) ContainerStats(containerID string, isStream bool) (containe
 	stats, err := cli.ContainerStats(context.Background(), containerID, isStream)
 	if err != nil {
 		return container.StatsResponse{}, fmt.Errorf("error retrieving container stats: %w", err)
-	}	
+	}
 	defer stats.Body.Close()
 
 	var containerStats container.StatsResponse
 	if err := json.NewDecoder(stats.Body).Decode(&containerStats); err != nil {
 		return container.StatsResponse{}, fmt.Errorf("error decoding container stats: %w", err)
 	}
-	return containerStats, nil
+	return containerStats, err
 }
 
 // ContainerStop makes the actual call to docker to stop a container.
