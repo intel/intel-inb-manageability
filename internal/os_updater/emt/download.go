@@ -15,10 +15,12 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	"google.golang.org/protobuf/encoding/protojson"
 
+	util "github.com/intel/intel-inb-manageability/internal/inbd/utils"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
 	"github.com/spf13/afero"
 	"golang.org/x/sys/unix"
@@ -32,33 +34,37 @@ var (
 
 // EMTDownloader is the concrete implementation of the IDownloader interface
 // for the EMT OS.
-type EMTDownloader struct {
-	request           *pb.UpdateSystemSoftwareRequest
-	readJWTTokenFunc  func(afero.Afero, string) (string, error)
-	writeUpdateStatus func(string, string, string)
-	writeGranularLog  func(string, string)
-	statfs            func(string, *unix.Statfs_t) error
-	httpClient        *http.Client
-	requestCreator    func(string, string, io.Reader) (*http.Request, error)
-	fs                afero.Fs
+type Downloader struct {
+	request                 *pb.UpdateSystemSoftwareRequest
+	readJWTTokenFunc        func(afero.Afero, string) (string, error)
+	writeUpdateStatus       func(string, string, string)
+	writeGranularLog        func(string, string)
+	statfs                  func(string, *unix.Statfs_t) error
+	httpClient              *http.Client
+	requestCreator          func(string, string, io.Reader) (*http.Request, error)
+	fs                      afero.Fs
+	getFreeDiskSpaceInBytes func(string) (uint64, error)
+	getFileSizeInBytesFunc  func(string, string) (int64, error)
 }
 
 // NewEMTDownloader creates a new EMTDownloader.
-func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *EMTDownloader {
-	return &EMTDownloader{
-		request:           request,
-		readJWTTokenFunc:  readJWTToken,
-		writeUpdateStatus: writeUpdateStatus,
-		writeGranularLog:  writeGranularLog,
-		statfs:            unix.Statfs,
-		httpClient:        &http.Client{},
-		requestCreator:    http.NewRequest,
-		fs:                afero.NewOsFs(),
+func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *Downloader {
+	return &Downloader{
+		request:                 request,
+		readJWTTokenFunc:        readJWTToken,
+		writeUpdateStatus:       writeUpdateStatus,
+		writeGranularLog:        writeGranularLog,
+		statfs:                  unix.Statfs,
+		httpClient:              &http.Client{},
+		requestCreator:          http.NewRequest,
+		fs:                      afero.NewOsFs(),
+		getFreeDiskSpaceInBytes: util.GetFreeDiskSpaceInBytes,
+		getFileSizeInBytesFunc:  getFileSizeInBytes,
 	}
 }
 
 // Download implements IDownloader.
-func (t *EMTDownloader) Download() error {
+func (t *Downloader) Download() error {
 	config, err := LoadConfig(t.fs, configFilePath)
 	if err != nil {
 		return fmt.Errorf("error loading config: %w", err)
@@ -82,16 +88,15 @@ func (t *EMTDownloader) Download() error {
 	log.Println("Downloading update from", t.request.Url)
 
 	// Check available space on disk
-	isDiskEnough, err := t.checkDiskSpace()
+	isDiskEnough, err := t.isDiskSpaceAvailable()
 	if err != nil {
 		return fmt.Errorf("error checking disk space: %w", err)
 	}
 
 	if !isDiskEnough {
-		errMsg := "Insufficient disk space."
-		t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
+		t.writeUpdateStatus(FAIL, string(jsonString), "Insufficient disk space")
 		t.writeGranularLog(FAIL, FAILURE_REASON_INSUFFICIENT_STORAGE)
-		return errors.New(errMsg)
+		return fmt.Errorf("insufficient disk space")
 	}
 
 	log.Println("Disk space enough. Proceeding to download the artifact.")
@@ -146,7 +151,7 @@ func (t *EMTUpdater) VerifyHash() error {
 }
 
 // downloadFile downloads the file from the url.
-func (t *EMTDownloader) downloadFile() error {
+func (t *Downloader) downloadFile() error {
 	// Create a new HTTP request
 	req, err := t.requestCreator("GET", t.request.Url, nil)
 	if err != nil {
@@ -200,7 +205,6 @@ func (t *EMTDownloader) downloadFile() error {
 	return nil
 }
 
-
 // readJWTToken reads the JWT token that is used for accessing RS server.
 func readJWTToken(fs afero.Afero, path string) (string, error) {
 	file, err := fs.Open(path)
@@ -216,18 +220,16 @@ func readJWTToken(fs afero.Afero, path string) (string, error) {
 	return strings.TrimSpace(string(token)), nil
 }
 
-
 // checkDiskSpace checks if there is enough disk space to download the artifacts.
-func (t *EMTDownloader) checkDiskSpace() (bool, error) {
+func (t *Downloader) isDiskSpaceAvailable() (bool, error) {
 	// Get available disk space
 	// TODO: We should be able to call the method in utils package
-	var stat unix.Statfs_t
-	err := t.statfs("/var/cache/manageability/", &stat)
+	availableSpace, err := t.getFreeDiskSpaceInBytes("/var/cache/manageability/repository-tool/sota")
 	if err != nil {
 		log.Printf("Error getting disk space: %v\n", err)
 		return false, err
 	}
-	availableSpace := stat.Bavail * uint64(stat.Bsize)
+	log.Printf("Available disk space: %d bytes\n", availableSpace)
 
 	// Get the request details
 	jsonString, err := protojson.Marshal(t.request)
@@ -243,80 +245,65 @@ func (t *EMTDownloader) checkDiskSpace() (bool, error) {
 		t.writeGranularLog(FAIL, FAILURE_REASON_INBM)
 		return false, fmt.Errorf("error reading JWT token: %w", err)
 	}
+	log.Println("JWT token read successfully.")
 
-	// Create a new HTTP request
-	req, err := t.requestCreator("HEAD", t.request.Url, nil)
+	requiredSpace, err := t.getFileSizeInBytesFunc(t.request.Url, token)
 	if err != nil {
 		t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
 		t.writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
-		return false, fmt.Errorf("error creating request: %w", err)
+		return false, fmt.Errorf("error getting file size: %w", err)
 	}
+	log.Printf("Required disk space: %d bytes\n", requiredSpace)
 
-	// Check if the token exists
-	if token == "" {
-		log.Println("JWT token is empty. Proceeding without Authorization.")
-	} else {
-		// Add the JWT token to the request header
+	// Check if there is enough space
+	if availableSpace < uint64(requiredSpace) {
+		log.Printf("Insufficient disk space. Available: %d bytes, Required: %d bytes\n", availableSpace, requiredSpace)
+		return false, nil
+	}
+	log.Println("Sufficient disk space available.")
+	return true, nil
+}
+
+func getFileSizeInBytes(url string, token string) (int64, error) {
+	// Create a new HTTP GET request
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return 0, fmt.Errorf("error creating GET request: %w", err)
+	}
+	log.Println("Created GET request for URL:", url)
+
+	// Add the JWT token to the request header if it exists
+	if token != "" {
 		req.Header.Add("Authorization", "Bearer "+token)
+		log.Println("Added JWT token to GET request header.")
+	} else {
+		log.Println("JWT token is empty. Proceeding without Authorization.")
 	}
 
-	// Perform the request
-	resp, err := t.httpClient.Do(req)
+	// Perform the GET request
+	client := &http.Client{}
+	resp, err := client.Do(req)
 	if err != nil {
-		t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
-		t.writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
-		return false, fmt.Errorf("error performing request: %w", err)
+		return 0, fmt.Errorf("error performing GET request: %w", err)
 	}
 	defer resp.Body.Close()
+
+	// Check if the status code is 200/Success
+	if resp.StatusCode != http.StatusOK {
+		return 0, fmt.Errorf("GET request failed with status code: %d", resp.StatusCode)
+	}
 
 	// Get the Content-Length header
 	contentLength := resp.Header.Get("Content-Length")
 	if contentLength == "" {
-		log.Println("Content-Length header is missing. Falling back to GET request.")
-		// Perform a GET request to determine the file size
-		req.Method = "GET"
-		resp, err = t.httpClient.Do(req)
-		if err != nil {
-			t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
-			t.writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
-			return false, fmt.Errorf("error performing GET request: %w", err)
-		}
-		defer resp.Body.Close()
-
-		// Get the Content-Length header from the GET response
-		contentLength = resp.Header.Get("Content-Length")
-		if contentLength == "" {
-			log.Println("Content-Length header is still missing after GET request.")
-			body, err := io.ReadAll(resp.Body)
-			if err != nil {
-				t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
-				t.writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
-				return false, fmt.Errorf("error reading response body: %w", err)
-			}
-			log.Printf("Response Body: %s\n", string(body))
-			return false, fmt.Errorf("content-Length header is missing")
-		}
-		// Check if the status code is 200/Success. If not, return the error.
-		if resp.StatusCode != http.StatusOK {
-			errMsg := fmt.Sprintf("Status code: %d. Expected 200/Success.", resp.StatusCode)
-			t.writeUpdateStatus(FAIL, string(jsonString), errMsg)
-			t.writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
-			return false, errors.New(errMsg)
-		}
+		return 0, fmt.Errorf("Content-Length header is missing in GET response")
 	}
 
 	// Parse the Content-Length to an integer
-	var requiredSpace uint64
-	_, err = fmt.Sscanf(contentLength, "%d", &requiredSpace)
+	size, err := strconv.ParseInt(contentLength, 10, 64)
 	if err != nil {
-		t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
-		t.writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
-		return false, fmt.Errorf("error parsing Content-Length: %w", err)
+		return 0, fmt.Errorf("error parsing Content-Length: %w", err)
 	}
 
-	// Check if there is enough space
-	if availableSpace < requiredSpace {
-		return false, nil
-	}
-	return true, nil
+	return size, nil
 }

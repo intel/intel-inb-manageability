@@ -13,13 +13,12 @@ import (
 	"time"
 )
 
-
-
 var (
 	updateStatusLogPath = "/var/log/inbm-update-status.log"
 	granularLogPath     = "/var/log/inbm-update-log.log"
 )
 
+// UpdateStatus represents the structure of the update status log.
 type UpdateStatus struct {
 	Status   string `json:"Status"`
 	Type     string `json:"Type"`
