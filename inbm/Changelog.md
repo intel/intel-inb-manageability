@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
+### Changed
+- (N/A) Fix tpm container removal issue during build
 
 ### Security
 - (N/A) Update Golang Version from 1.22 to 1.24 to resolve CVE: CVE-2025-22870

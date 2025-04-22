@@ -21,4 +21,4 @@ docker run -d --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro --name tpm2-tools
 rm -rf debs*
 docker cp 'tpm2-tools-output:/debs-20.04' ./debs-20.04/
 [ -f debs-20.04/*simulator*deb ]
-docker rm tpm2-tools-output
+docker rm -f tpm2-tools-output
