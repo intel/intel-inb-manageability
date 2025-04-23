@@ -244,20 +244,6 @@ func TestEMTDownloader_readJWTToken(t *testing.T) {
 	// })
 }
 
-// func TestRun_DiskSpaceAvailable(t *testing.T) {
-//     downloader := &EMTDownloader{
-//         readJWTTokenFunc: mockReadJWTTokenSuccess,
-//         fs:               afero.NewMemMapFs(),
-//     }
-
-//     utils.GetFreeDiskSpaceInBytes = mockGetFreeDiskSpaceInBytes
-//     emt.getFileSize = mockGetFileSizeSuccess
-
-//     result, err := downloader.isDiskSpaceAvailable()
-//     assert.NoError(t, err)
-//     assert.True(t, result)
-// }
-
 func TestEMTDownloader_isDiskSpaceAvailable(t *testing.T) {
 	tests := []struct {
 		name                    string
