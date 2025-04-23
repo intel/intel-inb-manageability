@@ -47,8 +47,8 @@ type Downloader struct {
 	getFileSizeInBytesFunc  func(string, string) (int64, error)
 }
 
-// NewEMTDownloader creates a new EMTDownloader.
-func NewEMTDownloader(request *pb.UpdateSystemSoftwareRequest) *Downloader {
+// NewDownloader creates a new Downloader.
+func NewDownloader(request *pb.UpdateSystemSoftwareRequest) *Downloader {
 	return &Downloader{
 		request:                 request,
 		readJWTTokenFunc:        readJWTToken,
@@ -99,7 +99,7 @@ func (t *Downloader) Download() error {
 		return fmt.Errorf("insufficient disk space")
 	}
 
-	log.Println("Disk space enough. Proceeding to download the artifact.")
+	log.Println("Sufficient disk space available. Proceeding to download the artifact.")
 
 	// Download file
 	err = t.downloadFile()
@@ -109,7 +109,7 @@ func (t *Downloader) Download() error {
 		return fmt.Errorf("error downloading the file: %w", err)
 	}
 
-	log.Println("Download completed.")
+	log.Println("Download complete.")
 
 	return nil
 }
@@ -258,7 +258,7 @@ func (t *Downloader) isDiskSpaceAvailable() (bool, error) {
 		log.Printf("Insufficient disk space. Available: %d bytes, Required: %d bytes\n", availableSpace, requiredSpace)
 		return false, nil
 	}
-	log.Println("Sufficient disk space available.")
+
 	return true, nil
 }
 
