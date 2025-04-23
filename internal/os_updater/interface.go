@@ -39,7 +39,7 @@ type EMTFactory struct{}
 
 // CreateDownloader creates a downloader concrete class for EMT OS.
 func (f *EMTFactory) CreateDownloader(req *pb.UpdateSystemSoftwareRequest) Downloader {
-	return emt.NewEMTDownloader(req)
+	return emt.NewDownloader(req)
 }
 
 // CreateUpdater creates an OS updater concrete class for EMT OS.
