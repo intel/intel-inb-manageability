@@ -220,10 +220,8 @@ func readJWTToken(fs afero.Afero, path string) (string, error) {
 	return strings.TrimSpace(string(token)), nil
 }
 
-// checkDiskSpace checks if there is enough disk space to download the artifacts.
+// isDiskSpaceAvailable checks if there is enough disk space to download the artifacts.
 func (t *Downloader) isDiskSpaceAvailable() (bool, error) {
-	// Get available disk space
-	// TODO: We should be able to call the method in utils package
 	availableSpace, err := t.getFreeDiskSpaceInBytes("/var/cache/manageability/repository-tool/sota")
 	if err != nil {
 		log.Printf("Error getting disk space: %v\n", err)
@@ -237,7 +235,7 @@ func (t *Downloader) isDiskSpaceAvailable() (bool, error) {
 		jsonString = []byte("{}")
 	}
 
-	//Read JWT token
+	// Read JWT token
 	token, err := t.readJWTTokenFunc(afero.Afero{Fs: t.fs}, JWTTokenPath)
 	if err != nil {
 		t.writeUpdateStatus(FAIL, string(jsonString), err.Error())
