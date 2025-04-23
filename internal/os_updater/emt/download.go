@@ -229,7 +229,6 @@ func (t *Downloader) isDiskSpaceAvailable() (bool, error) {
 		log.Printf("Error getting disk space: %v\n", err)
 		return false, err
 	}
-	log.Printf("Available disk space: %d bytes\n", availableSpace)
 
 	// Get the request details
 	jsonString, err := protojson.Marshal(t.request)
@@ -253,7 +252,6 @@ func (t *Downloader) isDiskSpaceAvailable() (bool, error) {
 		t.writeGranularLog(FAIL, FAILURE_REASON_DOWNLOAD)
 		return false, fmt.Errorf("error getting file size: %w", err)
 	}
-	log.Printf("Required disk space: %d bytes\n", requiredSpace)
 
 	// Check if there is enough space
 	if availableSpace < uint64(requiredSpace) {

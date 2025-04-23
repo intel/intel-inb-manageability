@@ -43,9 +43,9 @@ func TestEMTUpdater(t *testing.T) {
 		Signature:   "signature",
 	}
 
-	t.Run("createDownloader returns EMTDownloader", func(t *testing.T) {
+	t.Run("createDownloader returns Downloader", func(t *testing.T) {
 		downloader := emtUpdater.CreateDownloader(req)
-		assert.IsType(t, &emt.EMTDownloader{}, downloader)
+		assert.IsType(t, &emt.Downloader{}, downloader)
 	})
 
 	t.Run("createUpdater returns EMTUpdater", func(t *testing.T) {
