@@ -94,8 +94,9 @@ func GetEstimatedSize(cmdExec utils.Executor) (bool, uint64, error) {
 	// Ignore the error as the command will return a non-zero exit code
 	stdout, stderr, _ := cmdExec.Execute(cmd)
 	if len(stderr) > 0 {
-		log.Printf("Error executing command: %s\n", string(stderr))
+		log.Printf("Error executing command to determine update size: %s\n", string(stderr))
 	}
+	
 	return getEstimatedSizeInBytesFromAptGetUpgrade(string(stdout))
 }
 
@@ -118,16 +119,18 @@ func sizeToBytes(size string, unit string) uint64 {
 	}
 }
 
-const noUpdateAvailable = "0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded."
+const noUpdateAvailable = "0 upgraded, 0 newly installed, 0 to remove"
 
 func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (bool, uint64, error) {
 	log.Printf("Apt-get upgrade output: %s", upgradeOutput)
 	var outputLines []string
 	for _, line := range strings.Split(upgradeOutput, "\n") {
 		if strings.Contains(line, "After this operation,") {
+			log.Println("After this operation, line found.")
 			outputLines = append(outputLines, line)
 		} else if strings.Contains(line, noUpdateAvailable) {
 			// No update available.  System is up to date
+			log.Println("No update available.  System is up to date.")
 			return false, 0, nil
 		}
 

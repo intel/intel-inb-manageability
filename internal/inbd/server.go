@@ -15,7 +15,7 @@ import (
 )
 
 const configFilePath = "/etc/intel_manageability.conf"
-const schemaFilePath = "/etc/intel_manageability_schema.json"
+const schemaFilePath = "/usr/share/inbd_schema.json"
 
 // ServerDeps groups the dependencies needed for running the server.
 type ServerDeps struct {

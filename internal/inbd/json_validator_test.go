@@ -97,7 +97,7 @@ func TestIsValidJSON(t *testing.T) {
 			}
 
 			// Call the function under test
-			result, err := isValidJSON(afero.Afero{Fs: fs}, schemaFilePath, jsonFilePath)
+			result, err := IsValidJSON(afero.Afero{Fs: fs}, schemaFilePath, jsonFilePath)
 
 			// Assert the result
 			assert.Equal(t, tt.expectedResult, result)

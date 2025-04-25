@@ -110,6 +110,7 @@ build-deb:
     COPY fpm-templates/usr/bin/provision-tc usr/bin/provision-tc
     COPY fpm-templates/etc/intel_manageability.conf etc/intel_manageability.conf
     COPY fpm-templates/usr/lib/systemd/system/inbd.service usr/lib/systemd/system/inbd.service
+    COPY fpm-templates/usr/share/inbd_schema.json usr/share/inbd_schema.json
     RUN echo "Package: intel-inbm\nVersion: 0.0.0-unknown\nArchitecture: amd64\nMaintainer: Your Name <your-email@example.com>\nDescription: Intel In-Band Manageability Tools\n This package contains the inbc CLI and inbd daemon for Intel In-Band Manageability." > DEBIAN/control
     RUN dpkg-deb --build . /package/intel-inbm.deb
     SAVE ARTIFACT /package/intel-inbm.deb AS LOCAL ./build/intel-inbm.deb

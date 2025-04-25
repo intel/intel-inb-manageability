@@ -14,7 +14,7 @@ import (
 )
 
 // IsValidJSON validates the JSON configuration file against the JSON schema.
-func isValidJSON(fs afero.Afero, schemaFilePath string, jsonFilePath string) (bool, error) {
+func IsValidJSON(fs afero.Afero, schemaFilePath string, jsonFilePath string) (bool, error) {
 	// Read the schema file
 	schemaContent, err := fs.ReadFile(schemaFilePath)
 	if err != nil {

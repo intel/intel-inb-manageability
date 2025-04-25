@@ -15,6 +15,7 @@ import (
 
 	"github.com/intel/intel-inb-manageability/internal/inbd"
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	"github.com/spf13/afero"
 )
 
 func main() {
@@ -38,6 +39,9 @@ func main() {
 		ServeFunc: func(gs *grpc.Server, lis net.Listener) error {
 			log.Printf("Server listening on %s", *socket)
 			return gs.Serve(lis)
+		},
+		IsValidJSON: func(fs afero.Afero, filePath string, schemaPath string) (bool, error) {
+			return inbd.IsValidJSON(afero.Afero{Fs: afero.NewOsFs()}, filePath, schemaPath)
 		},
 	}
 

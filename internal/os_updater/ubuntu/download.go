@@ -20,6 +20,6 @@ type Downloader struct {
 
 // Download method for Ubuntu
 func (u *Downloader) Download() error {
-	fmt.Printf("Debian-based OS does not require a file download to perform a software update")
+	fmt.Println("Debian-based OS does not require a file download to perform a software update")
 	return nil
 }

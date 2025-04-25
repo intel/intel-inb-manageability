@@ -36,6 +36,8 @@ func UpdateOS(req *pb.UpdateSystemSoftwareRequest, factory UpdaterFactory) (*pb.
 	proceedWithReboot, err := updater.Update()
 	if err != nil {
 		// Remove the artifacts if failure happens.
+		// TODO:  This is only done for EMT, but it's also being done for Ubuntu.
+		// Need way to only do this for EMT.
 		errDel := cleaner.DeleteAll(emt.DownloadDir + "/")
 		if errDel != nil {
 			log.Printf("[Warning] %v", errDel.Error())

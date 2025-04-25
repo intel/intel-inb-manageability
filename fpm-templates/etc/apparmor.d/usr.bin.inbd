@@ -129,6 +129,7 @@
   /usr/share/keyrings/*.gpg w,
   /usr/share/intel-manageability/** r,
   /usr/share/intel-manageability/* r,
+  /usr/share/inbd_schema.json r,
   /usr/share/keyrings/ rw,
   /usr/share/keyrings/* rw,
   /var/cache/manageability/ rw,
