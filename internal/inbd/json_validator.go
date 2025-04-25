@@ -22,24 +22,24 @@ func IsValidJSON(fs afero.Afero, schemaFilePath string, jsonFilePath string) (bo
 	}
 
 	// Read the JSON file
-    jsonContent, err := fs.ReadFile(jsonFilePath)
-    if err != nil {
-        return false, fmt.Errorf("failed to read JSON file: %w", err)
-    }
+	jsonContent, err := fs.ReadFile(jsonFilePath)
+	if err != nil {
+		return false, fmt.Errorf("failed to read JSON file: %w", err)
+	}
 
 	// Use a canonical URI for the schema
-    schemaLoader := gojsonschema.NewStringLoader(string(schemaContent))
-    jsonLoader := gojsonschema.NewStringLoader(string(jsonContent))
+	schemaLoader := gojsonschema.NewStringLoader(string(schemaContent))
+	jsonLoader := gojsonschema.NewStringLoader(string(jsonContent))
 
-    // Validate the JSON against the schema
-    result, err := gojsonschema.Validate(schemaLoader, jsonLoader)
-    if err != nil {
-        return false, fmt.Errorf("failed to validate JSON file: %w", err)
-    }
+	// Validate the JSON against the schema
+	result, err := gojsonschema.Validate(schemaLoader, jsonLoader)
+	if err != nil {
+		return false, fmt.Errorf("failed to validate JSON file: %w", err)
+	}
 
-    if !result.Valid() {
-        return false, fmt.Errorf("JSON file is invalid. See logs for details")
-    }
+	if !result.Valid() {
+		return false, fmt.Errorf("JSON file is invalid. See logs for details")
+	}
 
 	return true, nil
 }
