@@ -39,7 +39,7 @@ Intel In-band Manageability framework, a.k.a. INBM, is designed to provide certa
 
 * Ubuntu 22.04 (Desktop and Server)
 * Ubuntu 24.04 (Desktop and Server)
-* Tiber (TODO:  Add more info)
+* Edge Microvisor Toolkit (Tiber OS)
 
 ### Setup checklist
 
