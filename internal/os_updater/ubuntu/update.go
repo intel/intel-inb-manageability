@@ -126,11 +126,9 @@ func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (bool, uint6
 	var outputLines []string
 	for _, line := range strings.Split(upgradeOutput, "\n") {
 		if strings.Contains(line, "After this operation,") {
-			log.Println("After this operation, line found.")
 			outputLines = append(outputLines, line)
 		} else if strings.Contains(line, noUpdateAvailable) {
 			// No update available.  System is up to date
-			log.Println("No update available.  System is up to date.")
 			return false, 0, nil
 		}
 
