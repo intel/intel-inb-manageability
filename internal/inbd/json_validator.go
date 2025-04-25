@@ -8,6 +8,7 @@ package inbd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/afero"
 	"github.com/xeipuuv/gojsonschema"
@@ -38,7 +39,12 @@ func IsValidJSON(fs afero.Afero, schemaFilePath string, jsonFilePath string) (bo
 	}
 
 	if !result.Valid() {
-		return false, fmt.Errorf("JSON file is invalid. See logs for details")
+        var errorDetails strings.Builder
+        for _, desc := range result.Errors() {
+            errorDetails.WriteString(fmt.Sprintf("Field: %s - Issue: %s; ",
+                desc.Field(), desc.Description()))
+        }
+		return false, fmt.Errorf("JSON file is invalid: %s", errorDetails.String())
 	}
 
 	return true, nil

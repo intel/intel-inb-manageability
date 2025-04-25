@@ -149,7 +149,7 @@ func TestGetEstimatedSize(t *testing.T) {
 
 		isUpdateAvail, size, err := GetEstimatedSize(mockExec)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "failed to get size of the update")
+		assert.Contains(t, err.Error(), "no output from command to determine update size")
 		assert.False(t, isUpdateAvail)
 		assert.Equal(t, uint64(0), size)
 		assert.Equal(t, 1, len(mockExec.commands))

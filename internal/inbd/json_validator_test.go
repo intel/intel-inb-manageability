@@ -60,7 +60,7 @@ func TestIsValidJSON(t *testing.T) {
                     }
                 }`,
 			expectedResult: false,
-			expectedError:  errors.New("JSON file is invalid. See logs for details"),
+			expectedError:  errors.New("JSON file is invalid: Field: (root) - Issue: os_updater is required; Field: (root) - Issue: Additional property fw_updater is not allowed; "),
 		},
 		{
 			name:           "error reading JSON file",
