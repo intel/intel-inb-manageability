@@ -14,6 +14,7 @@ import (
 	"time"
 
 	pb "github.com/intel/intel-inb-manageability/pkg/api/inbd/v1"
+	"github.com/spf13/afero"
 	"google.golang.org/grpc"
 )
 
@@ -88,6 +89,9 @@ func TestRunServer_Success(t *testing.T) {
 			// No actual serving.
 			return nil
 		},
+		IsValidJSON: func(afero.Afero, string, string) (bool, error) {
+			return true, nil
+		},
 	}
 
 	err := RunServer(deps)
@@ -96,6 +100,95 @@ func TestRunServer_Success(t *testing.T) {
 	}
 	if removeCalled {
 		t.Errorf("Remove should not be called because Stat returned os.ErrNotExist")
+	}
+}
+
+
+func TestRunServer_ConfigValidationFails(t *testing.T) {
+	fl := &fakeListener{}
+
+	deps := ServerDeps{
+		Socket: "dummy.sock",
+		Stat: func(name string) (os.FileInfo, error) {
+			// Simulate file not exists.
+			return nil, os.ErrNotExist
+		},
+		Remove: os.Remove,
+		NetListen: func(network, address string) (net.Listener, error) {
+			if network != "unix" || address != "dummy.sock" {
+				return nil, errors.New("unexpected parameters")
+			}
+			return fl, nil
+		},
+		Umask: func(mask int) int {
+			// Return 0 for the old umask.
+			return 0
+		},
+		NewGRPCServer: func(opts ...grpc.ServerOption) *grpc.Server {
+			return grpc.NewServer(opts...)
+		},
+		RegisterService: func(gs *grpc.Server) {
+			// Registration indicator.
+		},
+		ServeFunc: func(gs *grpc.Server, lis net.Listener) error {
+			if lis != fl {
+				return errors.New("listener mismatch")
+			}
+			// No actual serving.
+			return nil
+		},
+		IsValidJSON: func(afero.Afero, string, string) (bool, error) {
+			return true, errors.New("invalid JSON")
+		},
+	}
+
+	err := RunServer(deps)
+	if err == nil || err.Error() != "error validating INBD Configuration file: invalid JSON" {
+		t.Errorf("Expected error on configuration file JSON validation, got %v", err)
+	}
+}
+
+func TestRunServer_ConfigValidationInvalid(t *testing.T) {
+	fl := &fakeListener{}
+
+	deps := ServerDeps{
+		Socket: "dummy.sock",
+		Stat: func(name string) (os.FileInfo, error) {
+			// Simulate file not exists.
+			return nil, os.ErrNotExist
+		},
+		Remove: os.Remove,
+		NetListen: func(network, address string) (net.Listener, error) {
+			if network != "unix" || address != "dummy.sock" {
+				return nil, errors.New("unexpected parameters")
+			}
+			return fl, nil
+		},
+		Umask: func(mask int) int {
+			// Return 0 for the old umask.
+			return 0
+		},
+		NewGRPCServer: func(opts ...grpc.ServerOption) *grpc.Server {
+			return grpc.NewServer(opts...)
+		},
+		RegisterService: func(gs *grpc.Server) {
+			// Registration indicator.
+		},
+		ServeFunc: func(gs *grpc.Server, lis net.Listener) error {
+			if lis != fl {
+				return errors.New("listener mismatch")
+			}
+			// No actual serving.
+			return nil
+		},
+		IsValidJSON: func(afero.Afero, string, string) (bool, error) {
+			return false, nil
+		},
+	}
+
+	err := RunServer(deps)
+	if err == nil || err.Error() != "INBD Configuration file is not valid" {
+		t.Errorf("Expected error on configuration file JSON validation, got %v", err)
 	}
 }
 
@@ -168,6 +261,9 @@ func TestRunServer_ServeError(t *testing.T) {
 		ServeFunc: func(gs *grpc.Server, lis net.Listener) error {
 			return errors.New("serve error")
 		},
+		IsValidJSON: func(afero.Afero, string, string) (bool, error) {
+			return true, nil
+		},
 	}
 	err := RunServer(deps)
 	if err == nil || err.Error() != "serve error" {
@@ -198,6 +294,10 @@ func TestRunServer_RegisterCalled(t *testing.T) {
 		},
 		ServeFunc: func(gs *grpc.Server, lis net.Listener) error {
 			return nil
+		},
+		IsValidJSON: func(afero.Afero, string, string) (bool, error) {
+			// Not used in this test.
+			return true, nil
 		},
 	}
 
@@ -233,6 +333,10 @@ func TestRunServer_UmaskRestoration(t *testing.T) {
 		},
 		RegisterService: func(gs *grpc.Server) {},
 		ServeFunc:       func(gs *grpc.Server, lis net.Listener) error { return nil },
+		IsValidJSON: func(afero.Afero, string, string) (bool, error) {
+			// Not used in this test.
+			return true, nil
+		},
 	}
 	err := RunServer(deps)
 	if err != nil {
@@ -247,6 +351,7 @@ func TestRunServer_UmaskRestoration(t *testing.T) {
 	if maskSet[1] != 0 {
 		t.Errorf("Expected second Umask call with 0, got %o", maskSet[1])
 	}
+
 }
 
 // ----------------------------------------------------------------------------

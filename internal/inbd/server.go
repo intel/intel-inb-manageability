@@ -10,8 +10,12 @@ import (
 	"os"
 
 	emt "github.com/intel/intel-inb-manageability/internal/os_updater/emt"
+	"github.com/spf13/afero"
 	"google.golang.org/grpc"
 )
+
+const configFilePath = "/etc/intel_manageability.conf"
+const schemaFilePath = "/etc/intel_manageability_schema.json"
 
 // ServerDeps groups the dependencies needed for running the server.
 type ServerDeps struct {
@@ -23,6 +27,7 @@ type ServerDeps struct {
 	NewGRPCServer   func(...grpc.ServerOption) *grpc.Server
 	RegisterService func(*grpc.Server)
 	ServeFunc       func(*grpc.Server, net.Listener) error
+	IsValidJSON     func(afero.Afero, string, string) (bool, error)
 }
 
 // RunServer implements the core logic of the server:
@@ -55,7 +60,7 @@ func RunServer(deps ServerDeps) error {
 	// VerifyUpdateAfterReboot verifies the update after reboot.
 	// It compares the version in dispatcher_state file with the current system version.
 	// If the versions are different, the system successfully boots into the new image.
-	
+
 	// TODO: This should call the correct function using the factory pattern.
 	// Currently hardcoded to use EMT.  It should also be able to call Ubuntu.
 	err = emt.VerifyUpdateAfterReboot("EMT")
@@ -63,5 +68,12 @@ func RunServer(deps ServerDeps) error {
 		return fmt.Errorf("[Post verification failed] error verifying update after reboot: %w", err)
 	}
 
+	isValidConfig, err := deps.IsValidJSON(afero.Afero{Fs: afero.NewOsFs()}, configFilePath, schemaFilePath)
+	if err != nil {
+		return fmt.Errorf("error validating INBD Configuration file: %w", err)
+	}
+	if !isValidConfig {
+		return fmt.Errorf("INBD Configuration file is not valid")
+	}
 	return deps.ServeFunc(grpcServer, lis)
 }
