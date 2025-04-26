@@ -6,6 +6,7 @@ package inbd
 
 import (
 	"fmt"
+	"log"
 	"net"
 	"os"
 
@@ -68,7 +69,7 @@ func RunServer(deps ServerDeps) error {
 		return fmt.Errorf("[Post verification failed] error verifying update after reboot: %w", err)
 	}
 
-	isValidConfig, err := deps.IsValidJSON(afero.Afero{Fs: afero.NewOsFs()}, configFilePath, schemaFilePath)
+	isValidConfig, err := deps.IsValidJSON(afero.Afero{Fs: afero.NewOsFs()}, schemaFilePath, configFilePath)
 	if err != nil {
 		return fmt.Errorf("error validating INBD Configuration file: %w", err)
 	}

@@ -1,16 +1,24 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Configuration Schema",
+  "title": "Intel Manageability Configuration Schema",
   "type": "object",
   "properties": {
-    "trustedRepositories": {
-      "type": "array",
-      "items": {
-        "type": "string"
-      },
-      "description": "A list of trusted repository URLs."
-    }
+      "os_updater": {
+          "type": "object",
+          "properties": {
+              "trustedRepositories": {
+                  "type": "array",
+                  "items": {
+                      "type": "string",
+                      "format": "uri"
+                  },
+                  "description": "A list of trusted repository URLs."
+              }
+          },
+          "required": ["trustedRepositories"],
+          "additionalProperties": false
+      }
   },
-  "required": ["trustedRepositories"],
+  "required": ["os_updater"],
   "additionalProperties": false
 }
