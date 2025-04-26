@@ -6,7 +6,6 @@ package inbd
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"os"
 
