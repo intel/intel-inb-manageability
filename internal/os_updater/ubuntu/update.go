@@ -122,7 +122,7 @@ func sizeToBytes(size string, unit string) uint64 {
 	}
 }
 
-const noUpdateAvailable = "0 upgraded, 0 newly installed, 0 to remove"
+const noUpdateAvailable = "0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded."
 
 func getEstimatedSizeInBytesFromAptGetUpgrade(upgradeOutput string) (bool, uint64, error) {
 	log.Printf("Apt-get upgrade output: %s", upgradeOutput)
