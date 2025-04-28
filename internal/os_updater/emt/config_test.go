@@ -17,50 +17,56 @@ func TestLoadConfig(t *testing.T) {
     t.Run("successful load", func(t *testing.T) {
         fs := afero.NewMemMapFs()
         configContent := `
-trustedRepositories:
-  - "https://example.com/repo1"
-  - "https://example.com/repo2"
-`
-        err := afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
+        {
+            "os_updater": {
+                "trustedRepositories": ["https://example.com/repo1", "https://example.com/repo2"]
+            }
+        }`
+
+        err := afero.WriteFile(fs, "config.json", []byte(configContent), 0644)
         assert.NoError(t, err)
 
-        config, err := LoadConfig(fs, "config.yaml")
+        config, err := LoadConfig(fs, "config.json")
         assert.NoError(t, err)
         assert.NotNil(t, config)
-        assert.Equal(t, 2, len(config.TrustedRepositories))
-        assert.Equal(t, "https://example.com/repo1", config.TrustedRepositories[0])
-        assert.Equal(t, "https://example.com/repo2", config.TrustedRepositories[1])
+        assert.Equal(t, 2, len(config.OSUpdater.TrustedRepositories))
+        assert.Equal(t, "https://example.com/repo1", config.OSUpdater.TrustedRepositories[0])
+        assert.Equal(t, "https://example.com/repo2", config.OSUpdater.TrustedRepositories[1])
     })
 
     t.Run("file not found", func(t *testing.T) {
         fs := afero.NewMemMapFs()
 
-        config, err := LoadConfig(fs, "nonexistent.yaml")
+        config, err := LoadConfig(fs, "nonexistent.json")
         assert.Error(t, err)
         assert.Nil(t, config)
     })
 
-    t.Run("invalid YAML", func(t *testing.T) {
+    t.Run("invalid JSON", func(t *testing.T) {
         fs := afero.NewMemMapFs()
         configContent := `
-trustedRepositories:
-  - "https://example.com/repo1"
-  - "https://example.com/repo2
-`
-        err := afero.WriteFile(fs, "config.yaml", []byte(configContent), 0644)
+        {
+            "os_updater": {
+                "trustedRepositories": ["https://example.com/repo1", "https://example.com/repo2
+            }
+        }`
+        err := afero.WriteFile(fs, "config.json", []byte(configContent), 0644)
         assert.NoError(t, err)
 
-        config, err := LoadConfig(fs, "config.yaml")
+        config, err := LoadConfig(fs, "config.json")
         assert.Error(t, err)
         assert.Nil(t, config)
     })
 }
 
 func TestIsTrustedRepository(t *testing.T) {
-    config := &Configurations{
-        TrustedRepositories: []string{
-            "https://example.com/repo1",
-            "https://example.com/repo2",
+    config := &Configurations{ 
+        OSUpdater: struct {
+            TrustedRepositories []string `json:"trustedRepositories"`
+        }{
+            TrustedRepositories: []string{
+                "https://example.com/repo1", 
+                "https://example.com/repo2"},
         },
     }
 

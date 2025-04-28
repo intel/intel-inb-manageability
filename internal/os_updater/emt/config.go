@@ -7,43 +7,43 @@
 package emt
 
 import (
-	"io"
+	"encoding/json"
+	"fmt"
+	"log"
 	"strings"
 
 	"github.com/spf13/afero"
-	"gopkg.in/yaml.v3"
 )
 
 // Configurations represents the structure of the XML configuration file
 type Configurations struct {
-	TrustedRepositories []string `yaml:"trustedRepositories"`
+	OSUpdater struct {
+		TrustedRepositories []string `json:"trustedRepositories"`
+	} `json:"os_updater"`	
 }
 
 // LoadConfig loads the XML configuration file
-func LoadConfig(fs afero.Fs, filename string) (*Configurations, error) {
-	file, err := fs.Open(filename)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
+func LoadConfig(fs afero.Fs, filePath string) (*Configurations, error) {
+	content, err := afero.ReadFile(fs, filePath)
+    if err != nil {
+        return nil, fmt.Errorf("failed to read configuration file: %w", err)
+    }
 
-	content, err := io.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
+    // Unmarshal the JSON content into the Configurations struct
+    var config Configurations
+    err = json.Unmarshal(content, &config)
+    if err != nil {
+        return nil, fmt.Errorf("failed to parse configuration file: %w", err)
+    }
 
-	var config Configurations
-	err = yaml.Unmarshal(content, &config)
-	if err != nil {
-		return nil, err
-	}
-
-	return &config, nil
+    return &config, nil
 }
 
 // IsTrustedRepository checks if the given URL is in the list of trusted repositories
 func IsTrustedRepository(url string, config *Configurations) bool {
-	for _, repo := range config.TrustedRepositories {
+	log.Printf("Checking if URL %s is in trusted repositories", url)
+	for _, repo := range config.OSUpdater.TrustedRepositories {
+		log.Printf("Comparing with trusted repository: %s", repo)
 		if strings.HasPrefix(url, repo) {
 			return true
 		}
