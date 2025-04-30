@@ -8,9 +8,6 @@ Third party programs and their corresponding required notices and/or license ter
 ------------------------------------------------------------------------------------------------------------------------
 1. Software Released under the BSD 3-Clause License:
 
-protobuf
-Copyright 2008 Google Inc.  All rights reserved.
-
 pyca/cryptography
 Copyright (c) Individual contributors.
 All rights reserved.
@@ -42,15 +39,8 @@ Copyright 2017      Red Hat, Inc.
 Copyright 2019      Sebastien LE STUM
 Copyright 2017      SUSE GmbH
 
-gogo-protobuf
-Copyright (c) 2018 The Go Authors. All rights reserved.
-https://github.com/protocolbuffers/protobuf-go
-
 The Go Programming Language
 Copyright (c) 2009 The Go Authors. All rights reserved.
-
-golang protobuf
-Copyright 2010 The Go Authors.  All rights reserved.
 
 golang image
 Copyright (c) 2009 The Go Authors. All rights reserved.
@@ -860,18 +850,6 @@ Copyright 2017 Docker, Inc.
 
 opencontainers image-spec
 Copyright 2016 The Linux Foundation// Copyright 2016 The Linux Foundation
-
-grpc-grpc-go
-Copyright 2014 gRPC authors.
-
-grpc-core
-No copyright statement found.
-
-grpcio
-Copyright 2015-present gRPC Authors. All rights reserved.
-
-google go-genproto
-No copyright statement found.
 
 Python-devs importlib-metadata
 Copyright 2016 The Linux Foundation
