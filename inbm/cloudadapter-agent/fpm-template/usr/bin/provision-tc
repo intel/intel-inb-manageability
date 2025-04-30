@@ -40,6 +40,7 @@ function provision {
     fi
   else
     configure_cloud_udm_mode
+  fi
 
   if ! [[ -v UCC_MODE ]]; then
     if [[ "x$NO_OTA_CERT" == "x" ]]; then
@@ -326,9 +327,9 @@ if grep -q "TRUE" /etc/intel-manageability/public/ucc_flag ; then
 fi
 
 if [[ "$UDM_MODE" == "true" ]]; then
-  echo "UDM mode."
+    echo "UDM mode."
 else
-  UDM_MODE=false
+    UDM_MODE=false
 fi
 
 provision
