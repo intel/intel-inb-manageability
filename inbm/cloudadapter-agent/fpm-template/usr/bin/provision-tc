@@ -33,13 +33,10 @@ function provision {
   fi
   echo "$LOCAL_MQTT_PORT" >/etc/intel-manageability/local-mqtt-port.txt
   enable_mqtt
-  #if [[ "$UDM_MODE" == "false" ]]; then
+
   if [[ "$NO_CLOUD" == "" ]]; then
     configure_cloud
-  fi
-  #else
-  #  configure_cloud_udm_mode
-  #fi
+  fi 
 
   if ! [[ -v UCC_MODE ]]; then
     if [[ "x$NO_OTA_CERT" == "x" ]]; then
@@ -290,35 +287,35 @@ function get_file_input {
   done
 }
 
-function configure_cloud_udm_mode {
-  echo "Configuring cloud for UDM_MODE..."
-  local ONBOARDING_JSON="/mnt/udm-luks/onboarding.json"
-  local ADAPTER_CFG_DIR="/etc/intel-manageability/secret/cloudadapter-agent/"
-  local ADAPTER_CFG_FILE="$ADAPTER_CFG_DIR/adapter.cfg"
+# function configure_cloud_udm_mode {
+#   echo "Configuring cloud for UDM_MODE..."
+#   local ONBOARDING_JSON="/mnt/udm-luks/onboarding.json"
+#   local ADAPTER_CFG_DIR="/etc/intel-manageability/secret/cloudadapter-agent/"
+#   local ADAPTER_CFG_FILE="$ADAPTER_CFG_DIR/adapter.cfg"
 
-  if [[ ! -f "$ONBOARDING_JSON" ]]; then
-    echo "Error: Onboarding file $ONBOARDING_JSON does not exist."
-    exit 1
-  fi
+#   if [[ ! -f "$ONBOARDING_JSON" ]]; then
+#     echo "Error: Onboarding file $ONBOARDING_JSON does not exist."
+#     exit 1
+#   fi
 
-  mkdir -p "$ADAPTER_CFG_DIR"
+#   mkdir -p "$ADAPTER_CFG_DIR"
 
-  # Create adapter.cfg with onboarding_json_file reference
-  cat << EOF > "$ADAPTER_CFG_FILE"
-{
-  "cloud": "inbs",
-  "config": {
-    "onboarding_json_file": "$ONBOARDING_JSON"
-  }
-}
-EOF
+#   # Create adapter.cfg with onboarding_json_file reference
+#   cat << EOF > "$ADAPTER_CFG_FILE"
+# {
+#   "cloud": "inbs",
+#   "config": {
+#     "onboarding_json_file": "$ONBOARDING_JSON"
+#   }
+# }
+# EOF
 
-  chgrp -R cloudadapter-agent "$ADAPTER_CFG_DIR"
-  chmod 640 "$ADAPTER_CFG_FILE"
+#   chgrp -R cloudadapter-agent "$ADAPTER_CFG_DIR"
+#   chmod 640 "$ADAPTER_CFG_FILE"
 
-  chgrp cloudadapter-agent "$ONBOARDING_JSON"
-  chmod 660 "$ONBOARDING_JSON"  # cloudadapter needs to be able to truncate $ONBOARDING_JSON during decommission
-}
+#   chgrp cloudadapter-agent "$ONBOARDING_JSON"
+#   chmod 660 "$ONBOARDING_JSON"  # cloudadapter needs to be able to truncate $ONBOARDING_JSON during decommission
+# }
 
 if grep -q "TRUE" /etc/intel-manageability/public/ucc_flag ; then
     echo "UCC mode."
