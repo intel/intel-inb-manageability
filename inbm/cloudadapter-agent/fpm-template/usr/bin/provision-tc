@@ -33,13 +33,13 @@ function provision {
   fi
   echo "$LOCAL_MQTT_PORT" >/etc/intel-manageability/local-mqtt-port.txt
   enable_mqtt
-  if [[ "$UDM_MODE" == "false" ]]; then
-    if [[ "$NO_CLOUD" == "" ]]; then
-      configure_cloud
-    fi
-  else
-    configure_cloud_udm_mode
+  #if [[ "$UDM_MODE" == "false" ]]; then
+  if [[ "$NO_CLOUD" == "" ]]; then
+    configure_cloud
   fi
+  #else
+  #  configure_cloud_udm_mode
+  #fi
 
   if ! [[ -v UCC_MODE ]]; then
     if [[ "x$NO_OTA_CERT" == "x" ]]; then
