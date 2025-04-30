@@ -8,7 +8,6 @@ SPDX-License-Identifier: Apache-2.0
 import os
 from .cloud import adapter_factory as adapter_factory
 from .cloud.cloud_publisher import CloudPublisher
-from .cloud.adapters.inbs_adapter import InbsAdapter
 
 from .agent.broker import Broker
 from .agent.publisher import Publisher
@@ -158,7 +157,7 @@ class Client:
         """Handle state response from other agents"""
         logger.info("State: %-20s %s", topic, payload)
         # Set the dispatcher state
-        if isinstance(self._adapter, InbsAdapter) and DISPATCHER in str(topic):
+        if DISPATCHER in str(topic):
             if RUNNING in payload:
                 self._adapter.set_dispatcher_state(RUNNING)
             elif DEAD in payload:
