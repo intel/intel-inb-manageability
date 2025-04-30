@@ -13,7 +13,7 @@ from .agent.broker import Broker
 from .agent.publisher import Publisher
 from .agent.device_manager import DeviceManager
 
-from .constants import SLEEP_DELAY, TC_TOPIC, METHOD, DISPATCHER, RUNNING, DEAD
+from .constants import SLEEP_DELAY, TC_TOPIC, METHOD
 from .exceptions import (
     ConnectError, DisconnectError, AuthenticationError, BadConfigError)
 from .utilities import make_threaded, is_ucc_mode
@@ -150,18 +150,8 @@ class Client:
         # Log agent states
         self._broker.bind_callback(
             TC_TOPIC.STATE,
-            lambda topic, payload: self._handle_state(topic, payload))
+            lambda topic, payload: logger.info("State: %-20s %s", topic, payload))
         self._broker.start()
-
-    def _handle_state(self, topic: str, payload: Any) -> None:
-        """Handle state response from other agents"""
-        logger.info("State: %-20s %s", topic, payload)
-        # Set the dispatcher state
-        if DISPATCHER in str(topic):
-            if RUNNING in payload:
-                self._adapter.set_dispatcher_state(RUNNING)
-            elif DEAD in payload:
-                self._adapter.set_dispatcher_state(DEAD)
 
     def stop(self) -> None:
         """Disconnect the cloud and Intel(R) In-Band Manageability"""

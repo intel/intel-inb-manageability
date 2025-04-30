@@ -109,13 +109,3 @@ class TestClient(unittest.TestCase):
         self.client._bind_ucc_to_agent()
         self.MockBroker.assert_called_once_with(tls=True)
         assert self.mock_adapter.bind_callback.call_count > 0
-
-    @mock.patch('cloudadapter.client.isinstance',  return_value=True)
-    def test_handle_state_running(self, mock_instance) -> None:
-        self.client._handle_state("dispatcher/state", RUNNING)
-        assert self.mock_adapter.set_dispatcher_state.call_count == 1
-
-    @mock.patch('cloudadapter.client.isinstance', return_value=True)
-    def test_handle_state_dead(self, mock_instance) -> None:
-        self.client._handle_state("dispatcher/state", DEAD)
-        assert self.mock_adapter.set_dispatcher_state.call_count == 1
