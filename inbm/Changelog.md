@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
 ### Changed
-- (N/A) Fix tpm container removal issue during build
+- (N/A) Fix TPM container removal issue during build
+- (N/A) Remove UDM related code
 
 ### Security
 - (N/A) Update Golang Version from 1.22 to 1.24 to resolve CVE: CVE-2025-22870
