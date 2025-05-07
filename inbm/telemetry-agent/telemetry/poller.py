@@ -148,7 +148,7 @@ class Poller(IPoller):
                 if self._rm_active and not self.pms_notification_registered:
                     pms = pms_notification.PMSNotification(client)
                     worker = Thread(target=pms.register_pms_notification, args=(self,))
-                    worker.setDaemon(True)
+                    worker.daemon = True
                     worker.start()
                     self.previous_rm_active_status = True
                 elif self.previous_rm_active_status and not self._rm_active:

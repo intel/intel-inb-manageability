@@ -72,7 +72,7 @@ class WorkloadOrchestration:
         if self.is_workload_service_file_present():
             if online_mode:
                 worker = Thread(target=self._switch_to_online_mode)
-                worker.setDaemon(True)
+                worker.daemon = True
                 worker.start()
             elif self.is_workload_service_active():
                 self._switch_to_maintenance_mode()
