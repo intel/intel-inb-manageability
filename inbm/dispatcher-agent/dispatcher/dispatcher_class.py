@@ -190,7 +190,7 @@ class Dispatcher:
             if not self.update_queue.empty():
                 if active_count() - active_start_count < self._thread_count:
                     worker = Thread(target=handle_updates, args=(self,))
-                    worker.setDaemon(True)
+                    worker.daemon = True
                     self._thread_list.append(worker)
                     worker.start()
 

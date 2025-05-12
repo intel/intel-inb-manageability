@@ -30,7 +30,7 @@ class TestCancelThread(unittest.TestCase):
         type_of_manifest = "ota"
         thread_list = []
         worker = threading.Thread(target=mock_thread, args=(cancel_event,))
-        worker.setDaemon(True)
+        worker.daemon = True
         thread_list.append(worker)
         worker.start()
         sleep(1)
@@ -65,7 +65,7 @@ class TestCancelThread(unittest.TestCase):
         type_of_manifest = "ota"
         thread_list = []
         worker = threading.Thread(target=mock_thread, args=(cancel_event,))
-        worker.setDaemon(True)
+        worker.daemon = True
         thread_list.append(worker)
         worker.start()
         sleep(1)
@@ -104,7 +104,7 @@ class TestCancelThread(unittest.TestCase):
         type_of_manifest = "ota"
         thread_list = []
         worker = threading.Thread(target=mock_thread, args=(cancel_event,))
-        worker.setDaemon(True)
+        worker.daemon = True
         thread_list.append(worker)
         worker.start()
         sleep(1)
