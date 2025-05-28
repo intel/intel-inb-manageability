@@ -16,6 +16,7 @@ ENV no_proxy=$no_proxy
 
 # Install build essentials
 RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
     build-essential \
     gcc \
     && rm -rf /var/lib/apt/lists/*

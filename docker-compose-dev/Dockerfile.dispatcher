@@ -22,6 +22,7 @@ ENV no_proxy=$no_proxy
 
 # Install build essentials and Docker CLI
 RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
     build-essential \
     gcc \
     apt-transport-https \
