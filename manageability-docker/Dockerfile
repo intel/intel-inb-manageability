@@ -59,3 +59,11 @@ COPY ./thingsboard.pub.pe[m] /src/thingsboard.pub.pem
 
 # If client.nopass.pem(device x509 cert) exist, copy it to container
 COPY ./client.nopass.pe[m] /src/client.nopass.pem
+
+# Create and switch to non-root user (if possible)
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+RUN chown -R appuser:appgroup /src /var/persistent-log/mosquitto /var/cache/manageability /var/certs || true
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD systemctl is-active --quiet mqtt || exit 1
