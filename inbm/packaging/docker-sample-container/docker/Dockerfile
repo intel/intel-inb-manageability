@@ -3,9 +3,9 @@
 
 FROM registry.hub.docker.com/library/ubuntu:20.04
 
-# Create and switch to non-root user
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
-RUN chown -R appuser:appgroup /app
+# Create a non-root user and group
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+
 USER appuser
 
 ENTRYPOINT sleep infinity
