@@ -105,5 +105,10 @@ RUN cat /etc/apt/sources.list
 
 COPY --from=builder-20.04 /debs/ /debs-20.04/
 
+# Create and switch to non-root user
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+RUN mkdir -p /home/appuser && chown -R appuser:appgroup /home/appuser /debs-20.04 || true
+USER appuser
+
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
   CMD pgrep tpm_server || exit 1
