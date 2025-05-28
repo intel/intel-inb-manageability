@@ -33,6 +33,11 @@ COPY inbm/telemetry-agent/fpm-template /
 
 RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/telemetry-agent/logging.ini
 
+# Create and switch to non-root user
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+RUN chown -R appuser:appgroup /app
+USER appuser
+
 # used by INBM to detect if running in a container
 ENV container=docker
 ENV PYTHONPATH=/app:/app/telemetry-agent:/app/inbm-lib
@@ -41,4 +46,8 @@ ENV MQTT_PORT=1883
 ENV USE_TLS=False
 
 WORKDIR /app/telemetry-agent
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD pgrep -f "telemetry.telemetry" || exit 1
+
 CMD ["python", "-m", "telemetry.telemetry"]
