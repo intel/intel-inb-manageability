@@ -16,6 +16,7 @@ ENV no_proxy=$no_proxy
 
 # Install build essentials
 RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
     build-essential \
     gcc \
     && rm -rf /var/lib/apt/lists/*
@@ -34,6 +35,11 @@ RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/configu
 RUN sed -i '/<sotaSW>/,/<\/sotaSW>/c\        <sotaSW>\n        </sotaSW>' /etc/intel_manageability.conf
 RUN sed -i 's/<dbs>WARN<\/dbs>/<dbs>OFF<\/dbs>/' /etc/intel_manageability.conf
 
+# Create and switch to non-root user
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+RUN chown -R appuser:appgroup /app
+USER appuser
+
 # used by INBM to detect if running in a container
 ENV container=docker
 ENV MQTT_HOST=mosquitto
@@ -42,4 +48,8 @@ ENV USE_TLS=False
 ENV PYTHONPATH=/app:/app/configuration-agent:/app/inbm-lib
 
 WORKDIR /app/configuration-agent
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD pgrep -f "configuration.configuration" || exit 1
+
 CMD ["python", "-m", "configuration.configuration"]

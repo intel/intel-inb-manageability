@@ -16,8 +16,8 @@ RUN if [ ! -z "$NO_PROXY" ]; then echo "NO_PROXY=$NO_PROXY" >> /etc/environment;
 RUN if [ ! -z "$no_proxy" ]; then echo "no_proxy=$no_proxy" >> /etc/environment; fi
 
 # Install required packages
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install -y mosquitto cryptsetup openssl dmidecode dbus vim net-tools rsyslog libffi-dev pciutils lxc dkms libglib2.0 libssl1.0 udev docker.io docker-compose && \
-    apt-get clean && \ 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y upgrade && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y mosquitto cryptsetup openssl dmidecode dbus vim net-tools rsyslog libffi-dev pciutils lxc dkms libglib2.0 libssl1.0 udev docker.io docker-compose && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
 # Install TC artifacts within the container
@@ -59,3 +59,11 @@ COPY ./thingsboard.pub.pe[m] /src/thingsboard.pub.pem
 
 # If client.nopass.pem(device x509 cert) exist, copy it to container
 COPY ./client.nopass.pe[m] /src/client.nopass.pem
+
+# Create and switch to non-root user (if possible)
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+RUN chown -R appuser:appgroup /src /var/persistent-log/mosquitto /var/cache/manageability /var/certs || true
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD systemctl is-active --quiet mqtt || exit 1

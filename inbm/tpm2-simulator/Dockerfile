@@ -49,8 +49,11 @@ RUN apt-get update && \
     doxygen && \
     apt-get clean
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install libglib2.0-dev tpm2-abrmd tpm2-tools
-
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends libglib2.0-dev tpm2-abrmd tpm2-tools && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+    
 ENV PATH=/tpm2/ibmtpm1332/src:$PATH
 WORKDIR /tpm2
 
@@ -101,3 +104,11 @@ FROM ubuntu:20.04
 RUN cat /etc/apt/sources.list
 
 COPY --from=builder-20.04 /debs/ /debs-20.04/
+
+# Create and switch to non-root user
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+RUN mkdir -p /home/appuser && chown -R appuser:appgroup /home/appuser /debs-20.04 || true
+USER appuser
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD pgrep tpm_server || exit 1

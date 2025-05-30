@@ -22,6 +22,7 @@ ENV no_proxy=$no_proxy
 
 # Install build essentials
 RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
     build-essential \
     gcc \
     && rm -rf /var/lib/apt/lists/*
@@ -41,6 +42,11 @@ COPY --from=builder /go/src/app/trtl /usr/bin/trtl
 
 RUN sed -i 's/level=ERROR/level=DEBUG/g' /etc/intel-manageability/public/diagnostic-agent/logging.ini
 
+# Create and switch to non-root user
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+RUN chown -R appuser:appgroup /app
+USER appuser
+
 # used by INBM to detect if running in a container
 ENV container=docker
 ENV MQTT_HOST=mosquitto
@@ -49,4 +55,8 @@ ENV USE_TLS=False
 ENV PYTHONPATH=/app:/app/diagnostic-agent:/app/inbm-lib
 
 WORKDIR /app/diagnostic-agent
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD pgrep -f "diagnostic.diagnostic" || exit 1
+
 CMD ["python", "-m", "diagnostic.diagnostic"]
