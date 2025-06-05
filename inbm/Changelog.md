@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## X.X.X - YYYY-MM-DD
+
+### Changed
+- Update psutil Version from 5.9.5 to 6.1.0 to have same version in all requirements.txt
+- Update PyInstaller Version from 5.13.1 to 6.11.0 to have same version in all requirements.txt
+- Update urllib3 Version from 1.26.19 to 2.2.3 to have same version in all requirements.txt
+
 ### Changed
 - (N/A) Fix TPM container removal issue during build
 - (N/A) Remove UDM related code
