@@ -70,7 +70,7 @@ func TestDeleteSnapshotReturnsExitCodeOnError(t *testing.T) {
 	}
 	osExit = myExit
 
-	delete = func(util.ExecCommandWrapper, string, int) error {
+	deleteFunc = func(util.ExecCommandWrapper, string, int) error {
 		return errors.New("error")
 	}
 	new(SnapperInfo).DeleteSnapshot("rootConfig", 1)
@@ -84,7 +84,7 @@ func TestDeleteSnapshotReturnsSuccess(t *testing.T) {
 	}
 	osExit = myExit
 
-	delete = func(util.ExecCommandWrapper, string, int) error {
+	deleteFunc = func(util.ExecCommandWrapper, string, int) error {
 		return nil
 	}
 	new(SnapperInfo).DeleteSnapshot("rootConfig", 1)

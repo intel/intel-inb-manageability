@@ -80,12 +80,12 @@ class ConfigOperation:
             logger.debug("Config load operation using local path.")
             path_header = parsed_head.get_children('config/configtype/load')
             new_file_loc = path_header.get('path', None)
-            if CACHE not in new_file_loc.rsplit('/', 1):
-                return CONFIG_LOAD_FAIL_WRONG_PATH
             if new_file_loc is None:
                 return Result(CODE_BAD_REQUEST,
                               'Configuration load: Invalid configuration load manifest without <path> tag')
-
+            if CACHE not in new_file_loc.rsplit('/', 1):
+                return CONFIG_LOAD_FAIL_WRONG_PATH
+            
         if uri:
             try:
                 conf_file = configuration_helper.download_config(

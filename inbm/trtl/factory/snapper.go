@@ -17,7 +17,7 @@ type SnapperInfo struct{}
 
 var single = btrfs.SingleSnapshot
 var undo = btrfs.UndoChange
-var delete = btrfs.DeleteSnapshot
+var deleteFunc = btrfs.DeleteSnapshot
 var osExit = os.Exit
 
 // SingleSnapshot will use snapper to create a single snapshot using the provided configName
@@ -38,14 +38,14 @@ func (snap *SnapperInfo) UndoChange(configName string, snapshotVersion int) {
 }
 
 // List lists all snapshots on the system.
-func (snap *SnapperInfo) List(instanceName string) {
+func (snap *SnapperInfo) List(_ string) {
 	fmt.Fprint(os.Stderr, "List not supported for Snapper.")
 	osExit(3)
 }
 
 // DeleteSnapshot will use Snapper to delete the specified snapshot number.
 func (snap *SnapperInfo) DeleteSnapshot(configName string, snapshotNumber int) {
-	if err := delete(util.ExecCommandWrap{}, configName, snapshotNumber); err != nil {
+	if err := deleteFunc(util.ExecCommandWrap{}, configName, snapshotNumber); err != nil {
 		fmt.Fprintf(os.Stderr, "Error creating undoChange: %s", err)
 		osExit(1)
 	}

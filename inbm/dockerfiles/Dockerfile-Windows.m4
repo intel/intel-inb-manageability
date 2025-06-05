@@ -1,7 +1,7 @@
 include(`image.main.m4')
 
 # base windows/wine build image
-FROM registry.hub.docker.com/library/ubuntu:22.04 as base-windows
+FROM registry.hub.docker.com/library/ubuntu:22.04 AS base-windows
 RUN echo Refresh docker cache 20240212
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -91,7 +91,7 @@ RUN pip3 install wheel
 COPY inbm-lib /src/inbm-lib
 RUN pip3 install -e /src/inbm-lib
 
-FROM base-windows as windows-cloudadapter-py3
+FROM base-windows AS windows-cloudadapter-py3
 COPY inbm/cloudadapter-agent/requirements.txt /src/cloudadapter-agent/requirements.txt
 COPY inbm/cloudadapter-agent/test-requirements.txt /src/cloudadapter-agent/test-requirements.txt
 WORKDIR /src/cloudadapter-agent
@@ -107,23 +107,23 @@ RUN pyinstaller inbm-cloudadapter-windows.spec && \
     wine ../cloudadapter-agent/dist/inbm-cloudadapter/inbm-cloudadapter.exe install && \
     cp -r ../cloudadapter-agent/dist/inbm-cloudadapter /output
 
-FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-certs-windows
+FROM registry.hub.docker.com/library/golang:1.20-bookworm AS inb-provision-certs-windows
 COPY inbm/fpm/inb-provision-certs /inb-provision-certs
 RUN cd /inb-provision-certs && GOOS=windows GOARCH=386 CGO_ENABLED=0 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-certs/inb-provision-certs.exe /output/inb-provision-certs.exe
 
-FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-cloud-windows
+FROM registry.hub.docker.com/library/golang:1.20-bookworm AS inb-provision-cloud-windows
 COPY inbm/fpm/inb-provision-cloud /inb-provision-cloud
 RUN cd /inb-provision-cloud && GOOS=windows GOARCH=386 CGO_ENABLED=0 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-cloud/inb-provision-cloud.exe /output/inb-provision-cloud.exe
 
-FROM registry.hub.docker.com/library/golang:1.20-bookworm as inb-provision-ota-cert-windows
+FROM registry.hub.docker.com/library/golang:1.20-bookworm AS inb-provision-ota-cert-windows
 COPY inbm/fpm/inb-provision-ota-cert /inb-provision-ota-cert
 RUN cd /inb-provision-ota-cert && GOOS=windows GOARCH=386 CGO_ENABLED=0 go build . && \
     rm -rf /output/ && mkdir /output && cp /inb-provision-ota-cert/inb-provision-ota-cert.exe /output/inb-provision-ota-cert.exe
 
 # output container
-FROM registry.hub.docker.com/library/ubuntu:20.04 as output-windows
+FROM registry.hub.docker.com/library/ubuntu:20.04 AS output-windows
 RUN apt-get update && apt-get install -y -q wget
 COPY --from=windows-cloudadapter-py3 /output/ /windows-cloudadapter-py3
 COPY --from=inb-provision-certs-windows /output /windows-inb-provision-certs

@@ -33,6 +33,7 @@ var getImageByContainerId = realdocker.GetImageByContainerId
 // DockerInfo is a struct that contains DockerInfo-specific instance information
 type DockerInfo struct{}
 
+// DockerBenchSecurity runs the docker bench security script.
 func (docker *DockerInfo) DockerBenchSecurity() {
 	dw := realdocker.DockerWrap{}
 	err := realdocker.DockerBenchSecurity(dw)

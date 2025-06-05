@@ -16,7 +16,11 @@ RUN apt-get update && \
     git && \
     apt-get clean
 RUN gem install dotenv -v 2.8.1
-RUN gem install --no-document fpm -v 1.14.0
+
+RUN gem install public_suffix -v 4.0.7
+RUN gem install rchardet -v 1.8.0
+RUN gem install --no-document fpm -v 1.13.1
+
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get --no-install-recommends install -y \
     software-properties-common && \

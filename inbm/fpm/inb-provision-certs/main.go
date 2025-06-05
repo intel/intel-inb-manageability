@@ -46,7 +46,10 @@ func main() {
 	must(err, "Getting absolute secret directory")
 
 	// ensure publicDir and secretDir directories already exist
-	isDirPublic, _ := isDir(publicDir)
+	isDirPublic, err := isDir(publicDir)
+	if err != nil {
+		log.Fatalf("Error checking public directory: %s\n", err)
+	}
 	if !isDirPublic {
 		log.Fatalf("Public directory does not exist: %s\n", publicDir)
 	}

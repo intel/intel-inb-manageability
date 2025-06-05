@@ -89,12 +89,11 @@ func createConfig(cw util.ExecCommandWrapper, configName string) error {
 	if cmdOut, err := cw.CombinedOutput(snapper, "", args, isDockerApp()); err != nil {
 		fmt.Fprintf(os.Stderr, "%s", cmdOut)
 		fmt.Fprintf(os.Stderr, "Error creating snapper configuration file: %s", err)
-                if strings.Contains(string(cmdOut), "already exists") {
-                     return nil  
-                } else {
-                     return err 
-                }	
-        }
+		if strings.Contains(string(cmdOut), "already exists") {
+			return nil
+		}
+		return err
+	}
 
 	return nil
 }
