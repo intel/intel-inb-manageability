@@ -1,6 +1,6 @@
 services:
   mosquitto:
-    image: eclipse-mosquitto:2.0.18
+    image: eclipse-mosquitto:latest
     ports:
       - "1883:1883"
       - "9001:9001"

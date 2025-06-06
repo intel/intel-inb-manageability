@@ -123,7 +123,11 @@ func (compose *ComposeInfo) Login(username string, serverName string) {
 
 	go func() {
 		defer stdin.Close()
-		io.WriteString(stdin, dockerLoginPswd)
+		_, err := io.WriteString(stdin, dockerLoginPswd)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error writing to stdin for docker login: %s", err.Error())
+			osExit(1)
+		}
 	}()
 
 	if err := cmd.Start(); nil != err {
