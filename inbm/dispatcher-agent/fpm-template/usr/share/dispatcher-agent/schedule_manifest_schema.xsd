@@ -75,7 +75,7 @@
   </xs:complexType>
 
   <xs:complexType name="Schedule">
-    <xs:choice minOccurs="0" maxOccurs="unbounded">
+    <xs:choice minOccurs="0" maxOccurs="30">
       <xs:element name="single_schedule" type="SingleSchedule"/>
       <xs:element name="repeated_schedule" type="RepeatedSchedule"/>
     </xs:choice>
@@ -92,7 +92,7 @@
   <xs:complexType name="ScheduleRequest">
     <xs:sequence>
       <xs:element name="request_id" type="ValidUuidFormat"/>
-      <xs:element name="update_schedule" type="ScheduledOperation" maxOccurs="unbounded"/>
+      <xs:element name="update_schedule" type="ScheduledOperation" maxOccurs="30"/>
     </xs:sequence>
   </xs:complexType>
 

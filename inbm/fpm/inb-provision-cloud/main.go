@@ -76,17 +76,26 @@ func main() {
 	jsonSchemaFile, err := filepath.Abs(args[3])
 	must(err, "Getting generic JSON schema file")
 
-	cloudCredentialDirExists, _ := isDir(cloudCredentialDir)
+	cloudCredentialDirExists, err := isDir(cloudCredentialDir)
+	if err != nil {
+		log.Fatalf("Error checking cloud credential directory: %s\n", err)
+	}
 	if !cloudCredentialDirExists {
 		log.Fatalf("Cloud credential directory does not exist: %s\n", cloudCredentialDir)
 	}
 
-	thingsBoardTemplateDirExists, _ := isDir(thingsBoardTemplateDir)
+	thingsBoardTemplateDirExists, err := isDir(thingsBoardTemplateDir)
+	if err != nil {
+		log.Fatalf("Error checking ThingsBoard template directory: %s\n", err)
+	}
 	if !thingsBoardTemplateDirExists {
 		log.Fatalf("ThingsBoard template directory does not exist: %s\n", thingsBoardTemplateDir)
 	}
 
-	uccTemplateDirExists, _ := isDir(uccTemplateDir)
+	uccTemplateDirExists, err := isDir(uccTemplateDir)
+	if err != nil {
+		log.Fatalf("Error checking UCC template directory: %s\n", err)
+	}
 	if !uccTemplateDirExists {
 		log.Fatalf("UCC template directory does not exist: %s\n", uccTemplateDir)
 	}
@@ -128,10 +137,9 @@ func setUpCloudCredentialDirectory(config CloudConfig) {
 	if fileExists(cloudFilePath) {
 		if !confirmReplaceConfiguration(cloudFilePath) {
 			os.Exit(0)
-		} else {
-			if os.Remove(cloudFilePath) != nil {
-				log.Fatalf("Cannot remove existing cloud configuration.")
-			}
+		} 
+		if os.Remove(cloudFilePath) != nil {
+			log.Fatalf("Cannot remove existing cloud configuration.")
 		}
 	}
 
