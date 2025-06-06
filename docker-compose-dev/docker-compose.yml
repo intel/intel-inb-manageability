@@ -1,6 +1,6 @@
 services:
   mosquitto:
-    image: eclipse-mosquitto:latest
+    image: eclipse-mosquitto:2.0.18
     ports:
       - "1883:1883"
       - "9001:9001"
@@ -8,6 +8,17 @@ services:
       - inbm_network
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+    tmpfs:
+      - /mosquitto/data
+      - /mosquitto/log
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CAP_SETGID
+      - CAP_SETUID
 
   cloudadapter:
     build:
@@ -39,6 +50,11 @@ services:
     restart: always
     depends_on:
       - mosquitto
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    cap_drop:
+      - ALL
 
   telemetry:
     build:
@@ -68,7 +84,12 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /:/host
     depends_on:
-      - mosquitto      
+      - mosquitto
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    cap_drop:
+      - ALL
 
   diagnostic:
     build:
@@ -99,6 +120,11 @@ services:
       - /:/host
     depends_on:
       - mosquitto
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    cap_drop:
+      - ALL
 
   configuration:
     build:
@@ -126,6 +152,11 @@ services:
     restart: always
     depends_on:
       - mosquitto
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    cap_drop:
+      - ALL
 
   dispatcher:
     build:
@@ -156,6 +187,10 @@ services:
       - /:/host
     depends_on:
       - mosquitto
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
 
 networks:
   inbm_network:
