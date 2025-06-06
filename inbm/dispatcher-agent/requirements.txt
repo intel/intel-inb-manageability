@@ -5,7 +5,7 @@ jsonschema==4.20.0
 types-jsonschema==4.20.0.0
 shortuuid==1.0.13
 requests==2.32.2
-urllib3==2.2.3
+urllib3==1.26.19
 certifi==2024.8.30
 pyinstaller==6.11.0
 setuptools==78.1.1
