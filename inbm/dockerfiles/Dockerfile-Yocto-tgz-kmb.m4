@@ -1,4 +1,4 @@
-# Copyright (c) 2021-2024 Intel Corporation
+# Copyright (c) 2021-2025 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 include(`image.kmb.m4')
@@ -10,3 +10,7 @@ RUN mkdir -p /output && \
     /kmb/* \
     /output
 
+# Create and switch to non-root user
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+RUN chown -R appuser:appgroup /output
+USER appuser
