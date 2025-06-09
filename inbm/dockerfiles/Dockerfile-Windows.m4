@@ -117,3 +117,8 @@ RUN \
 # Copy in our Windows-only files
 RUN \
     cp -rv /windows-override/* intel-manageability/
+
+# Create and switch to non-root user for the final output image
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+RUN chown -R appuser:appgroup /output
+USER appuser

@@ -10,3 +10,7 @@ RUN mkdir -p /output && \
     /ehl/* \
     /output
 
+# Create and switch to non-root user
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+RUN chown -R appuser:appgroup /output
+USER appuser

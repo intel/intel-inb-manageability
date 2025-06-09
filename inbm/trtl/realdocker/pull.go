@@ -3,8 +3,8 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-// Package realdocker provides interface abstractions 
-// to interact with Docker, facilitating operations like 
+// Package realdocker provides interface abstractions
+// to interact with Docker, facilitating operations like
 // image and container manipulation.
 package realdocker
 
@@ -53,13 +53,16 @@ func ImagePull(f Finder, dw DockerWrapper, referenceName string, userName string
 		return err
 	}
 
-	waitForImage(f, dw, maxSeconds, referenceName)
+	err := waitForImage(f, dw, maxSeconds, referenceName)
+	if err != nil {
+		return fmt.Errorf("error waiting for image %s: %v", referenceName, err)
+	}
 
 	imageTag := referenceName
 	if !strings.ContainsAny(referenceName, ":") {
 		imageTag = referenceName + ":latest"
 	}
 
-	_, err := Start(f, dw, ContainerOptions{}, nil, imageTag)
+	_, err = Start(f, dw, ContainerOptions{}, nil, imageTag)
 	return err
 }
