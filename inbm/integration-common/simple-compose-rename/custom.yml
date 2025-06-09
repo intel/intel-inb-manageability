@@ -5,5 +5,3 @@ services:
     build: ./nginx
     ports:
       - 9876:80
-    security_opt:
-      - no-new-privileges:true
