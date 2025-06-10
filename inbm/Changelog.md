@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - (N/A) Remove UDM related code
 
 ### Security
+- (NEXMANANGE-1322) Fix Unsafe Deserialization issue in Dispatcher State file. 
 - (N/A) Update Golang Version from 1.22 to 1.24 to resolve CVE: CVE-2025-22870
 - (N/A) Update Docker API version from v25.0.6 to v28.0.4.  Resolves CVEs: CVE-2024-36623, CVE-2024-36621, CVE-2024-36620
 - (N/A) Fixes for various Trivy issues in setup version and Dockerfiles
