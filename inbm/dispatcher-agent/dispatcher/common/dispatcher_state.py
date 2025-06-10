@@ -14,13 +14,28 @@ import os
 # pickle is only used to read from a trusted state file
 import pickle  # nosec: B301, B403
 
-from typing import Dict, Any, TypedDict
+from typing import Any, TypedDict
 
 from .constants import OLD_DISPATCHER_STATE_FILE, NEW_DISPATCHER_STATE_FILE
 from ..dispatcher_exception import DispatcherException
 from inbm_common_lib.utility import remove_file
 
 logger = logging.getLogger(__name__)
+
+class RestrictedUnpickler(pickle.Unpickler):
+    """Unpickler that only allows safe built-in types."""
+    def find_class(self, module, name):
+        # Only allow basic built-in types and datetime
+        allowed = (
+            (module == "builtins" and name in {"dict", "str", "int", "float", "list", "tuple", "set", "bool", "NoneType"}),
+            (module == "datetime" and name == "datetime"),
+        )
+        if any(allowed):
+            return super().find_class(module, name)
+        raise pickle.UnpicklingError(f"Global '{module}.{name}' is forbidden")
+
+def restricted_load(file_obj) -> Any:
+    return RestrictedUnpickler(file_obj).load()
 
 
 def clear_dispatcher_state() -> None:
@@ -84,7 +99,7 @@ def consume_dispatcher_state_file(readonly: bool = False) -> DispatcherState | N
                 logger.debug(f"Attempting to open file {state_file}")
                 with builtins.open(state_file, 'rb') as fd:
                     logger.debug("Attempting to unpickle from state file")
-                    state = pickle.load(fd)  # nosec
+                    state = restricted_load(fd)
                     logger.debug("Unpickling succeeded")
                     logger.debug(f"Dispatcher State file info: {state}")
                 # Successfully read the state file, no need to try others
@@ -121,7 +136,7 @@ def write_dispatcher_state_to_state_file(state: DispatcherState) -> None:  # pra
             if os.path.exists(state_file):
                 with builtins.open(state_file, 'rb') as fd:
                     # Reading from a trusted state file here
-                    existing_state = pickle.load(fd)  # nosec B301
+                    existing_state = restricted_load(fd)
                     state_file_found = True
                 break  # Stop after finding the first existing state file
 
