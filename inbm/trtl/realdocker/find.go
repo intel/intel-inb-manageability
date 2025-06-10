@@ -3,8 +3,8 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-// Package realdocker provides interface abstractions 
-// to interact with Docker, facilitating operations like 
+// Package realdocker provides interface abstractions
+// to interact with Docker, facilitating operations like
 // image and container manipulation.
 package realdocker
 
@@ -25,9 +25,6 @@ import (
 func (i Instance) GetImageTag() string {
 	ver := i.GetVersion()
 	var verString string
-	if ver == -1 {
-		verString = ""
-	}
 	if ver == 0 {
 		verString = ":latest"
 	} else {

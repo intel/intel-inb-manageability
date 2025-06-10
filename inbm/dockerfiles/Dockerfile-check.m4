@@ -260,3 +260,8 @@ RUN mkdir -p /output/ && \
     /telemetry/* \
     /configuration/* \
     /output
+
+# Create and switch to non-root user for the final output image
+RUN groupadd --system appgroup && useradd --system --gid appgroup appuser
+RUN chown -R appuser:appgroup /output
+USER appuser

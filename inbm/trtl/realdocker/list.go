@@ -3,8 +3,8 @@
    SPDX-License-Identifier: Apache-2.0
 */
 
-// Package realdocker provides interface abstractions 
-// to interact with Docker, facilitating operations like 
+// Package realdocker provides interface abstractions
+// to interact with Docker, facilitating operations like
 // image and container manipulation.
 package realdocker
 
@@ -53,9 +53,9 @@ func GetAllContainers(dw DockerWrapper, all bool, imageName string) ([]container
 
 // ContainerInfo is a structure to hold container usage.
 type ContainerInfo struct {
-    ImageName string `json:"imageName"`
-	ID string `json:"id"`
-	State string `json:"state"`
+	ImageName string `json:"imageName"`
+	ID        string `json:"id"`
+	State     string `json:"state"`
 }
 
 // GetAllRunningContainers retrieves a list of all containers on the system in the running state.
@@ -68,11 +68,11 @@ func GetAllRunningContainers(dw DockerWrapper) ([]ContainerInfo, error) {
 
 	var runningContainers []ContainerInfo
 	for _, container := range containers {
-        if container.State == "running" {
-            runningContainers = append(runningContainers,
-							ContainerInfo{ImageName: container.Image, ID: container.ID[:12], State: container.State})
-        }
-    }
+		if container.State == "running" {
+			runningContainers = append(runningContainers,
+				ContainerInfo{ImageName: container.Image, ID: container.ID[:12], State: container.State})
+		}
+	}
 	return runningContainers, nil
 }
 
@@ -87,42 +87,38 @@ type allContainers struct {
 // and state if the image does not have an active container.
 // It will return any error encountered.
 func ListContainers(dw DockerWrapper, imageName string) error {
-    var images []image.Summary
-    var err error
+	var images []image.Summary
+	var err error
 
-    if len(imageName) == 0 {
-        images, err = dw.ImageList(image.ListOptions{All: true})
-    } else {
-        filters := filters.NewArgs()
-        filters.Add("reference", imageName)
-        images, err = dw.ImageList(image.ListOptions{All: false, Filters: filters})
-    }
+	if len(imageName) == 0 {
+		images, err = dw.ImageList(image.ListOptions{All: true})
+	} else {
+		filters := filters.NewArgs()
+		filters.Add("reference", imageName)
+		images, err = dw.ImageList(image.ListOptions{All: false, Filters: filters})
+	}
 
-    if err != nil {
-        return err
-    }
+	if err != nil {
+		return err
+	}
 
-    var containers []ContainerInfo
-		for _, image := range images {
-			if len(image.RepoTags) > 0 {
-				s := strings.Split(image.RepoTags[0], ":")
-				_, err = strconv.ParseInt(s[len(s)-1], 10, 64)
-				if s[len(s)-1] != "<none>" || err == nil {
-					imageContainers, err := appendImageInformation(dw, image)
-					if err == nil {
-						containers = append(containers, imageContainers...)
-					}
+	var containers []ContainerInfo
+	for _, image := range images {
+		if len(image.RepoTags) > 0 {
+			s := strings.Split(image.RepoTags[0], ":")
+			_, err = strconv.ParseInt(s[len(s)-1], 10, 64)
+			if s[len(s)-1] != "<none>" || err == nil {
+				imageContainers, err := appendImageInformation(dw, image)
+				if err == nil {
+					containers = append(containers, imageContainers...)
 				}
-
-				if s[len(s) - 1] == "<none>" {
-					err = nil
-				}
+			}
 		}
 	}
 
 	output, err := createContainerListJSON(containers)
 	if err != nil {
-	    return err
+		return err
 	}
 	fmt.Println("ContainerList=", output)
 	return nil
@@ -154,11 +150,11 @@ var appendImageInformation = func(dw DockerWrapper, image image.Summary) ([]Cont
 }
 
 func createContainerListJSON(containers []ContainerInfo) (string, error) {
-    if len(containers) == 0 {
-        return "no containers found.", nil
-    }
+	if len(containers) == 0 {
+		return "no containers found.", nil
+	}
 
-    c := &allContainers{
+	c := &allContainers{
 		AllContainers: containers}
 	j, err := json.Marshal(c)
 	if err != nil {
