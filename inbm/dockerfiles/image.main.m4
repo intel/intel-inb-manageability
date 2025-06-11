@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # base image with all dependencies for building
-FROM registry.hub.docker.com/library/ubuntu:20.04 AS base
+FROM registry.hub.docker.com/library/ubuntu:22.04 AS base
 RUN echo 'force cache refresh 20240212'
 include(`commands.base-setup.m4')
 
@@ -240,7 +240,7 @@ RUN make build && \
     mv output/* /output
 
 # output container
-FROM registry.hub.docker.com/library/ubuntu:20.04 AS output-main
+FROM registry.hub.docker.com/library/ubuntu:22.04 AS output-main
 COPY --from=packaging /output /packaging
 COPY --from=inbc-py3 /output /inbc
 COPY --from=diagnostic-py3 /output /diagnostic
