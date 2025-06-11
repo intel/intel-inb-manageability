@@ -1,10 +1,10 @@
-# Copyright (C) 2021-2024 Intel Corporation
+# Copyright (C) 2021-2025 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
-FROM jrei/systemd-ubuntu:20.04
+FROM jrei/systemd-ubuntu:22.04
 WORKDIR /src/
 
-ENV container docker
+ENV container=docker
 
 # Set the proxy environment
 RUN if [ ! -z "$http_proxy" ]; then echo "container=docker" >> /etc/environment; fi

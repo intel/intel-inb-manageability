@@ -4,7 +4,7 @@
 
 For a full reference, see https://fpm.readthedocs.io/en/latest/installing.html#installing-things-fpm-needs
 
-On Ubuntu 20.04:
+On Ubuntu 20.04 and Ubuntu 22.04:
 
 * `sudo apt install ruby ruby-dev rubygems build-essential`
 * `sudo gem install public_suffix -v 5.1.1`
