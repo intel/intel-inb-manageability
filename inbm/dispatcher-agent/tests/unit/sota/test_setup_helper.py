@@ -18,7 +18,7 @@ class TestSetupHelper(unittest.TestCase):
         mock_apt_source.assert_called_once()
 
     @patch('dispatcher.common.dispatcher_state.clear_dispatcher_state')
-    @patch("pickle.load", return_value={'restart_reason': 'rollback', 'snapshot_num': 1})
+    @patch('dispatcher.common.dispatcher_state.restricted_load', return_value={'restart_reason': 'rollback', 'snapshot_num': 1})
     @patch("os.path.exists", return_value=True)
     def test_ubuntu_extract_snap_num_from_disk(self, mock_exist, mock_pickle, mock_clear) -> None:
         with patch('builtins.open', new_callable=mock_open()) as m:
