@@ -6,6 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## X.X.X - YYYY-MM-DD
 
 ### Changed
+- Update requests Version from 2.32.2 to 2.32.4 to have same version in all requirements.txt
 - Update psutil Version from 5.9.5 to 6.1.0 to have same version in all requirements.txt
 - Update PyInstaller Version from 5.13.1 to 6.11.0 to have same version in all requirements.txt
 - Update urllib3 Version from 1.26.19 to 1.26.20 to have same version in all requirements.txt
