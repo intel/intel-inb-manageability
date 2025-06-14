@@ -187,10 +187,6 @@ services:
       - /:/host
     depends_on:
       - mosquitto
-    security_opt:
-      - no-new-privileges:true
-    cap_drop:
-      - ALL
 
 networks:
   inbm_network:
