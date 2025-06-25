@@ -61,9 +61,9 @@ WORKDIR /tpm2
 COPY --from=ibmtpm1332 /tmp/ibmtpm1332.tar.gz /ibmtpm1332.tar.gz
 
 # compile IBM's Software TPM 2.0
-RUN mkdir ibmtpm1332 && \
-    (cd ibmtpm1332 && gzip -cd /ibmtpm1332.tar.gz | cpio -iv -R root:root) && \
-    make -C ibmtpm1332/src -j $(nproc)
+RUN mkdir ibmtpm1332 
+RUN bash -c "set -o pipefail; (cd ibmtpm1332 && gzip -cd /ibmtpm1332.tar.gz | cpio -iv -R root:root) && \
+    make -C ibmtpm1332/src -j $(nproc)"
 
 RUN mkdir -p  /debs
 COPY ldconfig.sh /tpm2/
