@@ -54,7 +54,10 @@ func main() {
 		log.Fatalf("Public directory does not exist: %s\n", publicDir)
 	}
 
-	isDirSecret, _ := isDir(secretDir)
+	isDirSecret, err := isDir(secretDir)
+	if err != nil {
+		log.Fatalf("Error checking secret directory: %s\n", err)
+	}
 	if !isDirSecret {
 		log.Fatalf("Secret directory does not exist: %s\n", secretDir)
 	}
