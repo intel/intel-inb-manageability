@@ -50,7 +50,7 @@
  
   <xs:complexType name="INBMManifests">
     <xs:sequence>
-      <xs:element name="manifest_xml" type="xs:string" maxOccurs="unbounded"/>
+      <xs:element name="manifest_xml" type="xs:string" maxOccurs="30"/>
     </xs:sequence>
   </xs:complexType>
 
