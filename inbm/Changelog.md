@@ -3,7 +3,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## X.X.X - YYYY-MM-DD
+## 4.2.8.7 - 2025-07-10
 
 ### Changed
 - Update requests Version from 2.32.2 to 2.32.4 to have same version in all requirements.txt
