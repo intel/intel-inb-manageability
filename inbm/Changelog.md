@@ -8,9 +8,6 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- Update urllib3 Version from 1.26.20 to 2.5.0 to have latest version with security improvements
-- Improve SSL certificate verification for test environments to handle stricter urllib3 validation
-
 ### Security
 
 ## 4.2.8.7 - 2025-07-10
