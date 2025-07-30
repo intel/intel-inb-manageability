@@ -15,7 +15,7 @@ import shlex
 from urllib.parse import urlsplit
 from typing import Optional, Any
 from inbm_common_lib.utility import CanonicalUri
-from dispatcher.packagemanager.package_manager import verify_source
+from dispatcher.packagemanager.package_manager import verify_source, create_ssl_context_for_requests
 from ..packagemanager.irepo import IRepo
 from ..dispatcher_broker import DispatcherBroker
 from .constants import RELEASE_SERVER_TOKEN_PATH
@@ -80,7 +80,9 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         dispatcher_broker.telemetry(info_msg)
 
     try:
-        with requests.get(url=uri.value, headers=headers, stream=True) as response:
+        # Only use SSL verification for HTTPS URLs
+        verify_ssl = create_ssl_context_for_requests() if uri.value.startswith("https://") else False
+        with requests.get(url=uri.value, headers=headers, verify=verify_ssl, stream=True) as response:
             response.raise_for_status()
             with open(os.open(os.path.join(repo.get_repo_path(), file_name), os.O_CREAT | os.O_WRONLY), 'wb') \
                     as destination_file:
@@ -112,7 +114,9 @@ def is_enough_space_to_download(manifest_uri: str,
     try:
         logger.debug(f"Checking file size with manifest uri: {manifest_uri}")
 
-        with requests.get(url=manifest_uri, headers=headers, stream=True) as response:
+        # Only use SSL verification for HTTPS URLs
+        verify_ssl = create_ssl_context_for_requests() if manifest_uri.startswith("https://") else False
+        with requests.get(url=manifest_uri, headers=headers, verify=verify_ssl, stream=True) as response:
             response.raise_for_status()
             # Read Content-Length header
             try:
