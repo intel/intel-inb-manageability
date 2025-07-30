@@ -101,7 +101,7 @@ def create_ssl_context_for_requests() -> Union[bool, str]:
             return True
         
         # For Linux, check if test CA certificate exists
-        test_ca_path = '/etc/ssl/certs/csl-ca-cert.pem'
+        test_ca_path = '/home/nat/go/intel-inb-manageability/inbm/integration-reloaded/scripts/csl-ca-cert.pem'
         if os.path.exists(test_ca_path):
             # Create a combined CA bundle for test environments
             combined_ca_fd, combined_ca_path = tempfile.mkstemp(suffix='.pem', prefix='inbm_ca_')
@@ -110,13 +110,35 @@ def create_ssl_context_for_requests() -> Union[bool, str]:
                 with os.fdopen(combined_ca_fd, 'w') as combined_ca_file:
                     # Add standard CA certificates
                     if os.path.exists(LINUX_CA_FILE):
-                        with open(LINUX_CA_FILE, 'r') as std_ca:
-                            combined_ca_file.write(std_ca.read())
-                            combined_ca_file.write('\n')
+                        try:
+                            with open(LINUX_CA_FILE, 'r', encoding='utf-8') as std_ca:
+                                combined_ca_file.write(std_ca.read())
+                                combined_ca_file.write('\n')
+                        except UnicodeDecodeError:
+                            # Fallback to latin-1 encoding for binary data
+                            with open(LINUX_CA_FILE, 'r', encoding='latin-1') as std_ca:
+                                combined_ca_file.write(std_ca.read())
+                                combined_ca_file.write('\n')
                     
-                    # Add test CA certificate
-                    with open(test_ca_path, 'r') as test_ca:
-                        combined_ca_file.write(test_ca.read())
+                    # Add test CA certificate content if it's a valid PEM file
+                    try:
+                        with open(test_ca_path, 'r', encoding='utf-8') as test_ca:
+                            test_content = test_ca.read().strip()
+                            # Only add if it contains actual certificate content
+                            if test_content and ('-----BEGIN CERTIFICATE-----' in test_content or test_content.startswith('/')):
+                                if test_content.startswith('/'):
+                                    # It's a path reference, try to read from that path
+                                    actual_cert_path = test_content.strip()
+                                    if os.path.exists(actual_cert_path):
+                                        with open(actual_cert_path, 'r', encoding='utf-8') as actual_cert:
+                                            combined_ca_file.write(actual_cert.read())
+                                else:
+                                    # It's actual certificate content
+                                    combined_ca_file.write(test_content)
+                                    combined_ca_file.write('\n')
+                    except Exception as cert_e:
+                        logger.debug(f"Could not read test CA certificate: {cert_e}")
+                        # Continue without test certificate
                 
                 # Track the temporary file for cleanup
                 _temp_ca_files.append(combined_ca_path)
