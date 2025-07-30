@@ -327,6 +327,85 @@ class TestManager(TestCase):
             'dispatcher/trustedRepositories:', canonicalize_uri('http://def.com:800'))
         self.assertFalse(res)
 
+    def test_get_platform_ca_certs_windows(self) -> None:
+        with patch('platform.system', return_value='Windows'):
+            result = package_manager.get_platform_ca_certs()
+            self.assertTrue(result)
+
+    def test_get_platform_ca_certs_linux(self) -> None:
+        with patch('platform.system', return_value='Linux'):
+            result = package_manager.get_platform_ca_certs()
+            self.assertEqual(result, package_manager.LINUX_CA_FILE)
+
+    @patch('os.path.exists')
+    @patch('platform.system')
+    def test_create_ssl_context_for_requests_windows(self, mock_platform, mock_exists) -> None:
+        mock_platform.return_value = 'Windows'
+        result = package_manager.create_ssl_context_for_requests()
+        self.assertTrue(result)
+
+    @patch('os.path.exists')
+    @patch('platform.system')
+    def test_create_ssl_context_for_requests_linux_no_test_ca(self, mock_platform, mock_exists) -> None:
+        mock_platform.return_value = 'Linux'
+        mock_exists.return_value = False
+        result = package_manager.create_ssl_context_for_requests()
+        self.assertEqual(result, package_manager.LINUX_CA_FILE)
+
+    @patch('os.unlink')
+    @patch('os.path.exists')
+    def test_cleanup_temp_files(self, mock_exists, mock_unlink) -> None:
+        # Add a temp file to the global list
+        package_manager._temp_ca_files.append('/tmp/test_ca.pem')
+        mock_exists.return_value = True
+        
+        # Call cleanup function
+        package_manager._cleanup_temp_files()
+        
+        # Verify file removal was attempted
+        mock_unlink.assert_called_once_with('/tmp/test_ca.pem')
+        
+        # Clear the list for other tests
+        package_manager._temp_ca_files.clear()
+
+    @patch('builtins.open', new_callable=mock_open, read_data='test ca content')
+    @patch('tempfile.mkstemp')
+    @patch('os.fdopen')
+    @patch('os.path.exists')
+    @patch('platform.system')
+    def test_create_ssl_context_for_requests_linux_with_test_ca(self, mock_platform, mock_exists, mock_fdopen, mock_mkstemp, mock_builtin_open) -> None:
+        mock_platform.return_value = 'Linux'
+        # First call checks for test CA, second for standard CA file
+        mock_exists.side_effect = [True, True]
+        mock_mkstemp.return_value = (5, '/tmp/test_combined_ca.pem')
+        
+        # Mock file handle for os.fdopen
+        mock_file_handle = mock_open().return_value
+        mock_fdopen.return_value.__enter__ = lambda self: mock_file_handle
+        mock_fdopen.return_value.__exit__ = lambda self, *args: None
+        
+        result = package_manager.create_ssl_context_for_requests()
+        
+        # Should return the combined CA path
+        self.assertEqual(result, '/tmp/test_combined_ca.pem')
+        # Should track the temp file
+        self.assertIn('/tmp/test_combined_ca.pem', package_manager._temp_ca_files)
+        
+        # Clear for other tests
+        package_manager._temp_ca_files.clear()
+
+    @patch('tempfile.mkstemp', side_effect=OSError('Disk full'))
+    @patch('os.path.exists')
+    @patch('platform.system')
+    def test_create_ssl_context_for_requests_exception_fallback(self, mock_platform, mock_exists, mock_mkstemp) -> None:
+        mock_platform.return_value = 'Linux'
+        mock_exists.return_value = True  # Test CA exists but temp file creation fails
+        
+        result = package_manager.create_ssl_context_for_requests()
+        
+        # Should fallback to default behavior when exception occurs
+        self.assertEqual(result, package_manager.LINUX_CA_FILE)
+
 
 if __name__ == '__main__':
     unittest.main()

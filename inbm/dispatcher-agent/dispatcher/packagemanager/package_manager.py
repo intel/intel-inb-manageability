@@ -15,12 +15,13 @@ import os
 import platform
 import shutil
 import tarfile
+import tempfile
+import atexit
 from binascii import unhexlify
 from tarfile import TarFile
 from typing import Any, Union, Optional, Tuple, List, IO
 
 import requests
-import ssl
 from cryptography import exceptions
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -44,6 +45,21 @@ from ..dispatcher_exception import DispatcherException
 from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
+
+# Global list to track temporary CA files for cleanup
+_temp_ca_files: List[str] = []
+
+def _cleanup_temp_files():
+    """Clean up temporary CA certificate files on exit."""
+    for temp_file in _temp_ca_files:
+        try:
+            if os.path.exists(temp_file):
+                os.unlink(temp_file)
+        except Exception:
+            pass  # Ignore cleanup errors
+
+# Register cleanup function
+atexit.register(_cleanup_temp_files)
 
 
 def get_file_type(file_name: str) -> Optional[str]:
@@ -71,35 +87,54 @@ def get_platform_ca_certs() -> Union[bool, str]:
         return LINUX_CA_FILE
 
 
-def create_ssl_context_for_requests() -> Union[bool, str, ssl.SSLContext]:
-    """Create SSL context for requests with appropriate certificate verification.
+def create_ssl_context_for_requests() -> Union[bool, str]:
+    """Create appropriate certificate verification setting for requests.
     
-    For test environments (identified by test hostnames), creates a context that
-    allows self-signed certificates but still validates them against the CA bundle.
+    For test environments, tries to use a custom CA bundle that includes test certificates.
+    Falls back to platform defaults if needed.
     
-    @return: SSL context for requests verify parameter
+    @return: Certificate verification setting for requests verify parameter
     """
     try:
-        # For test environments, create a custom SSL context
-        context = ssl.create_default_context()
-        
-        # Load platform CA certificates
+        # For Windows, always use default behavior
         if platform.system() == 'Windows':
-            # Windows handles this automatically
             return True
+        
+        # For Linux, check if test CA certificate exists
+        test_ca_path = '/etc/ssl/certs/csl-ca-cert.pem'
+        if os.path.exists(test_ca_path):
+            # Create a combined CA bundle for test environments
+            combined_ca_fd, combined_ca_path = tempfile.mkstemp(suffix='.pem', prefix='inbm_ca_')
+            
+            try:
+                with os.fdopen(combined_ca_fd, 'w') as combined_ca_file:
+                    # Add standard CA certificates
+                    if os.path.exists(LINUX_CA_FILE):
+                        with open(LINUX_CA_FILE, 'r') as std_ca:
+                            combined_ca_file.write(std_ca.read())
+                            combined_ca_file.write('\n')
+                    
+                    # Add test CA certificate
+                    with open(test_ca_path, 'r') as test_ca:
+                        combined_ca_file.write(test_ca.read())
+                
+                # Track the temporary file for cleanup
+                _temp_ca_files.append(combined_ca_path)
+                return combined_ca_path
+                
+            except Exception as e:
+                logger.warning(f"Failed to create combined CA bundle: {e}")
+                try:
+                    os.unlink(combined_ca_path)
+                except Exception:
+                    pass
+                return LINUX_CA_FILE
         else:
-            # Linux - load the CA file
-            if os.path.exists(LINUX_CA_FILE):
-                context.load_verify_locations(LINUX_CA_FILE)
+            # Production environment - use standard CA file
+            return LINUX_CA_FILE
             
-            # For ci_nginx test environment, add custom certificate path if it exists
-            test_ca_path = '/etc/ssl/certs/csl-ca-cert.pem'
-            if os.path.exists(test_ca_path):
-                context.load_verify_locations(test_ca_path)
-            
-            return context
     except Exception as e:
-        logger.warning(f"Failed to create custom SSL context: {e}")
+        logger.warning(f"Failed to create custom SSL verification: {e}")
         # Fallback to default behavior
         return get_platform_ca_certs()
 
@@ -133,7 +168,9 @@ def is_enough_space_to_download(uri: CanonicalUri,
         logger.info("Checking content size...")
         env_proxies = get_environ_proxies(uri.value)
         logger.debug("Proxies: " + str(env_proxies))
-        with requests.get(uri.value, auth=auth, verify=create_ssl_context_for_requests(), stream=True) as response:
+        # Only use SSL verification for HTTPS URLs
+        verify_ssl = create_ssl_context_for_requests() if uri.value.startswith("https://") else False
+        with requests.get(uri.value, auth=auth, verify=verify_ssl, stream=True) as response:
             response.raise_for_status()
             # Read Content-Length header
             try:
@@ -425,7 +462,9 @@ def get(url: CanonicalUri,
     if username and password:
         auth = (username, password)
     try:
-        with requests.get(url.value, auth=auth, verify=create_ssl_context_for_requests(), stream=True) as response:
+        # Only use SSL verification for HTTPS URLs
+        verify_ssl = create_ssl_context_for_requests() if url.value.startswith("https://") else False
+        with requests.get(url.value, auth=auth, verify=verify_ssl, stream=True) as response:
             response.raise_for_status()
             repo.add_from_requests_response(
                 urlparse(url.value).path.split('/')[-1], response, umask=umask)
