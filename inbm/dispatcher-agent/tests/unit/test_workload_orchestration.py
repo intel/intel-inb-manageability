@@ -297,8 +297,6 @@ class TestWorkloadOrchestration(TestCase):
             {"Enabled": False, "Workloads": []})
         mock_wo_status.assert_not_called()
 
-    # NEW TESTS BELOW - Missing coverage
-
     def test_get_hostname(self) -> None:
         """Test the static get_hostname method"""
         hostname = WorkloadOrchestration.get_hostname()

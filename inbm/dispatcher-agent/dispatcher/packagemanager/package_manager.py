@@ -3,7 +3,7 @@
     package from the specified URL and stores into a configured local cache
     on the device
 
-    Copyright (C) 2017-2024 Intel Corporation
+    Copyright (C) 2017-2025 Intel Corporation
     SPDX-License-Identifier: Apache-2.0
 """
 
@@ -15,11 +15,10 @@ import os
 import platform
 import shutil
 import tarfile
-import tempfile
 import atexit
 from binascii import unhexlify
 from tarfile import TarFile
-from typing import Any, Union, Optional, Tuple, List, IO
+from typing import Any, Union, Optional, Tuple, List
 
 import requests
 from cryptography import exceptions
@@ -45,22 +44,6 @@ from ..dispatcher_exception import DispatcherException
 from ..dispatcher_broker import DispatcherBroker
 
 logger = logging.getLogger(__name__)
-
-# Global list to track temporary CA files for cleanup
-_temp_ca_files: List[str] = []
-
-def _cleanup_temp_files():
-    """Clean up temporary CA certificate files on exit."""
-    for temp_file in _temp_ca_files:
-        try:
-            if os.path.exists(temp_file):
-                os.unlink(temp_file)
-        except Exception:
-            pass  # Ignore cleanup errors
-
-# Register cleanup function
-atexit.register(_cleanup_temp_files)
-
 
 def get_file_type(file_name: str) -> Optional[str]:
     """Get the type of file i.e. cert or package based on the file extension
@@ -90,69 +73,13 @@ def get_platform_ca_certs() -> Union[bool, str]:
 def create_ssl_context_for_requests() -> Union[bool, str]:
     """Create appropriate certificate verification setting for requests.
     
-    For test environments, tries to use a custom CA bundle that includes test certificates.
-    Falls back to platform defaults if needed.
-    
     @return: Certificate verification setting for requests verify parameter
     """
     try:
         # For Windows, always use default behavior
         if platform.system() == 'Windows':
-            return True
-        
-        # # For Linux, check if test CA certificate exists
-        # test_ca_path = '/home/nat/go/intel-inb-manageability/inbm/integration-reloaded/scripts/csl-ca-cert.pem'
-        # if os.path.exists(test_ca_path):
-        #     # Create a combined CA bundle for test environments
-        #     combined_ca_fd, combined_ca_path = tempfile.mkstemp(suffix='.pem', prefix='inbm_ca_')
-            
-        #     try:
-        #         with os.fdopen(combined_ca_fd, 'w') as combined_ca_file:
-        #             # Add standard CA certificates
-        #             if os.path.exists(LINUX_CA_FILE):
-        #                 try:
-        #                     with open(LINUX_CA_FILE, 'r', encoding='utf-8') as std_ca:
-        #                         combined_ca_file.write(std_ca.read())
-        #                         combined_ca_file.write('\n')
-        #                 except UnicodeDecodeError:
-        #                     # Fallback to latin-1 encoding for binary data
-        #                     with open(LINUX_CA_FILE, 'r', encoding='latin-1') as std_ca:
-        #                         combined_ca_file.write(std_ca.read())
-        #                         combined_ca_file.write('\n')
-                    
-        #             # Add test CA certificate content if it's a valid PEM file
-        #             try:
-        #                 with open(test_ca_path, 'r', encoding='utf-8') as test_ca:
-        #                     test_content = test_ca.read().strip()
-        #                     # Only add if it contains actual certificate content
-        #                     if test_content and ('-----BEGIN CERTIFICATE-----' in test_content or test_content.startswith('/')):
-        #                         if test_content.startswith('/'):
-        #                             # It's a path reference, try to read from that path
-        #                             actual_cert_path = test_content.strip()
-        #                             if os.path.exists(actual_cert_path):
-        #                                 with open(actual_cert_path, 'r', encoding='utf-8') as actual_cert:
-        #                                     combined_ca_file.write(actual_cert.read())
-        #                         else:
-        #                             # It's actual certificate content
-        #                             combined_ca_file.write(test_content)
-        #                             combined_ca_file.write('\n')
-        #             except Exception as cert_e:
-        #                 logger.debug(f"Could not read test CA certificate: {cert_e}")
-        #                 # Continue without test certificate
-                
-        #         # Track the temporary file for cleanup
-        #         _temp_ca_files.append(combined_ca_path)
-        #         return combined_ca_path
-                
-        #     except Exception as e:
-        #         logger.warning(f"Failed to create combined CA bundle: {e}")
-        #         try:
-        #             os.unlink(combined_ca_path)
-        #         except Exception:
-        #             pass
-        #         return LINUX_CA_FILE
-        # else:
-        # Production environment - use standard CA file
+            return True        
+
         return LINUX_CA_FILE
             
     except Exception as e:
