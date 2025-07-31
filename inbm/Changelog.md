@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Security
+- Updated urllib3 version to 2.50.  Resolves CVE-2025-50181
 
 ## 4.2.8.7 - 2025-07-10
 
