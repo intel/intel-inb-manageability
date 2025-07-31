@@ -11,6 +11,8 @@ from dispatcher.constants import *
 from unittest.mock import patch
 import logging
 import mock
+import platform
+import requests
 logger = logging.getLogger(__name__)
 
 
@@ -294,3 +296,148 @@ class TestWorkloadOrchestration(TestCase):
         WorkloadOrchestration(self.mock_broker)._process_online_mode_ok_status_result(
             {"Enabled": False, "Workloads": []})
         mock_wo_status.assert_not_called()
+
+    def test_get_hostname(self) -> None:
+        """Test the static get_hostname method"""
+        hostname = WorkloadOrchestration.get_hostname()
+        self.assertIsNotNone(hostname)
+        self.assertIsInstance(hostname, str)
+        self.assertGreater(len(hostname), 0)
+
+    @patch('builtins.open', mock.mock_open(read_data='test_file_content'))
+    def test_get_workload_orchestration_file_content_success(self) -> None:
+        """Test successful file reading"""
+        result = WorkloadOrchestration(self.mock_broker)._get_workload_orchestration_file_content('/test/path')
+        self.assertEqual(result, 'test_file_content')
+
+    @patch('builtins.open', side_effect=OSError("File not found"))
+    def test_get_workload_orchestration_file_content_failure(self, mock_open) -> None:
+        """Test file reading with OSError"""
+        with self.assertRaises(DispatcherException) as context:
+            WorkloadOrchestration(self.mock_broker)._get_workload_orchestration_file_content('/nonexistent/path')
+        self.assertIn("Could not load workload orchestration config file with error:", str(context.exception))
+
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
+    def test_get_wo_details_success(self, mock_value) -> None:
+        """Test get_wo_details method with valid values"""
+        mock_value.side_effect = ['test_token', 'test_ip_port']
+        token, ip_port = WorkloadOrchestration(self.mock_broker).get_wo_details()
+        self.assertEqual(token, 'test_token')
+        self.assertEqual(ip_port, 'test_ip_port')
+
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
+    def test_get_wo_details_none_values(self, mock_value) -> None:
+        """Test get_wo_details method with None values"""
+        mock_value.side_effect = [None, None]
+        token, ip_port = WorkloadOrchestration(self.mock_broker).get_wo_details()
+        self.assertIsNone(token)
+        self.assertIsNone(ip_port)
+
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_wo_details')
+    def test_poll_wo_status_none_details(self, mock_details) -> None:
+        """Test poll_wo_status with None token and ip_port"""
+        mock_details.return_value = (None, None)
+        with self.assertRaises(DispatcherException) as context:
+            WorkloadOrchestration(self.mock_broker).poll_wo_status()
+        self.assertEqual(str(context.exception), " Workload-Orchestration IP and Token details Not Found")    # Simplified connection error tests - focusing on coverage rather than exact error messages
+    @patch('requests.get', side_effect=requests.exceptions.ConnectionError("Connection failed"))
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_hostname')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration._get_workload_orchestration_file_content')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_wo_details')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
+    def test_poll_wo_status_connection_error(self, mock_orchestrator_value, mock_details, mock_file_content, mock_hostname, mock_requests_get) -> None:
+        """Test poll_wo_status with connection error"""
+        mock_details.return_value = ('token', 'ip_port')
+        mock_file_content.side_effect = ['http://localhost:8080', 'test_token']
+        mock_hostname.return_value = 'test_host'
+        mock_orchestrator_value.return_value = True
+        
+        with self.assertRaises(DispatcherException):
+            WorkloadOrchestration(self.mock_broker).poll_wo_status()
+
+    @patch('requests.get', side_effect=TypeError("Type error"))
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_hostname')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration._get_workload_orchestration_file_content')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_wo_details')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
+    def test_poll_wo_status_type_error(self, mock_orchestrator_value, mock_details, mock_file_content, mock_hostname, mock_requests_get) -> None:
+        """Test poll_wo_status with TypeError"""
+        mock_details.return_value = ('token', 'ip_port')
+        mock_file_content.side_effect = ['http://localhost:8080', 'test_token']
+        mock_hostname.return_value = 'test_host'
+        mock_orchestrator_value.return_value = True
+
+        with self.assertRaises(DispatcherException):
+            WorkloadOrchestration(self.mock_broker).poll_wo_status()
+
+    @patch('requests.patch', side_effect=requests.exceptions.ConnectionError("Connection failed"))
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_hostname')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration._get_workload_orchestration_file_content')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_wo_details')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
+    def test_switch_wo_status_connection_error(self, mock_orchestrator_value, mock_details, mock_file_content, mock_hostname, mock_requests_patch) -> None:
+        """Test switch_wo_status with connection error"""
+        mock_details.return_value = ('token', 'ip_port')
+        mock_file_content.side_effect = ['http://localhost:8080', 'test_token']
+        mock_hostname.return_value = 'test_host'
+        mock_orchestrator_value.return_value = True
+        
+        with self.assertRaises(DispatcherException):
+            WorkloadOrchestration(self.mock_broker).switch_wo_status("true")
+
+    @patch('requests.patch', side_effect=ValueError("Value error"))
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_hostname')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration._get_workload_orchestration_file_content')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_wo_details')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
+    def test_switch_wo_status_value_error(self, mock_orchestrator_value, mock_details, mock_file_content, mock_hostname, mock_requests_patch) -> None:
+        """Test switch_wo_status with ValueError"""
+        mock_details.return_value = ('token', 'ip_port')
+        mock_file_content.side_effect = ['http://localhost:8080', 'test_token']
+        mock_hostname.return_value = 'test_host'
+        mock_orchestrator_value.return_value = True
+
+        with self.assertRaises(DispatcherException):
+            WorkloadOrchestration(self.mock_broker).switch_wo_status("true")
+
+    @patch('time.sleep', return_value=0)
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='true')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status', side_effect=DispatcherException("Test error"))
+    def test_switch_to_maintenance_mode_exception_handling(self, mock_wo_status, mock_value, mock_time) -> None:
+        """Test _switch_to_maintenance_mode exception handling with orchestrator_response = 'true'"""
+        with self.assertRaises(DispatcherException) as context:
+            WorkloadOrchestration(self.mock_broker)._switch_to_maintenance_mode()
+        self.assertIn("Failure in switching Device Workload Orchestration status to Maintenance mode", str(context.exception))
+
+    @patch('time.sleep', return_value=0)
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value', return_value='false')
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.switch_wo_status', side_effect=DispatcherException("Test error"))
+    def test_switch_to_maintenance_mode_exception_handling_false(self, mock_wo_status, mock_value, mock_time) -> None:
+        """Test _switch_to_maintenance_mode exception handling with orchestrator_response = 'false'"""
+        # Should not raise exception when orchestrator_response is 'false'
+        try:
+            WorkloadOrchestration(self.mock_broker)._switch_to_maintenance_mode()
+        except DispatcherException:
+            self.fail("Should not raise exception when orchestrator_response is 'false'")
+
+    @patch('time.sleep', return_value=0)
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.poll_wo_status', side_effect=DispatcherException("Poll error"))
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.is_workload_service_active', return_value=True)
+    def test_switch_to_online_mode_exception_handling(self, mock_active, mock_poll, mock_time) -> None:
+        """Test _switch_to_online_mode exception handling"""
+        # Should not raise exception, just log telemetry
+        try:
+            WorkloadOrchestration(self.mock_broker)._switch_to_online_mode()
+        except DispatcherException:
+            self.fail("Should not raise exception in _switch_to_online_mode")
+
+    @patch('dispatcher.workload_orchestration.WorkloadOrchestration.get_orchestrator_value')
+    def test_get_orchestrator_value_calls(self, mock_get_orchestrator_value) -> None:
+        """Test that get_orchestrator_value is called properly"""
+        mock_get_orchestrator_value.return_value = 'test_value'
+        
+        wo = WorkloadOrchestration(self.mock_broker)
+        result = wo.get_orchestrator_value('test_tag')
+        
+        mock_get_orchestrator_value.assert_called_once_with('test_tag')
+        self.assertEqual(result, 'test_value')

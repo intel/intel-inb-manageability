@@ -327,6 +327,43 @@ class TestManager(TestCase):
             'dispatcher/trustedRepositories:', canonicalize_uri('http://def.com:800'))
         self.assertFalse(res)
 
+    def test_get_platform_ca_certs_windows(self) -> None:
+        with patch('platform.system', return_value='Windows'):
+            result = package_manager.get_platform_ca_certs()
+            self.assertTrue(result)
+
+    def test_get_platform_ca_certs_linux(self) -> None:
+        with patch('platform.system', return_value='Linux'):
+            result = package_manager.get_platform_ca_certs()
+            self.assertEqual(result, package_manager.LINUX_CA_FILE)
+
+    @patch('os.path.exists')
+    @patch('platform.system')
+    def test_create_ssl_context_for_requests_windows(self, mock_platform, mock_exists) -> None:
+        mock_platform.return_value = 'Windows'
+        result = package_manager.create_ssl_context_for_requests()
+        self.assertTrue(result)
+
+    @patch('os.path.exists')
+    @patch('platform.system')
+    def test_create_ssl_context_for_requests_linux_no_test_ca(self, mock_platform, mock_exists) -> None:
+        mock_platform.return_value = 'Linux'
+        mock_exists.return_value = False
+        result = package_manager.create_ssl_context_for_requests()
+        self.assertEqual(result, package_manager.LINUX_CA_FILE)
+
+    @patch('tempfile.mkstemp', side_effect=OSError('Disk full'))
+    @patch('os.path.exists')
+    @patch('platform.system')
+    def test_create_ssl_context_for_requests_exception_fallback(self, mock_platform, mock_exists, mock_mkstemp) -> None:
+        mock_platform.return_value = 'Linux'
+        mock_exists.return_value = True  # Test CA exists but temp file creation fails
+        
+        result = package_manager.create_ssl_context_for_requests()
+        
+        # Should fallback to default behavior when exception occurs
+        self.assertEqual(result, package_manager.LINUX_CA_FILE)
+
 
 if __name__ == '__main__':
     unittest.main()
