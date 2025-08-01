@@ -275,14 +275,17 @@ class SqliteManager:
             
     def _select_job_by_task_id(self, task_id: str) -> str:
         """Get the job stored in database by task id.
-        @param id: row index
-        @return: job
+        @param task_id: task identifier
+        @return: job manifest
         """
-        sql = ''' SELECT manifest FROM job WHERE rowid=?; '''
+        sql = ''' SELECT manifest FROM job WHERE task_id=?; '''
         row = self._fetch_one(sql, (task_id,))
+        
+        if row is None:
+            raise DispatcherException(f"No job found with task_id: {task_id}")
             
         manifest = row[0]
-        logger.debug(f"id={task_id}, manifest={manifest}")
+        logger.debug(f"task_id={task_id}, manifest={manifest}")
         return manifest
 
     def _get_schedule_by_schedule_id(self, sql: str, schedule_id: str) -> Any:
@@ -296,7 +299,7 @@ class SqliteManager:
         @param id: row index
         @return: Schedule object
         """ 
-        sql = ''' SELECT request_id FROM immediate_schedule WHERE rowid=?; '''
+        sql = ''' SELECT request_id FROM immediate_schedule WHERE id=?; '''
         result = self._get_schedule_by_schedule_id(sql, schedule_id)
         request_id = result[0]
 
@@ -309,7 +312,7 @@ class SqliteManager:
         @param id: row index
         @return: SingleSchedule object
         """ 
-        sql = ''' SELECT request_id, start_time, end_time FROM single_schedule WHERE rowid=?; '''
+        sql = ''' SELECT request_id, start_time, end_time FROM single_schedule WHERE id=?; '''
         result = self._get_schedule_by_schedule_id(sql, schedule_id)
         request_id = result[0]
         start_time = datetime.fromisoformat(result[1])
@@ -328,7 +331,7 @@ class SqliteManager:
         @param id: row index
         @return: RepeatedSchedule object
         """
-        sql = ''' SELECT request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week FROM repeated_schedule WHERE rowid=?; '''
+        sql = ''' SELECT request_id, cron_duration, cron_minutes, cron_hours, cron_day_month, cron_month, cron_day_week FROM repeated_schedule WHERE id=?; '''
         result = self._get_schedule_by_schedule_id(sql, schedule_id)
 
         request_id = result[0]
