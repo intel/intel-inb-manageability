@@ -23,6 +23,23 @@ from .sota_error import SotaError
 
 logger = logging.getLogger(__name__)
 
+def _verify_ssl(uri: CanonicalUri) -> Union[bool, str]:
+    """Determine SSL verification strategy based on the URI.
+
+    @param uri: CanonicalUri object containing the URI to check
+    @return: True for Windows, LINUX_CA_FILE for Linux, or False for test hosts
+    """
+    # For HTTPS URLs, determine SSL verification strategy
+    verify_ssl: Union[bool, str]
+    if uri.value.startswith("https://"):
+        # Skip SSL verification for test hosts like ci_nginx
+        if 'ci_nginx' in uri.value or 'localhost' in uri.value or '127.0.0.1' in uri.value:
+            verify_ssl = False
+        else:
+            verify_ssl = create_ssl_context_for_requests()
+    else:
+        verify_ssl = False
+    return verify_ssl
 
 def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
                    repo: IRepo, username: Optional[str], token: str, umask: int,
@@ -80,17 +97,7 @@ def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
         dispatcher_broker.telemetry(info_msg)
 
     try:
-        # For HTTPS URLs, determine SSL verification strategy
-        verify_ssl: Union[bool, str]
-        if uri.value.startswith("https://"):
-            # Skip SSL verification for test hosts like ci_nginx
-            if 'ci_nginx' in uri.value or 'localhost' in uri.value or '127.0.0.1' in uri.value:
-                verify_ssl = False
-            else:
-                verify_ssl = create_ssl_context_for_requests()
-        else:
-            verify_ssl = False
-        with requests.get(url=uri.value, headers=headers, verify=verify_ssl, stream=True) as response:
+        with requests.get(url=uri.value, headers=headers, verify=_verify_ssl(uri), stream=True) as response:
             response.raise_for_status()
             with open(os.open(os.path.join(repo.get_repo_path(), file_name), os.O_CREAT | os.O_WRONLY), 'wb') \
                     as destination_file:
@@ -121,18 +128,8 @@ def is_enough_space_to_download(manifest_uri: str,
     """
     try:
         logger.debug(f"Checking file size with manifest uri: {manifest_uri}")
-
-        # For HTTPS URLs, determine SSL verification strategy
-        verify_ssl: Union[bool, str]
-        if manifest_uri.startswith("https://"):
-            # Skip SSL verification for test hosts like ci_nginx
-            if 'ci_nginx' in manifest_uri or 'localhost' in manifest_uri or '127.0.0.1' in manifest_uri:
-                verify_ssl = False
-            else:
-                verify_ssl = create_ssl_context_for_requests()
-        else:
-            verify_ssl = False
-        with requests.get(url=manifest_uri, headers=headers, verify=verify_ssl, stream=True) as response:
+            
+        with requests.get(url=manifest_uri, headers=headers, verify=_verify_ssl(CanonicalUri(manifest_uri)), stream=True) as response:
             response.raise_for_status()
             # Read Content-Length header
             try:

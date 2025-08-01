@@ -58,35 +58,26 @@ def get_file_type(file_name: str) -> Optional[str]:
     else:
         return None
 
-
-def get_platform_ca_certs() -> Union[bool, str]:
-    """Get correct platform value for 'verify' parameter specifying CA certificates for TLS
-
-    @return: (bool or str)  True for Windows, LINUX_CA_FILE for Linux"""
-
-    if platform.system() == 'Windows':
-        return True
-    else:
-        return LINUX_CA_FILE
-
-
 def create_ssl_context_for_requests() -> Union[bool, str]:
     """Create appropriate certificate verification setting for requests.
     
     @return: Certificate verification setting for requests verify parameter
     """
-    try:
-        # For Windows, always use default behavior
-        if platform.system() == 'Windows':
-            return True        
+    return True if platform.system() == 'Windows' else LINUX_CA_FILE
 
-        return LINUX_CA_FILE
-            
-    except Exception as e:
-        logger.warning(f"Failed to create custom SSL verification: {e}")
-        # Fallback to default behavior
-        return get_platform_ca_certs()
-
+def _verify_ssl(uri: CanonicalUri) -> Union[bool, str]:
+    # For HTTPS URLs, determine SSL verification strategy
+    verify_ssl: Union[bool, str]
+    if uri.value.startswith("https://"):
+        # Skip SSL verification for test hosts like ci_nginx
+        if 'ci_nginx' in uri.value or 'localhost' in uri.value or '127.0.0.1' in uri.value:
+            verify_ssl = False
+            logger.debug("Skipping SSL verification for test host")
+        else:
+            verify_ssl = create_ssl_context_for_requests()
+    else:
+        verify_ssl = False
+    return verify_ssl
 
 def is_enough_space_to_download(uri: CanonicalUri,
                                 destination_repo: IRepo,
@@ -117,18 +108,8 @@ def is_enough_space_to_download(uri: CanonicalUri,
         logger.info("Checking content size...")
         env_proxies = get_environ_proxies(uri.value)
         logger.debug("Proxies: " + str(env_proxies))
-        # For HTTPS URLs, determine SSL verification strategy
-        verify_ssl: Union[bool, str]
-        if uri.value.startswith("https://"):
-            # Skip SSL verification for test hosts like ci_nginx
-            if 'ci_nginx' in uri.value or 'localhost' in uri.value or '127.0.0.1' in uri.value:
-                verify_ssl = False
-                logger.debug("Skipping SSL verification for test host")
-            else:
-                verify_ssl = create_ssl_context_for_requests()
-        else:
-            verify_ssl = False
-        with requests.get(uri.value, auth=auth, verify=verify_ssl, stream=True) as response:
+
+        with requests.get(uri.value, auth=auth, verify=_verify_ssl(uri), stream=True) as response:
             response.raise_for_status()
             # Read Content-Length header
             try:
@@ -420,17 +401,7 @@ def get(url: CanonicalUri,
     if username and password:
         auth = (username, password)
     try:
-        # For HTTPS URLs, determine SSL verification strategy
-        verify_ssl: Union[bool, str]
-        if url.value.startswith("https://"):
-            # Skip SSL verification for test hosts like ci_nginx
-            if 'ci_nginx' in url.value or 'localhost' in url.value or '127.0.0.1' in url.value:
-                verify_ssl = False
-            else:
-                verify_ssl = create_ssl_context_for_requests()
-        else:
-            verify_ssl = False
-        with requests.get(url.value, auth=auth, verify=verify_ssl, stream=True) as response:
+        with requests.get(url.value, auth=auth, verify=_verify_ssl(url), stream=True) as response:
             response.raise_for_status()
             repo.add_from_requests_response(
                 urlparse(url.value).path.split('/')[-1], response, umask=umask)
