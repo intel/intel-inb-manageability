@@ -15,31 +15,13 @@ import shlex
 from urllib.parse import urlsplit
 from typing import Optional, Any, Union
 from inbm_common_lib.utility import CanonicalUri
-from dispatcher.packagemanager.package_manager import verify_source, create_ssl_context_for_requests
+from dispatcher.packagemanager.package_manager import verify_source, create_ssl_context_for_requests, _verify_ssl
 from ..packagemanager.irepo import IRepo
 from ..dispatcher_broker import DispatcherBroker
 from .constants import RELEASE_SERVER_TOKEN_PATH
 from .sota_error import SotaError
 
 logger = logging.getLogger(__name__)
-
-def _verify_ssl(uri: CanonicalUri) -> Union[bool, str]:
-    """Determine SSL verification strategy based on the URI.
-
-    @param uri: CanonicalUri object containing the URI to check
-    @return: True for Windows, LINUX_CA_FILE for Linux, or False for test hosts
-    """
-    # For HTTPS URLs, determine SSL verification strategy
-    verify_ssl: Union[bool, str]
-    if uri.value.startswith("https://"):
-        # Skip SSL verification for test hosts like ci_nginx
-        if 'ci_nginx' in uri.value or 'localhost' in uri.value or '127.0.0.1' in uri.value:
-            verify_ssl = False
-        else:
-            verify_ssl = create_ssl_context_for_requests()
-    else:
-        verify_ssl = False
-    return verify_ssl
 
 def tiber_download(dispatcher_broker: DispatcherBroker, uri: CanonicalUri,
                    repo: IRepo, username: Optional[str], token: str, umask: int,
