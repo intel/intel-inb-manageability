@@ -9,7 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 ### Security
+
 - Updated urllib3 version to 2.50.  Resolves CVE-2025-50181
+- Updated Python version to 3.13.  Resolves CVE-2020-1171, CVE-2024-49050,
+   CVE-2020-1192, CVE-2020-17163, CVE-2025-49714
 
 ## 4.2.8.7 - 2025-07-10
 
