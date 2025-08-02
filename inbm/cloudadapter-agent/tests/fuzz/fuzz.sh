@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Activate venv
-echo Attempting to activate venv. Will fail if ~/venv-3.12 is not set up.
-. ~/venv-3.12/bin/activate
+echo Attempting to activate venv. Will fail if ~/venv-3.13 is not set up.
+. ~/venv-3.13/bin/activate
 
 # Infinite loop to keep running the tests
 while true; do

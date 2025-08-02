@@ -33,7 +33,6 @@
   /tmp/ rw,
   /tmp/** mrw,
   /usr/bin/gcc-5 rix,
-  /usr/bin/python2.7 ix,
   /usr/bin/inbm-configuration rix,
   /usr/share/configuration-agent/*.xsd r,
   /usr/share/misc/magic.mgc r,

@@ -68,7 +68,6 @@
   /usr/bin/curl rix,
   /usr/bin/gawk rix,
   /usr/bin/mawk rix,
-  /usr/bin/python2.7 ix,
   /usr/bin/trtl Pix,
   /usr/bin/wc rix,
   /usr/bin/which rix,

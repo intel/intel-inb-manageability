@@ -29,7 +29,7 @@ RUN source /venv-py3/bin/activate && \
     	pytest==7.4.3 \
         pytest-timeout==2.3.1 \
     	pytest-cov==4.1.0 \
-        pytest-mock==3.12.0 \
+        pytest-mock==3.14.1 \
         pytest-xdist==3.3.1 \
         -U
 COPY inbm-lib /src/inbm-lib

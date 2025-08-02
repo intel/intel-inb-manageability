@@ -1156,7 +1156,7 @@ Events Log in the dashboard below the OTA buttons.
 Results of Configuration Get update can be seen in the ThingsBoard
 Events Log in the dashboard below the OTA buttons.
 
-#### Configuration Load 
+#### Configuration Load
 
 **Required Fields**: Command and Fetch
 
@@ -1175,8 +1175,9 @@ Events Log in the dashboard below the OTA buttons.
 Note: ubuntuAptSource tag is no longer used.
 
 **NOTE:**
+
 > - Append is only applicable to three configuration tags i.e
-> `trustedRepositories` and `sotaSW` 
+> `trustedRepositories` and `sotaSW`
 >
 > - Path takes in key value pair format, example:
 > `trustedRepositories:https://abc.com/`
@@ -1188,16 +1189,18 @@ Note: ubuntuAptSource tag is no longer used.
 
 **Required Fields**: Command and Path
 
-**NOTE:** 
+**NOTE:**
+
 > - Remove is only applicable to three configuration tags i.e
 > `trustedRepositories`, `sotaSW` and `ubuntuAptSource`
-> -   Path takes in key value pair format, example: `trustedRepositories:https://abc.com/`
+> - Path takes in key value pair format, example: `trustedRepositories:https://abc.com/`
 
 <p align="center">
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image47.PNG" alt="P978#yIS2" style="width:4.10995in;height:4.74167in" />
 </p>
 
 ### Configuration Update Via Manifest
+
 [Configuration Command Manifests and Examples](Manifest%20Parameters.md)
 
 ### Power Management
@@ -1273,6 +1276,7 @@ The query command capabilities are also supported via manifest.
 ## Telemetry Data
 
 In-Band Manageability provides two types of telemetry data.  Telemetry can be viewed under Dashboard as displayed below:
+
 - 1 - Static Telemetry
 - 2 - Dynamic Telemetry.  The telemetry data will indicate the health of each endpoint.
 
@@ -1302,6 +1306,7 @@ This contains the following information
 Each endpoint publishes the following Dynamic Telemetry Data in 5-minute intervals.
 
 The following are displayed in the data chart and also appear in the New Event Log:
+
 - Available-memory
 - Core-temp-Celsius
 - Percent-disk-used
@@ -1318,6 +1323,7 @@ The device must be connected in order to view the telemetry information
 on the ThingsBoard.
 
 #### Static Telemetry
+
 To view the device`s static telemetry, click the Static Telemetry window.
 
 <img src="media/In-Band Manageability User Guide - ThingsBoard/media/image55.png" style="width:5.65625in;height:3.58333in" />
@@ -1334,6 +1340,7 @@ see the below
 [General Troubleshooting](Issues%20and%20Troubleshooting.md)
 
 ### OTA Error Status
+
 [Error Messages](Error%20Messages.md)
 
 ### Acquiring Debug Messages from Agents

@@ -16,6 +16,7 @@
   - [Run the agent](#run-the-agent)
   - [Test the agent](#test-the-agent)
 - [Debian package (DEB)](#debian-package-deb)
+
 </details>
 
 ## Overview
@@ -31,31 +32,37 @@
 The agent supports MQTT for communication with cloud services.
 
 There are two supported cloud services:
-  - [Azure IoT Central](../../docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
-  - [ThingsBoard](../../docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
+
+- [Azure IoT Central](../../docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
+- [ThingsBoard](../../docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
 
 ### Intel Manageability
 
 The agent uses MQTT for communication with other agents.
 
 #### Publish channels
+
 The agent publishes to the following topics:
-  - cloudadapter-agent state: `cloudadapter/state` when dead/running
-  - Manifest install requests: `manageability/request/`
+
+- cloudadapter-agent state: `cloudadapter/state` when dead/running
+- Manifest install requests: `manageability/request/`
 
 #### Subscribe channels
+
 The agent subscribes to the following topics:
-  - Agent states: `+/state`
-  - Agent events: `manageability/event`
-  - Responses: `manageability/response`
-  - Device telemetry: `manageability/telemetry`
-  - Update from scheduled requests: `manageability/nodeupdate`
+
+- Agent states: `+/state`
+- Agent events: `manageability/event`
+- Responses: `manageability/response`
+- Device telemetry: `manageability/telemetry`
+- Update from scheduled requests: `manageability/nodeupdate`
 
 ❗`+` is a wild-card indicating single level thus matching `diagnostic/state` or `<another-agent>/state`
 
 Events or responses sent to the agent are logged or published to the cloud as-is.
 
 Device telemetry sent to the agent should have the following schema:
+
 ```json
 {
     "type": "object",
@@ -79,7 +86,9 @@ Device telemetry sent to the agent should have the following schema:
     }
 }
 ```
+
 For example:
+
 ```json
 {
     "type": "dynamic_telementry",
@@ -91,24 +100,26 @@ For example:
 ```
 
 ## Install from Source
-❗ Use a Python version greater than 3.12 is installed
+
+❗ Use a Python version greater than 3.13 is installed
 
 - [Build INBM](#../../README.md#build-instructions)
 - [Install INBM](#../../docs/In-Band%20Manageability%20Installation%20Guide%20Ubuntu.md)
 
 ## Usage
+
 ❗Ensure Mosquitto broker is installed and configured for Intel(R) In-Band Manageability.  
 ❗Some commands will require root privileges (sudo)  
 ❗Run commands in the `inbm/cloudadapter-agent` directory
 
+### Setup
 
-### Setup:
 - Run: `make config`
 - Refer to the following documents for cloud setup:
   - [Azure](#../../docs/In-Band%20Manageability%20User%20Guide%20-%20Azure.md)
   - [Thingsboard](#../../docs/In-Band%20Manageability%20User%20Guide%20-%20ThingsBoard.md)
 
-### Changing the logging level:
+### Changing the logging level
 
 - Run: `make logging LEVEL=DEBUG`
 - Valid values for `LEVEL`:
@@ -116,21 +127,24 @@ For example:
   - `ERROR`
   - `INFO`
 
-### Run the agent:
+### Run the agent
 
 - Run: `make run`
 
-### Test the agent:
+### Test the agent
 
 - Run: `make tests`
 
 ## Debian package (DEB)
 
 ### Install (For Ubuntu)
+
 After building the above package, if you only want to install the cloudadpater-agent, you can do so by following these steps:
+
 - `cd dist/inbm`
 - Unzip package: `sudo tar -xvf Intel-Manageability.preview.tar.gz`
 - Install package: `dpkg -i cloudadapter-agent<latest>.deb`
 
 ### Uninstall (For Ubuntu)
+
 - `dpkg --purge cloudadapter-agent`

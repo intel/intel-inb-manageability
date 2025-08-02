@@ -1,10 +1,10 @@
-# Copyright (c) 2024 Intel Corporation
+# Copyright (c) 2025 Intel Corporation
 # SPDX-License-Identifier: Apache-2.0
 
 include(`image.main.m4')
 
 # base windows/wine build image
-FROM registry.hub.docker.com/tobix/pywine:3.12 AS base-windows
+FROM registry.hub.docker.com/tobix/pywine:3.13 AS base-windows
 
 ENV DEBIAN_FRONTEND noninteractive
 
