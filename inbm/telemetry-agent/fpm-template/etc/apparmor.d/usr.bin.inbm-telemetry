@@ -38,7 +38,6 @@
   /var/rm-daemon wr,
   /var/rm-daemon-notify wr,
   /usr/bin/gcc-5 rix,
-  /usr/bin/python2.7 ix,
   /usr/bin/trtl Pix,
   /usr/bin/lsb_release rUx,
   /usr/bin/dpkg-query rUx,

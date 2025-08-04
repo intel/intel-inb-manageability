@@ -31,7 +31,6 @@
   /tmp/ rw,
   /tmp/** mrw,
   /usr/bin/gcc-5 rix,
-  /usr/bin/python2.7 ix,
   /usr/bin/inbm-cloudadapter rix,
   /usr/share/misc/magic.mgc r,
   /etc/intel-manageability/public/cloudadapter-agent/** r,

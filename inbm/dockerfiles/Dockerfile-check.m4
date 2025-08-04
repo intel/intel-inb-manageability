@@ -11,10 +11,10 @@ include(`commands.base-setup.m4')
 # py3 venv
 FROM base AS venv-py3
 WORKDIR /
-RUN python3.12 -m venv /venv-py3
+RUN python3.13 -m venv /venv-py3
 RUN source /venv-py3/bin/activate && \
-    pip3.12 install wheel==0.40.0 && \
-    pip3.12 install \
+    pip3.13 install wheel==0.40.0 && \
+    pip3.13 install \
         flake8==7.1.1 \
         flake8-commas==4.0.0.dev0 \
         bandit==1.7.3 \
@@ -29,15 +29,15 @@ RUN source /venv-py3/bin/activate && \
     	pytest==7.4.3 \
         pytest-timeout==2.3.1 \
     	pytest-cov==4.1.0 \
-        pytest-mock==3.12.0 \
+        pytest-mock==3.14.1 \
         pytest-xdist==3.3.1 \
         -U
 COPY inbm-lib /src/inbm-lib
 ENV PYTHONPATH=/src/inbm-lib
 ENV MYPYPATH=/src/inbm-lib
 RUN source /venv-py3/bin/activate && \
-    pip3.12 install -e /src/inbm-lib && \
-    pip3.12 install /src/inbm-lib[test]
+    pip3.13 install -e /src/inbm-lib && \
+    pip3.13 install /src/inbm-lib[test]
 
 FROM venv-py3 AS lint-venv-py3
 RUN source /venv-py3/bin/activate && \
@@ -78,8 +78,8 @@ COPY inbc-program/requirements.txt /src/inbc-program/requirements.txt
 COPY inbc-program/test-requirements.txt /src/inbc-program/test-requirements.txt
 WORKDIR /src/inbc-program
 RUN source /venv-py3/bin/activate && \
-    pip3.12 install -r requirements.txt && \
-    pip3.12 install -r test-requirements.txt
+    pip3.13 install -r requirements.txt && \
+    pip3.13 install -r test-requirements.txt
 COPY inbc-program /src/inbc-program
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
@@ -104,8 +104,8 @@ COPY inbm/diagnostic-agent/requirements.txt /src/diagnostic-agent/requirements.t
 COPY inbm/diagnostic-agent/test-requirements.txt /src/diagnostic-agent/test-requirements.txt
 WORKDIR /src/diagnostic-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.12 install -r requirements.txt && \
-    pip3.12 install -r test-requirements.txt
+    pip3.13 install -r requirements.txt && \
+    pip3.13 install -r test-requirements.txt
 COPY inbm/diagnostic-agent /src/diagnostic-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
@@ -131,10 +131,10 @@ COPY inbm/dispatcher-agent/test-requirements.txt /src/dispatcher-agent/test-requ
 WORKDIR /src/dispatcher-agent
 RUN source /venv-py3/bin/activate && \
     ln -sf /usr/bin/pip /usr/bin/pip3 && \
-    pip3.12 install --upgrade pip && \
-    pip3.12 install setuptools-rust && \
-    pip3.12 install -r requirements.txt && \
-    pip3.12 install -r test-requirements.txt
+    pip3.13 install --upgrade pip && \
+    pip3.13 install setuptools-rust && \
+    pip3.13 install -r requirements.txt && \
+    pip3.13 install -r test-requirements.txt
 COPY inbm/dispatcher-agent /src/dispatcher-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
@@ -160,8 +160,8 @@ COPY inbm/cloudadapter-agent/requirements.txt /src/cloudadapter-agent/requiremen
 COPY inbm/cloudadapter-agent/test-requirements.txt /src/cloudadapter-agent/test-requirements.txt
 WORKDIR /src/cloudadapter-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.12 install -r requirements.txt && \
-    pip3.12 install -r test-requirements.txt
+    pip3.13 install -r requirements.txt && \
+    pip3.13 install -r test-requirements.txt
 COPY inbm/cloudadapter-agent /src/cloudadapter-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
@@ -186,8 +186,8 @@ COPY inbm/telemetry-agent/requirements.txt /src/telemetry-agent/requirements.txt
 COPY inbm/telemetry-agent/test-requirements.txt /src/telemetry-agent/test-requirements.txt
 WORKDIR /src/telemetry-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.12 install -r requirements.txt && \
-    pip3.12 install -r test-requirements.txt
+    pip3.13 install -r requirements.txt && \
+    pip3.13 install -r test-requirements.txt
 COPY inbm/telemetry-agent /src/telemetry-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \
@@ -212,8 +212,8 @@ COPY inbm/configuration-agent/requirements.txt /src/configuration-agent/requirem
 COPY inbm/configuration-agent/test-requirements.txt /src/configuration-agent/test-requirements.txt
 WORKDIR /src/configuration-agent
 RUN source /venv-py3/bin/activate && \
-    pip3.12 install -r requirements.txt && \
-    pip3.12 install -r test-requirements.txt
+    pip3.13 install -r requirements.txt && \
+    pip3.13 install -r test-requirements.txt
 COPY inbm/configuration-agent /src/configuration-agent
 COPY inbm/packaging /src/packaging
 RUN source /venv-py3/bin/activate && \

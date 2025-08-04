@@ -25,7 +25,6 @@
   /tmp/ rw,
   /tmp/** mrw,
   /usr/bin/gcc-5 rix,
-  /usr/bin/python2.7 ix,
   /usr/bin/inbm-cloudadapter rix,
   /etc/intel-manageability/public/cloudadapter-agent/** r,
   /etc/intel-manageability/secret/cloudadapter-agent/** r,
