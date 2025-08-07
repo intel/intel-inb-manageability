@@ -4,9 +4,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## X.X.X.X - YYYY-MM-DD
-
-### Changed
+## 4.2.8.8 - 2025-08-07
 
 ### Security
 
