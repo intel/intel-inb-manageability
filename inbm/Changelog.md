@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
+- Fix tar extraction weakness which failed to resolve path traversal issues caused by symbolic and hard links.
+
 ### Security
 
 ## 4.2.8.8 - 2025-08-07
