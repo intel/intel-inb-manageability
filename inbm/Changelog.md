@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Security
 
+Fixed identified security issues in the github workflow files identified by zizmor tool.
+
 ## 4.2.8.8 - 2025-08-07
 
 ### Security
