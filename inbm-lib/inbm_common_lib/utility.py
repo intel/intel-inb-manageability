@@ -215,12 +215,60 @@ def safe_extract(tarball: tarfile.TarFile,
     @param members: members to extract
     @param numeric_owner: whether to extract numeric owner
     """
-    for member in tarball.getmembers():
-        member_path = os.path.join(path, member.name)
+    # Get the members to extract (either specified or all members)
+    members_to_extract = members if members is not None else tarball.getmembers()
+    
+    # Validate each member before extraction
+    safe_members = []
+    extracted_paths = set()  # Track extracted paths to detect overwrites
+    
+    for member in members_to_extract:
+        # Normalize the member name to prevent directory traversal
+        member_name = os.path.normpath(member.name)
+        
+        # Check for absolute paths
+        if os.path.isabs(member_name):
+            raise IOError(f"Attempted absolute path in tar file: {member.name}")
+            
+        # Check for parent directory references
+        if member_name.startswith('../') or '/../' in member_name:
+            raise IOError(f"Attempted path traversal in tar file: {member.name}")
+            
+        # Check if the final path would be within the target directory
+        member_path = os.path.join(path, member_name)
         if not is_within_directory(path, member_path):
-            raise IOError("Attempted Path Traversal in Tar File")
-    tarball.extractall(path, members, numeric_owner=numeric_owner) 
-
+            raise IOError(f"Attempted path traversal in tar file: {member.name}")
+        
+        # Check for symlink attacks - prevent extraction of symlinks pointing outside extraction directory
+        if member.issym() or member.islnk():
+            # For symbolic links, check if the link target would be outside the extraction directory
+            linkpath = member.linkname
+            
+            # If linkpath is absolute, it's definitely unsafe
+            if os.path.isabs(linkpath):
+                raise IOError(f"Attempted symlink to absolute path in tar file: {member.name} -> {linkpath}")
+            
+            # Resolve the link target relative to the extraction directory
+            link_target = os.path.join(path, os.path.dirname(member_name), linkpath)
+            link_target = os.path.normpath(link_target)
+            
+            # Check if the link target would be within the extraction directory
+            if not is_within_directory(path, link_target):
+                raise IOError(f"Attempted symlink outside extraction directory: {member.name} -> {linkpath}")
+        
+        # Check for duplicate paths (potential overwrite attacks)
+        if member_name in extracted_paths:
+            raise IOError(f"Attempted to extract duplicate path: {member.name}")
+        extracted_paths.add(member_name)
+            
+        # Create a safe copy of the member with normalized name
+        safe_member = member
+        safe_member.name = member_name
+        safe_members.append(safe_member)
+    
+    # Extract only the validated members
+    for member in safe_members:
+        tarball.extract(member, path, numeric_owner=numeric_owner)
 
 def validate_file_type(path: list[str]) -> None:
     """ Method to check target file's type. Example of supported file list:
