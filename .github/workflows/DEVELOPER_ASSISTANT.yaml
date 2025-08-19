@@ -16,10 +16,12 @@ jobs:
     runs-on: ["ubuntu-latest"]
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+        with:
+          persist-credentials: false
 
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502 # v4.0.2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -83,7 +85,7 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           # Uncomment the line below to enable the pre-merge checks (Ensure to provide the keywords to Code Review Dev Team to include in pre-merge checks)
           # GITHUB_ACTION.ENABLE_PRE_MERGE_CHECKS: true
-          
+
           # Uncomment the line below to add any extra instructions you wish to give to the LLM
           # GITHUB_ACTION.EXTRA_INSTRUCTIONS: 'Please give clear review for the user'
 

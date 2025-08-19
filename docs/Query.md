@@ -1,6 +1,7 @@
 # Query Command
 
 ## Description
+
 The Query command can be called by either the cloud or INBC.  It will provide attribute information on the Host.
 
 ### How to Call
