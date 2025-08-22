@@ -1,7 +1,8 @@
 name: UNIT-TEST-RUN-WORKFLOW-DISPATCH
 on:
   workflow_dispatch
-permissions: read-all
+permissions:
+  contents: read
 jobs:
   Checkout:
     if: startsWith(github.ref, 'refs/heads/NEX_MAXIMUS_UT/')

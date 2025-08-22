@@ -2,7 +2,8 @@ name: UNIT-TEST-GEN-ALL
 on:
   workflow_dispatch:
   # pull_request:
-permissions: read-all
+permissions:
+  contents: read
 jobs:
   Checkout:
     if: startsWith(github.ref, 'refs/heads/NEX_MAXIMUS_UT/')
