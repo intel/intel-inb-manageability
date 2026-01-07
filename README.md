@@ -9,8 +9,8 @@ This project has been identified as having known security issues.
 Contact: webadmin@linux.intel.com
 
 > [!IMPORTANT]
-> Please consider using this [alternative](https://github.com/open-edge-platform/edge-node-agents/tree/main/in-band-manageability)
-> 
+> Please consider using this alternative:  [edge-node-agents/in-band-manageability at main · open-edge-platform/edge-node-agents](https://github.com/open-edge-platform/edge-node-agents/tree/main/in-band-manageability)
+
 # Intel In-Band Manageability Framework (INBM)
 
 The Intel®  In-Band Manageability Framework is software which enables an administrator to perform critical Device Management operations over-the-air remotely from the cloud. It also facilitates the publishing of telemetry and critical events and logs from an IoT device to the cloud enabling the administrator to take corrective actions if, and when necessary. The framework is designed to be modular and flexible ensuring scalability of the solution across preferred Cloud Service Providers (for example, Azure* IoT Central, ThingBoard.io, and so on).
